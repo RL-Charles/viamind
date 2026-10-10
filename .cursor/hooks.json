@@ -1,0 +1,43 @@
+{
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-edit --agent cursor || true",
+        "timeout": 30
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-shell --agent cursor || true",
+        "timeout": 30
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "if command -v shp \u003e/dev/null 2\u003e\u00261; then shp hook working --agent cursor; else echo '{\"continue\":true}'; fi",
+        "timeout": 30
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "if command -v shp \u003e/dev/null 2\u003e\u00261; then shp hook pre-edit --agent cursor; else echo '{\"permission\":\"allow\"}'; fi",
+        "matcher": "Write|Delete",
+        "timeout": 30
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook session-start --agent cursor || true",
+        "timeout": 30
+      }
+    ],
+    "stop": [
+      {
+        "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook stop --agent cursor || true",
+        "loop_limit": 1,
+        "timeout": 30
+      }
+    ]
+  },
+  "version": 1
+}

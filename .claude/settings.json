@@ -1,0 +1,81 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-edit --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-shell --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook pre-edit --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook working --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook session-start --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume|clear|compact"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook stop --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook working --agent claude || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}

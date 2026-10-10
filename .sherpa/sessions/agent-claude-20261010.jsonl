@@ -1,0 +1,198 @@
+{"ts":"2026-10-10T23:52:42Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-001","type":"create","message":"Test epic"}
+{"ts":"2026-10-10T23:53:07Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-001","type":"create","message":"Probe"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-001","type":"create","message":"E0 Foundations"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-002","type":"create","message":"E1 Design model and command engine"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-003","type":"create","message":"E2 Geometry and rendering core"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-004","type":"create","message":"E3 Agent harness"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-005","type":"create","message":"E4 Libraries"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-006","type":"create","message":"E5 Schematic capture"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-007","type":"create","message":"E6 PCB layout core"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-008","type":"create","message":"E7 Interactive routing"}
+{"ts":"2026-10-10T23:54:24Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-009","type":"create","message":"E8 Advanced routing and signal integrity"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-010","type":"create","message":"E9 Manufacturing outputs"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-011","type":"create","message":"E10 Import and interoperability"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-012","type":"create","message":"E11 Rigid-flex and multi-board"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-013","type":"create","message":"E12 BOM, variants and supply chain"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-014","type":"create","message":"E13 Release and packaging"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"E-015","type":"create","message":"E14 Cable harness design"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-001","type":"create","message":"E0-S1 Crate layout following the Craft apps (doc, engine, geom, render, mcp, ui-egui, router, drc, fab)"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-002","type":"create","message":"E0-S2 CI on Linux, macOS and Windows"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-003","type":"create","message":"E0-S3 Licence files, NOTICE, ATTRIBUTION"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-004","type":"create","message":"E0-S4 Clean-room spec process"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-005","type":"create","message":"E0-S5 AGENTS.md and CLAUDE.md for agent contributors"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-006","type":"create","message":"E0-S6 Regression corpus of open-hardware designs"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-007","type":"create","message":"E1-S1 Project model: schematic sheets plus board, stable ID per object"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-008","type":"create","message":"E1-S2 Command trait: apply, invert, JSON schema; all edits go through it"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-009","type":"create","message":"E1-S3 Transactions with undo and redo"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-010","type":"create","message":"E1-S4 Append-only event log"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-011","type":"create","message":"E1-S5 Native file format: text, deterministic order"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-012","type":"create","message":"E1-S6 Typed change notifications per transaction"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-013","type":"create","message":"E1-S7 Integer nanometre coordinates"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-014","type":"create","message":"E2-S1 Primitives: points, segments, arcs, polygons; kurbo for curves"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-015","type":"create","message":"E2-S2 Polygon booleans and clearance offsets"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-016","type":"create","message":"E2-S3 R-tree spatial index"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-017","type":"create","message":"E2-S4 wgpu canvas"}
+{"ts":"2026-10-10T23:54:25Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-018","type":"create","message":"E2-S5 Layer system"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-019","type":"create","message":"E2-S6 Selection: click, box, lasso, filters"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-020","type":"create","message":"E3-S1 MCP server over stdio and streamable HTTP, tools generated from command schemas"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-021","type":"create","message":"E3-S2 Command parity check"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-022","type":"create","message":"E3-S3 Live session: agent edits appear in the open UI"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-023","type":"create","message":"E3-S4 Query API: nets, parts, board objects, DRC results as filtered JSON"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-024","type":"create","message":"E3-S5 Event subscriptions (changes, DRC, selection)"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-025","type":"create","message":"E3-S6 Hooks: pre- and post-command scripts or agent callbacks"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-026","type":"create","message":"E3-S7 Agent presence on canvas"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-027","type":"create","message":"E3-S8 Agent modes: live apply (default), approval, read-only"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-028","type":"create","message":"E3-S9 Agent branches"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-029","type":"create","message":"E3-S10 Headless mode and CLI"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-030","type":"create","message":"E3-S11 Rendered views for agents"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-031","type":"create","message":"E3-S12 Session replay and audit log"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-032","type":"create","message":"E3-S13 Multiple agents at once"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-033","type":"create","message":"E3-S14 Agent docs and skills"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-034","type":"create","message":"E4-S1 Symbol editor, including multi-unit parts"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-035","type":"create","message":"E4-S2 Footprint editor"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-036","type":"create","message":"E4-S3 IPC-7351 footprint generator"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-037","type":"create","message":"E4-S4 Parts database"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-038","type":"create","message":"E4-S5 KiCad library import"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-039","type":"create","message":"E4-S6 3D model attach and align"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-040","type":"create","message":"E4-S7 Agent part creation from datasheet pin tables"}
+{"ts":"2026-10-10T23:54:26Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-041","type":"create","message":"E5-S1 Parts, wires, junctions, labels, power ports"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-042","type":"create","message":"E5-S2 Buses and bus entries"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-043","type":"create","message":"E5-S3 Hierarchical sheets and ports"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-044","type":"create","message":"E5-S4 Multi-channel: repeat a sheet N times"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-045","type":"create","message":"E5-S5 Auto annotation"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-046","type":"create","message":"E5-S6 ERC with a configurable pin-type matrix"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-047","type":"create","message":"E5-S7 Netlist, forward and back annotation"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-048","type":"create","message":"E5-S8 Cross-probing"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-049","type":"create","message":"E5-S9 PDF and SVG print"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-050","type":"create","message":"E6-S1 Board outline and cutouts"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-051","type":"create","message":"E6-S2 Layer stack manager"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-052","type":"create","message":"E6-S3 Placement and ratsnest"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-053","type":"create","message":"E6-S4 Tracks, arcs and vias"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-054","type":"create","message":"E6-S5 Copper pours"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-055","type":"create","message":"E6-S6 Rules engine with net classes and scoped queries"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-056","type":"create","message":"E6-S7 Online and batch DRC"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-057","type":"create","message":"E6-S8 3D board view"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-058","type":"create","message":"E6-S9 Multi-channel layout replication"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-059","type":"create","message":"E7-S1 Walkaround and push-and-shove routing"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-060","type":"create","message":"E7-S2 Differential pair routing"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-061","type":"create","message":"E7-S3 Length tuning"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-062","type":"create","message":"E7-S4 BGA and QFP fanout"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-063","type":"create","message":"E7-S5 Gloss and retrace cleanup"}
+{"ts":"2026-10-10T23:54:27Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-064","type":"create","message":"E8-S1 Multi-net guided routing: draw one path, route a whole bus"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-065","type":"create","message":"E8-S2 Signal paths through series parts"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-066","type":"create","message":"E8-S3 Match-group tuning panel"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-067","type":"create","message":"E8-S4 Impedance solver tied to the stackup"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-068","type":"create","message":"E8-S5 Impedance profiles as routing rules"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-069","type":"create","message":"E8-S6 Delay units"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-070","type":"create","message":"E8-S7 Agent-driven bus routing"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-071","type":"create","message":"E9-S1 Gerber X2 and X3, Excellon drill"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-072","type":"create","message":"E9-S2 IPC-2581 export"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-073","type":"create","message":"E9-S3 ODB++ export"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-074","type":"create","message":"E9-S4 Pick-and-place and BOM CSV"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-075","type":"create","message":"E9-S5 STEP export of the assembled board"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-076","type":"create","message":"E9-S6 Auto fab and assembly drawings"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-077","type":"create","message":"E9-S7 Output jobs"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-078","type":"create","message":"E9-S8 Built-in Gerber viewer"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-079","type":"create","message":"E10-S1 KiCad project import (versions 7-9)"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-080","type":"create","message":"E10-S2 KiCad export"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-081","type":"create","message":"E10-S3 Altium schematic and PCB import"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-082","type":"create","message":"E10-S4 Altium library import"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-083","type":"create","message":"E10-S5 Import fidelity report"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-084","type":"create","message":"E11-S1 Several stackup regions on one board"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-085","type":"create","message":"E11-S2 Bend lines and 3D fold preview"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-086","type":"create","message":"E11-S3 Flex rules"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-087","type":"create","message":"E11-S4 Multi-board projects"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-088","type":"create","message":"E11-S5 Multi-board 3D assembly"}
+{"ts":"2026-10-10T23:54:28Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-089","type":"create","message":"E12-S1 BOM manager"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-090","type":"create","message":"E12-S2 Design variants"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-091","type":"create","message":"E12-S3 Distributor lookup (DigiKey, Mouser, LCSC)"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-092","type":"create","message":"E12-S4 Alternates and lifecycle warnings"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-093","type":"create","message":"E12-S5 Cost roll-up"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-094","type":"create","message":"E13-S1 Installers"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-095","type":"create","message":"E13-S2 Auto-update"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-096","type":"create","message":"E13-S3 User and agent docs site"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-097","type":"create","message":"E13-S4 Opt-in crash reporting"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-098","type":"create","message":"E13-S5 Performance budget tests"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-099","type":"create","message":"E14-S1 Harness parts library: connectors, contacts, wires, cables"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-100","type":"create","message":"E14-S2 Wiring diagram editor"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-101","type":"create","message":"E14-S3 Link harness to board connectors"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-102","type":"create","message":"E14-S4 Harness layout drawing (formboard)"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-103","type":"create","message":"E14-S5 Harness manufacturing outputs"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"S-104","type":"create","message":"E14-S6 Agent harness tools"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0001","type":"create","message":"T1 Restructure workspace into Craft-style crates (doc, engine, geom, render, mcp, ui-egui, router, drc, fab) plus apps/viamind"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0002","type":"create","message":"T2 Workspace lints, clippy.toml and rustfmt.toml"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0003","type":"create","message":"T3 GitHub Actions: fmt, clippy, test on Linux, macOS and Windows"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0004","type":"create","message":"T4 NOTICE and ATTRIBUTION.md"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0005","type":"create","message":"T5 PR template with clean-room checklist"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0006","type":"create","message":"T6 AGENTS.md and CLAUDE.md: build, test, conventions, parallel lanes"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0007","type":"create","message":"T7 viamind-corpus repo: 20 openly licensed KiCad projects"}
+{"ts":"2026-10-10T23:54:29Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0008","type":"create","message":"T8 Object IDs plus Project, Sheet and Board types"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0009","type":"create","message":"T9 Save/load round-trip tests"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0010","type":"create","message":"T10 Command trait: apply, invert, JSON schema"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0011","type":"create","message":"T11 First commands: AddPart, Move, Delete"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0012","type":"create","message":"T12 Transactions and undo stack"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0013","type":"create","message":"T13 Event log and byte-identical replay test"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0014","type":"create","message":"T14 Spike: choose the native text file format"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0015","type":"create","message":"T15 Change-notification stream"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0016","type":"create","message":"T16 Nm (integer nanometre) type and unit conversions"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0017","type":"create","message":"T17 Geometry primitives and property tests"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0018","type":"create","message":"T18 Spike: benchmark i_overlay vs geo for polygon booleans"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0019","type":"create","message":"T19 R-tree spatial index using rstar"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0020","type":"create","message":"T20 eframe app shell with wgpu canvas: pan and zoom"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0021","type":"create","message":"T21 Layer system"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0022","type":"create","message":"T22 Selection: click, box, lasso"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0023","type":"create","message":"T23 MCP server skeleton (stdio)"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0024","type":"create","message":"T24 Generate MCP tools from command schemas"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0025","type":"create","message":"T25 UI/agent command-parity test in CI"}
+{"ts":"2026-10-10T23:54:30Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0026","type":"create","message":"T26 Live session: agent edits repaint the UI (P1 gate demo)"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0001","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0002","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0003","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0004","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0005","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0006","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0007","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0008","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0009","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0010","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0011","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:49Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0012","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0013","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0014","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0015","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0016","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0017","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0018","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0019","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0020","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0021","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0022","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0023","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0024","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0025","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0026","type":"status","from":"backlog","to":"ready","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0027","type":"create","message":"Set up Sherpa tracking and agent hooks"}
+{"ts":"2026-10-10T23:54:50Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0027","type":"claim","from":"backlog","to":"in_progress","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0002","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0003","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0006","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0008","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0009","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0010","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0011","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0012","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:57Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0013","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0014","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0015","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0016","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0017","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0018","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0019","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0020","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0021","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0022","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0023","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0024","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0025","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:54:58Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0026","type":"status","from":"ready","to":"backlog","message":"Waiting on dependencies; promoted to ready when they land","commit":"bd09daf"}
+{"ts":"2026-10-10T23:55:09Z","actor":"agent:claude","session":"agent-claude-20261010","item":"T-0027","type":"touch","files":["docs/PARALLEL.md"]}

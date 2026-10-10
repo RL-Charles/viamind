@@ -1,0 +1,81 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-edit --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "apply_patch|Edit|Write"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook post-shell --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook pre-edit --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "apply_patch|Edit|Write"
+      },
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook working --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook session-start --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "startup|resume|clear|compact"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook stop --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "command -v shp \u003e/dev/null 2\u003e\u00261 \u0026\u0026 shp hook working --agent codex || true",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}
