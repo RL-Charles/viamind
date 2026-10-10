@@ -1,0 +1,11 @@
+[package]
+name = "viamind"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+viamind-core.workspace = true
+viamind-schematic.workspace = true
+viamind-pcb.workspace = true
