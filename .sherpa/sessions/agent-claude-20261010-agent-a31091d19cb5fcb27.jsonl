@@ -1,0 +1,2 @@
+{"ts":"2026-10-10T23:57:05Z","actor":"agent:claude","session":"agent-claude-20261010-agent-a31091d19cb5fcb27","item":"T-0005","type":"claim","from":"ready","to":"in_progress","commit":"48fadc0"}
+{"ts":"2026-10-10T23:57:20Z","actor":"agent:claude","session":"agent-claude-20261010-agent-a31091d19cb5fcb27","item":"T-0005","type":"touch","files":[".github/pull_request_template.md"]}

@@ -6,25 +6,71 @@ version = 4
 name = "viamind"
 version = "0.1.0"
 dependencies = [
- "viamind-core",
- "viamind-pcb",
- "viamind-schematic",
+ "viamind-mcp",
+ "viamind-ui-egui",
 ]
 
 [[package]]
-name = "viamind-core"
-version = "0.1.0"
-
-[[package]]
-name = "viamind-pcb"
+name = "viamind-doc"
 version = "0.1.0"
 dependencies = [
- "viamind-core",
+ "viamind-geom",
 ]
 
 [[package]]
-name = "viamind-schematic"
+name = "viamind-drc"
 version = "0.1.0"
 dependencies = [
- "viamind-core",
+ "viamind-doc",
+ "viamind-geom",
+]
+
+[[package]]
+name = "viamind-engine"
+version = "0.1.0"
+dependencies = [
+ "viamind-doc",
+]
+
+[[package]]
+name = "viamind-fab"
+version = "0.1.0"
+dependencies = [
+ "viamind-doc",
+ "viamind-geom",
+]
+
+[[package]]
+name = "viamind-geom"
+version = "0.1.0"
+
+[[package]]
+name = "viamind-mcp"
+version = "0.1.0"
+dependencies = [
+ "viamind-engine",
+]
+
+[[package]]
+name = "viamind-render"
+version = "0.1.0"
+dependencies = [
+ "viamind-doc",
+ "viamind-geom",
+]
+
+[[package]]
+name = "viamind-router"
+version = "0.1.0"
+dependencies = [
+ "viamind-doc",
+ "viamind-geom",
+]
+
+[[package]]
+name = "viamind-ui-egui"
+version = "0.1.0"
+dependencies = [
+ "viamind-engine",
+ "viamind-render",
 ]
