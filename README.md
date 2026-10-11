@@ -22,9 +22,10 @@ Licensed under the [MIT License](LICENSE).
 Linux is the initial target. CI builds and tests on Linux; macOS and Windows
 support is deferred.
 
-Download an optimized tarball from the **Linux bundle** workflow's artifacts, or
-build one with `python3 scripts/package-linux.py /tmp/viamind-linux-build`.
-See [Linux bundle instructions and runtime requirements](docs/linux-bundle.md).
+Download an optimized tarball or AppImage from the **Linux bundle** workflow's
+artifacts. See [Linux bundle instructions](docs/linux-bundle.md) or
+[AppImage build, extraction and runtime requirements](docs/linux-appimage.md).
+Build a tarball with `python3 scripts/package-linux.py /tmp/viamind-linux-build`.
 
 ```sh
 cargo run --release -p viamind          # opens a new design and serves it to agents
