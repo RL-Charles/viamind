@@ -9,6 +9,7 @@ mod assembly_templates;
 mod fabrication;
 mod output_job;
 mod populated_bom;
+mod release_inspection;
 mod snapshot;
 
 pub use assembly::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot, PreparedAssemblyCsv, assembly_schema, csv, write_csv};
@@ -20,4 +21,8 @@ pub use snapshot::FabricationSnapshot;
 pub use output_job::{
     CHECKED_PROFILE, CalibratedPlacementSummary, OutputJob, OutputJobChecks, OutputJobFileRequest, OutputJobSnapshot, PopulatedAssemblySummary,
     ReleaseManifest, RunOutputJobRequest, SaveOutputJobRequest, load_output_job, output_job_schema, save_output_job,
+};
+
+pub use release_inspection::{
+    InspectOutputRelease, MatchedAssembly, ReleaseCursor, ReleaseFileFact, ReleaseInspection, inspect_output_release, release_inspection_schema,
 };
