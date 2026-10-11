@@ -1,0 +1,4 @@
+
+thread 'main' (2849777) panicked at crates/ui-egui/examples/schematic_labels_inspection.rs:38:17:
+assertion failed: cam.zoom >= 10.0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

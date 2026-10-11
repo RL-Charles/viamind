@@ -1,0 +1,26 @@
+Sun Oct 11 20:47:16 UTC 2026
+56c6065e73044866a3ad31cd7c2f780ac2682128
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/apps/viamind)
+error[E0599]: no method named `run` found for struct `egui::Context` in the current scope
+  --> crates/ui-egui/src/schematic/labels.rs:85:21
+   |
+85 |         let _ = ctx.run(egui::RawInput { screen_rect: Some(viewport), ..Default::default() }, |ctx| {
+   |                 ----^^^
+   |
+help: there is a method `run_ui` with a similar name
+   |
+85 |         let _ = ctx.run_ui(egui::RawInput { screen_rect: Some(viewport), ..Default::default() }, |ctx| {
+   |                        +++
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `viamind-ui-egui` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

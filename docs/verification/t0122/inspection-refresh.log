@@ -1,0 +1,35 @@
+fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8
+Sun Oct 11 21:15:18 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.82s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.62s
+     Running tests/schematic_labels.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_labels-957eb272e693f03b)
+
+running 3 tests
+test actual_low_zoom_notice_replaces_symbol_text_without_moving_the_model ... ok
+test actual_compact_inspection_dense_labels_fit_and_presentation_is_not_a_pick_anchor ... ok
+test actual_fit_wheel_center_pick_and_mode_switch_preserve_shared_session_and_geometry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.04s
+ab76f0c457b7e2c43b57c984f59fcd3319c67cd60a60d05d9fd208e2b212abc8  /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-fa9793b
+Sun Oct 11 21:15:49 UTC 2026

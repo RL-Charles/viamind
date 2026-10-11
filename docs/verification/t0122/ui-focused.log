@@ -1,0 +1,67 @@
+Sun Oct 11 20:56:06 UTC 2026
+8fed2a11c86ad25ebd6cdab237b3794c42820e9e
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 24.13s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.89s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_ui_egui-f290fe03bbc405d5)
+
+running 2 tests
+test schematic::labels::tests::measured_fallback_never_escapes_envelope_and_refusal_identifies_source ... ok
+test schematic::labels::tests::actual_default_font_non_ascii_ink_fits_shared_envelopes_at_supported_zooms ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 91 filtered out; finished in 0.09s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.31s
+     Running tests/schematic_labels.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_labels-957eb272e693f03b)
+
+running 3 tests
+test actual_low_zoom_notice_replaces_symbol_text_without_moving_the_model ... ok
+test actual_compact_inspection_dense_labels_fit_and_presentation_is_not_a_pick_anchor ... ok
+test actual_fit_wheel_center_pick_and_mode_switch_preserve_shared_session_and_geometry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.07s
+     Running tests/schematic.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic-dd9961352c481e01)
+
+running 4 tests
+test reopen_same_project_resets_old_draft_using_session_stream ... ok
+test view_fit_and_status_follow_the_visible_schematic_camera ... ok
+test invalid_and_stale_drafts_preserve_every_session_field_until_explicit_reload ... ok
+test actual_forms_create_all_schematic_types_edit_and_undo_without_board_changes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.87s
+     Running tests/schematic_wires.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_wires-955ef08b23098ff8)
+
+running 4 tests
+test actual_posture_backspace_pan_zoom_and_escape_keep_entire_model_unchanged ... ok
+test actual_crossing_does_not_join_and_grid_t_endpoint_does ... ok
+test actual_pointer_exact_rotated_mirrored_offgrid_attachment_finish_and_undo ... ok
+test actual_stale_peer_edit_reopen_and_object_draft_guards_preserve_content ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+Sun Oct 11 20:57:25 UTC 2026
