@@ -551,6 +551,7 @@ mod tests {
             Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(width), height: Nm(height), net: Some(name.into()) };
         let part = Part {
             assembly: None,
+            artwork: None,
             schematic_symbol: None,
             schematic_package: None,
             pads: Some(Pads(vec![pad])),
@@ -747,6 +748,12 @@ mod tests {
         project.board.parts.get_mut(&id).unwrap().value = "x".repeat(3 * 1024 * 1024);
         project.board.parts.get_mut(&id).unwrap().assembly =
             Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("invalid unused metadata\n".repeat(200_000)), ..Default::default() }));
+        let artwork = viamind_doc::FootprintArtwork {
+            silkscreen: vec![viamind_doc::SilkscreenSegment { start: Point::ORIGIN, end: Point::ORIGIN, width: Nm(-1) }; 100_001],
+            courtyard: None,
+        };
+        assert!(artwork.validate().is_err());
+        project.board.parts.get_mut(&id).unwrap().artwork = Some(Box::new(artwork));
         let mut sheet = viamind_doc::Sheet::new("x".repeat(3 * 1024 * 1024));
         sheet.id = "00000000-0000-0000-0000-000000000000".parse().unwrap();
         project.schematic.sheets.insert(sheet.id, sheet);
