@@ -68,7 +68,7 @@
   "artifacts": {
     "crates/ui-egui/examples/t0123_inspection.rs": "3d72bc2ac87ba1fd3f8cb8fd4cc76f693d0dd4dacf99ab87fa0bb36a2d8d3fff",
     "docs/specs/unrouted-net-query.md": "d61248fb2514d6509d665f35067cfb625a4664997f89f05a47e6a8b7960a3645",
-    "docs/unrouted-net-verification.md": "89573979740a9ffa95cfbefc37c83ce3d68e9b68dc10fff8a78b7820403573a3",
+    "docs/unrouted-net-verification.md": "276dfa7b55a6b1fe64474091c235d51740aa61b37408f945a9092d5d03448079",
     "docs/verification/t0123/build-refresh.log": "da67c70685d1703520eb10cd7c6feeb72a9f04774dea4d07ff5d64008ba3db45",
     "docs/verification/t0123/build-refresh.sh": "8965221e7bb1179bf52d2af1ff68a8724a78fa62dc7611c9bef902b447f701be",
     "docs/verification/t0123/desktop-result.json": "d7d4741fbbc0733db25498beefbb261f9da9e1280298433ea256b7ec528a918f",
@@ -111,7 +111,10 @@
     "docs/verification/t0123/final-native-launch.json": "49f86118ae8b5952a3509ab53355d102d5d628b01d3325e3411711972385162b",
     "docs/verification/t0123/final-native-runtime.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "docs/generated/mcp-tools.json": "6facc67727d837490befcd10ba64a5ffa813e37f72d0f6d53a2824f59316422c",
-    "docs/generated/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954"
+    "docs/generated/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954",
+    "docs/verification/t0123/ci-refresh.sh": "7ec584341af3b66b605903e355626f6a07b4fade6cc9dcab70cd515230742b71",
+    "docs/verification/t0123/ci-refresh.log": "7db84954017a7f8ca586abb3d4adfae7079ba321ff54c6bd74d064620966f9d8",
+    "docs/verification/t0123/final-ci-clippy-failed.log": "5434c48862d7f39d7639f70c1bfef2d11a713fb7bcc89a0e05d13cc2ebcd2e0d"
   },
   "final_combined": {
     "source": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
@@ -158,5 +161,23 @@
       "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-final-proof/large.viamind.json",
       "sha256": "a14cb27a4f4c363612925c02cf37ade58c1443ed2c5622c8103a5090ac65e54e"
     }
+  },
+  "compatibility_correction": {
+    "source": "4eec348b04cb2b3e40ab60d3a0a5f7bd7433ea34",
+    "failed_ci": "38180135385",
+    "reason": "newer CI Rust deprecates AtomicUsize::fetch_update; equivalent compare_exchange_weak loop supports both toolchains",
+    "gate_exit": 0,
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_passed": 14,
+    "workspace_build": true,
+    "actual_catalog_drift_tools": 115,
+    "retained_binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/ci-verified/viamind",
+      "sha256": "d41410d2f088a077c55f9133fe71353ce70e8ba29abad8790524d50598e82e8b",
+      "source": "4eec348b04cb2b3e40ab60d3a0a5f7bd7433ea34"
+    },
+    "prior_actual_runtime_source_preserved": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
+    "future_T118_guard_requirement": "check_read before prepare admission and before captured-work engine lock"
   }
 }
