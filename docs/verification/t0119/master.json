@@ -578,6 +578,36 @@
       "path": "docs/specs/footprint-artwork.md",
       "storage": "repository",
       "sha256": "8da2cf3ae5e802432d768a90cbcfba0cb193000ebc0209e81b89895f3044ce66"
+    },
+    {
+      "path": "docs/verification/t0119/ci-38179820314-failed.log",
+      "storage": "repository",
+      "sha256": "aa039ee8a9409b6f71b87edd995c731bb32c47cc076aaa49a3c05b506949d902"
+    },
+    {
+      "path": "docs/verification/t0119/parts-ci-reproduce.sh",
+      "storage": "repository",
+      "sha256": "8ac5f638a4eb07dfcb7002f68fa44d3af798576ee5cd18983a191ea4119a575e"
+    },
+    {
+      "path": "docs/verification/t0119/parts-ci-reproduce.log",
+      "storage": "repository",
+      "sha256": "ad697c14137ae8cf0c25a10d4d26be69e8eccb34db3767c4527bdfc7d2f99af0"
+    },
+    {
+      "path": "docs/verification/t0119/parts-ci-fix.sh",
+      "storage": "repository",
+      "sha256": "b168bed964e70ea01804fe77d44eef5725e85b7a213e70a45a6cf22eea1743c8"
+    },
+    {
+      "path": "docs/verification/t0119/parts-ci-fix.log",
+      "storage": "repository",
+      "sha256": "4a00edf5a592a98e92c263abe5922d40be9e34e02cb39c6da8963064da7b1ba6"
+    },
+    {
+      "path": "docs/verification/t0119/parts-ci-fix2.log",
+      "storage": "repository",
+      "sha256": "1f05708391faff857934f3a6d9c9d2e7336acf2b2f83eb479a0fb9de6a0388d6"
     }
   ],
   "captures": [
@@ -654,5 +684,19 @@
       "scope": "final"
     }
   ],
-  "scope": "Original and combined production HTTP each34 checks. Inspection-only native WGPU, logical input/focus preparation, no OS-input/opacity/cadence claim. Original RGBA retained; PNG alpha omitted with identical RGB. combined-field-clipped captures are historical excluded silk-field-visibility evidence, retained honestly. Final capture asserts ancestor effective clip before preparation and native modal containment. Parent exact-head CI/independent review still gates merge."
+  "scope": "Original and combined production HTTP each34 checks. Inspection-only native WGPU, logical input/focus preparation, no OS-input/opacity/cadence claim. Original RGBA retained; PNG alpha omitted with identical RGB. combined-field-clipped captures are historical excluded silk-field-visibility evidence, retained honestly. Final capture asserts ancestor effective clip before preparation and native modal containment. Parent exact-head CI/independent review still gates merge.",
+  "ci_followup": {
+    "failed_ci": "https://github.com/RL-Charles/viamind/actions/runs/38179820314",
+    "failed_source": "9a28241450969f2cecc9068e15393e515b639b97",
+    "correction_source": "837a2c98bea3d83fc1346f2b726c3ac270360cf3",
+    "scope": "Test-only sidebar input ordering: scroll/layout, focus/layout/assert, and actual accessible text assertion. No product/native/artwork/tool-schema change. Original guards/stale/commit/undo assertions unchanged. Exact failing case reproduced locally before correction.",
+    "focused_verification": {
+      "fmt": true,
+      "strict_workspace_all_target_clippy": true,
+      "parts_tests_passed": 3,
+      "failed": 0
+    },
+    "initial_correction_failure": "Missing test NodeT trait import only; corrected before successful focused gate.",
+    "final_ci": "pending; exact final artifact head required"
+  }
 }

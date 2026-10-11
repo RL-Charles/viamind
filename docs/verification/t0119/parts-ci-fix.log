@@ -1,0 +1,29 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+error[E0599]: no method named `accesskit_node` found for struct `egui_kittest::Node<'tree>` in the current scope
+  --> crates/ui-egui/tests/parts.rs:34:38
+   |
+34 |     assert_eq!(h.get_by_label(label).accesskit_node().value().as_deref(), Some(value));
+   |                                      ^^^^^^^^^^^^^^ private field, not a method
+   |
+  ::: /home/charlesmowbray/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/kittest-0.4.0/src/node.rs:11:8
+   |
+11 |     fn accesskit_node(&self) -> AccessKitNode<'tree>;
+   |        -------------- the method is available for `egui_kittest::Node<'_>` here
+   |
+   = help: items from traits can only be used if the trait is in scope
+help: trait `NodeT` which provides `accesskit_node` is implemented but not in scope; perhaps you want to import it
+   |
+ 2 + use egui_kittest::kittest::NodeT;
+   |
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `viamind-ui-egui` (test "parts") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
