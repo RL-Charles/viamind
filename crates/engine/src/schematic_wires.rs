@@ -36,6 +36,7 @@ fn global_validation_budget(project: &Project, added: usize) -> Result<(), Comma
 impl crate::EngineHandle {
     /// Validate limits before cloning just one sheet; never copy the whole project.
     pub fn snapshot_schematic_wire_sheet(&self, input: &SchematicWireSheetQuery) -> Result<SchematicWireSnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|engine| {
             let project = engine.project();
             if project.id.as_uuid().is_nil() {

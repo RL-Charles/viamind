@@ -78,6 +78,7 @@ pub struct FootprintFile {
 impl crate::EngineHandle {
     /// Read bounded library data outside the engine mutex, then apply atomically.
     pub fn import_footprint(&self, input: FootprintFile, origin: crate::Origin) -> Result<crate::ExecResult, crate::EngineError> {
+        crate::command_hooks::check_write()?;
         let footprint = viamind_doc::footprint::load(&input.path).map_err(|message| crate::EngineError::File { message })?;
         self.execute_typed(
             ApplyFootprint { expected_cursor: input.expected_cursor, expected_project: input.expected_project, expected: input.expected, footprint },
@@ -87,6 +88,7 @@ impl crate::EngineHandle {
 
     /// Publish committed local geometry without changing design/history/dirty state.
     pub fn export_footprint(&self, input: FootprintFile) -> Result<std::path::PathBuf, crate::EngineError> {
+        crate::command_hooks::check_write()?;
         let part = self.with_engine(|engine| {
             let project = engine.project();
             if project.id != input.expected_project || project.board.part(&input.expected.id) != Some(&input.expected) {

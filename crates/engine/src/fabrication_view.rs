@@ -89,6 +89,7 @@ fn read(path: &Path, remaining: usize, before_open: impl FnOnce()) -> Result<Vec
 }
 impl EngineHandle {
     pub fn inspect_fabrication_files(&self, input: InspectFabricationFiles) -> Result<FabricationInspection, EngineError> {
+        crate::command_hooks::check_read()?;
         self.inspect_fabrication_files_with(input, || {})
     }
     fn inspect_fabrication_files_with(

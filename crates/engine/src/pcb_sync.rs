@@ -225,6 +225,7 @@ pub struct PcbSyncPreview {
 impl crate::EngineHandle {
     /// Bounded immutable link/preview input; detailed validation runs after releasing the lock.
     pub fn schematic_pcb_snapshot(&self) -> Result<(Project, crate::EventCursor), CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let (project, cursor) = self.with_engine(|e| {
             sync_budget(e.project())?;
             Ok::<_, CommandError>((e.project().clone(), e.event_cursor()))
@@ -234,6 +235,7 @@ impl crate::EngineHandle {
     }
     /// Capture once under lock, then calculate the immutable preview outside it.
     pub fn preview_schematic_pcb_sync(&self, direction: PcbSyncDirection) -> Result<PcbSyncPreview, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let (expected, source_cursor) = self.schematic_pcb_snapshot()?;
         let command = SynchronizeSchematicPcb { expected, source_cursor, direction };
         let plan = calculate_sync(&command.expected, direction, source_cursor)?;

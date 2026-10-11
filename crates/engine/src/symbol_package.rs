@@ -365,9 +365,11 @@ pub struct SymbolPackageResult {
 }
 impl EngineHandle {
     pub fn load_symbol_package(&self, input: LoadSymbolPackage) -> Result<SymbolPackageTemplate, EngineError> {
+        crate::command_hooks::check_read()?;
         package::load(&input.path).map_err(file_error)
     }
     pub fn save_symbol_package(&self, input: SaveSymbolPackage) -> Result<SymbolPackageSaved, EngineError> {
+        crate::command_hooks::check_write()?;
         self.save_package_before_publish(input, || {})
     }
     fn save_package_before_publish(&self, input: SaveSymbolPackage, before_publish: impl FnOnce()) -> Result<SymbolPackageSaved, EngineError> {
@@ -383,6 +385,7 @@ impl EngineHandle {
     }
     /// Reuse the bounded schematic-only capture; calculate rows outside the engine lock.
     pub fn query_symbol_packages(&self, input: &SymbolPackageQuery) -> Result<SymbolPackageResult, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let limit = input.limit.unwrap_or(100);
         if !(1..=100).contains(&limit) {
             return Err(invalid("limit must be within1..100"));

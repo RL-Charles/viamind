@@ -44,6 +44,7 @@ fn remap(error: EngineError) -> EngineError {
 impl EngineHandle {
     /// Read one bounded source without changing design/session/status or any files.
     pub fn preview_footprint_conversion(&self, input: PreviewFootprintConversion) -> Result<FootprintConversionPreview, EngineError> {
+        crate::command_hooks::check_read()?;
         let (path, bytes) = crate::pcb_import::read_source_bounded(&input.path, viamind_doc::footprint_sexpr::MAX_SOURCE_BYTES).map_err(remap)?;
         let source = std::str::from_utf8(&bytes).map_err(|_| invalid("footprint source must be UTF-8"))?;
         let parsed = viamind_doc::footprint_sexpr::parse(source).map_err(|e| invalid(e.to_string()))?;
@@ -57,6 +58,7 @@ impl EngineHandle {
     }
     /// Reparse exact preview bytes, then publish one new native library under the file guard.
     pub fn convert_footprint_file(&self, input: ConvertFootprintFile) -> Result<ConvertedFootprintFile, EngineError> {
+        crate::command_hooks::check_write()?;
         self.convert_footprint_file_with_before_publish(input, || {})
     }
     fn convert_footprint_file_with_before_publish(

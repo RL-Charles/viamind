@@ -121,6 +121,7 @@ fn budget(project: &Project) -> Result<usize, CommandError> {
 }
 impl EngineHandle {
     pub fn route_terminal_snapshot(&self) -> Result<RouteTerminalSnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|engine| {
             let project = engine.project();
             let rows = budget(project)?;
@@ -196,6 +197,7 @@ impl EngineHandle {
         })
     }
     pub fn query_route_terminals(&self, query: &RouteTerminalQuery) -> Result<RouteTerminalPage, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         if !(1..=1000).contains(&query.limit) {
             return Err(CommandError::invalid("limit", "must be within1..1000"));
         }

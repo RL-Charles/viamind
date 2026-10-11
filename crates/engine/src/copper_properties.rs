@@ -48,6 +48,7 @@ fn identity(id: ObjectId, stored: ObjectId) -> Result<(), CommandError> {
 }
 impl EngineHandle {
     pub fn query_copper_properties(&self, query: &CopperPropertyQuery) -> Result<CopperPropertySnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|e| {
             let p = e.project();
             viamind_doc::named_net_rule_budget(&p.board.net_rules).map_err(|e| CommandError::invalid("rules", e))?;

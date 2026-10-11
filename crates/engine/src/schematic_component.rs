@@ -127,6 +127,7 @@ fn plan(
 impl crate::EngineHandle {
     /// One immutable bounded capture; graph calculation takes place outside the mutex.
     pub fn preview_schematic_pcb_component(&self, input: SchematicComponentRequest) -> Result<SchematicComponentPreview, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let (expected, cursor) = self.schematic_pcb_snapshot()?;
         if expected.id != input.expected_project || cursor != input.source_cursor {
             return Err(CommandError::conflict("document changed; refresh symbols and prepare again"));

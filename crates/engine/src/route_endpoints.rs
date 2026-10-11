@@ -92,6 +92,7 @@ pub(crate) fn resolve_pad<'a>(part: &Part, pad: &'a Pad) -> Result<(Point, Coppe
 }
 impl EngineHandle {
     pub fn route_endpoint_snapshot(&self) -> Result<RouteEndpointSnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|engine| {
             let project = engine.project();
             capture_budget(project)?;
@@ -138,6 +139,7 @@ impl EngineHandle {
         })
     }
     pub fn query_route_endpoints(&self, query: &RouteEndpointQuery) -> Result<RouteEndpointPage, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         if !(1..=1000).contains(&query.limit) {
             return Err(CommandError::invalid("limit", "must be within 1..1000"));
         }

@@ -71,6 +71,7 @@ fn navigable(at: Point) -> bool {
 impl EngineHandle {
     /// Capture identities and positions once; no model/history/selection mutation.
     pub fn query_linked_components(&self, query: &ComponentLinkQuery) -> Result<ComponentLinkResult, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let limit = query.limit.unwrap_or(100);
         if !(1..=100).contains(&limit) || query.object_ids.len() > 100 {
             return Err(invalid("limit must be 1..100 and object_ids must contain at most 100 identities"));
