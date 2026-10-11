@@ -79,7 +79,7 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
     h.run_steps(3);
     h.event(egui::Event::Key { key: egui::Key::ArrowLeft, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::NONE });
     h.run_steps(2);
-    let retained_text_id = h.ctx.memory(|m| m.focused()).unwrap();
+    let retained_text_id = h.ctx.memory(egui::Memory::focused).unwrap();
     let cursor = egui::text_edit::TextEditState::load(&h.ctx, retained_text_id).unwrap().cursor.char_range();
     click(&mut h, "Remove pin 1");
     for (i, field) in fields.iter().enumerate() {
@@ -89,7 +89,7 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
     assert_eq!(egui::text_edit::TextEditState::load(&h.ctx, retained_text_id).unwrap().cursor.char_range(), cursor);
     h.get_by_label("Pin 1 name").focus();
     h.run_steps(3);
-    assert_eq!(h.ctx.memory(|m| m.focused()), Some(retained_text_id));
+    assert_eq!(h.ctx.memory(egui::Memory::focused), Some(retained_text_id));
     for _ in 0..12 {
         click(&mut h, "Add definition pin");
     }
