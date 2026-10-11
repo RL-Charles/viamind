@@ -35,18 +35,20 @@ hierarchy and automatic reference prefix inference are outside this increment.
 
 Source `272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9` passed all Linux gates:
 fmt, strict workspace all-target Clippy, **819 passed / 0 failed / 1 ignored**,
-workspace build and inspection example build (session59228). Prior source
-`db1d596` passed30 focused checks:5legacy+9package+6inherited package+2bounds+
-2actualHTTP+6actualUI. The sole later code change is a direct cursor accessor
-for strict lint. Historical failed attempts remain separately indexed. The authored fixture uses distinct unnumbered spellings
+workspace build and inspection example build (session 59228). Prior source
+`db1d596` passed 30 focused checks: 5 legacy, 9 package, 6 inherited package,
+2 boundary, 2 actual HTTP and 6 actual UI checks. The sole later code change is a direct cursor accessor
+for strict lint. Historical failed attempts remain separately indexed.
+
+The authored fixture uses distinct unnumbered spellings
 U?, u?, U and u for separate owners, preserving the foundation's native exact
 reference uniqueness across owners.
 
 Actual retained production `0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93`,
-PID2463504, serves7945. Two initialized clients passed **29 checks**, including
-whole-package apply/oneundo/redo, exact peer reads, stale sequence/reopen,
-malformed raw guards and schema11 round trips. Actual headless readonly7checks
-passed. One12-unit/two-package Apply measured20.33ms under current load; this is
+PID 2463504, serves port 7945. Two initialized clients passed **29 checks**, including
+whole-package Apply, Undo and Redo, exact peer reads, stale sequence/reopen,
+malformed raw guards and schema 11 round trips. Seven actual headless read-only checks
+passed. One Apply with 12 units and two packages measured 20.33 ms under current load; this is
 a fixture observation, not a worst-case latency claim.
 
 [Master](verification/t0115/master.json) indexes durable logs, drivers, exact
@@ -65,8 +67,8 @@ review PNG preserves every corresponding sample and omits alpha explicitly.
 UI passes are callback counts. Logical focus retention is an inspection aid;
 there is no OS-input, compositor-capture or frame-cadence claim.
 
-Wide1600x1000 and compact640x400 hosts self-closed after12/11UI passes.
-Actual framebuffer sizes were2667x1667 and1067x667. All native action rectangles
+The wide 1600×1000 and compact 640×400 hosts self-closed after 12 and 11 UI passes.
+Actual framebuffer sizes were 2667×1667 and 1067×667. All native action rectangles
 fit the production window/content. Both review PNGs were viewed: options, starting
 number, package/member count, unit references and Prepare/Apply/Cancel are
 readable. Long UUID metadata truncates to one row; full metadata remains in
