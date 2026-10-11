@@ -223,6 +223,7 @@ impl PadDraft {
             Picking::Start => ui.label("Click a visible explicit pad or connection guide."),
             Picking::Target => ui.label("Click a compatible target pad."),
             Picking::Interior if self.via_sizes.is_some() => ui.label("Editing start leg: click empty space to insert before via."),
+            Picking::Interior if self.walkaround => ui.label("Choose endpoints, request plan, then Enter to finish."),
             Picking::Interior => ui.label("Click: insert grid vertex before target · Backspace: remove · Enter: finish"),
             Picking::Via => ui.label("Place via: click empty space on the grid."),
             Picking::After => ui.label("Editing target leg: click empty space to insert before target."),
