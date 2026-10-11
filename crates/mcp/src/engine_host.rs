@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin, SetSelection, input_schema};
+use viamind_engine::{EngineHandle, Origin, PartQuery, SetSelection, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -37,6 +37,11 @@ impl CommandHost for EngineHost {
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
             .collect();
         commands.push(HostCommand {
+            name: "query_parts".into(),
+            description: "Read a bounded page of board parts using combined filters (IDs, exact fields, text, side, origin bounds in mm). Read-only. UUID order; limit defaults to 100 (max 1000). Repeat filters with next_after as after for the next page; restart if the design changes. Returns parts, total matches and next_after; positions are integer nanometres.".into(),
+            input_schema: input_schema::<PartQuery>(),
+        });
+        commands.push(HostCommand {
             name: "set_selection".into(),
             description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
             input_schema: input_schema::<SetSelection>(),
@@ -50,6 +55,11 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "query_parts" {
+            let query: PartQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_parts input: {e}"))?;
+            let result = self.engine.query_parts(&query).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
         if name == "get_selection" {
             if !input.as_object().is_some_and(serde_json::Map::is_empty) {
                 return Err("get_selection takes an empty object".into());

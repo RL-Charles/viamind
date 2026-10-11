@@ -134,3 +134,25 @@ previous selection if another user or agent has not changed it. The document
 returns to its initial state; the edit audit history retains the test operations.
 The HTTP client handles JSON responses and SSE responses, including the empty
 priming event and heartbeat frames permitted by the transport.
+
+## Query board parts
+
+`query_parts` reads the live board without editing it. Combine filters with AND:
+
+```json
+{
+  "text": "10k",
+  "side": "top",
+  "bounds": {"min_x_mm": 0, "min_y_mm": 0, "max_x_mm": 50, "max_y_mm": 50},
+  "limit": 100
+}
+```
+
+Use `designator`, `value`, or `footprint` for exact case-sensitive matches, `text`
+for a case-insensitive substring across those fields, and `ids` for known UUIDs.
+Bounds include their edges and test the part's origin. The response contains
+`parts` (full part records with integer nanometre positions), `total` (all
+matches), and `next_after` (null when done). Results are in UUID order. For the
+next page, repeat the same filters and pass `next_after` as `after`. `limit`
+defaults to 100, maximum 1000. Restart pagination after design edits.
+See [the complete query contract](../../docs/specs/part-queries.md).

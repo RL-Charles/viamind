@@ -157,6 +157,11 @@ impl EngineHandle {
         f(self.lock().project())
     }
 
+    /// Queries board parts under a single read lock, without emitting events or changing history.
+    pub fn query_parts(&self, query: &crate::PartQuery) -> Result<crate::PartQueryResult, crate::CommandError> {
+        self.read(|project| query.run(project))
+    }
+
     /// Runs `f` with the locked engine, e.g. to inspect the undo history.
     pub fn with_engine<R>(&self, f: impl FnOnce(&Engine) -> R) -> R {
         f(&self.lock())

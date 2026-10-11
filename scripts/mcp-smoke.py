@@ -107,7 +107,7 @@ def verify(url, observe_seconds=0):
         baseline = a.call("get_design", {})
         selection = a.call("get_selection", {})
         tools = {tool["name"] for tool in a.rpc("tools/list", {}).get("tools", [])}
-        check("tool discovery", {"add_part", "move_part", "delete_part", "undo", "redo", "get_design", "get_selection", "set_selection"} <= tools)
+        check("tool discovery", {"add_part", "move_part", "delete_part", "undo", "redo", "get_design", "get_selection", "set_selection", "query_parts"} <= tools)
         token = uuid.uuid4().hex[:12]
         args = {"designator": f"R_SMOKE_A_{token}", "value": "10k", "footprint": "R_0603", "x_mm": 60, "y_mm": 45}
         first = a.call("add_part", args)["created"][0]
@@ -122,6 +122,21 @@ def verify(url, observe_seconds=0):
         check("agent redo restores its edit", first in b.call("get_design", {})["board"]["parts"])
         a.call("move_part", {"id": first, "x_mm": 62.125, "y_mm": 47.5})
         check("move uses exact nanometres", b.call("get_design", {})["board"]["parts"][first]["position"] == {"x": 62125000, "y": 47500000})
+        filters = {"ids": [first, second], "value": "10k", "text": "R_SMOKE", "side": "top", "limit": 1}
+        page = b.call("query_parts", filters)
+        next_page = b.call("query_parts", {**filters, "after": page["next_after"]})
+        check("query filters and stable cursor pages", page["total"] == 2 and next_page["total"] == 2
+              and [part["id"] for part in page["parts"] + next_page["parts"]] == sorted([first, second])
+              and next_page["next_after"] is None)
+        bounded = b.call("query_parts", {"ids": [first, second], "bounds": {
+            "min_x_mm": 62.125, "min_y_mm": 47.5, "max_x_mm": 62.125, "max_y_mm": 47.5,
+        }})
+        check("query bounds include exact part origin", bounded["total"] == 1 and bounded["parts"][0]["id"] == first)
+        before_query = a.call("get_design", {})
+        before_selection = a.call("get_selection", {})
+        b.call("query_parts", {"limit": 0}, expect_error=True)
+        check("query validation changes no shared state", a.call("get_design", {}) == before_query
+              and a.call("get_selection", {}) == before_selection)
         before_invalid = a.call("get_design", {})
         error = a.call("add_part", args, expect_error=True)
         check("duplicate designator gives actionable error", "already used" in error and a.call("get_design", {}) == before_invalid)
