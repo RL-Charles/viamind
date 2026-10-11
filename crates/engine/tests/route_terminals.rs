@@ -95,7 +95,7 @@ fn exact_track_to_via_typed_dynamic_identity_preservation_and_one_undo() {
             assert_eq!((t.start, t.end, t.width, t.layer, t.net.as_deref()), (pair[0], pair[1], Nm(250_000), CopperLayer::Top, Some("N")));
         }
         for (id, t) in &before.project.board.tracks {
-            assert_eq!(after.board.tracks[id], *t)
+            assert_eq!(after.board.tracks[id], *t);
         }
         assert_eq!(after.board.vias, before.project.board.vias);
         assert_eq!(after.board.parts, before.project.board.parts);
