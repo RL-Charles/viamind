@@ -1,0 +1,92 @@
+{
+  "ticket": "T-0108",
+  "production_source": "c4d426190af0927442d3e83ee0890b35ceb52914",
+  "verification_harness_source": "ba79421f4f275e6c26e9010ef5cdba4a99c2b938",
+  "full_gate_source": "c4d426190af0927442d3e83ee0890b35ceb52914",
+  "production": {
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/production-verified",
+    "sha256": "2ab21728bec4c95ffe2c2e4efdbf8317260178495505143bb25252ddef08d88a",
+    "pid": 2001429,
+    "endpoint": "http://127.0.0.1:7938/mcp",
+    "live_executable_sha256": "2ab21728bec4c95ffe2c2e4efdbf8317260178495505143bb25252ddef08d88a",
+    "active_native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/production-project.json",
+    "native_sha256": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05",
+    "checks": 35,
+    "passed": true,
+    "report": "docs/verification/t0108-production-report.json",
+    "initial_cursor": {
+      "sequence": 0,
+      "stream_id": "82c49ab1-9ed2-4bf6-aeeb-89a0700e4e62"
+    },
+    "final_cursor": {
+      "sequence": 6,
+      "stream_id": "82c49ab1-9ed2-4bf6-aeeb-89a0700e4e62"
+    }
+  },
+  "previous_production": {
+    "source": "6c09a38b422e5ec53847e8efc369035fa6fb8c29",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-latest-verified",
+    "sha256": "82789aebea0a8bb63d917bfcf3bb1f836a7848fbea6e7457881dbecc94c531bf",
+    "scope": "Version1 ten and version2 eleven config/format payload bytes; session release manifests excluded from cross-process byte comparisons."
+  },
+  "inspection": {
+    "source": "c4d426190af0927442d3e83ee0890b35ceb52914",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/inspection-verified",
+    "sha256": "986079c967b0d4bf05cf41d14fdb70fb1369fd1ad8ac705f2f2743100d22ea70",
+    "pid": 2003800,
+    "self_closed": true,
+    "mcp_enabled": false,
+    "route": "Production ViamindApp inspection-only fixed viewport;4 local egui checkbox events and3 local dialog resize events;actual native WGPU Screenshot,NEW fsynced P6;lossless PNG with independent exact RGB comparison",
+    "full_session_unchanged": true,
+    "report": "docs/verification/t0108-native-inspection-report.json",
+    "original_ppm": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/native-framebuffer.ppm",
+    "original_ppm_sha256": "4b2a491a875222d58696102ba8fb73b5a6dfe2c319e0f99c8e77970c712cea49"
+  },
+  "gates": {
+    "workspace_tests_passed": 756,
+    "failed": 0,
+    "ignored": 1,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "inspection_example_build": true,
+    "focused_tests_passed": 20,
+    "actual_tool_count": 88,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13
+  },
+  "historical_failed_reader": {
+    "report": "docs/verification/t0108-historical-reader-failure.json",
+    "log": "docs/verification/t0108-historical-reader-failure.log",
+    "checks_before_failure": 5,
+    "passed": false,
+    "reason": "Independent reader compared blank CSV field to optional JSON null;corrected reader maps absent/null identifiers to blank. No product change;failure occurred before peer edits. Not counted as a successful proof."
+  },
+  "scope": [
+    "Strict saved version3 opt-in;versions1/2 default bytes remain unchanged",
+    "Matched all-mounting populated generic subset;exact explicit identifiers or blank,no procurement/vendor inference",
+    "Digest declares component identity only,not file content or vendor acceptance;existing manifest maps filenames to byte lengths and complete source cursor",
+    "One bounded board/rules/needed-metadata capture and one retained manufacturing permit;same-snapshot central checked DRC",
+    "NEW staged no-replace root;existing scoped fabrication/DRC exclusions remain",
+    "Final combined integration/reference and exact-head CI pending"
+  ],
+  "artifact_sha256": {
+    "docs/verification/t0108-production-report.json": "30f3671bd066349ae8ce2af56dcaf4d6f7401310fff4616df972c4b75256fbc0",
+    "docs/verification/t0108-historical-reader-failure.json": "32913f18a86104623fc0dcc32499f3f926049cd90c52b11ab503bfd0f69d51b4",
+    "docs/verification/t0108-historical-reader-failure.log": "25712de905b4b0a7e140b43e89cfc617cc954bf2e07a791135e2db7972bfbbe6",
+    "docs/verification/t0108-full-linux.log": "d32727ead5d3b1400975d0bc6fb0832c491886cbb976ffdfffd3a77e9e97ad82",
+    "docs/verification/t0108-focused-linux.log": "cd4f2a1ed76a2b21c50181aabf1b094be9f83f2778796717892b37919af9e4ff",
+    "docs/verification/t0108-catalog-report.json": "8d5d9d9b8e95122df5a30b4120ec5f467798b3acec0d5c9900d1c3ed3ebd0b7c",
+    "docs/verification/t0108-agent-workflow.json": "aca029af6dc3d18f7c3e93795ce97aab976666956e697c9a1ae8f759ab2e94ec",
+    "docs/verification/t0108-native-framebuffer.png": "71612cd3fe7a199bb67a218e41fc5b1db512c331d27073f3da068abdbe18b340",
+    "docs/verification/t0108-capture-conversion.json": "9096dd298f076308877610d09444434b8034400a4df4e36b021983d96d4cfb60",
+    "docs/verification/t0108-release-manifest.json": "4290cdc27b3437be9a462037e4ad5c5ee360252ea39800e0fb7cf2ade262ef3b",
+    "docs/verification/t0108-populated-bom.csv": "b0ac06a36552ee11179c0dbd39cf9e9e87bd712e6b9ebc9e739a5c0df8005c12",
+    "docs/verification/t0108-calibrated-placement.csv": "c546839c2192997eba7c0d84b7edd3e475ff05446c619a99509d2783cac25f9e",
+    "docs/verification/t0108-native-inspection-report.json": "49f65d04651b517ee9bae6dfc0379412cfcb177af80ad14a47a7791928e902f0",
+    "docs/verification/t0108-cua-production-metadata.json": "60ce7225632ef4513ee374b0a5d0e63f0093c8f272be951c9815ccc24bbcabbe",
+    "docs/verification/t0108-population-smoke.py": "a8fbf7f5485dc2733cff7fb8f34da7db996fb0e7b06c5e6de7e16158e59a7376",
+    "fixtures/assembly/output-job-population.viamind.json": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05",
+    "crates/ui-egui/examples/t0108_inspection.rs": "b804787984bfda537be186ff615286fcfbb076eb12649fd80519a1d44cd74f48"
+  }
+}

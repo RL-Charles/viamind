@@ -1,0 +1,18 @@
+{
+  "passed": false,
+  "checks": [
+    "two initialized HTTP clients share complete native session",
+    "actual production schema exposes strict explicit companion version",
+    "second client loads exact canonical version3 settings",
+    "two clients publish exact thirteen-file coherent releases",
+    "manifest declares populated companion and generic coordinate convention"
+  ],
+  "endpoint": "http://127.0.0.1:7938/mcp",
+  "binary_sha256": "2ab21728bec4c95ffe2c2e4efdbf8317260178495505143bb25252ddef08d88a",
+  "previous_binary_sha256": "82789aebea0a8bb63d917bfcf3bb1f836a7848fbea6e7457881dbecc94c531bf",
+  "fixture_sha256": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05",
+  "initial_cursor": {
+    "sequence": 0,
+    "stream_id": "82c49ab1-9ed2-4bf6-aeeb-89a0700e4e62"
+  }
+}

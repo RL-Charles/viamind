@@ -1,0 +1,9 @@
+{
+  "route": "Opaque native P6 encoded losslessly with Python standard-library PNG chunks; independent ImageMagick PNG decoder compared every RGB byte",
+  "width": 1600,
+  "height": 1000,
+  "rgb_equal": true,
+  "ppm_sha256": "4b2a491a875222d58696102ba8fb73b5a6dfe2c319e0f99c8e77970c712cea49",
+  "png_sha256": "71612cd3fe7a199bb67a218e41fc5b1db512c331d27073f3da068abdbe18b340",
+  "rgb_sha256": "bea44cda637294f7d62e5bad76fd72ad6a64337b1a603a6deb2ca1093d68eb78"
+}

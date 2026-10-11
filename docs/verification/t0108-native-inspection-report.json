@@ -1,0 +1,44 @@
+{
+  "all_job_controls_visible": true,
+  "capture": "eframe native WGPU Screenshot event",
+  "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/inspection-verified",
+  "full_session_unchanged": true,
+  "local_checkbox_pointer_events": 4,
+  "local_resize_pointer_events": 3,
+  "matched_description_visible": true,
+  "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/native-framebuffer.ppm",
+  "pid": 2003800,
+  "pixels": [
+    1600,
+    1000
+  ],
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "23e55f21-b551-4fd2-9f3b-80309f997c4c"
+  },
+  "visible_job_labels": [
+    "Saved output jobs",
+    "One board snapshot: generic BOM/placement, outer Gerber X2, mask, profile, through-via XNC and manifests.",
+    "Settings are detached JSON. Run reads the saved file, including changes made outside this window.",
+    "Job name",
+    "Manufacturing release",
+    "Mask expansion (mm)",
+    "0",
+    "Generic outer 2-layer",
+    "Checked outer 2-layer",
+    "Include calibrated placement companion (version 2)",
+    "Include matched populated BOM (version 3)",
+    "Adds a per-component generic BOM matching the calibrated populated subset, with exact optional sourcing identifiers. Missing identifiers stay blank; no procurement or vendor acceptance.",
+    "Adds a populated-only generic centroid/marker CSV; explicit mounting and calibration are required. Existing BOM/origin placement still inventory all components. No universal vendor zero or manufacturer acceptance.",
+    "Saved job file",
+    "",
+    "Load job",
+    "Save NEW job file",
+    "Form settings differ from the last loaded/saved job. Save to a NEW file to use them.",
+    "NEW release directory",
+    "",
+    "Existing files and directories are preserved. At most 100000 components, 200000 board primitives and 192 MiB release.",
+    "Requires explicit pads and outline. Scoped checks exclude connectivity, mask, silk and complete DFM. No inner copper, pours or fabrication certification.",
+    "Run saved job to NEW directory"
+  ]
+}
