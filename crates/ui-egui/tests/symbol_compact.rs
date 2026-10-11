@@ -31,8 +31,9 @@ fn painted_clip(h: &Harness<'_, ViamindApp>, rect: Rect) -> Rect {
         .shapes
         .iter()
         .filter_map(|shape| {
-            let bounds = shape.shape.visual_bounding_rect();
-            (bounds.contains(rect.center()) && bounds.width() <= rect.width() + 8.0 && bounds.height() <= rect.height() + 8.0)
+            let egui::Shape::Rect(background) = &shape.shape else { return None };
+            let bounds = background.rect;
+            (bounds.contains(rect.center()) && (bounds.width() - rect.width()).abs() <= 4.0 && (bounds.height() - rect.height()).abs() <= 4.0)
                 .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
         })
         .min_by(|a, b| a.area().total_cmp(&b.area()))
@@ -52,6 +53,9 @@ fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) -> Rect {
     }
     h.get_by_label(label).scroll_to_me();
     h.run_steps(8);
+    let rect = h.get_by_label(label).rect();
+    h.hover_at(rect.center());
+    h.run_steps(2);
     let rect = h.get_by_label(label).rect();
     eprintln!("RECT {label} {rect:?}");
     let clip = painted_clip(h, rect);
@@ -129,7 +133,16 @@ fn compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and
     h.get_by_label("Enter a NEW definition file path").scroll_to_me();
     h.run_steps(8);
     let error = h.get_by_label("Enter a NEW definition file path").rect();
-    assert!(painted_clip(&h, error).contains_rect(error));
+    let clip = h
+        .output()
+        .shapes
+        .iter()
+        .find_map(|shape| {
+            let egui::Shape::Text(text) = &shape.shape else { return None };
+            (text.galley.text() == "Enter a NEW definition file path").then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+        })
+        .expect("painted error text");
+    assert!(clip.contains_rect(error));
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("compact-original.json");
     input(&mut h, "NEW definition file path", &path.to_string_lossy());
