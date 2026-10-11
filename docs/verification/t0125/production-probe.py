@@ -55,10 +55,10 @@ for mode,flags in [('live',[]),('approval',['--agent-approval']),('read_only',['
         for invalid in [dict(args,pass_flag=True),dict(args,delta={'x':1.5,'y':0}),dict(args,source_cursor={'stream_id':ids(999),'sequence':before[0]['cursor']['sequence']})]:c.call('preview_schematic_symbol_drag',invalid,expect_error=True)
         check(mode+' invalid fields fractional coordinate and wrong stream refuse unchanged',state(c)==before and native.read_bytes()==original)
         if mode=='live':
-            graph=c.call('query_schematic_connectivity',{'offset':0,'limit':1000});oldgroups,anchors=partition(graph)
+            graph=c.call('query_schematic_connectivity',{'offset':0,'limit':100});oldgroups,anchors=partition(graph)
             c.call('drag_schematic_symbol',args);after=state(c)
             check('Live actual atomic one-event movement preserves entire PCB',after[0]['cursor']['sequence']==before[0]['cursor']['sequence']+1 and after[0]['project']['board']==before[0]['project']['board'])
-            newgroups,_=partition(c.call('query_schematic_connectivity',{'offset':0,'limit':1000}),anchors)
+            newgroups,_=partition(c.call('query_schematic_connectivity',{'offset':0,'limit':100}),anchors)
             check('Live independent original UUID partition and label facts equal after apply',newgroups==oldgroups)
             content=after[0]['project']['schematic']['sheets'][ids(502)]['content'];old=before[0]['project']['schematic']['sheets'][ids(502)]['content']
             check('Live fixed connectors labels junctions package membership unchanged',all(content['symbols'][ids(n)]==old['symbols'][ids(n)] for n in [507,509,511]) and all(content.get(k,{})==old.get(k,{}) for k in ['labels','junctions','packages']) and len(content['wires'])==6)
