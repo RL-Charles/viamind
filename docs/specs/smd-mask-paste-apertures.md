@@ -47,7 +47,7 @@ choices. No proprietary assets, code or binary inspection is used.
    These inherited Legacy policies are deliberately disclosed, not presented as
    equivalent manufacturing geometry. Legacy paste is unconfigured, never inferred.
 6. The detached editor uses exact decimal absolute width/height fields and separate
-   omit controls. A signed equal-margin calculator may produce explicit dimensions
+   omit controls. A bounded signed equal-margin calculator produces explicit dimensions
    by checked `copper_dimension + 2*margin`; persisted data remains absolute Nm.
    Invalid calculator input/collapse cannot partially alter a draft or live model.
 
@@ -65,7 +65,8 @@ choices. No proprietary assets, code or binary inspection is used.
    downgrading. Writer chooses3 for Some apertures, otherwise2 for Some artwork,
    otherwise1. Existing library1/2 byte representation remains exact.
 9. Save NEW/load/export retain existing 1 MiB file, 4096-byte path, bounded text/count,
-   same-fd NONBLOCK/NOFOLLOW regular-file and staged no-clobber/latest-native lifecycle
+   same-fd NONBLOCK regular-file source reader (existing symlink policy preserved),
+   and staged no-clobber/latest-native lifecycle
    guards. This feature does not add a global native-project file cap. Initial transport
    JSON ownership is not described as allocation-free or universally bounded.
 
@@ -177,7 +178,7 @@ choices. No proprietary assets, code or binary inspection is used.
   vs Legacy; mixed14/13/12/10 max and clearing; native/log base/before/after old-header
   refusal; library1/2 forbidden presence and library3 real-presence requirements.
 - Exact positive/negative margin calculations, odd-Nm doubled-corner oracle on all
-  cardinal/mirror/bottom poses, invalid collapse/overflow/stroked bounds and row-poison
+  cardinal/mirror/bottom poses, invalid collapse/overflow/centered extents and row-poison
   precedence; preserved IDs/nets/full Undo/redo/no-op and dirty/shared session status.
 - Actual initialized two-client MCP/CLI guards including peer edits/same-ID reopen,
   shared editor Save NEW/load/apply/undo, lifecycle/collision preservation and compact
