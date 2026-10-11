@@ -154,3 +154,40 @@ fn both_sides_charge_each_cutout_against_one_aggregate_cap() {
         }
     }
 }
+
+#[test]
+fn real_peer_edit_and_reopened_stream_reject_typed_dynamic_and_grouped_requests() {
+    use viamind_engine::{CommandCall, OpenProject, SaveProject};
+    let _guard = TEST.lock().unwrap();
+    let (project, ids) = fixture();
+    let e = EngineHandle::new(project);
+    let stale = input(&e, ids);
+    e.execute(
+        "add_track",
+        serde_json::json!({"start_x_mm":55,"start_y_mm":25,"end_x_mm":56,"end_y_mm":25,"width_mm":0.25,"layer":"top","net":"PEER"}),
+        Origin::agent("peer"),
+    )
+    .unwrap();
+    reject(&e, stale.clone());
+    let before = e.session_state();
+    assert!(e.execute("route_pad_via_walkaround", serde_json::to_value(stale.clone()).unwrap(), Origin::User).is_err());
+    assert!(
+        e.execute_batch(
+            vec![
+                CommandCall { name: "add_via".into(), input: serde_json::json!({"x_mm":58,"y_mm":25,"diameter_mm":0.6,"drill_mm":0.3,"net":"PEER"}) },
+                CommandCall { name: "route_pad_via_walkaround".into(), input: serde_json::to_value(stale).unwrap() }
+            ],
+            Origin::User,
+            None
+        )
+        .is_err()
+    );
+    assert_eq!(e.session_state(), before);
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("same-project.viamind.json");
+    e.save_project(SaveProject { path: Some(path.clone()), overwrite: false }).unwrap();
+    let stale = input(&e, ids);
+    e.open_project(OpenProject { path, discard_dirty: false, expected_cursor: Some(stale.expected_cursor) }, Origin::User).unwrap();
+    assert_ne!(e.event_cursor().stream_id, stale.expected_cursor.stream_id);
+    reject(&e, stale);
+}

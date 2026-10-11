@@ -173,23 +173,6 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     ))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn admission_refuses_third_retained_operation_and_releases_on_drop() {
-        let first = Permit::acquire().unwrap();
-        let second = Permit::acquire().unwrap();
-        assert!(Permit::acquire().is_err());
-        drop(first);
-        let replacement = Permit::acquire().unwrap();
-        assert!(Permit::acquire().is_err());
-        drop(second);
-        drop(replacement);
-        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
-    }
-}
-
 pub(crate) fn validate_scene(project: &Project) -> Result<(), CommandError> {
     capture(project)?;
     let mut ids = std::collections::BTreeSet::new();
@@ -284,4 +267,21 @@ pub(crate) fn scene(
         push(expanded(Rect::from_point(via.position), margin, margin)?)?;
     }
     Ok((domain, obstacles))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn admission_refuses_third_retained_operation_and_releases_on_drop() {
+        let first = Permit::acquire().unwrap();
+        let second = Permit::acquire().unwrap();
+        assert!(Permit::acquire().is_err());
+        drop(first);
+        let replacement = Permit::acquire().unwrap();
+        assert!(Permit::acquire().is_err());
+        drop(second);
+        drop(replacement);
+        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
+    }
 }
