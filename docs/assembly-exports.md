@@ -62,8 +62,8 @@ independent reader; Python 3 is needed to run the complete Linux test suite.
 ## Snapshot and output limits
 
 Assembly export copies only component headers; pads, copper, outlines and schematic
-contents are excluded. It supports100000 components,4096 UTF-8 bytes per reference,
-value or footprint,2 MiB aggregate text and32 MiB output. Limits are checked before
+contents are excluded. It supports 100000 components, 4096 UTF-8 bytes per reference,
+value or footprint, 2 MiB aggregate text and 32 MiB output. Limits are checked before
 copying; quoted-row output growth is checked before appending. Library `csv` now
 returns `io::Result<String>` so callers can report these failures.
 

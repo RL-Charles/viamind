@@ -1,0 +1,32 @@
+{
+  "ticket": "T-0075",
+  "implementation_head": "4f8c8e7b22a93a7ee30d3b705e174a5ad23f775f",
+  "artifact_source_head": "5f008c4c0f314574eec9cecb92f0a067b40db325",
+  "rebase_note": "Only own spec/implementation transplanted from final T71 head6711ef3 onto merged mainceae3ab; no manufacturing source changes after exact full gate/native build.",
+  "binary_sha256": "e0c72f33046444025de68f88d2fb3352c46aa994461ab59469ab02867c6d2fde",
+  "baseline_source_head": "e5c1144fa91b904ddd0ba210c53ac202a1bfaf8c",
+  "baseline_binary_sha256": "17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be",
+  "linux_gates": {
+    "fmt": true,
+    "strict_workspace_clippy": true,
+    "tests_passed": 446,
+    "tests_ignored": 1,
+    "build": true,
+    "local_log": "/tmp/viamind-t0075-full-gates.log"
+  },
+  "production_verification": {
+    "report": "t0075-production-export.json",
+    "passed_checks": 33,
+    "runtime": "Actual production application/binary, no inspection wrapper",
+    "endpoint": "http://127.0.0.1:7900/mcp",
+    "pid": 249312,
+    "window_id": 110379504973024
+  },
+  "cua": {
+    "report": "t0075-native-cua.json",
+    "screenshot": "t0075-native-production.png",
+    "limitation": "Compositor tiled production window105x59; AT-SPI metadata-only. Screenshot establishes process/window identity, not usable form controls. Existing desktop fabrication egui input regression passes."
+  },
+  "fixture": "t0075-export.viamind.json",
+  "reproduction_script": "t0075-export-smoke.py"
+}

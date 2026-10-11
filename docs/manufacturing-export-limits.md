@@ -13,10 +13,10 @@ fabrication's initial cursor read also avoids copying the session.
 
 | Limit | Assembly CSV | Gerber/XNC package |
 | --- | --- | --- |
-| Components/primitives |100000 component headers |200000 budgeted primitives, including part headers/rings |
-| Per copied UTF-8 string |4096 bytes |4096 bytes |
-| Aggregate copied UTF-8 text |2 MiB |2 MiB |
-| Published output |32 MiB CSV |128 MiB total package |
+| Components/primitives | 100000 component headers | 200000 budgeted primitives, including part headers/rings |
+| Per copied UTF-8 string | 4096 bytes | 4096 bytes |
+| Aggregate copied UTF-8 text | 2 MiB | 2 MiB |
+| Published output | 32 MiB CSV | 128 MiB total package |
 
 Fabrication counts pads twice (copper/mask), vias five times, tracks once, and
 outline vertices/rings plus component headers. Empty lists/components still count
@@ -40,3 +40,5 @@ Budget/busy/stale failures create no output and leave design/history/status inta
 The limit regressions include huge invalid unrelated sheets, malformed large pad
 metadata excluded by assembly, UTF-8 byte boundaries, aggregate text/component
 counts, process admission release and canceled blocking-worker ownership.
+
+[Linux, production CLI/native and compatibility verification](manufacturing-export-verification.md).
