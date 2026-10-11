@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use viamind_doc::Project;
 use viamind_drc::{DrcInput, DrcReport};
 
+use crate::auto_drc_events::{AutoDrcEventBatch, AutoDrcEventError, AutoDrcEventState, AutoDrcJournal, WatchAutoDrcEvents};
 use crate::{Engine, EngineError, EventCursor};
 
 pub const AUTO_DRC_MAX_OBJECTS: usize = 10_000;
@@ -95,6 +96,7 @@ struct Request {
 #[derive(Debug, Default)]
 struct State {
     status: AutoDrcStatus,
+    events: AutoDrcJournal,
     pending: Option<Request>,
     started: bool,
     stop: bool,
@@ -134,20 +136,54 @@ impl AutoDrcController {
     pub(crate) fn status(&self) -> AutoDrcStatus {
         self.shared.lock().status.clone()
     }
+    pub(crate) fn event_state(&self) -> AutoDrcEventState {
+        let state = self.shared.lock();
+        AutoDrcEventState { status: state.status.clone(), cursor: state.events.cursor() }
+    }
+    pub(crate) fn watch_events(&self, input: WatchAutoDrcEvents) -> Result<AutoDrcEventBatch, AutoDrcEventError> {
+        input.validate()?;
+        let deadline = Instant::now() + Duration::from_millis(input.timeout_ms);
+        let mut state = self.shared.lock();
+        let after = input.after.unwrap_or_else(|| state.events.cursor());
+        loop {
+            // Revalidate the retention floor after every wake, including spurious wakes.
+            let batch = state.events.read(after, input.limit)?;
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if !batch.events.is_empty() || remaining.is_zero() {
+                return Ok(batch);
+            }
+            state = self.shared.changed.wait_timeout(state, remaining).unwrap_or_else(PoisonError::into_inner).0;
+        }
+    }
+    fn record(state: &mut State) {
+        state.events.push(&state.status);
+    }
     /// Caller holds engine lock; all mutations use engine -> state lock order.
     pub(crate) fn configure(&self, config: AutoDrcConfig) -> Result<AutoDrcStatus, EngineError> {
+        self.configure_with_spawn(config, |engine, shared, checker| {
+            std::thread::Builder::new().name("viamind-auto-drc".into()).spawn(move || worker(engine, shared, checker)).map(|_| ())
+        })
+    }
+    fn configure_with_spawn(
+        &self,
+        config: AutoDrcConfig,
+        spawn: impl FnOnce(Weak<Mutex<Engine>>, Arc<Shared>, Arc<Checker>) -> std::io::Result<()>,
+    ) -> Result<AutoDrcStatus, EngineError> {
         config.validate()?;
         let mut state = self.shared.lock();
         state.status.config = config;
         Self::invalidate(&mut state);
+        Self::record(&mut state);
         if state.status.config.enabled && !state.started {
             let shared = self.shared.clone();
             let engine = self.engine.clone();
             let checker = self.checker.clone();
-            std::thread::Builder::new().name("viamind-auto-drc".into()).spawn(move || worker(engine, shared, checker)).map_err(|e| {
+            spawn(engine, shared, checker).map_err(|e| {
                 state.pending = None;
                 state.status.phase = AutoDrcPhase::Failed;
                 state.status.message = Some(format!("Could not start automatic DRC worker: {e}"));
+                Self::record(&mut state);
+                self.shared.changed.notify_all();
                 EngineError::InvalidInput { command: "configure_auto_drc".into(), message: e.to_string() }
             })?;
             state.started = true;
@@ -159,6 +195,7 @@ impl AutoDrcController {
         let mut state = self.shared.lock();
         if state.status.config.enabled {
             Self::invalidate(&mut state);
+            Self::record(&mut state);
             self.shared.changed.notify_all();
         }
     }
@@ -205,6 +242,8 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
             }
             let request = state.pending.take().expect("pending request");
             state.status.phase = AutoDrcPhase::Running;
+            AutoDrcController::record(&mut state);
+            shared.changed.notify_all();
             (request, state.status.config.clone())
         };
         let Some(owner) = engine.upgrade() else { return };
@@ -262,6 +301,7 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
                 state.status.message = Some(reason);
             }
         }
+        AutoDrcController::record(&mut state);
         shared.changed.notify_all();
     }
 }
@@ -332,6 +372,83 @@ mod tests {
     use serde_json::json;
     use std::sync::mpsc;
 
+    #[test]
+    fn spawn_failure_records_and_wakes_without_touching_document() {
+        let handle = EngineHandle::new(Project::new("failed spawn"));
+        let before = handle.session_state();
+        let baseline = handle.auto_drc_event_state();
+        let error = handle.automatic_drc.configure_with_spawn(enabled(), |_, _, _| Err(std::io::Error::other("injected spawn failure"))).unwrap_err();
+        assert!(error.to_string().contains("injected spawn failure"));
+        let events = handle.watch_auto_drc_events(crate::WatchAutoDrcEvents { after: Some(baseline.cursor), ..Default::default() }).unwrap();
+        assert_eq!(events.events.iter().map(|event| event.phase).collect::<Vec<_>>(), vec![AutoDrcPhase::Pending, AutoDrcPhase::Failed]);
+        assert_eq!(events.events[0].generation, 1);
+        assert!(events.events[1].message.as_ref().unwrap().contains("injected spawn failure"));
+        assert_eq!(handle.session_state(), before);
+        assert!(!handle.automatic_drc.shared.lock().started);
+        handle.configure_auto_drc(enabled()).unwrap();
+        assert_eq!(wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready).generation, 2);
+    }
+    #[test]
+    fn independent_observers_timeout_and_selection_keep_document_guards() {
+        let handle = EngineHandle::new(Project::new("independent observers"));
+        add(&handle, "R1");
+        let before = handle.session_state();
+        let baseline = handle.auto_drc_event_state();
+        assert_eq!(baseline.cursor.sequence, 0);
+        assert_eq!(baseline.status, handle.auto_drc_status());
+        let watcher = handle.clone();
+        let tail = baseline.cursor;
+        let observing = std::thread::spawn(move || {
+            watcher.watch_auto_drc_events(crate::WatchAutoDrcEvents { after: Some(tail), timeout_ms: 5000, ..Default::default() }).unwrap()
+        });
+        handle.configure_auto_drc(enabled()).unwrap();
+        let first = observing.join().unwrap();
+        assert!(!first.events.is_empty());
+        assert_eq!(first.events[0].phase, AutoDrcPhase::Pending);
+        wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready);
+        let all = handle.watch_auto_drc_events(crate::WatchAutoDrcEvents { after: Some(tail), ..Default::default() }).unwrap();
+        assert_eq!(all.events.iter().map(|e| e.phase).collect::<Vec<_>>(), vec![AutoDrcPhase::Pending, AutoDrcPhase::Running, AutoDrcPhase::Ready]);
+        assert_eq!(handle.session_state(), before);
+        let current = handle.auto_drc_event_state();
+        assert_eq!(current.cursor, all.cursor);
+        assert_eq!(all.events[2].source_cursor, current.status.source_cursor);
+        let time = Instant::now();
+        let empty =
+            handle.watch_auto_drc_events(crate::WatchAutoDrcEvents { after: Some(all.cursor), timeout_ms: 20, ..Default::default() }).unwrap();
+        assert!(empty.events.is_empty());
+        assert_eq!(empty.cursor, all.cursor);
+        assert!(time.elapsed() >= Duration::from_millis(20));
+        handle
+            .set_selection(SetSelection { ids: before.project.board.parts.keys().copied().collect(), mode: Default::default() }, Origin::User)
+            .unwrap();
+        assert_eq!(handle.auto_drc_event_state(), current);
+        assert_ne!(handle.event_cursor(), before.cursor);
+        let wrong = crate::AutoDrcEventCursor { stream_id: before.cursor.stream_id, sequence: 0 };
+        assert_eq!(
+            handle.watch_auto_drc_events(crate::WatchAutoDrcEvents { after: Some(wrong), ..Default::default() }).unwrap_err(),
+            crate::AutoDrcEventError::WrongStream
+        );
+        for input in [
+            crate::WatchAutoDrcEvents { limit: 0, ..Default::default() },
+            crate::WatchAutoDrcEvents { limit: 129, ..Default::default() },
+            crate::WatchAutoDrcEvents { timeout_ms: 30001, ..Default::default() },
+        ] {
+            assert!(handle.watch_auto_drc_events(input).is_err());
+        }
+        let journal = handle.auto_drc_event_state();
+        assert!(handle.configure_auto_drc(AutoDrcConfig { max_objects: 0, ..Default::default() }).is_err());
+        assert_eq!(handle.auto_drc_event_state(), journal);
+        handle.configure_auto_drc(Default::default()).unwrap();
+        let disabled = handle.auto_drc_event_state();
+        add(&handle, "R2");
+        handle
+            .new_project(
+                NewProject { name: "disabled replacement".into(), discard_dirty: true, expected_cursor: Some(handle.event_cursor()) },
+                Origin::User,
+            )
+            .unwrap();
+        assert_eq!(handle.auto_drc_event_state(), disabled);
+    }
     fn enabled() -> AutoDrcConfig {
         AutoDrcConfig { enabled: true, debounce_ms: 0, ..Default::default() }
     }
@@ -418,6 +535,26 @@ mod tests {
         assert_eq!(ready.generation, 4);
         assert_eq!(ready.report.unwrap().coverage.excluded_part_count, 3);
         assert_eq!(ready.source_cursor, Some(handle.session_state().cursor));
+        let events = handle
+            .watch_auto_drc_events(crate::WatchAutoDrcEvents {
+                after: Some(crate::AutoDrcEventCursor { stream_id: handle.auto_drc_event_state().cursor.stream_id, sequence: 0 }),
+                ..Default::default()
+            })
+            .unwrap();
+        assert_eq!(
+            events.events.iter().map(|e| (e.generation, e.phase)).collect::<Vec<_>>(),
+            vec![
+                (1, AutoDrcPhase::Pending),
+                (1, AutoDrcPhase::Running),
+                (2, AutoDrcPhase::Pending),
+                (3, AutoDrcPhase::Pending),
+                (4, AutoDrcPhase::Pending),
+                (4, AutoDrcPhase::Running),
+                (4, AutoDrcPhase::Ready),
+            ]
+        );
+        assert_eq!(events.events.last().unwrap().report.as_ref().unwrap().excluded_part_count, 3);
+        assert!(events.events[..6].iter().all(|event| event.report.is_none() && event.source_cursor.is_none()));
         assert!(ready.check_ms.unwrap().is_finite());
         assert!(ready.request_to_publication_ms.unwrap() >= ready.check_ms.unwrap());
     }
@@ -439,6 +576,40 @@ mod tests {
         assert_eq!(ready.config, config);
         assert_ne!(ready.source_cursor.unwrap().stream_id, old_stream);
         assert_eq!(ready.report.unwrap().coverage.excluded_part_count, 0);
+        let events = all_events(&handle);
+        assert_eq!(events.iter().filter(|event| event.phase == AutoDrcPhase::Ready).map(|event| event.generation).collect::<Vec<_>>(), vec![3]);
+        assert!(events.iter().filter_map(|event| event.source_cursor).all(|cursor| cursor.stream_id != old_stream));
+    }
+    #[test]
+    fn selection_during_blocked_check_keeps_original_capture_cursor() {
+        let (handle, entered, release) = blocked();
+        add(&handle, "R1");
+        let capture = handle.session_state();
+        handle.configure_auto_drc(enabled()).unwrap();
+        entered.recv_timeout(Duration::from_secs(10)).unwrap();
+        handle
+            .set_selection(SetSelection { ids: capture.project.board.parts.keys().copied().collect(), mode: Default::default() }, Origin::User)
+            .unwrap();
+        let selected = handle.session_state();
+        assert_ne!(selected.cursor, capture.cursor);
+        release.send(()).unwrap();
+        let ready = wait_status(&handle, |status| status.phase == AutoDrcPhase::Ready);
+        assert_eq!(ready.source_cursor, Some(capture.cursor));
+        assert_eq!(ready.generation, 1);
+        assert_eq!(handle.session_state(), selected);
+        let events = all_events(&handle);
+        assert_eq!(events.len(), 3);
+        assert_eq!(events[2].source_cursor, Some(capture.cursor));
+    }
+    fn all_events(handle: &EngineHandle) -> Vec<crate::AutoDrcEvent> {
+        handle
+            .watch_auto_drc_events(crate::WatchAutoDrcEvents {
+                after: Some(crate::AutoDrcEventCursor { stream_id: handle.auto_drc_event_state().cursor.stream_id, sequence: 0 }),
+                limit: 128,
+                ..Default::default()
+            })
+            .unwrap()
+            .events
     }
     #[test]
     fn disable_and_invalid_config_are_atomic_and_read_only_selection_does_not_rerun() {
@@ -483,6 +654,10 @@ mod tests {
         let skipped = wait_status(&handle, |s| s.phase == AutoDrcPhase::Skipped);
         assert!(skipped.report.is_none());
         assert!(skipped.message.unwrap().contains("exceeds 1 structural objects"));
+        let skipped_event = all_events(&handle).pop().unwrap();
+        assert_eq!(skipped_event.phase, AutoDrcPhase::Skipped);
+        assert!(skipped_event.report.is_none());
+        assert!(skipped_event.message.unwrap().contains("exceeds 1 structural objects"));
         handle.configure_auto_drc(enabled()).unwrap();
         assert_eq!(wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready).report.unwrap().coverage.excluded_part_count, 2);
         let mut project = Project::new("huge unrelated schematic name");
@@ -519,6 +694,10 @@ mod tests {
         let failed = wait_status(&handle, |s| s.phase == AutoDrcPhase::Failed);
         assert!(failed.report.is_none());
         assert!(failed.message.unwrap().contains("panicked"));
+        let failure = all_events(&handle).pop().unwrap();
+        assert_eq!(failure.phase, AutoDrcPhase::Failed);
+        assert!(failure.report.is_none());
+        assert!(failure.message.unwrap().contains("panicked"));
         handle.configure_auto_drc(enabled()).unwrap();
         assert_eq!(wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready).generation, 2);
     }
