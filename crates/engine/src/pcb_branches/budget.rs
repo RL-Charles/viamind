@@ -58,6 +58,10 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
             add(content.wires.len())?;
             add(content.junctions.len())?;
             add(content.labels.len())?;
+            add(content.packages.len())?;
+            for package in content.packages.values() {
+                add(package.units.len())?;
+            }
             for symbol in content.symbols.values() {
                 add(symbol.pins.len())?;
             }

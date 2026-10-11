@@ -344,10 +344,7 @@ mod tests {
     }
     #[test]
     fn actual_editor_unit_switch_preserves_other_units_and_identity() {
-        use egui_kittest::{
-            Harness,
-            kittest::{NodeT, Queryable},
-        };
+        use egui_kittest::{Harness, kittest::Queryable};
         let mut h = Harness::builder()
             .with_size(egui::vec2(1000., 1600.))
             .build_ui_state(|ui, e: &mut PackageEditor| e.show(ui, true), PackageEditor::from_template(&fixture()));
