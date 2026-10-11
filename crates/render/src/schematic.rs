@@ -482,6 +482,7 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
     };
     let tree = usvg::Tree::from_str(&source, &parsing).map_err(io::Error::other)?;
     let mut svg = tree.to_string(&usvg::WriteOptions::default());
+    svg.insert_str(4, &format!(" viewBox=\"0 0 {} {}\"", options.width_px, options.height_px));
     let c = snapshot.sheet.content.as_ref();
     let metadata = SchematicMetadata {
         project_id: snapshot.project_id,

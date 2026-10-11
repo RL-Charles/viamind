@@ -13,6 +13,7 @@ fn outlined_text_geometry_is_deterministic_and_snapshot_excludes_unrelated_data(
     let svg = schematic_svg(&snapshot, &options).unwrap();
     let png = schematic_png(&snapshot, &options).unwrap();
     assert!(svg.svg.contains("<path"));
+    assert!(svg.svg.contains("viewBox=\"0 0 1600 1000\""));
     assert!(!svg.svg.contains("<text"));
     assert!(!svg.svg.contains("font-family"));
     assert!(svg.svg.contains("U&lt;&amp;&gt;1"));

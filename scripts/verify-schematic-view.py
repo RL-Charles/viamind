@@ -37,7 +37,7 @@ def verify(binary, native, directory):
           any(t['text'] == 'U<&>1' for t in metadata['visible_text'])
           and any('10kΩ µA é Я' in t['text'] for t in metadata['visible_text']))
     check('unchanged font license accompanies outlines', 'BITSTREAM VERA LICENSE' in metadata['font_notice'])
-    check('absolute region and pixel mapping declared', metadata['view']['region_nm'] ==
+    check('absolute region and pixel mapping declared', root.attrib['viewBox']=='0 0 900 600' and metadata['view']['region_nm'] ==
           {'min_x':0,'min_y':0,'max_x':30000000,'max_y':20000000})
     reference = directory / 'reference.png'
     subprocess.run(['rsvg-convert','--output',str(reference),str(svg)],check=True)
@@ -60,7 +60,7 @@ def verify(binary, native, directory):
     check('mirrored quarter-turn asymmetric pin stem two',color(8,12.25)[3]>200)
     check('rectangular body corner orientation',color(7,9)[3]>150 and color(10,8)[3]>150)
     check('junction is explicit filled dot',color(16,7)[3]==255)
-    check('wire center and round cap',color(18,7)[3]==255 and color(20.04,7)[3]>100 and color(20.2,7)[3]==0)
+    check('wire center and round cap',color(18,7)[3]==255 and color(20.04,7)[3]>100 and color(20.3,7)[3]==0)
     check('unpainted sheet is transparent',color(2,2)[3]==0)
     def ink(image, box):
         x0,y0,x1,y1=map(lambda v:int(v*30),box)

@@ -59,7 +59,7 @@ fn selected_sheet_svg_png_work_without_display_and_protect_outputs() {
             ("--schematic-layers", "bad"),
         ] {
             let invalid = dir.path().join(format!("invalid-{suffix}"));
-            let base = [mode.as_ref(), "--open".as_ref(), native.as_os_str(), "--output".as_ref(), invalid.as_os_str()];
+            let base: [&OsStr; 5] = [mode.as_ref(), "--open".as_ref(), native.as_os_str(), "--output".as_ref(), invalid.as_os_str()];
             let mut args = base.to_vec();
             if flag != "--sheet" {
                 args.extend(["--sheet".as_ref(), SHEET.as_ref()]);
