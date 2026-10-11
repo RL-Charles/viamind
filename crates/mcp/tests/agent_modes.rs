@@ -118,17 +118,10 @@ async fn actual_two_clients_refresh_tools_prepare_privately_and_only_human_accep
     assert_eq!(engine.document_status(), status);
     assert_eq!(engine.auto_drc_event_state(), drc);
     assert_eq!(std::fs::read(&native).unwrap(), bytes);
-    let merge: MergePcbBranch =
-        serde_json::from_value(json!({"branch_id":id,"expected_revision":1,"expected_project":before.project.id,"expected_cursor":before.cursor}))
-            .unwrap();
-    assert!(
-        a.call_tool(
-            CallToolRequestParams::new("merge_pcb_branch").with_arguments(serde_json::to_value(&merge).unwrap().as_object().unwrap().clone())
-        )
-        .await
-        .is_err()
-    );
-    engine.merge_pcb_branch(merge, &BranchActor::Human).unwrap();
+    let merging = json!({"branch_id":id,"expected_revision":1,"expected_project":before.project.id,"expected_cursor":before.cursor});
+    let merge: MergePcbBranch = serde_json::from_value(merging.clone()).unwrap();
+    assert!(a.call_tool(CallToolRequestParams::new("merge_pcb_branch").with_arguments(merging.as_object().unwrap().clone())).await.is_err());
+    engine.merge_pcb_branch(merge, &BranchActor::human()).unwrap();
     assert!(engine.read(|p| p.board.parts.contains_key(&created)));
     assert_eq!(engine.event_cursor().sequence, before.cursor.sequence + 1);
     engine.undo(Origin::User).unwrap();
