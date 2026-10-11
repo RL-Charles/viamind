@@ -107,3 +107,30 @@ The live desktop engine also exposes `get_selection` and `set_selection`.
 An empty replacement clears selection. Unknown IDs reject the entire request.
 These session actions wake the desktop and preserve the document undo/redo stack.
 Deleting a selected part or undoing its creation removes it from the selection.
+
+## Verify a running desktop
+
+The desktop serves streamable HTTP at `http://127.0.0.1:7878/mcp` by default.
+Set `VIAMIND_MCP_PORT` when launching the desktop to use another port. Connect an
+agent client to that URL; the standalone `viamind-mcp` binary above serves only
+identification/echo tools, so use the desktop endpoint to edit the open design.
+
+From the repository root, with the desktop running:
+
+```sh
+python3 scripts/mcp-smoke.py --url http://127.0.0.1:7878/mcp --report /tmp/viamind-mcp-smoke.json
+```
+
+This standard-library client performs the MCP handshake, discovers tools, and
+uses two distinct agent sessions to place, move, select, delete, undo, and redo
+temporary parts. It checks useful validation errors, exact nanometre positions,
+selective undo isolation, and conflicts on overlapping edits. It returns a JSON
+report and exits nonzero on failure. `--observe-seconds 15` pauses with the test
+parts selected so you can see their appearance in the desktop.
+
+Run while the design is otherwise idle: the test compares the full document
+before and after. Cleanup deletes only the parts it created and restores the
+previous selection if another user or agent has not changed it. The document
+returns to its initial state; the edit audit history retains the test operations.
+The HTTP client handles JSON responses and SSE responses, including the empty
+priming event and heartbeat frames permitted by the transport.
