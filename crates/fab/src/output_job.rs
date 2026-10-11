@@ -11,6 +11,41 @@ use std::{
 use viamind_doc::Project;
 const CONFIG_LIMIT: usize = 64 * 1024;
 const RELEASE_LIMIT: usize = 192 * 1024 * 1024;
+const VALIDATION_LIMIT: usize = 16 * 1024 * 1024;
+pub const CHECKED_PROFILE: &str = "checked_outer_2layer";
+
+/// Explicit saved request baselines; document minima are resolved centrally by DRC.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct OutputJobChecks {
+    pub copper_clearance_mm: f64,
+    pub edge_clearance_mm: f64,
+    pub minimum_via_drill_mm: f64,
+    pub minimum_annular_width_mm: f64,
+    pub hole_clearance_mm: f64,
+    pub hole_to_copper_clearance_mm: f64,
+    pub max_violations: usize,
+}
+impl OutputJobChecks {
+    pub fn validate(&self) -> io::Result<()> {
+        for value in [
+            self.copper_clearance_mm,
+            self.edge_clearance_mm,
+            self.minimum_via_drill_mm,
+            self.minimum_annular_width_mm,
+            self.hole_clearance_mm,
+            self.hole_to_copper_clearance_mm,
+        ] {
+            if !value.is_finite() || !(0.0..=100.0).contains(&value) {
+                return Err(invalid("checked job distance baselines must be finite within 0..100 mm"));
+            }
+        }
+        if !(1..=10000).contains(&self.max_violations) {
+            return Err(invalid("checked job max_violations must be within 1..10000"));
+        }
+        Ok(())
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -21,14 +56,24 @@ pub struct OutputJob {
     pub profile: String,
     #[serde(default)]
     pub mask_expansion_mm: f64,
+    #[serde(default, deserialize_with = "present_checks", skip_serializing_if = "Option::is_none")]
+    pub checks: Option<OutputJobChecks>,
+}
+fn present_checks<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<OutputJobChecks>, D::Error> {
+    OutputJobChecks::deserialize(deserializer).map(Some)
 }
 impl OutputJob {
     pub fn new(name: String, mask_expansion_mm: f64) -> Self {
-        Self { format: "viamind-output-job".into(), version: 1, name, profile: "generic_outer_2layer".into(), mask_expansion_mm }
+        Self { format: "viamind-output-job".into(), version: 1, name, profile: "generic_outer_2layer".into(), mask_expansion_mm, checks: None }
     }
     pub fn validate(&self) -> io::Result<()> {
-        if self.format != "viamind-output-job" || self.version != 1 || self.profile != "generic_outer_2layer" {
+        if self.format != "viamind-output-job" || self.version != 1 || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE) {
             return Err(invalid("unsupported output job format, version or profile"));
+        }
+        match (self.profile.as_str(), &self.checks) {
+            (CHECKED_PROFILE, Some(checks)) => checks.validate()?,
+            ("generic_outer_2layer", None) => {}
+            _ => return Err(invalid("checked profile requires explicit checks; generic profile forbids checks")),
         }
         if self.name.is_empty() || self.name.len() > 256 || self.name.trim().is_empty() || self.name.chars().any(char::is_control) {
             return Err(invalid("job name needs 1–256 UTF-8 bytes, nonblank and without control characters"));
@@ -127,11 +172,17 @@ pub struct RunOutputJobRequest<C> {
 }
 pub fn output_job_schema(action: &str) -> Value {
     let path = json!({"type":"string","minLength":1});
+    let distance = json!({"type":"number","minimum":0,"maximum":100});
+    let checks = json!({"type":"object","additionalProperties":false,
+        "required":["copper_clearance_mm","edge_clearance_mm","minimum_via_drill_mm","minimum_annular_width_mm","hole_clearance_mm","hole_to_copper_clearance_mm","max_violations"],
+        "properties":{"copper_clearance_mm":distance,"edge_clearance_mm":distance,"minimum_via_drill_mm":distance,"minimum_annular_width_mm":distance,"hole_clearance_mm":distance,"hole_to_copper_clearance_mm":distance,"max_violations":{"type":"integer","minimum":1,"maximum":10000}}});
     match action {
         "load" => json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{"path":path}}),
-        "save" => {
-            json!({"type":"object","additionalProperties":false,"required":["path","job"],"properties":{"path":path,"job":{"type":"object","additionalProperties":false,"required":["format","version","name","profile"],"properties":{"format":{"const":"viamind-output-job"},"version":{"const":1},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"const":"generic_outer_2layer"},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0}}}}})
-        }
+        "save" => json!({"type":"object","additionalProperties":false,"required":["path","job"],"properties":{"path":path,"job":{
+            "type":"object","additionalProperties":false,"required":["format","version","name","profile"],
+            "properties":{"format":{"const":"viamind-output-job"},"version":{"const":1},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks},
+            "oneOf":[{"properties":{"profile":{"const":"generic_outer_2layer"}},"not":{"required":["checks"]}},{"properties":{"profile":{"const":CHECKED_PROFILE}},"required":["checks"]}]
+        }}}),
         _ => {
             json!({"type":"object","additionalProperties":false,"required":["job_path","path"],"properties":{"job_path":path,"path":path,"expected_cursor":{"type":["object","null"],"additionalProperties":false,"required":["stream_id","sequence"],"properties":{"stream_id":{"type":"string","format":"uuid"},"sequence":{"type":"integer","minimum":0}}}}})
         }
@@ -161,6 +212,9 @@ impl OutputJobSnapshot {
         Ok(Self { board: FabricationSnapshot::capture(project)?, job })
     }
     pub fn write<C: Serialize>(self, cursor: C, path: &Path, native: Option<&Path>) -> io::Result<(PathBuf, ReleaseManifest<C>)> {
+        if self.job.checks.is_some() {
+            return Err(invalid("checked profile requires the production validation callback"));
+        }
         self.write_with_before_publish(cursor, path, native, || Ok(()))
     }
     fn write_with_before_publish<C: Serialize>(
@@ -170,7 +224,39 @@ impl OutputJobSnapshot {
         native: Option<&Path>,
         before_publish: impl FnOnce() -> io::Result<()>,
     ) -> io::Result<(PathBuf, ReleaseManifest<C>)> {
+        self.write_impl(cursor, path, native, |_, _, _| Err(invalid("checked profile requires the production validation callback")), before_publish)
+    }
+    /// Internal application bridge: callbacks must run the trusted production validator.
+    /// No caller-supplied report or pass flag is accepted by CLI/MCP/desktop requests.
+    pub fn write_with_validation<C: Serialize>(
+        self,
+        cursor: C,
+        path: &Path,
+        native: Option<&Path>,
+        validate: impl FnOnce(&Project, &Value, &C) -> io::Result<Vec<u8>>,
+    ) -> io::Result<(PathBuf, ReleaseManifest<C>)> {
+        self.write_impl(cursor, path, native, validate, || Ok(()))
+    }
+    fn write_impl<C: Serialize>(
+        self,
+        cursor: C,
+        path: &Path,
+        native: Option<&Path>,
+        validate: impl FnOnce(&Project, &Value, &C) -> io::Result<Vec<u8>>,
+        before_publish: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<(PathBuf, ReleaseManifest<C>)> {
         let path = destination(path, native)?;
+        let validation = if let Some(checks) = &self.job.checks {
+            // Fixed numeric settings serialize to a small bounded bridge, never source strings.
+            let input = serde_json::to_value(checks).map_err(invalid_json)?;
+            let bytes = validate(&self.board.project, &input, &cursor)?;
+            if bytes.len() > VALIDATION_LIMIT {
+                return Err(invalid("checked validation artifact exceeds 16 MiB"));
+            }
+            Some(bytes)
+        } else {
+            None
+        };
         let package = self.board.render(FabricationOptions { mask_expansion_mm: self.job.mask_expansion_mm })?;
         let mut files = BTreeMap::new();
         let mut total = 0usize;
@@ -178,6 +264,9 @@ impl OutputJobSnapshot {
             add_file(&mut files, &mut total, format!("fabrication/{name}"), data.into_bytes())?;
         }
         add_file(&mut files, &mut total, "job.json".into(), self.job.canonical_bytes()?)?;
+        if let Some(bytes) = validation {
+            add_file(&mut files, &mut total, "validation/drc.json".into(), bytes)?;
+        }
         for (name, kind) in [("assembly/bom.csv", AssemblyCsv::Bom), ("assembly/placement.csv", AssemblyCsv::Placement)] {
             let data = render_csv_limited(self.board.project.board.parts.values(), kind, RELEASE_LIMIT - total)?;
             add_file(&mut files, &mut total, name.into(), data.into_bytes())?;
@@ -205,7 +294,8 @@ impl OutputJobSnapshot {
         #[cfg(target_os = "linux")]
         {
             let stage = tempfile::Builder::new().prefix(".viamind-output-job-").tempdir_in(path.parent().expect("canonical parent"))?;
-            for dir in ["assembly", "fabrication"] {
+            let dirs = if self.job.checks.is_some() { vec!["assembly", "fabrication", "validation"] } else { vec!["assembly", "fabrication"] };
+            for dir in &dirs {
                 std::fs::create_dir(stage.path().join(dir))?;
             }
             for (name, bytes) in files {
@@ -213,7 +303,7 @@ impl OutputJobSnapshot {
                 file.write_all(&bytes)?;
                 file.sync_all()?;
             }
-            for dir in ["assembly", "fabrication", ""] {
+            for dir in dirs.into_iter().chain([""]) {
                 File::open(stage.path().join(dir))?.sync_all()?;
             }
             before_publish()?;

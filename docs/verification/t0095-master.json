@@ -1,0 +1,142 @@
+{
+  "ticket": "T-0095",
+  "production_artifact_source_head": "3deab921233c1c648001ffcbb80dc324009a6d1b",
+  "production_artifact_base_main": "0d958743c4f85c0a7165de869a43b9ffa21e4b36",
+  "production_artifact_ci": {
+    "run": 38145197262,
+    "url": "https://github.com/RL-Charles/viamind/actions/runs/38145197262",
+    "conclusion": "all four Linux gates passed at exact retained production source"
+  },
+  "integration_note": "Later branch rebase adds unrelated merged CI/docs tooling; desktop and MCP descriptions were corrected to explicit saved baselines. Current-label focused/build and native inspection evidence is separate below. Final combined source/reference proof includes the description correction. Final exact evidence/reference-head CI is recorded on PR94 before merge.",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "production_local_gates": {
+    "fmt": "PASS",
+    "strict_workspace_all_target_clippy": "PASS",
+    "workspace_tests": {
+      "passed": 654,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": "PASS",
+    "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/full.log",
+    "log_sha256": "1875a9ef10656441e84ab987bb59eabb9c87e980a60e775dae5ac5d48c820f70"
+  },
+  "initial_focused_gates": {
+    "source_head": "878848926d519735ca6c6ce844bc6249ff813cb0",
+    "tests_passed": 15,
+    "failed": 0,
+    "fmt": "PASS",
+    "strict_workspace_all_target_clippy": "PASS",
+    "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/focused.log",
+    "log_sha256": "57ef213131bf4e9fa7b7a549141d1379cd95dfe53e75ff5f6287ba2121e5bb2c"
+  },
+  "production": {
+    "kind": "unchanged production application HTTP and no-display CLI",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-verified",
+    "binary_sha256": "3695983063d742030706b2796fe13d6cc800b746a0bdaaaca68abfad4825739a",
+    "running_exe_sha256": "3695983063d742030706b2796fe13d6cc800b746a0bdaaaca68abfad4825739a",
+    "postprocessing": "strip --strip-debug after successful workspace build before launch",
+    "pid": 1368046,
+    "http": "http://127.0.0.1:7923/mcp",
+    "native_checks": 28,
+    "report": "t0095-production-report.json",
+    "launch_metadata": "t0095-production-launch.json",
+    "window_note": "Cua launch metadata returned no windows. Readable inspection is separately labeled; no Cua screenshot or native widget-input claim."
+  },
+  "current_label_refresh": {
+    "source_head": "b45478dea0291c0d05a88cfbb16b58354cbc979a",
+    "base_main": "9a80afc",
+    "fmt": "PASS",
+    "output_job_ui_tests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "strict_workspace_all_target_clippy": "PASS",
+    "workspace_build": "PASS",
+    "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/current-refresh.log",
+    "log_sha256": "d8ff834d3bf88942dee4c38e9b4fa0f8f487af5f4052fe08aaeddd12e6b2cb54",
+    "production_binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-current-verified",
+    "production_binary_sha256": "0919a233316cd45d1dd4d4f1ccf3a1a12c0092c356d7ecc4ac3d4b8c882afd59",
+    "build_note": "Inactive acceleration library cache copied with reflinks; own crates/apps Rust inputs forced fresh before Cargo. Single job, separate target, own source frozen. No repeated full-workspace test claim for this refresh; historical full654 gate is above."
+  },
+  "inspection": {
+    "kind": "Production ViamindApp in fixed1600x1000 inspection-only host; no MCP listener",
+    "source": "docs/verification/t0095-native-inspection.rs",
+    "source_sha256": "214d9824dd497562ff9226092d0f1291dc41383414b0563b709149d3851bbc56",
+    "manifest_template": "docs/verification/t0095-native-Cargo.toml.in",
+    "production_rust_source_head": "b45478dea0291c0d05a88cfbb16b58354cbc979a",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/inspection-final-verified",
+    "binary_sha256": "627c28343c90e84b22e840113ac690b60e805184f07d5be13c349340a3bd3bfb",
+    "harness_source_head": "156fef637e8bc04cae8c7b6635ea982f9e33fb40",
+    "harness_build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/inspection-final-build.log",
+    "harness_build_log_sha256": "12e925c198c2a428e3418280831b04776cbbbc83af128ced6e4bf304c439fb6a",
+    "pid": 1453597,
+    "http": null,
+    "launch_metadata": "t0095-inspection-launch.json",
+    "capture": "t0095-native-final.png",
+    "capture_route": "eframe native WGPU Screenshot event; opaque P6 RGB losslessly converted to PNG with independent exact decoded RGB comparison",
+    "framebuffer_report": "t0095-native-framebuffer-report.json",
+    "capture_pixels": [
+      1600,
+      1000
+    ],
+    "injected_profile_pointer_events": 2,
+    "injected_resize_input_frames": 3,
+    "all_controls_visible": true,
+    "full_session_unchanged": true,
+    "self_close": "NEW capture synced and stdout report flushed before own viewport Close; process exit verified separately. No retained running-exe claim after self-close.",
+    "limitation": "Local inspection egui events only; no operating-system input, Cua screenshot, production viewport or frame-cadence claim. Actual compact640x400 input/parity tests are separate."
+  },
+  "fixture": {
+    "path": "fixtures/fabrication/asymmetric.viamind.json",
+    "sha256": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea",
+    "note": "Asymmetric explicit pads, straight tracks, through vias and polygon cutout. No inferred sourcing/centroids or manufacturer acceptance."
+  },
+  "prior_compatibility_artifact": {
+    "source_head": "64a677564d9afecfd380a90e91a3f0137e25fcd4",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/production-verified",
+    "binary_sha256": "25571b7cbd38f364fadac3c609369a684c56fc8e91c038ed119c4645973cb6de",
+    "comparison": "Ten generic format/config files exactly equal. Independent session cursor excludes release-manifest bytes from this historical comparison."
+  },
+  "portable_probe": "docs/verification/t0095-checked-job-smoke.py",
+  "scoped_limits": [
+    "explicit saved request baselines; persisted document net policy integration remains T-0097 follow-up",
+    "same private board and retained manufacturing permit; no supplied authorization report",
+    "16MiB validation artifact;192MiB complete release;12 fixed checked files;atomic NEW root",
+    "supported complete geometry checks only; no physical continuity/fullDFM/manufacturer certification"
+  ],
+  "reports_sha256": {
+    "t0095-capture-conversion.json": "ab230502740fa9692ad423f29eeddc8a99f41925923f6728a10017f8dc4f656c",
+    "t0095-inspection-launch.json": "acfe61b8c559306f59f6749f5a1c7b2f7855c5c9a6d9b6ae19c2ef946724a788",
+    "t0095-native-final.png": "573044b4ba2cecb39cf15f7b4e3e5d6d8252fd39ad3fe5e5c5ccd62f67d82f0d",
+    "t0095-native-framebuffer-report.json": "0328f53faa7208b01c00d9da4ef0f75e7cfafa5d445e67e6b8f6d8af07b910e6",
+    "t0095-production-launch.json": "fe3967d6596a9617e9bc966a0b2ec08abd07ed90ab3731d40faa6a82da0a724d",
+    "t0095-production-report.json": "f259c4e16573dea84b0a0b70f316ad79e08da6c5c2947ec746f361b0a2b6e8e0",
+    "t0095-reference-report.json": "82d4ab5df8fd3dbeb420228261bfa4ad9f1fbde003d617fa4451371bdce9be14",
+    "t0095-workflow-report.json": "8ddc4ace33b00bafbf813d41221ba82f957f97a8913e1464db90b0fc91cfb1c0"
+  },
+  "final_combined_integration": {
+    "source_head": "0b381d862e977808c25228dc6400e7f7877a5b03",
+    "base_main": "f7d73811f5229ff77712014628861f19d6beea4f",
+    "fmt": "PASS",
+    "focused_mcp_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "strict_workspace_all_target_clippy": "PASS",
+    "workspace_build": "PASS",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-description-verified",
+    "binary_sha256": "a43670fb5630a302371ffb7ec064dc12d3538237d1874f500f32509148ed8e6e",
+    "build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/description-refresh.log",
+    "build_log_sha256": "311cd3b2777f3a5e59a3416a317907f31e42e93370f12f55de099dff96437023",
+    "tooling_unit_tests": {
+      "passed": 13,
+      "failed": 0
+    },
+    "catalog_tools": 81,
+    "reference_report": "t0095-reference-report.json",
+    "isolated_agent_workflow_checks": 18,
+    "workflow_report": "t0095-workflow-report.json",
+    "note": "Merged main changes are CI/docs/Python tooling only. Final production Rust change corrects one MCP description to explicit saved baselines; export behavior is unchanged. Canonical catalog regenerated from this unique executable; read-only final drift check PASS. Final exact evidence/reference-head CI remains the PR94 merge gate."
+  }
+}

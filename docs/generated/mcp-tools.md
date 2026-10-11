@@ -9135,7 +9135,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Fixed 11 files, 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Uses the explicit saved scoped DRC baselines. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -9191,7 +9191,81 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "properties": {
       "job": {
         "additionalProperties": false,
+        "oneOf": [
+          {
+            "not": {
+              "required": [
+                "checks"
+              ]
+            },
+            "properties": {
+              "profile": {
+                "const": "generic_outer_2layer"
+              }
+            }
+          },
+          {
+            "properties": {
+              "profile": {
+                "const": "checked_outer_2layer"
+              }
+            },
+            "required": [
+              "checks"
+            ]
+          }
+        ],
         "properties": {
+          "checks": {
+            "additionalProperties": false,
+            "properties": {
+              "copper_clearance_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "edge_clearance_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "hole_clearance_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "hole_to_copper_clearance_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "max_violations": {
+                "maximum": 10000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "minimum_annular_width_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "minimum_via_drill_mm": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "copper_clearance_mm",
+              "edge_clearance_mm",
+              "minimum_via_drill_mm",
+              "minimum_annular_width_mm",
+              "hole_clearance_mm",
+              "hole_to_copper_clearance_mm",
+              "max_violations"
+            ],
+            "type": "object"
+          },
           "format": {
             "const": "viamind-output-job"
           },
@@ -9207,7 +9281,10 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "type": "string"
           },
           "profile": {
-            "const": "generic_outer_2layer"
+            "enum": [
+              "generic_outer_2layer",
+              "checked_outer_2layer"
+            ]
           },
           "version": {
             "const": 1

@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "checks": [
+    "two initialized clients observe identical complete session",
+    "shared save schema exposes both profiles and strict rules",
+    "explicit numeric checked settings roundtrip",
+    "production no-display checked CLI succeeds",
+    "checked CLI publishes twelve fixed files including validation",
+    "validation and release share project identity and complete source cursor",
+    "scoped validation states exact rules and honest remaining exclusions",
+    "production HTTP count and complete cursor identify same native snapshot",
+    "all ten fixed format/config bytes equal CLI",
+    "validation/drc.json parity after independent CLI cursor normalization",
+    "release-manifest.json parity after independent CLI cursor normalization",
+    "validation uses actual shared production DRC report",
+    "two native agents produce all twelve identical bytes",
+    "release inventory byte lengths include complete validation",
+    "NEW collision preserves every completed release byte",
+    "external authorization report rejected without output",
+    "actual DRC violations refuse HTTP and CLI before publication",
+    "actual truncated DRC refuses release",
+    "missing-checks rejected without file",
+    "unexpected-check rejected without file",
+    "generic-checks rejected without file",
+    "existing generic job ten format/config files retain prior verified bytes",
+    "generic canonical settings omit checks",
+    "active native file unchanged",
+    "accepted exports and refusals preserve entire native session and status",
+    "two-client full cursor rejects changed snapshot before output",
+    "undo restores exact project and clean native status without pretending unchanged cursor",
+    "ordinary failures leave no hidden staging directories"
+  ],
+  "endpoint": "http://127.0.0.1:7923/mcp",
+  "binary_sha256": "3695983063d742030706b2796fe13d6cc800b746a0bdaaaca68abfad4825739a",
+  "previous_binary_sha256": "25571b7cbd38f364fadac3c609369a684c56fc8e91c038ed119c4645973cb6de",
+  "fixture_sha256": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea",
+  "initial_cursor": {
+    "sequence": 0,
+    "stream_id": "9d35e63a-dde6-40dd-8d3f-d384ddccaa95"
+  },
+  "final_cursor": {
+    "sequence": 2,
+    "stream_id": "9d35e63a-dde6-40dd-8d3f-d384ddccaa95"
+  },
+  "output_sha256": {
+    "job.json": "11d6c4761df5cbf0f6c0f685e81f7cb87df057db2454623bbed6153d0d515b37",
+    "release-manifest.json": "452b2594c20066c96bb9ecfe9f4564908fe70fd048946b5b596631ad37032270",
+    "assembly/bom.csv": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53",
+    "assembly/placement.csv": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a",
+    "fabrication/bottom-copper.gbr": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120",
+    "fabrication/bottom-mask.gbr": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d",
+    "fabrication/manifest.json": "632053a0b47170001a2e946e27df06fd3b3d5bbe820293678e75b2c3c66c0a63",
+    "fabrication/plated-through.xnc": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d",
+    "fabrication/profile.gbr": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4",
+    "fabrication/top-copper.gbr": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf",
+    "fabrication/top-mask.gbr": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8",
+    "validation/drc.json": "5066ecd1ec3a91818175d7bce12eb248a013551af4d088cc5eeeb50decdd483b"
+  }
+}

@@ -123,3 +123,103 @@ fn job_component_budget_precedes_board_capture() {
     assert!(error.to_string().contains("100000 components"));
     assert_eq!(p.board.parts.len(), 100_001);
 }
+
+fn checked_job() -> OutputJob {
+    let mut job = job();
+    job.profile = viamind_fab::CHECKED_PROFILE.into();
+    job.checks = Some(viamind_fab::OutputJobChecks {
+        copper_clearance_mm: 0.2,
+        edge_clearance_mm: 0.25,
+        minimum_via_drill_mm: 0.2,
+        minimum_annular_width_mm: 0.1,
+        hole_clearance_mm: 0.25,
+        hole_to_copper_clearance_mm: 0.2,
+        max_violations: 1000,
+    });
+    job
+}
+#[test]
+fn strict_checked_descriptor_requires_every_numeric_baseline_and_preserves_generic_bytes() {
+    let original = job();
+    assert!(!String::from_utf8(original.canonical_bytes().unwrap()).unwrap().contains("checks"));
+    let checked = checked_job();
+    assert_eq!(OutputJob::parse(&checked.canonical_bytes().unwrap()).unwrap(), checked);
+    let value = serde_json::to_value(&checked).unwrap();
+    for field in [
+        "copper_clearance_mm",
+        "edge_clearance_mm",
+        "minimum_via_drill_mm",
+        "minimum_annular_width_mm",
+        "hole_clearance_mm",
+        "hole_to_copper_clearance_mm",
+        "max_violations",
+    ] {
+        let mut missing = value.clone();
+        missing["checks"].as_object_mut().unwrap().remove(field);
+        assert!(OutputJob::parse(&serde_json::to_vec(&missing).unwrap()).is_err(), "{field}");
+    }
+    for (field, bad) in [("profile", serde_json::json!("generic_outer_2layer")), ("checks", serde_json::Value::Null)] {
+        let mut invalid = value.clone();
+        invalid[field] = bad;
+        assert!(OutputJob::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+    }
+    let mut missing = value.clone();
+    missing.as_object_mut().unwrap().remove("checks");
+    assert!(OutputJob::parse(&serde_json::to_vec(&missing).unwrap()).is_err());
+    for bad in [serde_json::json!(-0.1), serde_json::json!(100.1), serde_json::json!("0.2")] {
+        let mut invalid = value.clone();
+        invalid["checks"]["copper_clearance_mm"] = bad;
+        assert!(OutputJob::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+    }
+    let mut invalid = value.clone();
+    invalid["checks"]["pass"] = serde_json::json!(true);
+    assert!(OutputJob::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+    let mut null_generic = serde_json::to_value(original).unwrap();
+    null_generic["checks"] = serde_json::Value::Null;
+    assert!(OutputJob::parse(&serde_json::to_vec(&null_generic).unwrap()).is_err());
+}
+#[test]
+fn checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_board() {
+    let _serial = SERIAL.lock().unwrap();
+    let mut project = project();
+    let original = project.clone();
+    let temp = tempfile::tempdir().unwrap();
+    let job = checked_job();
+    assert!(OutputJobSnapshot::capture(&project, job.clone()).unwrap().write(42, &temp.path().join("bypass"), None).is_err());
+    let snapshot = OutputJobSnapshot::capture(&project, job.clone()).unwrap();
+    project.board.parts.clear();
+    let (path, manifest) = snapshot
+        .write_with_validation(42, &temp.path().join("checked"), None, |captured, checks, cursor| {
+            assert_eq!(captured.board, original.board.clone_without_assembly());
+            assert_eq!(*cursor, 42);
+            assert_eq!(checks["max_violations"], 1000);
+            Ok(b"{\"trusted_test_callback\":true}\n".to_vec())
+        })
+        .unwrap();
+    assert_eq!(manifest.files.len(), 11);
+    assert_eq!(fs::read(path.join("validation/drc.json")).unwrap(), b"{\"trusted_test_callback\":true}\n");
+    for (name, bytes) in viamind_fab::fabrication(&original, FabricationOptions { mask_expansion_mm: job.mask_expansion_mm }).unwrap().files {
+        assert_eq!(fs::read(path.join("fabrication").join(name)).unwrap(), bytes.into_bytes());
+    }
+    let failed = temp.path().join("failed");
+    let error = OutputJobSnapshot::capture(&original, job.clone())
+        .unwrap()
+        .write_with_validation(0, &failed, None, |_, _, _| Err(std::io::Error::other("trusted DRC refusal")))
+        .unwrap_err();
+    assert!(error.to_string().contains("DRC refusal"));
+    assert!(!failed.exists());
+    assert!(
+        OutputJobSnapshot::capture(&original, job)
+            .unwrap()
+            .write_with_validation(0, &failed, None, |_, _, _| Ok(vec![0; 16 * 1024 * 1024 + 1]))
+            .is_err()
+    );
+    assert_eq!(fs::read_dir(temp.path()).unwrap().count(), 1);
+    OutputJobSnapshot::capture(&original, original_job())
+        .unwrap()
+        .write_with_validation(0, &temp.path().join("generic"), None, |_, _, _| panic!("generic must not invoke validator"))
+        .unwrap();
+}
+fn original_job() -> OutputJob {
+    job()
+}

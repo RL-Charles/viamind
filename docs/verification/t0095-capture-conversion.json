@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "route": "ImageMagick P6 RGB to PNG then independent PNG decode to raw RGB",
+  "ppm_sha256": "11d5b629a698efb33aa938a9d1821c2b9b888359d8257023a9b69da49f17745f",
+  "png_sha256": "573044b4ba2cecb39cf15f7b4e3e5d6d8252fd39ad3fe5e5c5ccd62f67d82f0d",
+  "pixels": [
+    1600,
+    1000
+  ],
+  "decoded_rgb_exactly_equal": true,
+  "new_png_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/native-selected.png",
+  "tool_version": "Version: ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org"
+}
