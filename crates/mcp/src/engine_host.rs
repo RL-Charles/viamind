@@ -70,7 +70,7 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "run_drc".into(),
-            description: "Read-only batch checks of a captured design: explicit rectangular SMD pad copper clearance, polygon board/cutout containment and edge clearance. Returns report and source_cursor; later edits make this snapshot stale. Input copper_clearance_mm/edge_clearance_mm finite 0..100, max_violations 1..10000. Reports stable part/pad IDs and coverage/exclusions, including legacy preview-only parts, tracks/vias and unimplemented fabrication/connectivity checks. Truncated results are incomplete. Not full manufacturing DRC.".into(),
+            description: "Read-only scoped batch DRC of a captured design: rectangular SMD pads, round-ended straight tracks and annular through-via copper; same-layer different-net/unassigned clearance, polygon substrate/edge clearance, minimum via drill/annular width, physical drilled-hole spacing and foreign copper-to-hole clearance. Returns stable tagged part/pad, track and via IDs, measured/required Nm, source_cursor and explicit coverage/exclusions. All six distance rules finite 0..100 mm; max_violations 1..10000. Same assigned nets exempt copper/foreign-hole checks, but not physical hole spacing. Legacy previews and remaining fabrication/connectivity checks excluded. Limited work/results are explicitly incomplete. Not full fabrication DRC.".into(),
             input_schema: input_schema::<viamind_drc::DrcInput>(),
         });
         commands.push(HostCommand {
@@ -90,12 +90,12 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "set_selection".into(),
-            description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
+            description: "Select persisted board part, track and via IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
             input_schema: input_schema::<SetSelection>(),
         });
         commands.push(HostCommand {
             name: "get_selection".into(),
-            description: "Read the shared selection: sorted part IDs, revision and last origin.".into(),
+            description: "Read the shared selection: sorted part/track/via IDs, revision and last origin.".into(),
             input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
         });
         commands

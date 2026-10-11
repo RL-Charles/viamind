@@ -67,13 +67,17 @@ Agents share the same selection through `get_selection` and `set_selection`:
 Selection preserves design undo/redo. The prototype currently draws common built-in
 footprints; schematic capture, routing and library editing are planned features.
 
-## Check explicit pad clearances
+## Check copper and via drill rules
 
-Open **Board → Design rule check** to run batch copper and board-edge checks with
-chosen clearances. Results include pad/part IDs, measured distances, coverage and
-exclusions. Legacy graphical footprints need explicit pads before copper checking;
-tracks/vias and additional fabrication rules remain outside this initial scope.
-Agents use the same read-only `run_drc` tool. Reports become stale after edits.
+Open **Board → Design rule check** for read-only batch checks of rectangular SMD
+pads, round-ended straight tracks and through-via annular copper. Choose copper/
+board-edge clearance, minimum via drill and radial annular width, drilled-hole
+spacing and foreign copper-to-hole clearance. Results include stable object IDs,
+measured distances and actual coverage; select an issue to highlight its objects.
+Legacy previews need explicit pads. Pours, unsupported copper types, connectivity
+and additional fabrication checks remain excluded; zero scoped issues is not
+fabrication approval. Agents use the same `run_drc` rules and snapshot report.
+Reports become stale after design edits.
 
 ## Run an agent without a window
 

@@ -1,4 +1,4 @@
-//! Pointer selection of board parts, with an R-tree broad phase over visible part bounds.
+//! Pointer selection of board parts and persisted copper, with an R-tree broad phase over visible part bounds.
 
 use egui::{Color32, Key, Modifiers, PointerButton, Pos2, Response, Shape, Stroke, StrokeKind, Ui};
 use viamind_doc::{ObjectId, Project};
@@ -60,7 +60,7 @@ impl Selection {
         self.dirty = true;
     }
 
-    /// Rebuild only when parts or visibility change, keeping picks cheap between edits.
+    /// Rebuild only when objects or visibility change, keeping picks cheap between edits.
     pub fn sync(&mut self, engine: &EngineHandle, layers: &LayerStack) {
         let visible: Vec<_> = layers.draw_order().filter(|layer| layer.visible && layer.opacity > 0.0).map(|layer| layer.id).collect();
         if self.dirty || self.visible_layers != visible {
@@ -71,14 +71,34 @@ impl Selection {
     }
 
     fn build_index(project: &Project, visible: &[LayerId]) -> SpatialIndex<ObjectId> {
-        SpatialIndex::bulk_load(project.board.parts.values().filter_map(|part| {
+        let parts = project.board.parts.values().filter_map(|part| {
             let rect = board_scene::part_items(part)
                 .into_iter()
                 .filter(|item| visible.contains(&item.layer))
                 .map(|item| Rect::new(point(item.bounds.min), point(item.bounds.max)))
                 .reduce(|a, b| a.union(&b))?;
             Some((part.id, rect))
-        }))
+        });
+        let tracks = project.board.tracks.values().filter_map(|track| {
+            let layer = match track.layer {
+                viamind_doc::CopperLayer::Top => LayerId::F_CU,
+                viamind_doc::CopperLayer::Bottom => LayerId::B_CU,
+            };
+            if !visible.contains(&layer) {
+                return None;
+            }
+            // Outward integer bounds preserve odd-Nm widths, matching round end caps.
+            let radius = Nm((track.width.0 + 1) / 2);
+            Some((track.id, Rect::new(track.start, track.end).inflate(radius)))
+        });
+        let vias = project.board.vias.values().filter_map(|via| {
+            if !visible.contains(&LayerId::VIAS) {
+                return None;
+            }
+            let radius = Nm((via.diameter.0 + 1) / 2);
+            Some((via.id, Rect::new(via.position, via.position).inflate(radius)))
+        });
+        SpatialIndex::bulk_load(parts.chain(tracks).chain(vias))
     }
 
     /// Closest visible bounds within the screen-sized picking tolerance. IDs break overlap ties.

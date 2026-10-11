@@ -111,10 +111,12 @@ impl Engine {
     /// Updates selection atomically, validates IDs, and wakes repaint listeners.
     /// Does not add a design transaction or clear redo history.
     pub fn set_selection(&mut self, input: crate::SetSelection, origin: Origin) -> Result<crate::SelectionSnapshot, EngineError> {
-        if let Some(id) = input.ids.iter().find(|id| !self.project.board.parts.contains_key(id)) {
+        if let Some(id) = input.ids.iter().find(|id| {
+            !self.project.board.parts.contains_key(id) && !self.project.board.tracks.contains_key(id) && !self.project.board.vias.contains_key(id)
+        }) {
             return Err(EngineError::InvalidInput {
                 command: "set_selection".into(),
-                message: format!("unknown board part {id}; call get_design for current IDs"),
+                message: format!("unknown board part/track/via {id}; call get_design for current IDs"),
             });
         }
         let mut ids: BTreeSet<_> = self.selection.ids.iter().copied().collect();
@@ -326,7 +328,9 @@ impl Engine {
     fn emit(&mut self, event: ChangeEvent) {
         self.document.dirty = self.project != self.document.saved;
         let before = self.selection.ids.len();
-        self.selection.ids.retain(|id| self.project.board.parts.contains_key(id));
+        self.selection.ids.retain(|id| {
+            self.project.board.parts.contains_key(id) || self.project.board.tracks.contains_key(id) || self.project.board.vias.contains_key(id)
+        });
         if self.selection.ids.len() != before {
             self.selection.revision += 1;
             self.selection.origin = Some(event.origin.clone());

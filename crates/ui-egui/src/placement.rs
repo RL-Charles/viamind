@@ -49,7 +49,7 @@ impl PlacementGesture {
         if let Some(input) = input {
             self.run(engine, input);
         } else {
-            self.error = Some("Selection changed; select the parts again".into());
+            self.error = Some("Placement requires selected parts only; clear track/via selections".into());
         }
     }
     fn run(&mut self, engine: &EngineHandle, input: TransformParts) {
@@ -89,7 +89,8 @@ impl PlacementGesture {
                     delta: Point::ORIGIN,
                 })
             });
-            self.error = None;
+            self.error = if self.moving.is_none() { Some("Placement requires selected parts only; clear track/via selections".into()) } else { None };
+            self.suppress_release = self.moving.is_none();
             consumed = true;
         }
         if let Some(gesture) = &mut self.moving {

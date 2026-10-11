@@ -95,7 +95,7 @@ impl ViamindApp {
                 }
                 field(ui, "Copper net (optional)", &mut draft.net);
             });
-            ui.label("Track/via clearance and copper continuity are not checked; guides remain pad-only.");
+            ui.label("Run Board → Design rule check for scoped track/via clearance and drill checks; guides remain pad-only.");
             if let Some(message) = &draft.message {
                 ui.label(message);
             }

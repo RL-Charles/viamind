@@ -36,7 +36,7 @@ fn square(lo: f64, hi: f64) -> Polygon {
     polygon(&[(lo, lo), (hi, lo), (hi, hi), (lo, hi)])
 }
 fn rules(copper: f64, edge: f64) -> DrcInput {
-    DrcInput { copper_clearance_mm: copper, edge_clearance_mm: edge, max_violations: 1000 }
+    DrcInput { copper_clearance_mm: copper, edge_clearance_mm: edge, max_violations: 1000, ..Default::default() }
 }
 #[test]
 fn copper_checks_real_rotated_rectangles_not_aabb_and_respects_layer_net_semantics() {
@@ -151,7 +151,7 @@ fn coverage_limits_native_roundtrip_and_ordering_are_honest_and_deterministic() 
     assert!(!r.coverage.explicit_outline_checked);
     assert_eq!(r.violations.len(), 3);
     assert!(!r.truncated);
-    assert!(r.coverage.checks_not_performed.iter().any(|v| v.contains("tracks")));
+    assert!(r.coverage.checks_not_performed.iter().any(|v| v.contains("curved tracks")));
     let restored = viamind_doc::file::from_str(&viamind_doc::file::to_string(&p)).unwrap();
     assert_eq!(run_drc(&restored, &DrcInput::default()).unwrap(), r);
     let limited = run_drc(&p, &DrcInput { max_violations: 1, ..Default::default() }).unwrap();
