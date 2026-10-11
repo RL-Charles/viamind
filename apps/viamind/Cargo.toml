@@ -12,3 +12,4 @@ workspace = true
 [dependencies]
 viamind-ui-egui.workspace = true
 viamind-mcp.workspace = true
+eframe.workspace = true

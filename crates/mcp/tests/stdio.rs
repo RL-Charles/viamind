@@ -29,16 +29,11 @@ impl Client {
 
     /// Send a request and return the response with the same id.
     async fn request(&mut self, id: u64, method: &str, params: Value) -> Value {
-        self.send(json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params }))
-            .await;
+        self.send(json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params })).await;
         loop {
-            let line = timeout(TIMEOUT, self.stdout.next_line())
-                .await
-                .expect("timed out waiting for the server")
-                .unwrap()
-                .expect("server closed stdout");
-            let message: Value = serde_json::from_str(&line)
-                .unwrap_or_else(|e| panic!("server wrote non-JSON to stdout ({e}): {line}"));
+            let line =
+                timeout(TIMEOUT, self.stdout.next_line()).await.expect("timed out waiting for the server").unwrap().expect("server closed stdout");
+            let message: Value = serde_json::from_str(&line).unwrap_or_else(|e| panic!("server wrote non-JSON to stdout ({e}): {line}"));
             // Skip server notifications and requests; we only want our response.
             if message.get("id") == Some(&json!(id)) && message.get("method").is_none() {
                 return message;
@@ -56,10 +51,7 @@ async fn initialize_list_and_call_over_stdio() {
         .kill_on_drop(true)
         .spawn()
         .expect("spawn viamind-mcp");
-    let mut client = Client {
-        stdin: child.stdin.take().unwrap(),
-        stdout: BufReader::new(child.stdout.take().unwrap()).lines(),
-    };
+    let mut client = Client { stdin: child.stdin.take().unwrap(), stdout: BufReader::new(child.stdout.take().unwrap()).lines() };
 
     // initialize
     let init = client
@@ -78,16 +70,9 @@ async fn initialize_list_and_call_over_stdio() {
     assert_eq!(result["serverInfo"]["name"], "viamind");
     assert_eq!(result["serverInfo"]["version"], env!("CARGO_PKG_VERSION"));
     assert!(result["capabilities"]["tools"].is_object(), "{init}");
-    assert!(
-        result["instructions"]
-            .as_str()
-            .is_some_and(|s| s.contains("Viamind")),
-        "{init}"
-    );
+    assert!(result["instructions"].as_str().is_some_and(|s| s.contains("Viamind")), "{init}");
 
-    client
-        .send(json!({ "jsonrpc": "2.0", "method": "notifications/initialized" }))
-        .await;
+    client.send(json!({ "jsonrpc": "2.0", "method": "notifications/initialized" })).await;
 
     // tools/list
     let list = client.request(2, "tools/list", json!({})).await;
@@ -102,13 +87,7 @@ async fn initialize_list_and_call_over_stdio() {
 
     // tools/call echo
     let args = json!({ "text": "hello", "nested": { "n": 3, "list": [1, 2] } });
-    let call = client
-        .request(
-            3,
-            "tools/call",
-            json!({ "name": "echo", "arguments": args }),
-        )
-        .await;
+    let call = client.request(3, "tools/call", json!({ "name": "echo", "arguments": args })).await;
     let result = &call["result"];
     assert_eq!(result["isError"], false, "{call}");
     assert_eq!(result["structuredContent"], args, "{call}");
@@ -116,23 +95,11 @@ async fn initialize_list_and_call_over_stdio() {
     assert_eq!(serde_json::from_str::<Value>(text).unwrap(), args);
 
     // tools/call viamind_version
-    let call = client
-        .request(
-            4,
-            "tools/call",
-            json!({ "name": "viamind_version", "arguments": {} }),
-        )
-        .await;
-    assert_eq!(
-        call["result"]["structuredContent"],
-        json!({ "name": "viamind", "version": env!("CARGO_PKG_VERSION") }),
-        "{call}"
-    );
+    let call = client.request(4, "tools/call", json!({ "name": "viamind_version", "arguments": {} })).await;
+    assert_eq!(call["result"]["structuredContent"], json!({ "name": "viamind", "version": env!("CARGO_PKG_VERSION") }), "{call}");
 
     // Unknown tools are a protocol error.
-    let call = client
-        .request(5, "tools/call", json!({ "name": "nope", "arguments": {} }))
-        .await;
+    let call = client.request(5, "tools/call", json!({ "name": "nope", "arguments": {} })).await;
     assert!(call["error"].is_object(), "{call}");
 
     // Closing stdin ends the session and the process exits cleanly.

@@ -89,8 +89,7 @@ impl ToolRegistry {
     /// Registry pre-filled with the built-in tools (see [`crate::builtin`]).
     pub fn with_builtins() -> Self {
         let mut registry = Self::new();
-        crate::builtin::register_builtins(&mut registry)
-            .expect("built-in tool definitions are valid and unique");
+        crate::builtin::register_builtins(&mut registry).expect("built-in tool definitions are valid and unique");
         registry
     }
 
@@ -106,21 +105,13 @@ impl ToolRegistry {
         F: Fn(Value) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
     {
-        let def = ToolDef {
-            name: name.into(),
-            description: description.into(),
-            input_schema,
-        };
+        let def = ToolDef { name: name.into(), description: description.into(), input_schema };
         let handler: ToolHandler = Arc::new(move |input| Box::pin(handler(input)) as ToolFuture);
         self.register_def(def, handler)
     }
 
     /// Register a tool from an already type-erased definition and handler.
-    pub fn register_def(
-        &mut self,
-        def: ToolDef,
-        handler: ToolHandler,
-    ) -> Result<(), RegistryError> {
+    pub fn register_def(&mut self, def: ToolDef, handler: ToolHandler) -> Result<(), RegistryError> {
         if !is_valid_name(&def.name) {
             return Err(RegistryError::InvalidName(def.name));
         }
@@ -156,21 +147,14 @@ impl ToolRegistry {
 
     /// Call the tool called `name` with `input`.
     pub async fn call(&self, name: &str, input: Value) -> Result<Value, CallError> {
-        let handler = self
-            .tools
-            .get(name)
-            .map(|entry| entry.handler.clone())
-            .ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
+        let handler = self.tools.get(name).map(|entry| entry.handler.clone()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
         Ok(handler(input).await?)
     }
 }
 
 /// Tool names per the MCP spec: 1-128 characters from `[A-Za-z0-9_.-]`.
 fn is_valid_name(name: &str) -> bool {
-    (1..=128).contains(&name.len())
-        && name
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'-' | b'.'))
+    (1..=128).contains(&name.len()) && name.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'-' | b'.'))
 }
 
 #[cfg(test)]
@@ -188,17 +172,11 @@ mod tests {
         let mut registry = ToolRegistry::new();
         registry
             .register("double", "Doubles n", object_schema(), |input| async move {
-                let n = input["n"]
-                    .as_i64()
-                    .ok_or_else(|| ToolError::InvalidInput("n must be an integer".into()))?;
+                let n = input["n"].as_i64().ok_or_else(|| ToolError::InvalidInput("n must be an integer".into()))?;
                 Ok(json!({ "n": n * 2 }))
             })
             .unwrap();
-        registry
-            .register("a_first", "Sorts first", object_schema(), |_| async {
-                Ok(Value::Null)
-            })
-            .unwrap();
+        registry.register("a_first", "Sorts first", object_schema(), |_| async { Ok(Value::Null) }).unwrap();
 
         assert_eq!(registry.len(), 2);
         let names: Vec<_> = registry.tools().map(|t| t.name.as_str()).collect();
@@ -212,20 +190,10 @@ mod tests {
     #[tokio::test]
     async fn handler_errors_and_unknown_tools() {
         let mut registry = ToolRegistry::new();
-        registry
-            .register("fail", "Always fails", object_schema(), |_| async {
-                Err(ToolError::Failed("boom".into()))
-            })
-            .unwrap();
+        registry.register("fail", "Always fails", object_schema(), |_| async { Err(ToolError::Failed("boom".into())) }).unwrap();
 
-        assert_eq!(
-            registry.call("fail", json!({})).await,
-            Err(CallError::Tool(ToolError::Failed("boom".into())))
-        );
-        assert_eq!(
-            registry.call("missing", json!({})).await,
-            Err(CallError::UnknownTool("missing".into()))
-        );
+        assert_eq!(registry.call("fail", json!({})).await, Err(CallError::Tool(ToolError::Failed("boom".into()))));
+        assert_eq!(registry.call("missing", json!({})).await, Err(CallError::UnknownTool("missing".into())));
     }
 
     #[test]
@@ -233,22 +201,10 @@ mod tests {
         let noop = |_| async { Ok(Value::Null) };
         let mut registry = ToolRegistry::new();
         registry.register("t", "", object_schema(), noop).unwrap();
-        assert_eq!(
-            registry.register("t", "", object_schema(), noop),
-            Err(RegistryError::Duplicate("t".into()))
-        );
-        assert_eq!(
-            registry.register("", "", object_schema(), noop),
-            Err(RegistryError::InvalidName("".into()))
-        );
-        assert_eq!(
-            registry.register("has space", "", object_schema(), noop),
-            Err(RegistryError::InvalidName("has space".into()))
-        );
-        assert_eq!(
-            registry.register("s", "", json!(true), noop),
-            Err(RegistryError::InvalidSchema("s".into()))
-        );
+        assert_eq!(registry.register("t", "", object_schema(), noop), Err(RegistryError::Duplicate("t".into())));
+        assert_eq!(registry.register("", "", object_schema(), noop), Err(RegistryError::InvalidName(String::new())));
+        assert_eq!(registry.register("has space", "", object_schema(), noop), Err(RegistryError::InvalidName("has space".into())));
+        assert_eq!(registry.register("s", "", json!(true), noop), Err(RegistryError::InvalidSchema("s".into())));
         assert_eq!(registry.len(), 1);
     }
 

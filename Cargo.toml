@@ -55,3 +55,6 @@ rmcp = { version = "=3.5.1", default-features = false }
 tokio = "1.53"
 anyhow = "1.0"
 thiserror = "2.0"
+egui = "0.36"
+eframe = { version = "0.36", default-features = false }
+egui_kittest = "0.36"
