@@ -75,16 +75,21 @@ impl CrossProbeUi {
     }
     pub(crate) fn symbol_highlighted(&self, id: ObjectId) -> bool {
         self.current.as_ref().is_some_and(|c| !c.schematic_source)
-            && self
-                .result
-                .as_ref()
-                .is_some_and(|r| r.components.iter().any(|row| row.status == ComponentLinkStatus::Linked && row.symbol_id == Some(id)))
+            && self.result.as_ref().is_some_and(|r| {
+                r.components.iter().any(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable && row.symbol_id == Some(id))
+            })
     }
 }
 impl ViamindApp {
     pub(crate) fn sync_cross_probe(&mut self, ui: &Ui) {
         let Some(design) = &self.design else {
             self.cross_probe.current = None;
+            self.cross_probe.document = None;
+            self.cross_probe.attempted = None;
+            self.cross_probe.source = None;
+            self.cross_probe.board_revision = None;
+            self.cross_probe.schematic_selection = None;
+            self.cross_probe.message = None;
             self.cross_probe.result = None;
             self.cross_probe.poll();
             return;
