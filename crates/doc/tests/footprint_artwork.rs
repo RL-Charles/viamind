@@ -68,8 +68,17 @@ fn native_feature_max_save_and_private_analysis_never_drop_live_artwork() {
 fn mixed_artwork_package_via_and_assembly_features_max_compose_and_clear() {
     use viamind_doc::{AssemblyMetadata, MountingTechnology, NamedNetMinima};
     let mut p = file::from_str(include_str!("../../../docs/verification/t0116/placed.viamind.json")).unwrap();
+    assert_eq!(file::minimum_version(&p), 11, "historical fixture places schematic units only");
+    let mut part =
+        file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap().board.parts.into_values().next().unwrap();
+    part.id = viamind_doc::ObjectId::new();
+    for pad in &mut part.pads.as_mut().unwrap().0 {
+        pad.id = viamind_doc::ObjectId::new();
+    }
+    part.schematic_package = Some(*p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().packages.keys().next().unwrap());
+    let id = part.id;
+    p.board.parts.insert(id, part);
     assert_eq!(file::minimum_version(&p), 12);
-    let id = *p.board.parts.keys().next().unwrap();
     p.board.parts.get_mut(&id).unwrap().assembly =
         Some(Box::new(AssemblyMetadata { mounting: Some(MountingTechnology::Hybrid), ..Default::default() }));
     p.board.net_rules.insert(
