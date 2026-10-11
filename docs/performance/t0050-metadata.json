@@ -1,0 +1,16 @@
+{
+  "native_source_head": "4e60cfb1ce919485159437a3b62a430f4e20bf03",
+  "base": "b01f96b",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "host": "x86_64",
+  "load_average_observed_between_runs": [
+    13.23,
+    12.54,
+    10.47
+  ],
+  "concurrent_load": "Parallel Viamind debug gates, unrelated hypervisor compilation/test workloads and several open native design previews. Reference and GPU benchmarks ran sequentially; no second benchmark window overlapped. Conditions were not controlled or isolated.",
+  "binary_sha256": {
+    "/home/charlesmowbray/.local/state/viamind/previews/native-benchmark-t0050-integrated": "c0805d90f3d50da975ec169d1d2dd4fe4ca305d1ab01735a205945b11fdce196",
+    "/home/charlesmowbray/.local/state/viamind/previews/gpu-parity-t0050-integrated": "93422f2064f3746c2ecf25dc67d774518bc1d319460175841b77e7cd6d30a648"
+  }
+}

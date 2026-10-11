@@ -1,0 +1,85 @@
+{
+  "adapter": {
+    "backend": "Vulkan",
+    "device_type": "IntegratedGpu",
+    "driver": "Intel open-source Mesa driver",
+    "driver_info": "Mesa 26.2.2-arch1.1",
+    "name": "Intel(R) Graphics (ARL)"
+  },
+  "build": "release",
+  "canvas_points": [
+    1320.0,
+    954.0
+  ],
+  "canvas_renderer": "persistent_gpu_tiles",
+  "completed_native_frames": 1260,
+  "egui_passes": 1261,
+  "measurement": "native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout",
+  "objects": 100000,
+  "phases": [
+    {
+      "drawn_max": 100000,
+      "drawn_min": 100000,
+      "egui_cpu": {
+        "mean_ms": 5.576932811204137,
+        "median_ms": 5.693587940186262,
+        "p95_ms": 7.0653799921274185,
+        "samples": 360,
+        "throughput_fps": 179.3100318495833
+      },
+      "frame_interval": {
+        "mean_ms": 43.610060141666665,
+        "median_ms": 49.284786,
+        "p95_ms": 51.674805,
+        "samples": 360,
+        "throughput_fps": 22.930488899843617
+      },
+      "meets_60fps": false,
+      "name": "fit_pan"
+    },
+    {
+      "drawn_max": 100000,
+      "drawn_min": 80311,
+      "egui_cpu": {
+        "mean_ms": 14.723638916620985,
+        "median_ms": 7.0060426369309425,
+        "p95_ms": 9.195899590849876,
+        "samples": 360,
+        "throughput_fps": 67.91799266899544
+      },
+      "frame_interval": {
+        "mean_ms": 59.396449011111116,
+        "median_ms": 49.794041,
+        "p95_ms": 66.73786,
+        "samples": 360,
+        "throughput_fps": 16.83602330861451
+      },
+      "meets_60fps": false,
+      "name": "fit_pan_zoom"
+    },
+    {
+      "drawn_max": 1965,
+      "drawn_min": 1928,
+      "egui_cpu": {
+        "mean_ms": 1.9833404519077804,
+        "median_ms": 1.970645971596241,
+        "p95_ms": 2.5208850856870413,
+        "samples": 360,
+        "throughput_fps": 504.19987099950356
+      },
+      "frame_interval": {
+        "mean_ms": 32.54469060555554,
+        "median_ms": 33.325431,
+        "p95_ms": 34.670514,
+        "samples": 360,
+        "throughput_fps": 30.72697823802003
+      },
+      "meets_60fps": false,
+      "name": "zoomed_8x_pan"
+    }
+  ],
+  "pixels_per_point": 1.0,
+  "renderer": "wgpu",
+  "sample_frames_per_phase": 360,
+  "warmup_frames_per_phase": 60
+}

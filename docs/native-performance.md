@@ -107,3 +107,37 @@ Run it with `cargo run --release -p viamind-ui-egui --example gpu_parity --
 Machine-readable evidence is in [performance/](performance/). Failed exploratory
 runs (per-tile uniform uploads and overlapping benchmark windows) remain in the
 local recovery directory; they are not used to claim acceptance.
+
+### Final integrated same-binary comparison
+
+At source `4e60cfb1ce919485159437a3b62a430f4e20bf03` (based on merged
+copper/placement main `b01f96b`), the same saved release binary rendered both
+paths sequentially at 1320 × 954 points, with the same 1,260 native frames and
+phase object counts. Load average observed between runs was 13.23: Viamind debug
+gates, unrelated hypervisor compilation/test workloads and open native previews
+were active. These are desktop observations, not controlled hardware limits.
+
+| Phase | Reference fps | GPU tiles fps | Reference mean CPU | GPU tiles mean CPU |
+| --- | ---: | ---: | ---: | ---: |
+| Fit pan | 13.317 | 22.930 | 36.184 ms | 5.577 ms |
+| Fit pan and zoom | 12.821 | 16.836 | 40.515 ms | 14.724 ms |
+| Zoomed 8× pan | 32.925 | 30.727 | 4.057 ms | 1.983 ms |
+
+All strict cadence checks fail under these conditions. Reduced previous-frame
+CPU and full-board cadence improvement support the cache optimization; the
+small visible-set cadence variation demonstrates why CPU timings alone do not
+prove native 60fps. The original acceptance remains open.
+
+Integrated native screenshot parity includes a through-via hole, rotated copper
+quad and connection guide overlay alongside the 5,000 synthetic items. All four
+cases pass: maximum difference 2/255, no pixels exceed two channel values, and
+mean channel difference is below 0.000265 across 1,068,480 pixels per case.
+Reference/GPU reports, parity, CPU profile and source/binary metadata are retained
+in [performance/](performance/). The final CPU diagnostic averaged 2.210 ms UI
+and 17.486 ms egui mesh assembly under this heavier load, with unchanged geometry
+volume of 23.19 MB/frame in the reference path.
+
+Native verification uses default single-sample wgpu, no depth attachment,
+1 pixel/point and default linear atlas filtering/dithering. Alternate custom
+sample/depth/filter policies and DPI are unverified in this increment. The public
+API keeps the egui mesh reference available for those integrations.
