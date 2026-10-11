@@ -48,6 +48,8 @@ ui_actions! {
     SaveSymbolTemplate => ("save_symbol_template", input_schema::<viamind_engine::SaveSymbolTemplate>(), save_symbol_template),
     ExportSymbolTemplate => ("export_symbol_template", input_schema::<viamind_engine::ExportSymbolTemplate>(), export_symbol_template),
 
+    LoadFootprintDefinition => ("load_footprint_definition", input_schema::<viamind_engine::LoadFootprintDefinition>(), load_footprint_definition),
+    SaveFootprintDefinition => ("save_footprint_definition", input_schema::<viamind_engine::SaveFootprintDefinition>(), save_footprint_definition),
     PreviewFootprintConversion => ("preview_footprint_conversion", input_schema::<viamind_engine::PreviewFootprintConversion>(), preview_footprint_conversion),
     ConvertFootprintFile => ("convert_footprint_file", input_schema::<viamind_engine::ConvertFootprintFile>(), convert_footprint_file),
     PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
@@ -389,4 +391,11 @@ fn preview_footprint_conversion(engine: &EngineHandle, input: Value) -> Result<V
 }
 fn convert_footprint_file(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.convert_footprint_file(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+
+fn load_footprint_definition(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.load_footprint_definition(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+fn save_footprint_definition(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.save_footprint_definition(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
 }

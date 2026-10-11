@@ -18,6 +18,7 @@ pub mod fabrication;
 pub mod fabrication_view;
 pub mod files;
 pub mod footprint_conversion;
+pub mod footprint_definition;
 mod gpu_tiles;
 pub mod gpu_timing;
 pub mod layer_panel;
@@ -156,6 +157,7 @@ pub struct ViamindApp {
     pub assembly_export: assembly_export::AssemblyExportUi,
     pub pcb_import: pcb_import::PcbImportUi,
     pub footprint_conversion: footprint_conversion::FootprintConversionUi,
+    pub footprint_definition: footprint_definition::FootprintDefinitionUi,
     pub fabrication: fabrication::FabricationUi,
     pub fabrication_view: fabrication_view::FabricationViewUi,
     pub output_jobs: output_jobs::OutputJobUi,
@@ -208,6 +210,7 @@ impl ViamindApp {
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
             footprint_conversion: footprint_conversion::FootprintConversionUi::default(),
+            footprint_definition: footprint_definition::FootprintDefinitionUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
@@ -252,6 +255,7 @@ impl ViamindApp {
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
             footprint_conversion: footprint_conversion::FootprintConversionUi::default(),
+            footprint_definition: footprint_definition::FootprintDefinitionUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
@@ -447,6 +451,7 @@ impl ViamindApp {
         self.assembly_export_window(ui);
         self.pcb_import_window(ui);
         self.footprint_conversion_window(ui);
+        self.footprint_definition_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -660,6 +665,14 @@ impl ViamindApp {
                     }
                     if ui.button("Board outline…").clicked() {
                         self.begin_board_outline();
+                        ui.close();
+                    }
+                });
+            }
+            if self.design.is_some() {
+                ui.menu_button("Libraries", |ui| {
+                    if ui.button("Footprint definitions…").clicked() {
+                        self.begin_footprint_definition();
                         ui.close();
                     }
                 });

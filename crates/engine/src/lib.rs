@@ -132,3 +132,6 @@ pub use footprint_conversion::{ConvertFootprintFile, ConvertedFootprintFile, Foo
 
 mod checked_output_job;
 pub use checked_output_job::checked_output_job_report;
+
+mod footprint_definition;
+pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, validate_definition};
