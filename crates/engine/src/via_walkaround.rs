@@ -73,34 +73,6 @@ fn invalid(message: impl Into<String>) -> CommandError {
     CommandError::invalid("via_walkaround", message)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn bounded_geometry_capture_omits_unused_invalid_sourcing() {
-        let mut project = Project::new("Not needed by routing");
-        let part = viamind_doc::Part {
-            id: ObjectId::new(),
-            schematic_symbol: None,
-            designator: "J1".into(),
-            value: String::new(),
-            footprint: String::new(),
-            position: Point::new(Nm(1), Nm(2)),
-            rotation_mdeg: 90000,
-            side: viamind_doc::Side::Bottom,
-            pads: None,
-            assembly: Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("\n".repeat(3 * 1024 * 1024)), ..Default::default() })),
-        };
-        let id = part.id;
-        project.board.parts.insert(id, part);
-        assert!(viamind_doc::file::validate_assembly(&project).is_err());
-        let snapshot = capture(&project).unwrap();
-        assert!(snapshot.board.parts[&id].assembly.is_none());
-        assert_eq!(snapshot.board.parts[&id], project.board.parts[&id].clone_without_assembly());
-        assert!(snapshot.name.is_empty());
-        assert_eq!(project.board.parts[&id].assembly.as_ref().unwrap().mpn.as_ref().unwrap().len(), 3 * 1024 * 1024);
-    }
-}
 fn budget(project: &Project) -> Result<(), CommandError> {
     crate::auto_drc::snapshot_budget(project, 100_000 - 1025).map_err(invalid)
 }
@@ -169,4 +141,33 @@ fn prepare(project: &Project, input: &RoutePadViaWalkaround) -> Result<(CheckedV
         },
         deltas,
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn bounded_geometry_capture_omits_unused_invalid_sourcing() {
+        let mut project = Project::new("Not needed by routing");
+        let part = viamind_doc::Part {
+            id: ObjectId::new(),
+            schematic_symbol: None,
+            designator: "J1".into(),
+            value: String::new(),
+            footprint: String::new(),
+            position: Point::new(Nm(1), Nm(2)),
+            rotation_mdeg: 90000,
+            side: viamind_doc::Side::Bottom,
+            pads: None,
+            assembly: Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("\n".repeat(3 * 1024 * 1024)), ..Default::default() })),
+        };
+        let id = part.id;
+        project.board.parts.insert(id, part);
+        assert!(viamind_doc::file::validate_assembly(&project).is_err());
+        let snapshot = capture(&project).unwrap();
+        assert!(snapshot.board.parts[&id].assembly.is_none());
+        assert_eq!(snapshot.board.parts[&id], project.board.parts[&id].clone_without_assembly());
+        assert!(snapshot.name.is_empty());
+        assert_eq!(project.board.parts[&id].assembly.as_ref().unwrap().mpn.as_ref().unwrap().len(), 3 * 1024 * 1024);
+    }
 }
