@@ -1,0 +1,53 @@
+{
+  "ticket": "T-0080",
+  "artifact_source_head": "9d109eea4903f93e4940c4c27a0ea11014984b93",
+  "base_main": "83c5dd657f5b0fa91f710a7dd70b008595dfc45c",
+  "linux_gates": {
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "tests_passed": 530,
+    "tests_failed": 0,
+    "tests_ignored": 1,
+    "build": true,
+    "log": "t0080-linux-gates.log",
+    "log_sha256": "aa045448dc4369c97244dad7f209b421ebe80105e2060ea266636db877c14471",
+    "source_ci": "https://github.com/RL-Charles/viamind/actions/runs/38131298476"
+  },
+  "production": {
+    "binary_sha256": "55c2226ff6b0177b2d7aa15647d2129d106ecb5196f8a0152255e1d90529429a",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0080-final-native",
+    "stdio_checks": 29,
+    "http_checks": 30,
+    "stdio_report": "t0080-production-stdio.json",
+    "http_report": "t0080-production-http.json",
+    "http_sessions": 2,
+    "endpoint": "http://127.0.0.1:7906/mcp",
+    "pid": 692024,
+    "window_id": 110379511283184,
+    "window_size": [
+      1,
+      5
+    ],
+    "cua": "t0080-production-cua.json",
+    "screenshot": "t0080-production-window.png",
+    "saved_result": "t0080-library-result.viamind.json"
+  },
+  "inspection": {
+    "binary_sha256": "231ca1a0ce7cc00bdbd48c770b9197ad8980dd9614b06dfc2e60dbdc76bbeec1",
+    "source": "../../crates/ui-egui/examples/t0080_inspection.rs",
+    "pid": 693468,
+    "window_id": 110379509487520,
+    "window_size": [
+      1600,
+      1000
+    ],
+    "cua": "t0080-inspection-cua.json",
+    "screenshot": "t0080-library-readable.png",
+    "difference": "Fixed viewport around production ViamindApp; actual egui input loads original template before launch and asserts complete shared session unchanged. MCP disabled in wrapper; actual desktop HTTP uses the exact production binary."
+  },
+  "capture_limits": "Cua AT-SPI unavailable; X11 window metadata fallback. Readable screenshot is inspection wrapper; actual pointer/text/compact scrolling verified by egui_kittest, not OS input.",
+  "previous_runs": "Initial7ae source:524workspace tests+20preliminary focused,28stdio/29HTTP before FIFO hardening; preserved historical logs/binaries. Hardening6258327 stopped at mkfifo fixture compile; corrected to pinned mkfifoat in9d109ee. Failed runs not counted.",
+  "scope": "Detached rectangular single-unit definitions only. Parent multi-unit quad-op-amp acceptance remains open.",
+  "integration_main": "bf8d455",
+  "integration_note": "Subsequent integration adds merged static walkaround routing. All symbol-library implementation files are byte-identical to verified9d source; additive engine exports/actions/UI hooks and README sections preserved. Fresh combined CI required; historical530/29/30 artifact identities remain unchanged."
+}

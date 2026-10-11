@@ -1,0 +1,40 @@
+{
+  "format": "viamind-symbol",
+  "version": 1,
+  "symbol": {
+    "name": "Original regulator",
+    "value": "3.3 V regulator",
+    "footprint": null,
+    "width": 4000000,
+    "height": 6000000,
+    "pins": [
+      {
+        "number": "1",
+        "name": "VIN",
+        "position": {
+          "x": -4000000,
+          "y": 0
+        },
+        "electrical": "power_input"
+      },
+      {
+        "number": "2",
+        "name": "GND",
+        "position": {
+          "x": 0,
+          "y": 4000000
+        },
+        "electrical": "power_input"
+      },
+      {
+        "number": "3",
+        "name": "VOUT",
+        "position": {
+          "x": 4000000,
+          "y": 0
+        },
+        "electrical": "power_output"
+      }
+    ]
+  }
+}

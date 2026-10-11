@@ -63,6 +63,7 @@ pub async fn serve_http(registry: impl Into<Arc<ToolRegistry>>, addr: SocketAddr
 pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
     let mut registry = ToolRegistry::with_builtins();
     crate::assembly::register(&mut registry, engine.clone())?;
+    crate::symbol_libraries::register(&mut registry, engine.clone())?;
     crate::fabrication::register(&mut registry, engine.clone())?;
     crate::views::register(&mut registry, engine.clone())?;
     crate::png_views::register(&mut registry, engine.clone())?;

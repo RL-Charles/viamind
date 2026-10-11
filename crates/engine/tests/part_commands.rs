@@ -41,6 +41,7 @@ fn builtin_specs() {
             "import_board_outline_dxf",
             "link_schematic_symbol",
             "move_part",
+            "place_symbol_template",
             "route_pad_polyline",
             "route_pad_posture",
             "route_pad_via_polyline",

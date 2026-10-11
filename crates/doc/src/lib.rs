@@ -15,6 +15,7 @@ pub mod outline;
 pub mod pad;
 pub mod project;
 pub mod schematic;
+pub mod symbol_library;
 
 pub use board::{Board, Part, Side};
 pub use id::ObjectId;

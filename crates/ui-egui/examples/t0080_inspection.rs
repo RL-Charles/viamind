@@ -1,0 +1,52 @@
+//! Readable inspection of the production ViamindApp prepared through actual egui input.
+use egui_kittest::{Harness, kittest::Queryable};
+use viamind_ui_egui::ViamindApp;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let project = std::env::args_os().nth(1).ok_or("project path required")?;
+    let library = std::env::args().nth(2).ok_or("library path required")?;
+    let engine = viamind_engine::EngineHandle::new(viamind_doc::file::load(project)?);
+    let initial = engine.session_state();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_symbol_library();
+    let mut h = Harness::builder().with_size(egui::vec2(1600.0, 1000.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    let end = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while h.query_by_label_contains("Target: Power regulator").is_none() {
+        assert!(std::time::Instant::now() < end);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+        h.run_steps(3);
+    }
+    h.get_by_label("Symbol library file path").focus();
+    h.run_steps(3);
+    h.get_by_label("Symbol library file path").type_text(&library);
+    h.run_steps(5);
+    h.get_by_label("Load symbol template").click();
+    h.run_steps(5);
+    while h.query_by_label_contains("Loaded Original regulator").is_none() {
+        assert!(std::time::Instant::now() < end);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+        h.run_steps(3);
+    }
+    assert_eq!(engine.session_state(), initial, "inspection preparation is read-only");
+    let mut app = h.into_state();
+    let options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_title("Viamind native symbol library inspection")
+            .with_app_id("viamind-symbol-library-inspection")
+            .with_inner_size([1600.0, 1000.0])
+            .with_min_inner_size([1600.0, 1000.0])
+            .with_max_inner_size([1600.0, 1000.0])
+            .with_resizable(false),
+        renderer: eframe::Renderer::Wgpu,
+        ..Default::default()
+    };
+    eframe::run_native(
+        "Viamind native symbol library inspection",
+        options,
+        Box::new(move |cc| {
+            app.configure_renderer(cc);
+            Ok(Box::new(app))
+        }),
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}

@@ -39,3 +39,5 @@ affected).";
 pub mod png_views;
 pub mod schematic_views;
 pub mod views;
+
+pub mod symbol_libraries;
