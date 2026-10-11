@@ -632,3 +632,43 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod drawing_tests {
+    use super::*;
+    #[test]
+    fn regulator_fixture_body_transforms_and_fit_bounds_are_exact() {
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
+        let content = project.schematic.sheets.values().next().unwrap().content.as_ref().unwrap();
+        assert_eq!((content.object_count(), content.pin_count()), (12, 7));
+        assert_eq!(bounds(Some(content)), WorldRect::new(WorldPos::new(6.0, 14.0), WorldPos::new(34.0, 31.0)));
+        let mut symbol = content.symbols.values().find(|s| s.designator == "U1").unwrap().clone();
+        for (mirrored, cases) in [
+            (
+                false,
+                [
+                    [(-2, -3), (2, -3), (2, 3), (-2, 3)],
+                    [(-3, 2), (-3, -2), (3, -2), (3, 2)],
+                    [(2, 3), (-2, 3), (-2, -3), (2, -3)],
+                    [(3, -2), (3, 2), (-3, 2), (-3, -2)],
+                ],
+            ),
+            (
+                true,
+                [
+                    [(2, -3), (-2, -3), (-2, 3), (2, 3)],
+                    [(-3, -2), (-3, 2), (3, 2), (3, -2)],
+                    [(-2, 3), (2, 3), (2, -3), (-2, -3)],
+                    [(3, 2), (3, -2), (-3, -2), (-3, 2)],
+                ],
+            ),
+        ] {
+            symbol.mirrored = mirrored;
+            for (quarter, offsets) in cases.into_iter().enumerate() {
+                symbol.rotation_quarters = quarter as u8;
+                let expected = offsets.map(|(x, y)| Coordinate { x: Nm(20_000_000 + x * 1_000_000), y: Nm(20_000_000 + y * 1_000_000) });
+                assert_eq!(body_corners(&symbol), expected);
+            }
+        }
+    }
+}
