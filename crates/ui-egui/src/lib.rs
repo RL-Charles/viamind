@@ -26,6 +26,7 @@ mod pad_routing;
 pub mod pads;
 pub mod parts;
 pub mod pcb_sync;
+pub mod pin_pad_probe;
 pub mod placement;
 pub mod routing;
 pub mod scene;
@@ -133,6 +134,7 @@ pub struct ViamindApp {
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
     pub cross_probe: cross_probe::CrossProbeUi,
+    pub pin_pad_probe: pin_pad_probe::PinPadProbeUi,
     pub schematic_component: schematic_component::SchematicComponentUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
@@ -180,6 +182,7 @@ impl ViamindApp {
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
+            pin_pad_probe: pin_pad_probe::PinPadProbeUi::default(),
             schematic_component: schematic_component::SchematicComponentUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
@@ -217,6 +220,7 @@ impl ViamindApp {
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
+            pin_pad_probe: pin_pad_probe::PinPadProbeUi::default(),
             schematic_component: schematic_component::SchematicComponentUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
@@ -339,6 +343,7 @@ impl ViamindApp {
         self.sync_design();
         self.sync_schematic_wires(ui.ctx());
         self.sync_cross_probe(ui);
+        self.sync_pin_pad_probe(ui);
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
@@ -384,6 +389,7 @@ impl ViamindApp {
                 self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
             self.paint_cross_probe(ui, response.rect);
+            self.paint_pin_pad_probe(ui, response.rect);
             self.paint_labels(ui);
         });
         self.file_dialogs(ui);

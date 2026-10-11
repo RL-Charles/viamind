@@ -93,6 +93,14 @@ impl CrossProbeUi {
     }
 }
 impl ViamindApp {
+    pub(crate) fn cross_probe_source(&self) -> Option<crate::pin_pad_probe::Source> {
+        self.cross_probe.current.as_ref().map(|c| crate::pin_pad_probe::Source {
+            project: c.project,
+            cursor: c.cursor,
+            schematic: c.schematic_source,
+            ids: c.ids.clone(),
+        })
+    }
     pub(crate) fn sync_cross_probe(&mut self, ui: &Ui) {
         let Some(design) = &self.design else {
             self.cross_probe.current = None;
@@ -165,6 +173,7 @@ impl ViamindApp {
         ui.heading("Linked component");
         ui.label("Counterpart highlights are local; shared PCB selection stays unchanged.");
         let mut navigate = None;
+        let mut inspect = None;
         if let Some(message) = &self.cross_probe.message {
             ui.label(message);
         } else if self.cross_probe.pending.is_some() {
@@ -184,6 +193,11 @@ impl ViamindApp {
                         );
                         ui.add(egui::Label::new(&caption).truncate())
                             .on_hover_text(format!("{caption}\nSymbol {:?}\nPCB {:?}", row.symbol_id, row.part_id));
+                        if let Some(id) = if schematic_source { row.symbol_id } else { row.part_id }
+                            && ui.button("Inspect pins and pads").clicked()
+                        {
+                            inspect = Some(id);
+                        }
                         if row.status == ComponentLinkStatus::Linked {
                             let enabled = if schematic_source { row.board_navigable } else { row.schematic_navigable };
                             if !enabled {
@@ -208,6 +222,10 @@ impl ViamindApp {
         } else {
             ui.label("Select a schematic symbol or PCB component to highlight its linked counterpart.");
         }
+        if let Some(id) = inspect {
+            self.inspect_pin_pads(id, 0);
+        }
+        self.pin_pad_probe_panel(ui);
         if let Some((row, schematic_source)) = navigate
             && let Err(error) = self.navigate_counterpart(&row, schematic_source)
         {

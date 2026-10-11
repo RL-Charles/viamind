@@ -42,6 +42,8 @@ mod erc;
 pub mod event;
 pub use erc::{ErcCheck, ErcCoverage, ErcInput, ErcReport, ErcSeverity, ErcViolation, PinCompatibilityRule};
 mod component_links;
+mod pin_pad_links;
+pub use pin_pad_links::{LinkedPinPad, PinPadCoverage, PinPadLinkQuery, PinPadLinkResult};
 pub mod footprint;
 pub mod handle;
 pub mod log;
