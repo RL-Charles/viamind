@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "port": 7911,
+  "binary_sha256": "9143784407bfe7647042af551fa44d960ce8175318694040e38e48859e780849",
+  "checks": [
+    "actual production shared cutout plan and commit tools discovered",
+    "complete session unchanged by cutout planning",
+    "independent exact seven-point cutout detour and off-grid stubs",
+    "complete scoped preflight and substrate box counted",
+    "derived side net and full captured cursor",
+    "copper clearance alone does not alter substrate route",
+    "odd half-width and strict1Nm edge margin at 0.874997",
+    "odd half-width and strict1Nm edge margin at 0.874998",
+    "clearance variation queries all remain immutable",
+    "recomputed six-segment commit equals checked exact path",
+    "all cutout route segments use one session event",
+    "second-agent stale plan_pad_walkaround rejects unchanged",
+    "second-agent stale route_pad_walkaround rejects unchanged",
+    "one creator undo removes entire cutout route",
+    "redo preserves exact segment IDs and geometry",
+    "real peer outline edit invalidates both old guards",
+    "fresh edited-cutout plan recomputes different geometry",
+    "nonrectangular cutout query and commit refuse atomically",
+    "blocked edge corridors query and commit refuse atomically",
+    "start inside cutout query and commit refuse atomically",
+    "multiple substrate cutouts share counted exact detour",
+    "multiple-cutout checked snapshot stays immutable",
+    "multiple-cutout route one undo preserves substrate",
+    "separate continuity query remains immutable",
+    "same-project reopened stream invalidates cutout plan and commit"
+  ],
+  "first_http_plan_ms": 2.0712400000775233,
+  "first_http_commit_ms": 4.228712001349777,
+  "warm_http_commit_ms": [
+    1.9815390041912906,
+    1.9579040017561056,
+    14.228611995349638,
+    2.2083609947003424,
+    2.6445149997016415
+  ],
+  "warm_http_mean_ms": 4.604186199139804
+}
