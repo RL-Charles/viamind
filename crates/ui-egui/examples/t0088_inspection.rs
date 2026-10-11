@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let before = engine.session_state();
     let mut app = ViamindApp::with_design(engine.clone(), None);
     app.begin_via_walkaround_route();
-    let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    let mut h = Harness::builder().with_size(vec2(1600.0, 1200.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     h.run_steps(5);
     h.get_by_label("Start route").click();
     h.run_steps(5);
@@ -57,19 +57,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "{}",
         serde_json::json!({"inspection_harness":true,"production_controls_and_pointer_events":true,"project_unchanged":true,"checked_points_nm":h.state().routing.pad_planned_points()})
     );
-    // Preserve the real sidebar scroll state so the checked plan and complete
-    // Finish/Cancel controls are visible in the native inspection window.
-    h.get_by_label("Finish via route").scroll_to_me();
-    h.run_steps(5);
-    let memory = h.ctx.memory(Clone::clone);
+    // Assert the actual controls fit this inspection viewport before launch.
+    // No scroll state is assumed to transfer between the two root UI IDs.
+    for label in ["Plan static walkaround", "Finish via route", "Cancel pad route"] {
+        let rect = h.get_by_label(label).rect();
+        assert!(
+            rect.min.x >= 0.0 && rect.min.y >= 0.0 && rect.max.x <= 1600.0 && rect.max.y < 1180.0,
+            "{label} outside inspection viewport: {rect:?}"
+        );
+    }
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_title("Viamind checked fixed via walkaround inspection")
             .with_app_id("viamind-fixed-via-inspection")
-            .with_inner_size([1600., 1000.])
-            .with_min_inner_size([1600., 1000.])
-            .with_max_inner_size([1600., 1000.])
+            .with_inner_size([1600., 1200.])
+            .with_min_inner_size([1600., 1200.])
+            .with_max_inner_size([1600., 1200.])
             .with_resizable(false),
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
@@ -79,7 +83,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            cc.egui_ctx.memory_mut(|m| *m = memory);
             Ok(Box::new(Inspection { app, engine, before }))
         }),
     )
