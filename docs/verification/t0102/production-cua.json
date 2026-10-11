@@ -1,0 +1,35 @@
+{
+  "_note": "Prefer `elements` — `tree_markdown` will continue to work but new fields will only be added to the structured side. Use `max_elements` / `max_depth` to bound the AT-SPI walk on apps with very large trees.",
+  "app_name": "viamind",
+  "degraded": true,
+  "degraded_reason": "x11_property_fallback_partial: AT-SPI was unavailable and Cua Driver only recovered window metadata. Treat it as discovery evidence; it cannot prove checked state.",
+  "element_count": 1,
+  "elements": [
+    {
+      "actions": [
+        "activate"
+      ],
+      "depth": 0,
+      "element_index": 0,
+      "element_token": "s0000002c:0",
+      "role": "window"
+    }
+  ],
+  "elements_complete": false,
+  "pid": 1785279,
+  "returned_element_count": 1,
+  "screenshot_height": 135,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 223,
+  "snapshot_id": "s0000002c",
+  "total_element_count": 1,
+  "tree_markdown": "- [0] window \"\" [actions=[activate]]\n",
+  "window_bounds": {
+    "height": 135,
+    "width": 223,
+    "x": 2175,
+    "y": 1190
+  },
+  "window_id": 110379552219728,
+  "window_title": "*protected.viamind.json — Viamind"
+}

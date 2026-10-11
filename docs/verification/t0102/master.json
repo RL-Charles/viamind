@@ -1,0 +1,434 @@
+{
+  "ticket": "T-0102",
+  "verified_utc": "2026-10-11T16:16:42.143282+00:00",
+  "spec": "docs/specs/symbol-editor-identity-bounds.md",
+  "spec_approved_before_code": "482ca5c0bffc6f1faf313901e942c2494fa1b9d2",
+  "product_source": "87a940c23015c77eb0c5f6c53f2331e264115fda",
+  "historical_base": "b9b09fc8f432e100436ab12b9b8749ec3c02d58f",
+  "full_linux": {
+    "session": 50387,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 716,
+      "failed": 0,
+      "ignored": 1
+    },
+    "separate_identity_prefilter_tests": 1,
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 85,
+    "workflow_checks": 18
+  },
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/viamind-87a940c23015",
+    "sha256": "c570aebf3e8d48562ce8e7004b2d325969aac9cc321d679c3681a07c9cd52cd6",
+    "pid": 1785279,
+    "http_port": 7933,
+    "stdio_checks": 18,
+    "actual_desktop_two_client_http_checks": 18,
+    "live_exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/viamind-87a940c23015"
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/inspection-b6fc692dde6e",
+    "sha256": "395fb38d691493a41e6fdee74a978884d1dc7a16bcd52be3248835dea4d29345",
+    "source": "b6fc692dde6e47a5c8c53f25dde917bc43aa292a",
+    "focused_gate": 12587,
+    "fmt_clippy_build_pass": true,
+    "preparation": "Production ViamindApp actual local egui NEW2-pin edits/removal/type/save; independently parsed original source. Real pointer expands dialog before input. Full Remove rect verified against actual paint clip before direct click/count2to1. Preparation1600x1200 then finalviewport reflow.",
+    "capture": "Actual eframe native WGPU Screenshot opaque P6/fsync/lossless PNG; fullsession/status invariant each UIpass; selfclose before app.show",
+    "os_input_claim": false,
+    "ui_passes_not_frames": true,
+    "captures": [
+      {
+        "name": "wide",
+        "png": "wide.png",
+        "pixels": [
+          1600,
+          1100
+        ],
+        "rgb_sha256": "4ee984a25802b4a4af9349ec9e01c5cc21276ac43ea67d8953f8b793fd7641ca",
+        "p6_sha256": "ac1a84c0818b62f2780c1885dc570b348a5c7f07a698e7d1b6f8df393e7e4715",
+        "runtime": [
+          {
+            "independently_loaded_source": "Original regulator",
+            "preparation_viewport": [
+              1600,
+              1200
+            ]
+          },
+          {
+            "inner_paint_clip": [
+              17.0,
+              699.0,
+              515.0,
+              979.0
+            ],
+            "remove_button": [
+              23.0,
+              808.0,
+              109.625,
+              826.0
+            ]
+          },
+          {
+            "actual_input_identity_after_removal": true,
+            "document_status_unchanged": true,
+            "field_ids": [
+              "NodeId(TreeIndex(0), #16110642201815392787)",
+              "NodeId(TreeIndex(0), #667867690260414322)",
+              "NodeId(TreeIndex(0), #11462719451571592686)",
+              "NodeId(TreeIndex(0), #13309505208490303313)",
+              "NodeId(TreeIndex(0), #15988933185653238060)"
+            ],
+            "full_session_unchanged": true
+          },
+          {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              1600.0,
+              1100.0
+            ],
+            "controls": [
+              [
+                23.0,
+                899.0,
+                169.625,
+                917.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-wide-final.ppm",
+            "pid": 1821029,
+            "pixels": [
+              1600,
+              1100
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          }
+        ],
+        "launch": {
+          "command": [
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/inspection-b6fc692dde6e",
+            "/home/charlesmowbray/Development/viamind-t-0102/fixtures/symbols/original-regulator.viamind-symbol.json",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-wide-final-new-definition.json",
+            "preview",
+            "1600",
+            "1100",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-wide-final.ppm"
+          ],
+          "pid": 1821029,
+          "source_commit": "b6fc692dde6e",
+          "launched_utc": "2026-10-11T16:15:12.950714+00:00",
+          "scope": "Actual egui input preparing production ViamindApp; actual native WGPU Screenshot; no OS input or compositor capture claim",
+          "exit_code": 0,
+          "exited_utc": "2026-10-11T16:15:14.817742+00:00"
+        },
+        "process_after_capture": "absent; clean self-close"
+      },
+      {
+        "name": "compact",
+        "png": "compact.png",
+        "pixels": [
+          640,
+          400
+        ],
+        "rgb_sha256": "0d1ad1337f1101af4f960589ef0d5b68037f20342c37c1f35b6f5ee737d6ca16",
+        "p6_sha256": "d5708c405bc1e8082eba123721def15a3c5693e941f4bcce2d576b040c77c097",
+        "runtime": [
+          {
+            "independently_loaded_source": "Original regulator",
+            "preparation_viewport": [
+              1600,
+              1200
+            ]
+          },
+          {
+            "inner_paint_clip": [
+              17.0,
+              699.0,
+              515.0,
+              979.0
+            ],
+            "remove_button": [
+              23.0,
+              808.0,
+              109.625,
+              826.0
+            ]
+          },
+          {
+            "actual_input_identity_after_removal": true,
+            "document_status_unchanged": true,
+            "field_ids": [
+              "NodeId(TreeIndex(0), #11101312624594518266)",
+              "NodeId(TreeIndex(0), #16851260998047822984)",
+              "NodeId(TreeIndex(0), #7681411507696354247)",
+              "NodeId(TreeIndex(0), #11768375206851385376)",
+              "NodeId(TreeIndex(0), #7233555463206355784)"
+            ],
+            "full_session_unchanged": true
+          },
+          {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              640.0,
+              400.0
+            ],
+            "controls": [
+              [
+                23.0,
+                354.0,
+                169.625,
+                372.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-compact-final.ppm",
+            "pid": 1821228,
+            "pixels": [
+              640,
+              400
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          }
+        ],
+        "launch": {
+          "command": [
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/inspection-b6fc692dde6e",
+            "/home/charlesmowbray/Development/viamind-t-0102/fixtures/symbols/original-regulator.viamind-symbol.json",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-compact-final-new-definition.json",
+            "preview",
+            "640",
+            "400",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-compact-final.ppm"
+          ],
+          "pid": 1821228,
+          "source_commit": "b6fc692dde6e",
+          "launched_utc": "2026-10-11T16:15:14.818836+00:00",
+          "scope": "Actual egui input preparing production ViamindApp; actual native WGPU Screenshot; no OS input or compositor capture claim",
+          "exit_code": 0,
+          "exited_utc": "2026-10-11T16:15:15.885003+00:00"
+        },
+        "process_after_capture": "absent; clean self-close"
+      },
+      {
+        "name": "completed",
+        "png": "completed.png",
+        "pixels": [
+          1600,
+          1100
+        ],
+        "rgb_sha256": "23dca295800c379981470cb5741d7ff3619ece347472b635dd26df24d2456c4d",
+        "p6_sha256": "5ea308955237a4c298937a3045cdda8ccd6a0ab56b0ff55289df8f040ef547fd",
+        "runtime": [
+          {
+            "independently_loaded_source": "Original regulator",
+            "preparation_viewport": [
+              1600,
+              1200
+            ]
+          },
+          {
+            "inner_paint_clip": [
+              17.0,
+              699.0,
+              515.0,
+              979.0
+            ],
+            "remove_button": [
+              23.0,
+              808.0,
+              109.625,
+              826.0
+            ]
+          },
+          {
+            "actual_input_identity_after_removal": true,
+            "document_status_unchanged": true,
+            "field_ids": [
+              "NodeId(TreeIndex(0), #9106668234980444261)",
+              "NodeId(TreeIndex(0), #13565635872999449141)",
+              "NodeId(TreeIndex(0), #15977709529097749357)",
+              "NodeId(TreeIndex(0), #13233896220020659957)",
+              "NodeId(TreeIndex(0), #15437892037106281152)"
+            ],
+            "full_session_unchanged": true
+          },
+          {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              1600.0,
+              1100.0
+            ],
+            "controls": [
+              [
+                23.0,
+                941.0,
+                447.65625,
+                986.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-completed-final.ppm",
+            "pid": 1821331,
+            "pixels": [
+              1600,
+              1100
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          }
+        ],
+        "launch": {
+          "command": [
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/inspection-b6fc692dde6e",
+            "/home/charlesmowbray/Development/viamind-t-0102/fixtures/symbols/original-regulator.viamind-symbol.json",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-completed-final-new-definition.json",
+            "completed",
+            "1600",
+            "1100",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-completed-final.ppm"
+          ],
+          "pid": 1821331,
+          "source_commit": "b6fc692dde6e",
+          "launched_utc": "2026-10-11T16:15:15.885926+00:00",
+          "scope": "Actual egui input preparing production ViamindApp; actual native WGPU Screenshot; no OS input or compositor capture claim",
+          "exit_code": 0,
+          "exited_utc": "2026-10-11T16:15:17.802811+00:00"
+        },
+        "process_after_capture": "absent; clean self-close"
+      }
+    ]
+  },
+  "scope_limits": [
+    "No multi-unit/vector graphics/instance updates.",
+    "JSON Value transport allocation and loader/expected-sheet predecode outside scope.",
+    "Existing symbol writer protects captured native path; latest-native lifecycle publication race remains separate follow-up.",
+    "Compact capture shows Save and destination, not all pin fields simultaneously.",
+    "Cua production screenshot223x135 is degraded discovery/provenance only, not readable editor proof."
+  ],
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "a4d1f5a8f982c97ae6d0ea441b6f56294d0499bbf10491e85e608162316142ae"
+    },
+    "capture-native.py": {
+      "bytes": 2043,
+      "sha256": "768f41e548065db15a86db101025c4510cf4dcce932cc1fd367d99293b67b1f9"
+    },
+    "catalog-check.json": {
+      "bytes": 367,
+      "sha256": "305b4a38fbe0d6c05a23390e491c613dd60a6c24b02cdf0edcb39e6644f8ee40"
+    },
+    "catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "305b4a38fbe0d6c05a23390e491c613dd60a6c24b02cdf0edcb39e6644f8ee40"
+    },
+    "compact-launch.json": {
+      "bytes": 775,
+      "sha256": "175e40dcb8d5fe8a229cd7fad0fac2322e50b6d9139e114f11cc1461be8d90dc"
+    },
+    "compact-native.log": {
+      "bytes": 892,
+      "sha256": "fb9946d7433a320c0f50435f542e5594e409a3c9fd8c63997533900203dc302e"
+    },
+    "compact.png": {
+      "bytes": 32219,
+      "sha256": "626fbb05b39e64258e95f6b391d267d3dbc0a5d17d006b9bae02dde9960f963b"
+    },
+    "completed-launch.json": {
+      "bytes": 783,
+      "sha256": "4e87bd770e5fa41acc3c6123d7ac8072e97d3126f94d60e5dd4de97204ff5ba0"
+    },
+    "completed-native.log": {
+      "bytes": 901,
+      "sha256": "e44afc3c7e50edc1f1be54493f03d3c2f9d479f9dcd7025803c67008a09f43c7"
+    },
+    "completed.png": {
+      "bytes": 105827,
+      "sha256": "ead3d531cc585d9eaa90445bbe3cc20caa0964bac83037e391de36ab5095457b"
+    },
+    "completed.viamind-symbol.json": {
+      "bytes": 404,
+      "sha256": "9ceb9bcb13f4cce5eaf555069765c3f86013139273adf1e76fc4e9b3513b9cae"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 935,
+      "sha256": "e3d439a132ab57a74062e0a096f1ebc530b13196f8de8c389b481fa9a4d56142"
+    },
+    "failed-preparations.json": {
+      "bytes": 3281,
+      "sha256": "6b7f4d06f2b142979b4b30125071267324b4bb1042590cce667d2f323a082260"
+    },
+    "focused.log": {
+      "bytes": 279877,
+      "sha256": "6864611b73264d4ddc73e815887d708c408e8b7e9ee84b940cd61d1e2611aa51"
+    },
+    "inspection-refresh.log": {
+      "bytes": 2215,
+      "sha256": "5eaed38240699eba013941207e67a0f03bff310e0779db2a419c608a7bafdf9e"
+    },
+    "inspection-refresh.sh": {
+      "bytes": 853,
+      "sha256": "76c62d78384469eb06508f20eb2b711972d30429202fe7b020bfc69ca3f78cbf"
+    },
+    "linux-full.log": {
+      "bytes": 118191,
+      "sha256": "3817ab68983c4b794f1f30b4a5ee5d1ddbc5e5f7adbc541c5b551ffd7c834ec3"
+    },
+    "linux-full.sh": {
+      "bytes": 2166,
+      "sha256": "5f5c243cf8be4e8e7dc541f92813d71db68dbad62a439fd394d242e75d0f82fc"
+    },
+    "production-cua.json": {
+      "bytes": 1139,
+      "sha256": "f3f9fde0174a209872e66628b8416a19424c11c22079a1c1e269313f048e6794"
+    },
+    "production-cua.png": {
+      "bytes": 19084,
+      "sha256": "07a5888472f387ddd79d574c684c0f139ceb86a206041df983c333f58cc27bec"
+    },
+    "production-http.json": {
+      "bytes": 1407,
+      "sha256": "77f957c4d27e93ccfd6ff882d2f61f6f58a44b84603254f9c3ec9d8511403cec"
+    },
+    "production-launch.json": {
+      "bytes": 566,
+      "sha256": "cbb284fc7fadeeb74f42fdfa5bbe617a057951d13849695ee636111a30d49493"
+    },
+    "production-stdio.json": {
+      "bytes": 1413,
+      "sha256": "0fdf790800252615ad146fefabab635b2c2d57e61e01f93efee61b68607af555"
+    },
+    "verify-artifacts.py": {
+      "bytes": 1651,
+      "sha256": "eb3ab0f56fedf29cab5ec4bef539e96ba146d0c57287f72d99edfe053ab8d6b0"
+    },
+    "wide-launch.json": {
+      "bytes": 771,
+      "sha256": "376492f51b53f4d8ae0f03a7f3c65f011ca46998aeacca0f02cc161063f76965"
+    },
+    "wide-native.log": {
+      "bytes": 893,
+      "sha256": "8d8ebfade9f0f4ef5c324379b8c5e0ebf4146de0d8ec0637019d3c743e3fee32"
+    },
+    "wide.png": {
+      "bytes": 96515,
+      "sha256": "ba145b32c8eebedff401d38166b39c60909782c67a4db7b85f0a61016777bea7"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+{"independently_loaded_source":"Original regulator","preparation_viewport":[1600,1200]}
+{"inner_paint_clip":[17.0,699.0,515.0,979.0],"remove_button":[23.0,808.0,109.625,826.0]}
+{"actual_input_identity_after_removal":true,"document_status_unchanged":true,"field_ids":["NodeId(TreeIndex(0), #9106668234980444261)","NodeId(TreeIndex(0), #13565635872999449141)","NodeId(TreeIndex(0), #15977709529097749357)","NodeId(TreeIndex(0), #13233896220020659957)","NodeId(TreeIndex(0), #15437892037106281152)"],"full_session_unchanged":true}
+{"capture":"eframe native WGPU Screenshot event","content_rect":[0.0,0.0,1600.0,1100.0],"controls":[[23.0,941.0,447.65625,986.0]],"document_status_unchanged":true,"full_session_unchanged":true,"path":"/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-completed-final.ppm","pid":1821331,"pixels":[1600,1100],"self_close_after_capture":true,"ui_passes":11}
