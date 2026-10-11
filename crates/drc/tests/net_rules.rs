@@ -94,7 +94,7 @@ fn exact_via_drill_and_half_nm_annulus_use_matching_maxima_without_resizing() {
         p.board.net_rules.insert("A".into(), NamedNetMinima { minimum_via_drill: Nm(300001), minimum_annular_width: Nm(150001), ..rule(0, 1) });
         let input = DrcInput { minimum_via_drill_mm: request_drill, minimum_annular_width_mm: request_annulus, ..Default::default() };
         let report = run_drc(&p, &input).unwrap();
-        assert_eq!(report.violations.iter().map(|v| v.kind.clone()).collect::<Vec<_>>(), expected);
+        assert_eq!(report.violations.iter().map(|v| v.kind).collect::<Vec<_>>(), expected);
         assert_eq!(p.board.vias[&original.id], original);
         assert_eq!(report.document_net_rules, p.board.net_rules);
         for v in report.violations {
