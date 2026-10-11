@@ -36,6 +36,7 @@ fn builtin_specs() {
             "move_part",
             "set_board_outline",
             "set_part_pads",
+            "transform_parts",
             "update_part"
         ]
     );

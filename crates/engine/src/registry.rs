@@ -108,6 +108,7 @@ impl CommandRegistry {
             .with::<crate::DeleteTrack>()
             .with::<crate::AddVia>()
             .with::<crate::DeleteVia>()
+            .with::<crate::TransformParts>()
     }
 
     /// Adds command type `C`.

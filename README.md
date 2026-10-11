@@ -104,6 +104,12 @@ Agents can follow design and selection changes through `get_session_state` and
 watching supports bounded long polling on HTTP and stdio. See the
 [session event contract](docs/specs/session-events.md).
 
+Drag an already selected part to move the selection with an amber local preview;
+release commits one guarded edit, and Escape or Space cancels. On the canvas,
+**R** rotates selected parts 90° and **F** flips their mounting sides. The Edit
+menu aligns/distributes **part origins**; agents use the same `transform_parts`
+command with exact expected Part snapshots to protect grouped edits.
+
 Selected parts expose **Edit electrical pads…** for persistent rectangular SMD
 pads, local dimensions and named net assignments. Apply and Reload protect drafts
 against concurrent agent changes. These pads rotate and mirror with their parent

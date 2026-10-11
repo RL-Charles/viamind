@@ -6,7 +6,7 @@
 use serde_json::{Value, json};
 use viamind_engine::{
     AddPart, Command, DeletePart, EngineError, EngineHandle, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin, SaveProject,
-    SetBoardOutline, SetPartPads, SetSelection, UpdatePart, input_schema,
+    SetBoardOutline, SetPartPads, SetSelection, TransformParts, UpdatePart, input_schema,
 };
 
 macro_rules! ui_actions {
@@ -43,6 +43,7 @@ ui_actions! {
     RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
+    TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
@@ -146,4 +147,8 @@ fn add_via(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
 
 fn delete_via(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute("delete_via", input, Origin::User)?).map_err(encode_error)
+}
+
+fn transform_parts(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(TransformParts::NAME, input, Origin::User)?).map_err(encode_error)
 }
