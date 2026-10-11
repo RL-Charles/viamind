@@ -93,7 +93,11 @@ impl eframe::App for Inspection {
             self.capture = Some("native-preview.ppm");
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
         }
-        if self.phase == 9 && !self.created_done && self.capture.is_none() {
+        if self.phase == 9
+            && !self.created_done
+            && self.capture.is_none()
+            && self.visible.iter().any(|s| s == "Created one linked physical component. Undo removes it; run DRC to inspect placement.")
+        {
             assert_eq!(session.project.schematic, self.before.project.schematic);
             assert_eq!(session.selection, self.before.selection);
             assert_eq!(session.cursor.stream_id, self.before.cursor.stream_id);
@@ -150,7 +154,7 @@ impl eframe::App for Inspection {
         if self.frames < 30 {
             return;
         }
-        if self.phase == 7
+        if matches!(self.phase, 7 | 9)
             && self.target.is_none()
             && self.frames.is_multiple_of(10)
             && let Some(rect) = ctx.memory(|m| m.area_rect(egui::Id::new(Some("Complete package to one PCB component"))))
