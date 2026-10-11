@@ -32,20 +32,28 @@ for line in sys.stdin:
   send({'jsonrpc':'2.0','id':ident,'error':{'code':-1,'message':'failed'}});continue
  if mode=='notification':
   send({'jsonrpc':'2.0','method':'notifications/progress','params':{}})
+ if mode=='notificationlimit':
+  for _ in range(129): send({'jsonrpc':'2.0','method':'notifications/progress'})
  if method=='initialize':
   result={'protocolVersion':'2025-03-26','capabilities':{'tools':{}}}
+  if mode=='badcapabilities': result['capabilities']=True
+  if mode=='badprotocol': result['protocolVersion']='unknown'
  else:
   tools=[{'name':name,'inputSchema':{'type':'object','$defs':{'Thing':{'type':'string','description':'μ ` ``` <tag>'}}},
           'annotations':{'readOnlyHint':True},'futureMetadata':{'enabled':True}} for name in names]
   if mode=='skeleton': tools=tools[:1]
   if mode=='duplicate': tools+=tools[:1]
+  if mode=='toomany': tools += [{'name':str(i),'inputSchema':{}} for i in range(513)]
   if mode=='repeat': result={'tools':tools if 'cursor' not in request['params'] else [],'nextCursor':''}
+  elif mode=='pagelimit': result={'tools':[],'nextCursor':str(ident)}
+  elif mode=='cursorlimit': result={'tools':tools,'nextCursor':'x'*4097}
   elif mode=='pages' and 'cursor' not in request['params']: result={'tools':tools[:2],'nextCursor':''}
   elif mode=='pages':
    assert request['params']['cursor']==''
    result={'tools':tools[2:]}
   else: result={'tools':tools}
  send({'jsonrpc':'2.0','id':ident,'result':result})
+if mode=='badexit': sys.exit(7)
 '''
 
 
@@ -81,11 +89,26 @@ class ReferenceTests(unittest.TestCase):
             self.assertIsNotNone(client.process.poll())
 
     def test_wrong_identity_protocol_error_and_invalid_json_reject(self):
-        for mode in ["wrongid", "rpcerror", "badjson"]:
+        for mode in ["wrongid", "rpcerror", "badjson", "badcapabilities", "badprotocol", "notificationlimit"]:
             with self.subTest(mode=mode), self.client(mode) as client:
                 with self.assertRaises(ValueError):
                     client.initialize()
             self.assertIsNotNone(client.process.poll())
+
+    def test_page_tool_cursor_total_byte_budgets_and_failed_exit(self):
+        for mode, message in [("pagelimit", "pages"), ("toomany", "count"), ("cursorlimit", "cursor")]:
+            with self.subTest(mode=mode), self.client(mode) as client:
+                client.initialize()
+                with self.assertRaisesRegex(ValueError, message):
+                    client.discover()
+        with patch.object(ref, "OUTPUT_LIMIT", 16), self.client() as client:
+            with self.assertRaisesRegex(ValueError, "stdout"):
+                client.initialize()
+        with self.client("badexit") as client:
+            client.initialize()
+            client.discover()
+            with self.assertRaisesRegex(ValueError, "cleanly"):
+                client.finish()
 
     def test_timeout_and_unterminated_stdout_and_stderr_bounded(self):
         before = time.monotonic()

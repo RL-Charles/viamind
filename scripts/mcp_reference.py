@@ -124,6 +124,8 @@ class StdioClient:
                     raise ValueError("MCP stderr exceeds1MiB")
 
     def _send(self, message, deadline):
+        if time.monotonic() >= min(deadline, self.deadline):
+            raise ValueError("MCP deadline exceeded")
         raw = json.dumps(message, allow_nan=False, ensure_ascii=False).encode() + b"\n"
         if len(raw) > RECORD_LIMIT:
             raise ValueError("MCP request too large")
@@ -184,7 +186,9 @@ class StdioClient:
     def initialize(self):
         info = self.rpc("initialize", {"protocolVersion": PROTOCOL, "capabilities": {},
                                       "clientInfo": {"name": "viamind-reference", "version": "1"}})
-        if info.get("protocolVersion") != PROTOCOL or not isinstance(info.get("capabilities", {}).get("tools"), dict):
+        capabilities = info.get("capabilities")
+        if (info.get("protocolVersion") != PROTOCOL or not isinstance(capabilities, dict)
+                or not isinstance(capabilities.get("tools"), dict)):
             raise ValueError("unsupported negotiated protocol or missing tools capability")
         self.protocol = info["protocolVersion"]
         self.rpc("notifications/initialized", notification=True)
