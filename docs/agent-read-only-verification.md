@@ -12,6 +12,10 @@ workspace/all-target Clippy, seven focused regressions, **671 workspace tests**
 Thirteen Python tooling tests, actual discovery of 81 live tools, canonical
 reference drift verification and the original 18-step agent workflow passed.
 Build source inputs and hashes are retained separately from later integration.
+The published verification tag `verification/t0099/native-source` retains the
+exact native host source and its production-source ancestor across rebases;
+GitHub resolves the original production commit. This tag is source retention,
+with no release workflow or artifact publication.
 
 The unchanged production application was launched through Cua Driver with
 `--agent-read-only --open` on the owned scratch native fixture, HTTP port 7925.
