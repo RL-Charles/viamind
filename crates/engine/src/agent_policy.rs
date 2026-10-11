@@ -37,6 +37,8 @@ pub struct AgentModeStatus {
 pub enum AgentPolicyError {
     #[error("agent operation is unavailable in the current mode")]
     Forbidden,
+    #[error("agent policy mutation unavailable inside command hooks")]
+    HookReentry,
     #[error("agents are permanently read only by startup restriction")]
     StartupLocked,
     #[error("{0} agent operations are unfinished; retry the mode change after completion")]
@@ -65,9 +67,11 @@ impl AgentPolicy {
         self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
     }
     pub fn status(&self) -> AgentModeStatus {
+        crate::command_hooks::read_allowed();
         self.state().clone()
     }
     pub fn subscribe(&self) -> watch::Receiver<u64> {
+        crate::command_hooks::write_allowed();
         self.changes.subscribe()
     }
     pub fn set_mode(&self, mode: AgentMode) -> Result<AgentModeStatus, AgentPolicyError> {
@@ -78,6 +82,7 @@ impl AgentPolicy {
         self.transition(AgentMode::ReadOnly, true)
     }
     fn transition(&self, mode: AgentMode, lock: bool) -> Result<AgentModeStatus, AgentPolicyError> {
+        crate::command_hooks::check_write().map_err(|_| AgentPolicyError::HookReentry)?;
         let result = {
             let mut state = self.state();
             if state.startup_locked && mode != AgentMode::ReadOnly {
@@ -107,6 +112,11 @@ impl AgentPolicy {
         Ok(result)
     }
     pub fn admit(self: &Arc<Self>, effect: AgentEffect) -> Result<Option<AgentWriterPermit>, AgentPolicyError> {
+        if effect == AgentEffect::Observation {
+            crate::command_hooks::check_read().map_err(|_| AgentPolicyError::HookReentry)?;
+        } else {
+            crate::command_hooks::check_write().map_err(|_| AgentPolicyError::HookReentry)?;
+        }
         let mut state = self.state();
         if !state.mode.admits(effect) {
             return Err(AgentPolicyError::Forbidden);

@@ -1,0 +1,963 @@
+{
+  "utc": "2026-10-11T22:02:12.348530+00:00",
+  "scope": "Exclusive whole Cargo mutex; only >=3h old single-link inactive integration test ELF cache outputs with newer existing current Rust source; no library/current output/retained proof/running executable",
+  "candidates": 119,
+  "removed_count": 119,
+  "apparent_removed_bytes": 41914077768,
+  "free_before_bytes": 7480004608,
+  "free_after_bytes": 22194335744,
+  "files": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-907985f1f74e4496",
+      "bytes": 43535536,
+      "disk_bytes": 43487232,
+      "mtime": 1791734892.1208224,
+      "inode": 17227090,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-429161443c575eab",
+      "bytes": 545364936,
+      "disk_bytes": 544403456,
+      "mtime": 1791735125.3241246,
+      "inode": 17230907,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-018ffa81f3fa9be1",
+      "bytes": 547427432,
+      "disk_bytes": 546463744,
+      "mtime": 1791735414.2998831,
+      "inode": 17235729,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/net_rules.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-070c2ae0d4ea53b9",
+      "bytes": 42038280,
+      "disk_bytes": 41996288,
+      "mtime": 1791737324.763711,
+      "inode": 17268534,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-072910101a9195d9",
+      "bytes": 245004880,
+      "disk_bytes": 244523008,
+      "mtime": 1791737338.7599,
+      "inode": 17268794,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-58510541e407138c",
+      "bytes": 245015552,
+      "disk_bytes": 244535296,
+      "mtime": 1791737340.23592,
+      "inode": 17268831,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-3b93ee1a076e67a9",
+      "bytes": 547704112,
+      "disk_bytes": 546734080,
+      "mtime": 1791737359.5011802,
+      "inode": 17269237,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/terminal_routing-ea6e7b527a02a8b6",
+      "bytes": 475431144,
+      "disk_bytes": 474562560,
+      "mtime": 1791737557.199849,
+      "inode": 17271519,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/terminal_routing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_terminals-315e080492853885",
+      "bytes": 245052784,
+      "disk_bytes": 244793344,
+      "mtime": 1791737670.9073827,
+      "inode": 17273283,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/route_terminals.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-6990e7144a897218",
+      "bytes": 283070232,
+      "disk_bytes": 282271744,
+      "mtime": 1791737843.995716,
+      "inode": 17277077,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/agent_presence.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-d0a21919f9702cc5",
+      "bytes": 474446384,
+      "disk_bytes": 473575424,
+      "mtime": 1791737863.0679731,
+      "inode": 17277303,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/agent_presence.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_libraries-95e6e21bc00c5209",
+      "bytes": 282958720,
+      "disk_bytes": 282161152,
+      "mtime": 1791738405.1392024,
+      "inode": 17290115,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/symbol_libraries.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_terminals-dad54da983d335db",
+      "bytes": 243930488,
+      "disk_bytes": 243441664,
+      "mtime": 1791738642.3566017,
+      "inode": 17293621,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/route_terminals.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/terminal_routing-98b29e836a14b00e",
+      "bytes": 475933184,
+      "disk_bytes": 475058176,
+      "mtime": 1791738664.6160655,
+      "inode": 17293886,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/terminal_routing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-41c838f8e5aa4bd8",
+      "bytes": 283087704,
+      "disk_bytes": 282288128,
+      "mtime": 1791738855.416396,
+      "inode": 17295424,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/drc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc_events-64201e0e9773bb43",
+      "bytes": 283432408,
+      "disk_bytes": 282636288,
+      "mtime": 1791738858.39535,
+      "inode": 17295485,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/auto_drc_events.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc_events-af887daabd3a84ad",
+      "bytes": 285190920,
+      "disk_bytes": 284389376,
+      "mtime": 1791739099.7245147,
+      "inode": 17299464,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/auto_drc_events.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-ce15cec732f32699",
+      "bytes": 246667944,
+      "disk_bytes": 246177792,
+      "mtime": 1791739267.5323334,
+      "inode": 17305074,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-a1ed7fe1e1022eb9",
+      "bytes": 246709528,
+      "disk_bytes": 246214656,
+      "mtime": 1791739267.596333,
+      "inode": 17305075,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_job_population.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_compact-720fdda20bee6037",
+      "bytes": 474393440,
+      "disk_bytes": 473522176,
+      "mtime": 1791739610.0641634,
+      "inode": 17307163,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/symbol_compact.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-553e71f201412dc1",
+      "bytes": 474914168,
+      "disk_bytes": 474128384,
+      "mtime": 1791739614.4341562,
+      "inode": 17307185,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/symbol_library.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-73efaa1aab11747b",
+      "bytes": 244025544,
+      "disk_bytes": 243539968,
+      "mtime": 1791739853.0639563,
+      "inode": 17310184,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/copper.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-e7e3641ef26c420f",
+      "bytes": 284725800,
+      "disk_bytes": 283930624,
+      "mtime": 1791739855.7339559,
+      "inode": 17310228,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/pcb_import.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_links-a21d847a00f2b8f8",
+      "bytes": 284724624,
+      "disk_bytes": 283922432,
+      "mtime": 1791739858.2949557,
+      "inode": 17310269,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/pin_pad_links.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-f71c14df791bd5a8",
+      "bytes": 474304736,
+      "disk_bytes": 473440256,
+      "mtime": 1791739862.3969553,
+      "inode": 17310310,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/schematic_wires.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-0fa20d8daa551f5d",
+      "bytes": 474884104,
+      "disk_bytes": 474017792,
+      "mtime": 1791739867.4679549,
+      "inode": 17310346,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/symbol_library.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/placement-c2aea1038e10b7f2",
+      "bytes": 474250600,
+      "disk_bytes": 473382912,
+      "mtime": 1791739869.3829546,
+      "inode": 17310365,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/placement.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cache-aa0e2cc78616fada",
+      "bytes": 466987696,
+      "disk_bytes": 466182144,
+      "mtime": 1791739872.6799545,
+      "inode": 17310409,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/cache.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/outlines-46364f72e0f796c0",
+      "bytes": 474114984,
+      "disk_bytes": 473247744,
+      "mtime": 1791739875.1799543,
+      "inode": 17310443,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/outlines.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-71638ed37f1e5ea9",
+      "bytes": 474290392,
+      "disk_bytes": 473419776,
+      "mtime": 1791739875.5319543,
+      "inode": 17310445,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/footprint_definition.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_posture-bcec2e83e0ff6091",
+      "bytes": 474160080,
+      "disk_bytes": 473292800,
+      "mtime": 1791739878.3769543,
+      "inode": 17310529,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/route_posture.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_probe-e2e82ac1a2be2949",
+      "bytes": 474243864,
+      "disk_bytes": 473395200,
+      "mtime": 1791739879.7069542,
+      "inode": 17310545,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/pin_pad_probe.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/erc-30d2203d95dae427",
+      "bytes": 474636160,
+      "disk_bytes": 473767936,
+      "mtime": 1791739880.9379542,
+      "inode": 17310561,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/erc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_mode-6184c724c90fdc33",
+      "bytes": 474055192,
+      "disk_bytes": 473190400,
+      "mtime": 1791739882.6979542,
+      "inode": 17310575,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/agent_mode.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-4a4993cdf8b00385",
+      "bytes": 474173400,
+      "disk_bytes": 473305088,
+      "mtime": 1791739884.6549542,
+      "inode": 17310589,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/fabrication_view.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-6dbaec4372269d99",
+      "bytes": 474061312,
+      "disk_bytes": 473194496,
+      "mtime": 1791739887.6239543,
+      "inode": 17310626,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/annotation.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cardinal_cleanup-7023412c5435ed5d",
+      "bytes": 474134120,
+      "disk_bytes": 473268224,
+      "mtime": 1791739893.9949546,
+      "inode": 17310668,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/cardinal_cleanup.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_export-85a4257466427834",
+      "bytes": 572519568,
+      "disk_bytes": 571555840,
+      "mtime": 1791739895.4639547,
+      "inode": 17310691,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/assembly_export.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/selection-dca59964afbe1835",
+      "bytes": 473850192,
+      "disk_bytes": 472985600,
+      "mtime": 1791739898.798955,
+      "inode": 17310701,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/selection.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_routing-9b83a7b983a09054",
+      "bytes": 474196208,
+      "disk_bytes": 473346048,
+      "mtime": 1791739898.877955,
+      "inode": 17310716,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/pad_routing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_via-0e70698b228c4911",
+      "bytes": 474164840,
+      "disk_bytes": 473292800,
+      "mtime": 1791739900.821955,
+      "inode": 17310755,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/route_via.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-2344ddfc5d337fc0",
+      "bytes": 473994616,
+      "disk_bytes": 473124864,
+      "mtime": 1791739905.4459555,
+      "inode": 17310784,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/pcb_import.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/ratsnest-8b4dd5624da29bbb",
+      "bytes": 472235128,
+      "disk_bytes": 471367680,
+      "mtime": 1791739907.7069557,
+      "inode": 17310827,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/ratsnest.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-3ee7cadfa83a635b",
+      "bytes": 473907928,
+      "disk_bytes": 473042944,
+      "mtime": 1791739907.8019557,
+      "inode": 17310828,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/footprint.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-57cdbed1866909ca",
+      "bytes": 572211920,
+      "disk_bytes": 571428864,
+      "mtime": 1791739910.504956,
+      "inode": 17310884,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/assembly_templates.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-470df59e3618f07a",
+      "bytes": 474132208,
+      "disk_bytes": 473264128,
+      "mtime": 1791739915.8269567,
+      "inode": 17310885,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/routing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-f5ccbf7676286ac5",
+      "bytes": 474391560,
+      "disk_bytes": 473522176,
+      "mtime": 1791739916.0099568,
+      "inode": 17310925,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/agent_presence.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/live_design-c5da1b03a370ee81",
+      "bytes": 474061040,
+      "disk_bytes": 473194496,
+      "mtime": 1791739919.7929573,
+      "inode": 17310955,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/live_design.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-0314937bf260fb1b",
+      "bytes": 473933136,
+      "disk_bytes": 473067520,
+      "mtime": 1791739920.1359575,
+      "inode": 17310956,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/drc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/command_parity-ef3a5aa89e1f7134",
+      "bytes": 516823464,
+      "disk_bytes": 516272128,
+      "mtime": 1791739922.0779579,
+      "inode": 17310990,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/command_parity.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/lifecycle-5b1bd7251a665c01",
+      "bytes": 474181856,
+      "disk_bytes": 473317376,
+      "mtime": 1791739925.8559585,
+      "inode": 17310991,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/lifecycle.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-db0b2b2abf31ed49",
+      "bytes": 474268520,
+      "disk_bytes": 473403392,
+      "mtime": 1791739926.6769586,
+      "inode": 17311007,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/footprint_conversion.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/saving-749e4a7216fc8fb4",
+      "bytes": 473617688,
+      "disk_bytes": 472752128,
+      "mtime": 1791739929.8229594,
+      "inode": 17311027,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/saving.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-c2ad3cb0919a3c98",
+      "bytes": 474172432,
+      "disk_bytes": 473305088,
+      "mtime": 1791739931.9159598,
+      "inode": 17311041,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/schematic_component.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround-0a75cab0f82047bc",
+      "bytes": 474353384,
+      "disk_bytes": 473567232,
+      "mtime": 1791739934.6949604,
+      "inode": 17311104,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/walkaround.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-56a82ed9529f132c",
+      "bytes": 572258120,
+      "disk_bytes": 571289600,
+      "mtime": 1791739937.7159612,
+      "inode": 17311147,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-3aa775ab9a0beff4",
+      "bytes": 572279352,
+      "disk_bytes": 571310080,
+      "mtime": 1791739937.746961,
+      "inode": 17311148,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-4d5180bc682deff4",
+      "bytes": 572217608,
+      "disk_bytes": 571248640,
+      "mtime": 1791739944.185963,
+      "inode": 17311212,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/net_rules.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_compact-5346e9133deaaa58",
+      "bytes": 474348632,
+      "disk_bytes": 473497600,
+      "mtime": 1791739947.980964,
+      "inode": 17311250,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/symbol_compact.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/parts-ea3615bd7668960b",
+      "bytes": 473978088,
+      "disk_bytes": 473112576,
+      "mtime": 1791739953.0959654,
+      "inode": 17311289,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/parts.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-79e775b4fa5b2e0c",
+      "bytes": 573510136,
+      "disk_bytes": 572538880,
+      "mtime": 1791739953.4659655,
+      "inode": 17311270,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/fabrication.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/view_export-841ea00c69d97679",
+      "bytes": 572396928,
+      "disk_bytes": 571432960,
+      "mtime": 1791739956.0239663,
+      "inode": 17311321,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/view_export.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/sourcing-de5f90bb2832989c",
+      "bytes": 572206272,
+      "disk_bytes": 571236352,
+      "mtime": 1791739956.3359663,
+      "inode": 17311322,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/sourcing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-a86c2daf683e3447",
+      "bytes": 473917280,
+      "disk_bytes": 473047040,
+      "mtime": 1791739958.2329671,
+      "inode": 17311382,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/copper.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-9f3dfee83b4225d5",
+      "bytes": 474153072,
+      "disk_bytes": 473288704,
+      "mtime": 1791739960.0849676,
+      "inode": 17311384,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/pcb_sync.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cross_probe-176748294739b7b1",
+      "bytes": 474074768,
+      "disk_bytes": 473206784,
+      "mtime": 1791739963.962969,
+      "inode": 17311422,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/cross_probe.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/app-a57b11a1a3018a3f",
+      "bytes": 469568760,
+      "disk_bytes": 468750336,
+      "mtime": 1791739970.1599712,
+      "inode": 17311496,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/app.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/perf-8cf6bbd0e77c4edf",
+      "bytes": 465861376,
+      "disk_bytes": 465055744,
+      "mtime": 1791739972.139972,
+      "inode": 17311523,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/perf.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pads-7f08b0e8af74d35e",
+      "bytes": 473923864,
+      "disk_bytes": 473059328,
+      "mtime": 1791739972.2299721,
+      "inode": 17311524,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/pads.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-a437d900fa5021ae",
+      "bytes": 572240304,
+      "disk_bytes": 571273216,
+      "mtime": 1791739975.1419733,
+      "inode": 17311564,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/assembly_placement.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-1a1c48e894393018",
+      "bytes": 474155552,
+      "disk_bytes": 473288704,
+      "mtime": 1791739976.5599737,
+      "inode": 17311585,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/ui-egui/tests/schematic.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-2487104729dea961",
+      "bytes": 284667392,
+      "disk_bytes": 283869184,
+      "mtime": 1791739979.639975,
+      "inode": 17311640,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/annotation.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-4b9b16292384c961",
+      "bytes": 244762432,
+      "disk_bytes": 244277248,
+      "mtime": 1791739981.3189757,
+      "inode": 17311675,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/routing.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/dxf-87b5a8a2523bf430",
+      "bytes": 284463296,
+      "disk_bytes": 283664384,
+      "mtime": 1791739985.8379776,
+      "inode": 17311728,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/dxf.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-451fa6e52cf6b2f5",
+      "bytes": 284840600,
+      "disk_bytes": 284045312,
+      "mtime": 1791739985.9669776,
+      "inode": 17311703,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/schematic_component.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/erc-22202bf0f6bfcd42",
+      "bytes": 284612640,
+      "disk_bytes": 283811840,
+      "mtime": 1791739988.468979,
+      "inode": 17311783,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/erc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-6343119ccf6ffdce",
+      "bytes": 285345448,
+      "disk_bytes": 284545024,
+      "mtime": 1791739988.841979,
+      "inode": 17311784,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/read_only.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-2b7015e4950dab26",
+      "bytes": 284699800,
+      "disk_bytes": 283901952,
+      "mtime": 1791739991.20698,
+      "inode": 17311836,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/fabrication_view.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-522abc30cb6eaf1d",
+      "bytes": 284854960,
+      "disk_bytes": 284057600,
+      "mtime": 1791739991.6439803,
+      "inode": 17311841,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/footprint_conversion.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-b9a8c4a26456f1cb",
+      "bytes": 244270776,
+      "disk_bytes": 243785728,
+      "mtime": 1791739992.5209806,
+      "inode": 17311858,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/fabrication.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-a34aa8bdf0fdef51",
+      "bytes": 285083056,
+      "disk_bytes": 284282880,
+      "mtime": 1791739994.3909814,
+      "inode": 17311893,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/agent_presence.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_connectivity-41900372c257b0a0",
+      "bytes": 284893672,
+      "disk_bytes": 284094464,
+      "mtime": 1791739995.439982,
+      "inode": 17311912,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/schematic_connectivity.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png_views-a0c99da2ea31f98c",
+      "bytes": 244451248,
+      "disk_bytes": 243965952,
+      "mtime": 1791739996.3329825,
+      "inode": 17311929,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/png_views.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/host-f0d6d3f55a1c13e4",
+      "bytes": 241112312,
+      "disk_bytes": 240955392,
+      "mtime": 1791739998.5239835,
+      "inode": 17311968,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/host.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_libraries-a8042ba404e54f73",
+      "bytes": 284945832,
+      "disk_bytes": 284143616,
+      "mtime": 1791739999.1409838,
+      "inode": 17311981,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/symbol_libraries.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-95d5cc3782e63efa",
+      "bytes": 244376016,
+      "disk_bytes": 243892224,
+      "mtime": 1791739999.700984,
+      "inode": 17311994,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/assembly_placement.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-e64804368ffd43ea",
+      "bytes": 244388080,
+      "disk_bytes": 243904512,
+      "mtime": 1791740000.6159844,
+      "inode": 17312012,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/assembly_templates.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-0cbeb68d1ec62204",
+      "bytes": 284728744,
+      "disk_bytes": 283926528,
+      "mtime": 1791740002.1939852,
+      "inode": 17312046,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/schematic_wires.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_transport-2e954378b62e6d86",
+      "bytes": 284875888,
+      "disk_bytes": 284078080,
+      "mtime": 1791740003.409986,
+      "inode": 17312065,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/schematic_transport.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_views-71483141fcbe8358",
+      "bytes": 244377312,
+      "disk_bytes": 243892224,
+      "mtime": 1791740004.3379865,
+      "inode": 17312079,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/schematic_views.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-3f2530c490fb2f8f",
+      "bytes": 246801664,
+      "disk_bytes": 246317056,
+      "mtime": 1791740005.636987,
+      "inode": 17312104,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-e76bf1da15552b43",
+      "bytes": 244351232,
+      "disk_bytes": 243867648,
+      "mtime": 1791740006.7159877,
+      "inode": 17312132,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/assembly.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-f5e8874922d243ea",
+      "bytes": 284699720,
+      "disk_bytes": 283901952,
+      "mtime": 1791740009.3999891,
+      "inode": 17312170,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/drc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/stdio-93c542af5ed17d65",
+      "bytes": 21365184,
+      "disk_bytes": 21344256,
+      "mtime": 1791740009.8899894,
+      "inode": 17312191,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/stdio.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/views-955813199b310d60",
+      "bytes": 244329688,
+      "disk_bytes": 243843072,
+      "mtime": 1791740010.7139897,
+      "inode": 17312206,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/views.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-504662f7eb05e2d8",
+      "bytes": 284840960,
+      "disk_bytes": 284041216,
+      "mtime": 1791740013.6659913,
+      "inode": 17312246,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/footprint_definition.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/manufacturing_limits-907239a1773b0493",
+      "bytes": 246195968,
+      "disk_bytes": 245710848,
+      "mtime": 1791740014.5099916,
+      "inode": 17312272,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/manufacturing_limits.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-c14fa91a9a359029",
+      "bytes": 246808400,
+      "disk_bytes": 246321152,
+      "mtime": 1791740015.2319922,
+      "inode": 17312288,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/component_links-758ebf6418a1cedd",
+      "bytes": 284755256,
+      "disk_bytes": 283955200,
+      "mtime": 1791740017.2199934,
+      "inode": 17312328,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/component_links.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png_transport-199f65f114a1065a",
+      "bytes": 284842768,
+      "disk_bytes": 284041216,
+      "mtime": 1791740018.0209937,
+      "inode": 17312344,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/png_transport.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_connectivity-7b7809c40c0cc299",
+      "bytes": 284320992,
+      "disk_bytes": 283521024,
+      "mtime": 1791740020.0649948,
+      "inode": 17312382,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/copper_connectivity.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/live_engine-86a90b0630fcbf54",
+      "bytes": 286173992,
+      "disk_bytes": 285376512,
+      "mtime": 1791740021.4499955,
+      "inode": 17312409,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/live_engine.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-5e84133f72972cbd",
+      "bytes": 284645240,
+      "disk_bytes": 283848704,
+      "mtime": 1791740022.8519964,
+      "inode": 17312458,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/pcb_sync.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/limits-e7cbc9a6c2a589a9",
+      "bytes": 42113328,
+      "disk_bytes": 42074112,
+      "mtime": 1791740038.1200056,
+      "inode": 17313203,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/limits.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-01da466e26f9324b",
+      "bytes": 41518176,
+      "disk_bytes": 41484288,
+      "mtime": 1791740038.461006,
+      "inode": 17313221,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/assembly_placement.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-cf31411f5122e002",
+      "bytes": 43247848,
+      "disk_bytes": 43204608,
+      "mtime": 1791740038.9220061,
+      "inode": 17313254,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/assembly_templates.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-37be8aa088d6e952",
+      "bytes": 45565368,
+      "disk_bytes": 45518848,
+      "mtime": 1791740039.0040061,
+      "inode": 17313256,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/output_jobs.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-8f9b813f9016f149",
+      "bytes": 44043544,
+      "disk_bytes": 43999232,
+      "mtime": 1791740039.5300064,
+      "inode": 17313288,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/output_job_calibration.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-7540588cd43aaea8",
+      "bytes": 44408664,
+      "disk_bytes": 44359680,
+      "mtime": 1791740039.6240065,
+      "inode": 17313297,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/assembly.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-23a0f6806b767e47",
+      "bytes": 41162272,
+      "disk_bytes": 41127936,
+      "mtime": 1791740039.8070066,
+      "inode": 17313313,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/fabrication_view.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-96dc72796c317707",
+      "bytes": 41718648,
+      "disk_bytes": 41684992,
+      "mtime": 1791740039.9000068,
+      "inode": 17313322,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/fab/tests/fabrication.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-2d70ff680f176173",
+      "bytes": 284695384,
+      "disk_bytes": 283885568,
+      "mtime": 1791740204.3983645,
+      "inode": 17316412,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/drc.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc_events-5fcfaeae5f30b13d",
+      "bytes": 285069544,
+      "disk_bytes": 284286976,
+      "mtime": 1791740207.2054586,
+      "inode": 17316475,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/auto_drc_events.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_libraries-a467ad3356f2fa6b",
+      "bytes": 284916864,
+      "disk_bytes": 284106752,
+      "mtime": 1791740751.0018969,
+      "inode": 17321562,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/symbol_libraries.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_properties-55fccade2065be9b",
+      "bytes": 244756760,
+      "disk_bytes": 244264960,
+      "mtime": 1791740868.9925961,
+      "inode": 17322954,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/copper_properties.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-ddb37bd574efffd1",
+      "bytes": 285477656,
+      "disk_bytes": 284667904,
+      "mtime": 1791740871.9486358,
+      "inode": 17323010,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/read_only.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_properties-00f3376d8b4e4ad1",
+      "bytes": 245477392,
+      "disk_bytes": 244981760,
+      "mtime": 1791741636.549129,
+      "inode": 17334617,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/copper_properties.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-67467d205ede723a",
+      "bytes": 286157440,
+      "disk_bytes": 285343744,
+      "mtime": 1791741639.555152,
+      "inode": 17334671,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/read_only.rs"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/build-target/debug/deps/release_inspection-107e0d0ef2e5f562",
+      "bytes": 288680128,
+      "disk_bytes": 287862784,
+      "mtime": 1791744603.284723,
+      "inode": 17384964,
+      "newer_current_input": "/home/charlesmowbray/Development/viamind-t-0118/crates/mcp/tests/release_inspection.rs"
+    }
+  ]
+}

@@ -288,12 +288,14 @@ impl EngineHandle {
         Ok(())
     }
     fn branch_wake(&self) {
+        crate::command_hooks::write_allowed();
         let wakers = self.engine.lock().unwrap_or_else(PoisonError::into_inner).wake_transient_ui();
         for waker in wakers {
             waker();
         }
     }
     pub fn create_pcb_branch(&self, input: CreatePcbBranch, actor: BranchActor, _permit: BranchWorkPermit) -> Result<PcbBranchInfo, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         label(&input.label)?;
         let result = self.with_engine(|engine| {
             if engine.project().id != input.expected_project || engine.event_cursor() != input.expected_cursor {
@@ -327,6 +329,7 @@ impl EngineHandle {
         result
     }
     pub fn list_pcb_branches(&self) -> Vec<PcbBranchInfo> {
+        crate::command_hooks::write_allowed();
         self.with_engine(|engine| {
             let mut store = self.pcb_branches.lock().unwrap_or_else(PoisonError::into_inner);
             let now = (store.clock)();
@@ -335,6 +338,7 @@ impl EngineHandle {
         })
     }
     pub fn inspect_pcb_branch(&self, input: PcbBranchId, actor: &BranchActor) -> Result<PcbBranchState, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         self.with_engine(|engine| {
             let mut store = self.pcb_branches.lock().unwrap_or_else(PoisonError::into_inner);
             let now = (store.clock)();
@@ -345,6 +349,7 @@ impl EngineHandle {
         })
     }
     pub fn diff_pcb_branch(&self, input: PcbBranchDiffInput) -> Result<PcbBranchDiff, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         if !(1..=128).contains(&input.limit) {
             return Err(BranchError::invalid("diff limit must be within 1..128"));
         }
@@ -365,6 +370,7 @@ impl EngineHandle {
         })
     }
     pub fn discard_pcb_branch(&self, input: PcbBranchRevision, actor: &BranchActor) -> Result<PcbBranchInfo, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         let result = self.with_engine(|engine| {
             let mut store = self.pcb_branches.lock().unwrap_or_else(PoisonError::into_inner);
             let now = (store.clock)();
@@ -382,6 +388,7 @@ impl EngineHandle {
         result
     }
     pub fn apply_pcb_branch(&self, input: ApplyPcbBranch, actor: &BranchActor, permit: BranchWorkPermit) -> Result<PcbBranchApplied, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         self.apply_pcb_branch_with(input, actor, permit, || {})
     }
     fn apply_pcb_branch_with(
@@ -456,6 +463,7 @@ impl EngineHandle {
         result
     }
     pub fn merge_pcb_branch(&self, input: MergePcbBranch, actor: &BranchActor) -> Result<ExecResult, BranchError> {
+        crate::command_hooks::check_write().map_err(|e| BranchError::invalid(e.to_string()))?;
         self.mutate(|engine| {
             let mut store = self.pcb_branches.lock().unwrap_or_else(PoisonError::into_inner);
             let now = (store.clock)();
@@ -472,3 +480,7 @@ impl EngineHandle {
         })
     }
 }
+
+// One retained process-wide worker is shared by all engine test modules.
+#[cfg(test)]
+pub(crate) static PCB_BRANCH_TEST_LOCK: Mutex<()> = Mutex::new(());

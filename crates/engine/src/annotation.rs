@@ -291,6 +291,7 @@ impl Command for AnnotateSchematic {
 }
 impl EngineHandle {
     pub fn preview_schematic_annotation(&self, options: AnnotationOptions) -> Result<AnnotationPreview, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let (project, cursor, sheets) = self.with_engine(|e| {
             let p = e.project();
             budget(&p.schematic.sheets)?;

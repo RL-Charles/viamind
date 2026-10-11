@@ -57,6 +57,7 @@ impl Command for RoutePadViaWalkaround {
 }
 impl EngineHandle {
     pub fn plan_pad_via_walkaround(&self, input: &RoutePadViaWalkaround) -> Result<CheckedViaWalkaround, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let _permit = crate::walkaround::Permit::acquire()?;
         let project = self.with_engine(|e| {
             if e.event_cursor() != input.expected_cursor || e.project().id != input.expected_project {

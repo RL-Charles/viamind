@@ -1,0 +1,81 @@
+{
+  "source": "3287ca5f7fd5a4d487ebd7f81550afd22384e309",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/command-hooks-inspection",
+  "binary_sha256": "f0babbbf95cc4917ac818b8ef9ab7320b5a02338028b25867ad708d0460d796e",
+  "launched_utc": "2026-10-11T22:35:04.482163+00:00",
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/launch-hooks-veto",
+    "pid": 3173527,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind-command-hooks-inspection",
+        "bounds": {
+          "height": 667,
+          "width": 1067,
+          "x": 1920,
+          "y": 1152
+        },
+        "height": 667,
+        "is_on_screen": true,
+        "pid": 3173527,
+        "title": "hooks-veto.viamind.json \u2014 Viamind",
+        "width": 1067,
+        "window_id": 110379537135104,
+        "x": 1920,
+        "y": 1152,
+        "z_index": null
+      }
+    ]
+  },
+  "native": {
+    "capture": "actual native eframe WGPU Screenshot event",
+    "controls_and_effective_clips": [
+      [
+        [
+          23.1875,
+          40.6875,
+          145.28125,
+          58.6875
+        ],
+        [
+          17.1875,
+          1.0,
+          455.1875,
+          389.0
+        ]
+      ],
+      [
+        [
+          153.28125,
+          40.6875,
+          232.625,
+          58.6875
+        ],
+        [
+          17.1875,
+          1.0,
+          455.1875,
+          389.0
+        ]
+      ]
+    ],
+    "document_status_unchanged": true,
+    "full_session_unchanged": true,
+    "native_bytes_unchanged": true,
+    "original_color32_rgba_retained": true,
+    "os_input": false,
+    "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p6",
+    "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p7",
+    "pid": 3173527,
+    "pixels": [
+      1067,
+      667
+    ],
+    "self_close_after_capture": true
+  },
+  "process_after_capture": "absent; self-closed",
+  "scope": "Actual local egui input preparation and production UI native WGPU Screenshot. Original Color32 RGBA retained, no OS input/compositor/opacity/cadence claim."
+}

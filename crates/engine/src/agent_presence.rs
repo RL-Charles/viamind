@@ -158,6 +158,7 @@ impl EngineHandle {
     }
 
     fn presence_with_clock(&self, clock: impl FnOnce() -> Instant) -> AgentPresenceSnapshot {
+        crate::command_hooks::write_allowed();
         let engine = self.engine.lock().unwrap_or_else(PoisonError::into_inner);
         let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
         let now = clock();
@@ -167,6 +168,7 @@ impl EngineHandle {
 
     /// `connection` is supplied by the trusted transport, never by tool input.
     pub fn set_agent_presence(&self, connection: u64, name: &str, input: SetAgentPresence) -> Result<AgentPresenceSnapshot, String> {
+        crate::command_hooks::check_write().map_err(|e| e.to_string())?;
         self.set_presence_with_clock(connection, name, input, Instant::now)
     }
 
@@ -238,6 +240,7 @@ impl EngineHandle {
 
     /// Clear only the trusted caller's marker, without changing document state.
     pub fn clear_agent_presence(&self, connection: u64, input: ClearAgentPresence) -> Result<AgentPresenceSnapshot, String> {
+        crate::command_hooks::check_write().map_err(|e| e.to_string())?;
         if connection == 0 {
             return Err("presence requires a trusted connection".into());
         }

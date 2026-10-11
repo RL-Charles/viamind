@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "scope": "original source feee91af, native RGBA preservation, no OS/compositor/cadence claim",
+  "captures": [
+    {
+      "name": "hooks-wide",
+      "width": 2667,
+      "height": 1667,
+      "all_original_rgba_equal_ffmpeg_png": true,
+      "all_rgb_equal_p6": true,
+      "hashes_equal": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "pid_absent_at_review": true
+    },
+    {
+      "name": "hooks-veto",
+      "width": 1067,
+      "height": 667,
+      "all_original_rgba_equal_ffmpeg_png": true,
+      "all_rgb_equal_p6": true,
+      "hashes_equal": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "pid_absent_at_review": true
+    },
+    {
+      "name": "hooks-recovery",
+      "width": 1067,
+      "height": 667,
+      "all_original_rgba_equal_ffmpeg_png": true,
+      "all_rgb_equal_p6": true,
+      "hashes_equal": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "pid_absent_at_review": true
+    }
+  ],
+  "inspection_sha256": "6cee21e462e7c967b139ded71719b5caabf01d7fd3171b12825da0387da4a0be"
+}

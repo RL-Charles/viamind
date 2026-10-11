@@ -24,6 +24,8 @@ use crate::transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxI
 #[derive(Debug)]
 pub struct Engine {
     project: Project,
+    hooks: crate::command_hooks::Hooks,
+    pending_hooks: Vec<crate::PostCommandDispatch>,
     design_revision: u64,
     registry: CommandRegistry,
     undo: Vec<Transaction>,
@@ -45,6 +47,8 @@ impl Engine {
     /// An engine for `project` accepting the commands in `registry`.
     pub fn with_registry(project: Project, registry: CommandRegistry) -> Engine {
         Engine {
+            hooks: crate::command_hooks::Hooks::default(),
+            pending_hooks: Vec::new(),
             design_revision: 0,
             registry,
             selection: crate::SelectionSnapshot::default(),
@@ -56,6 +60,43 @@ impl Engine {
             notifier: Notifier::default(),
             log: EventLog::new(project.clone()),
             project,
+        }
+    }
+
+    /// Transient callback configuration survives document replacement.
+    pub fn command_hook_status(&self) -> crate::CommandHookStatus {
+        self.hooks.status()
+    }
+    pub fn configure_command_hooks(&mut self, config: crate::CommandHookConfig) -> Result<crate::CommandHookStatus, EngineError> {
+        self.hooks.configure(config)
+    }
+    pub fn register_pre_command_hook(&mut self, id: String, hook: crate::PreCommandHook) -> Result<(), EngineError> {
+        self.hooks.register_pre(id, hook)
+    }
+    pub fn register_post_command_hook(&mut self, id: String, hook: crate::PostCommandHook) -> Result<(), EngineError> {
+        self.hooks.register_post(id, hook)
+    }
+    pub fn remove_command_hook(&mut self, id: &str) -> Result<bool, EngineError> {
+        self.hooks.remove(id)
+    }
+    /// Standalone callers must run these outside all document/native locks.
+    pub fn take_pending_command_hooks(&mut self) -> Vec<crate::PostCommandDispatch> {
+        std::mem::take(&mut self.pending_hooks)
+    }
+    fn validate_hooks(&self, deltas: &[Delta], origin: &Origin, label: &str, kind: ChangeKind) -> Result<(), EngineError> {
+        self.hooks.pre(
+            &crate::PreCommand { project: &self.project, deltas, source_cursor: self.event_cursor(), origin, label, kind },
+            self.pending_hooks.len(),
+        )
+    }
+    fn enqueue_hooks(&mut self, source_cursor: crate::EventCursor, tx: TxId, deltas: &[Delta], origin: &Origin, label: &str, kind: ChangeKind) {
+        if let Some(dispatch) = self.hooks.post(
+            &crate::PreCommand { project: &self.project, deltas, source_cursor, origin, label, kind },
+            tx,
+            self.event_cursor(),
+            self.pending_hooks.len(),
+        ) {
+            self.pending_hooks.push(dispatch);
         }
     }
 
@@ -213,12 +254,19 @@ impl Engine {
             }
         };
         let deltas = coalesce(tx.deltas);
+        if !deltas.is_empty()
+            && let Err(error) = self.validate_hooks(&deltas, &origin, label, ChangeKind::Applied)
+        {
+            apply_all(&mut self.project, &invert(&deltas));
+            return Err(error);
+        }
         let id = TxId(self.next_tx);
         self.next_tx += 1;
         let result = ExecResult::new(id, deltas.clone());
         if !deltas.is_empty() {
             self.redo.clear();
             self.emit(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Applied, deltas: deltas.clone() });
+            self.enqueue_hooks(cursor, id, &deltas, &origin, label, ChangeKind::Applied);
             self.undo.push(Transaction { id, origin, label: label.to_owned(), deltas });
         }
         Ok((value, result))
@@ -267,25 +315,23 @@ impl Engine {
     /// Undoes the most recent transaction, whoever made it. Returns its id, or
     /// `None` if there is nothing to undo. `origin` is who asked for the undo.
     pub fn undo(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        let source = self.event_cursor();
         let Some(tx) = self.undo.pop() else { return Ok(None) };
         let deltas = invert(&tx.deltas);
         apply_all(&mut self.project, &deltas);
         let id = tx.id;
+        let label = tx.label.clone();
         self.redo.push(tx);
-        self.emit(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
+        self.emit(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Undone, deltas: deltas.clone() });
+        self.enqueue_hooks(source, id, &deltas, &origin, &label, ChangeKind::Undone);
         Ok(Some(id))
     }
 
     /// Redoes the most recently undone transaction. Returns its id, or `None` if
     /// there is nothing to redo. `origin` is who asked for the redo.
     pub fn redo(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
-        let Some(tx) = self.redo.pop() else { return Ok(None) };
-        apply_all(&mut self.project, &tx.deltas);
-        let event = ChangeEvent { tx: tx.id, origin, kind: ChangeKind::Redone, deltas: tx.deltas.clone() };
-        let id = tx.id;
-        self.undo.push(tx);
-        self.emit(event);
-        Ok(Some(id))
+        let Some(index) = self.redo.len().checked_sub(1) else { return Ok(None) };
+        self.redo_at(index, origin)
     }
 
     /// Undoes the most recent transaction made by `origin`, leaving later
@@ -300,12 +346,15 @@ impl Engine {
         if let Some(later) = self.undo[index + 1..].iter().find(|later| touches(later, &ids)) {
             return Err(EngineError::UndoConflict { tx: self.undo[index].id, blocked_by: later.id, blocked_by_origin: later.origin.clone() });
         }
+        let source = self.event_cursor();
         let tx = self.undo.remove(index);
         let deltas = invert(&tx.deltas);
         apply_all(&mut self.project, &deltas);
         let id = tx.id;
+        let label = tx.label.clone();
         self.redo.push(tx);
-        self.emit(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
+        self.emit(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Undone, deltas: deltas.clone() });
+        self.enqueue_hooks(source, id, &deltas, &origin, &label, ChangeKind::Undone);
         Ok(Some(id))
     }
 
@@ -321,12 +370,22 @@ impl Engine {
         if let Some(earlier) = self.redo[index + 1..].iter().find(|earlier| touches(earlier, &ids)) {
             return Err(EngineError::UndoConflict { tx: self.redo[index].id, blocked_by: earlier.id, blocked_by_origin: earlier.origin.clone() });
         }
-        let tx = self.redo.remove(index);
+        self.redo_at(index, origin)
+    }
+
+    fn redo_at(&mut self, index: usize, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        let source = self.event_cursor();
+        let tx = &self.redo[index];
         apply_all(&mut self.project, &tx.deltas);
-        let event = ChangeEvent { tx: tx.id, origin, kind: ChangeKind::Redone, deltas: tx.deltas.clone() };
+        if let Err(error) = self.validate_hooks(&tx.deltas, &origin, &tx.label, ChangeKind::Redone) {
+            apply_all(&mut self.project, &invert(&tx.deltas));
+            return Err(error);
+        }
+        let tx = self.redo.remove(index);
         let id = tx.id;
+        self.emit(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Redone, deltas: tx.deltas.clone() });
+        self.enqueue_hooks(source, id, &tx.deltas, &origin, &tx.label, ChangeKind::Redone);
         self.undo.push(tx);
-        self.emit(event);
         Ok(Some(id))
     }
 

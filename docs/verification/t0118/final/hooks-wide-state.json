@@ -1,0 +1,111 @@
+{
+  "actual_local_input": true,
+  "capture_state": {
+    "cursor": {
+      "sequence": 1,
+      "stream_id": "9b0455ef-40fb-4f07-b734-f7424edb252a"
+    },
+    "project": {
+      "board": {
+        "parts": {},
+        "vias": {
+          "5454881c-e03d-49e5-89ae-410bbe8ef28c": {
+            "diameter": 1000000,
+            "drill": 400000,
+            "id": "5454881c-e03d-49e5-89ae-410bbe8ef28c",
+            "net": "A",
+            "position": {
+              "x": 20000000,
+              "y": 20000000
+            }
+          }
+        }
+      },
+      "id": "a24406bf-646b-4365-ad94-2cde5117af1f",
+      "name": "Command hooks native inspection",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "hooks": {
+    "config": {
+      "enabled": true,
+      "max_objects": 5000,
+      "rules": {
+        "copper_clearance_mm": 0.2,
+        "edge_clearance_mm": 0.25,
+        "hole_clearance_mm": 0.25,
+        "hole_to_copper_clearance_mm": 0.2,
+        "max_violations": 1000,
+        "minimum_annular_width_mm": 0.1,
+        "minimum_via_drill_mm": 0.2
+      }
+    },
+    "diagnostics": [
+      {
+        "callback_id": "builtin_drc",
+        "message": "scoped DRC candidate has violations, exclusions or incomplete coverage; inspect/repair candidate or disable gate",
+        "phase": "pre",
+        "source_cursor": {
+          "sequence": 1,
+          "stream_id": "9b0455ef-40fb-4f07-b734-f7424edb252a"
+        },
+        "truncated": false
+      }
+    ],
+    "generation": 1,
+    "post_callbacks": [],
+    "pre_callbacks": [
+      "builtin_drc"
+    ],
+    "supported_scope": "Borrowed scoped PCB DRC; unsupported checks remain disclosed. Incomplete, excluded, truncated and violating candidates veto. Undo escapes veto. Trusted callbacks have no execution deadline."
+  },
+  "mode": "wide",
+  "native_unchanged": true,
+  "original": {
+    "cursor": {
+      "sequence": 1,
+      "stream_id": "9b0455ef-40fb-4f07-b734-f7424edb252a"
+    },
+    "project": {
+      "board": {
+        "parts": {},
+        "vias": {
+          "5454881c-e03d-49e5-89ae-410bbe8ef28c": {
+            "diameter": 1000000,
+            "drill": 400000,
+            "id": "5454881c-e03d-49e5-89ae-410bbe8ef28c",
+            "net": "A",
+            "position": {
+              "x": 20000000,
+              "y": 20000000
+            }
+          }
+        }
+      },
+      "id": "a24406bf-646b-4365-ad94-2cde5117af1f",
+      "name": "Command hooks native inspection",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "os_input": false,
+  "recovery_add_one_event_then_undo": false,
+  "status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.viamind.json"
+  },
+  "veto_rollback": true
+}

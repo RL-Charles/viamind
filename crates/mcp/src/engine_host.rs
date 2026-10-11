@@ -75,6 +75,7 @@ impl CommandHost for EngineHost {
                 | "get_document_status"
                 | "get_session_state"
                 | "watch_events"
+                | "get_command_hooks"
                 | "get_auto_drc_status"
                 | "get_auto_drc_event_state"
                 | "watch_auto_drc_events"
@@ -205,6 +206,16 @@ impl CommandHost for EngineHost {
             name: "watch_events".into(),
             description: "Read design and selection changes in session order. Pass the last cursor as after, including after reconnecting. Omitted after starts at current tail. limit defaults to 100 (1–1000); timeout_ms defaults to 0 (0–30000), waiting only if no events are available. Returns events, cursor and has_more. History retains 1024 records; on expired/future/restarted cursor errors call get_session_state to resynchronize. Read-only; use one outstanding watch per observer.".into(),
             input_schema: input_schema::<WatchEvents>(),
+        });
+        commands.push(HostCommand {
+            name: "get_command_hooks".into(),
+            description: "Observe shared transient pre-command DRC gate settings, configuration generation, callback IDs/order and bounded failure diagnostics. No model/history/native change. Trusted callbacks have no execution deadline; undo bypasses veto, redo validates the final candidate. Unsupported DRC checks remain disclosed.".into(),
+            input_schema: json!({"type":"object","properties":{},"additionalProperties":false}),
+        });
+        commands.push(HostCommand {
+            name: "configure_command_hooks".into(),
+            description: "Configure the shared transient built-in scoped DRC pre-command veto. Default disabled. Enabled changed apply/redo candidates must pass existing scoped DRC without violations, excluded parts, truncation or incomplete coverage. max_objects1..10000(default5000), existing bounded DRC rules. Undo escapes veto; batch final candidate permits atomic repairs. Does not validate current project when enabled or change design/history/native bytes. Trusted Live writer admission required; no callback code registration.".into(),
+            input_schema: input_schema::<viamind_engine::CommandHookConfig>(),
         });
         commands.push(HostCommand {
             name: "configure_auto_drc".into(),
@@ -408,6 +419,16 @@ impl CommandHost for EngineHost {
             let input: WatchEvents = serde_json::from_value(input).map_err(|e| format!("invalid watch_events input: {e}"))?;
             let result = self.engine.watch_events(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "get_command_hooks" {
+            if input != json!({}) {
+                return Err("get_command_hooks takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.command_hook_status()).map_err(|e| e.to_string());
+        }
+        if name == "configure_command_hooks" {
+            let config = serde_json::from_value(input).map_err(|e| format!("invalid configure_command_hooks input: {e}"))?;
+            return serde_json::to_value(self.engine.configure_command_hooks(config).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "configure_auto_drc" {
             let config = serde_json::from_value(input).map_err(|e| format!("invalid configure_auto_drc input: {e}"))?;

@@ -70,6 +70,7 @@ impl Command for RoutePadWalkaround {
 impl EngineHandle {
     /// Capture only bounded board data under the engine lock. Search and preflight run outside it.
     pub fn plan_pad_walkaround(&self, input: &RoutePadWalkaround) -> Result<CheckedWalkaround, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let _permit = Permit::acquire()?;
         let project = self.with_engine(|e| {
             if e.event_cursor() != input.expected_cursor || e.project().id != input.expected_project {

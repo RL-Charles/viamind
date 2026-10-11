@@ -1,0 +1,350 @@
+{
+  "passed": true,
+  "mode": "live",
+  "checks": [
+    "explicit hook observation discovered",
+    "configuration only advertised to Live writers",
+    "owned HTTP settings normalized disabled without callbacks",
+    "owned active native path verified",
+    "exact no-op config retains generation",
+    "enabled builtin first with checked generation",
+    "peer observes identical settings",
+    "configuration preserves session/native status/AutoDRC",
+    "legacy candidate veto preserves full session/document/AutoDRC",
+    "bounded diagnostic identifies actual source and callback",
+    "veto publishes no design or selection event",
+    "invalid config refuses atomically {\"max_objects\": 0}",
+    "invalid config refuses atomically {\"max_objects\": 10001}",
+    "invalid config refuses atomically {\"enabled\": \"yes\"}",
+    "invalid config refuses atomically {\"extra\": true}",
+    "invalid config refuses atomically {\"rules\": {\"copper_clearance_mm\": 101}}",
+    "invalid config refuses atomically {\"rules\": {\"max_violations\": 0}}",
+    "invalid config refuses atomically {\"rules\": {\"extra\": true}}",
+    "veto consumed no transaction ID",
+    "recovery publishes exactly one design event",
+    "undo escapes validator and restores exact project",
+    "redo candidate veto preserves full state",
+    "actual scoped DRC valid candidate commits without ID gap",
+    "borrowed object admission veto preserves full state",
+    "budget refusal consumes no ID and recovers",
+    "hook configuration and diagnostics survive New",
+    "hook configuration survives same-native reopen with new stream",
+    "original owned native bytes unchanged through all operations"
+  ],
+  "check_count": 28,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
+  "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa",
+  "http_url": "http://127.0.0.1:7950/mcp",
+  "pid": 3054623,
+  "os_input_claim": false,
+  "timings": [
+    {
+      "tool": "get_session_state",
+      "ms": 2.1385030122473836
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 1.4763299986952916
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.3196750078350306
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.3241670094430447
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.6142680105986074
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.3435839937301353
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.2139610043959692
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.380260000587441
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.3697910035261884
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.2816060043405741
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.1555800010683015
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 1.1592860100790858
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.2082430039299652
+    },
+    {
+      "tool": "add_part",
+      "ms": 1.3357849966268986
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.145706992247142
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 1.0082460066769272
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.0732630034908652
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.2822840071748942
+    },
+    {
+      "tool": "watch_events",
+      "ms": 1.1694610002450645
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.8601490010041744
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.1639900039881468
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.3026259985053912
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.0613170015858486
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.2834429944632575
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.195360004203394
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.680660992860794
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.338032991043292
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.681447000009939
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.4037020009709522
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.5822589921299368
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.3675240043085068
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.5485030016861856
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.2094480043742806
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.398083011736162
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.1710580001818016
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.3978670031065121
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.255993003724143
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.6151009913301095
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.4248229999793693
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.5057649870868772
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.2641799985431135
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.4938860113034025
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.3098689960315824
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.5521459863521159
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.1371840082574636
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.3251019991002977
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.1028129956685007
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 0.9845580061664805
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.9659450044855475
+    },
+    {
+      "tool": "add_part",
+      "ms": 1.7378280026605353
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.598888004082255
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.7038059886544943
+    },
+    {
+      "tool": "undo",
+      "ms": 1.3864339998690411
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.2360260006971657
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 1.2093450059182942
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.7615590040804818
+    },
+    {
+      "tool": "redo",
+      "ms": 1.592567001353018
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.416049010003917
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 1.4595480024581775
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.5677080082241446
+    },
+    {
+      "tool": "add_via",
+      "ms": 1.8536550051067024
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.9452609994914383
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.8760899984044954
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.6218399978242815
+    },
+    {
+      "tool": "add_via",
+      "ms": 1.3818000006722286
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.3058460026513785
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 1.2213190057082102
+    },
+    {
+      "tool": "configure_command_hooks",
+      "ms": 1.4805490063736215
+    },
+    {
+      "tool": "add_via",
+      "ms": 1.4920429966878146
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.6078879998531193
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.26549499691464
+    },
+    {
+      "tool": "new_project",
+      "ms": 1.3122569944243878
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.5901399892754853
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.180999999633059
+    },
+    {
+      "tool": "open_project",
+      "ms": 1.5582990017719567
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 1.576018999912776
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 1.259220007341355
+    }
+  ]
+}
