@@ -44,6 +44,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<NewProject>(),
         });
         commands.push(HostCommand {
+            name: "run_erc".into(),
+            description: "Read-only bounded native pin ERC over one exact schematic graph snapshot. Configurable symmetric allowed/warning/error pin-type matrix plus input connection/drive, missing power_output and no-connect attachment checks. Returns effective matrix, stable sheet/symbol/pin/net IDs, deterministic issues, source_cursor, complete-for-selected-checks flag and explicit full_erc=false coverage. Labels never supply power. Max10000 graph objects, 1000000 contact candidates, 250000 pin pairs and max_violations1..10000(default1000); partial policy prefixes explicitly incomplete. Graph ambiguity/limits reject. No hierarchy, buses, hidden power pins or all-ERC claim; preserves model/history/selection/dirty state.".into(),
+            input_schema: input_schema::<viamind_engine::ErcInput>(),
+        });
+        commands.push(HostCommand {
             name: "query_schematic_connectivity".into(),
             description: "Read exact native schematic connected components from a bounded captured snapshot. Wire endpoint/T contacts and explicit junctions connect; interior crossings remain separate. Transformed pin endpoints, literal case-sensitive local/global/power labels; ambiguous crossing labels reject with IDs. Deterministic net/member IDs, aliases and coverage; offset0, limit1..100 default100. Restart pages when source_cursor changes. Max10000 objects including sheets/symbols/pins, 2MiB schematic text and 1000000 spatial candidates. No board annotation, ERC, buses, hierarchy or hidden power-pin inference. Read-only design/history/selection.".into(),
             input_schema: input_schema::<viamind_engine::SchematicConnectivityQuery>(),
@@ -132,6 +137,10 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "run_erc" {
+            let input: viamind_engine::ErcInput = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.run_erc(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
         if name == "query_schematic_connectivity" {
             let input: viamind_engine::SchematicConnectivityQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.query_schematic_connectivity(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
