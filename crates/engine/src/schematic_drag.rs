@@ -181,7 +181,7 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     let symbol =
         sheet.content.as_ref().and_then(|c| c.symbols.get(&input.symbol_id)).ok_or_else(|| CommandError::not_found("symbol", input.symbol_id))?;
     if symbol.pins.len() > 256 {
-        return Err(invalid("connected drag supports at most256 selected symbol pins"));
+        return Err(invalid("connected drag supports at most 256 selected symbol pins"));
     }
     crate::schematic_budget::project(project, 0, "connected drag identities")?;
     crate::schematic_budget::sheet(sheet, "connected drag sheet")?;
@@ -218,7 +218,7 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     Ok(Capture { snapshot, ids, global_rows })
 }
 fn charge(remaining: &mut usize) -> Result<(), CommandError> {
-    *remaining = remaining.checked_sub(1).ok_or_else(|| invalid("connected drag exceeded cumulative1000000 exact candidate visits"))?;
+    *remaining = remaining.checked_sub(1).ok_or_else(|| invalid("connected drag exceeded cumulative 1000000 exact candidate visits"))?;
     Ok(())
 }
 fn translated(p: Coordinate, d: Coordinate) -> Result<Coordinate, CommandError> {
@@ -294,7 +294,7 @@ fn plan(capture: Capture, input: DragSchematicSymbol, limit: usize) -> Result<Pl
         }
         attachments += 1;
         if attachments > 256 {
-            return Err(invalid("connected drag supports at most256 incident wires"));
+            return Err(invalid("connected drag supports at most 256 incident wires"));
         }
         if wire.start == wire.end || (wire.start.x != wire.end.x && wire.start.y != wire.end.y) {
             return Err(invalid("incident wires must be nonzero horizontal or vertical segments"));
@@ -339,7 +339,7 @@ fn plan(capture: Capture, input: DragSchematicSymbol, limit: usize) -> Result<Pl
         }
         incident += 1;
         if incident > 256 {
-            return Err(invalid("connected drag supports at most256 incident wires"));
+            return Err(invalid("connected drag supports at most 256 incident wires"));
         }
         if wire.start == wire.end || (wire.start.x != wire.end.x && wire.start.y != wire.end.y) {
             return Err(invalid("incident wires must be nonzero horizontal or vertical segments"));
@@ -536,8 +536,8 @@ mod tests {
         (project, id, moved, wire)
     }
     fn request(engine: &EngineHandle, sheet: ObjectId, symbol: ObjectId, delta: Coordinate) -> DragSchematicSymbol {
-        let state = engine.session_state();
-        DragSchematicSymbol { expected_project: state.project.id, source_cursor: state.cursor, sheet_id: sheet, symbol_id: symbol, delta }
+        let (expected_project, source_cursor) = engine.with_engine(|e| (e.project().id, e.event_cursor()));
+        DragSchematicSymbol { expected_project, source_cursor, sheet_id: sheet, symbol_id: symbol, delta }
     }
     #[test]
     fn cardinal_bend_preview_is_immutable_and_commit_undo_redo_replay_are_exact() {
@@ -699,5 +699,58 @@ mod tests {
         let error = engine.prepare_schematic_symbol_drag(input).unwrap().run().unwrap_err();
         assert!(error.to_string().contains("planned additions"));
         assert_eq!(engine.session_state(), before);
+    }
+    #[test]
+    fn pre_hooks_receive_final_candidate_veto_atomically_and_captured_work_refuses_reentry() {
+        let _lock = LOCK.lock().unwrap();
+        let (project, sheet, symbol, _) = fixture();
+        let e = EngineHandle::new(project);
+        let input = request(&e, sheet, symbol, p(3, 7));
+        let held = std::sync::Arc::new(std::sync::Mutex::new(Some(e.prepare_schematic_symbol_drag(input).unwrap())));
+        let callback = e.clone();
+        let work = held.clone();
+        e.register_pre_command_hook(
+            "drag-veto".into(),
+            std::sync::Arc::new(move |candidate| {
+                assert_eq!(candidate.project.schematic.sheets[&sheet].content.as_ref().unwrap().symbols[&symbol].position, p(3, 7));
+                assert!(callback.prepare_schematic_symbol_drag(input).is_err());
+                assert!(work.lock().unwrap().take().unwrap().run().unwrap_err().to_string().contains("pre-command"));
+                Err("explicit drag veto".into())
+            }),
+        )
+        .unwrap();
+        let before = e.session_state();
+        assert!(e.execute_typed(input, Origin::User).unwrap_err().to_string().contains("explicit drag veto"));
+        assert_eq!(e.session_state(), before);
+        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
+        e.remove_command_hook("drag-veto").unwrap();
+        e.execute_typed(input, Origin::User).unwrap();
+    }
+    #[test]
+    fn unrelated_huge_invalid_board_metadata_is_not_copied_or_validated() {
+        let _lock = LOCK.lock().unwrap();
+        let (mut project, sheet, symbol, _) = fixture();
+        let part = viamind_doc::Part {
+            artwork: None,
+            assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
+            schematic_symbol: None,
+            schematic_package: None,
+            pads: None,
+            id: ObjectId::new(),
+            designator: "R1".into(),
+            value: String::new(),
+            footprint: "F".into(),
+            position: viamind_geom::Point::new(Nm(0), Nm(0)),
+            rotation_mdeg: 0,
+            side: viamind_doc::Side::Top,
+        };
+        let id = part.id;
+        project.board.parts.insert(id, part);
+        let e = EngineHandle::new(project);
+        let before = e.event_cursor();
+        let result = e.prepare_schematic_symbol_drag(request(&e, sheet, symbol, p(3, 7))).unwrap().run().unwrap();
+        assert!(result.native_graph_partition_preserved);
+        assert_eq!(e.event_cursor(), before);
+        assert_eq!(e.read(|p| p.board.parts[&id].assembly.as_ref().unwrap().manufacturer.as_ref().unwrap().len()), 3 * 1024 * 1024);
     }
 }

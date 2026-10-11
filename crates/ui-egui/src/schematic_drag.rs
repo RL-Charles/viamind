@@ -31,7 +31,7 @@ impl LocalDraft {
         let c = snapshot.expected.content.as_ref().ok_or("Select a schematic symbol first")?;
         let symbol = c.symbols.get(&symbol_id).ok_or("Select a schematic symbol first")?;
         if symbol.pins.len() > 256 {
-            return Err("Connected move supports at most256 selected symbol pins".into());
+            return Err("Connected move supports at most 256 selected symbol pins".into());
         }
         let pins = symbol.pins.iter().map(|pin| symbol.pin_position(pin.position)).collect::<Result<Vec<_>, _>>()?;
         let points = pins.iter().map(|p| (p.x.0, p.y.0)).collect::<BTreeSet<_>>();
@@ -42,7 +42,7 @@ impl LocalDraft {
         for wire in c.wires.values() {
             if points.contains(&(wire.start.x.0, wire.start.y.0)) || points.contains(&(wire.end.x.0, wire.end.y.0)) {
                 if incident.len() == 256 {
-                    return Err("Connected move supports at most256 incident wires".into());
+                    return Err("Connected move supports at most 256 incident wires".into());
                 }
                 if wire.start == wire.end || (wire.start.x != wire.end.x && wire.start.y != wire.end.y) {
                     return Err("Connected move requires cardinal incident wires".into());
@@ -361,7 +361,7 @@ impl SchematicDragUi {
             if !busy
                 && response.drag_started_by(PointerButton::Primary)
                 && !ui.input(|i| i.key_down(Key::Space))
-                && let Some(pointer) = response.interact_pointer_pos()
+                && let Some(pointer) = ui.input(|i| i.pointer.press_origin())
             {
                 let bounds = egui::Rect::from_points(&draft.corners.map(screen)).expand(14.0);
                 if bounds.contains(pointer) {
@@ -376,12 +376,12 @@ impl SchematicDragUi {
                 let result = (|| {
                     let grid = crate::schematic::nm(&self.grid_mm)?;
                     if !(1..=10_000_000_000).contains(&grid) {
-                        return Err("Grid must be positive and at most10000mm".to_owned());
+                        return Err("Grid must be positive and at most 10000 mm".to_owned());
                     }
                     let snap = |origin: Nm, delta: f64| -> Result<Nm, String> {
                         let n = origin.0 as f64 + delta * 1_000_000.0;
                         if !n.is_finite() || n.abs() > 10_000_000_000.0 {
-                            return Err("Target must remain within±10000mm".into());
+                            return Err("Target must remain within ±10000 mm".into());
                         }
                         Ok(Nm(((n / grid as f64).round() as i64) * grid))
                     };
@@ -518,5 +518,50 @@ mod tests {
         let key = |p: Coordinate| (p.x.0 / 1_000_000, p.y.0 / 1_000_000);
         let actual = lines.iter().map(|(a, b)| (key(*a), key(*b))).collect::<Vec<_>>();
         assert_eq!(actual, expected);
+    }
+    #[test]
+    fn actual_compact_window_scroll_reaches_preview_apply_result_and_cancel() {
+        use egui_kittest::{Harness, kittest::Queryable};
+        let (engine, sheet, symbol) = fixture();
+        let before = engine.session_state();
+        let mut state = SchematicDragUi::default();
+        state.begin(&engine, sheet, symbol);
+        state.dx_mm = "3".into();
+        state.dy_mm = "5".into();
+        let worker = engine.clone();
+        let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(
+            move |ui, s: &mut SchematicDragUi| {
+                s.poll(ui.ctx(), Some(&worker), Some((sheet, symbol)));
+                s.window(ui.ctx(), &worker);
+            },
+            state,
+        );
+        h.run_steps(5);
+        h.get_by_label("Preview connected move").scroll_to_me();
+        h.run_steps(8);
+        let rect = h.get_by_label("Preview connected move").rect();
+        assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0 && rect.min.x >= 0.0 && rect.max.x <= 640.0, "{rect:?}");
+        h.get_by_label("Preview connected move").click();
+        h.run_steps(3);
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while h.state().busy() {
+            assert!(std::time::Instant::now() < deadline);
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            h.run_steps(3);
+        }
+        assert!(h.state().report().is_some());
+        h.get_by_label("Apply connected move").scroll_to_me();
+        h.run_steps(8);
+        let rect = h.get_by_label("Apply connected move").rect();
+        assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+        h.get_by_label_contains("Native graph preserved").scroll_to_me();
+        h.run_steps(8);
+        assert!(h.get_by_label_contains("Native graph preserved").rect().max.y <= 400.0);
+        h.get_by_label("Cancel connected move").scroll_to_me();
+        h.run_steps(8);
+        h.get_by_label("Cancel connected move").click();
+        h.run_steps(3);
+        assert!(!h.state().active());
+        assert_eq!(engine.session_state(), before);
     }
 }
