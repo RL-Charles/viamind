@@ -279,3 +279,43 @@ fn count_before_malformed_input_and_structural_or_serialized_project_limits() {
     assert_eq!((page.deltas.len(), page.next_offset), (32, Some(32)));
     assert!(page.deltas.windows(2).all(|d| delta_key(&d[0]) < delta_key(&d[1])));
 }
+
+#[test]
+fn package_and_member_structural_rows_refuse_before_sandbox_clone_even_with_missing_member_poison() {
+    use viamind_doc::{
+        Sheet,
+        schematic::SchematicContent,
+        symbol_package::{PackageUnit, SchematicPackage, UnitRole},
+    };
+    let _lock = TEST_LOCK.lock().unwrap();
+    for many_packages in [false, true] {
+        let mut p = Project::new("Borrowed package structural budget");
+        let mut sheet = Sheet::new("Missing members are deliberate poison");
+        let mut c = SchematicContent::default();
+        let count = if many_packages { 5000 } else { 1 };
+        for _ in 0..count {
+            let id = ObjectId::new();
+            let units = (0..if many_packages { 0 } else { 5000 })
+                .map(|i| PackageUnit { key: format!("U{i}"), name: "missing member".into(), role: UnitRole::Functional, symbol_id: ObjectId::new() })
+                .collect();
+            c.packages
+                .insert(id, SchematicPackage { id, template_name: "Missing members must never reach cloning/semantic validation".into(), units });
+        }
+        sheet.content = Some(c);
+        p.schematic.sheets.insert(sheet.id, sheet);
+        let e = EngineHandle::new(p);
+        let before = e.session_state();
+        let status = e.document_status();
+        let error = e
+            .create_pcb_branch(
+                CreatePcbBranch { expected_project: before.project.id, expected_cursor: before.cursor, label: "Never clone".into() },
+                BranchActor::human(),
+                reserve_pcb_branch_work().unwrap(),
+            )
+            .unwrap_err();
+        assert!(error.to_string().contains("5000 whole-project structural rows"), "{error}");
+        assert!(e.list_pcb_branches().is_empty());
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.document_status(), status);
+    }
+}

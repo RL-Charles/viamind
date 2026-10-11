@@ -133,7 +133,10 @@ mode; save/place/delete remain writers. No startup mode is weakened.
 Placement requires exact project UUID, initial full event cursor and target
 sheet guard, the validated template, an explicit reference and exactly one
 placement for each declared unit key. Each placement has exact integer-Nm
-position, cardinal quarter turns and optional local X reflection. Count/text,
+position, cardinal quarter turns and optional local X reflection. The two new command decoders also admit borrowed expected-sheet object,
+package-member and pin counts before malformed excess typed rows, then the
+existing 4096-byte per-field / 2 MiB selected-sheet text limits. The original
+transport Value allocation remains outside that secondary-copy claim. Count/text,
 geometry and global result budgets precede copying the guarded sheet or
 generating identities. A whole package must fit the existing target-sheet
 10000 objects/pins, 2 MiB text and global 100000 identities/1000 sheets/4 MiB
