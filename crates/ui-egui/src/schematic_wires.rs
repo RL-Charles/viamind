@@ -275,6 +275,10 @@ impl ViamindApp {
             return;
         }
         let Some(d) = &self.schematic_wires.draft else { return };
+        if !self.schematic.active || self.schematic.active_sheet_id() != Some(d.snapshot.expected.id) {
+            self.schematic_wires.cancel();
+            return;
+        }
         let Some(design) = &self.design else { return };
         let command = DrawSchematicWirePolyline {
             expected_project: d.snapshot.expected_project,
@@ -426,6 +430,26 @@ mod tests {
         app.begin_schematic_wires();
         assert_eq!(app.schematic_wires.confirmed_vertices(), points);
         assert_eq!(app.schematic.camera, camera);
+        assert_eq!(engine.session_state(), before);
+    }
+    #[test]
+    fn finish_checks_selected_sheet_even_before_the_next_frame_poll() {
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
+        let engine = EngineHandle::new(project);
+        let sheet_id = engine.read(|p| *p.schematic.sheets.keys().next().unwrap());
+        let snapshot = engine.snapshot_schematic_wire_sheet(&SchematicWireSheetQuery { sheet_id }).unwrap();
+        let mut draft = WireDraft::new(snapshot).unwrap();
+        draft.confirm(Coordinate { x: Nm(0), y: Nm(0) }, true).unwrap();
+        draft.confirm(Coordinate { x: Nm(1), y: Nm(0) }, true).unwrap();
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.set_schematic_mode(true);
+        // No sheet is selected until the panel runs. Simulate a context change
+        // immediately before Finish, without letting the next frame poll cancel it.
+        assert_eq!(app.schematic.active_sheet_id(), None);
+        app.schematic_wires.draft = Some(draft);
+        let before = engine.session_state();
+        app.finish_schematic_wires();
+        assert!(!app.schematic_wires.active());
         assert_eq!(engine.session_state(), before);
     }
 }

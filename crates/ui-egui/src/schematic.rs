@@ -451,6 +451,7 @@ impl ViamindApp {
                 }
             });
         if selected != self.schematic.sheet {
+            self.schematic_wires.cancel();
             self.schematic.sheet = selected;
             self.schematic.sheet_guard = None;
             self.schematic.selected = None;
