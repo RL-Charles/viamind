@@ -38,5 +38,7 @@
     "UI native open after staging preserves current session and bytes",
     "MCP second-agent open after staging preserves current session and bytes",
     "native guard waits for in-flight save-as before reading active path; ordinary commands remain available"
-  ]
+  ],
+  "integration_main": "391fd00",
+  "integration_note": "After artifact capture, rebased onto unrelated interactive-wire main391fd00; preserved additive wire and CSV action helpers, unchanged CSV export implementation. Fresh combined CI and focused UI/parity check required for integration."
 }

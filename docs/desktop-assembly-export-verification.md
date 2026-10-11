@@ -42,6 +42,11 @@ writing and fsync happen before it; only path checks and atomic publication happ
 inside. Hidden workers remain retained, duplicate starts are suppressed, and a
 disconnected worker produces a recoverable error.
 
+After those exact artifact checks, the branch was rebased onto interactive-wire
+main391fd00. Both additive wire and CSV action helpers were preserved; the CSV
+implementation and captured artifact evidence remain unchanged. Fresh combined
+CI and focused desktop/parity checks verify that integration.
+
 ## Reproduction
 
 Use a new directory for each script run. The wrapper source takes a project path
