@@ -101,11 +101,13 @@ impl FabricationSnapshot {
         let mut board = project.board.clone_without_assembly();
         if calibrated {
             for (id, part) in &mut board.parts {
-                part.assembly = project.board.parts[id].assembly.as_ref().map(|source| viamind_doc::AssemblyMetadata {
-                    populate: source.populate,
-                    mounting: source.populate.then_some(source.mounting).flatten(),
-                    placement: source.populate.then_some(source.placement).flatten(),
-                    ..Default::default()
+                part.assembly = project.board.parts[id].assembly.as_ref().map(|source| {
+                    Box::new(viamind_doc::AssemblyMetadata {
+                        populate: source.populate,
+                        mounting: source.populate.then_some(source.mounting).flatten(),
+                        placement: source.populate.then_some(source.placement).flatten(),
+                        ..Default::default()
+                    })
                 });
             }
         }
