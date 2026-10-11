@@ -64,7 +64,8 @@ cargo run -p viamind                                    # launch the app
 ```
 
 All four checks (build, test, fmt, clippy) must pass before `shp submit`; CI
-(`.github/workflows/ci.yml`) runs them on Linux, macOS and Windows. Lints are set
+(`.github/workflows/ci.yml`) runs them on Linux. Linux is the initial supported
+target; macOS and Windows support and native verification are deferred. Lints are set
 in the root `Cargo.toml` (`[workspace.lints]`), `clippy.toml` and `rustfmt.toml`;
 `unsafe_code` is forbidden. On Linux, eframe needs the X11/Wayland/xkbcommon/GL
 development packages (see the CI workflow for the list).

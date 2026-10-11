@@ -46,16 +46,11 @@ jobs:
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
 
   test:
-    name: test (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    name: build and test (Linux)
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install Linux system packages (eframe/wgpu)
-        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
@@ -66,3 +61,5 @@ jobs:
       - name: UI and agent command parity
         run: cargo test -p viamind-ui-egui --test command_parity --locked
       - run: cargo test --workspace --locked
+      - name: Build Linux workspace
+        run: cargo build --workspace --locked
