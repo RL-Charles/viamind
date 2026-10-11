@@ -17,7 +17,8 @@ try:
     def call(name,args=None,peer=False,error=False):return clients[int(peer)].call(name,args or {},expect_error=error)
     tools={t['name'] for t in clients[0].rpc('tools/list',{})['tools']}
     check('actual initialized discovery exposes complete shared package operations',{'preview_package_pcb_component','create_package_pcb_component','link_schematic_package','query_linked_components','query_linked_pin_pads','preview_schematic_pcb_sync','synchronize_schematic_pcb'}<=tools)
-    old=call('get_session_state');call('open_document',{'path':str(native),'discard_dirty':True,'expected_cursor':old['cursor']});base=call('get_session_state')
+    owned=json.loads(native.read_bytes())['project'];assert owned['name']=='T116 complete package owned proof' and not owned['board']['parts'];report['initial_native_sha256']=digest(native)
+    old=call('get_session_state');check('owned scratch identity is verified before lifecycle replacement',old['project']['id']==owned['id'] and old['project']['name']==owned['name']);call('open_document',{'path':str(native),'discard_dirty':True,'expected_cursor':old['cursor']});base=call('get_session_state')
     check('two actual clients share coherent owned initial project',call('get_session_state',peer=True)==base)
     project=base['project'];assert project['name']=='T116 complete package owned proof';assert not project['board']['parts'];sheet_id=next(iter(project['schematic']['sheets']))
     template=json.loads((repo/'fixtures/symbol-packages/original-quad.viamind-symbol-package.json').read_text())['package']

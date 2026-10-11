@@ -43,7 +43,7 @@ impl eframe::App for Inspection {
         let painted: Vec<_> = ui.ctx().graphics(|g| {
             layers
                 .iter()
-                .flat_map(|layer| g.get(*layer).into_iter().flat_map(|list| list.all_entries()))
+                .flat_map(|layer| g.get(*layer).into_iter().flat_map(egui::layers::PaintList::all_entries))
                 .filter_map(|entry| {
                     let egui::Shape::Text(text) = &entry.shape else { return None };
                     let rect = text.galley.rect.translate(text.pos.to_vec2());
@@ -85,6 +85,9 @@ impl eframe::App for Inspection {
         }
         if self.phase == 9 && !self.created_done && self.capture.is_none() {
             assert_eq!(session.project.schematic, self.before.project.schematic);
+            assert_eq!(session.selection, self.before.selection);
+            assert_eq!(session.cursor.stream_id, self.before.cursor.stream_id);
+            assert_eq!(session.cursor.sequence, self.before.cursor.sequence + 1);
             assert_eq!(session.project.board.parts.len(), 1);
             let part = session.project.board.parts.values().next().unwrap();
             assert!(part.schematic_package.is_some());
@@ -103,7 +106,7 @@ impl eframe::App for Inspection {
                 self.phase = 7;
             } else {
                 self.created_done = true;
-                let report = serde_json::json!({"passed":true,"route":"production ViamindApp with local egui events and native WGPU Screenshot","preview_full_session_unchanged":true,"created_one_complete_owner":true,"all_schematic_ids_and_geometry_unchanged":true,"native_path_unchanged":self.engine.document_status().path==self.native_path,"before_cursor":self.before.cursor,"after_cursor":session.cursor,"local_injected_events":self.events,"local_resize_events":3,"frames":self.frames,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"footprint":self.footprint,"preview_capture":"native-preview.ppm","created_capture":"native-created.ppm","visible_final_labels":self.visible,"claims_excluded":["OS input","frame cadence","vendor acceptance","physical copper continuity"]});
+                let report = serde_json::json!({"passed":true,"route":"production ViamindApp with local egui events and native WGPU Screenshot","preview_full_session_unchanged":true,"created_one_complete_owner":true,"all_schematic_ids_and_geometry_unchanged":true,"shared_selection_unchanged":true,"one_design_transaction":true,"native_path_unchanged":self.engine.document_status().path==self.native_path,"before_cursor":self.before.cursor,"after_cursor":session.cursor,"local_injected_events":self.events,"local_resize_frames":3,"local_resize_pointer_events":5,"frames":self.frames,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"footprint":self.footprint,"preview_capture":"native-preview.ppm","created_capture":"native-created.ppm","visible_final_labels":self.visible,"claims_excluded":["OS input","frame cadence","vendor acceptance","physical copper continuity"]});
                 let mut f = std::fs::OpenOptions::new().write(true).create_new(true).open(self.output.join("native-report.json")).unwrap();
                 serde_json::to_writer_pretty(&mut f, &report).unwrap();
                 f.sync_all().unwrap();
