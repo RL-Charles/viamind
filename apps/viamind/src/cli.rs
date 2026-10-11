@@ -64,7 +64,7 @@ pub struct Options {
 pub enum Invocation {
     Help,
     Version,
-    Run(Options),
+    Run(Box<Options>),
 }
 
 pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, String> {
@@ -204,7 +204,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         options.schematic_options.width_px = options.svg_options.width_px;
         options.schematic_options.height_px = options.svg_options.height_px;
         options.schematic_options.validate().map_err(|e| e.to_string())?;
-        return Ok(Invocation::Run(options));
+        return Ok(Invocation::Run(Box::new(options)));
     }
     if options.sheet.is_some() || seen.contains(&OsString::from("--schematic-layers")) {
         return Err("--sheet and --schematic-layers require schematic export".into());
@@ -269,7 +269,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
     if options.save_as.is_some() && !options.headless {
         return Err("--save-as requires --headless".into());
     }
-    Ok(Invocation::Run(options))
+    Ok(Invocation::Run(Box::new(options)))
 }
 
 fn view_nm(s: &str) -> Result<i64, String> {

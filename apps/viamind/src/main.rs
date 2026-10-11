@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
             println!("viamind {}", env!("CARGO_PKG_VERSION"));
             return Ok(());
         }
-        cli::Invocation::Run(options) => options,
+        cli::Invocation::Run(options) => *options,
     };
     if options.demo {
         return viamind_ui_egui::run().map_err(|e| anyhow::anyhow!("{e}"));
