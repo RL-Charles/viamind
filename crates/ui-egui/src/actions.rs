@@ -6,8 +6,8 @@
 use crate::fabrication::export_fabrication;
 use serde_json::{Value, json};
 use viamind_engine::{
-    AddPart, Command, DeletePart, EngineError, EngineHandle, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin, SaveProject,
-    SetBoardOutline, SetPartPads, SetSelection, TransformParts, UpdatePart, input_schema,
+    AddPart, Command, DeletePart, EngineError, EngineHandle, EventCursor, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin,
+    SaveProject, SetBoardOutline, SetPartPads, SetSelection, TransformParts, UpdatePart, input_schema,
 };
 
 macro_rules! ui_actions {
@@ -52,6 +52,10 @@ ui_actions! {
     ImportFootprint => ("import_footprint", input_schema::<viamind_engine::FootprintFile>(), import_footprint),
     ExportFootprint => ("export_footprint", input_schema::<viamind_engine::FootprintFile>(), export_footprint),
 
+    RenderBoardSvg => ("render_board_view", input_schema::<viamind_render::BoardViewRequest<EventCursor>>(), render_board_svg),
+    RenderBoardPng => ("render_board_png", input_schema::<viamind_render::BoardViewRequest<EventCursor>>(), render_board_png),
+    RenderSchematicSvg => ("render_schematic_view", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_svg),
+    RenderSchematicPng => ("render_schematic_png", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_png),
     ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
     ConfigureAutoDrc => ("configure_auto_drc", input_schema::<viamind_engine::AutoDrcConfig>(), configure_auto_drc),
     GetAutoDrcStatus => ("get_auto_drc_status", no_args(), get_auto_drc_status),
@@ -237,4 +241,17 @@ fn query_linked_components(engine: &EngineHandle, input: Value) -> Result<Value,
         engine.query_linked_components(&input).map_err(|error| EngineError::Command { command: "query_linked_components".into(), error })?,
     )
     .map_err(encode_error)
+}
+
+fn render_board_svg(e: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    crate::view_export::export(e, UiAction::RenderBoardSvg, input)
+}
+fn render_board_png(e: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    crate::view_export::export(e, UiAction::RenderBoardPng, input)
+}
+fn render_schematic_svg(e: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    crate::view_export::export(e, UiAction::RenderSchematicSvg, input)
+}
+fn render_schematic_png(e: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    crate::view_export::export(e, UiAction::RenderSchematicPng, input)
 }

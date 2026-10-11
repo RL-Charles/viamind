@@ -13,3 +13,6 @@ pub use schematic::{
     SchematicLayer, SchematicMetadata, SchematicPng, SchematicSnapshot, SchematicSvg, SchematicViewOptions, schematic_png, schematic_svg,
     schematic_view_snapshot,
 };
+
+pub mod requests;
+pub use requests::{BoardViewRequest, SchematicViewRequest};

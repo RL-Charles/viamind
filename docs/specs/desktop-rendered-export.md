@@ -8,7 +8,7 @@ Public-source behavior specification, written before implementation for T-0071.
 - [PNG third edition](https://www.w3.org/TR/png-3/): PNG is a lossless raster image format; use the existing transparent RGBA8 production renderer.
 - [egui Context](https://docs.rs/egui/0.36.2/egui/struct.Context.html#method.request_repaint): context clones share state and workers can request repaint; UI frame callbacks must remain short.
 - [Rust thread spawning](https://doc.rust-lang.org/std/thread/fn.spawn.html): owned work can run independently and communicate through channels; Builder::spawn reports thread creation failures.
-- Existing independent Viamind specifications: [board SVG](board-svg-views.md), [board PNG](board-png-views.md), [selected schematic views](schematic-rendered-views.md).
+- Existing independent Viamind specifications: [board SVG](svg-board-views.md), [board PNG](png-board-views.md), [selected schematic views](schematic-rendered-views.md).
 
 ## Contract
 
