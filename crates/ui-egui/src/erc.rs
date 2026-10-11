@@ -270,8 +270,8 @@ impl ViamindApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::actions::UiAction;
     use viamind_doc::Project;
-    use viamind_engine::{NewProject, Origin};
 
     fn pending(ui: &mut ErcUi, engine: &EngineHandle) -> std::sync::mpsc::SyncSender<Result<ErcReport, String>> {
         let (document, _) = Document::current(engine);
@@ -316,7 +316,7 @@ mod tests {
         assert!(ui.report.is_none());
         let sender = pending(&mut ui, &reopened);
         let old = reopened.run_erc(&ui.input).unwrap();
-        reopened.new_project(NewProject { name: "Replacement".into(), ..Default::default() }, Origin::User).unwrap();
+        UiAction::NewProject.run(&reopened, serde_json::json!({"name":"Replacement"})).unwrap();
         let (document, _) = Document::current(&reopened);
         ui.sync(Some(document));
         sender.send(Ok(old)).unwrap();

@@ -120,3 +120,46 @@ fn empty_project_states_supported_scope_and_ui_catalog_matches_mcp_tool() {
     assert_eq!(value["coverage"]["full_erc"], false);
     assert!(viamind_ui_egui::actions::UiAction::RunErc.run(&e, json!({"max_violations":0})).is_err());
 }
+
+#[test]
+fn actual_matrix_override_in_narrow_layout_changes_two_output_conflict_severity() {
+    use viamind_doc::schematic::{Coordinate, PinType};
+    let mut project = engine().read(Clone::clone);
+    let sheet = project.schematic.sheets.values_mut().next().unwrap();
+    let content = sheet.content.as_mut().unwrap();
+    content.wires.clear();
+    content.labels.clear();
+    content.junctions.clear();
+    let mut symbols: Vec<_> = content.symbols.values().take(2).cloned().collect();
+    for symbol in &mut symbols {
+        symbol.position = Coordinate::default();
+        symbol.rotation_quarters = 0;
+        symbol.mirrored = false;
+        symbol.pins.truncate(1);
+        symbol.pins[0].position = Coordinate::default();
+        symbol.pins[0].electrical = PinType::Output;
+    }
+    content.symbols = symbols.into_iter().map(|s| (s.id, s)).collect();
+    let e = EngineHandle::new(project);
+    let mut h = Harness::builder()
+        .with_size(vec2(760.0, 1200.0))
+        .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), ViamindApp::with_design(e.clone(), None));
+    h.run_steps(5);
+    h.state_mut().begin_erc();
+    h.run_steps(5);
+    let before = e.session_state();
+    click(&mut h, "Run ERC");
+    finish(&mut h);
+    assert!(h.query_by_label_contains("1 errors · 0 warnings").is_some());
+    click(&mut h, "ERC rules");
+    click(&mut h, "Pin compatibility (66 unordered pairs)");
+    h.get_by_label("Output / Output").scroll_to_me();
+    h.run_steps(5);
+    click(&mut h, "Output / Output");
+    click(&mut h, "Warning");
+    click(&mut h, "Pin compatibility (66 unordered pairs)");
+    click(&mut h, "Run ERC");
+    finish(&mut h);
+    assert!(h.query_by_label_contains("0 errors · 1 warnings").is_some());
+    assert_eq!(e.session_state(), before);
+}
