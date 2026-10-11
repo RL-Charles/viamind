@@ -278,11 +278,17 @@ impl Default for SchematicUi {
     }
 }
 impl SchematicUi {
+    pub(crate) fn active_sheet_id(&self) -> Option<ObjectId> {
+        self.sheet
+    }
     pub(crate) fn with_active(active: bool) -> Self {
         Self { active, ..Default::default() }
     }
 }
 impl ViamindApp {
+    pub(crate) fn schematic_object_draft_active(&self) -> bool {
+        self.schematic.draft.is_some()
+    }
     pub(crate) fn schematic_probe_selection(&self, project: ObjectId, stream: ObjectId) -> Option<ObjectId> {
         (self.schematic.project == Some(project) && self.schematic.stream == Some(stream)).then_some(self.schematic.selected).flatten()
     }
@@ -292,6 +298,9 @@ impl ViamindApp {
         cursor: viamind_engine::EventCursor,
         target: &viamind_engine::LinkedComponent,
     ) -> Result<(), String> {
+        if self.schematic_wires.active() {
+            return Err("Finish or cancel the wire drawing preview before navigating".into());
+        }
         let sheet_id = target.sheet_id.ok_or("Containing sheet is missing.")?;
         if self.schematic.draft.as_ref().is_some_and(|draft| draft.expected.id != sheet_id || draft.id != target.symbol_id) {
             return Err("Finish or cancel the schematic object draft before navigating to another symbol.".into());
@@ -329,6 +338,9 @@ impl ViamindApp {
     }
 
     pub fn set_schematic_mode(&mut self, active: bool) {
+        if !active {
+            self.schematic_wires.cancel();
+        }
         if active {
             self.routing.cancel();
         }
@@ -346,6 +358,9 @@ impl ViamindApp {
         cursor: viamind_engine::EventCursor,
         pin: &viamind_engine::SchematicNetMember,
     ) -> Result<(), String> {
+        if self.schematic_wires.active() {
+            return Err("Finish or cancel the wire drawing preview before navigating".into());
+        }
         let design = self.design.as_ref().ok_or("No open project")?;
         let (name, position) = design.engine.with_engine(|e| {
             if e.project().id != project || e.event_cursor() != cursor {
@@ -436,6 +451,7 @@ impl ViamindApp {
                 }
             });
         if selected != self.schematic.sheet {
+            self.schematic_wires.cancel();
             self.schematic.sheet = selected;
             self.schematic.sheet_guard = None;
             self.schematic.selected = None;
@@ -494,7 +510,7 @@ impl ViamindApp {
             ui.separator();
             ui.horizontal_wrapped(|ui| {
                 for (kind, label) in [("symbol", "Add symbol"), ("wire", "Add wire"), ("junction", "Add junction"), ("label", "Add label")] {
-                    if ui.button(label).clicked() {
+                    if ui.add_enabled(!self.schematic_wires.active(), egui::Button::new(label)).clicked() {
                         self.schematic.draft = Some(Draft::new(project, sheet.clone(), kind));
                         self.schematic.selected = None;
                         self.schematic.message = None;
@@ -516,7 +532,10 @@ impl ViamindApp {
                         .collect();
                     objects.sort_by_key(|(id, _)| *id);
                     for (id, label) in objects {
-                        if ui.selectable_label(self.schematic.selected == Some(id), label).clicked() {
+                        if ui
+                            .add_enabled(!self.schematic_wires.active(), egui::Button::selectable(self.schematic.selected == Some(id), label))
+                            .clicked()
+                        {
                             self.schematic.selected = Some(id);
                             self.schematic.draft = Draft::from_object(project, sheet.clone(), id);
                             self.schematic.message = None;
@@ -572,6 +591,7 @@ impl ViamindApp {
             ui.label(message);
         }
         ui.separator();
+        self.schematic_wire_toolbar(ui);
         self.annotation_panel(ui);
         ui.label("Middle drag / Space+drag pan · wheel zoom · Home fit");
         ui.label("Run Electrical rule check to inspect native pin diagnostics.");
@@ -607,6 +627,7 @@ impl ViamindApp {
         painter.rect_filled(viewport, 0.0, Color32::from_rgb(22, 25, 30));
         let Some(c) = content else {
             painter.text(viewport.center(), Align2::CENTER_CENTER, "Create or choose a schematic sheet", FontId::proportional(18.0), Color32::WHITE);
+            self.schematic_wire_canvas(ui, &response, &painter);
             return;
         };
         let cam = self.schematic.camera;
@@ -663,7 +684,9 @@ impl ViamindApp {
             // Keep attached net labels above the pin-number/name row at the same anchor.
             painter.text(at + egui::vec2(6.0, -20.0), Align2::LEFT_BOTTOM, format!("{} ({:?})", l.name, l.scope), FontId::proportional(13.0), tint);
         }
-        if response.clicked()
+        let drawing_wires = self.schematic_wire_canvas(ui, &response, &painter);
+        if !drawing_wires
+            && response.clicked()
             && !ui.input(|i| i.key_down(Key::Space))
             && !self.files.busy()
             && let Some(pointer) = response.interact_pointer_pos()

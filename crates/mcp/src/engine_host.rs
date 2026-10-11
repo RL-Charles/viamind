@@ -154,6 +154,11 @@ impl CommandHost for EngineHost {
             description: "Read the shared selection: sorted part/track/via IDs, revision and last origin.".into(),
             input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
         });
+        commands.push(HostCommand {
+            name: "snapshot_schematic_wire_sheet".into(),
+            description: "Read one bounded validated schematic sheet and exact project/stream/cursor for wire drawing; no mutation.".into(),
+            input_schema: input_schema::<viamind_engine::SchematicWireSheetQuery>(),
+        });
         commands
     }
 
@@ -161,6 +166,10 @@ impl CommandHost for EngineHost {
         if name == "preview_schematic_pcb_component" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.preview_schematic_pcb_component(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "snapshot_schematic_wire_sheet" {
+            let input = serde_json::from_value(input).map_err(|e| format!("invalid wire snapshot: {e}"))?;
+            return serde_json::to_value(self.engine.snapshot_schematic_wire_sheet(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "preview_schematic_pcb_sync" {
             let input: viamind_engine::PcbSyncRequest = serde_json::from_value(input).map_err(|e| e.to_string())?;

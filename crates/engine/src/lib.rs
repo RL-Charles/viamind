@@ -54,6 +54,8 @@ pub use schematic_component::{
     ComponentPadNet, CreateSchematicPcbComponent, SchematicComponentPlacement, SchematicComponentPreview, SchematicComponentRequest,
 };
 pub mod schematic;
+mod schematic_wires;
+pub use schematic_wires::{DrawSchematicWirePolyline, SchematicWireSheetQuery, SchematicWireSnapshot};
 mod schematic_connectivity;
 pub use footprint::{ApplyFootprint, FootprintFile};
 pub use schematic::{DeleteSchematicSheet, EditSchematicSheet, SchematicEdit, SchematicQuery, SchematicQueryResult, SymbolInput, SymbolPinInput};

@@ -568,3 +568,22 @@ Enter commits. Orange preview is unchecked. No inner layers, blind/buried or
 microvias, multiple transitions, automatic obstacle avoidance, push/shove or
 verified continuity. Conservative guides remain after routing. See the
 [single-via behavior contract](../../docs/specs/single-through-via-routing.md).
+
+## Interactive schematic wire paths
+
+`snapshot_schematic_wire_sheet {"sheet_id":"<sheet UUID>"}` returns the exact
+bounded selected sheet, project UUID and full source cursor. Pass that result
+unchanged with 2..256 integer-Nm `vertices` to `draw_schematic_wire_polyline`.
+Every adjacent pair must differ and be horizontal or vertical within ±10000 mm.
+One transaction creates all segments with fresh nested identities; one undo
+removes the complete path. Exact endpoint/T contacts connect, while interior
+crossings remain disconnected and no junction is inserted.
+
+Stale sequence/stream/project/sheet guards, invalid geometry or limits reject
+unchanged. Snapshot/result limits are 10000 selected-sheet objects, 10000 pins,
+4096-byte strings and 2 MiB text. Commit additionally bounds inherited global
+identity/reference validation to 100000 combined identities, 1000 sheets and
+4 MiB schematic text. That synchronous validation can reject an oversized
+unrelated board or sheet; no latency threshold is claimed. No symbol movement,
+board mutation, automatic junctions, buses or hierarchy. See the
+[desktop and agent workflow](../../docs/interactive-schematic-wires.md).

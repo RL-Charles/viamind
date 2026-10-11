@@ -30,6 +30,7 @@ pub mod routing;
 pub mod scene;
 pub mod schematic;
 pub mod schematic_component;
+pub mod schematic_wires;
 pub mod selection;
 pub mod view_export;
 
@@ -127,6 +128,7 @@ pub struct FrameStats {
 /// The Viamind application state.
 pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
+    pub schematic_wires: schematic_wires::SchematicWiresUi,
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
     pub cross_probe: cross_probe::CrossProbeUi,
@@ -172,6 +174,7 @@ impl ViamindApp {
     pub fn with_scene_size(n: usize) -> Self {
         Self {
             schematic: schematic::SchematicUi::default(),
+            schematic_wires: schematic_wires::SchematicWiresUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -207,6 +210,7 @@ impl ViamindApp {
         canvas.fit_pending = true;
         Self {
             schematic,
+            schematic_wires: schematic_wires::SchematicWiresUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -329,6 +333,7 @@ impl ViamindApp {
             }
         }
         self.sync_design();
+        self.sync_schematic_wires(ui.ctx());
         self.sync_cross_probe(ui);
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));

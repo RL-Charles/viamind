@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "wire command and bounded snapshot discovery",
+    "snapshot is repeated deterministic and preserves full session",
+    "noncardinal path rejects without mutation",
+    "stale cursor preserves entire concurrent session",
+    "two exact offgrid segments create one event and preserve unrelated project",
+    "one undo removes complete path",
+    "redo restores exact nested wire identities",
+    "ordinary interior crossing is disconnected",
+    "T endpoint joins without implicit junction object",
+    "native file retains exact wires",
+    "same UUID reopen preserves exact project and sheet",
+    "old stream alone rejects unchanged after reopen",
+    "clean production exit"
+  ],
+  "binary_sha256": "e3de89dc114cfca8da04e021f224673605b3c42ea9e4590462cfba71aeeb1f1f",
+  "transport": "production headless stdio",
+  "saved_path": "/tmp/viamind-t0074-native-8lfk8idv/wires.viamind.json"
+}

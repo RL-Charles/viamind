@@ -227,7 +227,8 @@ impl ViamindApp {
     fn navigate_counterpart(&mut self, row: &LinkedComponent, schematic_source: bool) -> Result<(), String> {
         let Some(context) = self.cross_probe.current.clone() else { return Err("Selection changed; select the source again.".into()) };
         let Some(design) = &self.design else { return Err("Document closed.".into()) };
-        if self.files.busy()
+        if self.schematic_wires.active()
+            || self.files.busy()
             || self.parts.placing()
             || self.outlines.editing()
             || self.pads.editing()
