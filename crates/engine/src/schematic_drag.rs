@@ -836,7 +836,7 @@ mod tests {
         let e = EngineHandle::new(project);
         let before = e.session_state();
         let before_bytes = viamind_doc::file::to_string(&before.project);
-        check_graph(&e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 10_000 }).unwrap());
+        check_graph(&e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 100 }).unwrap());
         let input = request(&e, id(102), id(103), p(1_000_000, -2_000_000));
         let preview = e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap();
         assert_eq!((preview.original_graph_members, preview.added_wire_count), (16, 3));
@@ -857,7 +857,7 @@ mod tests {
         assert_eq!(target.junctions, source.junctions);
         assert_eq!(target.packages, source.packages);
         assert_eq!(target.symbols[&id(103)].position, p(21_000_000, 18_000_000));
-        let graph = e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 10_000 }).unwrap();
+        let graph = e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 100 }).unwrap();
         assert_eq!(graph.coverage.members, 19);
         check_graph(&graph);
         assert_eq!(e.with_engine(|e| e.log().replay()), after.project);
