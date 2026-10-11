@@ -113,6 +113,7 @@ pub struct MeshCache {
     pub stats: CacheStats,
     gpu_format: Option<eframe::wgpu::TextureFormat>,
     gpu_pipeline: Option<Arc<crate::gpu_tiles::Pipeline>>,
+    gpu_timing: Option<Arc<crate::gpu_timing::GpuTiming>>,
 }
 
 impl std::fmt::Debug for MeshCache {
@@ -134,6 +135,11 @@ impl MeshCache {
     pub fn disable_gpu(&mut self) {
         self.gpu_format = None;
         self.gpu_pipeline = None;
+    }
+
+    /// Attach optional diagnostic GPU timing. Ordinary canvas rendering leaves this unset.
+    pub fn set_gpu_timing(&mut self, timing: Option<Arc<crate::gpu_timing::GpuTiming>>) {
+        self.gpu_timing = timing;
     }
 
     /// Drops all cached meshes; call when the scene's items change.
@@ -251,7 +257,7 @@ impl MeshCache {
             }
         }
         if let Some(pipeline) = &self.gpu_pipeline {
-            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, transforms, viewport));
+            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, transforms, viewport, self.gpu_timing.clone()));
         }
         self.stats = stats;
         drawn

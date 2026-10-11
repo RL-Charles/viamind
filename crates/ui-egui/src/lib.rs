@@ -13,6 +13,7 @@ pub mod drc;
 pub mod fabrication;
 pub mod files;
 mod gpu_tiles;
+pub mod gpu_timing;
 pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
