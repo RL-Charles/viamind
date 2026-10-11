@@ -101,13 +101,13 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     h.run_steps(2);
     let original_id = h.ctx.memory(|m| m.focused()).expect("focused second pin coordinate");
     println!("compact sidebar canvas before draft {viewport_before:?}; with draft {:?}", h.state().schematic.viewport);
-    h.get_all_by_label("Remove pin")[0].scroll_to_me();
+    h.get_all_by_label("Remove pin").next().unwrap().scroll_to_me();
     h.run_steps(10);
-    let rect = h.get_all_by_label("Remove pin")[0].rect();
+    let rect = h.get_all_by_label("Remove pin").next().unwrap().rect();
     h.hover_at(rect.center());
     h.run_steps(2);
-    assert_button_clip(&h, "first Remove pin", h.get_all_by_label("Remove pin")[0].rect());
-    h.get_all_by_label("Remove pin")[0].click();
+    assert_button_clip(&h, "first Remove pin", h.get_all_by_label("Remove pin").next().unwrap().rect());
+    h.get_all_by_label("Remove pin").next().unwrap().click();
     h.run_steps(5);
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins.len(), 1);
     h.get_by_label("Pin 1 X (mm)").scroll_to_me();
