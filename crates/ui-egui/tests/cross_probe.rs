@@ -148,17 +148,37 @@ fn unsupported_selection_and_large_selection_have_explicit_messages() {
 }
 
 #[test]
-fn active_placement_is_preserved_when_explicit_counterpart_navigation_is_rejected() {
-    let e = engine();
+fn active_route_preview_is_preserved_when_counterpart_navigation_is_rejected() {
+    let mut project = engine().read(Clone::clone);
+    project.board.outline = Some(
+        viamind_doc::BoardOutline::new(
+            viamind_geom::Polygon::new(vec![
+                viamind_geom::Point::from_mm(0.0, 0.0),
+                viamind_geom::Point::from_mm(100.0, 0.0),
+                viamind_geom::Point::from_mm(100.0, 100.0),
+                viamind_geom::Point::from_mm(0.0, 100.0),
+            ]),
+            vec![],
+        )
+        .unwrap(),
+    );
+    let e = EngineHandle::new(project);
     let row = e.query_linked_components(&ComponentLinkQuery::default()).unwrap().components.remove(0);
     let mut h = harness(&e);
     select_board(&mut h, row.board_position.unwrap());
     settle(&mut h, "Show schematic counterpart");
     let before = e.session_state();
-    h.state_mut().begin_place_part();
+    h.state_mut().begin_route();
     h.run_steps(5);
+    click(&mut h, "Start route");
+    select_board(&mut h, viamind_geom::Point::from_mm(70.0, 70.0));
+    assert!(h.state().routing.previewing());
+    let points = h.state().routing.points().to_vec();
+    assert_eq!(points.len(), 1);
     click(&mut h, "Show schematic counterpart");
     assert!(!h.state().schematic.active);
-    assert!(h.query_by_label("Place part").is_some(), "placement form is retained");
+    assert!(h.query_by_label("Finish the active edit before navigating to a counterpart.").is_some());
+    assert!(h.state().routing.previewing());
+    assert_eq!(h.state().routing.points(), points);
     assert_eq!(e.session_state(), before);
 }
