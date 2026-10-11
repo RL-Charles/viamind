@@ -86,3 +86,5 @@ preserved. Files and staging directories are synced before atomic Linux
 no-replace publication. Failures publish no partial release and ordinary staging
 is cleaned. A process interruption can leave a `.viamind-output-job-*` staging
 directory. Atomic visibility does not promise durability through power loss.
+
+See [Linux and native verification](saved-output-jobs-verification.md) for recorded artifacts, limitations and reproduction.

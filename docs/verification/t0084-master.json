@@ -12,7 +12,6 @@
     "build": true,
     "local_log": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0084/full-gates.log"
   },
-  "source_ci": "https://github.com/RL-Charles/viamind/actions/runs/38132538716",
   "production_binary_sha256": "fd1977296d64e85f2b5c2c866cf14f807e1f8f1ff69f23bcb757928ebb2fe6cd",
   "production_postprocessing": "Planned strip --strip-debug -o home-artifact shared-target/debug/viamind after successful workspace build, avoiding /tmp quota. Version/help and actual CLI output-job exports verify this exact artifact. /tmp names symlink to unique home files.",
   "native_verification": {
@@ -39,5 +38,6 @@
     "report": "t0084-native-cua.json",
     "screenshot": "t0084-native-output-job.png",
     "limitation": "Cua reports unavailable AT-SPI and X11 window metadata fallback. Fresh screenshot verifies readable production form in fixed wrapper; actual pointer/text/640x400 scrolling and disabled controls verified by egui_kittest, not native raw input."
-  }
+  },
+  "ci_note": "Artifact source026518e passed all local Linux gates; its draft conflicted with concurrently merged main and had no CI run. Superseded intermediate integration CI was canceled on push. Final exact integration CI is recorded in the PR before merge."
 }
