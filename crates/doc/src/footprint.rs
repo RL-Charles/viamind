@@ -133,7 +133,7 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     // Decode the original bounded bytes so duplicate fields remain visible to serde.
     // The presence preflight must never become a lossy Value-to-typed roundtrip.
     let envelope: Envelope = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
-    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1 | 2 | 3) {
+    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1..=3) {
         return Err("expected viamind-footprint version1,2 or3".into());
     }
     envelope.footprint.validate()?;
