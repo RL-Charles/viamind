@@ -42,8 +42,8 @@ impl eframe::App for Inspect {
             assert!(image.pixels.len() <= 4_194_304);
             // X11 opaque surfaces can return nonopaque stored alpha; preserve every
             // original Screenshot-event channel separately from the RGB review view.
-            let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
-            let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+            let alpha_min = image.pixels.iter().map(egui::Color32::a).min().unwrap();
+            let alpha_max = image.pixels.iter().map(egui::Color32::a).max().unwrap();
             let nonopaque_alpha_pixels = image.pixels.iter().filter(|p| p.a() != 255).count();
             let path = self.capture.take().unwrap();
             let rgba_path = path.with_extension("p7");
