@@ -58,4 +58,5 @@ sheets to1000 and schematic text to4MiB, including the proposed new instance.
 Agent undo remains scoped to the connection; human undo uses the shared timeline.
 
 The [public-source specification](specs/native-symbol-libraries.md) records behavior,
-limits and exclusions.
+limits and exclusions. See [Linux, MCP and native verification](native-symbol-libraries-verification.md)
+for exact artifacts, meaningful regressions and reproduction commands.
