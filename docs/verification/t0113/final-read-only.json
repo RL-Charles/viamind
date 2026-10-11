@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "two observation tools advertised",
+    "actual initialized empty read-only list",
+    "create_pcb_branch undiscoverable and protocol-refused",
+    "apply_pcb_branch undiscoverable and protocol-refused",
+    "inspect_pcb_branch undiscoverable and protocol-refused",
+    "merge_pcb_branch undiscoverable and protocol-refused",
+    "discard_pcb_branch undiscoverable and protocol-refused",
+    "all observations and refusals preserve complete session status and DRC journal"
+  ],
+  "binary_sha256": "ed09b9f77b0169cb74224c56314101604ac01c6a516d5438a3879289618820f8",
+  "transport": "actual initialized CLI headless read-only stdio"
+}

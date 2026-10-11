@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "scope": "Original implementation full Linux and production/native proof. Final combined integration remains pending.",
+  "scope": "Original full Linux/production/native proof plus final T112 scoped integration. Independent final production rerun and exact-head CI remain merge requirements.",
   "source": "032740a386c47f5adf98d91bbe954d26b947deaf",
   "precode_source": "116dcf9",
   "workspace_tests": {
@@ -22,6 +22,14 @@
     {
       "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/original-verified/viamind",
       "sha256": "b7e9d65ca963d9c8db688ced7f37e6a1bd78452019bab9cc65595f1f66461a89"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/final-verified/pcb-branches-inspection",
+      "sha256": "bcf7bed407f7c94eece78a13dccc21e346bd99416cb82fa55251f979c63e2364"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/final-verified/viamind",
+      "sha256": "ed09b9f77b0169cb74224c56314101604ac01c6a516d5438a3879289618820f8"
     }
   ],
   "artifacts": [
@@ -44,6 +52,51 @@
       "path": "docs/verification/t0113/compact.png",
       "bytes": 94569,
       "sha256": "894f626b169a26df6e4ee595e47e45787289e79cea0a01faa9c555feda7641b3"
+    },
+    {
+      "path": "docs/verification/t0113/final-catalog-check.json",
+      "bytes": 368,
+      "sha256": "ded64aac61c17b0135f89eea27396f7e2a79b9e3e2135d658c03b6cfa317380f"
+    },
+    {
+      "path": "docs/verification/t0113/final-catalog-report.json",
+      "bytes": 368,
+      "sha256": "ded64aac61c17b0135f89eea27396f7e2a79b9e3e2135d658c03b6cfa317380f"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined-racy-test-failure.log",
+      "bytes": 4769,
+      "sha256": "fc7532afec1cf494849ed9124ba59449086e163aa24347cde8181637e74af71e"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined-ttl-test-failure.log",
+      "bytes": 7061,
+      "sha256": "094b8fb77d53af763c613aaa04f4b4920da5013faec14fa938defcc926a57c20"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined.sh",
+      "bytes": 2547,
+      "sha256": "05b65f710555f158ba077652795e31bb0556cdd3119c193ce45e8d73021de924"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined3.log",
+      "bytes": 12463,
+      "sha256": "00bb041132452769922622e56a700964f2e7f9c74d9ec6f684ebd50a20d0c436"
+    },
+    {
+      "path": "docs/verification/t0113/final-production-stdio.json",
+      "bytes": 1707,
+      "sha256": "5bbe65b855d2b7ec2acd4cdad817d9374f53c5200a8c7e2f9e24680652a9608c"
+    },
+    {
+      "path": "docs/verification/t0113/final-read-only.json",
+      "bytes": 670,
+      "sha256": "52507e065b56598d2eb83c73b03012973dd5751eeabe4ce1b02eed2a4d7cc444"
+    },
+    {
+      "path": "docs/verification/t0113/final-workflow.json",
+      "bytes": 1265,
+      "sha256": "58aa63d92219d962e1221afe2ee1d746806d9da9c929d9b5f3414cd65f8d6683"
     },
     {
       "path": "docs/verification/t0113/full-linux.log",
@@ -175,5 +228,20 @@
       "bytes": 1248,
       "sha256": "627539d1fbb4d6fcbf1b81943f2a5e86234af1d3dfb2f4d33e4580dd0a03734b"
     }
-  ]
+  ],
+  "final_combined": {
+    "source": "b54593abcd733e3d02e11d0fe58d08ec7b7dbbfb",
+    "stack_parent": "b76179325f8205df093bb45908dfeea1fdf1a52c",
+    "focused_tests": 33,
+    "fmt": true,
+    "strict_all_target_workspace_lint": true,
+    "workspace_build": true,
+    "inspection_build": true,
+    "catalog_tools": 104,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "stdio_checks": 23,
+    "read_only_checks": 8,
+    "python_reference_tests": 13
+  }
 }

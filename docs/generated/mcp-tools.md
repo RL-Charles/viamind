@@ -9,15 +9,18 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [add\_via](#tool-6164645f766961)
 - [annotate\_schematic](#tool-616e6e6f746174655f736368656d61746963)
 - [apply\_footprint](#tool-6170706c795f666f6f747072696e74)
+- [apply\_pcb\_branch](#tool-6170706c795f7063625f6272616e6368)
 - [cleanup\_cardinal\_tracks](#tool-636c65616e75705f63617264696e616c5f747261636b73)
 - [clear\_agent\_presence](#tool-636c6561725f6167656e745f70726573656e6365)
 - [configure\_auto\_drc](#tool-636f6e6669677572655f6175746f5f647263)
 - [convert\_footprint\_file](#tool-636f6e766572745f666f6f747072696e745f66696c65)
+- [create\_pcb\_branch](#tool-6372656174655f7063625f6272616e6368)
 - [create\_schematic\_pcb\_component](#tool-6372656174655f736368656d617469635f7063625f636f6d706f6e656e74)
 - [delete\_part](#tool-64656c6574655f70617274)
 - [delete\_schematic\_sheet](#tool-64656c6574655f736368656d617469635f7368656574)
 - [delete\_track](#tool-64656c6574655f747261636b)
 - [delete\_via](#tool-64656c6574655f766961)
+- [discard\_pcb\_branch](#tool-646973636172645f7063625f6272616e6368)
 - [draw\_schematic\_wire\_polyline](#tool-647261775f736368656d617469635f776972655f706f6c796c696e65)
 - [echo](#tool-6563686f)
 - [edit\_schematic\_sheet](#tool-656469745f736368656d617469635f7368656574)
@@ -29,6 +32,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [get\_auto\_drc\_status](#tool-6765745f6175746f5f6472635f737461747573)
 - [get\_design](#tool-6765745f64657369676e)
 - [get\_document\_status](#tool-6765745f646f63756d656e745f737461747573)
+- [get\_pcb\_branch\_diff](#tool-6765745f7063625f6272616e63685f64696666)
 - [get\_selection](#tool-6765745f73656c656374696f6e)
 - [get\_session\_state](#tool-6765745f73657373696f6e5f7374617465)
 - [import\_board\_outline\_dxf](#tool-696d706f72745f626f6172645f6f75746c696e655f647866)
@@ -36,10 +40,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [import\_pcb](#tool-696d706f72745f706362)
 - [inspect\_fabrication\_files](#tool-696e73706563745f6661627269636174696f6e5f66696c6573)
 - [inspect\_output\_release](#tool-696e73706563745f6f75747075745f72656c65617365)
+- [inspect\_pcb\_branch](#tool-696e73706563745f7063625f6272616e6368)
 - [link\_schematic\_symbol](#tool-6c696e6b5f736368656d617469635f73796d626f6c)
+- [list\_pcb\_branches](#tool-6c6973745f7063625f6272616e63686573)
 - [load\_footprint\_definition](#tool-6c6f61645f666f6f747072696e745f646566696e6974696f6e)
 - [load\_output\_job](#tool-6c6f61645f6f75747075745f6a6f62)
 - [load\_symbol\_template](#tool-6c6f61645f73796d626f6c5f74656d706c617465)
+- [merge\_pcb\_branch](#tool-6d657267655f7063625f6272616e6368)
 - [move\_part](#tool-6d6f76655f70617274)
 - [new\_project](#tool-6e65775f70726f6a656374)
 - [open\_project](#tool-6f70656e5f70726f6a656374)
@@ -1040,6 +1047,57 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-6170706c795f7063625f6272616e6368"></a>
+
+## apply\_pcb\_branch
+
+```json
+{
+  "description": "Atomically prepare1..64 original PCB commands in an owned branch at exact revision; whole input64KiB, candidate2MiB/5000rows, coalesced128changes/2MiB checked after every step. Allowed add_part/move_part/delete_part/update_part/transform_parts/set_part_pads/add_track/delete_track/add_via/delete_via. Original source cursor is retained, earlier private steps visible. Errors/noops preserve branch and lease. No live mutation or DRC certification. Generated IDs retained for merge.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "branch_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "commands": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "input": true,
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "input"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "expected_revision": {
+        "format": "uint64",
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "branch_id",
+      "expected_revision",
+      "commands"
+    ],
+    "title": "ApplyPcbBranch",
+    "type": "object"
+  },
+  "name": "apply_pcb_branch"
+}
+```
+
 <a id="tool-636c65616e75705f63617264696e616c5f747261636b73"></a>
 
 ## cleanup\_cardinal\_tracks
@@ -1374,6 +1432,60 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "convert_footprint_file"
+}
+```
+
+<a id="tool-6372656174655f7063625f6272616e6368"></a>
+
+## create\_pcb\_branch
+
+```json
+{
+  "description": "Capture one isolated PCB candidate at exact project/full cursor. Label1..128 UTF8 bytes. At most4 branches,5000 whole-project structural rows,2MiB serialized project; one nonwaiting worker. No live document/history/selection/native mutation. Branches expire after5minutes idle. Voluntary preparation; ordinary live edits remain available.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "label"
+    ],
+    "title": "CreatePcbBranch",
+    "type": "object"
+  },
+  "name": "create_pcb_branch"
 }
 ```
 
@@ -2985,6 +3097,39 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "delete_via"
+}
+```
+
+<a id="tool-646973636172645f7063625f6272616e6368"></a>
+
+## discard\_pcb\_branch
+
+```json
+{
+  "description": "Discard only this transport connection's branch at exact revision, including stale branches. Busy workers refuse. No document/history/selection/native mutation. Human desktop may inspect/merge/discard any branch.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "branch_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "expected_revision": {
+        "format": "uint64",
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "branch_id",
+      "expected_revision"
+    ],
+    "title": "PcbBranchRevision",
+    "type": "object"
+  },
+  "name": "discard_pcb_branch"
 }
 ```
 
@@ -4614,6 +4759,45 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-6765745f7063625f6272616e63685f64696666"></a>
+
+## get\_pcb\_branch\_diff
+
+```json
+{
+  "description": "Read bounded deterministic kind/UUID ordered coalesced before/after Part/Track/Via changes. offset0, limit1..128 default32. Reports original source/revision, total/next_offset, stale/busy. At most2MiB serialized deltas plus metadata. No lease renewal or DRC check.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "branch_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "limit": {
+        "default": 32,
+        "format": "uint",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "offset": {
+        "default": 0,
+        "format": "uint",
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "branch_id"
+    ],
+    "title": "PcbBranchDiffInput",
+    "type": "object"
+  },
+  "name": "get_pcb_branch_diff"
+}
+```
+
 <a id="tool-6765745f73656c656374696f6e"></a>
 
 ## get\_selection
@@ -5177,6 +5361,33 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-696e73706563745f7063625f6272616e6368"></a>
+
+## inspect\_pcb\_branch
+
+```json
+{
+  "description": "Inspect bounded candidate board and metadata owned by this trusted transport connection. Same client display names do not share ownership. No mutation/lease renewal. Read-only agent mode exposes list/diff only.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "branch_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "branch_id"
+    ],
+    "title": "PcbBranchId",
+    "type": "object"
+  },
+  "name": "inspect_pcb_branch"
+}
+```
+
 <a id="tool-6c696e6b5f736368656d617469635f73796d626f6c"></a>
 
 ## link\_schematic\_symbol
@@ -5609,6 +5820,22 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-6c6973745f7063625f6272616e63686573"></a>
+
+## list\_pcb\_branches
+
+```json
+{
+  "description": "Read at most4 bounded branch metadata records including creator, original project/full cursor, revision, changed count, busy/stale and remaining lease. Does not renew leases or return private candidate geometry.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  },
+  "name": "list_pcb_branches"
+}
+```
+
 <a id="tool-6c6f61645f666f6f747072696e745f646566696e6974696f6e"></a>
 
 ## load\_footprint\_definition
@@ -5680,6 +5907,68 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "load_symbol_template"
+}
+```
+
+<a id="tool-6d657267655f7063625f6272616e6368"></a>
+
+## merge\_pcb\_branch
+
+```json
+{
+  "description": "Explicitly merge own branch using original project/full source cursor and exact branch revision. Refuses busy/stale/reopened or any before-object mismatch atomically; no rebase. Commits retained generated IDs in one normal undoable transaction attributed to creator, normal automatic DRC scheduling. Successful merge removes branch. This is voluntary preparation, not enforced approval security.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "branch_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "expected_revision": {
+        "format": "uint64",
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "branch_id",
+      "expected_revision",
+      "expected_project",
+      "expected_cursor"
+    ],
+    "title": "MergePcbBranch",
+    "type": "object"
+  },
+  "name": "merge_pcb_branch"
 }
 ```
 

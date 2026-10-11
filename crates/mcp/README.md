@@ -768,3 +768,7 @@ Existing unrelated violations and disclosed checker exclusions may remain.
 Desktop **Edit selected copper properties** and copper-row **Edit** use these
 same commands. See the [contract](../../docs/specs/existing-copper-property-edits.md)
 and [verification](../../docs/existing-copper-properties-verification.md).
+
+## Isolated PCB proposals
+
+The full application exposes bounded transient PCB command branches. Capture `get_session_state`, create a branch with its project/full cursor, apply supported original calls privately, and inspect deterministic paged before/after values. Board → Agent branches shows the same original/new geometry for human review. Exact guarded merge is one undoable transaction with retained IDs; stale sources refuse and remain discardable. Two same-name connections have different private ownership. Startup read-only clients can list/read diffs but cannot prepare, inspect private candidates, merge or discard. Live editing is the default and this voluntary feature does not enforce human approval. See [the behavior and verification guide](../../docs/pcb-command-branches-verification.md).
