@@ -111,7 +111,7 @@ fn copper_row_via_precision_and_geometry_refusal_keep_local_fields_then_exact_ap
     input(&mut h, "Property via drill (mm)", "0.4000001");
     click(&mut h, "Apply properties");
     assert_eq!(e.session_state(), before);
-    assert_eq!(h.get_by_label("Property via drill (mm)").accesskit_node().value(), Some("0.4000001"));
+    assert_eq!(h.get_by_label("Property via drill (mm)").accesskit_node().value().as_deref(), Some("0.4000001"));
     input(&mut h, "Property via drill (mm)", "0.900003");
     click(&mut h, "Apply properties");
     assert_eq!(e.session_state(), before);
@@ -173,10 +173,10 @@ fn peer_edit_and_same_uuid_reopen_disable_apply_preserve_fields_and_require_relo
     assert!(h.get_by_label("Apply properties").accesskit_node().is_disabled());
     click(&mut h, "Apply properties");
     assert_eq!(e.session_state(), peer);
-    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value(), Some("0.370001"));
+    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value().as_deref(), Some("0.370001"));
     assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().id(), id);
     click(&mut h, "Reload properties");
-    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value(), Some("0.250000"));
+    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value().as_deref(), Some("0.250000"));
     assert!(!h.get_by_label("Apply properties").accesskit_node().is_disabled());
     input(&mut h, "Property track width (mm)", "0.390001");
     let directory = tempfile::tempdir().unwrap();
@@ -188,7 +188,7 @@ fn peer_edit_and_same_uuid_reopen_disable_apply_preserve_fields_and_require_relo
     assert_eq!(reopened.project.id, peer.project.id);
     assert_ne!(reopened.cursor.stream_id, peer.cursor.stream_id);
     assert!(h.get_by_label("Apply properties").accesskit_node().is_disabled());
-    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value(), Some("0.390001"));
+    assert_eq!(h.get_by_label("Property track width (mm)").accesskit_node().value().as_deref(), Some("0.390001"));
     click(&mut h, "Apply properties");
     assert_eq!(e.session_state(), reopened);
     click(&mut h, "Reload properties");
