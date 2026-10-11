@@ -111,6 +111,27 @@
     "t0095-native-final.png": "573044b4ba2cecb39cf15f7b4e3e5d6d8252fd39ad3fe5e5c5ccd62f67d82f0d",
     "t0095-native-framebuffer-report.json": "0328f53faa7208b01c00d9da4ef0f75e7cfafa5d445e67e6b8f6d8af07b910e6",
     "t0095-production-launch.json": "fe3967d6596a9617e9bc966a0b2ec08abd07ed90ab3731d40faa6a82da0a724d",
-    "t0095-production-report.json": "f259c4e16573dea84b0a0b70f316ad79e08da6c5c2947ec746f361b0a2b6e8e0"
+    "t0095-production-report.json": "f259c4e16573dea84b0a0b70f316ad79e08da6c5c2947ec746f361b0a2b6e8e0",
+    "t0095-reference-report.json": "5573defbcb5b466d80e4e3bb5209e256dce433fcf74630807b47b932a4447333",
+    "t0095-workflow-report.json": "743c1fc9f84182a094318154dec35dcccc6e342eb128f2dcc7618de870fa7f6d"
+  },
+  "final_combined_integration": {
+    "source_head": "a93d9ff671a86ad73fdbb0254a2c55514539310f",
+    "base_main": "f7d73811f5229ff77712014628861f19d6beea4f",
+    "fmt": "PASS",
+    "workspace_build": "PASS",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-combined-verified",
+    "binary_sha256": "0919a233316cd45d1dd4d4f1ccf3a1a12c0092c356d7ecc4ac3d4b8c882afd59",
+    "build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/combined-build.log",
+    "build_log_sha256": "2ec806fdd0f77aec7bbd7d20bd1fef1f99aed16917fc625ddac74e2614be1b06",
+    "tooling_unit_tests": {
+      "passed": 13,
+      "failed": 0
+    },
+    "catalog_tools": 81,
+    "reference_report": "t0095-reference-report.json",
+    "isolated_agent_workflow_checks": 18,
+    "workflow_report": "t0095-workflow-report.json",
+    "note": "Merged main changes are CI/docs/Python tooling only; no production Rust changes from the current-label build. All own Rust inputs forced fresh for combined build. Canonical catalog regenerated from this unique executable; final drift check PASS. Final exact evidence/reference-head CI remains the PR94 merge gate."
   }
 }

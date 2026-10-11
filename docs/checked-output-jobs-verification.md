@@ -52,11 +52,13 @@ earlier full 654-test production artifact.
 The [inspection harness](verification/t0095-native-inspection.rs) embeds production
 `ViamindApp` in a fixed 1600×1000 viewport, opens Saved output jobs and uses
 paint-derived label bounds for two local egui pointer events selecting the checked
-profile, then three local input frames drag the window corner to reveal all controls. It starts no MCP listener and verifies complete session equality after
+profile, then three local input frames drag the window corner to reveal all
+controls. It starts no MCP listener and verifies complete session equality after
 each production UI update. The [fresh native image](verification/t0095-native-final.png)
 is an actual eframe WGPU Screenshot event, with the checked profile and explicit
 baseline controls visible. Its [framebuffer report](verification/t0095-native-framebuffer-report.json)
-records two profile button events, three resize input frames, all controls fully visible and unchanged complete session state. Opaque P6 RGB
+records two profile button events, three resize input frames, all controls fully
+visible and unchanged complete session state. Opaque P6 RGB
 pixels were converted losslessly to PNG and independently decoded back to the same
 RGB bytes. The inspection host closes itself after syncing the NEW capture and
 flushing its report. No Cua screenshot, global input, performance or production
@@ -67,6 +69,19 @@ edits all rule fields, exercises strict save failure and recovery, saves/loads,
 scrolls to Run and the result, compares twelve outputs with live MCP, and verifies
 collision recovery. Pending-input tests verify that both profile controls and all
 seven rule controls are disabled during retained work and re-enabled afterward.
+
+## Final combined reference integration
+
+After merging the MCP-reference tooling, a clean rebase onto main `f7d73811` and
+fresh compilation of every own Rust crate produced a unique combined executable
+at source `a93d9ff671a86ad73fdbb0254a2c55514539310f`. Its binary hash equals the
+current-label production build. The merged changes contain no production Rust
+changes. Formatting and workspace build passed; [canonical discovery](verification/t0095-reference-report.json)
+regenerated both reference files for 81 actual application tools. Thirteen tooling
+tests and [18 isolated agent workflow checks](verification/t0095-workflow-report.json)
+passed. A subsequent read-only drift check matched the committed references.
+Final exact-head combined CI is recorded on PR94 before merge; these records keep
+the original production, current desktop and combined reference proofs separate.
 
 ## Reproduce
 
