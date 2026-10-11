@@ -109,7 +109,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(h.state().footprint_definition.preview().unwrap().pads[0].width.0, 1200003);
     if height >= 800.0 {
         // Resize the ordinary dialog through actual local pointer input so the full preview fits.
-        let window = h.ctx.memory(|m| m.area_rect(egui::Id::new("Detached footprint definition"))).unwrap();
+        let window_id = egui::Id::new(Some(std::borrow::Cow::Borrowed("Detached footprint definition")));
+        let window = h.ctx.memory(|m| m.area_rect(window_id)).unwrap();
         let corner = window.max - egui::vec2(3.0, 3.0);
         let target = egui::pos2(corner.x, height - 60.0);
         h.hover_at(corner);
@@ -120,7 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         h.run_steps(6);
         h.drop_at(target);
         h.run_steps(6);
-        assert!(h.ctx.memory(|m| m.area_rect(egui::Id::new("Detached footprint definition"))).unwrap().height() >= height - 100.0);
+        assert!(h.ctx.memory(|m| m.area_rect(window_id)).unwrap().height() >= height - 100.0);
     }
     if mode == "completed" {
         click(&mut h, "Save NEW footprint definition");
