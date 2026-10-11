@@ -101,12 +101,23 @@ fn actual_fit_wheel_center_pick_and_mode_switch_preserve_shared_session_and_geom
         h.event(Event::Key { key: Key::Home, physical_key: None, pressed, repeat: false, modifiers: Modifiers::NONE });
         h.run_steps(2);
     }
-    assert_eq!(h.state().schematic.camera, camera);
+    let refit = h.state().schematic.camera;
+    assert_eq!(refit.center, camera.center);
+    // Opening the existing editor can grow the sidebar; Home must fit the
+    // current viewport rather than reproduce the earlier viewport scale.
+    for label in schematic_label_layout(&sheet).unwrap() {
+        let b = label.envelope;
+        let viewport = h.state().schematic.viewport;
+        assert!(viewport.contains_rect(egui::Rect::from_min_max(
+            refit.world_to_screen(WorldPos::new(b.min_x as f64 / 1e6, b.min_y as f64 / 1e6), viewport),
+            refit.world_to_screen(WorldPos::new(b.max_x as f64 / 1e6, b.max_y as f64 / 1e6), viewport)
+        )));
+    }
     h.get_by_label("PCB").click();
     h.run_steps(2);
     h.get_by_label("Schematic").click();
     h.run_steps(3);
-    assert_eq!(h.state().schematic.camera, camera);
+    assert_eq!(h.state().schematic.camera, refit);
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
     assert_eq!(before.project.schematic.sheets[&sheet.id].content.as_ref().unwrap().symbols[&symbol.id], *symbol);
@@ -126,4 +137,46 @@ fn actual_low_zoom_notice_replaces_symbol_text_without_moving_the_model() {
     assert!(texts.iter().any(|t| t == "Zoom in to read schematic labels"));
     assert!(!texts.iter().any(|t| t.starts_with("U1:A (")));
     assert_eq!(engine.session_state(), before);
+}
+
+#[test]
+fn actual_compact_inspection_dense_labels_fit_and_presentation_is_not_a_pick_anchor() {
+    let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/labels-compact.viamind.json")).unwrap();
+    let sheet = project.schematic.sheets.values().next().unwrap();
+    let plan = schematic_label_layout(sheet).unwrap();
+    let symbol = sheet.content.as_ref().unwrap().symbols.values().next().unwrap().clone();
+    let b = plan.iter().map(|l| l.envelope).reduce(viamind_render::schematic_labels::label_union).unwrap();
+    let engine = EngineHandle::new(project);
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.set_schematic_mode(true);
+    let mut h = Harness::builder().with_size(vec2(640.0, 400.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(5);
+    h.state_mut().schematic.camera.center = WorldPos::new((b.min_x as f64 + b.max_x as f64) / 2e6, (b.min_y as f64 + b.max_y as f64) / 2e6);
+    h.state_mut().schematic.camera.zoom = 10.0;
+    h.run_steps(3);
+    let cam = h.state().schematic.camera;
+    let viewport = h.state().schematic.viewport;
+    let texts = rendered(&h);
+    for label in &plan {
+        let b = label.envelope;
+        assert!(
+            viewport.contains_rect(egui::Rect::from_min_max(
+                cam.world_to_screen(WorldPos::new(b.min_x as f64 / 1e6, b.min_y as f64 / 1e6), viewport),
+                cam.world_to_screen(WorldPos::new(b.max_x as f64 / 1e6, b.max_y as f64 / 1e6), viewport)
+            )),
+            "{} {viewport:?}",
+            label.id
+        );
+        assert!(texts.contains(&label.display_text), "actual native text {}", label.id);
+    }
+    let value = plan.iter().find(|l| l.role == viamind_render::schematic_labels::LabelRole::Value).unwrap();
+    let at = cam.world_to_screen(WorldPos::new(value.anchor.x.to_mm(), value.anchor.y.to_mm()), viewport) + vec2(3.0, 3.0);
+    click_at(&mut h, at);
+    assert!(h.query_by_label("Apply schematic object").is_none(), "label hover region does not become an electrical pick object");
+    click_at(&mut h, cam.world_to_screen(WorldPos::new(symbol.position.x.to_mm(), symbol.position.y.to_mm()), viewport));
+    assert!(h.query_by_label("Apply schematic object").is_some());
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
 }
