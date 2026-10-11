@@ -69,7 +69,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 break;
             }
             h.query_all_by_label_contains(" @byte").next().ok_or("visible report row required")?.hover();
-            h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: egui::vec2(0.0, -100.0), modifiers: egui::Modifiers::NONE });
+            h.event(egui::Event::MouseWheel {
+                unit: egui::MouseWheelUnit::Point,
+                delta: egui::vec2(0.0, -100.0),
+                phase: egui::TouchPhase::Move,
+                modifiers: egui::Modifiers::NONE,
+            });
             h.run_steps(8);
         }
         h.get_by_label_contains(label).scroll_to_me();

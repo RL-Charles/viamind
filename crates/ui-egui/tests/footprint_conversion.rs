@@ -130,7 +130,12 @@ fn actual_report_scroll_reaches_exact_cardinal_normalization_without_session_cha
             break;
         }
         h.query_all_by_label_contains(" @byte").next().unwrap().hover();
-        h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, -100.0), modifiers: Modifiers::NONE });
+        h.event(Event::MouseWheel {
+            unit: egui::MouseWheelUnit::Point,
+            delta: vec2(0.0, -100.0),
+            phase: egui::TouchPhase::Move,
+            modifiers: Modifiers::NONE,
+        });
         h.run_steps(8);
     }
     h.get_by_label_contains(label).scroll_to_me();
