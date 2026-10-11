@@ -6,6 +6,8 @@
 //! [`invert`] and the same list doubles as the change notification sent to the UI
 //! and to agents.
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use viamind_doc::{ObjectId, Part, Project, Sheet};
 
@@ -131,6 +133,45 @@ pub fn apply_all(project: &mut Project, deltas: &[Delta]) {
     }
 }
 
+/// Merges deltas that touch the same object into one (its first `before` and
+/// last `after`), in the order objects were first touched, and drops objects
+/// that end as they started. Applying the result has the same effect as
+/// applying `deltas`, because each delta is a full snapshot of one object.
+pub fn coalesce(deltas: Vec<Delta>) -> Vec<Delta> {
+    let mut merged: Vec<Delta> = Vec::with_capacity(deltas.len());
+    let mut index: HashMap<(u8, ObjectId), usize> = HashMap::with_capacity(deltas.len());
+    for delta in deltas {
+        let key = (delta.kind_index(), delta.id());
+        match index.get(&key) {
+            Some(&i) => merged[i].absorb(delta),
+            None => {
+                index.insert(key, merged.len());
+                merged.push(delta);
+            }
+        }
+    }
+    merged.retain(|delta| !delta.is_noop());
+    merged
+}
+
+impl Delta {
+    fn kind_index(&self) -> u8 {
+        match self {
+            Delta::Part { .. } => 0,
+            Delta::Sheet { .. } => 1,
+        }
+    }
+
+    /// Takes `later`'s `after` state; both must be for the same object.
+    fn absorb(&mut self, later: Delta) {
+        match (self, later) {
+            (Delta::Part { after, .. }, Delta::Part { after: later, .. }) => *after = later,
+            (Delta::Sheet { after, .. }, Delta::Sheet { after: later, .. }) => *after = later,
+            _ => unreachable!("coalesce only merges deltas of the same kind"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use viamind_doc::Side;
@@ -175,6 +216,35 @@ mod tests {
         assert_eq!(project, original);
         apply_all(&mut project, &deltas);
         assert_eq!(project, after);
+    }
+
+    #[test]
+    fn coalesce_keeps_first_before_and_last_after() {
+        let mut project = Project::new("t");
+        let r1 = part("R1");
+        let r2 = part("R2");
+        Delta::record_part(&mut project, r2.id, Some(r2.clone()));
+        let start = project.clone();
+        let mut moved = r2.clone();
+        moved.position = Point::from_mm(9.0, 9.0);
+
+        let deltas = vec![
+            Delta::record_part(&mut project, r1.id, Some(r1.clone())),
+            Delta::record_part(&mut project, r2.id, Some(moved.clone())),
+            Delta::record_part(&mut project, r1.id, None),
+            Delta::record_part(&mut project, r2.id, Some(r2.clone())),
+            Delta::record_part(&mut project, r2.id, Some(moved.clone())),
+        ];
+        let end = project.clone();
+        let merged = coalesce(deltas);
+        // R1 was created and deleted again: no net change.
+        assert_eq!(merged, vec![Delta::Part { id: r2.id, before: Some(r2), after: Some(moved) }]);
+
+        let mut replay = start.clone();
+        apply_all(&mut replay, &merged);
+        assert_eq!(replay, end);
+        apply_all(&mut replay, &invert(&merged));
+        assert_eq!(replay, start);
     }
 
     #[test]

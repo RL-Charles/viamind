@@ -37,6 +37,14 @@ pub enum EngineError {
         /// What the command reported.
         error: CommandError,
     },
+    /// A step of a batch failed, so the whole batch was rolled back.
+    #[error("step {index} of the batch failed (no changes were made): {error}")]
+    BatchStep {
+        /// Zero-based index of the failing call.
+        index: usize,
+        /// Why it failed.
+        error: Box<EngineError>,
+    },
 }
 
 type RunFn = fn(Value, &mut Project) -> Result<Vec<Delta>, EngineError>;
