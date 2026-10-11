@@ -32,6 +32,11 @@ fn main() -> anyhow::Result<()> {
         Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
         None => EngineHandle::new(Project::new("Untitled")),
     };
+    if options.agent_read_only {
+        engine.agent_policy().lock_read_only()?;
+    } else if options.agent_approval {
+        engine.agent_policy().set_mode(viamind_engine::agent_policy::AgentMode::Approval)?;
+    }
     if let Some(job_path) = options.run_output_job {
         let job = viamind_fab::load_output_job(&job_path)?;
         let (snapshot, cursor, native) = engine
@@ -118,6 +123,8 @@ fn main() -> anyhow::Result<()> {
         eprintln!("viamind: headless design MCP on stdin/stdout; close stdin to finish");
         if options.agent_read_only {
             eprintln!("viamind: agents read only; edits and file writes are unavailable");
+        } else if options.agent_approval {
+            eprintln!("viamind: agents prepare private PCB proposals; trusted human desktop acceptance required");
         }
         tokio::runtime::Runtime::new()?.block_on(viamind_mcp::serve_stdio(registry))?;
         if let Some(path) = options.save_as {

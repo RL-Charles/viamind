@@ -4,8 +4,8 @@ use std::{collections::BTreeSet, ffi::OsString, path::PathBuf};
 
 pub const HELP: &str = "Viamind — agent-driven PCB design
 
-Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
-       viamind --headless [--open PATH] [--save-as PATH | --agent-read-only]
+Usage: viamind [--open PATH] [--no-mcp | --agent-read-only | --agent-approval]
+       viamind --headless [--open PATH] [--save-as PATH | --agent-read-only | --agent-approval]
        viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom|assembly_placement --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --inspect-output-release DIRECTORY
@@ -16,6 +16,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
        viamind --demo
 
   --headless       Serve full design MCP over stdin/stdout without a window
+  --agent-approval  Agents prepare bounded PCB proposals for trusted human accept/reject
   --agent-read-only Agents can observe but cannot edit or write files; human editing stays live
   --open PATH      Load an existing native .viamind.json project
   --save-as PATH   Save the final headless design after the client closes stdin
@@ -49,6 +50,7 @@ VIAMIND_MCP_PORT sets its port. Headless mode does not use a TCP port.
 pub struct Options {
     pub headless: bool,
     pub agent_read_only: bool,
+    pub agent_approval: bool,
     pub demo: bool,
     pub no_mcp: bool,
     pub open: Option<PathBuf>,
@@ -92,6 +94,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             Some("--headless") => options.headless = true,
             Some("--agent-read-only") => options.agent_read_only = true,
+            Some("--agent-approval") => options.agent_approval = true,
             Some("--demo") => options.demo = true,
             Some("--no-mcp") => options.no_mcp = true,
             Some("--overwrite") => options.overwrite = true,
@@ -201,7 +204,10 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         }
         return Ok(Invocation::Run(Box::new(options)));
     }
-    if options.agent_read_only
+    if options.agent_read_only && options.agent_approval {
+        return Err("choose only one of --agent-read-only and --agent-approval".into());
+    }
+    if (options.agent_read_only || options.agent_approval)
         && (options.no_mcp
             || options.demo
             || options.save_as.is_some()
@@ -213,7 +219,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             || options.export_gerber
             || options.export_csv.is_some())
     {
-        return Err("--agent-read-only requires desktop HTTP or headless stdio; remove save/export/job/demo/no-MCP options".into());
+        return Err("restricted agent mode requires desktop HTTP or headless stdio; remove save/export/job/demo/no-MCP options".into());
     }
     if options.run_output_job.is_some() {
         if options.open.is_none()
