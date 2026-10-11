@@ -1,4 +1,4 @@
-fef4ccff74870d0a1df938bc43038e7e29a3a9d6
+efb865b9638b21e37ef88ff869f37bbdfd637ea0
     Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/geom)
     Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/doc)
     Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/router)
@@ -8,15 +8,26 @@ fef4ccff74870d0a1df938bc43038e7e29a3a9d6
     Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/fab)
     Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/mcp)
     Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/ui-egui)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 22.53s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 28.79s
    Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/geom)
    Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/doc)
-   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/drc)
    Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/drc)
    Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/engine)
-   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/render)
    Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/render)
    Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/mcp)
    Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/ui-egui)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 07s
-0bedf5b6beab1e028c5ac8f3a338444687c07ff179a31aeb22744ecdbcb06263  /home/charlesmowbray/.cache/viamind/native-artifacts/t0091-inspection-framebuffer-final-native
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s
+     Running tests/cardinal_cleanup.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/cardinal_cleanup-044611d380dd4d1b)
+
+running 3 tests
+test actual_net_source_cancel_peer_invalidation_and_modal_guards ... ok
+test compact_actual_preview_apply_cancel_bounds_and_legacy_coverage_are_visible ... ok
+test actual_track_selection_checked_preview_atomic_apply_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.39s
+8d928dd1d24cabfe96df413d8cf3927e8d98c24a64c671ea9964e63abf15e464  /home/charlesmowbray/.cache/viamind/native-artifacts/t0091-inspection-readable-native

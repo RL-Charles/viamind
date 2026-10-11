@@ -19,9 +19,11 @@ cache temporary directory. The retained production binary is unoptimized with
 debug information stripped, SHA-256
 `ab9fad43ace5de47dfd943c0a68170940a9c62d96ab180c60ae1140d2558be85`.
 
-The production source and full-gate log remain historical evidence. Later
-commits modify only the inspection example and verification artifacts; they do
-not relabel this production binary or change application behavior.
+The production source and full-gate log remain historical evidence. A later label-only correction changes the checked summary arrow to plain ASCII
+`to`; all engine/MCP/geometry behavior is unchanged. Focused format, strict UI
+all-target lint, all three cleanup input tests and inspection build/capture pass
+on that corrected source. Final combined CI gates the current branch; these
+later changes do not relabel the historical production binary.
 
 ## Actual production MCP and atomicity
 
@@ -71,12 +73,12 @@ proof rather than generic exclusions prose.
 ## Readable native preview and capture provenance
 
 The retained inspection source is
-`fef4ccff74870d0a1df938bc43038e7e29a3a9d6`; its only changes since the
-verified product source are in `examples/t0091_inspection.rs`. A focused format
-check, strict example Clippy and example build passed. The uniquely copied
+`efb865b9638b21e37ef88ff869f37bbdfd637ea0`; the inspection Screenshot helper and a single product summary label changed
+since the verified source. A focused format check, strict UI all-target Clippy,
+three actual cleanup input tests and example build passed. The uniquely copied
 inspection binary SHA-256 is
-`0bedf5b6beab1e028c5ac8f3a338444687c07ff179a31aeb22744ecdbcb06263`.
-It launched as PID `1280627`, with independently grounded mapped compositor
+`8d928dd1d24cabfe96df413d8cf3927e8d98c24a64c671ea9964e63abf15e464`.
+It launched as PID `1298087`, with independently grounded mapped compositor
 metadata at 1600×1000.
 
 The host loads the authored fixture into the real shared engine and production
@@ -91,9 +93,9 @@ The inspection-only host requests eframe's native Screenshot API; the resulting
 Opaque native RGB pixels were written to a newly created P6 artifact. The
 committed standard-library encoder produces PNG without resizing or recoloring
 and independently reads back the exact RGB rows. Native P6 SHA-256:
-`3011cea997a3ed288e028a2dcaa3062c287038fb76d705a0c69087d8262b665e`.
+`3aee4522e8360b39b0d14f6f7581569e331dccefe2459fa07ad53ecfdee5504f`.
 PNG SHA-256:
-`cafa5cd496bfeba6efbe61352bdf66f22668c913dc8ebe7d95905ad1dbd920ea`.
+`5ef313e738e1abbd1d40fcb8771b72126a9154aee3ab0b86484eb14113c4ee2f`.
 Both output paths use exclusive creation. The image was independently viewed:
 green survivors and yellow removed joints are visible on both layers; the
 branch, diagonal and drill-hole-contact chain remain; actual coverage,
@@ -105,7 +107,11 @@ This is an inspection-only native renderer artifact, separate from the actual
 production HTTP checks. It is not a Cua screenshot or operating-system input
 claim. The earlier b64 inspection host asserted the same immutable preview but
 produced no image; the intermediate 3bc capture binary was built but never
-launched. Those attempts are excluded from final image provenance. Future
+launched. Those attempts are excluded from final image provenance. Root review then
+found that the fef capture rendered an arrow as a missing-glyph square. The
+ASCII `to` correction above passed focused gates and this fresh native capture;
+the previous fef source/hash/image are retained in the master as superseded
+visual evidence. No numeric semantics changed. Future
 inspection hosts can close after capture to reduce desktop congestion; all
 existing windows are preserved in this run.
 
