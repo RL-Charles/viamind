@@ -1,8 +1,5 @@
 use egui::{Event, Key, Modifiers, vec2};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::ViamindApp;
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, text: &str) {
