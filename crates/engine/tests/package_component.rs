@@ -62,6 +62,7 @@ fn request(engine: &EngineHandle) -> PackageComponentRequest {
                         position: LocalPosition { x: Nm(2_000_000 * i), y: Nm(257) },
                         width: Nm(800_001),
                         height: Nm(600_003),
+                        apertures: None,
                     })
                     .collect(),
             },

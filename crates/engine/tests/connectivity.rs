@@ -25,6 +25,7 @@ fn part(i: usize, x: f64, y: f64, net: Option<&str>) -> Part {
                 width: Nm::from_mm(1.0),
                 height: Nm::from_mm(1.0),
                 net: net.map(String::from),
+                apertures: None,
             }])
             .unwrap(),
         ),

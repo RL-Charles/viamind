@@ -11,8 +11,20 @@ fn original() -> Footprint {
         artwork: None,
         name: "Original asymmetric definition".into(),
         pads: vec![
-            FootprintPad { number: "1".into(), position: LocalPosition { x: Nm(-500003), y: Nm(250001) }, width: Nm(1200003), height: Nm(800001) },
-            FootprintPad { number: "2".into(), position: LocalPosition { x: Nm(750007), y: Nm(-125003) }, width: Nm(600003), height: Nm(1000001) },
+            FootprintPad {
+                number: "1".into(),
+                position: LocalPosition { x: Nm(-500003), y: Nm(250001) },
+                width: Nm(1200003),
+                height: Nm(800001),
+                apertures: None,
+            },
+            FootprintPad {
+                number: "2".into(),
+                position: LocalPosition { x: Nm(750007), y: Nm(-125003) },
+                width: Nm(600003),
+                height: Nm(1000001),
+                apertures: None,
+            },
         ],
     }
 }

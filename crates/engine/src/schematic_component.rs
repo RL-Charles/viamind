@@ -154,6 +154,7 @@ fn make_part(placement: &SchematicComponentPlacement, designator: String, value:
             position: Point::new(p.position.x, p.position.y),
             width: p.width,
             height: p.height,
+            apertures: p.apertures.clone(),
         })
         .collect::<Vec<_>>();
     Ok(Part {

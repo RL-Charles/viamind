@@ -411,6 +411,7 @@ mod tests {
                     position: LocalPosition { x: Nm(n * 2_000_000), y: Nm(257) },
                     width: Nm(800_001),
                     height: Nm(600_003),
+                    apertures: None,
                 })
                 .collect(),
         };

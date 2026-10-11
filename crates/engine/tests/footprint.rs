@@ -36,6 +36,7 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
                 position: LocalPosition { x: Nm(-800001), y: Nm(123) },
                 width: Nm(900003),
                 height: Nm(950007),
+                apertures: None,
             })
             .collect(),
     };

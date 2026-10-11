@@ -62,7 +62,7 @@ fn pad(n: &Node, items: &mut [FidelityItem]) -> Result<FootprintPad> {
         "Front rectangular copper retained; source mask/paste memberships are omitted and native output defaults may differ.",
     );
     let (position, width, height) = cardinal_pad_geometry(n, items)?;
-    let pad = FootprintPad { number: name(&n.args[0])?, position: LocalPosition { x: position.x, y: position.y }, width, height };
+    let pad = FootprintPad { number: name(&n.args[0])?, position: LocalPosition { x: position.x, y: position.y }, width, height, apertures: None };
     if pad.width.0 <= 0 || pad.height.0 <= 0 {
         return Err(bad("Rectangular pad dimensions must be greater than zero."));
     }

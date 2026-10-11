@@ -16,7 +16,15 @@ fn fixture() -> (Project, [RouteTerminalId; 3]) {
         )
         .unwrap(),
     );
-    let pad = Pad { id: ObjectId::new(), number: "1".into(), position: p(1, 3), width: Nm(1_000_000), height: Nm(1_000_000), net: Some("N".into()) };
+    let pad = Pad {
+        id: ObjectId::new(),
+        number: "1".into(),
+        position: p(1, 3),
+        width: Nm(1_000_000),
+        height: Nm(1_000_000),
+        net: Some("N".into()),
+        apertures: None,
+    };
     let part = Part {
         artwork: None,
         id: ObjectId::new(),

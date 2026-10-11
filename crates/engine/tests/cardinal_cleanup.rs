@@ -134,6 +134,7 @@ fn pad(project: &mut Project, center: Point, side: Side, rotation: i32) {
                 width: Nm(500_001),
                 height: Nm(500_001),
                 net: Some("N".into()),
+                apertures: None,
             }])
             .unwrap(),
         ),

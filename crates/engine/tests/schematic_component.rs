@@ -39,6 +39,7 @@ fn request(e: &EngineHandle, reference: &str) -> SchematicComponentRequest {
                         position: LocalPosition { x: Nm(i as i64 * 2_000_000), y: Nm(257) },
                         width: Nm(800_001),
                         height: Nm(600_003),
+                        apertures: None,
                     })
                     .collect(),
             },

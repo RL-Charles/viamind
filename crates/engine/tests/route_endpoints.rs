@@ -16,6 +16,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
             width: Nm(1_000_000),
             height: Nm(1_000_000),
             net: Some("SIGNAL".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,

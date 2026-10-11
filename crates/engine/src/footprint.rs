@@ -16,7 +16,7 @@ pub struct ApplyFootprint {
 
 impl Command for ApplyFootprint {
     const NAME: &'static str = "apply_footprint";
-    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
+    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork or pad apertures is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
     fn expected_cursor(&self) -> Option<crate::EventCursor> {
         self.expected_cursor
     }
@@ -28,8 +28,13 @@ impl Command for ApplyFootprint {
         if current != &self.expected {
             return Err(CommandError::conflict("part changed; reload before applying footprint"));
         }
-        if (self.footprint.artwork.is_some() || current.artwork.is_some()) && self.expected_cursor.is_none() {
-            return Err(CommandError::invalid("expected_cursor", "explicit artwork application requires full initial cursor"));
+        if (self.footprint.artwork.is_some()
+            || current.artwork.is_some()
+            || self.footprint.pads.iter().any(|p| p.apertures.is_some())
+            || current.pads.as_ref().is_some_and(|pads| pads.0.iter().any(|p| p.apertures.is_some())))
+            && self.expected_cursor.is_none()
+        {
+            return Err(CommandError::invalid("expected_cursor", "explicit artwork/aperture application requires full initial cursor"));
         }
         crate::footprint_artwork::validate_part_artwork(current)?;
         self.footprint.validate().map_err(|e| CommandError::invalid("footprint", e))?;
@@ -51,6 +56,7 @@ impl Command for ApplyFootprint {
                             position: viamind_geom::Point::new(p.position.x, p.position.y),
                             width: p.width,
                             height: p.height,
+                            apertures: p.apertures.clone(),
                         }
                     })
                     .collect::<Vec<_>>(),
