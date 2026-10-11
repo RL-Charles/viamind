@@ -72,7 +72,7 @@ fn matched_bom_has_exact_explicit_fields_digest_and_unchanged_calibrated_invento
     assert_eq!(fs::read_to_string(path.join(&summary.placement_file)).unwrap(), calibrated);
     assert_eq!(
         fs::read_to_string(path.join(&summary.bom_file)).unwrap(),
-        "Designator,Quantity,Value,Footprint,Mounting,Manufacturer,MPN,Supplier,Supplier SKU,Component ID\r\nU_TOP,1,\"µ, \"\"parts\"\"\nline\",RECT,through_hole,\"Explicit, \"\"maker\"\"\",MPN-λ,,SKU-42,00000000-0000-0000-0000-000000000005\r\n"
+        "Designator,Quantity,Value,Footprint,Mounting,Manufacturer,MPN,Supplier,Supplier SKU,Component ID\r\nU_TOP,1,\"µ, \"\"parts\"\"\nline\",EXPLICIT_FIXTURE,through_hole,\"Explicit, \"\"maker\"\"\",MPN-λ,,SKU-42,00000000-0000-0000-0000-000000000005\r\n"
     );
     for name in old.files.keys().filter(|name| name.as_str() != "job.json") {
         assert_eq!(fs::read(old_path.join(name)).unwrap(), fs::read(path.join(name)).unwrap(), "{name}");
@@ -125,4 +125,22 @@ fn empty_population_is_headers_only_and_invalid_included_id_mapping_rejects_befo
     source = project();
     source.board.parts.values_mut().next().unwrap().id = viamind_doc::ObjectId::new();
     assert!(OutputJobSnapshot::capture(&source, job(3)).err().unwrap().to_string().contains("map key"));
+}
+#[test]
+fn aggregate_included_sourcing_budget_refuses_before_copy_without_restricting_v2() {
+    let _serial = SERIAL.lock().unwrap();
+    let mut source = project();
+    let mut template = source.board.parts.values().next().unwrap().clone();
+    template.assembly.as_mut().unwrap().manufacturer = Some("x".repeat(512));
+    source.board.parts.clear();
+    for index in 0..4097 {
+        let mut part = template.clone();
+        part.id = viamind_doc::ObjectId::new();
+        part.designator = format!("R{index}");
+        source.board.parts.insert(part.id, part);
+    }
+    let error = OutputJobSnapshot::capture(&source, job(3)).err().unwrap();
+    assert!(error.to_string().contains("2 MiB aggregate"), "{error}");
+    assert_eq!(source.board.parts.len(), 4097);
+    assert!(OutputJobSnapshot::capture(&source, job(2)).is_ok());
 }
