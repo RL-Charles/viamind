@@ -30,6 +30,8 @@ Linux bundle, preserving its complete application/license/provenance inventory.
 AppRun resolves its own location and execs the application with every argument
 unchanged, preserving the caller's working directory, standard streams, exit
 status and caller-provided environment. It must work from paths containing spaces.
+Runtime-owned `APPIMAGE`/`APPDIR` and documented extraction variables are explicit
+environment exceptions; AppRun adds no application-specific environment overrides.
 Headless MCP and native desktop launch use the same packaged application.
 
 The image includes a valid desktop entry and a repository-native SVG icon. No
@@ -67,7 +69,8 @@ Retain and distribute the exact runtime source, patches, dependency source/licen
 texts and build instructions. Include a relink kit containing the runtime object,
 the exact necessary static library/CRT objects and explicit link instructions,
 allowing replacement of the statically linked LGPL libfuse. Verify that relinking
-the retained objects produces a functional runtime before publishing. Preserve
+from the distributed companion alone produces a functional runtime before publishing;
+the verification cannot depend on files left in the original build tree. Preserve
 the MIT, BSD, LGPL and other actual component notices, including mimalloc. Runtime
 source/build and relink evidence are required gates, not a URL-only source promise.
 The application itself remains covered by its existing license inventory.
