@@ -71,29 +71,42 @@ No external EDA code, assets or library data are used.
    events over canvas keep existing zoom behavior. No label-plan/SVG/native geometry,
    picking tolerance or model/file schema changes are part of this ticket.
 
-## Verification required
+## Verification required (baseline-informed amendment)
 
-- Actual 640×400 egui input starts with controls below the fold, reveals them using
-  supported scroll input, and requires each target response rectangle to be within
-  its effective inherited clip and application viewport before clicking. Overscan or
-  scroll_to_node alone is not an oracle. Exercise sheet controls, all four Add types,
-  Fit, Draw/Cancel wire and annotation/library/ERC entry points with existing guards.
-- Create/select a local symbol draft; reach every coordinate/pin/electrical field and
-  Apply/Reload/Cancel. Type exact odd-Nm values, scroll away/back and verify draft,
-  focus/cursor/selection and popup identity. Include row removal where identity changes.
-  Actually Apply once, verify one expected delta and shared Undo/redo; Cancel leaves
-  full session/status unchanged. Peer sheet edits and same-ID document reopen retain
-  existing stale rejection/cancellation behavior.
-- A large bounded object/pin fixture verifies the last supported row/action is reachable
-  without unbounded widget construction when virtualization is used; over-budget
-  snapshots show actionable admission errors. No claimed throughput from a tiny fixture.
-- Wide and compact viewport tests verify Fit/pick parity, local wheel routing and
-  complete model/session/status/selection preservation for observation/scrolling.
-- Real Linux eframe WGPU inspection captures at640×400 logical size show a revealed
-  supported editing action and selected-object Apply/Cancel, with exact framebuffer
-  provenance, original RGBA/RGB retention, full session/status invariants and self-close.
-  Inspection event injection is disclosed; no OS-input claim without actual native input.
-- Linux fmt, strict workspace all-target Clippy, workspace tests/build; actual generated
-  catalog/workflow remains unchanged. Retain failed logs and exact source/binary/capture
-  hashes. Independent source/native review and exact-head CI precede parent merge.
-  Human Done remains pending; this agent does not merge its own PR.
+The baseline proves all inspected action controls already reachable through the
+existing outer scroll area. T124 changes only draft/pin/field identity. This amendment
+keeps the behavior contract above and makes the acceptance evidence precise; it does
+not claim a complete new compact-layout or virtualization implementation.
+
+- At640×400, reveal all14 inspected sidebar entry buttons and Apply/Reload/Cancel,
+  requiring complete response containment in the actual painted ancestor clip before
+  each action. Actual wheel events reveal the footer without changing the canvas
+  camera or full SessionSnapshot/DocumentStatus.
+- For text inputs exercised by this ticket, reveal and require effective painted clip
+  containment before focus/type. Exercise every symbol metadata/body/coordinate/pin
+  text field, both wire endpoints and label name, preserving exact local text; Cancel
+  leaves session/status unchanged. Exercise one guarded exact Apply and keyboard
+  Undo/redo through the existing shared command.
+- Remove an earlier pin after typing into a later pin. Assert retained text-edit ID,
+  exact text and caret selection. Exercise the later pin's electrical popup before
+  removal and after reindexing; assert identical popup-owner widget ID and correct
+  row values. Add a new row and prove it does not reuse the removed/retained owner IDs
+  or transfer electrical selections. Explicitly clicking another control may close
+  the popup; no promise to keep an open menu through that outside click is made.
+- Map inherited tests for sheet creation/name/selection/edit/delete/reload/stale and
+  same-ID reopen; wire Finish/cancel/pan/zoom/stale guards; and wide/compact Fit/pick
+  parity. Preserve their original viewport/scope in the coverage report. Their
+  functional success is not presented as new640×400 effective-clip evidence for every
+  inherited field/control. Sheet-selector interaction and max1024-pin/last-object
+  stress are not new T124 claims because their layout/virtualization is unchanged.
+  Any future change to those controls or virtualization needs its own actual bounds
+  and last-row admission checks.
+- Real Linux eframe WGPU640×400 captures show revealed entry and selected-object
+  action controls with exact framebuffer provenance, retained RGBA/RGB, every-pass
+  session/status invariants and self-close. Disclose preparation input; no OS-input
+  claim without actual native input. Existing compact canvas remains narrow.
+- Linux fmt, strict workspace all-target Clippy, workspace tests/build and actual
+  complete catalog/workflow checks pass. Retain failures and exact source/binary/
+  capture hashes. Test-only evidence strengthening after the complete gate uses
+  focused tests/lint and does not relabel the historical native/product source.
+  Independent review and exact-head CI precede parent merge; human Done stays pending.
