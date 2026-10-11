@@ -53,6 +53,7 @@ fn request(engine: &EngineHandle) -> PackageComponentRequest {
         placement: PackageComponentPlacement {
             package_id: engine.read(|p| *p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().packages.keys().next().unwrap()),
             footprint: Footprint {
+                artwork: None,
                 name: "Authored-14pad".into(),
                 pads: (1..=14)
                     .rev()
