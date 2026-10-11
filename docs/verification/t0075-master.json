@@ -35,23 +35,23 @@
     "linux_gates": {
       "fmt": true,
       "strict_workspace_clippy": true,
-      "tests_passed": 454,
+      "tests_passed": 446,
       "tests_ignored": 1,
       "build": true,
-      "local_log": "/tmp/viamind-t0075-rust199-full-gates.log"
+      "local_log": "/tmp/viamind-t0075-full-gates.log"
     },
     "production_verification": {
-      "report": "t0075-rust199-production-export.json",
+      "report": "t0075-production-export.json",
       "passed_checks": 33,
       "runtime": "Actual production application/binary, no inspection wrapper",
-      "endpoint": "http://127.0.0.1:7902/mcp",
-      "pid": 329724,
-      "window_id": 110379505456096
+      "endpoint": "http://127.0.0.1:7900/mcp",
+      "pid": 249312,
+      "window_id": 110379504973024
     },
     "cua": {
-      "report": "t0075-rust199-native-cua.json",
-      "screenshot": "t0075-rust199-native-production.png",
-      "limitation": "Compositor tiled production window45x59; AT-SPI metadata-only. Screenshot establishes process/window identity, not usable form controls."
+      "report": "t0075-native-cua.json",
+      "screenshot": "t0075-native-production.png",
+      "limitation": "Compositor tiled production window105x59; AT-SPI metadata-only. Screenshot establishes process/window identity, not usable form controls. Existing desktop fabrication egui input regression passes."
     }
   },
   "code_ci": "https://github.com/RL-Charles/viamind/actions/runs/38126471644"
