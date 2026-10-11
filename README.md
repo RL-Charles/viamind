@@ -64,8 +64,9 @@ Agents share the same selection through `get_selection` and `set_selection`:
 {"ids": ["<part ID from get_design>"], "mode": "replace"}
 ```
 
-Selection preserves design undo/redo. The prototype currently draws common built-in
-footprints; schematic capture, routing and library editing are planned features.
+Selection preserves design undo/redo. The Linux application supports native
+schematic capture, guarded manual PCB routing and reusable rectangular SMD
+footprints. The workflow sections below describe each supported subset.
 
 ## Check copper and via drill rules
 
@@ -124,9 +125,11 @@ against concurrent agent changes. These pads rotate and mirror with their parent
 part; absent explicit pads retain the built-in graphical preview. Explicit pads
 use native schema version 3. Cyan connection guides follow explicit net-assigned
 pads through placement and undo; `query_nets` and `query_connectivity` expose the
-same connectivity to agents. Guides estimate routing work without copper
-continuity analysis and are not copper or a DRC result. Routing, other pad shapes and schematic net transfer
-remain roadmap work.
+same membership and conservative remaining guides to agents. Exact same-net/side
+track endpoint chains and through-via bridges clear proven connections. Unsupported
+contacts/rotations and excessive inputs retain extra guides; query `copper_proof`
+reports coverage. Guides are not copper, full physical connectivity or a DRC result.
+See [endpoint connectivity](docs/endpoint-copper-connectivity.md).
 
 ## Export assembly tables
 
@@ -152,9 +155,8 @@ smaller than their outer diameter. Undo restores exact geometry and identity.
 Agents use `add_track`, `delete_track`, `add_via` and `delete_via`; optional expected
 project/object snapshots guard stale edits. Native files containing copper require
 schema version 4. Older outline/pad-only files keep their existing schema version.
-Copper continuity, interactive routing, curved tracks, inner layers and other via
-types remain subsequent work. Pad-only connection guides do not yet account for
-tracks or vias. See [the copper contract](docs/specs/copper-tracks-vias.md).
+Interactive routing and bounded exact-endpoint guide suppression are available.
+Shape contacts, curved tracks, inner layers and other via types remain subsequent work. See [the copper contract](docs/specs/copper-tracks-vias.md).
 
 ## Footprint libraries
 
@@ -247,7 +249,7 @@ Selected native schematic sheets also support display-free SVG/PNG export and MC
 
 ### Linked schematic and PCB updates
 
-Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). New component creation and routed-net migration remain open.
+Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). Component creation uses the explicit footprint workflow below; routed-net migration remains open.
 
 ### Linked component cross-probing
 

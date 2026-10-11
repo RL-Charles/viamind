@@ -136,12 +136,12 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "query_nets".into(),
-            description: "Read named-net summaries in exact case-sensitive name order from explicit pads only. Read-only; terminal and conservative guide counts exclude legacy preview pads. limit defaults to 100 (max1000), after is the last net name. Repeat pages only while the design is unchanged.".into(),
+            description: "Read named-net summaries in exact case-sensitive name order from explicit pads only. Read-only; terminal and conservative remaining guide counts exclude legacy preview pads. Whole-board copper_proof reports bounded exact-endpoint coverage/fallback, not full connectivity or DRC certification. limit defaults to 100 (max1000), after is the last net name. Repeat pages only while the design is unchanged.".into(),
             input_schema: input_schema::<NetQuery>(),
         });
         commands.push(HostCommand {
             name: "query_connectivity".into(),
-            description: "Read exact named-net terminal membership and unrouted connection guides. Explicit pads only; N terminals produce N-1 guides; no copper continuity analysis, so touching same-net pads may overestimate unrouted work. Coordinates are transformed pad centres in mm. Exact dense_prim for <=256 terminals, approximate coordinate_chain for larger nets. Guides are not copper or DRC. Arrays share offset and limit (default100,max1000); repeat pages only while unchanged.".into(),
+            description: "Read exact named-net terminal membership and unrouted connection guides. Explicit pads only; bounded exact same-net/side track endpoints and through-via bridges suppress proven connected islands. copper_proof reports whole-board coverage/fallback. Unsupported transforms, contacts and excessive inputs retain conservative extra guides; no full physical connectivity certification. Coordinates are transformed pad centres in mm. Exact dense_prim for <=256 terminals, approximate coordinate_chain for larger nets. Guides are not copper or DRC. Arrays share offset and limit (default100,max1000); repeat pages only while unchanged.".into(),
             input_schema: input_schema::<ConnectivityQuery>(),
         });
         commands.push(HostCommand {

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "checks": [
+    "shared query and exact pad/via routing tools discovered",
+    "three independent initial required connections",
+    "arbitrary rotation explicitly unsupported and fallback absent",
+    "repeated peer queries preserve session dirty state and ordering",
+    "exact off-grid mirrored quarter-turn chain clears only its guide",
+    "net summaries and graph query share residual guide counts",
+    "readonly proof does not create events history or dirty changes",
+    "stale peer routing leaves entire session unchanged",
+    "one creator undo restores exact model and guide",
+    "redo retains exact route identity and clears guide",
+    "opposite-side through-via chain clears guide with analyzed proof",
+    "unsupported isolated connection remains visible after both routes",
+    "one via-route undo restores cross-side guide",
+    "via route redo retains exact model and clears guide",
+    "native save preserves every identity and current copper",
+    "reopen derives same residual guides from persisted copper",
+    "clean headless process exit"
+  ],
+  "binary_sha256": "0ddec17567e03fada92d4aa8e84a0166631d0bd9678421aa69939d2129c84837",
+  "transport": "production headless stdio",
+  "fixture": "/tmp/viamind-t0076-native-a2n66qfx/original.viamind.json",
+  "same_side_route_ms": 1.469255999836605,
+  "saved_path": "/tmp/viamind-t0076-native-a2n66qfx/final.viamind.json"
+}

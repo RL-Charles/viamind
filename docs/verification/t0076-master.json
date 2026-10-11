@@ -1,0 +1,32 @@
+{
+  "source_commit": "c1a7d9843504fa2b27be5edcfbc8debc47fac216",
+  "base_commit": "c55dc7cedecc0e905234a1c2722b93ceb0f6d10d",
+  "production_binary_sha256": "0ddec17567e03fada92d4aa8e84a0166631d0bd9678421aa69939d2129c84837",
+  "linux_gates": {
+    "fmt": true,
+    "clippy_workspace_all_targets_strict": true,
+    "tests_passed": 458,
+    "tests_failed": 0,
+    "tests_ignored_existing": 1,
+    "build": true
+  },
+  "stdio_checks": 17,
+  "http_checks": 18,
+  "production_pid": 352718,
+  "production_window_id": 110379505833376,
+  "production_endpoint": "http://127.0.0.1:7903/mcp",
+  "inspection": {
+    "source_commit": "c1a7d9843504fa2b27be5edcfbc8debc47fac216",
+    "binary_sha256": "ddbf518e747be8ac3b8c0936e346d0ca14fdcda7925b90970d604cde1aa4b34e",
+    "pid": 415543,
+    "window_id": 110379506781040,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "source": "t0076-inspection.rs",
+    "screenshot": "t0076-board.png",
+    "cua": "t0076-board-cua.json",
+    "scope": "Fixed-size production ViamindApp with same renderer, no MCP, no input injection; loaded final HTTP-saved project. Readable native board evidence only, no cadence claim."
+  }
+}

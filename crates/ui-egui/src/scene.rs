@@ -52,7 +52,7 @@ impl Item {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Scene {
     pub board: WorldRect,
-    /// Transient unrouted connection guides from explicit, net-assigned pads.
+    /// Conservative remaining guides from explicit pads and bounded endpoint copper proofs.
     pub ratsnest: Vec<[WorldPos; 2]>,
     /// Actual substrate triangles, including cutouts; None uses the synthetic rectangle.
     pub substrate: Option<Vec<[WorldPos; 3]>>,
