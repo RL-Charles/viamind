@@ -135,15 +135,15 @@ impl ViamindApp {
                     let selected_part = parts.iter().find(|p| Some(p.id) == self.pcb_sync.part).copied();
                     let selected_symbol = symbols.iter().find(|(_, s)| Some(s.id) == self.pcb_sync.symbol).map(|(_, s)| *s);
                     let label = ui.label("PCB component to link");
-                    egui::ComboBox::from_id_salt("sync_part").selected_text(selected_part.map(|p| short(&p.designator)).unwrap_or_else(|| "Choose PCB component".into())).width(320.0).show_ui(ui, |ui| {
+                    egui::ComboBox::from_id_salt("sync_part").selected_text(selected_part.map_or_else(|| "Choose PCB component".into(), |p| short(&p.designator))).width(320.0).show_ui(ui, |ui| {
                         for part in parts { ui.selectable_value(&mut self.pcb_sync.part, Some(part.id), format!("{} · {}", short(&part.designator), &part.id.to_string()[28..])).on_hover_text(format!("{}\n{}", part.designator, part.id)); }
                     }).response.labelled_by(label.id);
                     let label = ui.label("Schematic symbol to link");
-                    egui::ComboBox::from_id_salt("sync_symbol").selected_text(selected_symbol.map(|s| short(&s.designator)).unwrap_or_else(|| "Choose schematic symbol".into())).width(320.0).show_ui(ui, |ui| {
+                    egui::ComboBox::from_id_salt("sync_symbol").selected_text(selected_symbol.map_or_else(|| "Choose schematic symbol".into(), |s| short(&s.designator))).width(320.0).show_ui(ui, |ui| {
                         for (sheet, symbol) in symbols { ui.selectable_value(&mut self.pcb_sync.symbol, Some(symbol.id), format!("{} · {}", short(&symbol.designator), short(&sheet.name))).on_hover_text(format!("{}\nSheet {}\n{}", symbol.designator, sheet.name, symbol.id)); }
                     }).response.labelled_by(label.id);
                     if let Some(part) = selected_part {
-                        ui.label(format!("Current symbol link: {}", part.schematic_symbol.map(|id| id.to_string()).unwrap_or_else(|| "unlinked".into())));
+                        ui.label(format!("Current symbol link: {}", part.schematic_symbol.map_or_else(|| "unlinked".into(), |id| id.to_string())));
                         let target = selected_symbol.map(|s| SchematicLinkTarget::Symbol { expected: s.clone() });
                         if ui.add_enabled(fresh && target.is_some() && !self.files.busy() && self.pcb_sync.pending.is_none(), egui::Button::new("Link selected components")).clicked() {
                             link = Some(LinkSchematicSymbol { expected_project: project.id, expected_part: part.clone(), target: target.expect("enabled symbol") });
@@ -165,7 +165,7 @@ impl ViamindApp {
                 let fresh = preview.command.source_cursor == cursor;
                 if !fresh { ui.label("Document changed; prepare synchronization again."); }
                 ui.label(format!("{} proposed changes · {} unlinked symbols · {} unlinked PCB components", preview.changes.len(), preview.unlinked_symbols.len(), preview.unlinked_parts.len()));
-                egui::ScrollArea::vertical().id_salt("sync_changes").max_height(220.0).show_rows(ui, ui.text_style_height(&egui::TextStyle::Body) + 6.0, preview.changes.len(), |ui, rows| {
+                egui::ScrollArea::vertical().id_salt("sync_changes").max_height(220.0).show_rows(ui, ui.text_style_height(&egui::TextStyle::Body), preview.changes.len(), |ui, rows| {
                     for row in rows { let change = &preview.changes[row]; let line = format!("{}: {} → {} · part {}", change.field, change.before.as_deref().unwrap_or("unassigned"), change.after.as_deref().unwrap_or("unassigned"), change.part_id); ui.add(egui::Label::new(&line).truncate()).on_hover_text(line); }
                 });
                 ui.collapsing("Net identities and label names", |ui| {
