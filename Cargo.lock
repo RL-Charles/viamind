@@ -2795,6 +2795,7 @@ dependencies = [
  "schemars_derive",
  "serde",
  "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -3390,6 +3391,10 @@ dependencies = [
 name = "viamind-doc"
 version = "0.1.0"
 dependencies = [
+ "schemars",
+ "serde",
+ "serde_json",
+ "uuid",
  "viamind-geom",
 ]
 
