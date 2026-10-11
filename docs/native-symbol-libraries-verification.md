@@ -43,6 +43,9 @@ The [master report](verification/t0080-master.json) identifies the verified sour
 full Linux gate log, production and inspection binary hashes, CI and captures.
 The exact production executable is copied while the shared build lock remains
 held. MCP verification uses that immutable copy, independently of later builds.
+The later static-walkaround integration preserves byte-identical symbol-library
+implementation files and both sets of engine/actions/UI hooks. Historical artifact
+identities remain unchanged; fresh combined CI checks the integrated branch.
 All four Linux gates pass at the recorded source: **530 passed, zero failed,
 one existing timing test ignored**. The production binary passes **29 stdio checks
 and 30 actual desktop HTTP checks**. The full gate log and individual check

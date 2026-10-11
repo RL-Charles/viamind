@@ -47,5 +47,7 @@
   },
   "capture_limits": "Cua AT-SPI unavailable; X11 window metadata fallback. Readable screenshot is inspection wrapper; actual pointer/text/compact scrolling verified by egui_kittest, not OS input.",
   "previous_runs": "Initial7ae source:524workspace tests+20preliminary focused,28stdio/29HTTP before FIFO hardening; preserved historical logs/binaries. Hardening6258327 stopped at mkfifo fixture compile; corrected to pinned mkfifoat in9d109ee. Failed runs not counted.",
-  "scope": "Detached rectangular single-unit definitions only. Parent multi-unit quad-op-amp acceptance remains open."
+  "scope": "Detached rectangular single-unit definitions only. Parent multi-unit quad-op-amp acceptance remains open.",
+  "integration_main": "bf8d455",
+  "integration_note": "Subsequent integration adds merged static walkaround routing. All symbol-library implementation files are byte-identical to verified9d source; additive engine exports/actions/UI hooks and README sections preserved. Fresh combined CI required; historical530/29/30 artifact identities remain unchanged."
 }
