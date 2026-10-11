@@ -29,6 +29,7 @@ fn builtin_specs() {
             "add_part",
             "add_track",
             "add_via",
+            "annotate_schematic",
             "apply_footprint",
             "delete_part",
             "delete_schematic_sheet",

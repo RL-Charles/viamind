@@ -26,6 +26,8 @@
 //! assert!(engine.read(|p| p.board.parts.is_empty()));
 //! ```
 
+pub mod annotation;
+pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
 pub mod auto_drc;
 pub use auto_drc::{AutoDrcConfig, AutoDrcPhase, AutoDrcStatus};
 pub mod command;

@@ -1,0 +1,19 @@
+# Deterministic schematic reference annotation
+
+Public behavioral source: [KiCad 9 reference designators and annotation](https://docs.kicad.org/9.0/en/eeschema/eeschema.html#reference-designators-and-symbol-annotation), consulted 2026-10-11. Reference prefixes/numbers identify components; bulk annotation can retain numbered references or reset them, order by position, and choose a starting number. Viamind implements its own bounded native behavior from this public description.
+
+## Native behavior
+
+- Read-only `preview_schematic_annotation` captures only schematic sheets and a source cursor. It returns the exact `annotate_schematic` command input plus proposed reference changes. Preview never changes selection, history, dirty state or session events. Calculation releases the engine lock after bounded capture.
+- `annotate_schematic` requires the expected project UUID and exact complete set of sheet snapshots. Added, removed or changed sheets reject the entire command. Board changes do not invalidate a schematic-only guard. Apply one transaction with changed Sheet deltas; preserve every UUID, pin, geometry, field and board object except changed symbol designators. One undo restores all affected sheets. Selective undo remains conservatively sheet-scoped.
+- Flat sheets use an explicit complete `sheet_order` without duplicates, or UUID order when omitted (the desktop sheet-list order). Within each sheet choose X-then-Y or Y-then-X integer position order; symbol UUID breaks ties. Numbering continues across sheets independently for each prefix.
+- Supported references have 1..16 ASCII letters followed by a positive decimal number 1..999999999, `?`, or no suffix. Prefix matching is ASCII case-insensitive. Output assigned references use uppercase prefixes and canonical decimal numbers. Keep-existing preserves numbered reference text, reserves its normalized prefix/number globally, and assigns only unnumbered references. Ambiguous existing aliases such as `r01` and `R1` reject keep-existing; reset-all can assign them unique numbers. Unsupported reference formats reject with the symbol UUID/reference before any change. Native document validation still requires existing literal designators to be unique.
+- Starting number is inclusive, 1..999999999. Assign the lowest free number at or above it in deterministic traversal order, skipping retained numbers. Exhaustion rejects atomically. Reset-all replaces every supported reference; repeating the same annotation is a no-op.
+- Bound to 100 sheets, 2000 symbols, 10000 total sheets/symbols/pins/wires/junctions/labels, 256 KiB aggregate schematic text and 2 MiB serialized complete sheet guard. Count before cloning. Invalid native sheet geometry/identities reject. Dense board geometry is not captured.
+- Desktop **Annotate symbols** prepares a preview with keep-existing/reset-all, position order and starting number. Applying uses the shared command and the captured guard. Concurrent changes retain the stale preview with a reload message; preparing again explicitly refreshes it. Document replacement clears the preview, including reopening the same UUID.
+
+This ticket covers flat native single-unit symbols. Multi-unit packages, hierarchy/repeated sheet instances, board synchronization, ERC, automatic annotation while placing, and unsupported arbitrary reference syntax are outside coverage. The operation does not imply a PCB/schematic link.
+
+## Verification
+
+Independently expected multi-sheet order and X/Y/tie behavior; retained-number gaps and normalized aliases; every non-reference field/UUID unchanged; no-op/repeated result; exhaustion/invalid formats/order/budgets; whole-session stale failure and one-step undo/redo; native save/log replay; real MCP two-client preview/apply/undo; actual desktop preview/apply and stale/reopen regressions. Required Linux fmt, strict all-target clippy, workspace tests/build and final combined CI.

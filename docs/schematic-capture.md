@@ -16,6 +16,31 @@ Middle drag or Space+drag pans, wheel zooms, and **Fit schematic**, Home or
 **View → Zoom to fit** fits the active sheet. PCB and schematic cameras are
 independent. Changing workspace cancels an interrupted PCB gesture.
 
+## Annotate symbols
+
+Expand **Annotate symbols** in the schematic panel. Choose **Keep existing** to
+preserve numbered references and fill available numbers, or **Renumber all** to
+assign every reference again. Choose X then Y or Y then X ordering and a positive
+starting number, then **Prepare annotation** to inspect the proposed changes.
+Preparing changes no document data. **Apply annotation** changes references in
+one undoable transaction across all sheets.
+
+References use a 1–16 letter ASCII prefix and a positive number or `?` placeholder.
+Allocation treats prefixes case-insensitively and numbers without leading-zero
+distinctions; conflicting retained references require correction or renumbering.
+Default sheet order is stable sheet UUID order. Agent clients can supply an
+explicit complete sheet order to `preview_schematic_annotation`, then send the
+returned guarded command to `annotate_schematic`.
+
+A concurrent schematic edit rejects an old preview. Prepare it again to inspect
+the current changes. Board-only edits preserve the preview. Reopening a document
+clears the desktop preview. This operation changes schematic references only;
+PCB synchronization is a separate capability.
+
+The [Linux annotation verification report](verification/t0063-annotation-native.json)
+records the tested production binary, 14 headless MCP checks, full workspace
+gates, desktop input regressions and verification limits.
+
 ## Original regulator example
 
 Open [the native example](../fixtures/schematic/regulator.viamind.json), which
