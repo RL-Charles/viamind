@@ -194,7 +194,7 @@ fn generated_ellipsis_suffixes_are_charged_before_display_strings() {
         c.symbols.insert(s.id, s);
     }
     sh.content = Some(c);
-    assert!(schematic_label_layout(&sh).unwrap_err().to_string().contains("display exceeds32768"));
+    assert!(schematic_label_layout(&sh).unwrap_err().to_string().contains("display exceeds 32768"));
 }
 
 #[test]

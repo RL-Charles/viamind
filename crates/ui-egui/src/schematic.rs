@@ -744,12 +744,9 @@ impl ViamindApp {
         let screen = |p: Coordinate| cam.world_to_screen(world(p), viewport);
         let wire_color = Color32::from_rgb(100, 220, 150);
         let symbol_color = Color32::from_rgb(235, 210, 130);
-        let glyphs = match labels::prepare(ui.ctx(), &symbol_labels, cam, viewport, symbol_color) {
-            Ok(glyphs) => glyphs,
-            Err(error) => {
-                painter.text(viewport.left_top() + egui::vec2(8.0, 8.0), Align2::LEFT_TOP, error, FontId::proportional(13.0), Color32::LIGHT_RED);
-                return;
-            }
+        let (glyphs, label_error) = match labels::prepare(ui.ctx(), &symbol_labels, cam, viewport, symbol_color) {
+            Ok(glyphs) => (glyphs, None),
+            Err(error) => (vec![], Some(error)),
         };
         let selected = self.schematic.selected;
         let color = |id, normal| {
@@ -786,6 +783,13 @@ impl ViamindApp {
             }
         }
         labels::paint(ui, &painter, glyphs, cam, viewport, symbol_color);
+        if let Some(error) = label_error {
+            // Unsupported font metrics refuse labels, while original geometry,
+            // picking and wire attachment continue through their existing paths.
+            let galley = painter.layout(error, FontId::proportional(13.0), Color32::LIGHT_RED, (viewport.width() - 16.0).max(1.0));
+            painter.galley(viewport.left_top() + egui::vec2(8.0, 8.0), galley, Color32::LIGHT_RED);
+        }
+
         if cam.zoom < 10.0 && !symbol_labels.is_empty() {
             painter.text(
                 viewport.left_top() + egui::vec2(8.0, 8.0),
