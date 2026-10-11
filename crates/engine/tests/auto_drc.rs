@@ -58,3 +58,34 @@ fn moderate_board_worker_timing_and_undo_redo_refresh_are_measured() {
     assert_eq!(redone.generation, 4);
     assert_eq!(redone.report.unwrap().coverage.checked_vias, 1);
 }
+
+#[test]
+fn named_policy_edit_and_undo_refresh_captured_automatic_checker_sources() {
+    let mut project = Project::new("Automatic exact minima");
+    let id = ObjectId::new();
+    project.board.tracks.insert(
+        id,
+        Track { id, start: Point::ORIGIN, end: Point::new(Nm(1_000_000), Nm(0)), width: Nm(300_000), layer: CopperLayer::Top, net: Some("A".into()) },
+    );
+    let e = EngineHandle::new(project);
+    e.configure_auto_drc(AutoDrcConfig { enabled: true, ..Default::default() }).unwrap();
+    assert!(ready(&e).report.unwrap().document_net_rules.is_empty());
+    e.execute_typed(
+        viamind_engine::SetNamedNetRules {
+            expected_project: e.read(|p| p.id),
+            expected_cursor: e.event_cursor(),
+            rules: vec![viamind_engine::NamedNetRuleRow { net: "A".into(), minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300_001) }],
+        },
+        Origin::User,
+    )
+    .unwrap();
+    let updated = ready(&e);
+    assert_eq!(updated.source_cursor, Some(e.event_cursor()));
+    let report = updated.report.unwrap();
+    assert_eq!(report.document_net_rules, e.read(|p| p.board.net_rules.clone()));
+    assert_eq!(report.violations.len(), 1);
+    assert_eq!(report.violations[0].kind, viamind_drc::ViolationKind::MinimumTrackWidth);
+    e.undo(Origin::User).unwrap();
+    let report = ready(&e).report.unwrap();
+    assert!(report.document_net_rules.is_empty() && report.violations.is_empty());
+}

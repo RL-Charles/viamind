@@ -23,6 +23,7 @@ pub mod gpu_timing;
 pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
+pub mod net_rules;
 pub mod outlines;
 pub mod output_jobs;
 mod pad_routing;
@@ -165,6 +166,7 @@ pub struct ViamindApp {
     pub copper: copper::CopperUi,
     pub routing: routing::RoutingUi,
     pub track_cleanup: track_cleanup::TrackCleanupUi,
+    pub net_rules: net_rules::NetRulesUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
     pub erc: erc::ErcUi,
@@ -217,6 +219,7 @@ impl ViamindApp {
             copper: copper::CopperUi::default(),
             routing: routing::RoutingUi::default(),
             track_cleanup: track_cleanup::TrackCleanupUi::default(),
+            net_rules: net_rules::NetRulesUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             erc: erc::ErcUi::default(),
@@ -261,6 +264,7 @@ impl ViamindApp {
             copper: copper::CopperUi::default(),
             routing: routing::RoutingUi::default(),
             track_cleanup: track_cleanup::TrackCleanupUi::default(),
+            net_rules: net_rules::NetRulesUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             erc: erc::ErcUi::default(),
@@ -305,6 +309,7 @@ impl ViamindApp {
     pub fn undo_design(&mut self) {
         self.routing.cancel();
         self.track_cleanup.cancel();
+        self.net_rules.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Undo.run(&design.engine, json!({}));
         }
@@ -314,6 +319,7 @@ impl ViamindApp {
     pub fn redo_design(&mut self) {
         self.routing.cancel();
         self.track_cleanup.cancel();
+        self.net_rules.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Redo.run(&design.engine, json!({}));
         }
@@ -321,7 +327,7 @@ impl ViamindApp {
 
     /// Places a 10k 0603 resistor with the next free designator near the board centre (Edit menu).
     pub fn place_test_resistor(&mut self) {
-        if self.routing.editing() || self.track_cleanup.editing() {
+        if self.routing.editing() || self.track_cleanup.editing() || self.net_rules.editing() {
             return;
         }
         let Some(design) = &self.design else { return };
@@ -401,6 +407,7 @@ impl ViamindApp {
         self.schematic_component_window(ui);
         self.symbol_library_window(ui);
         self.track_cleanup_window(ui);
+        self.named_net_rules_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
@@ -416,14 +423,16 @@ impl ViamindApp {
                     && !self.pads.editing()
                     && !self.copper.editing()
                     && !self.routing.editing()
-                    && !self.track_cleanup.editing();
+                    && !self.track_cleanup.editing()
+                    && !self.net_rules.editing();
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
                 let routing_enabled = !self.files.busy()
                     && !self.parts.placing()
                     && !self.outlines.editing()
                     && !self.pads.editing()
                     && !self.copper.editing()
-                    && !self.track_cleanup.editing();
+                    && !self.track_cleanup.editing()
+                    && !self.net_rules.editing();
                 self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
             self.paint_cross_probe(ui, response.rect);
@@ -582,7 +591,8 @@ impl ViamindApp {
                                 && !self.pads.editing()
                                 && !self.copper.editing()
                                 && !self.routing.editing()
-                                && !self.track_cleanup.editing(),
+                                && !self.track_cleanup.editing()
+                                && !self.net_rules.editing(),
                         );
                     }
                     ui.separator();
@@ -626,6 +636,10 @@ impl ViamindApp {
             }
             if self.design.is_some() && !self.schematic.active {
                 ui.menu_button("Board", |ui| {
+                    if ui.button("Exact named-net minima…").clicked() {
+                        self.begin_named_net_rules();
+                        ui.close();
+                    }
                     if ui.button("Clean cardinal track joints…").clicked() {
                         self.begin_track_cleanup();
                         ui.close();

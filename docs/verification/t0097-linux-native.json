@@ -1,0 +1,345 @@
+{
+  "source_commit": "6566e8066e8ccfcb7ba2d6ff04be462ef7fc4f35",
+  "source_base": "c506d6b67e318a59e199c2faa136e718b982ac13",
+  "date": "2026-10-11",
+  "platform": "Linux x86_64 Hyprland",
+  "gates": {
+    "source_commit": "6566e8066e8ccfcb7ba2d6ff04be462ef7fc4f35",
+    "fmt": "pass",
+    "clippy": "workspace/all-targets/-Dwarnings pass",
+    "targeted": {
+      "passed": 38,
+      "failed": 0
+    },
+    "workspace": {
+      "passed": 696,
+      "failed": 0,
+      "ignored": 1
+    },
+    "build": "workspace pass",
+    "catalog_unit_tests": 13,
+    "discovered_tools": 83,
+    "agent_workflow_checks": 18,
+    "production_sha256": "0d356ea32eaafb2fe581d6458f2d327d58ac968551c7918c7d1c75ef8e38b504",
+    "inspection_initial_sha256": "28c32608910253ccb7a3c4f5b4174cb9950e48bce65195f466b44f4db49d80e8",
+    "log_sha256": "80a038a464635c67c50fc510acf454fcf3a9b8c43dbb1da428ffdce62dda1b4b"
+  },
+  "gate_environment": {
+    "mutex": "/tmp/viamind-workspace-gates.lock",
+    "preflight": "Touch workspace Rust mtimes while holding entire gate mutex; unique copies before unlock",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp",
+    "profile": "unoptimized debug with debug info stripped",
+    "offline_locked": true
+  },
+  "production": {
+    "pid": 1590343,
+    "mcp_port": 7924,
+    "window_id": 110379494710448,
+    "http_checks": 42,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0097/verified-6566e80/viamind",
+    "binary_sha256": "0d356ea32eaafb2fe581d6458f2d327d58ac968551c7918c7d1c75ef8e38b504",
+    "cua_exact_snapshot": "success; metadata retained separately",
+    "checked_files": 12,
+    "latencies_ms": {
+      "first_policy_http_ms": 1.332347994321026,
+      "equal_width_route_http_ms": 1.5702870005043224,
+      "named_walkaround_commit_http_ms": 3.2394740119343624,
+      "checked_job_http_ms": 14.48866400460247
+    }
+  },
+  "final_inspection": {
+    "source_commit": "83f92efa247c9c0aac09486e3a7503a7b06e5809",
+    "source_change": "Inspection-only captured guard before production app.show prevents post-Close editor assertion; product behavior and production binary remain source6566e80.",
+    "binary_sha256": "7d581f64588d553711232bf26704b1bd74d590940126af5691ff52d0f25e948d",
+    "fmt": "pass",
+    "strict_workspace_all_targets_clippy": "pass",
+    "example_build": "pass",
+    "os_input_claim": false,
+    "capture": "Actual eframe WGPU Screenshot Event; exclusive new opaque RGB P6; fsync; lossless PNG readback; self-close",
+    "ui_passes_meaning": "native UI callback invocations, not presented frames",
+    "windows": [
+      {
+        "mode": "wide",
+        "launch": {
+          "active": false,
+          "bundle_id": null,
+          "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0097/launch-inspection-final-wide",
+          "pid": 1600622,
+          "running": true,
+          "windows": [
+            {
+              "app_name": "viamind-net-minima-inspection",
+              "bounds": {
+                "height": 1000,
+                "width": 1600,
+                "x": 2080,
+                "y": 1265
+              },
+              "height": 1000,
+              "is_on_screen": true,
+              "pid": 1600622,
+              "title": "Untitled \u2014 Viamind",
+              "width": 1600,
+              "window_id": 110379493818736,
+              "x": 2080,
+              "y": 1265,
+              "z_index": null
+            }
+          ]
+        },
+        "prepared": {
+          "control_bounds": {
+            "Apply named-net rules": {
+              "max": [
+                161.3125,
+                555.0
+              ],
+              "min": [
+                23.0,
+                537.0
+              ]
+            },
+            "Cancel rules": {
+              "max": [
+                334.34375,
+                555.0
+              ],
+              "min": [
+                256.78125,
+                537.0
+              ]
+            },
+            "Reload rules": {
+              "max": [
+                248.78125,
+                555.0
+              ],
+              "min": [
+                169.3125,
+                537.0
+              ]
+            }
+          },
+          "full_session_unchanged": true,
+          "inspection_only": true,
+          "named_rules": {
+            "A": {
+              "minimum_copper_clearance": 900001,
+              "minimum_track_width": 300001
+            },
+            "B": {
+              "minimum_copper_clearance": 700001,
+              "minimum_track_width": 200000
+            },
+            "FOREIGN": {
+              "minimum_copper_clearance": 1500000,
+              "minimum_track_width": 1
+            },
+            "N": {
+              "minimum_copper_clearance": 1100001,
+              "minimum_track_width": 300001
+            },
+            "UNUSED": {
+              "minimum_copper_clearance": 10000000,
+              "minimum_track_width": 1
+            }
+          },
+          "os_input_claim": false,
+          "prepared_production_editor_via_egui": true
+        },
+        "framebuffer": {
+          "capture": "actual eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            1600.0,
+            1000.0
+          ],
+          "full_session_unchanged": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0097/editor-wide-final.ppm",
+          "pixels": [
+            1600,
+            1000
+          ],
+          "prepared_actual_egui_control_bounds_fit_native_viewport": true,
+          "self_close_after_fsync": true,
+          "ui_passes": 11
+        },
+        "self_closed_verified": true,
+        "encoding": {
+          "encoding": "lossless RGB P6 to PNG; no image transformations",
+          "pixels": [
+            1600,
+            1000
+          ],
+          "source_sha256": "f1a145d85d88aabebd7707629dbbc21b1fb8df10fe88d00108ad4b842646bd08",
+          "png_sha256": "3323ce6b0bf993e3e345901597cf9d259ae011d6cd7cdfaaf3b15720e642276c",
+          "exact_rgb_readback": true
+        }
+      },
+      {
+        "mode": "compact",
+        "launch": {
+          "active": false,
+          "bundle_id": null,
+          "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0097/launch-inspection-final-compact",
+          "pid": 1601113,
+          "running": true,
+          "windows": [
+            {
+              "app_name": "viamind-net-minima-inspection",
+              "bounds": {
+                "height": 400,
+                "width": 640,
+                "x": 2560,
+                "y": 1565
+              },
+              "height": 400,
+              "is_on_screen": true,
+              "pid": 1601113,
+              "title": "Untitled \u2014 Viamind",
+              "width": 640,
+              "window_id": 110379493818736,
+              "x": 2560,
+              "y": 1565,
+              "z_index": null
+            }
+          ]
+        },
+        "prepared": {
+          "control_bounds": {
+            "Apply named-net rules": {
+              "max": [
+                161.3125,
+                317.0
+              ],
+              "min": [
+                23.0,
+                299.0
+              ]
+            },
+            "Cancel rules": {
+              "max": [
+                334.34375,
+                317.0
+              ],
+              "min": [
+                256.78125,
+                299.0
+              ]
+            },
+            "Reload rules": {
+              "max": [
+                248.78125,
+                317.0
+              ],
+              "min": [
+                169.3125,
+                299.0
+              ]
+            }
+          },
+          "full_session_unchanged": true,
+          "inspection_only": true,
+          "named_rules": {
+            "A": {
+              "minimum_copper_clearance": 900001,
+              "minimum_track_width": 300001
+            },
+            "B": {
+              "minimum_copper_clearance": 700001,
+              "minimum_track_width": 200000
+            },
+            "FOREIGN": {
+              "minimum_copper_clearance": 1500000,
+              "minimum_track_width": 1
+            },
+            "N": {
+              "minimum_copper_clearance": 1100001,
+              "minimum_track_width": 300001
+            },
+            "UNUSED": {
+              "minimum_copper_clearance": 10000000,
+              "minimum_track_width": 1
+            }
+          },
+          "os_input_claim": false,
+          "prepared_production_editor_via_egui": true
+        },
+        "framebuffer": {
+          "capture": "actual eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            640.0,
+            400.0
+          ],
+          "full_session_unchanged": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0097/editor-compact-final.ppm",
+          "pixels": [
+            640,
+            400
+          ],
+          "prepared_actual_egui_control_bounds_fit_native_viewport": true,
+          "self_close_after_fsync": true,
+          "ui_passes": 11
+        },
+        "self_closed_verified": true,
+        "encoding": {
+          "encoding": "lossless RGB P6 to PNG; no image transformations",
+          "pixels": [
+            640,
+            400
+          ],
+          "source_sha256": "9a9455771abbd95ad069fcf484c8268a5a6ed25ae21fa88becf6d03ad9ace425",
+          "png_sha256": "e886c82642cdedaabbc8dbc11236488a7938d1cfad75f6e787b10cccf0feab9b",
+          "exact_rgb_readback": true
+        }
+      }
+    ]
+  },
+  "excluded_initial_inspection": {
+    "source_commit": "6566e8066e8ccfcb7ba2d6ff04be462ef7fc4f35",
+    "binary_sha256": "28c32608910253ccb7a3c4f5b4174cb9950e48bce65195f466b44f4db49d80e8",
+    "reason": "Correct initial wide/compact framebuffer followed by inspection-only next callback assertion after Close canceled editor; not final retained visual proof. Rebuilt guarded host captures/cleanly exits."
+  },
+  "test_corrections": [
+    "Missing UI engine binding/Envelope lifetime/strict replay lint and test-only NodeT import corrected before complete green gates.",
+    "Four independent integration fixtures originally competed with intentional two-operation planning admission; serialize fixture tests only. Production cap/algorithm/assertions unchanged."
+  ],
+  "limits": [
+    "Only exact assigned named-net copper clearance and track-width floors; no preferred sizes or implicit widening.",
+    "No class hierarchy, patterns, layer/region priorities or document via-size minima.",
+    "Scoped existing DRC coverage/work/result caps and exclusions remain; no physical/manufacturing certification.",
+    "Existing native reader has no global file-size cap; bounded rule visitors/captures do not add one.",
+    "Small authored debug-fixture HTTP latencies are not worst-case guarantees; strict native100k60fps remains open."
+  ],
+  "final_combined_ci": "Required on final artifact head before merge; historical local binaries remain tied to exact source above.",
+  "artifacts": {
+    "t0097-agent-workflow.json": "ff1b63fa609688c18e52cbdbecd59f0f11abbcef2b765958058a6a2caa240d58",
+    "t0097-catalog-discovery.json": "cfa1a5444f5a5e56a950366ec0c16d136b8b809b7c50cd2038eca1b5023f00b4",
+    "t0097-checked-drc.json": "b9507403124783cdf56f0381643685d7fd48ceb6006954213c0e2d219ccae73b",
+    "t0097-checked-job.json": "5ecf221810e8ccfb89dec470e4a3f9a50e0bee3846ef60822ff84f2c1962933f",
+    "t0097-checked-manifest.json": "a348e0615c421804da4ce6af0858a09c0cd54c19c008e95185367db3bbab9853",
+    "t0097-checked-rules.viamind.json": "f225e68077770abad8dddb6978bea694baf04a3dc159a026d7b1b2840f3c7550",
+    "t0097-cleared.viamind.json": "0f7d77b19912b3baa6016a821eb9ac399e8cde9073911b9d38fdf10bb15e521e",
+    "t0097-editor-compact.png": "e886c82642cdedaabbc8dbc11236488a7938d1cfad75f6e787b10cccf0feab9b",
+    "t0097-editor-wide.png": "3323ce6b0bf993e3e345901597cf9d259ae011d6cd7cdfaaf3b15720e642276c",
+    "t0097-encoding-compact.json": "2f012a41c181c1e3e35223fd16ca2ecf96e354d8de1cfb96b01b665d294e304c",
+    "t0097-encoding-wide.json": "7db261f562b8db595b2d6dc533f16d789e4318d6588b83ee8cd5e8f2ad572780",
+    "t0097-inspection-build.log": "6a27eb55bd65898c9e5df8e26364f1979e401b9e42524615ae22aa53694f4be9",
+    "t0097-inspection-compact-launch.json": "09d3b648d963a2445fb53e86c90b11440d12bb324c461e7b33e4ef05f04cd187",
+    "t0097-inspection-compact.log": "8086d34eb807faff0777328416c8f9567208083a776b4cd09df57fee90f8e0a4",
+    "t0097-inspection-wide-launch.json": "5c47a6f5a871e257ca0aeb2f6dd46c2b1ee1f2a4ddbb18479a8a61bcc6735d8b",
+    "t0097-inspection-wide.log": "a11220d93b9abf646cfe16ea35d18f4843db8f89ea73c9aa4bfbf67bf869a0c0",
+    "t0097-linux-full.log": "80a038a464635c67c50fc510acf454fcf3a9b8c43dbb1da428ffdce62dda1b4b",
+    "t0097-linux-gates.json": "97407a944f5c5c1b203ed3b4bc99828eb8f5ae3f2a35899447b456c6377c0148",
+    "t0097-production-check.py": "28842b67e59811cfac54de5cea2783270bc2f42416275b3f9cc3065748776bfc",
+    "t0097-production-cua-metadata.json": "433b6aa7c6013b0cfd46ddd61690717a4335c5df2a4131b66f3332a3320170a4",
+    "t0097-production-http.json": "10d430320408ba4f0584f9ed5a566c811dbdce2b34fe7300dd0f12e22aa7e07d",
+    "t0097-production-launch.json": "132bf0c684042997ac474ac7f644ad706f2d1ffa97f3fd6496a94bfbef2b3e48",
+    "t0097-rules.viamind.json": "553807d5d3f7ced9e05c45b0db3314ae0d38e36e8670b683a638e1e6fb2441a0"
+  }
+}

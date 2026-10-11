@@ -138,3 +138,62 @@ async fn checked_job_uses_production_drc_without_report_override_and_refuses_ato
     assert_eq!(engine.session_state().project, before.project);
     assert!(!failure.exists());
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn checked_job_cannot_weaken_named_width_floor_and_reports_both_captured_sources() {
+    let _guard = TEST.lock().await;
+    let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+    project.board.net_rules.insert("GND".into(), serde_json::from_value(json!({"minimum_copper_clearance":0,"minimum_track_width":250000})).unwrap());
+    let e = EngineHandle::new(project);
+    let tools = viamind_mcp::engine_registry(e.clone()).unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let mut job = OutputJob::new("Document floors".into(), 0.);
+    job.profile = viamind_fab::CHECKED_PROFILE.into();
+    job.checks = Some(viamind_fab::OutputJobChecks {
+        copper_clearance_mm: 0.,
+        edge_clearance_mm: 0.,
+        minimum_via_drill_mm: 0.,
+        minimum_annular_width_mm: 0.,
+        hole_clearance_mm: 0.,
+        hole_to_copper_clearance_mm: 0.,
+        max_violations: 1000,
+    });
+    let job_path = directory.path().join("zero-baselines.json");
+    save_output_job(&job, &job_path, None).unwrap();
+    let before = e.session_state();
+    let output = directory.path().join("equal-floor");
+    tools.call("run_output_job", json!({"job_path":job_path,"path":output,"expected_cursor":before.cursor}), Default::default()).await.unwrap();
+    let validation: serde_json::Value = serde_json::from_slice(&std::fs::read(output.join("validation/drc.json")).unwrap()).unwrap();
+    assert_eq!(validation["requested_rules"]["copper_clearance_mm"], 0.);
+    assert_eq!(validation["report"]["rules"]["copper_clearance"], 0);
+    assert_eq!(validation["report"]["document_net_rules"], json!(before.project.board.net_rules));
+    assert_eq!(validation["exported_cursor"], json!(before.cursor));
+    assert_eq!(e.session_state(), before);
+    e.execute(
+        "set_named_net_rules",
+        json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"rules":[{"net":"GND","minimum_copper_clearance":0,"minimum_track_width":250001}]}),
+        Origin::agent("peer-policy"),
+    )
+    .unwrap();
+    let current = e.session_state();
+    let refused = directory.path().join("one-nm-below-floor");
+    let error = tools
+        .call("run_output_job", json!({"job_path":job_path,"path":refused,"expected_cursor":current.cursor}), Default::default())
+        .await
+        .unwrap_err();
+    assert!(error.to_string().contains("track width"), "{error}");
+    assert!(!refused.exists());
+    assert_eq!(e.session_state(), current);
+    assert!(!std::fs::read_dir(directory.path()).unwrap().any(|p| p.unwrap().file_name().to_string_lossy().starts_with(".viamind-output-job-")));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    // Capture owns the exact policy even if its source project changes later.
+    let mut source = before.project;
+    let snapshot = viamind_fab::OutputJobSnapshot::capture(&source, job).unwrap();
+    source.board.net_rules.insert("GND".into(), serde_json::from_value(json!({"minimum_copper_clearance":0,"minimum_track_width":250001})).unwrap());
+    let retained = directory.path().join("retained-policy");
+    snapshot.write_with_validation(before.cursor, &retained, None, viamind_engine::checked_output_job_report).unwrap();
+    let retained: serde_json::Value = serde_json::from_slice(&std::fs::read(retained.join("validation/drc.json")).unwrap()).unwrap();
+    assert_eq!(retained["report"]["document_net_rules"]["GND"]["minimum_track_width"], 250_000);
+    assert_eq!(source.board.net_rules["GND"].minimum_track_width.0, 250_001);
+}

@@ -42,6 +42,8 @@ pub struct RoutePadWalkaround {
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct CheckedWalkaround {
+    #[serde(skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub document_net_rules: viamind_doc::NamedNetRules,
     pub project_id: ObjectId,
     pub source_cursor: EventCursor,
     pub layer: CopperLayer,
@@ -162,6 +164,7 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     let deltas = crate::routing::prepare_route_candidate(project, tracks, Vec::new(), &input.rules)?;
     Ok((
         CheckedWalkaround {
+            document_net_rules: project.board.net_rules.clone(),
             project_id: project.id,
             source_cursor: input.expected_cursor,
             layer,
@@ -206,10 +209,16 @@ pub(crate) fn scene(
     remaining_obstacles: usize,
 ) -> Result<(Rect, Vec<Rect>), CommandError> {
     let rules = input.validate().map_err(|e| invalid(e.to_string()))?;
+    viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
+    if width < viamind_doc::named_track_width(&project.board.net_rules, Some(net)) {
+        return Err(invalid("route width is below the exact named-net document minimum"));
+    }
     let r = half(width)?;
     let edge = r + i128::from(rules.edge_clearance.0) + 1;
     let domain = domain(project, edge)?;
-    let copper = r + i128::from(rules.copper_clearance.0) + 1;
+    let copper = |other: Option<&str>| {
+        r + i128::from(viamind_doc::named_copper_clearance(&project.board.net_rules, rules.copper_clearance, Some(net), other).0) + 1
+    };
     let hole = r + i128::from(rules.hole_to_copper_clearance.0) + 1;
     let mut obstacles = Vec::new();
     let mut push = |bounds: Rect| -> Result<(), CommandError> {
@@ -246,21 +255,21 @@ pub(crate) fn scene(
                 return Err(invalid("pad center out of range"));
             }
             if pad.net.as_deref() != Some(net) {
-                push(expanded(Rect::from_point(center), x + copper, y + copper)?)?;
+                push(expanded(Rect::from_point(center), x + copper(pad.net.as_deref()), y + copper(pad.net.as_deref()))?)?;
             }
         }
     }
     for track in project.board.tracks.values() {
         track.validate().map_err(invalid)?;
         if track.layer == layer && track.net.as_deref() != Some(net) {
-            let margin = half(track.width)? + copper;
+            let margin = half(track.width)? + copper(track.net.as_deref());
             push(expanded(Rect::new(track.start, track.end), margin, margin)?)?;
         }
     }
     for via in project.board.vias.values() {
         via.validate().map_err(invalid)?;
         if via.net.as_deref() != Some(net) {
-            let margin = half(via.diameter)? + copper;
+            let margin = half(via.diameter)? + copper(via.net.as_deref());
             push(expanded(Rect::from_point(via.position), margin, margin)?)?;
         }
         let margin = half(via.drill)? + hole;

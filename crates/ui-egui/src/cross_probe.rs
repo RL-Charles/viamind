@@ -252,6 +252,7 @@ impl ViamindApp {
             || self.pads.editing()
             || self.copper.editing()
             || self.routing.editing()
+            || self.net_rules.editing()
         {
             return Err("Finish the active edit before navigating to a counterpart.".into());
         }

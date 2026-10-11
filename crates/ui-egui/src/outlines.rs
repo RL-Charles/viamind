@@ -48,6 +48,7 @@ impl ViamindApp {
     pub fn begin_board_outline(&mut self) {
         if self.routing.editing()
             || self.track_cleanup.editing()
+            || self.net_rules.editing()
             || self.files.busy()
             || self.copper.editing()
             || self.parts.placing()

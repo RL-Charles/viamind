@@ -132,3 +132,6 @@ pub use footprint_conversion::{ConvertFootprintFile, ConvertedFootprintFile, Foo
 
 mod checked_output_job;
 pub use checked_output_job::checked_output_job_report;
+
+mod net_rules;
+pub use net_rules::{NamedNetRuleRow, NamedNetRuleSnapshot, SetNamedNetRules};

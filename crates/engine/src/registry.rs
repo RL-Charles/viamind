@@ -105,6 +105,7 @@ impl CommandRegistry {
             .with::<SetBoardOutline>()
             .with::<crate::ImportBoardOutlineDxf>()
             .with::<crate::SetPartPads>()
+            .with::<crate::SetNamedNetRules>()
             .with::<crate::AddTrack>()
             .with::<crate::DeleteTrack>()
             .with::<crate::AddVia>()

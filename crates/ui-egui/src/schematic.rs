@@ -381,6 +381,7 @@ impl ViamindApp {
         if active {
             self.routing.cancel();
             self.track_cleanup.cancel();
+            self.net_rules.cancel();
         }
         if active && (self.files.busy() || self.parts.placing() || self.outlines.editing() || self.pads.editing() || self.copper.editing()) {
             return;

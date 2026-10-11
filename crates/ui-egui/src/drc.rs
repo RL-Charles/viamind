@@ -202,6 +202,18 @@ impl ViamindApp {
                 }
                 if let Some(report) = &self.drc.report {
                     let coverage = &report.coverage;
+                    ui.label(format!("Request copper baseline: {:.6} mm", report.rules.copper_clearance.to_mm()));
+                    if !report.document_net_rules.is_empty() {
+                        ui.collapsing(format!("{} persisted exact-net minima (pair maxima apply)", report.document_net_rules.len()), |ui| {
+                            for (net, rules) in &report.document_net_rules {
+                                ui.label(format!(
+                                    "{net}: copper minimum {:.6} mm; track-width minimum {:.6} mm",
+                                    rules.minimum_copper_clearance.to_mm(),
+                                    rules.minimum_track_width.to_mm()
+                                ));
+                            }
+                        });
+                    }
                     ui.label(format!(
                         "{} scoped violations · {} explicit pads · {} unassigned pads · {} excluded parts",
                         report.violations.len(),
@@ -237,6 +249,7 @@ impl ViamindApp {
                         ui.separator();
                         let title = match issue.kind {
                             ViolationKind::CopperClearance => "Copper clearance",
+                            ViolationKind::MinimumTrackWidth => "Named-net minimum track width",
                             ViolationKind::OutsideSubstrate => "Outside board / inside cutout",
                             ViolationKind::BoardEdgeClearance => "Board edge clearance",
                             ViolationKind::MinimumViaDrill => "Minimum via drill",

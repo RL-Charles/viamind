@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 7 to preserve explicit assembly metadata in appended part snapshots.
-pub const LOG_VERSION: u32 = 7;
+/// New logs use version 8 to preserve guarded named-net policy deltas.
+pub const LOG_VERSION: u32 = 8;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -115,6 +115,7 @@ impl EventLog {
         if header.format != LOG_FORMAT
             || header.version > LOG_VERSION
             || (header.version < viamind_doc::file::minimum_version(&header.base))
+            || viamind_doc::file::validate_net_rules(&header.base).is_err()
             || viamind_doc::file::validate_assembly(&header.base).is_err()
             || viamind_doc::file::validate_pads(&header.base).is_err()
             || viamind_doc::file::validate_copper(&header.base).is_err()
@@ -143,6 +144,12 @@ impl EventLog {
                             && (header.version >= 7 || part.assembly.is_none())
                             && part.assembly.as_ref().is_none_or(|m| m.validate().is_ok())
                     }),
+                    crate::Delta::NamedNetRules { id, before, after } => {
+                        header.version >= 8
+                            && *id == current.id
+                            && viamind_doc::named_net_rule_budget(before).is_ok()
+                            && viamind_doc::named_net_rule_budget(after).is_ok()
+                    }
                     crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Sheet { id, before, after } => before.iter().chain(after).all(|sheet| {
@@ -163,6 +170,11 @@ impl EventLog {
                     let after = after.as_ref().and_then(|p| p.assembly.as_deref());
                     budget.replace(before, after).map_err(|_| LogError::BadHeader)?;
                 }
+                if let crate::Delta::NamedNetRules { before, .. } = delta
+                    && *before != current.board.net_rules
+                {
+                    return Err(LogError::BadHeader);
+                }
                 delta.apply_to(&mut current);
             }
             log.append(event);
@@ -179,6 +191,7 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
+    viamind_doc::file::validate_net_rules(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     viamind_doc::file::validate_assembly(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: LOG_VERSION, base })?;
     out.write_all(b"\n")
@@ -194,6 +207,12 @@ pub fn write_entry(mut out: impl Write, event: &ChangeEvent) -> io::Result<()> {
 /// Reconstruct the touched portion's initial sourcing state without cloning strings.
 /// The first before record supplies each ID; later records update it sequentially.
 fn validate_event_assembly(event: &ChangeEvent) -> Result<(), &'static str> {
+    for delta in &event.deltas {
+        if let crate::Delta::NamedNetRules { before, after, .. } = delta {
+            viamind_doc::named_net_rule_budget(before)?;
+            viamind_doc::named_net_rule_budget(after)?;
+        }
+    }
     let mut state = std::collections::BTreeMap::new();
     for delta in &event.deltas {
         if let crate::Delta::Part { id, before, after } = delta {

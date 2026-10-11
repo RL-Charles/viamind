@@ -24,6 +24,8 @@ pub struct RoutePadViaWalkaround {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct CheckedViaWalkaround {
+    #[serde(skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub document_net_rules: viamind_doc::NamedNetRules,
     pub project_id: ObjectId,
     pub source_cursor: EventCursor,
     pub start_layer: CopperLayer,
@@ -126,6 +128,7 @@ fn prepare(project: &Project, input: &RoutePadViaWalkaround) -> Result<(CheckedV
     let deltas = crate::routing::prepare_route_candidate(project, candidate, vec![via], &input.rules)?;
     Ok((
         CheckedViaWalkaround {
+            document_net_rules: project.board.net_rules.clone(),
             project_id: project.id,
             source_cursor: input.expected_cursor,
             start_layer,

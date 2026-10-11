@@ -204,6 +204,7 @@ impl ViamindApp {
             || self.pads.editing()
             || self.copper.editing()
             || self.routing.editing()
+            || self.net_rules.editing()
             || self.schematic_wires.active()
             || self.schematic_object_draft_active()
         {

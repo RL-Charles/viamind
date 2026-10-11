@@ -298,6 +298,7 @@ impl PadDraft {
                 ui.label("Planning and checking captured snapshot…");
             }
             if let Some(checked) = &self.checked {
+                crate::net_rules::show_document_minima(ui, &checked.document_net_rules);
                 ui.label(format!(
                     "Checked snapshot · {} segments · {} obstacles · {} nodes",
                     checked.plan.path.points.len() - 1,
@@ -306,6 +307,7 @@ impl PadDraft {
                 ));
             }
             if let Some(checked) = &self.checked_via {
+                crate::net_rules::show_document_minima(ui, &checked.document_net_rules);
                 ui.label(format!(
                     "Joint checked snapshot · {} segments +1 via · {} obstacles · {} nodes",
                     checked.before.path.points.len() + checked.after.path.points.len() - 2,

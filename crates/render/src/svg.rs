@@ -182,7 +182,9 @@ fn rect_attrs(r: ViewBounds, origin: (i64, i64)) -> String {
 /// Maximum total UTF-8 text copied into a board view snapshot.
 pub const MAX_BOARD_VIEW_TEXT: usize = 2 * 1024 * 1024;
 fn validate_board_budget(project: &Project) -> io::Result<()> {
+    let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
     let mut count = project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(3));
+    count = count.saturating_add(policy.rows);
     if count > 100_000 {
         return Err(invalid("SVG view supports at most 100000 primitives"));
     }
@@ -200,7 +202,7 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
             }
         }
     }
-    let mut text = 0usize;
+    let mut text = policy.text_bytes;
     let mut add = |s: &str| -> io::Result<()> {
         if s.len() > 4096 {
             return Err(invalid("SVG metadata strings must not exceed 4096 UTF-8 bytes"));
