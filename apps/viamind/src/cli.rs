@@ -98,7 +98,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                                 "top_copper" => Ok(viamind_render::ViewLayer::TopCopper),
                                 "bottom_copper" => Ok(viamind_render::ViewLayer::BottomCopper),
                                 "outline" => Ok(viamind_render::ViewLayer::Outline),
-                                _ => Err("unknown SVG layer".to_string()),
+                                _ => Err("unknown board view layer".to_string()),
                             })
                             .collect::<Result<_, _>>()?;
                     }

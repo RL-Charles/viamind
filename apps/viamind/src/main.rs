@@ -41,8 +41,8 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
     if options.export_png {
-        let snapshot = engine.with_engine(|e| e.session_state());
-        let rendered = viamind_render::board_png(&snapshot.project, &options.svg_options)?;
+        let project = engine.read(viamind_render::board_view_snapshot)?;
+        let rendered = viamind_render::board_png(&project, &options.svg_options)?;
         let path =
             viamind_render::write_png(&rendered.png, options.output.as_deref().expect("validated output"), engine.document_status().path.as_deref())?;
         eprintln!(
@@ -55,8 +55,8 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
     if options.export_svg {
-        let snapshot = engine.session_state();
-        let rendered = viamind_render::board_svg(&snapshot.project, &options.svg_options)?;
+        let project = engine.read(viamind_render::board_view_snapshot)?;
+        let rendered = viamind_render::board_svg(&project, &options.svg_options)?;
         let output = options.output.as_deref().expect("CLI requires a view destination");
         let path = viamind_render::write_svg(&rendered.svg, output, engine.document_status().path.as_deref())?;
         eprintln!(

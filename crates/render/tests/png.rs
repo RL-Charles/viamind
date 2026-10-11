@@ -104,3 +104,31 @@ fn pixel_limits_and_atomic_png_publication_preserve_native_and_collisions() {
     assert!(write_png(&vec![0; viamind_render::MAX_PNG_BYTES + 1], &dir.path().join("large.png"), None).is_err());
     assert!(!dir.path().join("large.png").exists());
 }
+
+#[test]
+fn board_only_capture_excludes_unrelated_schematic_and_bounds_text_before_copy() {
+    let mut project = sample();
+    let mut sheet = viamind_doc::Sheet::new("Unrelated");
+    sheet.name = "s".repeat(8 * 1024 * 1024);
+    project.schematic.sheets.insert(sheet.id, sheet);
+    let snapshot = viamind_render::board_view_snapshot(&project).unwrap();
+    assert!(snapshot.schematic.sheets.is_empty());
+    assert_eq!(snapshot.id, project.id);
+    assert_eq!(snapshot.name, project.name);
+    assert_eq!(snapshot.board, project.board);
+    assert_eq!(board_png(&snapshot, &SvgOptions { width_px: 64, height_px: 64, ..Default::default() }).unwrap().metadata.pad_count, 3);
+    let mut part = project.board.parts.values().next().unwrap().clone();
+    part.pads = None;
+    part.value = "v".repeat(4096);
+    project.board.parts.clear();
+    for _ in 0..513 {
+        part.id = viamind_doc::ObjectId::new();
+        project.board.parts.insert(part.id, part.clone());
+    }
+    let before = project.board.clone();
+    assert!(viamind_render::board_view_snapshot(&project).unwrap_err().to_string().contains("aggregate"));
+    assert!(viamind_render::board_svg(&project, &SvgOptions::default()).unwrap_err().to_string().contains("aggregate"));
+    assert_eq!(project.board, before);
+    project.board.parts.values_mut().next().unwrap().value = "x".repeat(4097);
+    assert!(viamind_render::board_view_snapshot(&project).unwrap_err().to_string().contains("4096"));
+}

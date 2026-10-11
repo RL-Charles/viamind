@@ -26,13 +26,11 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
             let input: Input=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;
             viamind_render::validate_png_options(&input.options).map_err(|e|ToolError::InvalidInput(e.to_string()))?;
             let permit=slots.acquire_owned().await.map_err(|e|ToolError::Failed(e.to_string()))?;
-            let (snapshot,native)=engine.with_engine(|e|(e.session_state(),e.document_status().path));
-            if input.expected_cursor.is_some_and(|c|c!=snapshot.cursor){return Err(ToolError::Failed("document changed; request a fresh board PNG".into()));}
-            let cursor=snapshot.cursor;
+            let (project,cursor,native)=crate::views::capture_board(&engine,input.expected_cursor)?;
             tokio::task::spawn_blocking(move || {
                 // A cancelled client cannot release the slot while its blocking render continues.
                 let _permit=permit;
-                let rendered=viamind_render::board_png(&snapshot.project,&input.options)?;
+                let rendered=viamind_render::board_png(&project,&input.options)?;
                 let path=input.path.map(|p|viamind_render::write_png(&rendered.png,&p,native.as_deref())).transpose()?;
                 Ok::<_,std::io::Error>(json!({"png_base64":base64::engine::general_purpose::STANDARD.encode(&rendered.png),"media_type":"image/png","metadata":rendered.metadata,"source_cursor":cursor,"path":path}))
             }).await.map_err(|e|ToolError::Failed(e.to_string()))?.map_err(|e|ToolError::Failed(format!("could not render board PNG: {e}")))

@@ -37,7 +37,10 @@ region/viewport proportions leave transparent margins. Requested regions clip
 geometry; explicit bounds never receive automatic padding.
 
 Coordinates are bounded to ±100000 mm, primitives to 100000, metadata strings
-to 4096 UTF-8 bytes, and output to 16 MiB. Half-nanometre pad edges and via radii
+to 4096 UTF-8 bytes per string and 2 MiB aggregate board text, and SVG output to
+16 MiB. Primitive/text budgets are checked before cloning a board-only snapshot;
+unrelated schematic content is not cloned or validated. Omitted legacy part
+fields count toward the board snapshot budgets. Half-nanometre pad edges and via radii
 are retained at the SVG boundary. Project/object descriptions are escaped XML;
 valid Unicode remains intact and XML-forbidden characters are replaced with
 U+FFFD and reported. Views contain no external resources or executable content.

@@ -179,6 +179,70 @@ fn rect_attrs(r: ViewBounds, origin: (i64, i64)) -> String {
     )
 }
 
+/// Maximum total UTF-8 text copied into a board view snapshot.
+pub const MAX_BOARD_VIEW_TEXT: usize = 2 * 1024 * 1024;
+fn validate_board_budget(project: &Project) -> io::Result<()> {
+    let mut count = project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(3));
+    if count > 100_000 {
+        return Err(invalid("SVG view supports at most 100000 primitives"));
+    }
+    for part in project.board.parts.values() {
+        count = count.saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()));
+        if count > 100_000 {
+            return Err(invalid("SVG view supports at most 100000 primitives"));
+        }
+    }
+    if let Some(outline) = &project.board.outline {
+        for ring in outline.rings() {
+            count = count.saturating_add(1).saturating_add(ring.points.len());
+            if count > 100_000 {
+                return Err(invalid("SVG view supports at most 100000 primitives"));
+            }
+        }
+    }
+    let mut text = 0usize;
+    let mut add = |s: &str| -> io::Result<()> {
+        if s.len() > 4096 {
+            return Err(invalid("SVG metadata strings must not exceed 4096 UTF-8 bytes"));
+        }
+        text = text.saturating_add(s.len());
+        if text > MAX_BOARD_VIEW_TEXT {
+            return Err(invalid("board view metadata exceeds 2 MiB aggregate UTF-8 text"));
+        }
+        Ok(())
+    };
+    add(&project.name)?;
+    for part in project.board.parts.values() {
+        add(&part.designator)?;
+        add(&part.value)?;
+        add(&part.footprint)?;
+        if let Some(pads) = &part.pads {
+            for pad in &pads.0 {
+                add(&pad.number)?;
+                if let Some(net) = &pad.net {
+                    add(net)?;
+                }
+            }
+        }
+    }
+    for track in project.board.tracks.values() {
+        if let Some(net) = &track.net {
+            add(net)?;
+        }
+    }
+    for via in project.board.vias.values() {
+        if let Some(net) = &via.net {
+            add(net)?;
+        }
+    }
+    Ok(())
+}
+/// Bounded board-only copy. Unrelated schematic content is never cloned or validated.
+pub fn board_view_snapshot(project: &Project) -> io::Result<Project> {
+    validate_board_budget(project)?;
+    Ok(Project { id: project.id, name: project.name.clone(), board: project.board.clone(), schematic: Default::default() })
+}
+
 /// Render model geometry without inferred legacy footprint previews or model changes.
 pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg> {
     board_svg_impl(project, options, None)
@@ -198,19 +262,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     let origin = raster_origin.unwrap_or((0, 0));
     let x = |n: i64| mm(n - origin.0);
     let y = |n: i64| mm(n - origin.1);
-    let count = project
-        .board
-        .parts
-        .values()
-        .map(|p| p.pads.as_ref().map_or(0, |p| p.0.len()))
-        .sum::<usize>()
-        .saturating_add(project.board.parts.len())
-        .saturating_add(project.board.tracks.len())
-        .saturating_add(project.board.vias.len().saturating_mul(3))
-        .saturating_add(project.board.outline.as_ref().map_or(0, |o| o.rings().map(|r| r.points.len()).sum()));
-    if count > 100_000 {
-        return Err(invalid("SVG view supports at most 100000 primitives"));
-    }
+    validate_board_budget(project)?;
     viamind_doc::file::validate_pads(project).map_err(|e| invalid(e.to_string()))?;
     viamind_doc::file::validate_copper(project).map_err(|e| invalid(e.to_string()))?;
     if let Some(outline) = &project.board.outline {
@@ -356,7 +408,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
                 continue;
             }
             let magnitude =
-                [b.min_x - origin.0, b.max_x - origin.0, b.min_y - origin.1, b.max_y - origin.1].into_iter().map(|n| n.unsigned_abs()).max().unwrap()
+                [b.min_x - origin.0, b.max_x - origin.0, b.min_y - origin.1, b.max_y - origin.1].into_iter().map(i64::unsigned_abs).max().unwrap()
                     as f64;
             if magnitude * f64::from(f32::EPSILON) * scale > 0.125 {
                 return Err(invalid(
