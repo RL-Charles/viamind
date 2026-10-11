@@ -80,7 +80,7 @@ impl FootprintDefinitionUi {
                 .rows
                 .iter()
                 .zip(geometry)
-                .map(|(r, (position, width, height))| FootprintPad { number: r.number.clone(), position, width, height })
+                .map(|(r, (position, width, height))| FootprintPad { number: r.number.clone(), position, width, height, apertures: None })
                 .collect(),
         };
         validate_definition(&footprint)?;
@@ -366,6 +366,7 @@ mod tests {
                 position: LocalPosition { x: Nm(-500003), y: Nm(250001) },
                 width: Nm(1200003),
                 height: Nm(800001),
+                apertures: None,
             }],
         }
     }

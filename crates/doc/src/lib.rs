@@ -18,6 +18,7 @@ pub mod id;
 pub mod net_rules;
 pub mod outline;
 pub mod pad;
+pub mod pad_apertures;
 pub mod pcb_sexpr;
 pub mod project;
 pub mod schematic;
@@ -30,6 +31,7 @@ pub use footprint_artwork::{FootprintArtwork, RectangularCourtyard, SilkscreenSe
 pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};
 pub use pad::{Pad, Pads};
+pub use pad_apertures::{ApertureKind, ApertureRect, ApertureResolution, PadApertures, resolve_aperture};
 pub use project::{Project, Schematic, Sheet};
 
 pub mod copper;

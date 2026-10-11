@@ -129,7 +129,22 @@ impl Part {
             assembly: None,
             schematic_symbol: self.schematic_symbol,
             schematic_package: self.schematic_package,
-            pads: self.pads.clone(),
+            pads: self.pads.as_ref().map(|pads| {
+                crate::Pads(
+                    pads.0
+                        .iter()
+                        .map(|p| crate::Pad {
+                            id: p.id,
+                            number: p.number.clone(),
+                            position: p.position,
+                            width: p.width,
+                            height: p.height,
+                            net: p.net.clone(),
+                            apertures: None,
+                        })
+                        .collect(),
+                )
+            }),
             id: self.id,
             designator: self.designator.clone(),
             value: self.value.clone(),

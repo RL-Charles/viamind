@@ -27,6 +27,8 @@ pub struct FootprintPad {
     pub position: LocalPosition,
     pub width: Nm,
     pub height: Nm,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apertures: Option<crate::PadApertures>,
 }
 
 /// Named geometry. Always validate data constructed in memory before use.
@@ -53,6 +55,9 @@ impl Footprint {
         }
         let mut numbers = BTreeSet::new();
         for p in &self.pads {
+            if let Some(apertures) = &p.apertures {
+                apertures.validate_at(viamind_geom::Point { x: p.position.x, y: p.position.y })?;
+            }
             if !name_ok(&p.number) || !numbers.insert(&p.number) {
                 return Err("pad numbers must be unique, trimmed, nonempty, at most 128 characters and contain no controls".into());
             }
@@ -82,6 +87,7 @@ impl Footprint {
                     position: LocalPosition { x: p.position.x, y: p.position.y },
                     width: p.width,
                     height: p.height,
+                    apertures: p.apertures.clone(),
                 })
                 .collect(),
         };
@@ -106,14 +112,29 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     let raw: serde_json::Value = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
     let version = raw.get("version").and_then(serde_json::Value::as_u64);
     let artwork = raw.get("footprint").and_then(|f| f.get("artwork"));
-    if (version == Some(1) && artwork.is_some()) || (version == Some(2) && !artwork.is_some_and(serde_json::Value::is_object)) {
+    let pads = raw.get("footprint").and_then(|f| f.get("pads")).and_then(serde_json::Value::as_array);
+    if pads.is_some_and(|p| p.len() > 1024) {
+        return Err("at most1024 footprint pads before typed decoding".into());
+    }
+    let has_aperture_member = pads.is_some_and(|p| p.iter().any(|p| p.get("apertures").is_some()));
+    let has_aperture_policy = pads.is_some_and(|p| p.iter().any(|p| p.get("apertures").is_some_and(serde_json::Value::is_object)));
+    if matches!(version, Some(1 | 2)) && has_aperture_member {
+        return Err("library1/2 forbid any apertures member, including null".into());
+    }
+    if version == Some(3) && !has_aperture_policy {
+        return Err("library3 requires at least one non-null pad apertures policy".into());
+    }
+    if (version == Some(1) && artwork.is_some())
+        || (version == Some(2) && !artwork.is_some_and(serde_json::Value::is_object))
+        || (version == Some(3) && artwork.is_some_and(|a| !a.is_object()))
+    {
         return Err("library1 requires artwork missing; library2 requires non-null artwork object".into());
     }
     // Decode the original bounded bytes so duplicate fields remain visible to serde.
     // The presence preflight must never become a lossy Value-to-typed roundtrip.
     let envelope: Envelope = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
-    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1 | 2) {
-        return Err("expected viamind-footprint version1 or2".into());
+    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1 | 2 | 3) {
+        return Err("expected viamind-footprint version1,2 or3".into());
     }
     envelope.footprint.validate()?;
     Ok(envelope.footprint)
@@ -123,7 +144,13 @@ pub fn to_vec(footprint: &Footprint) -> Result<Vec<u8>, String> {
     footprint.validate()?;
     let mut bytes = serde_json::to_vec_pretty(&Envelope {
         format: "viamind-footprint".into(),
-        version: if footprint.artwork.is_some() { 2 } else { 1 },
+        version: if footprint.pads.iter().any(|p| p.apertures.is_some()) {
+            3
+        } else if footprint.artwork.is_some() {
+            2
+        } else {
+            1
+        },
         footprint: footprint.clone(),
     })
     .map_err(|e| e.to_string())?;

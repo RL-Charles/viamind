@@ -17,6 +17,7 @@ fn fixture() -> (EngineHandle, [PadEndpointId; 2]) {
             width: Nm(1_000_000),
             height: Nm(1_000_000),
             net: Some("EXACT".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,

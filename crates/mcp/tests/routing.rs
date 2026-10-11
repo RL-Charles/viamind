@@ -78,6 +78,7 @@ async fn immutable_pad_discovery_resolves_exact_identity_and_derives_net_side_wi
             width: serde_json::from_value(json!(1000000)).unwrap(),
             height: serde_json::from_value(json!(1000000)).unwrap(),
             net: Some("EXACT".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,
@@ -139,6 +140,7 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
             width: serde_json::from_value(json!(1000000)).unwrap(),
             height: serde_json::from_value(json!(1000000)).unwrap(),
             net: Some("EXACT".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,
@@ -231,6 +233,7 @@ async fn exact_posture_routes_share_planner_and_two_agent_cursor_guards() {
             width: serde_json::from_value(json!(1000000)).unwrap(),
             height: serde_json::from_value(json!(1000000)).unwrap(),
             net: Some("EXACT".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,
@@ -300,6 +303,7 @@ async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_
                 width: nm(1_000_000),
                 height: nm(1_000_000),
                 net: Some("N".into()),
+                apertures: None,
             };
             let part = Part {
                 artwork: None,
