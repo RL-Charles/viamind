@@ -52,7 +52,7 @@ impl ViamindApp {
             egui::ScrollArea::vertical().max_height((content.height()-160.).clamp(60.,340.)).show(ui, |ui| {
                 ui.strong(mode_label(status.mode));
                 if status.startup_locked { ui.label("Startup read-only lock: restart without --agent-read-only to allow agent edits."); }
-                ui.label("Live apply: agent writes apply immediately. Approval: agents prepare bounded private PCB proposals; a human accepts or rejects in Board → Agent branches. Unsupported edits and file publication refuse. Read only: observations and in-memory views.");
+                ui.label("Live apply: agent writes apply immediately. Approval: agents prepare bounded private PCB proposals; a human accepts or rejects in the Board menu under Agent branches. Unsupported edits and file publication refuse. Read only: observations and in-memory views.");
                 ui.label("Human editing stays live. These controls change all agent endpoints in this application. They do not accept an existing proposal or change its lease.");
                 ui.label(format!("Policy generation {} · unfinished agent operations {}",status.generation,status.active_writers));
                 if let Some(message) = &self.agent_modes.message { ui.label(message); }
