@@ -62,9 +62,9 @@ fn selected_sheet_svg_png_work_without_display_and_protect_outputs() {
             let base: [&OsStr; 5] = [mode.as_ref(), "--open".as_ref(), native.as_os_str(), "--output".as_ref(), invalid.as_os_str()];
             let mut args = base.to_vec();
             if flag != "--sheet" {
-                args.extend(["--sheet".as_ref(), SHEET.as_ref()]);
+                args.extend([OsStr::new("--sheet"), OsStr::new(SHEET)]);
             }
-            args.extend([flag.as_ref(), value.as_ref()]);
+            args.extend([OsStr::new(flag), OsStr::new(value)]);
             assert!(!run(&args).status.success());
             assert!(!invalid.exists());
         }
