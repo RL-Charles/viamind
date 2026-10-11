@@ -22,6 +22,29 @@ pub struct FabricationOptions {
     pub mask_expansion_mm: f64,
 }
 
+/// Shared desktop/MCP request. Cursor types belong to the caller, not the document.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields, bound(deserialize = "C: Deserialize<'de>"))]
+pub struct FabricationExportRequest<C> {
+    pub path: PathBuf,
+    #[serde(default)]
+    pub mask_expansion_mm: f64,
+    #[serde(default)]
+    pub expected_cursor: Option<C>,
+}
+impl<C> FabricationExportRequest<C> {
+    /// Cheap input checks before snapshot budget/admission/copy work.
+    pub fn validate(&self) -> io::Result<()> {
+        if self.path.as_os_str().is_empty() {
+            return Err(invalid("path must not be empty"));
+        }
+        if !self.mask_expansion_mm.is_finite() || !(0.0..=10.0).contains(&self.mask_expansion_mm) {
+            return Err(invalid("mask expansion needs a finite number from 0 to 10 mm"));
+        }
+        Ok(())
+    }
+}
+
 /// The schema shared by desktop and MCP snapshot export actions.
 pub fn fabrication_schema() -> Value {
     json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{
