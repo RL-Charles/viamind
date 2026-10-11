@@ -46,6 +46,21 @@ fn guarded_atomic_artwork_noop_undo_log_and_reopen() {
     assert_eq!(e.read(Clone::clone), before.project);
     e.redo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), after.project);
+    // A base-only artwork feature and a before-only deletion feature must each
+    // refuse old headers independently of an after value.
+    let base_only = EventLog::new(after.project.clone());
+    let mut base_bytes = Vec::new();
+    base_only.write_jsonl(&mut base_bytes).unwrap();
+    assert!(EventLog::read_jsonl(String::from_utf8(base_bytes).unwrap().replace("\"version\":13", "\"version\":12").as_bytes()).is_err());
+    let before_only = EngineHandle::new(after.project.clone());
+    before_only.execute_typed(command(&before_only, None), Origin::User).unwrap();
+    let event = before_only.with_engine(|eng| eng.log().entries()[0].clone());
+    let mut isolated = EventLog::new(before.project.clone());
+    isolated.append(event);
+    let mut isolated_bytes = Vec::new();
+    isolated.write_jsonl(&mut isolated_bytes).unwrap();
+    assert!(EventLog::read_jsonl(String::from_utf8(isolated_bytes).unwrap().replace("\"version\":13", "\"version\":12").as_bytes()).is_err());
+
     let stale = command(&e, None);
     let d = tempfile::tempdir().unwrap();
     let path = d.path().join("same.json");
