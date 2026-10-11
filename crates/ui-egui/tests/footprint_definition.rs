@@ -1,6 +1,9 @@
 //! Real accessible input drives detached geometry; applying to a component stays explicit.
 use egui::{Event, Key, Modifiers, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use serde_json::json;
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::{ViamindApp, actions::UiAction};
@@ -146,7 +149,9 @@ fn actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_a
     click(&mut h, "Load native footprint definition");
     wait(&mut h);
     input(&mut h, "Pad 2 number", "RETAIN");
+    let retained_field = h.get_by_label("Pad 2 number").accesskit_node().id();
     click(&mut h, "Remove definition pad 1");
+    assert_eq!(h.get_by_label("Pad 1 number").accesskit_node().id(), retained_field);
     assert_eq!(h.state().footprint_definition.definition().unwrap().pads[0].number, "RETAIN");
     assert_eq!(h.state().footprint_definition.definition().unwrap().pads[0].position.x.0, 750007);
     UiAction::PlacePart.run(&engine, json!({"designator":"PEER1","value":"keep","footprint":"old","x_mm":0,"y_mm":0})).unwrap();
