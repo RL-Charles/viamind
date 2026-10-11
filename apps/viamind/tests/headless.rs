@@ -93,6 +93,7 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
         "add_part",
         "move_part",
         "update_part",
+        "set_board_outline",
         "delete_part",
         "undo",
         "redo",
@@ -127,11 +128,19 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
     assert_eq!(client.tool("get_selection", json!({})).await["ids"], json!([]));
     client.tool("redo", json!({})).await;
     client.tool("update_part", json!({ "id": id, "value": "47k", "rotation_deg": 45, "side": "bottom" })).await;
+    client
+        .tool(
+            "set_board_outline",
+            json!({ "outline": { "outer": [
+        {"x_mm":-5,"y_mm":-5}, {"x_mm":50,"y_mm":-5}, {"x_mm":50,"y_mm":40}, {"x_mm":-5,"y_mm":40}
+    ] }}),
+        )
+        .await;
     let expected = client.tool("get_design", json!({})).await;
     let events = client.tool("watch_events", json!({ "after": baseline["cursor"] })).await;
     let kinds: Vec<_> = events["events"].as_array().unwrap().iter().map(|event| event["event"]["kind"].as_str().unwrap()).collect();
-    assert_eq!(kinds, ["design", "selection", "design", "selection", "design", "design"]);
-    assert_eq!(events["cursor"]["sequence"], 6);
+    assert_eq!(kinds, ["design", "selection", "design", "selection", "design", "design", "design"]);
+    assert_eq!(events["cursor"]["sequence"], 7);
     let explicit = directory.path().join("tool-saved.viamind.json");
     let saved = client.tool("save_project", json!({ "path": explicit })).await;
     assert_eq!(saved["dirty"], false);

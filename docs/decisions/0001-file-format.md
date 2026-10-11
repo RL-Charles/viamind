@@ -44,3 +44,14 @@ Use **pretty-printed JSON** as the native format:
 - JSON has no comments; design notes belong in the model (e.g. a future `notes` field), not in the file.
 - Files are larger than TOML; compression is left to version control and archives.
 - Save/load and the byte-identical re-save test are T-0009.
+
+## Polygon outlines (native schema version 2)
+
+Outline-free projects continue to write the version-1 envelope with identical
+bytes. Projects with explicit polygon board outlines write version 2 so older
+builds reject files whose substrate geometry they cannot preserve. Version 2
+adds the optional `board.outline` outer polygon and cutout rings in integer
+nanometres. Both native parsing and engine commands validate ring topology.
+See [the behavioral contract](../specs/board-outline.md). Event logs with an
+outline-bearing base use log version 2; new outline deltas also cause older
+readers to reject unsupported geometry explicitly.

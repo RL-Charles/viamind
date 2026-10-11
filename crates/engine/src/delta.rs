@@ -9,7 +9,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use viamind_doc::{ObjectId, Part, Project, Sheet};
+use viamind_doc::{BoardOutline, ObjectId, Part, Project, Sheet};
 
 /// The change to one model object: its full state before and after.
 ///
@@ -19,6 +19,8 @@ use viamind_doc::{ObjectId, Part, Project, Sheet};
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Delta {
+    /// The substrate geometry of the project changed.
+    BoardOutline { id: ObjectId, before: Option<BoardOutline>, after: Option<BoardOutline> },
     /// A part on the board changed.
     Part {
         /// Id of the part.
@@ -43,13 +45,14 @@ impl Delta {
     /// Id of the object this delta changes.
     pub fn id(&self) -> ObjectId {
         match self {
-            Delta::Part { id, .. } | Delta::Sheet { id, .. } => *id,
+            Delta::Part { id, .. } | Delta::Sheet { id, .. } | Delta::BoardOutline { id, .. } => *id,
         }
     }
 
     /// Whether the object was created (it did not exist before).
     pub fn is_create(&self) -> bool {
         match self {
+            Delta::BoardOutline { before, after, .. } => before.is_none() && after.is_some(),
             Delta::Part { before, after, .. } => before.is_none() && after.is_some(),
             Delta::Sheet { before, after, .. } => before.is_none() && after.is_some(),
         }
@@ -58,6 +61,7 @@ impl Delta {
     /// Whether the object was deleted (it does not exist after).
     pub fn is_delete(&self) -> bool {
         match self {
+            Delta::BoardOutline { before, after, .. } => before.is_some() && after.is_none(),
             Delta::Part { before, after, .. } => before.is_some() && after.is_none(),
             Delta::Sheet { before, after, .. } => before.is_some() && after.is_none(),
         }
@@ -66,6 +70,7 @@ impl Delta {
     /// Whether before and after are identical, i.e. nothing changed.
     pub fn is_noop(&self) -> bool {
         match self {
+            Delta::BoardOutline { before, after, .. } => before == after,
             Delta::Part { before, after, .. } => before == after,
             Delta::Sheet { before, after, .. } => before == after,
         }
@@ -74,6 +79,7 @@ impl Delta {
     /// The opposite change: before and after swapped.
     pub fn inverted(&self) -> Delta {
         match self.clone() {
+            Delta::BoardOutline { id, before, after } => Delta::BoardOutline { id, before: after, after: before },
             Delta::Part { id, before, after } => Delta::Part { id, before: after, after: before },
             Delta::Sheet { id, before, after } => Delta::Sheet { id, before: after, after: before },
         }
@@ -84,6 +90,7 @@ impl Delta {
     /// use [`Delta::record_part`] and friends instead.
     pub fn apply_to(&self, project: &mut Project) {
         match self {
+            Delta::BoardOutline { after, .. } => project.board.outline = after.clone(),
             Delta::Part { id, after, .. } => write(&mut project.board.parts, *id, after.clone()),
             Delta::Sheet { id, after, .. } => write(&mut project.schematic.sheets, *id, after.clone()),
         }
@@ -159,6 +166,7 @@ impl Delta {
         match self {
             Delta::Part { .. } => 0,
             Delta::Sheet { .. } => 1,
+            Delta::BoardOutline { .. } => 2,
         }
     }
 
@@ -167,6 +175,7 @@ impl Delta {
         match (self, later) {
             (Delta::Part { after, .. }, Delta::Part { after: later, .. }) => *after = later,
             (Delta::Sheet { after, .. }, Delta::Sheet { after: later, .. }) => *after = later,
+            (Delta::BoardOutline { after, .. }, Delta::BoardOutline { after: later, .. }) => *after = later,
             _ => unreachable!("coalesce only merges deltas of the same kind"),
         }
     }

@@ -20,8 +20,8 @@ use crate::project::Project;
 
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
-/// Version written by this build; files with a higher version are rejected.
-pub const VERSION: u32 = 1;
+/// Highest supported version; outline-free projects retain version 1 bytes.
+pub const VERSION: u32 = 2;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -45,6 +45,9 @@ pub enum FileError {
     /// The file was written by a newer Viamind.
     #[error("project file version {0} is newer than this build supports (version {VERSION})")]
     UnsupportedVersion(u32),
+    /// Geometry is present in an envelope that predates its schema.
+    #[error("board outline requires native project version 2 or newer")]
+    OutlineVersion,
     /// A map key does not match the id of the object stored under it.
     #[error("{object} stored under key {key} has id {id}; the key must equal the object's id")]
     KeyMismatch {
@@ -73,7 +76,7 @@ struct EnvelopeIn {
 
 /// Serialises `project` as the text of a project file.
 pub fn to_string(project: &Project) -> String {
-    let envelope = EnvelopeOut { format: FORMAT, version: VERSION, project };
+    let envelope = EnvelopeOut { format: FORMAT, version: if project.board.outline.is_some() { 2 } else { 1 }, project };
     let mut text = serde_json::to_string_pretty(&envelope).expect("the model always serialises: string keys, no floats");
     text.push('\n');
     text
@@ -89,6 +92,9 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
         return Err(FileError::UnsupportedVersion(envelope.version));
     }
     let project: Project = serde_json::from_value(envelope.project)?;
+    if project.board.outline.is_some() && envelope.version < 2 {
+        return Err(FileError::OutlineVersion);
+    }
     check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
     check_keys("part", &project.board.parts, |part| part.id)?;
     Ok(project)

@@ -11,6 +11,9 @@ use crate::id::ObjectId;
 /// The physical board: placed parts (more object kinds follow).
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Board {
+    /// Explicit substrate boundary; absent in legacy projects with an automatic preview.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outline: Option<crate::BoardOutline>,
     /// Placed parts by id, in id order.
     pub parts: BTreeMap<ObjectId, Part>,
 }

@@ -1,5 +1,6 @@
 //! Simple polygons (a single closed ring of points).
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::point::{Point, Vector};
@@ -12,7 +13,7 @@ use crate::segment::{Segment, orient};
 /// Holes and multi-part regions (copper pours) belong to the boolean layer on
 /// top of this type. Point containment uses the non-zero winding rule and
 /// counts the boundary as inside; it is exact.
-#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema)]
 #[serde(transparent)]
 pub struct Polygon {
     /// The vertices in order.
