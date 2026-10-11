@@ -30,8 +30,30 @@ impl eframe::App for Inspect {
             .memory(|m| m.area_rect(egui::Id::new(Some(std::borrow::Cow::Borrowed("Copper properties")))))
             .expect("production property window");
         let content = ui.ctx().content_rect();
-        assert!(content.contains_rect(window), "actual native property window fits: {window:?}");
-        assert!(self.controls.iter().all(|r| content.contains_rect(*r)));
+        // X11 can negotiate a different native viewport than the preparation
+        // harness. Read actual completed-pass hit rectangles instead of treating
+        // the harness's absolute control coordinates as native coordinates.
+        let native_buttons = if self.ui_passes >= 3 {
+            assert!(content.contains_rect(window), "actual native property window fits: {window:?}; content {content:?}");
+            let rects = ui.ctx().interactive_rects_last_pass();
+            self.controls[1..]
+                .iter()
+                .map(|prepared| {
+                    let matches: Vec<_> = rects
+                        .iter()
+                        .copied()
+                        .filter(|r| {
+                            window.contains_rect(*r) && (r.width() - prepared.width()).abs() < 0.1 && (r.height() - prepared.height()).abs() < 0.1
+                        })
+                        .collect();
+                    assert_eq!(matches.len(), 1, "unique native footer button size {:?}; window {window:?}; content {content:?}", prepared.size());
+                    assert!(content.contains_rect(matches[0]));
+                    matches[0]
+                })
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
         let image = ui.ctx().input(|i| {
             i.events.iter().find_map(|e| match e {
                 egui::Event::Screenshot { image, .. } => Some(image.clone()),
@@ -59,7 +81,7 @@ impl eframe::App for Inspect {
             f.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"controls":self.controls.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"control_bounds":"three actual native completed-pass hit rectangles, each uniquely matched to prepared Apply/Reload/Cancel button dimensions","controls":native_buttons.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
