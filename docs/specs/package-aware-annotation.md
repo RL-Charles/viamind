@@ -89,7 +89,11 @@ entry, preserving existing behavior.
 ## Bounds and ownership
 
 Retain 100 sheets, 2000 actual symbols/units, 10000 combined schematic rows/pins,
-256 KiB aggregate schematic text and 2 MiB serialized guard. Explicit package
+256 KiB aggregate schematic text and a 2 MiB serialized `expected_sheets` guard.
+Independently cap the whole AnnotateSchematic envelope at 2 MiB + 8 KiB,
+including options (at most 100 sheet UUIDs), cursor and keys. Raw input, typed
+apply and new preview all use these exact boundaries; a preview never accepts
+a sheets map that its generated Apply envelope cannot admit. Explicit package
 records and member records count in the existing combined row cap; membership
 name/key/display strings count toward the aggregate text budget before any
 sheet/candidate clone. Existing per-field semantic bounds apply. Count all raw
