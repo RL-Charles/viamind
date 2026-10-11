@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shlex
 import shutil
 import subprocess
@@ -60,6 +61,20 @@ def check_runtime(runtime):
     return manifest
 
 
+def read_bundle_info(payload):
+    path = payload / "build-info.json"
+    if path.stat().st_size > 1024 * 1024:
+        raise ValueError("Linux bundle provenance exceeds1MiB")
+    info = json.loads(path.read_text())
+    if (info["host"] != "x86_64-unknown-linux-gnu" or info["headless_mcp_verified"] is not True
+            or not isinstance(info["version"], str) or len(info["version"]) > 128
+            or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", info["version"]) is None
+            or re.fullmatch(r"[0-9a-f]{40}", info["revision"]) is None
+            or digest(payload / "viamind") != info["binary_sha256"]):
+        raise ValueError("Linux bundle host, safe version/revision or application provenance mismatch")
+    return info
+
+
 def package(output, runtime, cache, bundle=None, offline=False):
     if sys.version_info < (3, 12) or sys.platform != "linux" or platform.machine() != "x86_64":
         raise ValueError("AppImage packaging requires Python3.12+ on x86_64 Linux")
@@ -91,10 +106,7 @@ def package(output, runtime, cache, bundle=None, offline=False):
         if len(roots) != 1 or not roots[0].is_dir():
             raise ValueError("unexpected Linux bundle layout")
         payload = roots[0]
-        info = json.loads((payload / "build-info.json").read_text())
-        if (info["host"] != "x86_64-unknown-linux-gnu" or not info["headless_mcp_verified"]
-                or digest(payload / "viamind") != info["binary_sha256"]):
-            raise ValueError("Linux bundle host or application provenance mismatch")
+        info = read_bundle_info(payload)
         application_files = {str(path.relative_to(payload)): digest(path) for path in sorted(payload.rglob("*")) if path.is_file()}
         appdir = stage / "Viamind.AppDir"
         (appdir / "usr/bin").mkdir(parents=True)

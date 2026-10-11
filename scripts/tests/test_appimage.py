@@ -139,6 +139,20 @@ class AppImageTests(unittest.TestCase):
             self.assertFalse(list(root.glob(".appimage-build-*")))
             self.assertEqual((runtime / "runtime-x86_64").read_bytes(), b"runtime")
 
+    def test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "viamind").write_bytes(b"application")
+            info = dict(host="x86_64-unknown-linux-gnu", headless_mcp_verified=True, version="0.1.0", revision="a"*40,
+                        binary_sha256=support.digest(root / "viamind"))
+            (root / "build-info.json").write_text(json.dumps(info))
+            self.assertEqual(package.read_bundle_info(root), info)
+            for field, value in [("host", "aarch64-unknown-linux-gnu"), ("version", "../../outside"),
+                                 ("revision", "../outside"), ("binary_sha256", "0"*64), ("headless_mcp_verified", "yes")]:
+                (root / "build-info.json").write_text(json.dumps(dict(info, **{field:value})))
+                with self.assertRaisesRegex(ValueError, "provenance"):
+                    package.read_bundle_info(root)
+
     def test_relink_refuses_destination_created_after_early_check(self):
         # Exercise the exact distributed shell program with a linker double
         # that creates a racing destination after the shell's initial check.

@@ -64,9 +64,9 @@ def extract_regular(archive, destination, max_bytes=512 * 1024 * 1024, max_membe
         for count, member in enumerate(source, 1):
             name = PurePosixPath(member.name)
             if (count > max_members or name.is_absolute() or ".." in name.parts
-                    or not name.parts or member.name in seen or not (member.isfile() or member.isdir())):
+                    or not name.parts or name.as_posix() in seen or not (member.isfile() or member.isdir())):
                 raise ValueError("unsafe or oversized packaging archive")
-            seen.add(member.name)
+            seen.add(name.as_posix())
             total += member.size
             if total > max_bytes or member.size < 0:
                 raise ValueError("packaging archive exceeds expanded byte cap")
