@@ -771,7 +771,7 @@ and [verification](../../docs/existing-copper-properties-verification.md).
 
 ## Isolated PCB proposals
 
-The full application exposes bounded transient PCB command branches. Capture `get_session_state`, create a branch with its project/full cursor, apply supported original calls privately, and inspect deterministic paged before/after values. Board → Agent branches shows the same original/new geometry for human review. Exact guarded merge is one undoable transaction with retained IDs; stale sources refuse and remain discardable. Two same-name connections have different private ownership. Startup read-only clients can list/read diffs but cannot prepare, inspect private candidates, merge or discard. Live editing is the default and this voluntary feature does not enforce human approval. See [the behavior and verification guide](../../docs/pcb-command-branches-verification.md).
+The full application exposes bounded transient PCB command branches. Capture `get_session_state`, create a branch with its project/full cursor, apply supported original calls privately, and inspect deterministic paged before/after values. Board → Agent branches shows the same original/new geometry for human review. Exact guarded merge is one undoable transaction with retained IDs; stale sources refuse and remain discardable. Two same-name connections have different private ownership. Startup read-only clients can list/read diffs but cannot prepare, inspect private candidates, merge or discard. Live editing is the default, where PCB proposals are voluntary. Trusted Approval mode enforces human acceptance and refuses direct agent merge. See [the behavior and verification guide](../../docs/pcb-command-branches-verification.md).
 
 ## Explicit multi-unit symbol packages
 
@@ -805,3 +805,6 @@ whole-command envelope. No inferred aliases, PCB synchronization or hierarchy.
 Desktop Annotate symbols exposes the same Prepare/Apply/Cancel workflow.
 See [behavior spec](../../docs/specs/package-aware-annotation.md) and
 [verification](../../docs/package-aware-annotation-verification.md).
+## Trusted agent modes
+
+The desktop status bar exposes trusted Live apply, Approval and Read only controls shared by all endpoints. `--agent-approval` begins in Approval; agents can prepare private PCB proposals but a human must Accept or Reject through Board → Agent branches. Direct writers and file publication are hidden and refused. `get_agent_mode` reports current policy; initialized clients receive tool-list change notifications. `--agent-read-only` is an immutable startup ceiling. A mode change refuses while an admitted writer is unfinished, including retained work after caller cancellation. Human editing remains available. See [agent mode usage](../../docs/agent-modes.md) and the [behavior contract](../../docs/specs/agent-approval-modes.md).

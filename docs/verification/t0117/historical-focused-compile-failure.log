@@ -1,0 +1,57 @@
+849b4760adc8dcf8a109110a794ab12b2bc38fba
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+error[E0277]: the trait bound `viamind_engine::pcb_branches::MergePcbBranch: serde::Serialize` is not satisfied
+   --> crates/mcp/tests/agent_modes.rs:126:97
+    |
+126 | ...::new("merge_pcb_branch").with_arguments(serde_json::to_value(&merge).unwrap().as_object().unwrap().clone())
+    |                                             --------------------  ^^^^^ the trait `serde_core::ser::Serialize` is not implemented for `viamind_engine::pcb_branches::MergePcbBranch`
+    |                                             |
+    |                                             required by a bound introduced by this call
+    |
+    = note: for local types consider adding `#[derive(serde::Serialize)]` to your `viamind_engine::pcb_branches::MergePcbBranch` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `serde_core::ser::Serialize`:
+              &'a T
+              &'a mut T
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+              (T0, T1, T2, T3, T4)
+            and 618 others
+    = note: required for `&viamind_engine::pcb_branches::MergePcbBranch` to implement `serde_core::ser::Serialize`
+note: required by a bound in `serde_json::to_value`
+   --> /home/charlesmowbray/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.152/src/value/mod.rs:997:8
+    |
+995 | pub fn to_value<T>(value: T) -> Result<Value, Error>
+    |        -------- required by a bound in this function
+996 | where
+997 |     T: Serialize,
+    |        ^^^^^^^^^ required by this bound in `to_value`
+
+error[E0599]: no associated function or constant named `Human` found for struct `viamind_engine::pcb_branches::BranchActor` in the current scope
+   --> crates/mcp/tests/agent_modes.rs:131:50
+    |
+131 |     engine.merge_pcb_branch(merge, &BranchActor::Human).unwrap();
+    |                                                  ^^^^^ associated function or constant not found in `viamind_engine::pcb_branches::BranchActor`
+    |
+help: there is an associated function `human` with a similar name
+   --> crates/engine/src/pcb_branches/mod.rs:56:5
+    |
+ 56 |     pub fn human() -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+
+Some errors have detailed explanations: E0277, E0599.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `viamind-mcp` (test "agent_modes") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

@@ -1,0 +1,159 @@
+{
+  "actual_local_inspect_accept_reject_or_busy_input": true,
+  "after_preparation_or_merge": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "80367ec5-f8cd-45da-b429-ec6cfd9c9d4d"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "437ffeed-0eba-4108-91ca-8426b06db25a": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "437ffeed-0eba-4108-91ca-8426b06db25a",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "97640522-984a-43be-8532-1620d280ba14",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "01f1bc0c-36b2-47e3-b834-9ffc96f4f84f",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "b6ab2e2b-7449-4196-9cde-434eb9af4b36": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "b6ab2e2b-7449-4196-9cde-434eb9af4b36",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "95596b0c-7544-4c7d-865f-5abfc4655d6a",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+  "mode": "busy",
+  "native_unchanged": true,
+  "original": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "80367ec5-f8cd-45da-b429-ec6cfd9c9d4d"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "437ffeed-0eba-4108-91ca-8426b06db25a": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "437ffeed-0eba-4108-91ca-8426b06db25a",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "97640522-984a-43be-8532-1620d280ba14",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "01f1bc0c-36b2-47e3-b834-9ffc96f4f84f",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "b6ab2e2b-7449-4196-9cde-434eb9af4b36": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "b6ab2e2b-7449-4196-9cde-434eb9af4b36",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "95596b0c-7544-4c7d-865f-5abfc4655d6a",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "os_input": false,
+  "status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/busy.viamind.json"
+  }
+}

@@ -23,7 +23,7 @@ const BRANCH_LIMIT: usize = 4;
 const INPUT_LIMIT: usize = 64 * 1024;
 const LEASE: Duration = Duration::from_secs(300);
 static WORK_ACTIVE: AtomicBool = AtomicBool::new(false);
-const COMMANDS: &[&str] = &[
+pub const COMMANDS: &[&str] = &[
     "add_part",
     "move_part",
     "delete_part",

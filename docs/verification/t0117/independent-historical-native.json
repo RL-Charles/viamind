@@ -1,0 +1,121 @@
+{
+  "passed": true,
+  "source": "7e376ce9abe17211e1e809debb37882622ea1f17",
+  "binary_sha256": "3c90c6713928dd8bf04b3c625544602c6d4e607926352699f5838e3ebc7dac5f",
+  "captures": [
+    {
+      "name": "wide",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 13337667,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 5601,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    },
+    {
+      "name": "compact",
+      "pixels": [
+        1067,
+        667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 2135067,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1595,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    },
+    {
+      "name": "accepted",
+      "pixels": [
+        1067,
+        667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 2135067,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1789,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    },
+    {
+      "name": "rejected",
+      "pixels": [
+        1067,
+        667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 2135067,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1789,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    },
+    {
+      "name": "locked",
+      "pixels": [
+        1067,
+        667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 2135067,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1652,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    },
+    {
+      "name": "busy",
+      "pixels": [
+        1067,
+        667
+      ],
+      "every_original_rgba_rgb_sample_matches_p6_and_independent_magick_png_decode": true,
+      "rgb_samples": 2135067,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1652,
+      "metadata_agrees": true,
+      "self_closed_pid_absent": true,
+      "controls_fit_content_and_effective_clips": true,
+      "native_fixture_unchanged": true,
+      "actual_accepted_one_sequence_or_other_session_unchanged": true,
+      "viewed_readable": true
+    }
+  ],
+  "scope": "Independent full RGB decode/equality, original alpha statistics, runtime metadata/hash and PID absence; visual usability findings reported separately. No OS input or full workspace claim.",
+  "visual_findings": {
+    "proposals": "Wide and compact show actual old/new geometry and complete Inspect/Accept/Reject controls.",
+    "completion": "Accepted/rejected messages readable. At these historical hashes the title/close is outside the viewed top edge; capture framing only, no established product window-position bug.",
+    "modes": "Locked startup ceiling and busy unfinished-operation refusal/readable controls visible; menu arrow is a missing-glyph square, minor text defect; root plans ASCII correction."
+  }
+}

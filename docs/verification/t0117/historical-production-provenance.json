@@ -1,0 +1,6 @@
+{
+  "source": "7e376ce9abe17211e1e809debb37882622ea1f17",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/cli-source-7e376ce/viamind",
+  "sha256": "6795fb1a42c0c9efec7f37fb26325717198fb7a1d8d52bcf2a32d4a163b776e1",
+  "scope": "Actual CLI binary built by workspace test; full gate stopped at test-only stderr-word expectation after actual approval workflow and EOF passed. No workspace/full-build success claim. Source executable stat unchanged throughout stripped copy."
+}

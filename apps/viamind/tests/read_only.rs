@@ -14,30 +14,32 @@ fn contradictory_read_only_invocations_reject_before_open_output_or_endpoint() {
     let output = dir.path().join("must-not-exist");
     let missing = missing.to_str().unwrap();
     let output = output.to_str().unwrap();
-    for flags in [
-        vec!["--save-as", output, "--headless"],
-        vec!["--no-mcp"],
-        vec!["--demo"],
-        vec!["--export-csv", "bom", "--output", output],
-        vec!["--export-gerber", "--output", output],
-        vec!["--export-svg", "--output", output],
-        vec!["--export-png", "--output", output],
-        vec!["--export-schematic-svg", "--output", output],
-        vec!["--export-schematic-png", "--output", output],
-        vec!["--run-output-job", missing, "--output", output],
-    ] {
-        let result = std::process::Command::new(env!("CARGO_BIN_EXE_viamind"))
-            .args(["--agent-read-only", "--open", missing])
-            .args(&flags)
-            .env("VIAMIND_MCP_PORT", "invalid-must-not-be-read")
-            .env_remove("DISPLAY")
-            .env_remove("WAYLAND_DISPLAY")
-            .output()
-            .unwrap();
-        assert!(!result.status.success(), "{flags:?}");
-        let error = String::from_utf8(result.stderr).unwrap();
-        assert!(error.contains("--agent-read-only requires desktop HTTP or headless stdio"), "{error}");
-        assert!(!std::path::Path::new(output).exists());
+    for mode in ["--agent-read-only", "--agent-approval"] {
+        for flags in [
+            vec!["--save-as", output, "--headless"],
+            vec!["--no-mcp"],
+            vec!["--demo"],
+            vec!["--export-csv", "bom", "--output", output],
+            vec!["--export-gerber", "--output", output],
+            vec!["--export-svg", "--output", output],
+            vec!["--export-png", "--output", output],
+            vec!["--export-schematic-svg", "--output", output],
+            vec!["--export-schematic-png", "--output", output],
+            vec!["--run-output-job", missing, "--output", output],
+        ] {
+            let result = std::process::Command::new(env!("CARGO_BIN_EXE_viamind"))
+                .args([mode, "--open", missing])
+                .args(&flags)
+                .env("VIAMIND_MCP_PORT", "invalid-must-not-be-read")
+                .env_remove("DISPLAY")
+                .env_remove("WAYLAND_DISPLAY")
+                .output()
+                .unwrap();
+            assert!(!result.status.success(), "{flags:?}");
+            let error = String::from_utf8(result.stderr).unwrap();
+            assert!(error.contains(&format!("{mode} requires desktop HTTP or headless stdio")), "{error}");
+            assert!(!std::path::Path::new(output).exists());
+        }
     }
 }
 

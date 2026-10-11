@@ -114,6 +114,9 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
     for (name, operation, schema, description) in definitions {
         let engine = engine.clone();
         registry.register_with_context(name, description, schema, move |input, ctx| run(engine.clone(), operation, input, ctx))?;
+        if matches!(operation, Operation::Create | Operation::Apply | Operation::Inspect | Operation::Discard) {
+            registry.admit_private_candidate(name);
+        }
         if matches!(operation, Operation::List | Operation::Diff) {
             registry.admit_observation(name);
         }

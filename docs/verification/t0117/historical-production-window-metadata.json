@@ -1,0 +1,8 @@
+{
+  "degraded": true,
+  "degraded_reason": "x11_property_fallback_partial: AT-SPI was unavailable and Cua Driver only recovered window metadata. Treat it as discovery evidence; it cannot prove checked state.",
+  "pid": 2542152,
+  "snapshot_id": "s00000036",
+  "window_id": 110379492576032,
+  "scope": "Cua exact owned PID/window metadata only; no painted-content or accessibility-interaction claim"
+}

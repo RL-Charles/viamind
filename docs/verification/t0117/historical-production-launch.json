@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/launch-production",
+  "pid": 2542152,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind",
+      "bounds": {
+        "height": 1150,
+        "width": 941,
+        "x": 2887,
+        "y": 1190
+      },
+      "height": 1150,
+      "is_on_screen": true,
+      "pid": 2542152,
+      "title": "production-owned.viamind.json — Viamind",
+      "width": 941,
+      "window_id": 110379492576032,
+      "x": 2887,
+      "y": 1190,
+      "z_index": null
+    }
+  ]
+}

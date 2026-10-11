@@ -28,6 +28,7 @@ pub struct EngineHandle {
     pub(crate) automatic_drc: Arc<crate::auto_drc::AutoDrcController>,
     pub(crate) agent_presence: Arc<Mutex<crate::agent_presence::PresenceStore>>,
     pub(crate) pcb_branches: Arc<Mutex<crate::pcb_branches::BranchStore>>,
+    agent_policy: Arc<crate::agent_policy::AgentPolicy>,
 }
 
 impl EngineHandle {
@@ -52,7 +53,13 @@ impl EngineHandle {
             saves: Arc::new(Mutex::new(())),
             agent_presence: Arc::default(),
             pcb_branches: Arc::default(),
+            agent_policy: Arc::default(),
         }
+    }
+
+    /// Trusted transient agent admission shared with desktop and MCP endpoints.
+    pub fn agent_policy(&self) -> Arc<crate::agent_policy::AgentPolicy> {
+        Arc::clone(&self.agent_policy)
     }
 
     /// Configure transient shared automatic DRC without modifying design/history.

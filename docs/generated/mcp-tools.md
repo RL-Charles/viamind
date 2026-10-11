@@ -30,6 +30,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [export\_fabrication](#tool-6578706f72745f6661627269636174696f6e)
 - [export\_footprint](#tool-6578706f72745f666f6f747072696e74)
 - [export\_symbol\_template](#tool-6578706f72745f73796d626f6c5f74656d706c617465)
+- [get\_agent\_mode](#tool-6765745f6167656e745f6d6f6465)
 - [get\_auto\_drc\_event\_state](#tool-6765745f6175746f5f6472635f6576656e745f7374617465)
 - [get\_auto\_drc\_status](#tool-6765745f6175746f5f6472635f737461747573)
 - [get\_design](#tool-6765745f64657369676e)
@@ -6541,6 +6542,22 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "export_symbol_template"
+}
+```
+
+<a id="tool-6765745f6167656e745f6d6f6465"></a>
+
+## get\_agent\_mode
+
+```json
+{
+  "description": "Observe current trusted agent mode, policy generation, fixed startup/endpoint restriction, active writer count and supported bounded PCB proposal commands. No policy setter exists for agents. Human desktop editing remains live; mode does not authenticate clients or isolate OS/filesystem access.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  },
+  "name": "get_agent_mode"
 }
 ```
 

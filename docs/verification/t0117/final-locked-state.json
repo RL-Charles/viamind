@@ -1,0 +1,159 @@
+{
+  "actual_local_inspect_accept_reject_or_busy_input": false,
+  "after_preparation_or_merge": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "0c3eacb8-9b4e-4254-8a40-c3f834d149e6"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "56bf39ef-3592-47ae-835e-8925cbcfb514": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "56bf39ef-3592-47ae-835e-8925cbcfb514",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "d168314d-16d6-4e47-a08b-80fad531a987",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "4ea808e8-25b0-4f26-8e8a-951d7337fd81",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "12c9f96a-9102-4f09-90e7-8dfc92e2b60a": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "12c9f96a-9102-4f09-90e7-8dfc92e2b60a",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "9c1da74f-4292-42d4-8332-584d14568071",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+  "mode": "locked",
+  "native_unchanged": true,
+  "original": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "0c3eacb8-9b4e-4254-8a40-c3f834d149e6"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "56bf39ef-3592-47ae-835e-8925cbcfb514": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "56bf39ef-3592-47ae-835e-8925cbcfb514",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "d168314d-16d6-4e47-a08b-80fad531a987",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "4ea808e8-25b0-4f26-8e8a-951d7337fd81",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "12c9f96a-9102-4f09-90e7-8dfc92e2b60a": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "12c9f96a-9102-4f09-90e7-8dfc92e2b60a",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "9c1da74f-4292-42d4-8332-584d14568071",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "os_input": false,
+  "status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/locked.viamind.json"
+  }
+}

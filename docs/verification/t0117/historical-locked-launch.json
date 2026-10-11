@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/launch-locked",
+  "pid": 2548764,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-agent-approval-inspection",
+      "bounds": {
+        "height": 667,
+        "width": 1067,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 667,
+      "is_on_screen": true,
+      "pid": 2548764,
+      "title": "locked.viamind.json — Viamind",
+      "width": 1067,
+      "window_id": 110379509087760,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "passed": true,
+  "source": "7e376ce9abe17211e1e809debb37882622ea1f17",
+  "binary_sha256": "3c90c6713928dd8bf04b3c625544602c6d4e607926352699f5838e3ebc7dac5f",
+  "captures": [
+    {
+      "name": "wide",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "pid": 2547261,
+      "self_closed": true,
+      "png_sha256": "880eaf2c6c6bb8dad40733395916b6df27694c487a65ce5909f431ca6289549a",
+      "p6_sha256": "e472aed8e586d91f98fc317f438292e509e5897f5bb34f1865d6a82ed6eff842",
+      "p7_sha256": "07c0271ae57a162b616011210895ae3b9b5a57c58c575ed7379e3573e9723cd0",
+      "rgb_sha256": "236cf1f5cd1d4608ee34e42edf950fb58c94149193b3d96315bdea9e86484766",
+      "rgba_sha256": "18b5715c3c0d2128d40341be62985b5ee94e853926a50884d8a0a03cdddaba0d",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 5601,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    },
+    {
+      "name": "compact",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2548550,
+      "self_closed": true,
+      "png_sha256": "294c32bca72d2aea36257149a1437f8eb5815a8afb7773b55c191bc1e9637b6b",
+      "p6_sha256": "e126971fe0a7b06c2028bc2dd4ad5690cefd76e12b7eed7af867c8988425950d",
+      "p7_sha256": "135deb7c20a7044ede59569977478c2d05db357afeeefb1ac437d8e8947b5a3f",
+      "rgb_sha256": "c865ec317ecac6875a4c2ca8f366e8fe97ba6de79acde66cccedd2d1128daf98",
+      "rgba_sha256": "b07f10e8089e2f4448e9b2c1f44dfc57deef6eb8590f136c6d2837be59036eb5",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1595,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    },
+    {
+      "name": "accepted",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2548636,
+      "self_closed": true,
+      "png_sha256": "328458bf5039a0d86b2fb278efcde6adbb1245c09ca7a062d56d2da56546d205",
+      "p6_sha256": "08c654b1ee0409ecb43383348b9bc478d6e5f085a061fbe35c427e293c983277",
+      "p7_sha256": "5d2a83f626915eb64ad467a58204d80b74899e48aba48d0db4449375df6c7d9b",
+      "rgb_sha256": "2b48fe84eb50f3094ec73de6ce9108ae64f964109a5155699d6f646400617ef3",
+      "rgba_sha256": "0d5963b815ad7e9a1614591a4341876179d7ef3a53498a53ba1a37daf8ec04ff",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1789,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    },
+    {
+      "name": "rejected",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2548720,
+      "self_closed": true,
+      "png_sha256": "75154ef9d1b750ec87dad43db91d784e9b84091b4ced3288306aa4a1af24f1e9",
+      "p6_sha256": "c700e87ddd51881d8a57ea27a88b870e943f7aa2b29dfeed1c69d0cc87611f0f",
+      "p7_sha256": "d665e420057402b3498c7b6fc094399f84f370e3cfe00765c774b62f1ec53979",
+      "rgb_sha256": "a52f2b84391a2dbd4277a78497c9c6251e95cacd945bdbe93e74cdc7148778d3",
+      "rgba_sha256": "6cf616cf6a7f67f0193b21c8d1b957ba5916cdbe85cfa3774d9087f0f07f2f23",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1789,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    },
+    {
+      "name": "locked",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2548764,
+      "self_closed": true,
+      "png_sha256": "506bf674517aee5783e3f9bb0732d3e7dc0d1ee27ae2e9c0242c26dcf363e1f0",
+      "p6_sha256": "379b1608be2005d2bc25775048ab0fb51a0275cc7b18562bfb2beb5a057a2278",
+      "p7_sha256": "1404f38605ae7861a01a4f7fcecfb373c7647426ebb7ea10afe2ffed546aaaac",
+      "rgb_sha256": "886061afbcc88fadd37763e7b35d168d38d1d226774a636e805305612a15e8eb",
+      "rgba_sha256": "40a8022716c786f907939bd067908e17b08d97cc7bc010f30ba694342f56801a",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1652,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    },
+    {
+      "name": "busy",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2548819,
+      "self_closed": true,
+      "png_sha256": "519443a09e265e7f5e45e92b04fd39f6ae845593b6c9fce5e25f214e7c477c13",
+      "p6_sha256": "10daf51dd19b290fd2ffec58f410028008ac9b3e80a32e8ca77812f53ed06f9f",
+      "p7_sha256": "17dcda710ba0c8af50cfe96b9a748b7f92730b50a6adbccf700ff5a7b78fd163",
+      "rgb_sha256": "4e7f69c67b28cf0a3ace9e61acd5ed60aebb5fd9dcb83072c7f78b8f1a909b7b",
+      "rgba_sha256": "55f644bb837650ed431fa6f70add072ba6b935dbe9f7118f5c343789385127ac",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1652,
+      "every_rgb_sample_equal": true,
+      "scope": "Original Screenshot Color32 RGBA retained; reviewPNG omits alpha and exactly preserves RGB samples. Native local egui input; no OS input/compositor/cadence claim."
+    }
+  ]
+}

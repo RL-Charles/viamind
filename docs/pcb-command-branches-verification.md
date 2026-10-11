@@ -6,9 +6,9 @@ An initialized live MCP connection can prepare a transient PCB proposal without 
 
 1. Read `get_session_state`; pass its project UUID and full cursor to `create_pcb_branch`, with a short label.
 2. Pass returned branch UUID/revision and bounded original command calls to `apply_pcb_branch`. Read candidate geometry with `inspect_pcb_branch`; inspect deterministic paged before/after values with `get_pcb_branch_diff`.
-3. Review in the desktop, or explicitly merge your own proposal with `merge_pcb_branch` using its revision and original project/full cursor. One successful merge is one ordinary undoable engine transaction with the same generated IDs. `discard_pcb_branch` removes an unused proposal.
+3. Review in the desktop. In Live apply mode, an agent can explicitly merge its own proposal with `merge_pcb_branch` using its revision and original project/full cursor. One successful merge is one ordinary undoable engine transaction with the same generated IDs. `discard_pcb_branch` removes an unused proposal.
 
-Ordinary live editing remains the default. An admitted live agent can explicitly merge its own proposal. This feature provides voluntary isolated preparation and process-local connection ownership; it does not enforce human approval or authenticate arbitrary remote clients. Two connections with the same display name have different ownership. A human can inspect, merge or discard any proposal. Startup read-only mode exposes list/diff observations and hides all five candidate/lifecycle handlers.
+Ordinary live editing remains the default. An admitted live agent can explicitly merge its own proposal. In Live apply mode, branch preparation is voluntary. [Approval mode](agent-modes.md) enforces private preparation and trusted human acceptance, hiding agent merge and other direct edits. Branch ownership is process-local connection identity; it does not authenticate arbitrary remote clients. Two connections with the same display name have different ownership. A human can inspect, merge or discard any proposal. Startup read-only mode exposes list/diff observations and hides all five candidate/lifecycle handlers.
 
 ## Limits and stale sources
 

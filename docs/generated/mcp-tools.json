@@ -6248,6 +6248,15 @@
       "name": "export_symbol_template"
     },
     {
+      "description": "Observe current trusted agent mode, policy generation, fixed startup/endpoint restriction, active writer count and supported bounded PCB proposal commands. No policy setter exists for agents. Human desktop editing remains live; mode does not authenticate clients or isolate OS/filesystem access.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_agent_mode"
+    },
+    {
       "description": "Read an atomic current automatic scoped DRC status and its independent event cursor. Initialize/resynchronize here, then watch_auto_drc_events after this cursor. Detailed reports exist only in current ready status; match generation. Preserves document cursors, history and native bytes.",
       "inputSchema": {
         "additionalProperties": false,

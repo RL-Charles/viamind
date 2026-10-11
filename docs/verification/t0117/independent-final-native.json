@@ -1,0 +1,1129 @@
+{
+  "passed": true,
+  "reviewer": "manufacturing_csv",
+  "source": "20403b8d9d89ea7ac19ea935d1948a0c9bf77a3b",
+  "captures": [
+    {
+      "mode": "wide",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "pid": 2839996,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": true,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "c8eded58-5d79-474e-be38-dec28f8f0dbf"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "1547f23d-d847-4938-a70e-5243bdd119b6": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "1547f23d-d847-4938-a70e-5243bdd119b6",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "6cabbdc5-0c8d-461d-8d93-82d5ab49702f",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "c902e448-7866-472e-944a-4a6197247bb7",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "e6ffa7ef-0542-4edf-abb7-fb10d052e60b": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "e6ffa7ef-0542-4edf-abb7-fb10d052e60b",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "f0e6deda-274b-45c8-8112-01701231b761",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "wide",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "c8eded58-5d79-474e-be38-dec28f8f0dbf"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "1547f23d-d847-4938-a70e-5243bdd119b6": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "1547f23d-d847-4938-a70e-5243bdd119b6",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "6cabbdc5-0c8d-461d-8d93-82d5ab49702f",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "c902e448-7866-472e-944a-4a6197247bb7",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "e6ffa7ef-0542-4edf-abb7-fb10d052e60b": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "e6ffa7ef-0542-4edf-abb7-fb10d052e60b",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "f0e6deda-274b-45c8-8112-01701231b761",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/wide.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "5c5fafe6ebbc7efa0760440f1a21a6d9d06b8d2f439c1e187114834dda6a2be0",
+        ".p6": "7026922eeb6def2a910f10a32525a1d7c303d3b2f8839a82805816d30db9c640",
+        ".png": "d9a9b3340b0d48b3e4b7b65f4871946de0fa37df588aa2cc48037cf45cdf5f3a",
+        "-state.json": "418992e84f7ce794e84467c0f6156a990693a0c824ddd344539597de555bed1a",
+        "-launch.json": "8e39e9ed01bae8ada26d92720fc188b2d89f3769c9ea4ed45dbde3b205fd76de",
+        "-runtime.log": "0cea0f546f01d815c6c58e2c2c91f39f71e9eb60acc36cefae7c3a4527f3e9f5"
+      }
+    },
+    {
+      "mode": "compact",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2841013,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": true,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "6b20d70f-b135-40fc-8c32-c3067d38f8aa"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "6595d281-0dcc-427e-b918-7dc4c3009532": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "6595d281-0dcc-427e-b918-7dc4c3009532",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "b4b81516-460c-4e7a-80a9-0498e4cca36c",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "e85c60e9-360f-4733-b305-fa782a3e5c65",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "58faca8f-2158-4e1a-ac95-4d5c78442fec": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "58faca8f-2158-4e1a-ac95-4d5c78442fec",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "aa9e8c00-70ca-48fb-bfd3-9ad3128d811b",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "compact",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "6b20d70f-b135-40fc-8c32-c3067d38f8aa"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "6595d281-0dcc-427e-b918-7dc4c3009532": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "6595d281-0dcc-427e-b918-7dc4c3009532",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "b4b81516-460c-4e7a-80a9-0498e4cca36c",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "e85c60e9-360f-4733-b305-fa782a3e5c65",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "58faca8f-2158-4e1a-ac95-4d5c78442fec": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "58faca8f-2158-4e1a-ac95-4d5c78442fec",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "aa9e8c00-70ca-48fb-bfd3-9ad3128d811b",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/compact.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "9523bbfb1cb49117ff31332181f786a8e977162f2676c638ca5e929a2875864d",
+        ".p6": "ad2c8aad5f89c82b13e716d0566e82102ffa756ed5ba4eb47db6fb8a1dd0da09",
+        ".png": "56d21abeed2ea6f90f70b81ccd15b5e59ead423ee36576c219632c99f19bee5c",
+        "-state.json": "ae47adeba8f33ad66465eee7f0b06ff2f62250c155c3e179d7204ed68019f300",
+        "-launch.json": "e04d865d8cd0c15a776db9158fc63ba9241831f9f22a9ca40edd0b79ed531e26",
+        "-runtime.log": "7a331e3f5eaf7f66fdbfa413afd186d121a366355d70e470800f3ad699b8dec7"
+      }
+    },
+    {
+      "mode": "accepted",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2841079,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": true,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 4,
+            "stream_id": "eb36e15c-79f6-4c4a-8cd4-8ea07f2aeef0"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "1af520e9-7579-45a5-98bb-15ea7867b99c": {
+                  "designator": "U2",
+                  "footprint": "authored",
+                  "id": "1af520e9-7579-45a5-98bb-15ea7867b99c",
+                  "position": {
+                    "x": 57000000,
+                    "y": 42000000
+                  },
+                  "rotation_mdeg": 0,
+                  "side": "top",
+                  "value": "private component"
+                },
+                "62a71d21-ff2d-4eb2-a925-55781e641276": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "62a71d21-ff2d-4eb2-a925-55781e641276",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "2ed6ff14-3e43-47ec-9412-e8aabf658b80",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "49f1542a-3a22-44dd-aacf-71d195d35aa9",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 48000000,
+                    "y": 38000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "924c9e0a-7029-4577-93a1-bf0ce4883e99": {
+                  "end": {
+                    "x": 55000000,
+                    "y": 38000000
+                  },
+                  "id": "924c9e0a-7029-4577-93a1-bf0ce4883e99",
+                  "layer": "bottom",
+                  "net": "N",
+                  "start": {
+                    "x": 43000000,
+                    "y": 38000000
+                  },
+                  "width": 400000
+                }
+              },
+              "vias": {
+                "7674b7f7-7ac3-4415-8bbb-7b8680f968aa": {
+                  "diameter": 1000000,
+                  "drill": 400000,
+                  "id": "7674b7f7-7ac3-4415-8bbb-7b8680f968aa",
+                  "net": "N",
+                  "position": {
+                    "x": 55000000,
+                    "y": 38000000
+                  }
+                }
+              }
+            },
+            "id": "8ee98048-d0d1-4fc9-b4b5-00b428048c47",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "accepted",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "eb36e15c-79f6-4c4a-8cd4-8ea07f2aeef0"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "62a71d21-ff2d-4eb2-a925-55781e641276": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "62a71d21-ff2d-4eb2-a925-55781e641276",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "2ed6ff14-3e43-47ec-9412-e8aabf658b80",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "49f1542a-3a22-44dd-aacf-71d195d35aa9",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "c7f6bb43-e5fe-4829-bf62-ea898a7df4f1": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "c7f6bb43-e5fe-4829-bf62-ea898a7df4f1",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "8ee98048-d0d1-4fc9-b4b5-00b428048c47",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/accepted.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "5d2a83f626915eb64ad467a58204d80b74899e48aba48d0db4449375df6c7d9b",
+        ".p6": "08c654b1ee0409ecb43383348b9bc478d6e5f085a061fbe35c427e293c983277",
+        ".png": "ba611f7991d96af8856f5b75bdb1d879e7f29102d1e17b67d5ab735d8be681b0",
+        "-state.json": "e4b616fcdfd50d8877a85153f8b39cdaf3d50d8d0b13af8e1b46fa04b81a1ce6",
+        "-launch.json": "ee5717a5b3d4b5ae62342c7902d6e40f71e94339a16af07c0d0c44d25110d606",
+        "-runtime.log": "aec3740d0b2c994ca262d3a8f3cf39f5558ce3c7da50e259ef7d328a56969d54"
+      }
+    },
+    {
+      "mode": "rejected",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2841109,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": true,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "9aedfb0c-04c6-4b8d-ac7a-7adabeb200df"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "4393d0be-2ee1-4fcc-9bb5-b86ede4b5dd4": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "4393d0be-2ee1-4fcc-9bb5-b86ede4b5dd4",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "b666cdc3-055a-4f33-acc3-35481c393472",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "9732f6da-44a1-41ff-9c7b-fb6ca2ff83d3",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "f18a078e-532e-415c-b1c5-69c8e39d89f6": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "f18a078e-532e-415c-b1c5-69c8e39d89f6",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "10653021-4c04-451d-b198-aa64da58b4f4",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "rejected",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "9aedfb0c-04c6-4b8d-ac7a-7adabeb200df"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "4393d0be-2ee1-4fcc-9bb5-b86ede4b5dd4": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "4393d0be-2ee1-4fcc-9bb5-b86ede4b5dd4",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "b666cdc3-055a-4f33-acc3-35481c393472",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "9732f6da-44a1-41ff-9c7b-fb6ca2ff83d3",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "f18a078e-532e-415c-b1c5-69c8e39d89f6": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "f18a078e-532e-415c-b1c5-69c8e39d89f6",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "10653021-4c04-451d-b198-aa64da58b4f4",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/rejected.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "d665e420057402b3498c7b6fc094399f84f370e3cfe00765c774b62f1ec53979",
+        ".p6": "c700e87ddd51881d8a57ea27a88b870e943f7aa2b29dfeed1c69d0cc87611f0f",
+        ".png": "e3be70662070595e96151c28764f4939b79c9dff24ec3b76a779ddaca30380e7",
+        "-state.json": "59e1d6a53f6ce7ce1b9004609fa7f58115b746a7644fbf1ec1beb058528bc9be",
+        "-launch.json": "d97bbbffbaf8b5ed287c60b715fa2049de97bf0094719ed5e25f7292471f442d",
+        "-runtime.log": "5ca01b0817dcf54886a8035cd9216ca1c63bb42fe4b152a777224aaaa0fdef4a"
+      }
+    },
+    {
+      "mode": "locked",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2841137,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": false,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "0c3eacb8-9b4e-4254-8a40-c3f834d149e6"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "56bf39ef-3592-47ae-835e-8925cbcfb514": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "56bf39ef-3592-47ae-835e-8925cbcfb514",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "d168314d-16d6-4e47-a08b-80fad531a987",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "4ea808e8-25b0-4f26-8e8a-951d7337fd81",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "12c9f96a-9102-4f09-90e7-8dfc92e2b60a": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "12c9f96a-9102-4f09-90e7-8dfc92e2b60a",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "9c1da74f-4292-42d4-8332-584d14568071",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "locked",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "0c3eacb8-9b4e-4254-8a40-c3f834d149e6"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "56bf39ef-3592-47ae-835e-8925cbcfb514": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "56bf39ef-3592-47ae-835e-8925cbcfb514",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "d168314d-16d6-4e47-a08b-80fad531a987",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "4ea808e8-25b0-4f26-8e8a-951d7337fd81",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "12c9f96a-9102-4f09-90e7-8dfc92e2b60a": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "12c9f96a-9102-4f09-90e7-8dfc92e2b60a",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "9c1da74f-4292-42d4-8332-584d14568071",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/locked.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "3d32416d065a6f3c33a9928f3c395ca00d15d210296d661b2cd809a585b4826a",
+        ".p6": "b1f0826b5e3e57a7979cce5b4965d941da09701a9482ed4aaff8af640b5369d9",
+        ".png": "19189c5bbfa6938909f28f6d01c04b8041da76b94c1f5035f5ba0d960a58c275",
+        "-state.json": "5b985bf7f3ffeb426e18bbc7fbb43a3d909cac2fa1f3881800f9e485c75c577d",
+        "-launch.json": "add31348602725b31add0dea72f6ab8475e9a1672e902daa440f69654deafc59",
+        "-runtime.log": "f885513f4e15abd38b2d27607c2f5c7eabaa74d0be5b03dd29e379cb49a50d92"
+      }
+    },
+    {
+      "mode": "busy",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2841242,
+      "exited": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "rgba_rgb_png_exact": true,
+      "state": {
+        "actual_local_inspect_accept_reject_or_busy_input": true,
+        "after_preparation_or_merge": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "80367ec5-f8cd-45da-b429-ec6cfd9c9d4d"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "437ffeed-0eba-4108-91ca-8426b06db25a": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "437ffeed-0eba-4108-91ca-8426b06db25a",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "97640522-984a-43be-8532-1620d280ba14",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "01f1bc0c-36b2-47e3-b834-9ffc96f4f84f",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "b6ab2e2b-7449-4196-9cde-434eb9af4b36": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "b6ab2e2b-7449-4196-9cde-434eb9af4b36",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "95596b0c-7544-4c7d-865f-5abfc4655d6a",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "locked_scope": "trusted startup ceiling; disabled controls rendered; no local button input",
+        "mode": "busy",
+        "native_unchanged": true,
+        "original": {
+          "cursor": {
+            "sequence": 3,
+            "stream_id": "80367ec5-f8cd-45da-b429-ec6cfd9c9d4d"
+          },
+          "project": {
+            "board": {
+              "parts": {
+                "437ffeed-0eba-4108-91ca-8426b06db25a": {
+                  "designator": "U1",
+                  "footprint": "authored",
+                  "id": "437ffeed-0eba-4108-91ca-8426b06db25a",
+                  "pads": [
+                    {
+                      "height": 600000,
+                      "id": "97640522-984a-43be-8532-1620d280ba14",
+                      "net": "N",
+                      "number": "1",
+                      "position": {
+                        "x": -1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    },
+                    {
+                      "height": 600000,
+                      "id": "01f1bc0c-36b2-47e3-b834-9ffc96f4f84f",
+                      "net": "N",
+                      "number": "2",
+                      "position": {
+                        "x": 1000003,
+                        "y": 7
+                      },
+                      "width": 800000
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "rotation_mdeg": 90000,
+                  "side": "bottom",
+                  "value": "live geometry"
+                }
+              },
+              "tracks": {
+                "b6ab2e2b-7449-4196-9cde-434eb9af4b36": {
+                  "end": {
+                    "x": 40000000,
+                    "y": 30000000
+                  },
+                  "id": "b6ab2e2b-7449-4196-9cde-434eb9af4b36",
+                  "layer": "top",
+                  "net": "N",
+                  "start": {
+                    "x": 30000000,
+                    "y": 30000000
+                  },
+                  "width": 400000
+                }
+              }
+            },
+            "id": "95596b0c-7544-4c7d-865f-5abfc4655d6a",
+            "name": "Authored PCB branch visual proof",
+            "schematic": {
+              "sheets": {}
+            }
+          },
+          "selection": {
+            "ids": [],
+            "origin": null,
+            "revision": 0
+          }
+        },
+        "os_input": false,
+        "status": {
+          "dirty": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-native/busy.viamind.json"
+        }
+      },
+      "sha256": {
+        ".p7": "80cf3f7f80136f5406dc6bef0eef791181fb50a7248844be1d274202afae0328",
+        ".p6": "767796b29e9ec2a93de2cc4dfcae9af7a4d90e5c45672577bf71c63c23cb5b9f",
+        ".png": "f864ad571de6019b3f1e9658f77453cd8c2e6477f9bd176ef708cdf880943a55",
+        "-state.json": "53da6fcf3037c2b6691ca5b830483ad1ea25b4c47b147b218cb8544dd00275a6",
+        "-launch.json": "03fdc2663a8dd97827c45a20d7dfb8e802c6f51c22a095525b862369e94cc4f1",
+        "-runtime.log": "1d31e75f509c7104ae229c3375b2df163abb88138467f69e4959d1a5ca97dd7a"
+      }
+    }
+  ],
+  "scope": "Independent read-only complete-channel equality, runtime invariants and actual absent process checks; native visual review separately recorded.",
+  "visual_review": {
+    "passed": true,
+    "all_six_viewed": true,
+    "observations": "Wide and compact actual branch Inspect/Accept/Reject controls and ghost geometry readable; accepted one-transaction success and rejected unchanged-live statuses readable; immutable ReadOnly startup ceiling and busy retained-writer refusal readable. No OS input claim."
+  },
+  "retained_inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-verified/agent-modes-inspection",
+    "sha256": "cb06f1f724d31a4bc10a24c060db8a290d88398b8d2ac2f3c86ecc5263164b92",
+    "live_process_claim": false
+  },
+  "review_result": "PASS: exact channels and readable six native states; trusted local egui preparation/clicks followed by production ViamindApp native rendering, explicit no OS input. Locked case displays disabled controls without injected click. Accepted cursor3\u21924 is distinct from capture-stage immutability; other cases cursor3\u21923, all native bytes unchanged."
+}
