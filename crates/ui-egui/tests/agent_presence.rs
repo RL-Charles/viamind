@@ -139,8 +139,8 @@ fn schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves
     h.get_by_label("Schematic").click();
     h.run_steps(5);
     // Choose the explicit populated sheet, even if UUID order made the empty sheet initial.
-    if h.query_by_label("Empty attention").is_some() {
-        h.get_by_label("Empty attention").click();
+    if h.get_by_role(egui::accesskit::Role::ComboBox).accesskit_node().value() == Some("Empty attention") {
+        h.get_by_role(egui::accesskit::Role::ComboBox).click();
         h.run_steps(3);
         h.get_by_label(&sheet.name).click();
         h.run_steps(5);
@@ -169,7 +169,7 @@ fn schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves
     assert_eq!(circles, 2, "selected junction and label anchors");
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
-    h.get_by_label(&sheet.name).click();
+    h.get_by_role(egui::accesskit::Role::ComboBox).click();
     h.run_steps(3);
     h.get_by_label("Empty attention").click();
     h.run_steps(5);
@@ -177,7 +177,7 @@ fn schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves
     assert!(attention_labels(&h)[0].starts_with("empty agent #"));
     assert_eq!(engine.session_state(), before);
     // Return and exercise an actual human shared command with markers alive.
-    h.get_by_label("Empty attention").click();
+    h.get_by_role(egui::accesskit::Role::ComboBox).click();
     h.run_steps(3);
     h.get_by_label(&sheet.name).click();
     h.run_steps(5);
