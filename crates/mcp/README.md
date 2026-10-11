@@ -678,3 +678,15 @@ endpoints are supported; no automatic via relocation or shove. See the
 ## Detached footprint S-expression conversion
 
 `preview_footprint_conversion` reads one bounded regular `.kicad_mod` and returns exact local rectangular pad geometry, per-list fidelity and source SHA256. `convert_footprint_file` takes `path`, `expected_source_sha256` and `destination`, reparses those exact bytes and publishes one new native footprint library. Existing files and the current active native project are protected; dirty project work, history and selection remain unchanged. Converted source UUIDs/nets are absent. Separate `import_footprint` preserves matching native pad IDs/nets by number and creates fresh IDs without nets for new numbers. [Supported subset, workflow and exclusions](../../docs/footprint-conversion.md).
+
+## Equivalent cardinal track cleanup
+
+`plan_cardinal_track_cleanup` and `cleanup_cardinal_tracks` share explicit
+project/full-cursor guards, a stored-ID selector or exact net/optional outer
+layer, and scoped DRC rules. Immutable preview reports deterministic exact
+before/after tracks, retained/unsupported/work counters and actual checker
+coverage. Commit recomputes the complete joint candidate before one atomic undo.
+Only equivalent assigned-net cardinal chains merge; branches, exact pad/via
+anchors and all-net drill-hole AABB contacts remain. Finite capture/selection/
+merge/work/admission limits refuse unchanged. No bend optimization, shove or
+physical certification. See [desktop workflow and limits](../../docs/cardinal-track-cleanup.md).
