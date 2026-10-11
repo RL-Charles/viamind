@@ -82,3 +82,69 @@ fn batch_uses_one_initial_cursor_and_raw_overflow_precedes_poison() {
     assert!(error.to_string().contains("at most256"), "{error}");
     assert_eq!(e.session_state(), baseline);
 }
+
+#[test]
+fn library_two_apply_export_native_save_pad_net_identity_and_assembly_delta_retention() {
+    use viamind_doc::{AssemblyMetadata, file, footprint::Footprint};
+    use viamind_engine::{ApplyFootprint, FootprintFile, SaveProject, SetPartAssembly};
+    let e = EngineHandle::new(file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap());
+    let id = e.read(|p| *p.board.parts.keys().next().unwrap());
+    let before = e.session_state();
+    let part = before.project.board.parts[&id].clone();
+    let mut definition = Footprint::from_part(&part).unwrap();
+    definition.artwork = Some(artwork());
+    definition.name = "Explicit authored".into();
+    let mut apply =
+        ApplyFootprint { expected_project: before.project.id, expected_cursor: None, expected: part.clone(), footprint: definition.clone() };
+    assert!(e.execute_typed(apply.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), before);
+    apply.expected_cursor = Some(before.cursor);
+    e.execute("add_part", json!({"designator":"PEER","value":"peer","footprint":"test","x_mm":1,"y_mm":2}), Origin::agent("peer")).unwrap();
+    let peer = e.session_state();
+    assert!(e.execute_typed(apply.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), peer);
+    apply.expected_cursor = Some(peer.cursor);
+    e.execute_typed(apply, Origin::User).unwrap();
+    let changed = e.read(|p| p.board.parts[&id].clone());
+    assert_eq!(changed.pads, part.pads);
+    assert_eq!(changed.position, part.position);
+    assert_eq!(changed.side, part.side);
+    assert_eq!(changed.artwork, definition.artwork);
+    let baseline = e.session_state();
+    e.execute_typed(
+        SetPartAssembly {
+            id,
+            assembly: Some(AssemblyMetadata { mpn: Some("Exact user field".into()), ..Default::default() }),
+            expected: Some(changed.clone()),
+            expected_project: Some(before.project.id),
+        },
+        Origin::User,
+    )
+    .unwrap();
+    assert_eq!(e.read(|p| p.board.parts[&id].artwork.clone()), changed.artwork, "ordinary clone_without_assembly must retain live artwork");
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), baseline.project);
+    let temp = tempfile::tempdir().unwrap();
+    let library = temp.path().join("explicit.footprint.json");
+    e.export_footprint(FootprintFile {
+        expected_cursor: Some(e.event_cursor()),
+        expected_project: before.project.id,
+        expected: changed.clone(),
+        path: library.clone(),
+    })
+    .unwrap();
+    assert_eq!(viamind_doc::footprint::load(&library).unwrap(), definition);
+    let native = temp.path().join("explicit.viamind.json");
+    e.save_project(SaveProject { path: Some(native.clone()), overwrite: false }).unwrap();
+    assert_eq!(file::load(&native).unwrap(), e.read(Clone::clone));
+    let restored = ApplyFootprint {
+        expected_project: before.project.id,
+        expected_cursor: Some(e.event_cursor()),
+        expected: changed,
+        footprint: Footprint::from_part(&part).unwrap(),
+    };
+    e.execute_typed(restored, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.parts[&id].artwork.is_none()));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), baseline.project);
+}

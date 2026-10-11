@@ -16,7 +16,7 @@ pub struct ApplyFootprint {
 
 impl Command for ApplyFootprint {
     const NAME: &'static str = "apply_footprint";
-    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
+    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
     fn expected_cursor(&self) -> Option<crate::EventCursor> {
         self.expected_cursor
     }

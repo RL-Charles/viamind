@@ -16,6 +16,8 @@ pub enum FabricationLayer {
     BottomCopper,
     TopMaskOpenings,
     BottomMaskOpenings,
+    TopSilkscreen,
+    BottomSilkscreen,
     Profile,
     Drill,
 }
@@ -108,6 +110,8 @@ fn layer(value: &str) -> Result<FabricationLayer, String> {
         "Copper,L2,Bot" => FabricationLayer::BottomCopper,
         "Soldermask,Top" => FabricationLayer::TopMaskOpenings,
         "Soldermask,Bot" => FabricationLayer::BottomMaskOpenings,
+        "Legend,Top" => FabricationLayer::TopSilkscreen,
+        "Legend,Bot" => FabricationLayer::BottomSilkscreen,
         "Profile,NP" => FabricationLayer::Profile,
         _ => return Err("unsupported fabrication FileFunction".into()),
     })
@@ -239,8 +243,10 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
             let (position, operation) = command.rsplit_once('D').ok_or_else(invalid)?;
             let at = point(position, false)?;
             let aperture = selected.ok_or_else(invalid)?;
-            if file_layer == Some(FabricationLayer::Profile) && operation == "03" {
-                return Err("profile inspection supports linear centerlines only".into());
+            if matches!(file_layer, Some(FabricationLayer::Profile | FabricationLayer::TopSilkscreen | FabricationLayer::BottomSilkscreen))
+                && operation == "03"
+            {
+                return Err("profile/Legend inspection supports linear centerlines only".into());
             }
             graphics = true;
             let primitive = match (operation, aperture) {

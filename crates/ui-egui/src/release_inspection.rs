@@ -92,7 +92,7 @@ impl ViamindApp {
         let mut start = false;
         egui::Window::new("Inspect saved release").open(&mut open).default_width(560.).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Read-only historical release consistency. Existing files and the current document stay unchanged.");
-            ui.label("Fixed versions 1–3/layouts only. Per-file inspector limits can refuse otherwise valid larger exports.");
+            ui.label("Fixed versions 1–4/layouts only. Per-file inspector limits can refuse otherwise valid larger exports.");
             ui.add_enabled_ui(!busy, |ui| {
                 let label = ui.label("Saved release directory");
                 let changed = ui

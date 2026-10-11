@@ -11,6 +11,7 @@ pub struct FabricationUi {
     open: bool,
     path: String,
     mask: String,
+    include_silkscreen: bool,
     worker: Option<Receiver<Result<Value, String>>>,
     message: Option<String>,
     result: Option<Value>,
@@ -33,6 +34,7 @@ impl FabricationUi {
         serde_json::to_value(FabricationExportRequest {
             path: std::path::PathBuf::from(self.path.trim()),
             mask_expansion_mm: mask,
+            include_silkscreen: self.include_silkscreen,
             expected_cursor: Some(cursor),
         })
         .map_err(|e| e.to_string())
@@ -107,7 +109,11 @@ pub(crate) fn export_fabrication(engine: &EngineHandle, input: Value) -> Result<
         Ok((snapshot, cursor, e.document_status().path))
     })?;
     let (path, manifest) = snapshot
-        .write(viamind_fab::FabricationOptions { mask_expansion_mm: input.mask_expansion_mm }, &input.path, native.as_deref())
+        .write(
+            viamind_fab::FabricationOptions { mask_expansion_mm: input.mask_expansion_mm, include_silkscreen: input.include_silkscreen },
+            &input.path,
+            native.as_deref(),
+        )
         .map_err(|e| invalid(e.to_string()))?;
     Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor}))
 }
@@ -133,13 +139,15 @@ impl ViamindApp {
         egui::Window::new("Fabrication export").open(&mut self.fabrication.open).default_width(580.0).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Two outer copper layers, explicit SMD pads, tracks, through vias, mask and polygon profile.");
             ui.label("A NEW directory is required. Existing destinations and native projects are preserved.");
-            ui.label("No legacy previews, inner copper, pours, paste, silkscreen or fabrication certification.");
+            ui.label("No legacy previews, inner copper, pours, paste or fabrication certification.");
             ui.add_enabled_ui(!busy, |ui| {
                 let label = ui.label("New fabrication directory");
                 ui.add(egui::TextEdit::singleline(&mut self.fabrication.path).desired_width(500.0).char_limit(4096)).labelled_by(label.id);
                 let label = ui.label("Mask expansion (mm)");
                 ui.add(egui::TextEdit::singleline(&mut self.fabrication.mask).desired_width(100.0).char_limit(32)).labelled_by(label.id);
                 ui.label("Default 0 mm: mask opening equals pad; all vias untented. Export X right/Y up; common top view.");
+                ui.checkbox(&mut self.fabrication.include_silkscreen, "Include stored silkscreen Legend files");
+                ui.label("Legend exports stored straight strokes only; no text, clipping or courtyard checks.");
                 export = ui.button("Export fabrication snapshot").clicked();
             });
             if busy {

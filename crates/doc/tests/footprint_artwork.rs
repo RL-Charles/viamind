@@ -63,3 +63,33 @@ fn native_feature_max_save_and_private_analysis_never_drop_live_artwork() {
     assert!(!path.exists());
     assert_eq!(std::fs::read_dir(d.path()).unwrap().count(), 0);
 }
+
+#[test]
+fn mixed_artwork_package_via_and_assembly_features_max_compose_and_clear() {
+    use viamind_doc::{AssemblyMetadata, MountingTechnology, NamedNetMinima};
+    let mut p = file::from_str(include_str!("../../../docs/verification/t0116/placed.viamind.json")).unwrap();
+    assert_eq!(file::minimum_version(&p), 12);
+    let id = *p.board.parts.keys().next().unwrap();
+    p.board.parts.get_mut(&id).unwrap().assembly =
+        Some(Box::new(AssemblyMetadata { mounting: Some(MountingTechnology::Hybrid), ..Default::default() }));
+    p.board.net_rules.insert(
+        "Exact".into(),
+        NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(0), minimum_via_drill: Nm(3), minimum_annular_width: Nm(5) },
+    );
+    p.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
+    assert_eq!(file::minimum_version(&p), 13);
+    assert_eq!(file::from_str(&file::to_string(&p)).unwrap(), p);
+    p.board.parts.get_mut(&id).unwrap().artwork = None;
+    assert_eq!(file::minimum_version(&p), 12);
+    for part in p.board.parts.values_mut() {
+        part.schematic_package = None;
+        part.schematic_symbol = None;
+    }
+    p.schematic = Default::default();
+    assert_eq!(file::minimum_version(&p), 10);
+    p.board.net_rules.clear();
+    assert_eq!(file::minimum_version(&p), 9);
+    p.board.parts.get_mut(&id).unwrap().assembly = None;
+    assert!(file::minimum_version(&p) < 9);
+    assert_eq!(file::from_str(&file::to_string(&p)).unwrap(), p);
+}

@@ -71,6 +71,11 @@ impl FabricationSnapshot {
         }
         text.add(&project.name)?;
         for part in project.board.parts.values() {
+            if let Some(artwork) = &part.artwork {
+                count = count.saturating_add(artwork.primitive_count());
+                check(count)?;
+                artwork.validate().map_err(invalid)?;
+            }
             count = count.saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()).saturating_mul(2));
             check(count)?;
             for value in [&part.designator, &part.value, &part.footprint] {
