@@ -81,8 +81,8 @@ label and 2 MiB aggregate copied board text**. Track selectors are capped at
 segments** can participate. Refuse an over-budget operation without truncating
 the requested selector or publishing a partial plan.
 
-Endpoint and anchor indexes have at most two entries per captured track plus
-one per explicit pad/via, bounded by the structural cap. Use deterministic
+Endpoint and anchor indexes have at most two entries per captured track/via plus
+one per explicit pad, bounded by the structural cap. Use deterministic
 ordered indexes and chain traversal, with no all-pairs scan. Hole broad-phase
 queries share a maximum of **1000000 visited candidates** for the complete
 operation; charge before inspecting each candidate. Overflow or exhaustion

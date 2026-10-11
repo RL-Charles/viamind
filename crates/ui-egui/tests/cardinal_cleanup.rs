@@ -26,10 +26,13 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
 fn click_track(h: &mut Harness<'_, ViamindApp>, x: f64, modifiers: Modifiers) {
     let pos = h.state().canvas.camera.world_to_screen(WorldPos::new(x, 0.), h.state().canvas.viewport);
     for pressed in [true, false] {
+        h.event(Event::ModifiersChanged(modifiers));
         h.event(Event::PointerMoved(pos));
         h.event(Event::PointerButton { pos, button: PointerButton::Primary, pressed, modifiers });
         h.run_steps(2);
     }
+    h.event(Event::ModifiersChanged(Modifiers::NONE));
+    h.run_steps(1);
 }
 fn wait(h: &mut Harness<'_, ViamindApp>) {
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);

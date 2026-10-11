@@ -5,21 +5,13 @@ use viamind_mcp::{CallContext, engine_registry};
 #[tokio::test]
 async fn checked_cardinal_cleanup_is_read_only_guarded_and_one_undo_for_two_agents() {
     use viamind_doc::{CopperLayer, ObjectId, Track};
-    use viamind_geom::{Nm, Point};
     let mut project = Project::new("MCP cleanup");
     project.board.outline = Some(
         serde_json::from_value(json!({"outer":[{"x":0,"y":0},{"x":50000000,"y":0},{"x":50000000,"y":30000000},{"x":0,"y":30000000}],"cutouts":[]}))
             .unwrap(),
     );
     for (a, b) in [(10_000_123, 20_000_127), (20_000_127, 30_000_129)] {
-        let track = Track {
-            id: ObjectId::new(),
-            start: Point::new(Nm(a), Nm(10_000_007)),
-            end: Point::new(Nm(b), Nm(10_000_007)),
-            width: Nm(250_001),
-            layer: CopperLayer::Top,
-            net: Some("N".into()),
-        };
+        let track: Track = serde_json::from_value(json!({"id":ObjectId::new(),"start":{"x":a,"y":10_000_007},"end":{"x":b,"y":10_000_007},"width":250_001,"layer":CopperLayer::Top,"net":"N"})).unwrap();
         project.board.tracks.insert(track.id, track);
     }
     let e = EngineHandle::new(project);
