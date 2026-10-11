@@ -108,10 +108,10 @@ pub fn schematic_view_snapshot(project: &Project, sheet_id: ObjectId) -> io::Res
     Ok(SchematicSnapshot { project_id: project.id, project_name: project.name.clone(), sheet: sheet.clone() })
 }
 fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
-    if let Some(c) = &sheet.content {
-        if c.object_count() > 10_000 || c.pin_count() > 100_000 {
-            return Err(invalid("selected sheet exceeds 10000 objects or 100000 pins"));
-        }
+    if let Some(c) = &sheet.content
+        && (c.object_count() > 10_000 || c.pin_count() > 100_000)
+    {
+        return Err(invalid("selected sheet exceeds 10000 objects or 100000 pins"));
     }
     let mut bytes = 0usize;
     let mut glyphs = 0usize;
@@ -129,7 +129,7 @@ fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
                 return Err(invalid("selected sheet view exceeds 32768 visible glyphs"));
             }
         }
-        if s.chars().any(|c| c.is_control()) {
+        if s.chars().any(char::is_control) {
             return Err(invalid("schematic view text must not contain controls"));
         }
         Ok(())
@@ -497,7 +497,7 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         svg_coordinates: "0 0 width_px height_px; uniformly fit region_nm, centered; clip to region",
         font: "bundled unchanged Hack Regular; visible glyphs outlined",
         symbol_count: c.map_or(0, |c| c.symbols.len()),
-        pin_count: c.map_or(0, |c| c.pin_count()),
+        pin_count: c.map_or(0, viamind_doc::schematic::SchematicContent::pin_count),
         wire_count: c.map_or(0, |c| c.wires.len()),
         junction_count: c.map_or(0, |c| c.junctions.len()),
         label_count: c.map_or(0, |c| c.labels.len()),
