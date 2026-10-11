@@ -56,6 +56,11 @@ fn mode(modifiers: Modifiers) -> SelectionMode {
 }
 
 impl Selection {
+    /// Cached bounds of visible board objects; attention overlays do not rescan geometry.
+    pub(crate) fn visible_bounds(&self, id: ObjectId) -> Option<viamind_geom::Rect> {
+        self.index.get(id)
+    }
+
     /// Cancel local pointer previews when switching workspaces, preserving shared IDs.
     pub fn cancel_gestures(&mut self) {
         self.gesture = None;

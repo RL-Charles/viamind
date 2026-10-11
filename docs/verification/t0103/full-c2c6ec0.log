@@ -1,0 +1,49 @@
+c2c6ec0983288ee8a4dcca6c689fd7355c4c86fa
+Sun Oct 11 15:51:35 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/render)
+error: literal out of range for `i32`
+  --> crates/engine/src/agent_presence.rs:22:28
+   |
+22 |     #[schemars(range(min = -10000000000, max = 10000000000))]
+   |                            ^^^^^^^^^^^^
+   |
+   = note: the literal `-10000000000` does not fit into the type `i32` whose range is `-2147483648..=2147483647`
+   = help: consider using the type `i64` instead
+   = note: `#[deny(overflowing_literals)]` on by default
+
+error: literal out of range for `i32`
+  --> crates/engine/src/agent_presence.rs:22:48
+   |
+22 |     #[schemars(range(min = -10000000000, max = 10000000000))]
+   |                                                ^^^^^^^^^^^
+   |
+   = note: the literal `10000000000` does not fit into the type `i32` whose range is `-2147483648..=2147483647`
+   = help: consider using the type `i64` instead
+
+error: literal out of range for `i32`
+  --> crates/engine/src/agent_presence.rs:24:28
+   |
+24 |     #[schemars(range(min = -10000000000, max = 10000000000))]
+   |                            ^^^^^^^^^^^^
+   |
+   = note: the literal `-10000000000` does not fit into the type `i32` whose range is `-2147483648..=2147483647`
+   = help: consider using the type `i64` instead
+
+error: literal out of range for `i32`
+  --> crates/engine/src/agent_presence.rs:24:48
+   |
+24 |     #[schemars(range(min = -10000000000, max = 10000000000))]
+   |                                                ^^^^^^^^^^^
+   |
+   = note: the literal `10000000000` does not fit into the type `i32` whose range is `-2147483648..=2147483647`
+   = help: consider using the type `i64` instead
+
+error: could not compile `viamind-engine` (lib) due to 4 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `viamind-engine` (lib test) due to 4 previous errors

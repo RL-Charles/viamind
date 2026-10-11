@@ -1,0 +1,51 @@
+{
+  "agents": {
+    "agents": [
+      {
+        "connection": 1001,
+        "cursor": {
+          "x": 30000000,
+          "y": 17000000
+        },
+        "display_name": "Routing agent",
+        "palette_index": 1,
+        "remaining_lease_ms": 28695,
+        "selection": [
+          "00000000-0000-0000-0000-000000000002"
+        ],
+        "working_on": "Checking via clearance"
+      },
+      {
+        "connection": 1002,
+        "cursor": {
+          "x": 14000000,
+          "y": 24000000
+        },
+        "display_name": "Assembly agent",
+        "palette_index": 2,
+        "remaining_lease_ms": 28695,
+        "selection": [
+          "00000000-0000-0000-0000-000000000005"
+        ],
+        "working_on": "Calibrating centroid"
+      }
+    ],
+    "project_id": "00000000-0000-0000-0000-000000000001",
+    "source_cursor": {
+      "sequence": 0,
+      "stream_id": "ece59277-4dbf-4a87-a080-787c76e544e4"
+    }
+  },
+  "capture": "actual eframe native WGPU Screenshot event",
+  "full_session_unchanged": true,
+  "inspection_only": true,
+  "native_bytes_unchanged": true,
+  "pid": 1790165,
+  "pixels": [
+    1600,
+    1000
+  ],
+  "seed_scope": "Two bounded direct trusted engine presence updates before native launch. Actual MCP ownership/stdio and human edit tests have separate evidence. No OS input or frame-cadence claim.",
+  "self_closes_after_fsynced_proof": true,
+  "ui_passes": 11
+}

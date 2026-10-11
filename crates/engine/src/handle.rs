@@ -26,6 +26,7 @@ pub struct EngineHandle {
     session_changed: Arc<Condvar>,
     saves: Arc<Mutex<()>>,
     pub(crate) automatic_drc: Arc<crate::auto_drc::AutoDrcController>,
+    pub(crate) agent_presence: Arc<Mutex<crate::agent_presence::PresenceStore>>,
 }
 
 impl EngineHandle {
@@ -43,7 +44,13 @@ impl EngineHandle {
     pub fn from_engine(engine: Engine) -> EngineHandle {
         let engine = Arc::new(Mutex::new(engine));
         let automatic_drc = Arc::new(crate::auto_drc::AutoDrcController::new(&engine));
-        EngineHandle { engine, automatic_drc, session_changed: Arc::new(Condvar::new()), saves: Arc::new(Mutex::new(())) }
+        EngineHandle {
+            engine,
+            automatic_drc,
+            session_changed: Arc::new(Condvar::new()),
+            saves: Arc::new(Mutex::new(())),
+            agent_presence: Arc::default(),
+        }
     }
 
     /// Configure transient shared automatic DRC without modifying design/history.

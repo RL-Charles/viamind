@@ -1,0 +1,91 @@
+{
+  "format": "viamind-agent-presence-verification",
+  "version": 1,
+  "platform": "Linux x86_64 Hyprland",
+  "historical_full": {
+    "source": "49863aa093eb892cac9af08611f487a03b2da763",
+    "workspace": {
+      "passed": 718,
+      "failed": 0,
+      "ignored": 1
+    },
+    "focused_passed": 6,
+    "fmt": "pass",
+    "clippy": "strict workspace all-targets pass",
+    "build": "pass",
+    "production_sha256": "cfc7dd8f1bbd48c506356e6002b520a93581e72e612a04ff63f5be5b94370928",
+    "inspection_sha256": "945ae19eb3d54f365598b8682c1f2fa14af90c0b1b65ec91ad885422b5e85e45",
+    "note": "Completed before independent timing review. Four schemars literal type compile errors in first attempt are retained separately; fixed before this successful runtime run."
+  },
+  "combined": {
+    "source": "a1a3df58797bd9898d13e0c2f2360dc2de244b0e",
+    "base": "f568574e3c62f0fdbf2e3ef4ce26caf466203f1e",
+    "fmt": "pass",
+    "clippy": "strict workspace all-targets pass",
+    "focused_passed": 7,
+    "build": "workspace and native inspection pass",
+    "actual_tools": 88,
+    "workflow_checks": 18,
+    "production_binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0103/production-combined",
+    "production_sha256": "3c92a975faae8740caa8ef49c19f48a38a8aa899bf35a5860b7e09b70a02be17",
+    "production_pid": 1788610,
+    "http_port": 7927,
+    "actual_transport_checks": 40,
+    "inspection_binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0103/inspection-combined",
+    "inspection_sha256": "799aa2f5cc99db5c90b81e80426e844bad97c51ec65ca59c2b739370946148a2",
+    "timing_fix": "Production monotonic clock sampled after both locks; deterministic regression asserts lock ownership and exact expiry."
+  },
+  "native": [
+    {
+      "mode": "compact",
+      "pid": 1789559,
+      "process_after_capture": "absent; self-closed",
+      "report": "compact-inspection.json",
+      "png": "compact.png",
+      "p6_sha256": "1ed6b84d5a4f5c479d736ad6f388d4801f3d81ff0eded7c8307bbebce6c056b0",
+      "png_sha256": "0093c48d03fa21899acf2a1947d76d935a60c840c65796a093ca44bb39f5959b",
+      "exact_rgb_readback": true,
+      "pixels": [
+        640,
+        400
+      ]
+    },
+    {
+      "mode": "wide",
+      "pid": 1790165,
+      "process_after_capture": "absent; self-closed",
+      "report": "wide-inspection.json",
+      "png": "wide.png",
+      "p6_sha256": "4dd081320dca63d090be5f3c65e4738a674e413080456a03d258b6c1ebcea76b",
+      "png_sha256": "d984484897c822c589fe2506747e675e6dd5a1b90d899b237eb4ee2aa6d86be8",
+      "exact_rgb_readback": true,
+      "pixels": [
+        1600,
+        1000
+      ]
+    }
+  ],
+  "scope": "PCB explicit attention only. Same names disambiguated by trusted connection;32leases/30seconds. Direct seeded native renderer captures are separate from actual HTTP/stdio and actual egui human-edit/undo test. No OS-input/presented-frame/cadence or automatic inference claim.",
+  "artifact_sha256": {
+    "catalog-report.json": "60a896a88999d03a1fc673d9a9478f96283c0253efae262f00c9ce8c1013fed2",
+    "combined-source.json": "670052ea21438d61c539b2d7e602e208410a8a6c0ecae21a6c9de92926bb3f28",
+    "compact-inspection.json": "f6aae9794ab91d893224a6aa76d1da9c73580e486cee4cbd7733a6692c5efcb1",
+    "compact-launch.json": "c40064b102eec7f0cfee26d5ee4da5b60f88fcf06ca9559c79e6c85883049b69",
+    "compact-runtime.log": "f67b461a379b149c23dc54482c791e55a652f241ccbc942c04b88327490a8379",
+    "compact.png": "0093c48d03fa21899acf2a1947d76d935a60c840c65796a093ca44bb39f5959b",
+    "full-c2c6ec0.log": "7ad2d108cf69d82acf99aab7a8da9de85a30700df5516a5aa12c1deadebd6cf7",
+    "full-retry1.log": "76c5aee21dbc4300166aadeac0cec40e776fd3f36f52c5f7b5345ac24d40fd47",
+    "presence-smoke.py": "d795c297961385e0feab57c6b99147d0afd93ce3e3ea36897a554ade104f65d9",
+    "presence.viamind.json": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea",
+    "production-launch.json": "554533134a2cdbb92720ed1342dc22185f82b7c1afaada527b282c2a809084b6",
+    "production-proof.json": "c7de0965c77d98d715ac09220c4a7cd8ec357d395528474188daf3295362d69d",
+    "production-runtime.log": "6396624495a2f513822c8649e4a92733058b9c30750e78c0cccfb0ac901ee6d7",
+    "refresh.log": "c433f4f5dfd338436b9c44a696dc6ad0565482f96d648e892c269ba20cbc2f9f",
+    "refresh.sh": "386611554472125061082d7254d71bb26a577326e5f2ea55f94470428f4052d4",
+    "wide-inspection.json": "5791a3436261b043ec8c494fbbaf25b7e19bc7db024267e6fbfec4d8bf9e2839",
+    "wide-launch.json": "3534506afd2fccfdf8cabd16c8d43a77e83d10426bf74a117da5a7f1d9f485c1",
+    "wide-runtime.log": "7f4a3a525bf6c89193cd97392aa77352e317f5e0ec0097981ddab1e613680b55",
+    "wide.png": "d984484897c822c589fe2506747e675e6dd5a1b90d899b237eb4ee2aa6d86be8",
+    "workflow.json": "bf00955b208284e4db3dfee36eb1df338597fc2ee76bcd265a416fd9dfe6c2d3"
+  }
+}

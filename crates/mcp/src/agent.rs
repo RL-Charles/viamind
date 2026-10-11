@@ -53,11 +53,13 @@ impl From<String> for AgentId {
 pub struct CallContext {
     /// The agent making the call.
     pub agent: AgentId,
+    /// Transport-owned identity; untrusted names/tool arguments cannot set it.
+    pub(crate) connection: Option<u64>,
 }
 
 impl CallContext {
     /// Context for a call made by `agent`.
     pub fn new(agent: impl Into<AgentId>) -> Self {
-        Self { agent: agent.into() }
+        Self { agent: agent.into(), connection: None }
     }
 }

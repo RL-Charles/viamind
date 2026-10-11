@@ -10,6 +10,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [annotate\_schematic](#tool-616e6e6f746174655f736368656d61746963)
 - [apply\_footprint](#tool-6170706c795f666f6f747072696e74)
 - [cleanup\_cardinal\_tracks](#tool-636c65616e75705f63617264696e616c5f747261636b73)
+- [clear\_agent\_presence](#tool-636c6561725f6167656e745f70726573656e6365)
 - [configure\_auto\_drc](#tool-636f6e6669677572655f6175746f5f647263)
 - [convert\_footprint\_file](#tool-636f6e766572745f666f6f747072696e745f66696c65)
 - [create\_schematic\_pcb\_component](#tool-6372656174655f736368656d617469635f7063625f636f6d706f6e656e74)
@@ -49,6 +50,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [preview\_schematic\_annotation](#tool-707265766965775f736368656d617469635f616e6e6f746174696f6e)
 - [preview\_schematic\_pcb\_component](#tool-707265766965775f736368656d617469635f7063625f636f6d706f6e656e74)
 - [preview\_schematic\_pcb\_sync](#tool-707265766965775f736368656d617469635f7063625f73796e63)
+- [query\_agent\_presence](#tool-71756572795f6167656e745f70726573656e6365)
 - [query\_connectivity](#tool-71756572795f636f6e6e6563746976697479)
 - [query\_linked\_components](#tool-71756572795f6c696e6b65645f636f6d706f6e656e7473)
 - [query\_linked\_pin\_pads](#tool-71756572795f6c696e6b65645f70696e5f70616473)
@@ -76,6 +78,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [save\_output\_job](#tool-736176655f6f75747075745f6a6f62)
 - [save\_project](#tool-736176655f70726f6a656374)
 - [save\_symbol\_template](#tool-736176655f73796d626f6c5f74656d706c617465)
+- [set\_agent\_presence](#tool-7365745f6167656e745f70726573656e6365)
 - [set\_board\_outline](#tool-7365745f626f6172645f6f75746c696e65)
 - [set\_named\_net\_rules](#tool-7365745f6e616d65645f6e65745f72756c6573)
 - [set\_part\_assembly](#tool-7365745f706172745f617373656d626c79)
@@ -1195,6 +1198,39 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "cleanup_cardinal_tracks"
+}
+```
+
+<a id="tool-636c6561725f6167656e745f70726573656e6365"></a>
+
+## clear\_agent\_presence
+
+```json
+{
+  "description": "Clear only this trusted MCP connection's PCB attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "expected_stream": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_stream"
+    ],
+    "title": "ClearAgentPresence",
+    "type": "object"
+  },
+  "name": "clear_agent_presence"
 }
 ```
 
@@ -7083,6 +7119,22 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-71756572795f6167656e745f70726573656e6365"></a>
+
+## query\_agent\_presence
+
+```json
+{
+  "description": "Read bounded ephemeral PCB agent cursors, selected board IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  },
+  "name": "query_agent_presence"
+}
+```
+
 <a id="tool-71756572795f636f6e6e6563746976697479"></a>
 
 ## query\_connectivity
@@ -9885,6 +9937,79 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "save_symbol_template"
+}
+```
+
+<a id="tool-7365745f6167656e745f70726573656e6365"></a>
+
+## set\_agent\_presence
+
+```json
+{
+  "description": "Publish or renew only this MCP connection's ephemeral PCB cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; at most64 distinct existing board part/track/via IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "cursor": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "maximum": 10000000000,
+            "minimum": -10000000000,
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "maximum": 10000000000,
+            "minimum": -10000000000,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "expected_stream": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "selection": {
+        "items": {
+          "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+          "format": "uuid",
+          "type": "string"
+        },
+        "maxItems": 64,
+        "type": "array"
+      },
+      "working_on": {
+        "maxLength": 80,
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_stream",
+      "cursor",
+      "selection",
+      "working_on"
+    ],
+    "title": "SetAgentPresence",
+    "type": "object"
+  },
+  "name": "set_agent_presence"
 }
 ```
 

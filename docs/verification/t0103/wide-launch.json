@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0103/launch-wide",
+  "pid": 1790165,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-agent-presence-inspection",
+      "bounds": {
+        "height": 1000,
+        "width": 1600,
+        "x": 2080,
+        "y": 1265
+      },
+      "height": 1000,
+      "is_on_screen": true,
+      "pid": 1790165,
+      "title": "presence.viamind.json — Viamind",
+      "width": 1600,
+      "window_id": 110379550909168,
+      "x": 2080,
+      "y": 1265,
+      "z_index": null
+    }
+  ]
+}
