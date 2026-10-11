@@ -1,0 +1,15 @@
+{
+  "source": "feee91af076956981c66412b9335c3b3b2fed5d8",
+  "source_tree": "8323de4d4e33fc24680760ad1047000092cb9a8c",
+  "binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
+      "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa"
+    },
+    "command-hooks-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/command-hooks-inspection",
+      "sha256": "6cee21e462e7c967b139ded71719b5caabf01d7fd3171b12825da0387da4a0be"
+    }
+  },
+  "gates": "fmtcheck strictworkspacealltargetclippy fullworkspace tests/build plus inspection build"
+}

@@ -1,0 +1,19 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0118/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0118/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0118/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0118/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0118/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.31s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 7 tests
+test command_hooks::tests::veto_preserves_full_session_document_log_redo_and_next_id ... ok
+test command_hooks::tests::pre_captured_reads_panic_is_veto_but_mutations_return_error ... ok
+test command_hooks::tests::post_runs_outside_engine_and_native_locks_and_isolates_failure ... ok
+test command_hooks::tests::drc_gate_uses_real_coverage_and_preserves_auto_drc_on_veto ... ok
+test command_hooks::tests::final_candidate_batch_repair_undo_escape_and_noop_skip ... ok
+test command_hooks::tests::metadata_admission_and_unicode_diagnostics_are_bounded ... ok
+test command_hooks::tests::bounded_standalone_queue_refuses_apply_allows_undo_and_snapshots_callbacks ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 86 filtered out; finished in 0.01s
+

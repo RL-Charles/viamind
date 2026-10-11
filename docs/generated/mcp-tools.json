@@ -1608,6 +1608,93 @@
       "name": "configure_auto_drc"
     },
     {
+      "description": "Configure the shared transient built-in scoped DRC pre-command veto. Default disabled. Enabled changed apply/redo candidates must pass existing scoped DRC without violations, excluded parts, truncation or incomplete coverage. max_objects1..10000(default5000), existing bounded DRC rules. Undo escapes veto; batch final candidate permits atomic repairs. Does not validate current project when enabled or change design/history/native bytes. Trusted Live writer admission required; no callback code registration.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "default": false,
+            "type": "boolean"
+          },
+          "max_objects": {
+            "default": 5000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "rules": {
+            "additionalProperties": false,
+            "default": {
+              "copper_clearance_mm": 0.2,
+              "edge_clearance_mm": 0.25,
+              "hole_clearance_mm": 0.25,
+              "hole_to_copper_clearance_mm": 0.2,
+              "max_violations": 1000,
+              "minimum_annular_width_mm": 0.1,
+              "minimum_via_drill_mm": 0.2
+            },
+            "properties": {
+              "copper_clearance_mm": {
+                "default": 0.2,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "edge_clearance_mm": {
+                "default": 0.25,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "hole_clearance_mm": {
+                "default": 0.25,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "hole_to_copper_clearance_mm": {
+                "default": 0.2,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "max_violations": {
+                "default": 1000,
+                "format": "uint",
+                "maximum": 10000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "minimum_annular_width_mm": {
+                "default": 0.1,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              "minimum_via_drill_mm": {
+                "default": 0.2,
+                "format": "double",
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "title": "CommandHookConfig",
+        "type": "object"
+      },
+      "name": "configure_command_hooks"
+    },
+    {
       "description": "Reparse the exact SHA256-guarded footprint source and publish one explicit new detached native footprint library without overwriting source, existing files or the current native project. Dirty work, history, selection and active native path remain unchanged. Converted libraries omit source UUIDs/nets and require separate explicit import_footprint to reuse: matching pad numbers retain native IDs/nets; new numbers receive fresh IDs and no net. No full fidelity claim.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -7244,6 +7331,15 @@
         "type": "object"
       },
       "name": "get_auto_drc_status"
+    },
+    {
+      "description": "Observe shared transient pre-command DRC gate settings, configuration generation, callback IDs/order and bounded failure diagnostics. No model/history/native change. Trusted callbacks have no execution deadline; undo bypasses veto, redo validates the final candidate. Unsupported DRC checks remain disclosed.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_command_hooks"
     },
     {
       "description": "Return the whole current design (project, schematic, board) as JSON. Read-only: it never changes anything. Call it to look at the design before you edit it, to find the ids that other tools take as arguments, and after editing to check the result, since the human may have changed things too.",
