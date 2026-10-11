@@ -8,6 +8,32 @@ use serde_json::{Value, json};
 use viamind_engine::EngineHandle;
 use viamind_mcp::{engine_registry, serve_http};
 type Client = RunningService<RoleClient, ClientConfig>;
+
+#[test]
+fn borrowed_definition_limits_precede_typed_row_decoding_and_preserve_session() {
+    use viamind_mcp::{agent::AgentId, engine_host::EngineHost, host::CommandHost};
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("never-created.json");
+    let engine = EngineHandle::new(viamind_doc::Project::new("unchanged"));
+    let host = EngineHost::new(engine.clone());
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let agent = AgentId("bounded-definition".into());
+    // Null rows deliberately cannot deserialize: count must reject first.
+    let input = json!({"path":path,"footprint":{"name":"Explicit","pads":vec![Value::Null;1025]}});
+    assert!(host.execute("save_footprint_definition", input, &agent).unwrap_err().contains("at most 1024 pads before typed decoding"));
+    let oversized_name = json!({"path":path,"footprint":{"name":"a".repeat(513),"pads":[null]}});
+    assert!(host.execute("save_footprint_definition", oversized_name, &agent).unwrap_err().contains("512 UTF-8 bytes before typed decoding"));
+    let oversized_number = json!({"path":path,"footprint":{"name":"Explicit","pads":[{"number":"a".repeat(513)}]}});
+    assert!(host.execute("save_footprint_definition", oversized_number, &agent).unwrap_err().contains("512 UTF-8 bytes before typed decoding"));
+    for command in ["load_footprint_definition", "save_footprint_definition"] {
+        assert!(host.execute(command, json!({"path":"a".repeat(4097)}), &agent).unwrap_err().contains("4096 UTF-8 bytes"));
+    }
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
+    assert!(!path.exists());
+}
+
 async fn call(client: &Client, name: &'static str, input: Value) -> CallToolResult {
     client.call_tool(CallToolRequestParams::new(name).with_arguments(input.as_object().unwrap().clone())).await.unwrap()
 }
