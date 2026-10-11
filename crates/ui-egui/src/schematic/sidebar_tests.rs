@@ -124,7 +124,15 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     h.run_steps(10);
     h.get_by_label("Pin 2 X (mm)").focus();
     h.run_steps(2);
+    for pressed in [true, false] {
+        h.event(egui::Event::Key { key: Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+        h.run_steps(2);
+    }
+    h.get_by_label("Pin 2 X (mm)").type_text("1.000003");
+    h.run_steps(3);
     let original_id = h.ctx.memory(|m| m.focused()).expect("focused second pin coordinate");
+    let original_cursor = egui::text_edit::TextEditState::load(&h.ctx, original_id).unwrap().cursor.char_range();
+    assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[1].x, "1.000003");
     println!("compact sidebar canvas before draft {viewport_before:?}; with draft {:?}", h.state().schematic.viewport);
     h.get_all_by_label("Remove pin").next().unwrap().scroll_to_me();
     h.run_steps(10);
@@ -141,6 +149,56 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     h.run_steps(2);
     let retained_id = h.ctx.memory(|m| m.focused()).expect("focused retained pin coordinate");
     assert_eq!(retained_id, original_id, "retained row text state must not acquire the removed row's identity");
+    assert_eq!(egui::text_edit::TextEditState::load(&h.ctx, retained_id).unwrap().cursor.char_range(), original_cursor);
+    assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[0].x, "1.000003");
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
+}
+
+fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(10);
+    h.get_by_label(label).focus();
+    for pressed in [true, false] {
+        h.event(egui::Event::Key { key: Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+        h.run_steps(2);
+    }
+    h.get_by_label(label).type_text(value);
+    h.run_steps(3);
+}
+#[test]
+fn compact_sidebar_local_drafts_and_exact_apply_keep_existing_atomic_undo() {
+    let (app, engine) = app();
+    let before = engine.session_state();
+    let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    h.run_steps(5);
+    for (label, kind) in [("Add symbol", "symbol"), ("Add wire", "wire"), ("Add junction", "junction"), ("Add label", "label")] {
+        click(&mut h, label);
+        assert_eq!(h.state().schematic.draft.as_ref().unwrap().kind, kind);
+        click(&mut h, "Cancel schematic draft");
+        assert_eq!(engine.session_state(), before);
+    }
+    click(&mut h, "Add symbol");
+    input(&mut h, "Reference", "U77");
+    input(&mut h, "Schematic X (mm)", "12.000003");
+    input(&mut h, "Schematic Y (mm)", "-0.000007");
+    input(&mut h, "Pin 1 name", "EXACT");
+    assert_eq!(engine.session_state(), before);
+    click(&mut h, "Apply schematic object");
+    let after = engine.session_state();
+    let symbol = after.project.schematic.sheets.values().flat_map(|sheet| sheet.content.iter().flat_map(|c| c.symbols.values())).find(|s|s.designator=="U77").unwrap();
+    assert_eq!((symbol.position.x.0, symbol.position.y.0), (12_000_003, -7));
+    assert_eq!(symbol.pins[0].name, "EXACT");
+    assert_eq!(after.project.board, before.project.board);
+    assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
+    for pressed in [true, false] {
+        h.event(egui::Event::Key { key: Key::Z, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+        h.run_steps(3);
+    }
+    assert_eq!(engine.session_state().project, before.project);
+    for pressed in [true, false] {
+        h.event(egui::Event::Key { key: Key::Z, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND | egui::Modifiers::SHIFT });
+        h.run_steps(3);
+    }
+    assert_eq!(engine.session_state().project, after.project);
 }
