@@ -109,6 +109,7 @@ impl CommandRegistry {
             .with::<crate::AddVia>()
             .with::<crate::DeleteVia>()
             .with::<crate::TransformParts>()
+            .with::<crate::ApplyFootprint>()
     }
 
     /// Adds command type `C`.

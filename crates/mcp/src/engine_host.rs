@@ -44,6 +44,16 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<NewProject>(),
         });
         commands.push(HostCommand {
+            name: "import_footprint".into(),
+            description: "Load a bounded native viamind-footprint version1 JSON library from a local file and apply with exact project/part guards. Rectangular SMD local Nm geometry only. Matching numbers retain pad IDs/nets; component placement is unchanged. One undoable edit. Does not read KiCad files.".into(),
+            input_schema: input_schema::<viamind_engine::FootprintFile>(),
+        });
+        commands.push(HostCommand {
+            name: "export_footprint".into(),
+            description: "Export committed explicit rectangular SMD geometry and footprint name to a new native library file. Exact project/part guards; no UUIDs, nets or component placement are exported. Refuses existing paths and protects active native project. Read-only design/history operation; parent directory must exist.".into(),
+            input_schema: input_schema::<viamind_engine::FootprintFile>(),
+        });
+        commands.push(HostCommand {
             name: "open_project".into(),
             description: "Open a native file on this machine in the shared desktop/agent session. Validates before replacement; failed reads leave the current document intact. Resets history and selection. Unsaved changes require discard_dirty with the current expected_cursor from get_session_state. Concurrent edits during loading reject; old event cursors require resynchronization.".into(),
             input_schema: input_schema::<OpenProject>(),
@@ -102,6 +112,14 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "import_footprint" || name == "export_footprint" {
+            let input: viamind_engine::FootprintFile = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return if name == "import_footprint" {
+                serde_json::to_value(self.engine.import_footprint(input, Self::origin(agent)).map_err(|e| e.to_string())?).map_err(|e| e.to_string())
+            } else {
+                Ok(json!({"path":self.engine.export_footprint(input).map_err(|e| e.to_string())?}))
+            };
+        }
         if name == "new_project" {
             let input: NewProject = serde_json::from_value(input).map_err(|e| format!("invalid new_project input: {e}"))?;
             let result = self.engine.new_project(input, Self::origin(agent)).map_err(|e| e.to_string())?;

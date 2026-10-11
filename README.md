@@ -155,3 +155,12 @@ schema version 4. Older outline/pad-only files keep their existing schema versio
 Copper continuity, interactive routing, curved tracks, inner layers and other via
 types remain subsequent work. Pad-only connection guides do not yet account for
 tracks or vias. See [the copper contract](docs/specs/copper-tracks-vias.md).
+
+## Footprint libraries
+
+The electrical pads editor can export applied rectangular SMD geometry to a new
+native library file and reuse it on another component. Matching pad numbers keep
+their identities and nets; placement stays unchanged and import is one undoable
+edit. Agents share `apply_footprint`, `import_footprint` and `export_footprint`.
+See [footprint library instructions](docs/footprint-libraries.md) for the strict
+integer geometry format and bounds.

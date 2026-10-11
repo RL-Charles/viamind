@@ -29,6 +29,7 @@ fn builtin_specs() {
             "add_part",
             "add_track",
             "add_via",
+            "apply_footprint",
             "delete_part",
             "delete_track",
             "delete_via",
