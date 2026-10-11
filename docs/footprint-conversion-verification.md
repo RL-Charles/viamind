@@ -95,3 +95,12 @@ Front zero-angle rectangles only; 1 MiB source/output, depth32, 100000 tokens,
 20000 lists/report items, 4096-byte tokens/paths and at most1024 pads. These are
 bounded original fixtures, not a representative library/project corpus. Full
 S079 compatibility and S083 cross-tool/fabrication fidelity remain open.
+
+## Final integration
+
+Final clean rebase includes sourcing metadata main `80d67c0`. The board parser
+retains `assembly: None`; detached definitions contain no sourcing fields.
+Range-diff preserves all nine ticket commits, with only additive action-function
+context changed. Both sourcing and conversion handlers remain present. Formatting
+passes; fresh combined CI validates this integrated PR head. Historical binary,
+test and native capture provenance above is unchanged.
