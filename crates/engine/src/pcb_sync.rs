@@ -55,6 +55,7 @@ impl Command for LinkSchematicSymbol {
 
 /// Check counts and string sizes before any whole-project synchronization copy.
 pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
+    viamind_doc::file::validate_assembly(project).map_err(|e| CommandError::invalid("assembly", e.to_string()))?;
     const MAX_OBJECTS: usize = 10_000;
     const MAX_TEXT: usize = 4 * 1024 * 1024;
     if project.id.as_uuid().is_nil() {

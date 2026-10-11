@@ -1,14 +1,17 @@
 use viamind_ui_egui::ViamindApp;
 struct Inspection { inner:ViamindApp, frames:u32 }
 impl eframe::App for Inspection {
- fn update(&mut self,ctx:&egui::Context,frame:&mut eframe::Frame) {
-  eframe::App::update(&mut self.inner,ctx,frame);self.frames+=1;if self.frames<40 {ctx.request_repaint();}
+ fn logic(&mut self,ctx:&egui::Context,frame:&mut eframe::Frame) {
+  eframe::App::logic(&mut self.inner,ctx,frame);
+ }
+ fn ui(&mut self,ui:&mut egui::Ui,frame:&mut eframe::Frame) {
+  eframe::App::ui(&mut self.inner,ui,frame);self.frames+=1;if self.frames<40 {ui.ctx().request_repaint();}
  }
  fn raw_input_hook(&mut self,_ctx:&egui::Context,input:&mut egui::RawInput) {
   // One explicitly documented inspection-only egui scroll; production behavior unchanged.
   if self.frames==25 {
    input.events.push(egui::Event::PointerMoved(egui::pos2(130.0,800.0)));
-   input.events.push(egui::Event::MouseWheel {unit:egui::MouseWheelUnit::Point,delta:egui::vec2(0.0,-600.0),modifiers:egui::Modifiers::NONE});
+   input.events.push(egui::Event::MouseWheel {unit:egui::MouseWheelUnit::Point,delta:egui::vec2(0.0,-600.0),phase:egui::TouchPhase::Move,modifiers:egui::Modifiers::NONE});
   }
  }
 }
