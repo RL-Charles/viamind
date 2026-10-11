@@ -25,6 +25,21 @@ async fn calibrated_shared_setter_two_clients_full_guards_and_publication_are_at
     let metadata = json!({"mounting":"through_hole","placement":{"centroid_local":{"x":2_000_000,"y":1_000_000},"zero_axis_mdeg":37_125}});
     a.call("set_part_assembly", json!({"id":id,"assembly":metadata,"expected":original}), Default::default()).await.unwrap();
     let state = engine.session_state();
+    let observer = a.clone().read_only();
+    assert!(observer.get("set_part_assembly").is_none());
+    assert!(observer.get("export_assembly_csv").is_none());
+    let observed = observer.call("query_parts", json!({}), Default::default()).await.unwrap();
+    assert_eq!(observed["parts"][0]["assembly"], metadata);
+    let forbidden = temp.path().join("observer.csv");
+    assert!(
+        observer
+            .call("export_assembly_csv", json!({"kind":"assembly_placement","path":forbidden,"overwrite":true}), Default::default())
+            .await
+            .is_err()
+    );
+    assert!(observer.call("set_part_assembly", json!({"id":id,"assembly":null,"expected":original}), Default::default()).await.is_err());
+    assert!(!forbidden.exists());
+    assert_eq!(engine.session_state(), state);
     assert!(b.call("set_part_assembly", json!({"id":id,"assembly":null,"expected":original}), Default::default()).await.is_err());
     let stale = temp.path().join("stale.csv");
     assert!(
