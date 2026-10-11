@@ -10,6 +10,32 @@ repository = "https://github.com/RL-Charles/viamind"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+# Default clippy groups (correctness, suspicious, style, complexity, perf).
+all = { level = "warn", priority = -1 }
+# Leftovers that must not reach main.
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+# Pedantic lints that catch real issues without fighting normal code.
+cast_lossless = "warn"
+cloned_instead_of_copied = "warn"
+explicit_into_iter_loop = "warn"
+flat_map_option = "warn"
+implicit_clone = "warn"
+inefficient_to_string = "warn"
+manual_let_else = "warn"
+manual_string_new = "warn"
+map_unwrap_or = "warn"
+redundant_closure_for_method_calls = "warn"
+semicolon_if_nothing_returned = "warn"
+uninlined_format_args = "warn"
+unnested_or_patterns = "warn"
+# Command structs and egui widgets legitimately take many arguments and nested types.
+too_many_arguments = "allow"
+type_complexity = "allow"
 
 [workspace.dependencies]
 viamind-geom = { path = "crates/geom" }

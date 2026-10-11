@@ -1,0 +1,4 @@
+# Stable options only (matches the Craft apps' style).
+max_width = 150
+use_small_heuristics = "Max"
+newline_style = "Unix"
