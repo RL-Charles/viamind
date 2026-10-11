@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "port": 7907,
+  "binary_sha256": "633182d74626014d3383879d98019782074ec148560cd204cd613cf2b843a41f",
+  "checks": [
+    "actual production plan and commit tools discovered",
+    "plan is immutable across complete session",
+    "independently expected exact detour and off-grid stubs",
+    "complete checked snapshot and derived net side",
+    "bounded work counters supplied",
+    "recomputed commit equals checked snapshot geometry",
+    "entire route creates one session event",
+    "second-agent stale plan_pad_walkaround leaves entire session unchanged",
+    "second-agent stale route_pad_walkaround leaves entire session unchanged",
+    "one undo removes all new tracks and preserves obstacle",
+    "redo restores exact track IDs and geometry",
+    "atomic query and commit refusal zero grid",
+    "atomic query and commit refusal zero width",
+    "atomic query and commit refusal same endpoint",
+    "atomic query and commit refusal collapsed domain",
+    "real peer side edit invalidates both guards",
+    "fresh incompatible layer intent rejected atomically",
+    "same-net via drill hole adds an obstacle",
+    "same-net drill detour remains read-only",
+    "same-net hole detour commit passes complete scoped DRC",
+    "no-path refuses plan and commit without mutation",
+    "continuity query remains separate and immutable",
+    "same-project reopen changes stream and rejects both stale intents"
+  ],
+  "first_http_plan_ms": 5.050728999776766,
+  "first_http_commit_ms": 5.4573659945162944,
+  "warm_http_commit_ms": [
+    6.5807729988591745,
+    41.37372500554193,
+    6.439053002395667,
+    5.45573300041724,
+    5.482499997015111
+  ],
+  "warm_http_mean_ms": 13.066356800845824
+}

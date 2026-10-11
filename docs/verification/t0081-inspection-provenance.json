@@ -1,0 +1,32 @@
+{
+  "source_commit": "fd9aab1649454087ce8980354d99f312303c156d",
+  "binary_sha256": "f256a2e8ee27bf43b7d71f8d44d6ddc60673725fd7c47273bda4e110c6cc7978",
+  "harness_source": "docs/verification/t0081-inspection.rs",
+  "harness_sha256": "1203770268ae59113b51984cc93f90f3036a21b11a715b18e9dc00e5e73740b4",
+  "capture": "docs/verification/t0081-checked-preview.png",
+  "capture_sha256": "83150080a5a46ee134d123f0f5b12d3865266573cec066e3742375674bf61e73",
+  "actual_production_http": false,
+  "production_ui_controls_and_egui_pointer_events": true,
+  "operating_system_input": false,
+  "logical_focus_retained_for_rendering_only": true,
+  "native_viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "capture_pixels": {
+    "width": 1568,
+    "height": 980
+  },
+  "settings": {
+    "grid_nm": 250000,
+    "width_nm": 250000,
+    "copper_clearance_mm": 0.2,
+    "edge_clearance_mm": 0.25
+  },
+  "fixture_preparation": "Before creating the shared engine, remove same-net N tracks from retained production fixture; retain explicit pads, rectangular outline and foreign barrier.",
+  "runtime_assertions": [
+    "Full engine session remains unchanged",
+    "Checked planned points remain nonempty on every native UI frame"
+  ],
+  "gates": "Strict example Clippy and native example build passed after source-touch under shared entire-sequence mutex."
+}
