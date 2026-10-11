@@ -235,6 +235,12 @@ rules remain local to each request. Hierarchy and buses remain separate work. Se
 [desktop workflow](docs/specs/schematic-erc-desktop.md) and
 [desktop verification](docs/schematic-erc-desktop-verification.md).
 
+Draw orthogonal wire paths directly on the schematic canvas with exact pin/endpoint
+attachment before grid snapping, a local preview and one undoable commit. Enter
+finishes, Backspace removes the last click, and Escape cancels; interior crossings
+remain disconnected. Desktop and MCP use the same guarded command. See the
+[canvas wire workflow and bounds](docs/interactive-schematic-wires.md).
+
 Selected native schematic sheets also support display-free SVG/PNG export and MCP `render_schematic_view` / `render_schematic_png`, including visible bundled-font labels and exact mirror/quarter-turn geometry. See [schematic view instructions](docs/schematic-views.md) for required sheet IDs, category filters and bounds.
 
 

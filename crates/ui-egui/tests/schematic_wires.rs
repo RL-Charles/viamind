@@ -166,6 +166,8 @@ fn actual_stale_peer_edit_reopen_and_object_draft_guards_preserve_content() {
     e.open_project(viamind_engine::OpenProject { path, discard_dirty: false, expected_cursor: None }, Origin::User).unwrap();
     h.run_steps(5);
     assert!(!h.state().schematic_wires.active());
+    assert!(!h.state().schematic.active, "reopened project with a PCB part selects the board editor");
+    click(&mut h, "Schematic");
     click(&mut h, "Add wire");
     let before = e.session_state();
     click(&mut h, "Draw wires on canvas");
