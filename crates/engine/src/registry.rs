@@ -128,6 +128,7 @@ impl CommandRegistry {
             .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()
             .with::<crate::DrawSchematicWirePolyline>()
+            .with::<crate::DragSchematicSymbol>()
             .with::<crate::PlaceSymbolTemplate>()
             .with::<crate::PlaceSymbolPackage>()
             .with::<crate::DeleteSymbolPackage>()

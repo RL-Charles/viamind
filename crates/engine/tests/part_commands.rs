@@ -39,6 +39,7 @@ fn builtin_specs() {
             "delete_symbol_package",
             "delete_track",
             "delete_via",
+            "drag_schematic_symbol",
             "draw_schematic_wire_polyline",
             "edit_schematic_sheet",
             "import_board_outline_dxf",

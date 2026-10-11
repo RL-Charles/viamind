@@ -100,6 +100,7 @@ pub struct SchematicConnectivityResult {
 fn invalid(message: impl Into<String>) -> CommandError {
     CommandError::invalid("schematic_connectivity", message.into())
 }
+#[derive(Clone)]
 pub(crate) struct Snapshot {
     pub(crate) project_id: ObjectId,
     pub(crate) source_cursor: EventCursor,
@@ -238,7 +239,19 @@ fn rank(scope: LabelScope) -> u8 {
         LabelScope::Local => 2,
     }
 }
-fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_limit: usize) -> Result<SchematicConnectivityResult, CommandError> {
+fn calculate(
+    snapshot: Snapshot,
+    query: &SchematicConnectivityQuery,
+    mut candidate_limit: usize,
+) -> Result<SchematicConnectivityResult, CommandError> {
+    calculate_with_budget(snapshot, query, &mut candidate_limit)
+}
+/// Consume one shared exact-contact allowance across related graph proofs.
+pub(crate) fn calculate_with_budget(
+    snapshot: Snapshot,
+    query: &SchematicConnectivityQuery,
+    remaining: &mut usize,
+) -> Result<SchematicConnectivityResult, CommandError> {
     let mut nodes = Vec::new();
     let mut coverage = SchematicConnectivityCoverage {
         sheets: snapshot.sheets.len(),
@@ -329,10 +342,10 @@ fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_l
         let mut contacts = |p: Coordinate| -> Result<Vec<usize>, CommandError> {
             let mut found = Vec::new();
             for (i, _) in index.query_point(point(p), Nm(0)) {
+                *remaining = remaining
+                    .checked_sub(1)
+                    .ok_or_else(|| invalid("exceeded shared spatial candidate contacts; simplify dense/overlapping wire geometry"))?;
                 coverage.candidate_contacts += 1;
-                if coverage.candidate_contacts > candidate_limit {
-                    return Err(invalid("exceeded 1000000 spatial candidate contacts; simplify dense/overlapping wire geometry"));
-                }
                 let (a, b) = nodes[i].wire.expect("indexed wires only");
                 if on_segment(p, a, b) {
                     found.push(i);
