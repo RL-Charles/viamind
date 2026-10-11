@@ -26,6 +26,15 @@ fn harness(e: &EngineHandle) -> Harness<'static, ViamindApp> {
     wait(&mut h, "Schematic symbol for new PCB component");
     h
 }
+fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    h.get_by_label(label).focus();
+    h.event(egui::Event::Key { key: egui::Key::A, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::COMMAND });
+    h.run_steps(2);
+    h.event(egui::Event::Key { key: egui::Key::A, physical_key: None, pressed: false, repeat: false, modifiers: egui::Modifiers::COMMAND });
+    h.run_steps(1);
+    h.get_by_label(label).type_text(value);
+    h.run_steps(3);
+}
 fn choose(h: &mut Harness<'_, ViamindApp>) {
     click(h, "Schematic symbol for new PCB component");
     click(h, "U1 · Power regulator");
@@ -41,6 +50,8 @@ fn actual_desktop_selection_path_preview_explicit_placement_creation_and_undo() 
     let before = e.session_state();
     let mut h = harness(&e);
     choose(&mut h);
+    input(&mut h, "X (integer nm)", "40000001");
+    input(&mut h, "Y (integer nm)", "50000003");
     click(&mut h, "Bottom");
     click(&mut h, "90°");
     click(&mut h, "Prepare new PCB component");
@@ -51,7 +62,7 @@ fn actual_desktop_selection_path_preview_explicit_placement_creation_and_undo() 
     let after = e.read(Clone::clone);
     let part = after.board.parts.values().next().unwrap();
     assert_eq!((part.designator.as_str(), part.side, part.rotation_mdeg), ("U1", viamind_doc::Side::Bottom, 90000));
-    assert_eq!((part.position.x.0, part.position.y.0), (40000000, 40000000));
+    assert_eq!((part.position.x.0, part.position.y.0), (40000001, 50000003));
     assert!(part.pads.as_ref().unwrap().0.iter().all(|p| p.net.as_deref().unwrap().starts_with("sc:")));
     assert_eq!(after.schematic, before.project.schematic);
     h.state_mut().undo_design();
@@ -107,5 +118,10 @@ fn actual_invalid_coordinate_and_missing_library_leave_model_unchanged() {
     h.run_steps(5);
     click(&mut h, "Prepare new PCB component");
     assert!(h.query_by_label("Coordinates must be signed integer nanometres").is_some());
+    assert_eq!(e.session_state(), before);
+    input(&mut h, "X (integer nm)", "40000000");
+    input(&mut h, "Native footprint library path", "/tmp/viamind-t0072-definitely-missing-footprint.json");
+    click(&mut h, "Prepare new PCB component");
+    wait(&mut h, "No such file");
     assert_eq!(e.session_state(), before);
 }
