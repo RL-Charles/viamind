@@ -91,3 +91,21 @@ fn failed_batch_and_agent_undo_preserve_other_copper() {
     engine.execute("delete_track", json!({"id":id}), b).unwrap();
     assert!(engine.undo_own(a).is_err(), "same-object cross-agent conflict");
 }
+
+#[test]
+fn malformed_log_copper_identity_or_native_collision_is_rejected() {
+    let engine = EngineHandle::new(Project::new("Log identity"));
+    engine.execute("add_track", track(), Origin::User).unwrap();
+    let mut bytes = Vec::new();
+    engine.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+    let lines: Vec<_> = text.lines().collect();
+    let mut entry: Value = serde_json::from_str(lines[1]).unwrap();
+    let foreign = Project::new("Foreign").id;
+    entry["deltas"][0]["id"] = json!(foreign);
+    assert!(EventLog::read_jsonl(format!("{}\n{}\n", lines[0], entry).as_bytes()).is_err());
+    let base = engine.with_engine(|e| e.log().base().id);
+    entry["deltas"][0]["id"] = json!(base);
+    entry["deltas"][0]["after"]["id"] = json!(base);
+    assert!(EventLog::read_jsonl(format!("{}\n{}\n", lines[0], entry).as_bytes()).is_err());
+}

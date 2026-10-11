@@ -69,3 +69,16 @@ fn malformed_native_geometry_keys_layers_nets_and_global_ids_reject() {
     track.start.x = Nm(i64::MIN);
     assert!(file::from_str(&file::to_string(&p)).is_err(), "bounded coordinate");
 }
+
+#[test]
+fn native_copper_count_is_bounded_before_geometry_scan() {
+    let mut p = project();
+    let template = p.board.vias.values().next().unwrap().clone();
+    for _ in 0..viamind_doc::MAX_COPPER_OBJECTS {
+        let mut via = template.clone();
+        via.id = ObjectId::new();
+        p.board.vias.insert(via.id, via);
+    }
+    let error = file::validate_copper(&p).unwrap_err().to_string();
+    assert!(error.contains("at most 100000"), "{error}");
+}
