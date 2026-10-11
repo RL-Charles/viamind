@@ -1,0 +1,61 @@
+{
+  "pid": 3054623,
+  "port": 7950,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
+  "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa",
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-original/owned.viamind.json",
+  "native_sha256": "d34c9f4b163f131daf82ed859da013440c76816ca125d57acbd21fa6d0799d7b",
+  "headless_creation_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "94961b36-6471-432d-8f57-c5651039d50f"
+    },
+    "project": {
+      "board": {
+        "parts": {}
+      },
+      "id": "29c76c23-f4be-4d8e-b9e4-d6fc6ba15194",
+      "name": "T118 owned command hook proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "headless_creation_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-original/owned.viamind.json"
+  },
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-original/launch-production",
+    "pid": 3054623,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind",
+        "bounds": {
+          "height": 1200,
+          "width": 1920,
+          "x": 1920,
+          "y": 1152
+        },
+        "height": 1200,
+        "is_on_screen": true,
+        "pid": 3054623,
+        "title": "owned.viamind.json \u2014 Viamind",
+        "width": 1920,
+        "window_id": 110379509399584,
+        "x": 1920,
+        "y": 1152,
+        "z_index": null
+      }
+    ]
+  },
+  "listener": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7950      0.0.0.0:*    users:((\"viamind\",pid=3054623,fd=6))\n"
+}

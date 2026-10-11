@@ -1,0 +1,77 @@
+[
+  {
+    "name": "hooks-wide",
+    "pixels": [
+      2667,
+      1667
+    ],
+    "pid": 3056076,
+    "self_closed": true,
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p7",
+    "p7_sha256": "0c891d3558f2f02c1b02749c2f05ec4b4edae11a78c464387a86c8ec63126560",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p6",
+    "p6_sha256": "eb1a0017ecbc5dbec7e681494324d50dd2f984721abfd3e08f10e3401f588641",
+    "rgba_sha256": "420c2261c08d61bf48a18f6e3c641d627863a046a01c028485c0c06ba905c9ae",
+    "rgb_sha256": "9efb4e33e579ec33b8d8b3e48514022e088615349bdb6d6d071097d5c9f9322c",
+    "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.png",
+    "png_sha256": "7d153489d714ab9af01567cf663804ee2d9f9946b9775136b62372070e271d5a",
+    "png_mode": "RGBA",
+    "every_original_color32_rgba_and_rgb_sample_equal": true,
+    "alpha_range": [
+      242,
+      255
+    ],
+    "nonopaque_alpha_pixels": 5468,
+    "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+  },
+  {
+    "name": "hooks-veto",
+    "pixels": [
+      1067,
+      667
+    ],
+    "pid": 3057198,
+    "self_closed": true,
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p7",
+    "p7_sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p6",
+    "p6_sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd",
+    "rgba_sha256": "6c4fbf65cd2194fa0d0d22e8bb6eb2baece9d07018050d9782747f6b1fae2199",
+    "rgb_sha256": "76c33271a8a803dfd79c7ac53765ef7fa235b39cfdffbf417271a2b9f7b55721",
+    "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.png",
+    "png_sha256": "bc8fc31287db9616a2e245c505b73e87e968d3b53456702f91ad9cf6d814b85c",
+    "png_mode": "RGBA",
+    "every_original_color32_rgba_and_rgb_sample_equal": true,
+    "alpha_range": [
+      242,
+      255
+    ],
+    "nonopaque_alpha_pixels": 1490,
+    "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+  },
+  {
+    "name": "hooks-recovery",
+    "pixels": [
+      1067,
+      667
+    ],
+    "pid": 3057314,
+    "self_closed": true,
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p7",
+    "p7_sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p6",
+    "p6_sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8",
+    "rgba_sha256": "fa517e0765cd1e7870de556421d9f2537f4b52dc74c84eff37227a778bb63d76",
+    "rgb_sha256": "d0de15fe63867cad838ac47b6537d9e305830eb9359c2a1e96ec633e18a7176e",
+    "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.png",
+    "png_sha256": "eb3388043e06f587c344ff1861c1948d2b3a5df0c2fc411de2f61803fde3dfba",
+    "png_mode": "RGBA",
+    "every_original_color32_rgba_and_rgb_sample_equal": true,
+    "alpha_range": [
+      242,
+      255
+    ],
+    "nonopaque_alpha_pixels": 1490,
+    "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+  }
+]

@@ -13,6 +13,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [cleanup\_cardinal\_tracks](#tool-636c65616e75705f63617264696e616c5f747261636b73)
 - [clear\_agent\_presence](#tool-636c6561725f6167656e745f70726573656e6365)
 - [configure\_auto\_drc](#tool-636f6e6669677572655f6175746f5f647263)
+- [configure\_command\_hooks](#tool-636f6e6669677572655f636f6d6d616e645f686f6f6b73)
 - [convert\_footprint\_file](#tool-636f6e766572745f666f6f747072696e745f66696c65)
 - [create\_package\_pcb\_component](#tool-6372656174655f7061636b6167655f7063625f636f6d706f6e656e74)
 - [create\_pcb\_branch](#tool-6372656174655f7063625f6272616e6368)
@@ -33,6 +34,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [get\_agent\_mode](#tool-6765745f6167656e745f6d6f6465)
 - [get\_auto\_drc\_event\_state](#tool-6765745f6175746f5f6472635f6576656e745f7374617465)
 - [get\_auto\_drc\_status](#tool-6765745f6175746f5f6472635f737461747573)
+- [get\_command\_hooks](#tool-6765745f636f6d6d616e645f686f6f6b73)
 - [get\_design](#tool-6765745f64657369676e)
 - [get\_document\_status](#tool-6765745f646f63756d656e745f737461747573)
 - [get\_pcb\_branch\_diff](#tool-6765745f7063625f6272616e63685f64696666)
@@ -1496,6 +1498,100 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "configure_auto_drc"
+}
+```
+
+<a id="tool-636f6e6669677572655f636f6d6d616e645f686f6f6b73"></a>
+
+## configure\_command\_hooks
+
+```json
+{
+  "description": "Configure the shared transient built-in scoped DRC pre-command veto. Default disabled. Enabled changed apply/redo candidates must pass existing scoped DRC without violations, excluded parts, truncation or incomplete coverage. max_objects1..10000(default5000), existing bounded DRC rules. Undo escapes veto; batch final candidate permits atomic repairs. Does not validate current project when enabled or change design/history/native bytes. Trusted Live writer admission required; no callback code registration.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "default": false,
+        "type": "boolean"
+      },
+      "max_objects": {
+        "default": 5000,
+        "format": "uint",
+        "maximum": 10000,
+        "minimum": 1,
+        "type": "integer"
+      },
+      "rules": {
+        "additionalProperties": false,
+        "default": {
+          "copper_clearance_mm": 0.2,
+          "edge_clearance_mm": 0.25,
+          "hole_clearance_mm": 0.25,
+          "hole_to_copper_clearance_mm": 0.2,
+          "max_violations": 1000,
+          "minimum_annular_width_mm": 0.1,
+          "minimum_via_drill_mm": 0.2
+        },
+        "properties": {
+          "copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "edge_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_to_copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "max_violations": {
+            "default": 1000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minimum_annular_width_mm": {
+            "default": 0.1,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "minimum_via_drill_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "title": "CommandHookConfig",
+    "type": "object"
+  },
+  "name": "configure_command_hooks"
 }
 ```
 
@@ -6590,6 +6686,22 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "get_auto_drc_status"
+}
+```
+
+<a id="tool-6765745f636f6d6d616e645f686f6f6b73"></a>
+
+## get\_command\_hooks
+
+```json
+{
+  "description": "Observe shared transient pre-command DRC gate settings, configuration generation, callback IDs/order and bounded failure diagnostics. No model/history/native change. Trusted callbacks have no execution deadline; undo bypasses veto, redo validates the final candidate. Unsupported DRC checks remain disclosed.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  },
+  "name": "get_command_hooks"
 }
 ```
 

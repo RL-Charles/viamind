@@ -1,0 +1,14 @@
+{
+  "format": "viamind",
+  "version": 1,
+  "project": {
+    "id": "29c76c23-f4be-4d8e-b9e4-d6fc6ba15194",
+    "name": "T118 owned command hook proof",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "parts": {}
+    }
+  }
+}

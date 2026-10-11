@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "mode": "approval",
+  "checks": [
+    "explicit hook observation discovered",
+    "configuration only advertised to Live writers",
+    "default disabled and no registered callbacks",
+    "restricted configuration preserves full session and file status"
+  ],
+  "check_count": 4,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
+  "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa",
+  "http_url": null,
+  "pid": null,
+  "os_input_claim": false,
+  "timings": [
+    {
+      "tool": "get_session_state",
+      "ms": 0.8650009986013174
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 0.46006600314285606
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 0.5147780029801652
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 0.5690219986718148
+    },
+    {
+      "tool": "get_session_state",
+      "ms": 0.561359993298538
+    },
+    {
+      "tool": "get_document_status",
+      "ms": 0.3420830034883693
+    },
+    {
+      "tool": "get_auto_drc_status",
+      "ms": 0.49877900164574385
+    },
+    {
+      "tool": "get_command_hooks",
+      "ms": 0.5413740000221878
+    }
+  ]
+}

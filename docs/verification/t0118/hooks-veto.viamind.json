@@ -1,0 +1,26 @@
+{
+  "format": "viamind",
+  "version": 4,
+  "project": {
+    "id": "b0acc194-cb2f-423f-8496-6bbc2e0028a8",
+    "name": "Command hooks native inspection",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "vias": {
+        "9191bcbe-2528-4b79-a27b-56ed1f0434b6": {
+          "id": "9191bcbe-2528-4b79-a27b-56ed1f0434b6",
+          "position": {
+            "x": 20000000,
+            "y": 20000000
+          },
+          "diameter": 1000000,
+          "drill": 400000,
+          "net": "A"
+        }
+      },
+      "parts": {}
+    }
+  }
+}
