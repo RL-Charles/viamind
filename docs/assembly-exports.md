@@ -58,3 +58,16 @@ remain separate work. See [the behavioral specification](specs/assembly-csv.md).
 
 The CLI interoperability test uses Python 3's standard-library CSV parser as an
 independent reader; Python 3 is needed to run the complete Linux test suite.
+
+## Snapshot and output limits
+
+Assembly export copies only component headers; pads, copper, outlines and schematic
+contents are excluded. It supports 100000 components, 4096 UTF-8 bytes per reference,
+value or footprint, 2 MiB aggregate text and 32 MiB output. Limits are checked before
+copying; quoted-row output growth is checked before appending. Library `csv` now
+returns `io::Result<String>` so callers can report these failures.
+
+All manufacturing captures share two snapshot slots per process. A busy request
+fails immediately with a retry message; it does not queue while holding the engine
+lock. A snapshot owns its slot through rendering/publication, including a blocking
+MCP job whose client cancels. See [manufacturing limits](manufacturing-export-limits.md).

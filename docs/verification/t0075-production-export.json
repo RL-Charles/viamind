@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "checks": [
+    "bom baseline CLI succeeds",
+    "bom bounded CLI succeeds",
+    "bom exact prior format bytes preserved",
+    "bom repeated collision preserves bytes",
+    "bom independently parsed escaped Unicode text",
+    "placement baseline CLI succeeds",
+    "placement bounded CLI succeeds",
+    "placement exact prior format bytes preserved",
+    "placement repeated collision preserves bytes",
+    "placement independently parsed escaped Unicode text",
+    "fabrication baseline CLI succeeds",
+    "fabrication bounded CLI succeeds",
+    "fabrication exact prior format bytes preserved",
+    "fabrication repeated collision preserves bytes",
+    "overbudget CSV rejects before overwrite",
+    "overbudget fabrication rejects without output",
+    "production native input unchanged",
+    "bom native exact source cursor",
+    "bom native/production CLI bytes identical",
+    "placement native exact source cursor",
+    "placement native/production CLI bytes identical",
+    "fabrication native exact source cursor",
+    "fabrication native/production CLI bytes identical",
+    "native read-only exports preserve full session/status",
+    "native active path preserved",
+    "export_assembly_csv other agent invalidates stale snapshot without output",
+    "export_fabrication other agent invalidates stale snapshot without output",
+    "native editor undo restores exact project",
+    "distinct native sessions",
+    "native overbudget CSV preserves existing output",
+    "native overbudget fabrication leaves no output",
+    "native budget failures preserve edited session",
+    "native budget-edit undo restores project/status"
+  ],
+  "binary_sha256": "e0c72f33046444025de68f88d2fb3352c46aa994461ab59469ab02867c6d2fde",
+  "baseline_sha256": "17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be",
+  "outputs": {
+    "bom": {
+      "new-bom": "0ce46882917d0234d4c54b9f632064a648cc39a96a2fab2f724e6bf00ead2353"
+    },
+    "placement": {
+      "new-placement": "cf30f18c85aaca802c1d54d77523f0004bcb334a0629f48f4d53bccd899ee32e"
+    },
+    "fabrication": {
+      "top-mask.gbr": "4a83b7ca001c4ca0b3016f201d5c3c3ae03302704079b027f923bcaa083778f6",
+      "top-copper.gbr": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf",
+      "profile.gbr": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4",
+      "plated-through.xnc": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d",
+      "manifest.json": "596221706692585d4a3040545fcf716834872fc3e6225b2c6a73b1f84475d1d0",
+      "bottom-mask.gbr": "ce15b114b9bf90830339ebac477125cf9f19cbea10ec29febe99dca45d64dc65",
+      "bottom-copper.gbr": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    }
+  }
+}
