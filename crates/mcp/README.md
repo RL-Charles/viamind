@@ -342,4 +342,4 @@ Operations are tagged with `kind`: `translate` plus integer nanometre
 plus `axis: "x"|"y"` and `reference: "minimum"|"centre"|"maximum"`; or
 `distribute` plus `axis`. Alignment and distribution use part origins, not body
 edges. Distribution keeps outermost origins fixed. Rotation and flip act at each
-part's own origin. Selection size is bounded to10000 unique parts.
+part's own origin. Selection size is bounded to 10000 unique parts.

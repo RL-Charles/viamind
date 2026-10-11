@@ -106,7 +106,7 @@ watching supports bounded long polling on HTTP and stdio. See the
 
 Drag an already selected part to move the selection with an amber local preview;
 release commits one guarded edit, and Escape or Space cancels. On the canvas,
-**R** rotates selected parts90° and **F** flips their mounting sides. The Edit
+**R** rotates selected parts 90° and **F** flips their mounting sides. The Edit
 menu aligns/distributes **part origins**; agents use the same `transform_parts`
 command with exact expected Part snapshots to protect grouped edits.
 
