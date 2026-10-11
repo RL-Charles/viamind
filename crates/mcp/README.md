@@ -146,11 +146,11 @@ See [the lifecycle contract](../../docs/specs/document-lifecycle.md).
 
 The live desktop engine also exposes `get_selection` and `set_selection`.
 `get_selection` takes `{}` and returns `ids`, `revision`, and the last `origin`.
-`set_selection` takes `{"ids":["<board part UUID>"],"mode":"replace"}`;
+`set_selection` takes `{"ids":["<board part, track or via UUID>"],"mode":"replace"}`;
 `mode` defaults to `replace`, and can also be `add`, `remove`, or `toggle`.
 An empty replacement clears selection. Unknown IDs reject the entire request.
 These session actions wake the desktop and preserve the document undo/redo stack.
-Deleting a selected part or undoing its creation removes it from the selection.
+Deleting a selected object or undoing its creation removes it from the selection.
 
 ## Verify a running desktop
 
@@ -343,8 +343,8 @@ The shared command catalog includes `add_track`, `delete_track`, `add_via` and
 Creation returns a stable ID in `created`. Deletion takes that `id` and optional
 exact `expected` snapshot; all four commands accept optional `expected_project`.
 Coordinates use the document's Y-down frame. New copper is persistent, undoable
-and replayable, but electrical continuity/clearance checking and automatic routing
-are separate features. Only straight top/bottom tracks and through vias are
+and replayable. Use `run_drc` for scoped clearance and drill checks; electrical
+continuity and automatic routing remain separate work. Only straight top/bottom tracks and through vias are
 supported; blind/buried/microvias and inner-layer tracks reject unsupported input.
 
 ### Grouped part placement

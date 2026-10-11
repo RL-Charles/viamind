@@ -90,12 +90,12 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "set_selection".into(),
-            description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
+            description: "Select persisted board part, track and via IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
             input_schema: input_schema::<SetSelection>(),
         });
         commands.push(HostCommand {
             name: "get_selection".into(),
-            description: "Read the shared selection: sorted part IDs, revision and last origin.".into(),
+            description: "Read the shared selection: sorted part/track/via IDs, revision and last origin.".into(),
             input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
         });
         commands

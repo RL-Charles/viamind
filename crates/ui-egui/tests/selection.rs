@@ -150,3 +150,33 @@ fn lasso_refines_bounding_box_candidates_and_detects_edge_crossings() {
     let crossing = ring(&[(10.0, 29.9), (55.0, 29.9), (55.0, 30.1), (10.0, 30.1)]);
     assert_eq!(sorted(h.state().selection.lasso_ids(&crossing)), sorted(ids));
 }
+
+#[test]
+fn persistent_track_via_picks_and_selection_respect_visible_layers_and_deleted_ids() {
+    let (engine, _, mut h) = setup();
+    let track = engine
+        .execute("add_track", json!({"start_x_mm":60,"start_y_mm":30,"end_x_mm":65,"end_y_mm":30,"width_mm":0.2,"layer":"bottom"}), Origin::User)
+        .unwrap()
+        .created[0];
+    let via = engine.execute("add_via", json!({"x_mm":70,"y_mm":30,"diameter_mm":0.6,"drill_mm":0.3}), Origin::User).unwrap().created[0];
+    h.run_steps(4);
+    click(&mut h, 62.0, 30.0, Modifiers::NONE);
+    assert_eq!(engine.selection().ids, vec![track]);
+    click(&mut h, 70.0, 30.0, Modifiers::SHIFT);
+    assert_eq!(engine.selection().ids, sorted(vec![track, via]));
+    h.state_mut().layers.set_visible(LayerId::B_CU, false);
+    h.run_steps(3);
+    click(&mut h, 62.0, 30.0, Modifiers::NONE);
+    assert!(engine.selection().ids.is_empty());
+    click(&mut h, 70.0, 30.0, Modifiers::NONE);
+    assert_eq!(engine.selection().ids, vec![via]);
+    h.state_mut().layers.set_visible(LayerId::VIAS, false);
+    h.run_steps(3);
+    click(&mut h, 70.0, 30.0, Modifiers::NONE);
+    assert!(engine.selection().ids.is_empty());
+    engine.set_selection(SetSelection { ids: vec![track], mode: SelectionMode::Replace }, Origin::User).unwrap();
+    let expected = engine.read(|p| p.board.tracks[&track].clone());
+    engine.execute("delete_track", json!({"id":track,"expected":expected}), Origin::User).unwrap();
+    h.run_steps(3);
+    assert!(engine.selection().ids.is_empty());
+}

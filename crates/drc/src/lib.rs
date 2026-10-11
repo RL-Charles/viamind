@@ -120,9 +120,11 @@ impl CopperReference {
     }
     pub fn label(&self) -> String {
         match self {
-            Self::Pad { pad } => format!("{} pad {} ({})", pad.designator, pad.pad_number, pad.pad_id),
-            Self::Track { track_id, .. } => format!("track {track_id}"),
-            Self::Via { via_id, .. } => format!("via {via_id}"),
+            Self::Pad { pad } => {
+                format!("{} pad {} ({}) · part {} · {:?} · {:?}", pad.designator, pad.pad_number, pad.pad_id, pad.part_id, pad.side, pad.net)
+            }
+            Self::Track { track_id, side, net } => format!("track {track_id} · {side:?} · {net:?}"),
+            Self::Via { via_id, net } => format!("via {via_id} · top/bottom · {net:?}"),
         }
     }
     fn net(&self) -> &Option<String> {

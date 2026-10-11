@@ -165,3 +165,29 @@ fn copper_modal_cancels_active_preview_and_blocks_canvas_and_menu_transforms() {
     assert!(h.query_by_label("Rotate selected 90° (R)").is_none(), "copper modal blocks placement menu access");
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn mixed_copper_selection_rejects_part_placement_keys_menu_and_drag_atomically() {
+    let (e, ids, mut h) = setup();
+    let track = e
+        .execute("add_track", json!({"start_x_mm":60,"start_y_mm":60,"end_x_mm":65,"end_y_mm":60,"width_mm":0.2,"layer":"top"}), Origin::User)
+        .unwrap()
+        .created[0];
+    e.set_selection(SetSelection { ids: vec![ids[0], track], mode: SelectionMode::Replace }, Origin::User).unwrap();
+    h.run_steps(4);
+    let before = e.session_state();
+    let pointer = screen(&h, 20.0, 30.0);
+    h.event(Event::PointerMoved(pointer));
+    h.run_steps(2);
+    key(&mut h, Key::R);
+    key(&mut h, Key::F);
+    assert_eq!(e.session_state(), before);
+    assert!(h.state().selection.placement.error.as_ref().unwrap().contains("parts only"));
+    let end = begin_drag(&mut h);
+    assert!(!h.state().selection.placement.moving());
+    button(&mut h, end, false);
+    assert_eq!(e.session_state(), before);
+    menu(&mut h, "Edit");
+    menu(&mut h, "Rotate selected 90° (R)");
+    assert_eq!(e.session_state(), before);
+}
