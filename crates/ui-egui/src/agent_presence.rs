@@ -23,7 +23,7 @@ impl ViamindApp {
         }
         ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
         let painter = ui.painter_at(canvas);
-        for agent in snapshot.agents.into_iter().filter(|agent| matches!(agent.surface, viamind_engine::PresenceSurface::Pcb)) {
+        for agent in snapshot.agents.into_iter().filter(|agent| matches!(agent.surface, viamind_engine::PresenceSurface::Pcb {})) {
             let color = COLORS[usize::from(agent.palette_index) % COLORS.len()];
             let world = |p: viamind_geom::Point| WorldPos::new(p.x.to_mm(), p.y.to_mm());
             for id in &agent.selection {
