@@ -16,7 +16,7 @@ struct Check {
     reference: Option<Arc<ColorImage>>,
     report: Vec<Value>,
     file: std::fs::File,
-    finished: Arc<Mutex<bool>>,
+    finished: Arc<Mutex<Option<bool>>>,
 }
 impl eframe::App for Check {
     fn ui(&mut self, ui: &mut Ui, _: &mut eframe::Frame) {
@@ -32,7 +32,7 @@ impl eframe::App for Check {
                 let mut sum = 0u64;
                 let mut maximum = 0u8;
                 let mut changed = 0usize;
-                let mut pixels = 0;
+                let mut pixels = 0usize;
                 for y in ((rect.min.y * ppp).ceil() as usize)..((rect.max.y * ppp).floor() as usize).min(image.size[1]) {
                     for x in ((rect.min.x * ppp).ceil() as usize)..((rect.max.x * ppp).floor() as usize).min(image.size[0]) {
                         let a = reference.pixels[y * reference.size[0] + x].to_array();
@@ -56,7 +56,7 @@ impl eframe::App for Check {
                 serde_json::to_writer_pretty(&mut self.file, &json!({"passed":success,"cases":self.report})).unwrap();
                 self.file.write_all(b"\n").unwrap();
                 self.file.sync_all().unwrap();
-                *self.finished.lock().unwrap() = true;
+                *self.finished.lock().unwrap() = Some(success);
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
                 return;
             }
@@ -90,7 +90,7 @@ impl eframe::App for Check {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::env::args_os().nth(1).ok_or("usage: gpu_parity NEW_REPORT.json")?;
     let file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    let finished = Arc::new(Mutex::new(false));
+    let finished = Arc::new(Mutex::new(None));
     let shared = Arc::clone(&finished);
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -121,8 +121,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
     )
     .map_err(|e| e.to_string())?;
-    if !*finished.lock().unwrap() {
-        return Err("parity run closed before completing".into());
+    match *finished.lock().unwrap() {
+        Some(true) => Ok(()),
+        Some(false) => Err("native canvas parity failed; inspect the report".into()),
+        None => Err("parity run closed before completing".into()),
     }
-    Ok(())
 }
