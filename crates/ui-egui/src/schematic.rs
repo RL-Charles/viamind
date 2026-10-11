@@ -293,6 +293,43 @@ impl ViamindApp {
         }
         self.schematic.active = active;
     }
+    pub(crate) fn navigate_erc_pin(
+        &mut self,
+        project: ObjectId,
+        cursor: viamind_engine::EventCursor,
+        pin: &viamind_engine::SchematicNetMember,
+    ) -> Result<(), String> {
+        let design = self.design.as_ref().ok_or("No open project")?;
+        let (name, position) = design.engine.with_engine(|e| {
+            if e.project().id != project || e.event_cursor() != cursor {
+                return Err("ERC result is stale; run ERC again".to_owned());
+            }
+            let sheet = e.project().schematic.sheets.get(&pin.sheet_id).ok_or("ERC sheet is absent")?;
+            let symbol = sheet.content.as_ref().and_then(|c| pin.symbol_id.and_then(|id| c.symbols.get(&id))).ok_or("ERC symbol is absent")?;
+            let current_pin = symbol.pins.iter().find(|p| p.id == pin.id).ok_or("ERC pin is absent")?;
+            let position = symbol.pin_position(current_pin.position)?;
+            if pin.position != Some(position) {
+                return Err("ERC pin endpoint changed; run ERC again".into());
+            }
+            Ok((sheet.name.clone(), position))
+        })?;
+        self.set_schematic_mode(true);
+        if !self.schematic.active {
+            return Err("Finish the current file or board edit before navigating".into());
+        }
+        self.schematic.project = Some(project);
+        self.schematic.stream = Some(cursor.stream_id);
+        self.schematic.sheet = Some(pin.sheet_id);
+        self.schematic.sheet_name = name;
+        self.schematic.sheet_guard = None;
+        self.schematic.selected = pin.symbol_id;
+        self.schematic.draft = None;
+        self.schematic.message = None;
+        self.schematic.fit = false;
+        self.schematic.camera.center = WorldPos::new(position.x.to_mm(), position.y.to_mm());
+        self.schematic.camera.zoom = self.schematic.camera.zoom.max(10.0);
+        Ok(())
+    }
     pub(crate) fn fit_schematic(&mut self) {
         self.schematic.fit = true;
     }
@@ -339,6 +376,9 @@ impl ViamindApp {
             self.schematic.sheet_guard = None;
         }
         ui.heading("Schematic capture");
+        if ui.button("Electrical rule check…").clicked() {
+            self.begin_erc();
+        }
         let mut selected = self.schematic.sheet;
         egui::ComboBox::from_id_salt("schematic_sheet")
             .selected_text(sheets.iter().find(|(id, _)| Some(*id) == selected).map_or("Choose sheet", |(_, name)| name.as_str()))
@@ -486,7 +526,7 @@ impl ViamindApp {
         ui.separator();
         self.annotation_panel(ui);
         ui.label("Middle drag / Space+drag pan · wheel zoom · Home fit");
-        ui.label("Electrical connectivity and ERC are not evaluated.");
+        ui.label("Run Electrical rule check to inspect native pin diagnostics.");
     }
     pub(crate) fn schematic_canvas(&mut self, ui: &mut Ui) {
         let sheet = self.design.as_ref().and_then(|d| d.engine.read(|p| self.schematic.sheet.and_then(|id| p.schematic.sheets.get(&id).cloned())));

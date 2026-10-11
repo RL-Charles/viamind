@@ -221,9 +221,19 @@ crossing labels or exceeded work limits return errors without partial nets.
 66-pair compatibility matrix and stable actionable pin/net identities. Reports
 state supported coverage and any work/result truncation; they never certify full
 ERC. The regulator reports missing power-output sources on VIN and GND because
-power labels name nets without supplying power. Desktop ERC results, hierarchy,
-buses and board annotation remain separate work. See the
+power labels name nets without supplying power.
+
+Open **Inspect → Electrical rule check…** or use the schematic panel entry. Run
+checks in the background, adjust native pin compatibility and diagnostic
+severities under **ERC rules**, and navigate a fresh issue to its exact pin.
+Document edits or changed rules visibly stale the result and disable navigation;
+reopening a project clears old results. Incomplete and previous-snapshot results
+never imply a current all-clear. These controls use the same `run_erc` API as MCP;
+rules remain local to each request. Hierarchy, buses and board annotation remain
+separate work. See the
 [connectivity behavior specification](docs/specs/schematic-connectivity.md) and
-[native ERC policy](docs/specs/schematic-erc.md).
+[native ERC policy](docs/specs/schematic-erc.md),
+[desktop workflow](docs/specs/schematic-erc-desktop.md) and
+[desktop verification](docs/schematic-erc-desktop-verification.md).
 
 Selected native schematic sheets also support display-free SVG/PNG export and MCP `render_schematic_view` / `render_schematic_png`, including visible bundled-font labels and exact mirror/quarter-turn geometry. See [schematic view instructions](docs/schematic-views.md) for required sheet IDs, category filters and bounds.

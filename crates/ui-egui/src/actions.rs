@@ -51,6 +51,7 @@ ui_actions! {
     ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
     ConfigureAutoDrc => ("configure_auto_drc", input_schema::<viamind_engine::AutoDrcConfig>(), configure_auto_drc),
     GetAutoDrcStatus => ("get_auto_drc_status", no_args(), get_auto_drc_status),
+    RunErc => ("run_erc", input_schema::<viamind_engine::ErcInput>(), run_erc),
     RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
@@ -161,6 +162,11 @@ fn get_auto_drc_status(engine: &EngineHandle, input: Value) -> Result<Value, Eng
         return Err(EngineError::InvalidInput { command: "get_auto_drc_status".into(), message: "expected an empty object".into() });
     }
     serde_json::to_value(engine.auto_drc_status()).map_err(encode_error)
+}
+
+fn run_erc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(engine.run_erc(&input).map_err(|error| EngineError::Command { command: "run_erc".into(), error })?).map_err(encode_error)
 }
 
 fn run_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
