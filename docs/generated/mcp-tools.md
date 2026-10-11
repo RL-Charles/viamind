@@ -34,6 +34,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [import\_pcb](#tool-696d706f72745f706362)
 - [inspect\_fabrication\_files](#tool-696e73706563745f6661627269636174696f6e5f66696c6573)
 - [link\_schematic\_symbol](#tool-6c696e6b5f736368656d617469635f73796d626f6c)
+- [load\_footprint\_definition](#tool-6c6f61645f666f6f747072696e745f646566696e6974696f6e)
 - [load\_output\_job](#tool-6c6f61645f6f75747075745f6a6f62)
 - [load\_symbol\_template](#tool-6c6f61645f73796d626f6c5f74656d706c617465)
 - [move\_part](#tool-6d6f76655f70617274)
@@ -70,6 +71,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [run\_drc](#tool-72756e5f647263)
 - [run\_erc](#tool-72756e5f657263)
 - [run\_output\_job](#tool-72756e5f6f75747075745f6a6f62)
+- [save\_footprint\_definition](#tool-736176655f666f6f747072696e745f646566696e6974696f6e)
 - [save\_output\_job](#tool-736176655f6f75747075745f6a6f62)
 - [save\_project](#tool-736176655f70726f6a656374)
 - [save\_symbol\_template](#tool-736176655f73796d626f6c5f74656d706c617465)
@@ -5216,6 +5218,31 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-6c6f61645f666f6f747072696e745f646566696e6974696f6e"></a>
+
+## load\_footprint\_definition
+
+```json
+{
+  "description": "Read one strict detached native viamind-footprint version1 library (regular file <=1MiB, path <=4096 bytes). Named rectangular SMD local integer Nm geometry only, at most1024 pads. Does not require a selected part or change project/history/selection/dirty state. Does not parse foreign footprint formats.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "path": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "path"
+    ],
+    "title": "LoadFootprintDefinition",
+    "type": "object"
+  },
+  "name": "load_footprint_definition"
+}
+```
+
 <a id="tool-6c6f61645f6f75747075745f6a6f62"></a>
 
 ## load\_output\_job
@@ -9176,6 +9203,96 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "run_output_job"
+}
+```
+
+<a id="tool-736176655f666f6f747072696e745f646566696e6974696f6e"></a>
+
+## save\_footprint\_definition
+
+```json
+{
+  "description": "Validate and publish one detached native rectangular SMD footprint definition to a NEW file. Explicit local integer Nm centers/dimensions and unique pad numbers, at most1024 pads, no IDs/nets/placement or inferred manufacturing data. Refuses existing paths and protects the latest active native project under its lifecycle guard. No design/history/selection/dirty change; apply separately using guarded import_footprint.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "footprint": {
+        "additionalProperties": false,
+        "description": "Named geometry. Always validate data constructed in memory before use.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "pads": {
+            "items": {
+              "additionalProperties": false,
+              "description": "One reusable rectangular SMD pad.",
+              "properties": {
+                "height": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "number": {
+                  "type": "string"
+                },
+                "position": {
+                  "additionalProperties": false,
+                  "description": "Strict local coordinate pair; integer nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "width": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "number",
+                "position",
+                "width",
+                "height"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "pads"
+        ],
+        "type": "object"
+      },
+      "path": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "footprint",
+      "path"
+    ],
+    "title": "SaveFootprintDefinition",
+    "type": "object"
+  },
+  "name": "save_footprint_definition"
 }
 ```
 
