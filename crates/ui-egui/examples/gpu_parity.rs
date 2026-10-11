@@ -12,6 +12,8 @@ use viamind_ui_egui::{
     layers::LayerId,
     scene::{Item, Prim},
 };
+#[path = "support/parity_trace.rs"]
+mod parity_trace;
 struct Check {
     app: ViamindApp,
     format: eframe::wgpu::TextureFormat,
@@ -22,11 +24,50 @@ struct Check {
     report: Vec<Value>,
     file: std::fs::File,
     finished: Arc<Mutex<Option<bool>>>,
+    trace: Option<parity_trace::Trace>,
+    aborted: bool,
+}
+impl Check {
+    fn trace_failure(&mut self, ui: &Ui, error: &str) {
+        eprintln!("native parity diagnostic failure: {error}");
+        if let Some(trace) = &mut self.trace
+            && let Err(error) = trace.finish(Some(error))
+        {
+            eprintln!("writing diagnostic failure: {error}");
+        }
+        self.aborted = true;
+        *self.finished.lock().unwrap() = Some(false);
+        ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+    }
 }
 impl eframe::App for Check {
     fn ui(&mut self, ui: &mut Ui, _: &mut eframe::Frame) {
-        let image = ui.input(|i| i.events.iter().find_map(|e| if let Event::Screenshot { image, .. } = e { Some(Arc::clone(image)) } else { None }));
-        if let Some(image) = image {
+        if self.aborted {
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+            return;
+        }
+        if let Some(trace) = &mut self.trace
+            && let Err(error) = trace.check_budget(ui.ctx())
+        {
+            self.trace_failure(ui, &error);
+            return;
+        }
+        let image = ui.input(|i| {
+            i.events.iter().find_map(|e| {
+                if let Event::Screenshot { image, user_data, viewport_id } = e {
+                    Some((Arc::clone(image), user_data.clone(), *viewport_id))
+                } else {
+                    None
+                }
+            })
+        });
+        if let Some((image, user_data, viewport_id)) = image {
+            if let Some(trace) = &mut self.trace
+                && let Err(error) = trace.image(self.step, viewport_id, &user_data, &image, &self.app, ui.ctx())
+            {
+                self.trace_failure(ui, &error);
+                return;
+            }
             self.waiting = false;
             if self.step.is_multiple_of(2) {
                 self.reference = Some(image);
@@ -62,6 +103,12 @@ impl eframe::App for Check {
                 serde_json::to_writer_pretty(&mut self.file, &json!({"passed":success,"cases":self.report})).unwrap();
                 self.file.write_all(b"\n").unwrap();
                 self.file.sync_all().unwrap();
+                if let Some(trace) = &mut self.trace
+                    && let Err(error) = trace.finish(None)
+                {
+                    self.trace_failure(ui, &error);
+                    return;
+                }
                 *self.finished.lock().unwrap() = Some(success);
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
                 return;
@@ -90,16 +137,45 @@ impl eframe::App for Check {
             self.app.canvas.cache.enable_gpu(self.format);
         }
         self.app.show(ui, None);
+        if let Some(trace) = &mut self.trace
+            && let Err(error) = trace.draw(self.step, &self.app, ui.ctx())
+        {
+            self.trace_failure(ui, &error);
+            return;
+        }
         self.frames += 1;
         if self.frames >= 6 && !self.waiting {
-            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
+            let token = if let Some(trace) = &mut self.trace {
+                match trace.request(self.step, &self.app, ui.ctx()) {
+                    Ok(token) => token,
+                    Err(error) => {
+                        self.trace_failure(ui, &error);
+                        return;
+                    }
+                }
+            } else {
+                Default::default()
+            };
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(token));
             self.waiting = true;
         }
         ui.ctx().request_repaint();
     }
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let path = std::env::args_os().nth(1).ok_or("usage: gpu_parity NEW_REPORT.json")?;
+    let mut args = std::env::args_os().skip(1);
+    let path = args.next().ok_or("usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY]")?;
+    let trace = match args.next() {
+        Some(flag) if flag == "--trace-dir" => {
+            let directory = args.next().ok_or("--trace-dir requires a NEW directory")?;
+            if args.next().is_some() {
+                return Err("unexpected extra argument".into());
+            }
+            Some(parity_trace::Trace::new(directory.into())?)
+        }
+        Some(_) => return Err("usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY]".into()),
+        None => None,
+    };
     let file = OpenOptions::new().write(true).create_new(true).open(path)?;
     let finished = Arc::new(Mutex::new(None));
     let shared = Arc::clone(&finished);
@@ -135,6 +211,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 report: Vec::new(),
                 file,
                 finished: shared,
+                trace,
+                aborted: false,
             }))
         }),
     )
