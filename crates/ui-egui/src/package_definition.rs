@@ -33,7 +33,7 @@ pub(crate) struct PackageEditor {
 }
 fn geometry(unit: &UnitTemplate) -> DefinitionEditor {
     DefinitionEditor::from_template(&SymbolTemplate {
-        name: "Package unit".into(),
+        name: "U".into(),
         value: String::new(),
         footprint: None,
         width: unit.width,
@@ -272,6 +272,7 @@ fn text(ui: &mut egui::Ui, id: ObjectId, label: &str, key: &str, value: &mut Str
 }
 fn preview(ui: &mut egui::Ui, t: &SymbolTemplate) {
     let (rect, painter) = ui.allocate_painter(egui::vec2(ui.available_width().min(450.), 180.), egui::Sense::hover());
+    let rect = rect.rect;
     let center = rect.center();
     let extent = t
         .pins

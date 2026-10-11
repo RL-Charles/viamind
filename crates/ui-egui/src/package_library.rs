@@ -136,6 +136,12 @@ impl PackageLibraryUi {
             Err(e) => self.message = Some(format!("Could not start package worker: {e}")),
         }
     }
+    fn file_path(&self) -> Result<std::path::PathBuf, String> {
+        if self.path.is_empty() || self.path.len() > 4096 {
+            return Err("Package path requires1..4096 UTF8 bytes before copying".into());
+        }
+        Ok(self.path.clone().into())
+    }
     fn proposal(&self) -> Result<PlaceSymbolPackage, String> {
         if !self.fresh() {
             return Err("Refresh the target sheet after document changes".into());
@@ -200,13 +206,18 @@ impl ViamindApp {
                 let label=ui.label("Package file path (load or NEW save)");
                 ui.add(egui::TextEdit::singleline(&mut self.package_library.path).id(egui::Id::new("package-file-path")).char_limit(4096)).labelled_by(label.id);
                 ui.horizontal_wrapped(|ui|{
-                    if ui.button("Load complete package file").clicked(){action=Some((UiAction::LoadSymbolPackage,serde_json::to_value(LoadSymbolPackage{path:self.package_library.path.clone().into()}).expect("package load")));}
+                    if ui.button("Load complete package file").clicked(){
+                        match self.package_library.file_path(){
+                            Ok(path)=>action=Some((UiAction::LoadSymbolPackage,serde_json::to_value(LoadSymbolPackage{path}).expect("package load"))),
+                            Err(e)=>error=Some(e),
+                        }
+                    }
                     if ui.button("Reset detached package").clicked(){self.package_library.editor=PackageEditor::new();self.package_library.generation=self.package_library.generation.wrapping_add(1);self.package_library.message=None;}
                 });
             });
             self.package_library.editor.show(ui,ready);
             ui.add_enabled_ui(ready,|ui|{
-                if ui.button("Save NEW complete package file").clicked(){match self.package_library.editor.template(){Ok(template)=>action=Some((UiAction::SaveSymbolPackage,serde_json::to_value(SaveSymbolPackage{template,path:self.package_library.path.clone().into()}).expect("package save"))),Err(e)=>error=Some(e)}}
+                if ui.button("Save NEW complete package file").clicked(){match self.package_library.file_path().and_then(|path|self.package_library.editor.template().map(|template|SaveSymbolPackage{template,path})){Ok(input)=>action=Some((UiAction::SaveSymbolPackage,serde_json::to_value(input).expect("package save"))),Err(e)=>error=Some(e)}}
             });
             ui.separator();
             if ui.add_enabled(ready&&context.is_some()&&!self.files.busy(),egui::Button::new("Refresh complete package target")).clicked()&&let Some((_,_,sheet_id))=context {action=Some((UiAction::SnapshotSymbolSheet,serde_json::to_value(SymbolSheetQuery{sheet_id}).expect("sheet query")));}
@@ -345,5 +356,14 @@ mod tests {
         h.state_mut().begin_package_library();
         h.run_steps(3);
         assert!(!h.get_by_label("Unit key").accesskit_node().is_disabled());
+    }
+    #[test]
+    fn path_byte_bound_precedes_copy_and_typed_definition() {
+        let mut state = PackageLibraryUi { path: "é".repeat(2049), ..Default::default() };
+        assert!(state.file_path().unwrap_err().contains("4096"));
+        state.path = "x".repeat(4096);
+        assert_eq!(state.file_path().unwrap().as_os_str().len(), 4096);
+        state.path.clear();
+        assert!(state.file_path().is_err());
     }
 }

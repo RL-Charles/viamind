@@ -165,16 +165,18 @@ impl Draft {
         if let Some((id, key, name)) = &self.package {
             ui.label(format!("Package {id} · unit {key} ({name}). Pose only; shared metadata/body/pins belong to the complete package."));
         }
-        egui::Grid::new("schematic_fields").num_columns(2).show(ui, |ui| {
-            if self.kind == "symbol" {
-                ui.add_enabled_ui(self.package.is_none(), |ui| {
+        if self.kind == "symbol" {
+            ui.add_enabled_ui(self.package.is_none(), |ui| {
+                egui::Grid::new("schematic_symbol_metadata").num_columns(2).show(ui, |ui| {
                     field(ui, "Reference", &mut self.name);
                     field(ui, "Symbol value", &mut self.value);
                     field(ui, "Symbol footprint", &mut self.footprint);
                     field(ui, "Body width (mm)", &mut self.width);
                     field(ui, "Body height (mm)", &mut self.height);
                 });
-            }
+            });
+        }
+        egui::Grid::new("schematic_fields").num_columns(2).show(ui, |ui| {
             if self.kind == "label" {
                 field(ui, "Label name", &mut self.name);
             }
@@ -904,5 +906,62 @@ mod drawing_tests {
                 assert_eq!(body_corners(&symbol), expected);
             }
         }
+    }
+    #[test]
+    fn actual_group_unit_editor_exposes_pose_and_protects_shared_metadata() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let mut project = viamind_doc::Project::new("Group fields");
+        let sheet = Sheet::new("Main");
+        let sheet_id = sheet.id;
+        project.schematic.sheets.insert(sheet_id, sheet);
+        let engine = viamind_engine::EngineHandle::new(project);
+        let guard = engine.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id }).unwrap();
+        let template =
+            viamind_doc::symbol_package::from_slice(include_bytes!("../../../fixtures/symbol-packages/original-quad.viamind-symbol-package.json"))
+                .unwrap();
+        let placements = template
+            .units
+            .iter()
+            .enumerate()
+            .map(|(i, u)| viamind_engine::UnitPose {
+                key: u.key.clone(),
+                position: Coordinate { x: Nm(i as i64 * 20_000_000), y: Nm(0) },
+                rotation_quarters: 0,
+                mirrored: false,
+            })
+            .collect();
+        UiAction::PlaceSymbolPackage
+            .run(
+                &engine,
+                serde_json::to_value(viamind_engine::PlaceSymbolPackage {
+                    expected_project: guard.expected_project,
+                    source_cursor: guard.source_cursor,
+                    expected: guard.expected,
+                    template,
+                    designator: "U1".into(),
+                    placements,
+                })
+                .unwrap(),
+            )
+            .unwrap();
+        let before = engine.session_state();
+        let sheet = before.project.schematic.sheets[&sheet_id].clone();
+        let id = *sheet.content.as_ref().unwrap().symbols.keys().next().unwrap();
+        let draft = Draft::from_object(before.project.id, sheet, id).unwrap();
+        assert!(draft.package.is_some());
+        let mut h = Harness::builder().with_size(egui::vec2(1000., 2200.)).build_ui_state(|ui, d: &mut Draft| d.fields(ui), draft);
+        h.run_steps(3);
+        for label in ["Reference", "Symbol value", "Symbol footprint", "Body width (mm)", "Pin 1 number"] {
+            assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        assert!(!h.get_by_label("Schematic X (mm)").accesskit_node().is_disabled());
+        h.get_by_label("Schematic X (mm)").click();
+        h.run_steps(2);
+        h.get_by_label("Schematic X (mm)").type_text("1");
+        h.run_steps(2);
+        assert_eq!(engine.session_state(), before, "local pose draft never applies implicitly");
     }
 }
