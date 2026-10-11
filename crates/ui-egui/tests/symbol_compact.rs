@@ -114,11 +114,21 @@ fn compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and
     let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
     let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
     reveal(&mut h, "Remove pin 2");
-    let union = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).rect()).fold(h.get_by_label("Remove pin 2").rect(), Rect::union);
-    assert!(
-        painted_clip(&h, h.get_by_label("Remove pin 2").rect()).contains_rect(union),
-        "complete pin row must fit one actual compact clip: {union:?}"
-    );
+    for _ in 0..3 {
+        let button = h.get_by_label("Remove pin 2").rect();
+        let union = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).rect()).fold(button, Rect::union);
+        let clip = painted_clip(&h, button);
+        if clip.contains_rect(union) {
+            break;
+        }
+        // Individual ScrollIntoView reveals its target, not the full row.
+        // Ordinary wheel input centers the complete row within its real clip.
+        wheel(&mut h, button.center(), clip.center().y - union.center().y);
+    }
+    let button = h.get_by_label("Remove pin 2").rect();
+    let union = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).rect()).fold(button, Rect::union);
+    let clip = painted_clip(&h, button);
+    assert!(clip.contains_rect(union), "complete pin row must fit one actual compact clip: {union:?}, {clip:?}");
     h.get_by_label("Pin 2 name").focus();
     h.run_steps(3);
     let text_id = h.ctx.memory(egui::Memory::focused).unwrap();
