@@ -155,7 +155,7 @@ fn selected_and_global_preflight_bound_unrelated_data_before_inherited_validatio
 #[test]
 fn source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content() {
     let mut project = fixture().read(Clone::clone);
-    let unrelated = Sheet::new(&"x".repeat(4097));
+    let unrelated = Sheet::new("x".repeat(4097));
     project.schematic.sheets.insert(unrelated.id, unrelated);
     let e = EngineHandle::new(project);
     let before = e.session_state();
