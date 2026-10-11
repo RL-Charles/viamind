@@ -364,7 +364,7 @@ fn borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state() {
         input.rules.max_violations = 1;
         let error = e.execute_typed(input, Origin::User).unwrap_err().to_string();
         if variant == 2 {
-            assert!(error.contains("truncated"), "{error}");
+            assert!(error.contains("preflight incomplete") && error.contains("result limit 1"), "{error}");
         }
         assert_eq!(e.session_state(), before);
         assert_eq!(e.document_status(), status);
