@@ -63,8 +63,9 @@ guarded edits, agent-local undo/redo, lifecycle and NEW destination behavior.
 
 Provide an original executable workflow using the same bounded stdio client:
 create a small named project, place explicit component geometry using supported
-tools, query exact results, perform a cursor-guarded edit, demonstrate stale guard
-rejection and undo/redo, save to a NEW owned native path, and reopen for exact
+tools, query exact results, perform an exact-part-snapshot guarded edit, demonstrate
+stale part rejection and undo/redo, save to a NEW owned native path, demonstrate
+stale full-cursor lifecycle rejection, and reopen for exact
 document verification. Discover each required schema instead of inventing fields.
 Only a fresh child process may be modified; never attach this mutating example to
 the user's current desktop. Optional command-line output is a NEW directory with
