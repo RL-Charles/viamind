@@ -264,3 +264,5 @@ Create linked PCB components from explicit schematic symbols and native footprin
 Desktop inspection images: [export board or selected-sheet SVG/PNG](docs/desktop-view-export.md).
 
 Pad route corner choices: [cardinal/45-degree posture controls and exact endpoint stubs](docs/pad-route-postures.md), with [Linux/native verification](docs/pad-route-postures-verification.md).
+
+Desktop generic assembly tables: [export BOM or placement CSV](docs/desktop-assembly-export.md).

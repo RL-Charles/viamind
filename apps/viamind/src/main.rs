@@ -85,8 +85,11 @@ fn main() -> anyhow::Result<()> {
         let (snapshot, native) =
             engine.with_engine(|e| viamind_fab::AssemblySnapshot::capture(e.project()).map(|s| (s, e.document_status().path)))?;
         let output = options.output.as_deref().expect("CLI requires an export destination");
-        let path = snapshot
-            .write(kind, output, options.overwrite, native.as_deref())
+        let prepared = snapshot
+            .prepare(kind, output, options.overwrite, native.as_deref())
+            .with_context(|| format!("could not export CSV {}", output.display()))?;
+        let path = engine
+            .with_native_file_guard(|current| prepared.publish(current))
             .with_context(|| format!("could not export CSV {}", output.display()))?;
         eprintln!("viamind: exported {}", path.display());
         return Ok(());

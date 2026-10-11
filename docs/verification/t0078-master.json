@@ -1,0 +1,44 @@
+{
+  "ticket": "T-0078",
+  "artifact_source_head": "7f6672af987add71d8b16f474ef9b81ecc261883",
+  "base_main": "5a91aa0",
+  "production_binary_sha256": "cc5fb8f44540234c6110ebf490f8f016073006d97cc846e7b5d98607169ece35",
+  "linux_gates": {
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "tests_passed": 461,
+    "tests_ignored": 1,
+    "build": true,
+    "local_log": "/tmp/viamind-t0078-full-gates.log"
+  },
+  "source_ci": "https://github.com/RL-Charles/viamind/actions/runs/38128022227",
+  "native_verification": {
+    "runtime": "Fixed-size inspection wrapper using production ViamindApp, EngineHandle and shared production MCP; production CLI binary verified separately",
+    "wrapper_binary_sha256": "6cc4f13fba150262e22861aca6546da04f870d964ee5465564a63a991523edba",
+    "endpoint": "http://127.0.0.1:7905/mcp",
+    "pid": 448706,
+    "window_id": 110379508130208,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "report": "t0078-native-export.json",
+    "passed_checks": 23,
+    "source": "t0078-native-inspection.rs",
+    "manifest_template": "t0078-native-Cargo.toml.in",
+    "script": "t0078-export-smoke.py",
+    "fixture": "t0075-export.viamind.json"
+  },
+  "cua": {
+    "report": "t0078-native-cua.json",
+    "screenshot": "t0078-native-export.png",
+    "limitation": "AT-SPI metadata only; capture verifies actual readable production dialog in inspection wrapper. Actual pointer/text input and640x400 scroll checks use egui_kittest, not unsupported native raw input."
+  },
+  "controlled_concurrency_tests": [
+    "UI native open after staging preserves current session and bytes",
+    "MCP second-agent open after staging preserves current session and bytes",
+    "native guard waits for in-flight save-as before reading active path; ordinary commands remain available"
+  ],
+  "integration_main": "c8d1867",
+  "integration_note": "After artifact capture, preserved additive wire and CSV action helpers on main391fd00; focused fmt/strict workspace clippy and7 desktop/parity tests passed. Rebased through connectivity main5fb15a6 onto pad-route-posture mainc8d1867, preserving both route_pad_posture/export_assembly_csv helpers and both README entries. CSV implementation and captured artifact source7f6672a remain unchanged. Final focused integration checks and combined CI are required."
+}

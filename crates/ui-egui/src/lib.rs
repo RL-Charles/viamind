@@ -6,6 +6,7 @@
 
 pub mod actions;
 pub mod annotation;
+pub mod assembly_export;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
@@ -142,6 +143,7 @@ pub struct ViamindApp {
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
     pub view_export: view_export::ViewExportUi,
+    pub assembly_export: assembly_export::AssemblyExportUi,
     pub fabrication: fabrication::FabricationUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
@@ -186,6 +188,7 @@ impl ViamindApp {
             selection: selection::Selection::default(),
             design: None,
             view_export: view_export::ViewExportUi::default(),
+            assembly_export: assembly_export::AssemblyExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -222,6 +225,7 @@ impl ViamindApp {
             selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
             view_export: view_export::ViewExportUi::default(),
+            assembly_export: assembly_export::AssemblyExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -392,6 +396,7 @@ impl ViamindApp {
         self.erc_window(ui);
         self.fabrication_window(ui);
         self.view_export_window(ui);
+        self.assembly_export_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -460,6 +465,10 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    if ui.button("Export assembly CSV…").clicked() {
+                        self.begin_assembly_export();
+                        ui.close();
+                    }
                     if ui.button("Export rendered view…").clicked() {
                         self.begin_view_export();
                         ui.close();

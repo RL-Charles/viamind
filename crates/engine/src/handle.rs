@@ -72,6 +72,18 @@ impl EngineHandle {
         self.lock().document_status()
     }
 
+    /// Publish an already staged export while native open/new/save operations are excluded.
+    ///
+    /// The closure receives the current active native path. Prepare and sync the export
+    /// before calling this method; keep the closure limited to path checks and atomic
+    /// publication. The document mutex is released before the closure, so ordinary
+    /// commands remain available. The closure must not reenter native file operations.
+    pub fn with_native_file_guard<R>(&self, publish: impl FnOnce(Option<&Path>) -> R) -> R {
+        let _files = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
+        let native = self.lock().document_status().path;
+        publish(native.as_deref())
+    }
+
     /// Atomically saves a captured snapshot without blocking document edits during I/O.
     pub fn save_project(&self, input: crate::SaveProject) -> Result<crate::SaveResult, EngineError> {
         self.save_project_with(
@@ -389,6 +401,42 @@ mod save_tests {
     use std::sync::atomic::{AtomicBool, Ordering};
 
     use super::*;
+
+    #[test]
+    fn native_publication_waits_for_in_flight_save_and_keeps_commands_available() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("save-as.csv");
+        let engine = EngineHandle::new(Project::new("save lifecycle"));
+        let (writing, written) = std::sync::mpsc::channel();
+        let (release, released) = std::sync::mpsc::channel();
+        let save_engine = engine.clone();
+        let save_path = path.clone();
+        let saving = std::thread::spawn(move || {
+            save_engine
+                .save_project_with(crate::SaveProject { path: Some(save_path), overwrite: false }, |project, path, _| {
+                    viamind_doc::file::save_new(project, path)?;
+                    writing.send(()).unwrap();
+                    released.recv().unwrap();
+                    Ok(())
+                })
+                .unwrap();
+        });
+        written.recv_timeout(Duration::from_secs(5)).unwrap();
+        assert!(engine.saves.try_lock().is_err(), "save owns the full native lifecycle");
+        assert!(engine.document_status().path.is_none(), "save has written but not marked the active path yet");
+        let publication_engine = engine.clone();
+        let publication = std::thread::spawn(move || publication_engine.with_native_file_guard(|current| current.map(Path::to_owned)));
+        engine.execute("add_part", serde_json::json!({"designator":"R1","value":"","footprint":"F","x_mm":0,"y_mm":0}), Origin::User).unwrap();
+        release.send(()).unwrap();
+        saving.join().unwrap();
+        assert_eq!(publication.join().unwrap(), Some(path));
+        engine.with_native_file_guard(|_| {
+            assert!(engine.saves.try_lock().is_err(), "publication excludes native open/new/save");
+            // Ordinary edits remain possible during the small publication section.
+            engine.execute("add_part", serde_json::json!({"designator":"R2","value":"","footprint":"F","x_mm":0,"y_mm":0}), Origin::User).unwrap();
+        });
+        assert_eq!(engine.read(|p| p.board.parts.len()), 2);
+    }
 
     #[test]
     fn concurrent_edit_during_open_rejects_the_loaded_document() {

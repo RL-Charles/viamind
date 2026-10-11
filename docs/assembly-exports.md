@@ -1,5 +1,7 @@
 # Export assembly CSV
 
+Desktop: [File → Export assembly CSV](desktop-assembly-export.md).
+
 Export a saved design without starting a desktop window or agent server:
 
 ```sh
