@@ -22,7 +22,7 @@ fn write_export(
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
     registry.register(
         "export_assembly_csv",
-        "Export generic Viamind BOM or placement CSV to a local path. Placement uses component origins in global mm, positive Y down, CCW degrees viewed from top; bottom keeps the stored transform. Not a manufacturer preset. Refuses existing files unless overwrite=true and always protects the active native file. Optional expected_cursor guards the exported snapshot; returns exported_cursor. Bounded to100000 components,4096 bytes/string,2 MiB aggregate text and32 MiB output. Shared two-snapshot process admission rejects busy requests. Does not change design/history/dirty state.",
+        "Export generic Viamind BOM, placement or sourcing BOM CSV to a local path. Placement uses component origins in global mm, positive Y down, CCW degrees viewed from top; bottom keeps the stored transform. Sourcing BOM includes explicitly entered identifiers and population for all parts. BOM/placement ignore population. Not a manufacturer preset. Refuses existing files unless overwrite=true and always protects the active native file. Optional expected_cursor guards the exported snapshot; returns exported_cursor. Bounded to100000 components,4096 bytes/string,2 MiB aggregate text and32 MiB output. Shared two-snapshot process admission rejects busy requests. Does not change design/history/dirty state.",
         viamind_fab::assembly_schema(),
         move |input| {
             let engine = engine.clone();
@@ -36,7 +36,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
                     if input.expected_cursor.is_some_and(|expected| expected != cursor) {
                         return Err(ToolError::Failed("document changed; call get_session_state and retry the export".into()));
                     }
-                    let snapshot = viamind_fab::AssemblySnapshot::capture(engine.project()).map_err(|e|ToolError::Failed(e.to_string()))?;
+                    let snapshot = viamind_fab::AssemblySnapshot::capture_for(engine.project(), input.kind).map_err(|e|ToolError::Failed(e.to_string()))?;
                     Ok((snapshot, cursor, engine.document_status().path))
                 })?;
                 let count = snapshot.component_count();

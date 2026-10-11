@@ -13,6 +13,8 @@ use viamind_doc::{Part, Project, Side};
 pub enum AssemblyCsv {
     /// Components grouped by exact value and footprint.
     Bom,
+    /// Explicit sourcing identifiers and population; includes every component.
+    SourcingBom,
     /// Individual component origins in global mm and CCW degrees.
     Placement,
 }
@@ -34,7 +36,7 @@ pub fn assembly_schema() -> serde_json::Value {
         "type": "object", "additionalProperties": false,
         "required": ["kind", "path"],
         "properties": {
-            "kind": {"type": "string", "enum": ["bom", "placement"]},
+            "kind": {"type": "string", "enum": ["bom", "placement", "sourcing_bom"]},
             "path": {"type": "string", "minLength": 1},
             "overwrite": {"type": "boolean", "default": false},
             "expected_cursor": {"type": ["object", "null"], "additionalProperties": false,
@@ -49,11 +51,16 @@ pub fn assembly_schema() -> serde_json::Value {
 /// Immutable component headers; unrelated pads, copper and schematic data are never copied.
 pub struct AssemblySnapshot {
     parts: Vec<Part>,
+    sourcing: bool,
     _permit: crate::snapshot::Permit,
 }
 impl AssemblySnapshot {
     /// Validate component/text budgets before copying; rejects busy admission immediately.
     pub fn capture(project: &Project) -> io::Result<Self> {
+        Self::capture_for(project, AssemblyCsv::Bom)
+    }
+    /// Capture only the fields needed by the selected format, after borrowed validation.
+    pub fn capture_for(project: &Project, kind: AssemblyCsv) -> io::Result<Self> {
         let permit = crate::snapshot::Permit::acquire()?;
         if project.board.parts.len() > 100_000 {
             return Err(crate::snapshot::invalid("assembly export supports at most 100000 components"));
@@ -63,12 +70,21 @@ impl AssemblySnapshot {
             for value in [&part.designator, &part.value, &part.footprint] {
                 text.add(value)?;
             }
+            if kind == AssemblyCsv::SourcingBom {
+                if let Some(metadata) = &part.assembly {
+                    metadata.validate().map_err(crate::snapshot::invalid)?;
+                    for s in metadata.strings() {
+                        text.add(s)?;
+                    }
+                }
+            }
         }
         let parts = project
             .board
             .parts
             .values()
             .map(|p| Part {
+                assembly: if kind == AssemblyCsv::SourcingBom { p.assembly.clone() } else { None },
                 id: p.id,
                 designator: p.designator.clone(),
                 value: p.value.clone(),
@@ -80,13 +96,16 @@ impl AssemblySnapshot {
                 schematic_symbol: None,
             })
             .collect();
-        Ok(Self { parts, _permit: permit })
+        Ok(Self { parts, sourcing: kind == AssemblyCsv::SourcingBom, _permit: permit })
     }
     pub fn component_count(&self) -> usize {
         self.parts.len()
     }
     /// Render the unchanged generic CSV format, bounded to32 MiB.
     pub fn csv(&self, kind: AssemblyCsv) -> io::Result<String> {
+        if kind == AssemblyCsv::SourcingBom && !self.sourcing {
+            return Err(crate::snapshot::invalid("sourcing BOM requires a sourcing-aware capture"));
+        }
         render_csv(&self.parts, kind)
     }
     pub fn write(&self, kind: AssemblyCsv, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<PathBuf> {
@@ -114,7 +133,7 @@ impl PreparedAssemblyCsv {
 }
 /// Render a bounded component-only snapshot, preserving text including line breaks.
 pub fn csv(project: &Project, kind: AssemblyCsv) -> io::Result<String> {
-    AssemblySnapshot::capture(project)?.csv(kind)
+    AssemblySnapshot::capture_for(project, kind)?.csv(kind)
 }
 
 pub(crate) fn render_csv<'a>(parts: impl IntoIterator<Item = &'a Part>, kind: AssemblyCsv) -> io::Result<String> {
@@ -127,6 +146,55 @@ pub(crate) fn render_csv_limited<'a>(parts: impl IntoIterator<Item = &'a Part>, 
     let mut parts: Vec<_> = parts.into_iter().collect();
     parts.sort_by_key(|part| (&part.designator, part.id));
     match kind {
+        AssemblyCsv::SourcingBom => {
+            #[derive(PartialEq, Eq, PartialOrd, Ord)]
+            struct Key<'a> {
+                value: &'a str,
+                footprint: &'a str,
+                manufacturer: &'a str,
+                mpn: &'a str,
+                supplier: &'a str,
+                supplier_sku: &'a str,
+                populate: bool,
+            }
+            row(
+                &mut output,
+                &["Designators", "Component IDs", "Quantity", "Value", "Footprint", "Manufacturer", "MPN", "Supplier", "Supplier SKU", "Population"],
+            )?;
+            let mut groups: BTreeMap<Key<'_>, Vec<&Part>> = BTreeMap::new();
+            for part in parts {
+                let metadata = part.assembly.as_ref();
+                let key = Key {
+                    value: &part.value,
+                    footprint: &part.footprint,
+                    manufacturer: metadata.and_then(|m| m.manufacturer.as_deref()).unwrap_or(""),
+                    mpn: metadata.and_then(|m| m.mpn.as_deref()).unwrap_or(""),
+                    supplier: metadata.and_then(|m| m.supplier.as_deref()).unwrap_or(""),
+                    supplier_sku: metadata.and_then(|m| m.supplier_sku.as_deref()).unwrap_or(""),
+                    populate: metadata.is_none_or(|m| m.populate),
+                };
+                groups.entry(key).or_default().push(part);
+            }
+            for (key, parts) in groups {
+                let designators = serde_json::to_string(&parts.iter().map(|p| &p.designator).collect::<Vec<_>>()).expect("strings serialize");
+                let ids = parts.iter().map(|p| p.id.to_string()).collect::<Vec<_>>().join(" ");
+                row(
+                    &mut output,
+                    &[
+                        &designators,
+                        &ids,
+                        &parts.len().to_string(),
+                        key.value,
+                        key.footprint,
+                        key.manufacturer,
+                        key.mpn,
+                        key.supplier,
+                        key.supplier_sku,
+                        if key.populate { "Populate" } else { "Do not populate" },
+                    ],
+                )?;
+            }
+        }
         AssemblyCsv::Bom => {
             row(&mut output, &["Designators", "Component IDs", "Quantity", "Value", "Footprint"])?;
             let mut groups: BTreeMap<(&str, &str), Vec<&Part>> = BTreeMap::new();
@@ -207,7 +275,7 @@ fn row_limited(output: &mut String, fields: &[&str], limit: usize) -> io::Result
 /// file in the same directory prevents partial outputs and permits atomic rename.
 /// Supply the active native path to protect it from accidental CSV replacement.
 pub fn write_csv(project: &Project, kind: AssemblyCsv, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<PathBuf> {
-    AssemblySnapshot::capture(project)?.write(kind, path, overwrite, native_path)
+    AssemblySnapshot::capture_for(project, kind)?.write(kind, path, overwrite, native_path)
 }
 
 struct StagedCsv {

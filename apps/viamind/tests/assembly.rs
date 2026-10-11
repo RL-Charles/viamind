@@ -31,6 +31,10 @@ fn cli_exports_lossless_tables_without_display_and_requires_explicit_replacement
             )
             .unwrap();
     }
+    let id = engine.read(|p| p.board.part_by_designator("R1").unwrap().id);
+    engine
+        .execute("set_part_assembly", json!({"id":id,"assembly":{"manufacturer":"µ, \"Example\"","mpn":"USER-INPUT","populate":false}}), Origin::User)
+        .unwrap();
     engine.read(|project| file::save(project, &native)).unwrap();
     let native_bytes = std::fs::read(&native).unwrap();
     let export = |kind: &str, path: &Path, overwrite: bool| {
@@ -62,6 +66,12 @@ fn cli_exports_lossless_tables_without_display_and_requires_explicit_replacement
     assert_eq!(records[1][7], "Top");
     assert_eq!(records[2][7], "Bottom");
     let placement_bytes = std::fs::read(&output).unwrap();
+    let sourcing = directory.path().join("sourcing.csv");
+    let result = export("sourcing_bom", &sourcing, false);
+    assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
+    let sourcing_rows = parse_csv(&sourcing);
+    assert_eq!(sourcing_rows[0][9], "Population");
+    assert!(sourcing_rows.as_array().unwrap().iter().any(|r| r[5] == "µ, \"Example\"" && r[9] == "Do not populate"));
     assert!(!export("bom", &output, false).status.success());
     assert_eq!(std::fs::read(&output).unwrap(), placement_bytes);
     assert!(export("bom", &output, true).status.success());

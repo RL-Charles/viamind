@@ -24,7 +24,7 @@ fn export_with_before_publish(engine: &EngineHandle, input: Value, before_publis
         if request.expected_cursor.is_some_and(|expected| expected != cursor) {
             return Err(invalid("document changed; retry export from a fresh snapshot".into()));
         }
-        let snapshot = AssemblySnapshot::capture(e.project()).map_err(|e| invalid(e.to_string()))?;
+        let snapshot = AssemblySnapshot::capture_for(e.project(), request.kind).map_err(|e| invalid(e.to_string()))?;
         Ok((snapshot, cursor, e.document_status().path))
     })?;
     let count = snapshot.component_count();
@@ -140,16 +140,18 @@ impl ViamindApp {
                 ui.horizontal(|ui| {
                     ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::Bom, "BOM");
                     ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::Placement, "Placement");
+                    ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::SourcingBom, "Sourcing BOM");
                 });
                 ui.label(match self.assembly_export.kind {
-                    AssemblyCsv::Bom => "Groups exact value and footprint; lists component IDs and references.",
-                    AssemblyCsv::Placement => "Component origins in global mm: X right, Y down, CCW top view. Bottom keeps the stored transform.",
+                    AssemblyCsv::Bom => "All-component inventory grouped by value/footprint; sourcing and population are not applied.",
+                    AssemblyCsv::SourcingBom => "User-entered identifiers and explicit population for every component; no sourcing lookup or vendor preset.",
+                    AssemblyCsv::Placement => "All-component inventory; population is not applied. Origins in global mm: X right, Y down, CCW top view. Bottom keeps the stored transform.",
                 });
                 let label = ui.label("CSV output file");
                 ui.add(egui::TextEdit::singleline(&mut self.assembly_export.path).desired_width(520.0).char_limit(4096)).labelled_by(label.id);
                 ui.checkbox(&mut self.assembly_export.overwrite, "Allow replacing this CSV output");
                 ui.label("Default: a NEW file is required. The active native project is always protected.");
-                ui.label("At most 100000 components, 2 MiB aggregate text and 32 MiB CSV. No sourcing IDs or manufacturer preset.");
+                ui.label("At most 100000 components, 2 MiB aggregate text and 32 MiB CSV. Sourcing fields are explicit user input; no manufacturer preset.");
                 start = ui.button(if self.assembly_export.overwrite { "Export CSV (replace allowed)" } else { "Export CSV to NEW file" }).clicked();
             });
             if busy {

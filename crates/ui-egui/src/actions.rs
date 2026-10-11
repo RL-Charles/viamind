@@ -95,6 +95,7 @@ ui_actions! {
     AddVia => (viamind_engine::AddVia::NAME, input_schema::<viamind_engine::AddVia>(), add_via),
     DeleteVia => (viamind_engine::DeleteVia::NAME, input_schema::<viamind_engine::DeleteVia>(), delete_via),
     SetBoardOutline => (SetBoardOutline::NAME, input_schema::<SetBoardOutline>(), set_board_outline),
+    SetPartAssembly => (viamind_engine::SetPartAssembly::NAME, input_schema::<viamind_engine::SetPartAssembly>(), set_part_assembly),
     UpdatePart => (UpdatePart::NAME, input_schema::<UpdatePart>(), update_part),
     DeletePart => (DeletePart::NAME, input_schema::<DeletePart>(), delete_part),
     MovePart => (MovePart::NAME, input_schema::<MovePart>(), move_part),
@@ -357,4 +358,8 @@ fn preview_pcb_import(engine: &EngineHandle, input: Value) -> Result<Value, Engi
 fn import_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let input = serde_json::from_value(input).map_err(encode_error)?;
     serde_json::to_value(engine.import_pcb(input, Origin::User)?).map_err(encode_error)
+}
+
+fn set_part_assembly(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetPartAssembly::NAME, input, Origin::User)?).map_err(encode_error)
 }

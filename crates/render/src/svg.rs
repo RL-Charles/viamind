@@ -240,7 +240,7 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
 /// Bounded board-only copy. Unrelated schematic content is never cloned or validated.
 pub fn board_view_snapshot(project: &Project) -> io::Result<Project> {
     validate_board_budget(project)?;
-    Ok(Project { id: project.id, name: project.name.clone(), board: project.board.clone(), schematic: Default::default() })
+    Ok(Project { id: project.id, name: project.name.clone(), board: project.board.clone_without_assembly(), schematic: Default::default() })
 }
 
 /// Render model geometry without inferred legacy footprint previews or model changes.
@@ -262,7 +262,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     // Direct callers receive the same schematic exclusion as engine snapshots.
     // The normal board-only path borrows without another model copy.
     let shell;
-    let project = if project.schematic.sheets.is_empty() {
+    let project = if project.schematic.sheets.is_empty() && project.board.parts.values().all(|p| p.assembly.is_none()) {
         project
     } else {
         shell = board_view_snapshot(project)?;

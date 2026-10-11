@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 6;
+pub const VERSION: u32 = 7;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -51,6 +51,8 @@ pub enum FileError {
     /// Electrical pad schema or identity invariant failed.
     #[error("invalid electrical pads: {0}")]
     Pads(String),
+    #[error("invalid assembly metadata: {0}")]
+    Assembly(String),
     /// Project features were placed in an older envelope.
     #[error("project features require native version {0} or newer")]
     FeatureVersion(u32),
@@ -106,6 +108,7 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
     }
+    validate_assembly(&project)?;
     validate_pads(&project)?;
     validate_copper(&project)?;
     check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
@@ -136,6 +139,7 @@ pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileErr
 }
 
 fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
+    validate_assembly(project)?;
     let io_err = |source| FileError::Io { path: path.to_owned(), source };
     let parent = path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or_else(|| Path::new("."));
     let mut tmp = tempfile::NamedTempFile::new_in(parent).map_err(io_err)?;
@@ -154,7 +158,9 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    if project.board.parts.values().any(|p| p.schematic_symbol.is_some()) {
+    if project.board.parts.values().any(|p| p.assembly.is_some()) {
+        7
+    } else if project.board.parts.values().any(|p| p.schematic_symbol.is_some()) {
         6
     } else if project.schematic.sheets.values().any(|s| s.content.is_some()) {
         5
@@ -219,4 +225,9 @@ pub fn validate_copper(project: &Project) -> Result<(), FileError> {
         }
     }
     Ok(())
+}
+
+/// Validate borrowed sourcing metadata before native writes or model copies.
+pub fn validate_assembly(project: &Project) -> Result<(), FileError> {
+    crate::assembly::validate_metadata(project.board.parts.values().filter_map(|p| p.assembly.as_ref())).map_err(|e| FileError::Assembly(e.into()))
 }

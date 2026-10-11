@@ -19,9 +19,9 @@ fn outline_changes_are_atomic_undoable_and_replayable() {
     assert_eq!(file::from_str(&file::to_string(&after)).unwrap(), after);
     let mut log = Vec::new();
     viamind_engine::EventLog::new(after.clone()).write_jsonl(&mut log).unwrap();
-    assert!(String::from_utf8_lossy(&log).contains("\"version\":6"));
+    assert!(String::from_utf8_lossy(&log).contains("\"version\":7"));
     assert_eq!(viamind_engine::EventLog::read_jsonl(log.as_slice()).unwrap().replay(), after);
-    let mislabeled = String::from_utf8(log).unwrap().replace("\"version\":6", "\"version\":1");
+    let mislabeled = String::from_utf8(log).unwrap().replace("\"version\":7", "\"version\":1");
     assert!(viamind_engine::EventLog::read_jsonl(mislabeled.as_bytes()).is_err());
     let snapshot = engine.session_state();
     for input in [

@@ -19,6 +19,7 @@ fn fixture() -> EngineHandle {
         project.board.parts.insert(
             id,
             Part {
+                assembly: None,
                 schematic_symbol: None,
                 pads: None,
                 id,
@@ -121,6 +122,7 @@ fn default_page_is_bounded_on_large_designs() {
         project.board.parts.insert(
             id,
             Part {
+                assembly: None,
                 schematic_symbol: None,
                 pads: None,
                 id,

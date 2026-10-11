@@ -90,6 +90,7 @@ impl PartQuery {
         let bounds = self.bounds.as_ref().map(PartQueryBounds::rect).transpose()?;
         let ids: Option<BTreeSet<_>> = self.ids.as_ref().map(|ids| ids.iter().copied().collect());
         let text = self.text.as_ref().map(|text| text.to_lowercase());
+        let mut page = Vec::new();
         let mut result = PartQueryResult { parts: Vec::new(), total: 0, next_after: None };
         for part in project.board.parts.values() {
             if ids.as_ref().is_some_and(|ids| !ids.contains(&part.id))
@@ -108,12 +109,15 @@ impl PartQuery {
             if self.after.is_some_and(|after| part.id <= after) {
                 continue;
             }
-            if result.parts.len() < self.limit {
-                result.parts.push(part.clone());
+            if page.len() < self.limit {
+                page.push(part);
             } else {
-                result.next_after = result.parts.last().map(|part| part.id);
+                result.next_after = page.last().map(|part| part.id);
             }
         }
+        viamind_doc::assembly::validate_metadata(page.iter().filter_map(|p| p.assembly.as_ref()))
+            .map_err(|e| CommandError::invalid("assembly", e))?;
+        result.parts = page.into_iter().cloned().collect();
         Ok(result)
     }
 }

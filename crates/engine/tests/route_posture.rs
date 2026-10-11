@@ -19,6 +19,7 @@ fn fixture() -> (EngineHandle, [PadEndpointId; 2]) {
             net: Some("EXACT".into()),
         };
         let part = Part {
+            assembly: None,
             id: ObjectId::new(),
             schematic_symbol: None,
             designator: format!("J{x}"),

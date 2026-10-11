@@ -6,6 +6,7 @@
 //! is serde-serialisable. Changes go through `viamind-engine` commands, never by
 //! writing to these fields directly from UI or agent code.
 
+pub mod assembly;
 pub mod board;
 pub mod dxf;
 pub mod file;
@@ -18,6 +19,7 @@ pub mod project;
 pub mod schematic;
 pub mod symbol_library;
 
+pub use assembly::AssemblyMetadata;
 pub use board::{Board, Part, Side};
 pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};

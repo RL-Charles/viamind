@@ -65,6 +65,56 @@ struct Properties {
     original: Part,
     stream: ObjectId,
     draft: Draft,
+    sourcing: SourcingDraft,
+}
+struct SourcingDraft {
+    manufacturer: String,
+    mpn: String,
+    supplier: String,
+    supplier_sku: String,
+    populate: bool,
+}
+impl SourcingDraft {
+    fn from_part(part: &Part) -> Self {
+        let m = part.assembly.as_ref();
+        Self {
+            manufacturer: m.and_then(|m| m.manufacturer.clone()).unwrap_or_default(),
+            mpn: m.and_then(|m| m.mpn.clone()).unwrap_or_default(),
+            supplier: m.and_then(|m| m.supplier.clone()).unwrap_or_default(),
+            supplier_sku: m.and_then(|m| m.supplier_sku.clone()).unwrap_or_default(),
+            populate: m.is_none_or(|m| m.populate),
+        }
+    }
+    fn metadata(&self) -> Result<viamind_doc::AssemblyMetadata, String> {
+        for s in [&self.manufacturer, &self.mpn, &self.supplier, &self.supplier_sku].into_iter().filter(|s| !s.is_empty()) {
+            viamind_doc::AssemblyMetadata::validate_field(s).map_err(str::to_owned)?;
+        }
+        let field = |s: &String| (!s.is_empty()).then(|| s.clone());
+        let metadata = viamind_doc::AssemblyMetadata {
+            manufacturer: field(&self.manufacturer),
+            mpn: field(&self.mpn),
+            supplier: field(&self.supplier),
+            supplier_sku: field(&self.supplier_sku),
+            populate: self.populate,
+        };
+        metadata.validate().map_err(str::to_owned)?;
+        Ok(metadata)
+    }
+    fn fields(&mut self, ui: &mut Ui) {
+        ui.separator();
+        ui.heading("Assembly sourcing");
+        for (label, text) in [
+            ("Manufacturer", &mut self.manufacturer),
+            ("Manufacturer part number", &mut self.mpn),
+            ("Supplier", &mut self.supplier),
+            ("Supplier stock number", &mut self.supplier_sku),
+        ] {
+            let label = ui.label(label);
+            ui.add(egui::TextEdit::singleline(text).char_limit(512).desired_width(150.0)).labelled_by(label.id);
+        }
+        ui.checkbox(&mut self.populate, "Populate component");
+        ui.label("Explicit user input; fields allow 512 UTF-8 bytes each. Only Sourcing BOM applies population; BOM/placement and saved jobs inventory all components.");
+    }
 }
 #[derive(Default)]
 pub struct PartUi {
@@ -143,10 +193,26 @@ impl ViamindApp {
         // Read selection, part and stream consistently; avoid cloning the whole project per frame.
         let current = design.engine.with_engine(|e| {
             let selection = e.selection();
-            let part = if selection.ids.len() == 1 { e.project().board.part(&selection.ids[0]).cloned() } else { None };
-            (part, e.event_cursor())
+            let part = if selection.ids.len() == 1 { e.project().board.part(&selection.ids[0]) } else { None };
+            let part = part
+                .map(|p| {
+                    if let Some(m) = &p.assembly {
+                        m.validate()?;
+                    }
+                    Ok::<_, &'static str>(p.clone())
+                })
+                .transpose();
+            (part, e.event_cursor(), e.project().id)
         });
-        let (Some(part), EventCursor { stream_id, .. }) = current else {
+        let (part, EventCursor { stream_id, .. }, project_id) = current;
+        let part = match part {
+            Ok(part) => part,
+            Err(error) => {
+                ui.label(error);
+                return;
+            }
+        };
+        let Some(part) = part else {
             self.parts.properties = None;
             ui.heading("Part properties");
             ui.label("Select one part to edit its properties.");
@@ -156,7 +222,12 @@ impl ViamindApp {
             return;
         };
         if self.parts.properties.as_ref().is_none_or(|p| p.original.id != part.id || p.stream != stream_id) {
-            self.parts.properties = Some(Properties { draft: Draft::from_part(&part), original: part.clone(), stream: stream_id });
+            self.parts.properties = Some(Properties {
+                draft: Draft::from_part(&part),
+                sourcing: SourcingDraft::from_part(&part),
+                original: part.clone(),
+                stream: stream_id,
+            });
             self.parts.message = None;
         }
         let Some(properties) = &mut self.parts.properties else { return };
@@ -165,6 +236,15 @@ impl ViamindApp {
             ui.label("Part changed; reload to review the latest properties.");
         }
         properties.draft.fields(ui);
+        let mut apply_sourcing = false;
+        let mut clear_sourcing = false;
+        let enabled =
+            !self.files.busy() && !self.copper.editing() && self.parts.placement.is_none() && !self.outlines.editing() && !self.pads.editing();
+        ui.add_enabled_ui(enabled, |ui| {
+            properties.sourcing.fields(ui);
+            apply_sourcing = ui.button("Apply sourcing").clicked();
+            clear_sourcing = ui.button("Clear sourcing").clicked();
+        });
         if let Some(message) = &self.parts.message {
             ui.label(message);
         }
@@ -184,7 +264,22 @@ impl ViamindApp {
         if reload {
             properties.original = part.clone();
             properties.draft = Draft::from_part(&part);
+            properties.sourcing = SourcingDraft::from_part(&part);
             self.parts.message = None;
+        } else if apply_sourcing || clear_sourcing {
+            let metadata = if clear_sourcing { Ok(None) } else { properties.sourcing.metadata().map(Some) };
+            let result = metadata.and_then(|metadata| {
+                UiAction::SetPartAssembly
+                    .run(&design.engine, json!({"id":part.id,"assembly":metadata,"expected":properties.original,"expected_project":project_id}))
+                    .map_err(|e| e.to_string())
+            });
+            match result {
+                Ok(_) => {
+                    self.parts.properties = None;
+                    self.parts.message = None;
+                }
+                Err(error) => self.parts.message = Some(error),
+            }
         } else if apply {
             let result = properties.draft.input().and_then(|mut input| {
                 input["id"] = json!(part.id);

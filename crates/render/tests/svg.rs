@@ -9,6 +9,18 @@ fn sample() -> Project {
     file::from_str(include_str!("../../../fixtures/views/asymmetric.viamind.json")).unwrap()
 }
 #[test]
+fn direct_views_and_captures_exclude_unrelated_sourcing_before_copy() {
+    let mut project = sample();
+    let expected = board_svg(&project, &SvgOptions::default()).unwrap();
+    for part in project.board.parts.values_mut() {
+        part.assembly = Some(viamind_doc::AssemblyMetadata { mpn: Some("unused".repeat(400000)), populate: false, ..Default::default() });
+    }
+    let snapshot = viamind_render::board_view_snapshot(&project).unwrap();
+    assert!(snapshot.board.parts.values().all(|p| p.assembly.is_none()));
+    assert_eq!(board_svg(&project, &SvgOptions::default()).unwrap().svg, expected.svg);
+    assert_eq!(board_svg(&snapshot, &SvgOptions::default()).unwrap().svg, expected.svg);
+}
+#[test]
 fn transformed_geometry_exact_half_nanometres_and_stable_layers() {
     let project = sample();
     let all = board_svg(&project, &SvgOptions::default()).unwrap();
