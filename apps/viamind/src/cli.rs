@@ -219,7 +219,10 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             || options.export_gerber
             || options.export_csv.is_some())
     {
-        return Err("restricted agent mode requires desktop HTTP or headless stdio; remove save/export/job/demo/no-MCP options".into());
+        return Err(format!(
+            "{} requires desktop HTTP or headless stdio; remove save/export/job/demo/no-MCP options",
+            if options.agent_read_only { "--agent-read-only" } else { "--agent-approval" }
+        ));
     }
     if options.run_output_job.is_some() {
         if options.open.is_none()
