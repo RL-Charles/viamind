@@ -322,3 +322,43 @@ fn unused_assembly_and_unrelated_schematic_text_never_enter_terminal_capture_or_
     assert_eq!(result.created.len(), 2);
     assert!(e.read(|p| p.name == huge && p.board.parts.values().next().unwrap().assembly.as_ref().unwrap().manufacturer.as_ref() == Some(&huge)));
 }
+
+#[test]
+fn borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state() {
+    for variant in 0..3 {
+        let (mut project, ids) = fixture();
+        match variant {
+            0 => project.board.parts.values_mut().next().unwrap().designator = "x".repeat(513),
+            1 => {
+                project.board.net_rules.insert("x".repeat(257), Default::default());
+            }
+            _ => {
+                for x in [0, 5_000_000] {
+                    let track = Track {
+                        id: ObjectId::new(),
+                        start: p(x, -8_000_000),
+                        end: p(x, -2_000_000),
+                        width: Nm(250_000),
+                        layer: CopperLayer::Top,
+                        net: Some("OTHER".into()),
+                    };
+                    project.board.tracks.insert(track.id, track);
+                }
+            }
+        }
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let status = e.document_status();
+        if variant < 2 {
+            assert!(e.route_terminal_snapshot().is_err());
+        }
+        let mut input = manual(&e, ids);
+        input.rules.max_violations = 1;
+        let error = e.execute_typed(input, Origin::User).unwrap_err().to_string();
+        if variant == 2 {
+            assert!(error.contains("truncated"), "{error}");
+        }
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.document_status(), status);
+    }
+}
