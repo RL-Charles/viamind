@@ -1,6 +1,9 @@
 //! Actual compact input with painted effective-clip oracles.
 use super::*;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use viamind_engine::EngineHandle;
 
 fn app() -> (ViamindApp, EngineHandle) {
@@ -120,8 +123,7 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     let viewport_before = h.state().schematic.viewport;
     click(&mut h, "Add symbol");
     click(&mut h, "Add pin");
-    h.get_by_label("Pin 2 X (mm)").scroll_to_me();
-    h.run_steps(10);
+    reveal(&mut h, "Pin 2 X (mm)");
     h.get_by_label("Pin 2 X (mm)").focus();
     h.run_steps(2);
     for pressed in [true, false] {
@@ -143,8 +145,7 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     h.get_all_by_label("Remove pin").next().unwrap().click();
     h.run_steps(5);
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins.len(), 1);
-    h.get_by_label("Pin 1 X (mm)").scroll_to_me();
-    h.run_steps(10);
+    reveal(&mut h, "Pin 1 X (mm)");
     h.get_by_label("Pin 1 X (mm)").focus();
     h.run_steps(2);
     let retained_id = h.ctx.memory(egui::Memory::focused).expect("focused retained pin coordinate");
@@ -156,8 +157,7 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
 }
 
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
-    h.get_by_label(label).scroll_to_me();
-    h.run_steps(10);
+    reveal(h, label);
     h.get_by_label(label).focus();
     for pressed in [true, false] {
         h.event(egui::Event::Key { key: Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
@@ -165,6 +165,104 @@ fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
     }
     h.get_by_label(label).type_text(value);
     h.run_steps(3);
+}
+
+#[test]
+fn compact_sidebar_all_text_fields_are_clipped_reachable_and_cancel_remains_local() {
+    let (app, engine) = app();
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    h.run_steps(5);
+    click(&mut h, "Add symbol");
+    for (label, value) in [
+        ("Reference", "U99"),
+        ("Symbol value", "Exact"),
+        ("Symbol footprint", "DETACHED"),
+        ("Body width (mm)", "4.000003"),
+        ("Body height (mm)", "6.000007"),
+        ("Schematic X (mm)", "1.000003"),
+        ("Schematic Y (mm)", "-2.000007"),
+        ("Pin 1 number", "7"),
+        ("Pin 1 name", "VIN"),
+        ("Pin 1 X (mm)", "-3.000003"),
+        ("Pin 1 Y (mm)", "0.000007"),
+    ] {
+        input(&mut h, label, value);
+    }
+    let d = h.state().schematic.draft.as_ref().unwrap();
+    assert_eq!(
+        [d.name.as_str(), d.value.as_str(), d.footprint.as_str(), d.width.as_str(), d.height.as_str(), d.x.as_str(), d.y.as_str()],
+        ["U99", "Exact", "DETACHED", "4.000003", "6.000007", "1.000003", "-2.000007"]
+    );
+    assert_eq!(
+        [d.pins[0].number.as_str(), d.pins[0].name.as_str(), d.pins[0].x.as_str(), d.pins[0].y.as_str()],
+        ["7", "VIN", "-3.000003", "0.000007"]
+    );
+    click(&mut h, "Cancel schematic draft");
+    click(&mut h, "Add wire");
+    for (label, value) in
+        [("Schematic X (mm)", "1.000003"), ("Schematic Y (mm)", "-2.000007"), ("Wire end X (mm)", "3.000011"), ("Wire end Y (mm)", "4.000013")]
+    {
+        input(&mut h, label, value);
+    }
+    let d = h.state().schematic.draft.as_ref().unwrap();
+    assert_eq!([d.x.as_str(), d.y.as_str(), d.end_x.as_str(), d.end_y.as_str()], ["1.000003", "-2.000007", "3.000011", "4.000013"]);
+    click(&mut h, "Cancel schematic draft");
+    click(&mut h, "Add label");
+    input(&mut h, "Label name", "EXACT");
+    assert_eq!(h.state().schematic.draft.as_ref().unwrap().name, "EXACT");
+    click(&mut h, "Cancel schematic draft");
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
+}
+
+#[test]
+fn compact_sidebar_electrical_popup_ownership_survives_preceding_row_removal_without_reuse() {
+    let (app, engine) = app();
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    h.run_steps(5);
+    click(&mut h, "Add symbol");
+    click(&mut h, "Add pin");
+    let removed_id = h.get_all_by_label("Passive").next().unwrap().accesskit_node().id();
+    h.get_all_by_label("Passive").nth(1).unwrap().scroll_to_me();
+    h.run_steps(10);
+    let second = h.get_all_by_label("Passive").nth(1).unwrap();
+    let retained_id = second.accesskit_node().id();
+    assert_ne!(retained_id, removed_id);
+    let rect = second.rect();
+    h.hover_at(rect.center());
+    h.run_steps(2);
+    assert_button_clip(&h, "second pin electrical", h.get_all_by_label("Passive").nth(1).unwrap().rect());
+    h.get_all_by_label("Passive").nth(1).unwrap().click();
+    h.run_steps(5);
+    click(&mut h, "Output");
+    assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[1].electrical, PinType::Output);
+    h.get_all_by_label("Remove pin").next().unwrap().scroll_to_me();
+    h.run_steps(10);
+    let rect = h.get_all_by_label("Remove pin").next().unwrap().rect();
+    h.hover_at(rect.center());
+    h.run_steps(2);
+    assert_button_clip(&h, "first Remove pin", h.get_all_by_label("Remove pin").next().unwrap().rect());
+    h.get_all_by_label("Remove pin").next().unwrap().click();
+    h.run_steps(5);
+    assert_eq!(h.get_by_label("Output").accesskit_node().id(), retained_id);
+    click(&mut h, "Output");
+    click(&mut h, "PowerInput");
+    assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[0].electrical, PinType::PowerInput);
+    click(&mut h, "Add pin");
+    let fresh_id = h.get_by_label("Passive").accesskit_node().id();
+    assert_ne!(fresh_id, removed_id);
+    assert_ne!(fresh_id, retained_id);
+    click(&mut h, "Passive");
+    click(&mut h, "Input");
+    let pins = &h.state().schematic.draft.as_ref().unwrap().pins;
+    assert_eq!(pins[0].electrical, PinType::PowerInput);
+    assert_eq!(pins[1].electrical, PinType::Input);
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
 }
 #[test]
 fn compact_sidebar_local_drafts_and_exact_apply_keep_existing_atomic_undo() {
