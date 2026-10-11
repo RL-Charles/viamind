@@ -42,6 +42,7 @@ fn part() -> Part {
                 width: Nm::from_mm(1.0),
                 height: Nm::from_mm(1.0),
                 net: Some("B".into()),
+                apertures: None,
             }])
             .unwrap(),
         ),

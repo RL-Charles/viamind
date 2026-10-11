@@ -337,6 +337,7 @@ mod pad_tests {
                 width: Nm::from_mm(2.0),
                 height: Nm::from_mm(1.0),
                 net: Some("GND".into()),
+                apertures: None,
             }])
             .unwrap(),
         );

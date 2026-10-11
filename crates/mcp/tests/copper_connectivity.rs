@@ -31,6 +31,7 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
             width: serde_json::from_value(json!(1_000_000)).unwrap(),
             height: serde_json::from_value(json!(1_000_000)).unwrap(),
             net: Some("N".into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,

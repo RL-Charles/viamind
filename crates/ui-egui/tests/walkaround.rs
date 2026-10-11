@@ -21,6 +21,7 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
             width: Nm(1_000_000),
             height: Nm(2_000_000),
             net: Some(if number == 3 { "OTHER" } else { "GND" }.into()),
+            apertures: None,
         };
         let part = Part {
             artwork: None,

@@ -420,7 +420,7 @@ fn pad(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]) -> R
         "Front copper imported; mask/paste layers are not represented by the native pad model.",
     );
     let (position, width, height) = cardinal_pad_geometry(n, items)?;
-    Ok(Pad { id: identity(n, items)?, number: name(&n.args[0])?, position, width, height, net: net(n, table, items)? })
+    Ok(Pad { id: identity(n, items)?, number: name(&n.args[0])?, position, width, height, net: net(n, table, items)?, apertures: None })
 }
 fn footprint(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]) -> Result<Part> {
     if n.args.len() != 1 {
