@@ -4371,6 +4371,9 @@ dependencies = [
 name = "viamind-drc"
 version = "0.1.0"
 dependencies = [
+ "schemars",
+ "serde",
+ "thiserror 2.0.21",
  "viamind-doc",
  "viamind-geom",
 ]
@@ -4428,6 +4431,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "viamind-doc",
+ "viamind-drc",
  "viamind-engine",
  "viamind-fab",
 ]
@@ -4460,6 +4464,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "viamind-doc",
+ "viamind-drc",
  "viamind-engine",
  "viamind-geom",
  "viamind-mcp",

@@ -63,6 +63,14 @@ Agents share the same selection through `get_selection` and `set_selection`:
 Selection preserves design undo/redo. The prototype currently draws common built-in
 footprints; schematic capture, routing and library editing are planned features.
 
+## Check explicit pad clearances
+
+Open **Board → Design rule check** to run batch copper and board-edge checks with
+chosen clearances. Results include pad/part IDs, measured distances, coverage and
+exclusions. Legacy graphical footprints need explicit pads before copper checking;
+tracks/vias and additional fabrication rules remain outside this initial scope.
+Agents use the same read-only `run_drc` tool. Reports become stale after edits.
+
 ## Run an agent without a window
 
 `viamind --headless` serves the full design engine over stdio MCP. It works
