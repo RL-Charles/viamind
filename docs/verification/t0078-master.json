@@ -39,6 +39,6 @@
     "MCP second-agent open after staging preserves current session and bytes",
     "native guard waits for in-flight save-as before reading active path; ordinary commands remain available"
   ],
-  "integration_main": "5fb15a6",
-  "integration_note": "After artifact capture, preserved additive wire and CSV action helpers on main391fd00; focused fmt/strict workspace clippy and7 desktop/parity tests passed. Subsequently clean-rebased onto copper-connectivity main5fb15a6 with fmt check passed and unchanged CSV implementation; fresh combined CI required."
+  "integration_main": "c8d1867",
+  "integration_note": "After artifact capture, preserved additive wire and CSV action helpers on main391fd00; focused fmt/strict workspace clippy and7 desktop/parity tests passed. Rebased through connectivity main5fb15a6 onto pad-route-posture mainc8d1867, preserving both route_pad_posture/export_assembly_csv helpers and both README entries. CSV implementation and captured artifact source7f6672a remain unchanged. Final focused integration checks and combined CI are required."
 }

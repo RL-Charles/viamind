@@ -45,9 +45,10 @@ disconnected worker produces a recoverable error.
 After those exact artifact checks, the branch was rebased onto interactive-wire
 main 391fd00. Both additive wire and CSV action helpers were preserved; strict
 workspace clippy and seven desktop/parity tests passed on that integration.
-A subsequent clean rebase onto copper-connectivity main 5fb15a6 passes fmt and
-gets fresh combined CI. The CSV implementation and captured artifacts remain
-unchanged.
+Subsequent integration through copper-connectivity main 5fb15a6 onto pad-route-
+posture main c8d1867 preserves both routing and CSV action helpers and README
+entries. Final focused checks and combined CI validate that integration. The CSV
+implementation and captured artifact source remain unchanged.
 
 ## Reproduction
 
