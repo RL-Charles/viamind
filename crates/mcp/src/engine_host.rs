@@ -157,7 +157,7 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "preview_schematic_annotation".into(),
-            description: "Read-only bounded flat schematic annotation preview. Returns changes and exact guarded annotate_schematic command input. Explicit complete sheet_order or UUID default; x_then_y/y_then_x, keep_existing/reset_all, inclusive start1..999999999. Does not alter history, dirty, selection or events. Reprepare if schematic changes; no PCB synchronization.".into(),
+            description: "Read-only bounded flat schematic annotation preview, including explicit whole packages as single reference owners. Returns actual symbol/unit and package counts, per-member changes and exact full-cursor guarded annotate_schematic command input. Explicit complete sheet_order or UUID default; x_then_y/y_then_x, keep_existing/reset_all, inclusive start1..999999999. Does not alter history, dirty, selection or events. Reprepare if full session cursor changes. One number per explicit package; no suffix inference or PCB synchronization.".into(),
             input_schema: input_schema::<viamind_engine::AnnotationOptions>(),
         });
         commands.push(HostCommand {
