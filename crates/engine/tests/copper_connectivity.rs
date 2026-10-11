@@ -87,6 +87,12 @@ fn one_nanometer_gap_wrong_side_net_and_interior_crossings_never_prove_a_join() 
 #[test]
 fn mirrored_quarter_turn_exact_off_grid_routes_disappear_and_undo_restores_guides() {
     let mut project = Project::new("Exact proof with shared undo");
+    project.board.outline = Some(
+        serde_json::from_value(
+            serde_json::json!({"outer":[{"x":0,"y":0},{"x":100000000,"y":0},{"x":100000000,"y":100000000},{"x":0,"y":100000000}],"cutouts":[]}),
+        )
+        .unwrap(),
+    );
     let ids = [10_000_001, 30_000_007].map(|x| part(&mut project, x, 10_000_003, Side::Bottom));
     for part in project.board.parts.values_mut() {
         part.rotation_mdeg = 90_000;
@@ -179,5 +185,34 @@ fn count_and_text_budgets_disable_all_suppression_without_mutation() {
         assert_eq!(result.guide_count, 1);
         assert_eq!(result.copper_proof.analyzed_tracks, 0);
         assert_eq!(project, before);
+    }
+}
+#[test]
+fn drilled_away_shapes_and_foreign_midsegment_holes_never_hide_guides() {
+    for tiny in [true, false] {
+        let mut project = Project::new("Drilled copper is unsupported");
+        let (a, b, center) =
+            if tiny { (p(0, 0), p(10, 0), p(5, 0)) } else { (p(10_000_000, 10_000_000), p(30_000_000, 10_000_000), p(20_000_000, 10_000_000)) };
+        for point in [a, b] {
+            let id = part(&mut project, point.x.0, point.y.0, Side::Top);
+            if tiny {
+                let pad = &mut project.board.parts.get_mut(&id.part_id).unwrap().pads.as_mut().unwrap().0[0];
+                pad.width = Nm(1);
+                pad.height = Nm(1);
+            }
+        }
+        track(&mut project, a, b, CopperLayer::Top, "N");
+        if tiny {
+            project.board.tracks.values_mut().next().unwrap().width = Nm(1);
+        }
+        assert_eq!(query(&project).guide_count, 0);
+        let via = Via { id: ObjectId::new(), position: center, diameter: Nm(600_000), drill: Nm(300_000), net: Some("foreign".into()) };
+        project.board.vias.insert(via.id, via);
+        let result = query(&project);
+        assert_eq!(result.guide_count, 1);
+        assert_eq!(result.copper_proof.analyzed_tracks, 0);
+        if tiny {
+            assert_eq!(result.copper_proof.unsupported_named_pads, 2);
+        }
     }
 }

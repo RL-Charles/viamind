@@ -18,3 +18,7 @@
 ## Exclusions
 
 No filled planes, inner layers, arbitrary rotation proof, midsegment contacts, overlapping shape/annulus analysis, dangling-track certification, clearance guarantees or physical fabrication certification. Conservative extra guides are expected outside the exact-endpoint subset. Existing historical verification reports retain their source provenance.
+
+## Review refinement: drilled copper
+
+A reviewer supplied a valid tiny pad/track example wholly removed by a through-via drill. Endpoint topology alone cannot prove that path. Before graph construction, index all validated via drill bounding boxes, including unassigned/foreign nets. Reject proof of any track centerline bounding box intersecting a hole unless it is an exact endpoint at an isolated same-net valid via and its segment reaches the annulus. Pad centers inside/touching hole boxes cannot bind. A via whose annulus box intersects another hole cannot prove a bridge. Invalid via geometry disables suppression. Bounding-box over-exclusion deliberately retains extra guides. At most one million aggregate spatial candidates are examined, otherwise the entire proof falls back. This refines the original conservative subset without changing document geometry.

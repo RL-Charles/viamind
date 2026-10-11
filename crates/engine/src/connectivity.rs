@@ -207,10 +207,10 @@ fn remaining_tree(members: &[Terminal], proof: &CopperProof) -> Vec<(usize, usiz
     let mut islands = BTreeMap::new();
     for (i, terminal) in members.iter().enumerate() {
         let id = crate::PadEndpointId { part_id: terminal.part_id, pad_id: terminal.pad_id };
-        if let Some(root) = proof.pads.get(&id) {
-            if let Some(previous) = islands.insert(root, i) {
-                forest.join(previous, i);
-            }
+        if let Some(root) = proof.pads.get(&id)
+            && let Some(previous) = islands.insert(root, i)
+        {
+            forest.join(previous, i);
         }
     }
     tree(members).into_iter().filter(|&(a, b)| forest.join(a, b)).collect()

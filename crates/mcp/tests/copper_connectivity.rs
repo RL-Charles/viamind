@@ -18,6 +18,12 @@ async fn call(c: &Client, n: &'static str, args: Value) -> Value {
 #[tokio::test(flavor = "multi_thread")]
 async fn actual_independent_http_agents_see_same_conservative_guides_through_route_peer_edit_and_undo() {
     let mut project = Project::new("HTTP copper islands");
+    project.board.outline = Some(
+        serde_json::from_value(
+            serde_json::json!({"outer":[{"x":0,"y":0},{"x":100000000,"y":0},{"x":100000000,"y":100000000},{"x":0,"y":100000000}],"cutouts":[]}),
+        )
+        .unwrap(),
+    );
     for (i, x) in [10_000_123, 30_000_257].into_iter().enumerate() {
         let pad = Pad {
             id: ObjectId::new(),

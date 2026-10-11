@@ -26,3 +26,10 @@ Proof work is bounded before graph allocation to 100000 combined board
 parts/pads/tracks/vias, 4096 bytes per inspected string and 2 MiB inspected text.
 Exceeding a bound disables all suppression and reports `budget_fallback: true`;
 the historical conservative guides remain. No native schema changes.
+
+Drilled copper is handled conservatively: all via holes (including foreign or
+unassigned nets) exclude intersecting track-centerline boxes and affected pad
+centers, except a segment reaching an isolated same-net via annulus from its exact
+center. Overlapping hole/annulus boxes disable that via proof. These box checks
+can leave extra guides. Invalid via geometry or more than one million aggregate
+spatial candidates disables all suppression.

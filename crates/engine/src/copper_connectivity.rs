@@ -1,9 +1,9 @@
 //! Conservative exact endpoint proofs. Extra guides remain outside this subset.
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde::Serialize;
 use viamind_doc::{CopperLayer, Project, Side};
-use viamind_geom::Point;
+use viamind_geom::{Nm, Point, Rect, SpatialIndex};
 
 use crate::PadEndpointId;
 
@@ -22,6 +22,7 @@ pub struct CopperConnectivityCoverage {
     pub analyzed_tracks: usize,
     pub analyzed_vias: usize,
     pub unsupported_named_copper: usize,
+    pub hole_candidates: usize,
 }
 impl Default for CopperConnectivityCoverage {
     fn default() -> Self {
@@ -33,6 +34,7 @@ impl Default for CopperConnectivityCoverage {
             analyzed_tracks: 0,
             analyzed_vias: 0,
             unsupported_named_copper: 0,
+            hole_candidates: 0,
         }
     }
 }
@@ -114,11 +116,34 @@ fn distance2(a: Point, b: Point) -> i128 {
     dx * dx + dy * dy
 }
 impl CopperProof {
+    fn fallback() -> Self {
+        Self { coverage: CopperConnectivityCoverage { budget_fallback: true, ..Default::default() }, pads: BTreeMap::new() }
+    }
     pub fn analyze(project: &Project) -> Self {
         let mut result = Self { coverage: CopperConnectivityCoverage::default(), pads: BTreeMap::new() };
         if !budget(project) {
-            result.coverage.budget_fallback = true;
-            return result;
+            return Self::fallback();
+        }
+        // All holes matter, including unassigned and foreign-net vias. Broad phase
+        // boxes are exact here (coordinates below 2^53); over-exclusion is safe.
+        if project.board.vias.values().any(|v| v.validate().is_err()) {
+            return Self::fallback();
+        }
+        let holes =
+            SpatialIndex::bulk_load(project.board.vias.values().map(|v| (v.id, Rect::from_point(v.position).inflate(Nm((v.drill.0 + 1) / 2)))));
+        let mut safe_vias = BTreeSet::new();
+        for via in project.board.vias.values() {
+            let mut safe = true;
+            for (id, _) in holes.query_rect(&Rect::from_point(via.position).inflate(Nm((via.diameter.0 + 1) / 2))) {
+                result.coverage.hole_candidates += 1;
+                if result.coverage.hole_candidates > 1_000_000 {
+                    return Self::fallback();
+                }
+                safe &= id == via.id;
+            }
+            if safe {
+                safe_vias.insert(via.id);
+            }
         }
         // Borrow all net strings. The budget runs before graph allocation.
         let mut nodes = BTreeMap::new();
@@ -127,6 +152,23 @@ impl CopperProof {
         for track in project.board.tracks.values() {
             let Some(net) = track.net.as_deref() else { continue };
             if track.validate().is_err() {
+                result.coverage.unsupported_named_copper += 1;
+                continue;
+            }
+            let mut safe = true;
+            for (id, _) in holes.query_rect(&Rect::new(track.start, track.end)) {
+                result.coverage.hole_candidates += 1;
+                if result.coverage.hole_candidates > 1_000_000 {
+                    return Self::fallback();
+                }
+                let via = &project.board.vias[&id];
+                let incident = (track.start == via.position || track.end == via.position)
+                    && via.net.as_deref() == Some(net)
+                    && safe_vias.contains(&id)
+                    && 4 * distance2(track.start, track.end) > i128::from(via.drill.0).pow(2);
+                safe &= incident;
+            }
+            if !safe {
                 result.coverage.unsupported_named_copper += 1;
                 continue;
             }
@@ -144,7 +186,7 @@ impl CopperProof {
         }
         for via in project.board.vias.values() {
             let Some(net) = via.net.as_deref() else { continue };
-            if via.validate().is_err() {
+            if !safe_vias.contains(&via.id) {
                 result.coverage.unsupported_named_copper += 1;
                 continue;
             }
@@ -171,6 +213,18 @@ impl CopperProof {
                     result.coverage.unsupported_named_pads += 1;
                     continue;
                 };
+                let mut hole_affected = false;
+                for _ in holes.query_rect(&Rect::from_point(center)) {
+                    result.coverage.hole_candidates += 1;
+                    if result.coverage.hole_candidates > 1_000_000 {
+                        return Self::fallback();
+                    }
+                    hole_affected = true;
+                }
+                if hole_affected {
+                    result.coverage.unsupported_named_pads += 1;
+                    continue;
+                }
                 result.coverage.supported_named_pads += 1;
                 if let Some(&i) = nodes.get(&key(net, part.side == Side::Bottom, center)) {
                     result.pads.insert(PadEndpointId { part_id: part.id, pad_id: pad.id }, forest.root(i));
