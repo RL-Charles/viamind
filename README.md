@@ -301,3 +301,8 @@ File → Import PCB S-expression… provides a bounded read-only fidelity previe
 ## Standalone footprint conversion
 
 File → Convert footprint S-expression… previews the restricted standalone rectangular SMD subset and creates one new detached native footprint library. Conversion preserves dirty work; applying the library is a separate guarded, undoable action. Source IDs, art and manufacturing defaults are not retained. See [workflow, exact subset and fidelity exclusions](docs/footprint-conversion.md).
+
+
+### Agent approval modes
+
+Choose **Agent modes…** in the desktop status bar to switch Live apply, Approval or Read only. Start with `--agent-approval` to require human acceptance of bounded private PCB proposals, or `--agent-read-only` for an immutable observation ceiling. Human editing remains available. See [supported workflows and restrictions](docs/agent-modes.md).

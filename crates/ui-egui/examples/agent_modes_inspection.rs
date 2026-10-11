@@ -78,7 +78,7 @@ impl eframe::App for Inspect {
             rgb.sync_all().unwrap();
             println!(
                 "{}",
-                json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"pixels":image.size,"ui_passes":self.passes,"full_session_unchanged":true,"document_status_unchanged":true,"completed":self.completed,"agent_mode":self.expected_mode,"mode_controls":self.mode_controls,"self_close_after_capture":true,"original_color32_rgba_retained":true,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_alpha_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"rgb_review":"original Color32 RGB samples; alpha omitted for review","native_requested_transparent":false,"controls_and_effective_clips":self.app.pcb_branches.control_rects().iter().map(|(r,c)|[[r.min.x,r.min.y,r.max.x,r.max.y],[c.min.x,c.min.y,c.max.x,c.max.y]]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y],"os_input":false})
+                json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"pixels":image.size,"ui_passes":self.passes,"full_session_unchanged":true,"document_status_unchanged":true,"completed":self.completed,"agent_mode":self.expected_mode,"mode_controls":self.mode_controls,"self_close_after_capture":true,"original_color32_rgba_retained":true,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_alpha_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"rgb_review":"original Color32 RGB samples; alpha omitted for review","native_requested_transparent":false,"controls_and_effective_clips":(if self.mode_controls {self.app.agent_modes.control_rects()} else {self.app.pcb_branches.control_rects()}).iter().map(|(r,c)|[[r.min.x,r.min.y,r.max.x,r.max.y],[c.min.x,c.min.y,c.max.x,c.max.y]]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y],"os_input":false})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
@@ -193,7 +193,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::write(
         report,
         serde_json::to_vec_pretty(
-            &json!({"original":original,"after_preparation_or_merge":before,"status":status,"native_unchanged":true,"mode":mode,"actual_local_inspect_accept_reject_or_busy_input":true,"os_input":false}),
+            &json!({"original":original,"after_preparation_or_merge":before,"status":status,"native_unchanged":true,"mode":mode,"actual_local_inspect_accept_reject_or_busy_input":mode!="locked","locked_scope":"trusted startup ceiling; disabled controls rendered; no local button input","os_input":false}),
         )?,
     )?;
     let completed = mode == "accepted" || mode == "rejected";
