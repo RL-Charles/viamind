@@ -8,6 +8,7 @@ use viamind_geom::Point;
 fn parts() -> Vec<Part> {
     (0..200)
         .map(|i| Part {
+            pads: None,
             id: ObjectId::new(),
             designator: format!("R{i}"),
             value: "10k".into(),

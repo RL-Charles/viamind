@@ -34,6 +34,7 @@ pub mod engine;
 pub mod event;
 pub mod handle;
 pub mod log;
+pub mod pads;
 pub mod query;
 pub mod registry;
 pub mod selection;
@@ -48,6 +49,7 @@ pub use engine::{Engine, Tx};
 pub use event::{ChangeEvent, ChangeKind, Waker};
 pub use handle::EngineHandle;
 pub use log::{EventLog, LogError};
+pub use pads::{PadInput, SetPartPads};
 pub use query::{PartQuery, PartQueryBounds, PartQueryResult};
 pub use registry::{CommandRegistry, EngineError};
 /// Re-exported so command input types can derive `JsonSchema` with a matching version.

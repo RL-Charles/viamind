@@ -71,12 +71,23 @@ pub fn part_items(part: &Part) -> Vec<Item> {
     };
     let swap = quarter_turned(part);
     let mut items = Vec::with_capacity(fp.pads.len() * 2 + 4);
-    for &(x, y, w, h) in &fp.pads {
-        let center = place(part, x, y);
-        let (hw, hh) = if swap { (h / 2.0, w / 2.0) } else { (w / 2.0, h / 2.0) };
-        let pad = WorldRect::new(WorldPos::new(center.x - hw, center.y - hh), WorldPos::new(center.x + hw, center.y + hh));
-        items.push(Item::new(Prim::Rect(pad), copper));
-        items.push(Item::new(Prim::Rect(pad.expand(0.05)), mask));
+    if let Some(pads) = &part.pads {
+        for p in &pads.0 {
+            let (x, y, w, h) = (p.position.x.to_mm(), p.position.y.to_mm(), p.width.to_mm(), p.height.to_mm());
+            for (margin, layer) in [(0.0, copper), (0.05, mask)] {
+                let (hw, hh) = (w / 2.0 + margin, h / 2.0 + margin);
+                let corners = [place(part, x - hw, y - hh), place(part, x + hw, y - hh), place(part, x + hw, y + hh), place(part, x - hw, y + hh)];
+                items.push(Item::new(Prim::Quad(corners), layer));
+            }
+        }
+    } else {
+        for &(x, y, w, h) in &fp.pads {
+            let center = place(part, x, y);
+            let (hw, hh) = if swap { (h / 2.0, w / 2.0) } else { (w / 2.0, h / 2.0) };
+            let pad = WorldRect::new(WorldPos::new(center.x - hw, center.y - hh), WorldPos::new(center.x + hw, center.y + hh));
+            items.push(Item::new(Prim::Rect(pad), copper));
+            items.push(Item::new(Prim::Rect(pad.expand(0.05)), mask));
+        }
     }
     let (bw, bh) = (fp.body.0 / 2.0, fp.body.1 / 2.0);
     let corners = [place(part, -bw, -bh), place(part, bw, -bh), place(part, bw, bh), place(part, -bw, bh)];
@@ -162,6 +173,7 @@ mod tests {
 
     pub(super) fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
         Part {
+            pads: None,
             id: ObjectId::new(),
             designator: "R1".into(),
             value: "10k".into(),
@@ -237,5 +249,58 @@ mod outline_tests {
         let scene = scene_from_project(&project);
         assert_eq!(scene.board.max, WorldPos::new(40.0, 40.0));
         assert!(scene.bounds().max.x > 150.0 && scene.bounds().max.y > 150.0);
+    }
+}
+
+/// Seed editable pads from the graphical preview without persisting invented connectivity.
+pub(crate) fn preview_pad_inputs(part: &Part) -> Vec<viamind_engine::PadInput> {
+    footprint(&part.footprint)
+        .pads
+        .into_iter()
+        .enumerate()
+        .map(|(i, (x, y, w, h))| viamind_engine::PadInput {
+            id: None,
+            number: (i + 1).to_string(),
+            x_mm: x,
+            y_mm: y,
+            width_mm: w,
+            height_mm: h,
+            net: None,
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod pad_tests {
+    use super::*;
+    use viamind_doc::{ObjectId, Pad, Pads};
+    use viamind_geom::{Nm, Point};
+    #[test]
+    fn explicit_copper_uses_true_rotated_mirrored_corners() {
+        let mut part = super::tests::part("R_0603", 45_000, Side::Bottom);
+        part.pads = Some(
+            Pads::try_from(vec![Pad {
+                id: ObjectId::new(),
+                number: "1".into(),
+                position: Point::from_mm(2.0, 0.0),
+                width: Nm::from_mm(2.0),
+                height: Nm::from_mm(1.0),
+                net: Some("GND".into()),
+            }])
+            .unwrap(),
+        );
+        let items = part_items(&part);
+        assert_eq!(items.iter().filter(|i| i.layer == LayerId::B_CU).count(), 1);
+        let Prim::Quad(points) = items[0].prim else {
+            panic!("expected actual pad corners");
+        };
+        let edge = |a: WorldPos, b: WorldPos| ((a.x - b.x).powi(2) + (a.y - b.y).powi(2)).sqrt();
+        assert!((edge(points[0], points[1]) - 2.0).abs() < 1e-9);
+        assert!((edge(points[1], points[2]) - 1.0).abs() < 1e-9);
+        let center = WorldPos::new(points.iter().map(|p| p.x).sum::<f64>() / 4.0, points.iter().map(|p| p.y).sum::<f64>() / 4.0);
+        assert!((center.x - (10.0 - 2.0_f64.sqrt())).abs() < 1e-9);
+        assert!((center.y - (20.0 + 2.0_f64.sqrt())).abs() < 1e-9);
+        part.pads = Some(Pads(vec![]));
+        assert!(part_items(&part).iter().all(|i| i.layer == LayerId::B_SILKS));
     }
 }

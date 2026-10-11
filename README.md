@@ -95,3 +95,10 @@ Agents can follow design and selection changes through `get_session_state` and
 `watch_events`. The snapshot includes a cursor that resumes after reconnecting;
 watching supports bounded long polling on HTTP and stdio. See the
 [session event contract](docs/specs/session-events.md).
+
+Selected parts expose **Edit electrical pads…** for persistent rectangular SMD
+pads, local dimensions and named net assignments. Apply and Reload protect drafts
+against concurrent agent changes. These pads rotate and mirror with their parent
+part; absent explicit pads retain the built-in graphical preview. Explicit pads
+use native schema version 3. Routing, other pad shapes and schematic net transfer
+remain roadmap work.

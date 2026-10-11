@@ -224,3 +224,13 @@ until its timeout. Cursors survive client reconnects to the same engine. They ex
 more than 1024 newer records arrive, or when the engine restarts. On a cursor error, call
 `get_session_state` to resynchronize. Reading events preserves undo ownership and history.
 See [the full session event contract](../../docs/specs/session-events.md).
+
+### Electrical pads
+
+`set_part_pads` takes `id`, an exact `expected` Part snapshot from `get_design` or
+`get_parts`, and `pads`: rectangular SMD pads with `number`, `x_mm`, `y_mm`,
+`width_mm`, `height_mm` and optional `net`. Omitted pad IDs preserve existing
+identities by number; include an existing `id` when renumbering a pad. Empty pads
+means no electrical pads. A stale snapshot, invalid size or duplicate number/ID
+rejects the whole edit. Pads are included in part queries, events, undo and native
+version-3 saves. Matching case-sensitive net names identify shared membership.

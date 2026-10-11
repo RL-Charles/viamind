@@ -8,6 +8,8 @@ use crate::layers::LayerId;
 pub enum Prim {
     /// A rectangular pad.
     Rect(WorldRect),
+    /// True transformed rectangle corners, used for explicit pads.
+    Quad([WorldPos; 4]),
     /// A round pad or via.
     Circle { center: WorldPos, radius: f64 },
     /// A track segment of the given width.
@@ -19,6 +21,9 @@ impl Prim {
     pub fn bounds(&self) -> WorldRect {
         match *self {
             Self::Rect(r) => r,
+            Self::Quad(points) => points.iter().skip(1).fold(WorldRect::from_points(points[0], points[0]), |r, p| {
+                WorldRect::new(WorldPos::new(r.min.x.min(p.x), r.min.y.min(p.y)), WorldPos::new(r.max.x.max(p.x), r.max.y.max(p.y)))
+            }),
             Self::Circle { center, radius } => {
                 WorldRect::new(WorldPos::new(center.x - radius, center.y - radius), WorldPos::new(center.x + radius, center.y + radius))
             }

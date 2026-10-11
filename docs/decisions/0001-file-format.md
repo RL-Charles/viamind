@@ -55,3 +55,14 @@ nanometres. Both native parsing and engine commands validate ring topology.
 See [the behavioral contract](../specs/board-outline.md). Event logs with an
 outline-bearing base use log version 2; new outline deltas also cause older
 readers to reject unsupported geometry explicitly.
+
+## Electrical pads (native schema version 3)
+
+Explicit per-part `pads` lists require version 3. Each pad has a persistent UUID,
+number, local integer-nanometre centre and size, and optional named net assignment.
+List order follows the editor; unchanged projects retain exactly the same order
+and bytes. Pad-free files retain version 1 or 2 as appropriate. Native loading
+validates geometry and globally unique pad identities. New event logs always use
+version 3, including empty bases: later appended part snapshots can then contain
+pads without older readers silently discarding them. Legacy logs remain readable;
+pad-bearing snapshots in a mislabeled older log are rejected.

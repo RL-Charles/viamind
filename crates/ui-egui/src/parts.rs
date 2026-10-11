@@ -84,7 +84,7 @@ impl PartUi {
 impl ViamindApp {
     /// Place an arbitrary part using the same command available to agents.
     pub fn begin_place_part(&mut self) {
-        if self.files.busy() || self.parts.placing() || self.outlines.editing() {
+        if self.files.busy() || self.parts.placing() || self.outlines.editing() || self.pads.editing() {
             return;
         }
         let Some(design) = &self.design else { return };
@@ -159,6 +159,7 @@ impl ViamindApp {
         if let Some(message) = &self.parts.message {
             ui.label(message);
         }
+        let edit_pads = ui.button("Edit electrical pads…").clicked();
         let mut apply = false;
         let mut reload = false;
         let mut delete = false;
@@ -167,6 +168,10 @@ impl ViamindApp {
             reload = ui.button("Reload").clicked();
         });
         delete |= ui.button("Delete part").clicked();
+        if edit_pads {
+            self.begin_edit_pads(part);
+            return;
+        }
         if reload {
             properties.original = part.clone();
             properties.draft = Draft::from_part(&part);
