@@ -8,6 +8,13 @@ on:
     paths:
       - scripts/package-linux.py
       - scripts/tests/test_package_linux.py
+      - scripts/appimage_support.py
+      - scripts/build-appimage-runtime.py
+      - scripts/package-appimage.py
+      - scripts/tests/test_appimage.py
+      - packaging/appimage/**
+      - docs/linux-appimage.md
+      - docs/specs/linux-appimage.md
       - docs/linux-bundle.md
       - packaging/licenses/**
       - .github/workflows/linux-bundle.yml
@@ -42,6 +49,7 @@ jobs:
       - name: Check publication and dependency closure guarantees
         run: |
           python3 -m unittest discover -s scripts/tests -p test_package_linux.py
+          python3 -m unittest discover -s scripts/tests -p test_appimage.py
           test -z "$(git status --porcelain)"
       - name: Build and verify bundle
         run: python3 scripts/package-linux.py "$RUNNER_TEMP/viamind-linux"
@@ -52,5 +60,20 @@ jobs:
         with:
           name: viamind-linux-x86_64
           path: ${{ runner.temp }}/viamind-linux/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Build isolated pinned runtime and verify companion relink
+        run: python3 scripts/build-appimage-runtime.py "$RUNNER_TEMP/viamind-runtime"
+      - name: Assemble and verify actual AppImage
+        run: >-
+          python3 scripts/package-appimage.py "$RUNNER_TEMP/viamind-appimage"
+          --runtime "$RUNNER_TEMP/viamind-runtime" --bundle "$RUNNER_TEMP/viamind-linux"
+      - name: Verify AppImage publication checksums
+        working-directory: ${{ runner.temp }}/viamind-appimage
+        run: sha256sum -c SHA256SUMS
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: viamind-appimage-x86_64
+          path: ${{ runner.temp }}/viamind-appimage/*
           if-no-files-found: error
           retention-days: 14

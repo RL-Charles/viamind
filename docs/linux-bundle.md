@@ -27,7 +27,8 @@ index in `licenses/`. It does not bundle system graphics drivers or libraries.
 For optional desktop-menu registration, first put the extracted `viamind`
 executable on your PATH, then copy `viamind.desktop` into
 `~/.local/share/applications/`. Launching from the extracted directory requires
-no installation. AppImage/Flatpak packaging and macOS/Windows are future work.
+no installation. [AppImage packaging and extraction](linux-appimage.md) are also
+available. Flatpak and macOS/Windows remain future work.
 
 ## Build a bundle from source
 

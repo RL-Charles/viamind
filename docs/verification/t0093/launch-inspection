@@ -1,0 +1,4 @@
+#!/bin/sh
+set -euC
+export TMPDIR=/home/charlesmowbray/.cache/viamind/tmp
+exec /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/inspection-native /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/native-project.viamind.json /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/native-framebuffer.ppm > /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/inspection-stdout.log 2> /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/inspection-stderr.log

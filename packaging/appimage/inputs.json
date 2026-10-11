@@ -1,0 +1,77 @@
+{
+  "runtime_commit": "dd6cebedcbddde9c82f89b011e8e1d40b6e43868",
+  "base_image": "alpine@sha256:3c81aa9a3d770b316568f4499e30461a5cd3fbd7180bd89e28e34894c7845832",
+  "runtime_sources": [
+    {
+      "name": "type2-runtime-dd6cebed.tar.gz",
+      "url": "https://codeload.github.com/AppImage/type2-runtime/tar.gz/dd6cebedcbddde9c82f89b011e8e1d40b6e43868",
+      "sha256": "f5fec23be76e50e2445ed2d018bac49b367490fc483c62c4637e99ec705d27ba",
+      "max_bytes": 33554432
+    },
+    {
+      "name": "fuse-3.15.0.tar.xz",
+      "url": "https://github.com/libfuse/libfuse/releases/download/fuse-3.15.0/fuse-3.15.0.tar.xz",
+      "sha256": "70589cfd5e1cff7ccd6ac91c86c01be340b227285c5e200baa284e401eea2ca0",
+      "max_bytes": 33554432,
+      "observed_bytes": 4589124
+    },
+    {
+      "name": "squashfuse-0.5.2.tar.gz",
+      "url": "https://github.com/vasi/squashfuse/archive/0.5.2.tar.gz",
+      "sha256": "db0238c5981dabbd80ee09ae15387f390091668ca060a7bc38047912491443d3",
+      "max_bytes": 33554432,
+      "observed_bytes": 75404
+    },
+    {
+      "name": "musl-1.2.5.tar.gz",
+      "url": "https://musl.libc.org/releases/musl-1.2.5.tar.gz",
+      "sha256": "a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4",
+      "max_bytes": 33554432,
+      "observed_bytes": 1080786
+    },
+    {
+      "name": "zstd-1.5.6.tar.gz",
+      "url": "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz",
+      "sha256": "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1",
+      "max_bytes": 33554432,
+      "observed_bytes": 2406875
+    },
+    {
+      "name": "zlib-1.3.2.tar.gz",
+      "url": "https://zlib.net/zlib-1.3.2.tar.gz",
+      "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+      "max_bytes": 33554432,
+      "observed_bytes": 1502830
+    },
+    {
+      "name": "mimalloc-2.1.7.tar.gz",
+      "url": "https://codeload.github.com/microsoft/mimalloc/tar.gz/refs/tags/v2.1.7",
+      "sha256": "0eed39319f139afde8515010ff59baf24de9e47ea316a315398e8027d198202d",
+      "max_bytes": 33554432,
+      "observed_bytes": 1181422
+    }
+  ],
+  "tool": {
+    "name": "appimagetool-1.9.1-x86_64.AppImage",
+    "url": "https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage",
+    "sha256": "ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0",
+    "max_bytes": 33554432
+  },
+  "support_sources": [
+    {
+      "name": "aports-cd665478.tar.gz",
+      "url": "https://codeload.github.com/alpinelinux/aports/tar.gz/cd6654787807de07f60d0355d092b9b0ffb80b74",
+      "sha256": "3aee28308c8c5fbf0d26904bbfba85725bcafe7a11a61822adaf6181966a3625",
+      "max_bytes": 33554432,
+      "observed_bytes": 13663696
+    },
+    {
+      "name": "gcc-14.2.0.tar.xz",
+      "url": "https://gcc.gnu.org/pub/gcc/releases/gcc-14.2.0/gcc-14.2.0.tar.xz",
+      "sha256": "a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9",
+      "max_bytes": 134217728,
+      "observed_bytes": 92306460
+    }
+  ],
+  "aports_commit": "cd6654787807de07f60d0355d092b9b0ffb80b74"
+}

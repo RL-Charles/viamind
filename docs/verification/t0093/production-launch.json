@@ -1,0 +1,8 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "env TMPDIR=/home/charlesmowbray/.cache/viamind/tmp VIAMIND_MCP_PORT=7921 appdir=caller-sentinel /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/ubuntu-artifact-38141065493/viamind-0.1.0-63fb95402c74-x86_64.AppImage --appimage-extract-and-run --open /home/charlesmowbray/.cache/viamind/native-artifacts/t0093/native-project.viamind.json",
+  "pid": 1204257,
+  "running": true,
+  "windows": []
+}
