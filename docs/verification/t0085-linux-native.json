@@ -1,0 +1,44 @@
+{
+  "source_commit": "fa77e1713779ae5c1e5336124bd01addcc389d0b",
+  "source_base": "bf8d455",
+  "date": "2026-10-11",
+  "platform": "Linux x86_64, Wayland/Hyprland",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "workspace_tests": {
+    "passed": 525,
+    "failed": 0,
+    "ignored": 1
+  },
+  "full_gate_log_sha256": "3e008db1f46e905c95b40b02ab5f45bfdcfd4ade68b5103fff585ec33f13a6ab",
+  "production_binary_sha256": "9143784407bfe7647042af551fa44d960ce8175318694040e38e48859e780849",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --offline --locked -- -D warnings",
+    "cargo test --workspace --offline --locked",
+    "cargo build --workspace --offline --locked"
+  ],
+  "environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp"
+  },
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "preflight": "Touch workspace Rust sources under entire-sequence mutex; copy unique binaries before releasing lock",
+  "initial_ci": "https://github.com/RL-Charles/viamind/actions/runs/38132724574",
+  "initial_ci_result": "fmt and strict Clippy passed; inherited fabrication UI test polling race failed (click queued, busy tested before event frame). Narrow explicit frame pump preserves deadline/assertions; focused regression and final combined CI recorded separately.",
+  "nearby_host_load": "9.32/10.41/13.25; concurrent builds active, not an idle-system measurement",
+  "production_artifact_delta": "Later changes only inherited fabrication test synchronization, unrelated main integration and verification artifacts; original binary remains tied to source_commit.",
+  "integrated_source_commit": "02bcdfa2eda6c8d7605b0e7d0fe554d1c372861b",
+  "integrated_base": "8d77b23",
+  "focused_fabrication_sync_fix": {
+    "fmt": "pass",
+    "tests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "clippy_ui_all_targets_deny_warnings": "pass",
+    "log_sha256": "be20e064e4e52746632bd398dbe89baef2f8cd92ac4fb1afb3e54bcbe50fed9f"
+  }
+}

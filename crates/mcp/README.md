@@ -636,7 +636,9 @@ net/layer, work counters and captured cursor. `route_pad_walkaround` accepts the
 same guarded intent and recomputes before one atomic undoable commit.
 
 Only same-side/same-net quarter-turn explicit pad endpoints and four-corner
-axis-aligned rectangular outlines without cutouts are supported. Conservative
+axis-aligned rectangular outer outlines and rectangular substrate cutouts are supported.
+Cutouts use outward route half-width plus board-edge clearance plus1Nm, separately
+from copper rules; cutout/copper/ALL-hole boxes share the64-obstacle budget. Conservative
 foreign copper boxes and **all** via drill holes block paths; legacy route-side
 parts, unsafe stubs, malformed objects, no path, stale cursors, incomplete DRC or
 budgets refuse. Limits:64 relevant boxes,20000 nodes,100000 edges,4000000 box tests,

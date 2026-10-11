@@ -1,0 +1,32 @@
+{
+  "source_commit": "fa77e1713779ae5c1e5336124bd01addcc389d0b",
+  "binary_sha256": "befe5307bd376ae03e38b48b18f24f769f73bdd7567e7a80630c13664b1a62f2",
+  "harness_source": "docs/verification/t0085-inspection.rs",
+  "harness_sha256": "2c283f3ee664ca7336c2804112fc67d90cb77684a68ea1c93e8c14ed67008bfc",
+  "capture": "docs/verification/t0085-checked-preview.png",
+  "capture_sha256": "5a0a2c7d1b9cbbcb53452656ee61d15de2e7367d4e1d578628205dbca63b7be1",
+  "actual_production_http": false,
+  "production_ui_controls_and_egui_pointer_events": true,
+  "operating_system_input": false,
+  "logical_focus_retained_for_rendering_only": true,
+  "native_viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "capture_pixels": {
+    "width": 1568,
+    "height": 980
+  },
+  "settings": {
+    "grid_nm": 250000,
+    "width_nm": 250000,
+    "copper_clearance_mm": 0.2,
+    "edge_clearance_mm": 0.25
+  },
+  "fixture_preparation": "Before engine creation remove same-net N tracks from retained production fixture, retaining explicit endpoints and rectangular substrate cutout.",
+  "runtime_assertions": [
+    "Complete engine session unchanged",
+    "Checked planned points remain nonempty on every native UI frame"
+  ],
+  "gates": "Strict workspace all-target Clippy and inspection example build passed under entire-sequence source-touch mutex."
+}

@@ -4,7 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use viamind_doc::{CopperLayer, ObjectId, Project, Side};
-use viamind_geom::{Nm, Point, Rect};
+use viamind_geom::{Nm, Point, Polygon, Rect};
 
 static ACTIVE: AtomicUsize = AtomicUsize::new(0);
 struct Permit;
@@ -52,7 +52,7 @@ pub struct CheckedWalkaround {
 }
 impl Command for RoutePadWalkaround {
     const NAME: &'static str = "route_pad_walkaround";
-    const DESCRIPTION: &'static str = "Recompute and atomically commit bounded static cardinal walkaround between exact same-net/same-side quarter-turn explicit pad IDs. Exact expected_project/full initial expected_cursor required. Axis-aligned four-corner rectangular outline without cutouts only. Conservative integer clearance boxes cover foreign pads/tracks/via copper and ALL via drill holes regardless of net. Legacy route-side parts, unsupported transforms, unsafe exact endpoint stubs, no path or budgets refuse without mutation. At most64 obstacle boxes,20000 nodes,100000 edges,4000000 intersection tests,510 interior waypoints,1024 segments; two retained planning/preflight operations. Complete shared scoped joint DRC required. Same-net copper unchanged; no shove, existing copper relocation,45-degree walkaround, global optimality or physical connectivity certification. One undo/redo preserves all IDs.";
+    const DESCRIPTION: &'static str = "Recompute and atomically commit bounded static cardinal walkaround between exact same-net/same-side quarter-turn explicit pad IDs. Exact expected_project/full initial expected_cursor required. Axis-aligned four-corner rectangular outer outline and rectangular cutouts only. Every substrate cutout is excluded by outward route half-width plus board-edge clearance plus1Nm, independently of copper/hole rules, within the shared64-obstacle budget. Conservative integer clearance boxes cover foreign pads/tracks/via copper and ALL via drill holes regardless of net. Legacy route-side parts, unsupported transforms, unsafe exact endpoint stubs, no path or budgets refuse without mutation. At most64 obstacle boxes,20000 nodes,100000 edges,4000000 intersection tests,510 interior waypoints,1024 segments; two retained planning/preflight operations. Complete shared scoped joint DRC required. Same-net copper unchanged; no shove, existing copper relocation,45-degree walkaround, global optimality or physical connectivity certification. One undo/redo preserves all IDs.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.expected_cursor)
     }
@@ -104,15 +104,24 @@ fn expanded(center_box: Rect, x: i128, y: i128) -> Result<Rect, CommandError> {
         max: point(i128::from(center_box.max.x.0) + x, i128::from(center_box.max.y.0) + y)?,
     })
 }
+fn rectangle_bounds(ring: &Polygon, label: &str) -> Result<Rect, CommandError> {
+    if ring.points.len() != 4 {
+        return Err(invalid(format!("walkaround requires four-corner axis-aligned rectangular {label}")));
+    }
+    let bounds = Rect::from_points(ring.points.iter().copied()).expect("four corners");
+    if ring.points.iter().any(|p| !bounds.corners().contains(p)) || ring.edges().any(|e| e.a.x != e.b.x && e.a.y != e.b.y) {
+        return Err(invalid(format!("walkaround requires axis-aligned rectangular {label}")));
+    }
+    Ok(bounds)
+}
 fn domain(project: &Project, inset: i128) -> Result<Rect, CommandError> {
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("explicit rectangular outline required"))?;
-    if !outline.cutouts.is_empty() || outline.outer.points.len() != 4 {
-        return Err(invalid("walkaround supports four-corner axis-aligned rectangle without cutouts only"));
-    }
     outline.validate().map_err(|e| invalid(e.to_string()))?;
-    let bounds = Rect::from_points(outline.outer.points.iter().copied()).expect("four corners");
-    if outline.outer.points.iter().any(|p| !bounds.corners().contains(p)) || outline.outer.edges().any(|e| e.a.x != e.b.x && e.a.y != e.b.y) {
-        return Err(invalid("walkaround supports axis-aligned rectangular outline only"));
+    let bounds = rectangle_bounds(&outline.outer, "outer outline")?;
+    // Check every cutout even when its inflated exclusion would lie outside the
+    // inset route domain. Unsupported substrate geometry must never be ignored.
+    for cutout in &outline.cutouts {
+        rectangle_bounds(cutout, "cutout")?;
     }
     let min = point(i128::from(bounds.min.x.0) + inset, i128::from(bounds.min.y.0) + inset)?;
     let max = point(i128::from(bounds.max.x.0) - inset, i128::from(bounds.max.y.0) - inset)?;
@@ -158,7 +167,8 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     if input.start == input.target || start == target || layer != other_layer || net != other_net {
         return Err(invalid("distinct same-side explicit pad centers with exact same assigned net required"));
     }
-    let domain = domain(project, r + i128::from(rules.edge_clearance.0) + 1)?;
+    let edge = r + i128::from(rules.edge_clearance.0) + 1;
+    let domain = domain(project, edge)?;
     let copper = r + i128::from(rules.copper_clearance.0) + 1;
     let hole = r + i128::from(rules.hole_to_copper_clearance.0) + 1;
     let mut obstacles = Vec::new();
@@ -171,6 +181,11 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
         }
         Ok(())
     };
+    // Substrate holes use board-edge clearance for every net/layer. They share
+    // the same relevant-obstacle cap with copper and all via drill exclusions.
+    for cutout in &project.board.outline.as_ref().expect("domain validated outline").cutouts {
+        push(expanded(rectangle_bounds(cutout, "cutout")?, edge, edge)?)?;
+    }
     for part in project.board.parts.values() {
         let side = if part.side == Side::Top { CopperLayer::Top } else { CopperLayer::Bottom };
         if side != layer {

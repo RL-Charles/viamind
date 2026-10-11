@@ -138,3 +138,86 @@ fn actual_static_checkbox_background_plan_cancel_guard_and_atomic_commit() {
     assert_eq!(e.session_state(), peer);
     key(&mut h, Key::Escape);
 }
+#[test]
+fn actual_cutout_preview_cancel_outline_invalidation_and_one_commit() {
+    let (e, mut h) = setup();
+    let outline = |top| json!({"outer":[{"x_mm":0.,"y_mm":0.},{"x_mm":100.,"y_mm":0.},{"x_mm":100.,"y_mm":100.},{"x_mm":0.,"y_mm":100.}],"cutouts":[[{"x_mm":19.,"y_mm":top},{"x_mm":21.,"y_mm":top},{"x_mm":21.,"y_mm":22.},{"x_mm":19.,"y_mm":22.}]]});
+    let set_outline = |top| {
+        e.execute(
+            "set_board_outline",
+            json!({"expected":{"project_id":e.read(|p|p.id),"outline":e.read(|p|p.board.outline.clone())},"outline":outline(top)}),
+            Origin::agent("outline-peer"),
+        )
+        .unwrap()
+    };
+    set_outline(8.);
+    h.run_steps(3);
+    let before = e.session_state();
+    begin(&mut h);
+    click(&mut h, 10., 10.);
+    click(&mut h, 30., 20.);
+    assert!(h.query_by_label_contains("rectangular outer board and cutouts").is_some());
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(2);
+    wait_plan(&mut h);
+    let points = h.state().routing.pad_planned_points();
+    assert_eq!(points.first(), Some(&p(10_000_123, 10_000_129)));
+    assert_eq!(points.last(), Some(&p(30_000_257, 20_000_129)));
+    assert!(points.iter().any(|p| p.y.0 == 7_500_000));
+    assert!(points.iter().any(|p| p.x.0 == 21_500_000));
+    assert_eq!(e.session_state(), before);
+    key(&mut h, Key::Escape);
+    assert_eq!(e.session_state(), before);
+    begin(&mut h);
+    click(&mut h, 10., 10.);
+    click(&mut h, 30., 20.);
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(2);
+    wait_plan(&mut h);
+    set_outline(6.);
+    h.run_steps(3);
+    assert!(h.state().routing.pad_planned_points().is_empty());
+    let peer = e.session_state();
+    key(&mut h, Key::Enter);
+    assert_eq!(e.session_state(), peer);
+    key(&mut h, Key::Escape);
+    begin(&mut h);
+    click(&mut h, 10., 10.);
+    click(&mut h, 30., 20.);
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(2);
+    wait_plan(&mut h);
+    let points = h.state().routing.pad_planned_points();
+    assert!(points.iter().any(|p| p.y.0 == 22_500_000), "{points:?}");
+    key(&mut h, Key::Enter);
+    assert!(!h.state().routing.editing(), "{:?}", h.state().routing.error);
+    let after = e.session_state();
+    assert_eq!(after.cursor.sequence, peer.cursor.sequence + 1);
+    assert_eq!(after.project.board.tracks.len(), points.len() - 1);
+    h.state_mut().undo_design();
+    h.run_steps(3);
+    assert_eq!(e.read(Clone::clone), peer.project);
+    h.state_mut().redo_design();
+    h.run_steps(3);
+    assert_eq!(e.read(Clone::clone), after.project);
+    begin(&mut h);
+    click(&mut h, 10., 10.);
+    click(&mut h, 30., 20.);
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(2);
+    wait_plan(&mut h);
+    let file = tempfile::NamedTempFile::new().unwrap();
+    e.read(|p| viamind_doc::file::save(p, file.path())).unwrap();
+    let cursor = e.event_cursor();
+    e.open_project(
+        viamind_engine::OpenProject { path: file.path().to_path_buf(), discard_dirty: true, expected_cursor: Some(cursor) },
+        Origin::agent("reopen-peer"),
+    )
+    .unwrap();
+    h.run_steps(3);
+    assert!(h.state().routing.pad_planned_points().is_empty());
+    let reopened = e.session_state();
+    key(&mut h, Key::Enter);
+    assert_eq!(e.session_state(), reopened);
+    key(&mut h, Key::Escape);
+}
