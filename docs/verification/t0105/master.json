@@ -57,9 +57,18 @@
     "tooling_tests": 13
   },
   "integration": {
-    "source": "6710a3ea0e1a54058da60884a1f46c72c52e3073",
-    "base": "adf2d9f",
-    "range_diff": "all eight feature commits equal after zero-conflict rebase; final combined gate/CI pending"
+    "source": "66acf6cd3a7075478e2aecdfc6d8db1cb92ad8ee",
+    "predecessor": "bcae5954fc6ea29d64ce68b018f428b8fd7b424c",
+    "range_diff": "all nine own commits equal; tested predecessor exact reviewed T104 head, now merged as c58193c",
+    "focused_passed": 11,
+    "fmt": true,
+    "strict_alltarget_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tools": 88,
+    "isolated_workflow_checks": 18,
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0105/production-combined-66acf6cd3a70",
+    "binary_sha256": "046d8eb08fe5ae3de765a24267904ffcc616ddc098097e871448c09d4e2f5e26",
+    "exact_head_ci": "pending after final evidence commit"
   },
   "limitations": [
     "Cua production snapshot is degraded metadata only; readable pixel proof is the actual native WGPU inspection host.",
@@ -155,6 +164,34 @@
     "wide.png": {
       "bytes": 68133,
       "sha256": "6517bf53032ccff4f76725cf12cbb0df2031701283b9187e014eb16a1f5eaa59"
+    },
+    "combined.sh": {
+      "bytes": 1849,
+      "sha256": "67b48782117d39b878c28157d696c5e5cea92ca4067b2b9c2b192790c4ebdc27"
+    },
+    "combined.log": {
+      "bytes": 6613,
+      "sha256": "fcbad543c580a51d711c3a28434741ca6cb0aaeeee0d508002cb27f6f1e09576"
+    },
+    "combined-catalog.json": {
+      "bytes": 367,
+      "sha256": "0d9611b26f6c22e7c03ee812a7a8215473528921e2b96baa2d0d92913f26ff73"
+    },
+    "combined-drift.json": {
+      "bytes": 367,
+      "sha256": "0d9611b26f6c22e7c03ee812a7a8215473528921e2b96baa2d0d92913f26ff73"
+    },
+    "combined-workflow.json": {
+      "bytes": 1264,
+      "sha256": "413857479aba2d885c9d35a5848cc5681384c6f3da777d0b723c30f80196bf5e"
+    },
+    "independent-production.json": {
+      "bytes": 3108,
+      "sha256": "6693a98eadd1e66859cc4f44af397c46fae80c39668214f4734c0470cca19f31"
+    },
+    "stack-range-diff.txt": {
+      "bytes": 756,
+      "sha256": "7258926a1b743074045eb81ef00aadf0bbc13025ff7c500fb0b62f438af021be"
     }
   }
 }
