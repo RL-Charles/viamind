@@ -181,10 +181,13 @@ impl ViamindApp {
     pub fn with_design(engine: EngineHandle, mcp_url: Option<String>) -> Self {
         let changes = engine.subscribe();
         let scene = engine.read(board_scene::scene_from_project);
+        let schematic = schematic::SchematicUi::with_active(
+            engine.read(|p| !p.schematic.sheets.is_empty() && p.board.parts.is_empty() && p.board.tracks.is_empty() && p.board.vias.is_empty()),
+        );
         let mut canvas = Canvas::default();
         canvas.fit_pending = true;
         Self {
-            schematic: schematic::SchematicUi::default(),
+            schematic,
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -211,6 +214,10 @@ impl ViamindApp {
             design.change_count += 1;
             let kind = match event.kind {
                 ChangeKind::Replaced => {
+                    self.selection.cancel_gestures();
+                    self.schematic.active = design
+                        .engine
+                        .read(|p| !p.schematic.sheets.is_empty() && p.board.parts.is_empty() && p.board.tracks.is_empty() && p.board.vias.is_empty());
                     self.canvas.fit_pending = true;
                     "opened document"
                 }
@@ -494,7 +501,11 @@ impl ViamindApp {
             }
             ui.menu_button("View", |ui| {
                 if ui.button("Zoom to fit (Home)").clicked() {
-                    self.canvas.fit_pending = true;
+                    if self.schematic.active {
+                        self.fit_schematic();
+                    } else {
+                        self.canvas.fit_pending = true;
+                    }
                     ui.close();
                 }
                 if self.design.is_none() {
@@ -511,6 +522,10 @@ impl ViamindApp {
     }
 
     fn status_bar(&self, ui: &mut Ui) {
+        if self.schematic.active {
+            self.schematic_status(ui);
+            return;
+        }
         ui.horizontal(|ui| {
             match self.canvas.cursor_world {
                 Some(p) => ui.monospace(format!("X {:9.3}  Y {:9.3} mm", p.x, p.y)),

@@ -199,3 +199,16 @@ top-view geometry. Existing output paths are preserved. Legacy previews and
 unsupported geometry are reported; PNG views remain subsequent work. See
 [board view instructions](docs/board-views.md) for cropping, viewport options,
 agent requests and independent SVG verification.
+
+### Schematic capture
+
+Switch between **PCB** and **Schematic** in the desktop toolbar. In schematic mode,
+create a sheet, add symbols and numbered pins, then add wires, junctions and
+local/global/power labels. Select an object in **Schematic objects** or click its
+anchor to edit it. Apply uses the same guarded, undoable sheet command as MCP;
+a concurrent agent edit requires explicit reload. Middle drag or Space+drag pans,
+wheel zooms, and Home fits the sheet. Schematic-only documents open in this mode.
+
+The original regulator example is
+[`fixtures/schematic/regulator.viamind.json`](fixtures/schematic/regulator.viamind.json).
+Electrical connectivity, ERC and board annotation are separate work.

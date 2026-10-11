@@ -127,7 +127,8 @@ impl Draft {
         } else if let Some(j) = c.junctions.get(&id) {
             d.x = mm(j.position.x);
             d.y = mm(j.position.y);
-        } else if let Some(l) = c.labels.get(&id) {
+        } else {
+            let l = c.labels.get(&id)?;
             d.kind = "label";
             d.x = mm(l.position.x);
             d.y = mm(l.position.y);
@@ -137,8 +138,6 @@ impl Draft {
                 viamind_doc::schematic::LabelScope::Global => "global",
                 viamind_doc::schematic::LabelScope::Power => "power",
             };
-        } else {
-            return None;
         }
         Some(d)
     }
@@ -253,6 +252,8 @@ pub struct SchematicUi {
     pub camera: Camera,
     fit: bool,
     pub viewport: egui::Rect,
+    cursor_world: Option<WorldPos>,
+    object_count: usize,
 }
 impl Default for SchematicUi {
     fn default() -> Self {
@@ -269,7 +270,14 @@ impl Default for SchematicUi {
             camera: Camera::default(),
             fit: true,
             viewport: egui::Rect::NOTHING,
+            cursor_world: None,
+            object_count: 0,
         }
+    }
+}
+impl SchematicUi {
+    pub(crate) fn with_active(active: bool) -> Self {
+        Self { active, ..Default::default() }
     }
 }
 impl ViamindApp {
@@ -277,7 +285,32 @@ impl ViamindApp {
         if active && (self.files.busy() || self.parts.placing() || self.outlines.editing() || self.pads.editing() || self.copper.editing()) {
             return;
         }
+        if self.schematic.active != active {
+            self.selection.cancel_gestures();
+        }
         self.schematic.active = active;
+    }
+    pub(crate) fn fit_schematic(&mut self) {
+        self.schematic.fit = true;
+    }
+    pub(crate) fn schematic_status(&self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            if let Some(p) = self.schematic.cursor_world {
+                ui.monospace(format!("X {:.3} Y {:.3} mm", p.x, p.y));
+            }
+            ui.monospace(format!("zoom {:.3} px/mm · {} schematic objects", self.schematic.camera.zoom, self.schematic.object_count));
+            if let Some(design) = &self.design {
+                let status = design.engine.document_status();
+                ui.label(if status.dirty {
+                    "Unsaved changes"
+                } else if status.path.is_some() {
+                    "Saved"
+                } else {
+                    "Not saved"
+                });
+                ui.monospace(design.mcp_url.as_deref().map_or_else(|| "MCP off".into(), |url| format!("MCP {url}")));
+            }
+        });
     }
     pub(crate) fn schematic_panel(&mut self, ui: &mut Ui) {
         let Some(design) = &self.design else { return };
@@ -294,6 +327,13 @@ impl ViamindApp {
             self.schematic.draft = None;
             self.schematic.fit = true;
             self.schematic.message = None;
+        }
+        if self.schematic.sheet.is_none()
+            && let Some((id, name)) = sheets.first()
+        {
+            self.schematic.sheet = Some(*id);
+            self.schematic.sheet_name = name.clone();
+            self.schematic.sheet_guard = None;
         }
         ui.heading("Schematic capture");
         let mut selected = self.schematic.sheet;
@@ -447,6 +487,7 @@ impl ViamindApp {
     pub(crate) fn schematic_canvas(&mut self, ui: &mut Ui) {
         let sheet = self.design.as_ref().and_then(|d| d.engine.read(|p| self.schematic.sheet.and_then(|id| p.schematic.sheets.get(&id).cloned())));
         let content = sheet.as_ref().and_then(|s| s.content.as_ref());
+        self.schematic.object_count = content.map_or(0, SchematicContent::object_count);
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
         if self.schematic.fit || self.schematic.viewport.size() != viewport.size() || ui.input(|i| i.key_pressed(Key::Home)) {
@@ -454,6 +495,7 @@ impl ViamindApp {
             self.schematic.fit = false;
         }
         self.schematic.viewport = viewport;
+        self.schematic.cursor_world = response.hover_pos().map(|p| self.schematic.camera.screen_to_world(p, viewport));
         if response.dragged_by(PointerButton::Middle) || (response.dragged_by(PointerButton::Primary) && ui.input(|i| i.key_down(Key::Space))) {
             self.schematic.camera.pan_by_screen(response.drag_delta());
         }
@@ -477,12 +519,19 @@ impl ViamindApp {
         }
         for s in c.symbols.values() {
             let corners = body_corners(s);
-            let points: Vec<_> = corners.into_iter().map(|p| screen(p)).collect();
+            let points: Vec<_> = corners.into_iter().map(&screen).collect();
             painter.add(egui::Shape::closed_line(points, Stroke::new(2.0, color(s.id, symbol_color))));
             let at = screen(s.position);
             painter.text(at, Align2::CENTER_CENTER, format!("{}\n{}", s.designator, s.value), FontId::proportional(13.0), symbol_color);
             for pin in &s.pins {
                 if let Ok(p) = s.pin_position(pin.position) {
+                    let body = Coordinate {
+                        x: Nm(pin.position.x.0.clamp(-s.width.0 / 2, s.width.0 - s.width.0 / 2)),
+                        y: Nm(pin.position.y.0.clamp(-s.height.0 / 2, s.height.0 - s.height.0 / 2)),
+                    };
+                    if let Ok(body) = s.pin_position(body) {
+                        painter.line_segment([screen(body), screen(p)], Stroke::new(1.5, symbol_color));
+                    }
                     let at = screen(p);
                     painter.circle_stroke(at, 3.0, Stroke::new(1.5, symbol_color));
                     painter.text(
@@ -504,19 +553,21 @@ impl ViamindApp {
             painter.circle_stroke(at, 3.0, Stroke::new(1.0, tint));
             painter.text(at + egui::vec2(6.0, -4.0), Align2::LEFT_BOTTOM, format!("{} ({:?})", l.name, l.scope), FontId::proportional(13.0), tint);
         }
-        if response.clicked() && !ui.input(|i| i.key_down(Key::Space)) && !self.files.busy() {
-            if let Some(pointer) = response.interact_pointer_pos() {
-                let near = anchors(c)
-                    .into_iter()
-                    .map(|(id, p)| (id, screen(p).distance(pointer)))
-                    .filter(|(_, distance)| *distance < 14.0)
-                    .min_by(|a, b| a.1.total_cmp(&b.1));
-                if let Some((id, _)) = near {
-                    self.schematic.selected = Some(id);
-                    if let (Some(project), Some(sheet)) = (self.schematic.project, sheet) {
-                        self.schematic.draft = Draft::from_object(project, sheet, id);
-                        self.schematic.message = None;
-                    }
+        if response.clicked()
+            && !ui.input(|i| i.key_down(Key::Space))
+            && !self.files.busy()
+            && let Some(pointer) = response.interact_pointer_pos()
+        {
+            let near = anchors(c)
+                .into_iter()
+                .map(|(id, p)| (id, screen(p).distance(pointer)))
+                .filter(|(_, distance)| *distance < 14.0)
+                .min_by(|a, b| a.1.total_cmp(&b.1));
+            if let Some((id, _)) = near {
+                self.schematic.selected = Some(id);
+                if let (Some(project), Some(sheet)) = (self.schematic.project, sheet) {
+                    self.schematic.draft = Draft::from_object(project, sheet, id);
+                    self.schematic.message = None;
                 }
             }
         }

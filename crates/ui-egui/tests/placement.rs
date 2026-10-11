@@ -191,3 +191,19 @@ fn mixed_copper_selection_rejects_part_placement_keys_menu_and_drag_atomically()
     menu(&mut h, "Rotate selected 90° (R)");
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn switching_to_schematic_cancels_board_drag_without_changing_selection_or_design() {
+    let (engine, _, mut h) = setup();
+    let before = engine.session_state();
+    let end = begin_drag(&mut h);
+    assert!(h.state().selection.placement.moving());
+    h.state_mut().set_schematic_mode(true);
+    h.run_steps(2);
+    assert!(!h.state().selection.placement.moving());
+    button(&mut h, end, false);
+    h.state_mut().set_schematic_mode(false);
+    h.run_steps(5);
+    assert!(!h.state().selection.placement.moving());
+    assert_eq!(engine.session_state(), before);
+}

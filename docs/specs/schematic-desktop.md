@@ -36,3 +36,9 @@ Actual egui input creates/edits/deletes all supported types, stale guards and un
 mode switching blocks board gestures; malformed fields keep the draft unchanged;
 new document cannot accept an old draft; native Linux view shows a regulator-style
 circuit. Exact transformed drawing coordinates are checked independently.
+
+The original `fixtures/schematic/regulator.viamind.json` circuit has three
+rectangular symbols, seven electrical pin endpoints, five wires, a junction,
+VIN/3V3 labels and GND power port. Pin stubs connect each endpoint to its symbol
+body. Schematic-only documents open in schematic mode automatically. Opening or
+creating a replacement document resets old drafts using the session stream ID.
