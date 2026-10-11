@@ -96,10 +96,20 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
     h.get_by_label("Pin 1 name").scroll_to_me();
     h.run_steps(5);
     h.hover_at(h.get_by_label("Pin 1 name").rect().center());
-    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, -4000.0), modifiers: egui::Modifiers::NONE });
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        phase: egui::TouchPhase::Move,
+        delta: vec2(0.0, -4000.0),
+        modifiers: egui::Modifiers::NONE,
+    });
     h.run_steps(8);
     h.hover_at(h.get_by_label("Pin 13 name").rect().center());
-    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, 4000.0), modifiers: egui::Modifiers::NONE });
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        phase: egui::TouchPhase::Move,
+        delta: vec2(0.0, 4000.0),
+        modifiers: egui::Modifiers::NONE,
+    });
     h.run_steps(8);
     for (i, field) in fields.iter().enumerate() {
         assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
