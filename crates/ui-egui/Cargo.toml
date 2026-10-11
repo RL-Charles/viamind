@@ -10,6 +10,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+earcutr.workspace = true
 viamind-engine.workspace = true
 viamind-doc.workspace = true
 viamind-geom.workspace = true

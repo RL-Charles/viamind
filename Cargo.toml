@@ -61,6 +61,7 @@ tokio-util = "0.7"
 egui = "0.36"
 eframe = { version = "0.36", default-features = false }
 egui_kittest = "0.36"
+earcutr = "0.5"
 # Model and engine (crates/doc, crates/engine)
 uuid = { version = "1.28", features = ["v4", "serde"] }
 schemars = { version = "1.2", features = ["uuid1"] }
