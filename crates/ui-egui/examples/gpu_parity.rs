@@ -175,16 +175,19 @@ impl eframe::App for Check {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
-    let path = args.next().ok_or("usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY]")?;
+    let usage = "usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY [--defer-trace-io]]";
+    let path = args.next().ok_or(usage)?;
     let trace = match args.next() {
         Some(flag) if flag == "--trace-dir" => {
             let directory = args.next().ok_or("--trace-dir requires a NEW directory")?;
-            if args.next().is_some() {
-                return Err("unexpected extra argument".into());
-            }
-            Some(parity_trace::Trace::new(directory.into())?)
+            let deferred = match args.next() {
+                Some(flag) if flag == "--defer-trace-io" && args.next().is_none() => true,
+                Some(_) => return Err(usage.into()),
+                None => false,
+            };
+            Some(if deferred { parity_trace::Trace::deferred(directory.into())? } else { parity_trace::Trace::new(directory.into())? })
         }
-        Some(_) => return Err("usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY]".into()),
+        Some(_) => return Err(usage.into()),
         None => None,
     };
     let file = OpenOptions::new().write(true).create_new(true).open(path)?;
@@ -205,15 +208,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Viamind GPU parity",
         options,
         Box::new(move |cc| {
-            let mut app = ViamindApp::with_scene_size(5000);
-            app.scene.items.push(Item::new(Prim::Via { center: WorldPos::new(150.0, 100.0), radius: 8.0, drill_radius: 3.0 }, LayerId::VIAS));
-            app.scene.items.push(Item::new(
-                Prim::Quad([WorldPos::new(160.0, 100.0), WorldPos::new(166.0, 104.0), WorldPos::new(163.0, 108.0), WorldPos::new(157.0, 104.0)]),
-                LayerId::F_CU,
-            ));
-            app.scene.ratsnest = vec![[WorldPos::new(150.0, 100.0), WorldPos::new(165.0, 108.0)]];
             Ok(Box::new(Check {
-                app,
+                app: fixture(),
                 format: cc.wgpu_render_state.as_ref().unwrap().target_format,
                 step: 0,
                 frames: 0,
@@ -232,5 +228,69 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(true) => Ok(()),
         Some(false) => Err("native canvas parity failed; inspect the report".into()),
         None => Err("parity run closed before completing".into()),
+    }
+}
+
+fn fixture() -> ViamindApp {
+    let mut app = ViamindApp::with_scene_size(5000);
+    app.scene.items.push(Item::new(Prim::Via { center: WorldPos::new(150.0, 100.0), radius: 8.0, drill_radius: 3.0 }, LayerId::VIAS));
+    app.scene.items.push(Item::new(
+        Prim::Quad([WorldPos::new(160.0, 100.0), WorldPos::new(166.0, 104.0), WorldPos::new(163.0, 108.0), WorldPos::new(157.0, 104.0)]),
+        LayerId::F_CU,
+    ));
+    app.scene.ratsnest = vec![[WorldPos::new(150.0, 100.0), WorldPos::new(165.0, 108.0)]];
+    app
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation() {
+        let mut h = egui_kittest::Harness::builder()
+            .with_size(egui::vec2(1400.0, 1000.0))
+            .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), fixture());
+        let mut states = Vec::new();
+        for case in 0..5 {
+            let app = h.state_mut();
+            match case {
+                1 => app.canvas.camera.pan_by_screen(egui::vec2(-19.0, 13.0)),
+                2 => {
+                    app.layers.set_visible(LayerId::IN1_CU, false);
+                    app.layers.get_mut(LayerId::F_CU).unwrap().opacity = 0.4;
+                    app.layers.move_layer(LayerId::B_CU, true);
+                }
+                3 => app.canvas.camera.zoom_about(app.canvas.viewport.center(), app.canvas.viewport, 1.04),
+                4 => {
+                    app.canvas.camera.center = app.scene.board.center();
+                    app.canvas.camera.zoom_about(app.canvas.viewport.center(), app.canvas.viewport, 8.0);
+                    app.canvas.camera.pan_by_screen(egui::vec2(83.0, -47.0));
+                }
+                _ => {}
+            }
+            app.canvas.cache.disable_gpu();
+            h.run_steps(6);
+            let reference = (h.state().canvas.camera, h.state().canvas.viewport, h.state().canvas.drawn);
+            h.state_mut().canvas.cache.enable_gpu(eframe::wgpu::TextureFormat::Bgra8Unorm);
+            h.run_steps(6);
+            let gpu = (h.state().canvas.camera, h.state().canvas.viewport, h.state().canvas.drawn);
+            assert_eq!(reference, gpu, "headless layout state diverged in case {case}");
+            assert_eq!(gpu.2, [5002, 5002, 4665, 4624, 606][case]);
+            states.push(gpu);
+        }
+        assert!((states[4].0.zoom - 53.69680915111379).abs() < 1e-10);
+        assert!((states[4].0.center.x - 33.8096233769221).abs() < 1e-10);
+        assert!((states[4].0.center.y - 25.375284784012628).abs() < 1e-10);
+        h.set_size(egui::vec2(1401.0, 1000.0));
+        h.run_steps(2);
+        let resized = h.state().canvas.camera;
+        assert_ne!(resized, states[4].0, "direct navigation leaves startup auto-fit active");
+        assert_eq!(resized.center, h.state().scene.bounds().center());
+        assert!(resized.zoom < states[4].0.zoom / 7.0);
+        h.set_size(egui::vec2(1400.0, 1000.0));
+        h.run_steps(2);
+        assert_eq!(h.state().canvas.camera, states[0].0);
+        // 64 input steps. This proves a layout hazard, not historical native causality.
     }
 }
