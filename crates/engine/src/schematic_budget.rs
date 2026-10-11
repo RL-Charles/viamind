@@ -9,8 +9,14 @@ pub(crate) fn sheet(sheet: &Sheet, purpose: &str) -> Result<usize, CommandError>
     if c.is_some_and(|c| c.object_count() > 10_000) {
         return Err(invalid(format!("{purpose} supports at most 10000 sheet objects")));
     }
+    let (membership, mut text) = c.map(viamind_doc::symbol_package::membership_budget).transpose().map_err(invalid)?.unwrap_or_default();
+    if c.is_some_and(|c| c.object_count().saturating_add(membership.saturating_sub(c.packages.len())) > 10_000) {
+        return Err(invalid(format!("{purpose} supports at most 10000 objects and package membership records")));
+    }
+    if text > 2 * 1024 * 1024 {
+        return Err(invalid(format!("{purpose} package text exceeds 2 MiB")));
+    }
     let mut pins = 0usize;
-    let mut text = 0usize;
     let mut add = |s: &str| -> Result<(), CommandError> {
         text = text.saturating_add(s.len());
         if s.len() > 4096 || text > 2 * 1024 * 1024 {
@@ -70,6 +76,16 @@ pub(crate) fn project(project: &Project, added: usize, purpose: &str) -> Result<
         more(p.pads.as_ref().map_or(0, |p| p.0.len()))?;
     }
     let mut bytes = 0usize;
+    for sheet in project.schematic.sheets.values() {
+        if let Some(c) = &sheet.content {
+            let (records, text) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
+            more(records.saturating_sub(c.packages.len()))?;
+            bytes = bytes.saturating_add(text);
+            if bytes > 4 * 1024 * 1024 {
+                return Err(invalid("global package text exceeds 4 MiB"));
+            }
+        }
+    }
     let mut text = |s: &str| {
         bytes = bytes.saturating_add(s.len());
         if s.len() > 4096 || bytes > 4 * 1024 * 1024 {
