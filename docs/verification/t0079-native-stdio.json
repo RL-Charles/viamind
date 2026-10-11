@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "bounded pin pad query discovered",
+    "native regulator has seven exact physical terminal pairs",
+    "part and symbol queries produce identical paired identities",
+    "repeat query deterministic and full session preserved",
+    "stable paged terminal order",
+    "invalid query rejects without mutation",
+    "property rename keeps physical identities with fresh cursor",
+    "arbitrary angle excluded without rounded integer centers",
+    "mismatched terminal sets exclude all partial navigation",
+    "explicit unlink removes all counterpart navigation",
+    "same UUID native reopen retains pair IDs and changes event stream",
+    "reopened read preserves clean entire session",
+    "clean production exit"
+  ],
+  "binary_sha256": "a4da8deb0717d747aba961e67cd0d39240accccc9bb37add96851d16d73e869f",
+  "transport": "production headless stdio",
+  "saved_path": "/tmp/viamind-t0079-native-9e7hm1f7/paired.viamind.json"
+}

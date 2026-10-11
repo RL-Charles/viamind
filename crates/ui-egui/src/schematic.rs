@@ -337,6 +337,43 @@ impl ViamindApp {
         Ok(())
     }
 
+    pub(crate) fn navigate_terminal_pin(
+        &mut self,
+        project: ObjectId,
+        cursor: viamind_engine::EventCursor,
+        component: &viamind_engine::LinkedComponent,
+        terminal: &viamind_engine::LinkedPinPad,
+    ) -> Result<(), String> {
+        let sheet_id = component.sheet_id.ok_or("Containing sheet is missing")?;
+        let (sheet_name, position) = self.design.as_ref().ok_or("Document closed")?.engine.with_engine(|e| {
+            if e.project().id != project || e.event_cursor() != cursor {
+                return Err("Document changed; inspect terminals again".to_owned());
+            }
+            let sheet = e.project().schematic.sheets.get(&sheet_id).ok_or("Containing sheet is missing")?;
+            let symbol = sheet.content.as_ref().and_then(|c| component.symbol_id.and_then(|id| c.symbols.get(&id))).ok_or("Symbol is missing")?;
+            let pin = symbol.pins.iter().find(|p| Some(p.id) == terminal.pin_id).ok_or("Pin is missing")?;
+            let at = symbol.pin_position(pin.position)?;
+            if terminal.schematic_position != Some(viamind_geom::Point::new(at.x, at.y)) {
+                return Err("Pin endpoint changed; inspect terminals again".into());
+            }
+            Ok((sheet.name.clone(), at))
+        })?;
+        self.set_schematic_mode(true);
+        if !self.schematic.active {
+            return Err("Finish the active edit before switching editors".into());
+        }
+        self.schematic.project = Some(project);
+        self.schematic.stream = Some(cursor.stream_id);
+        self.schematic.sheet = Some(sheet_id);
+        self.schematic.sheet_name = sheet_name;
+        self.schematic.sheet_guard = None;
+        self.schematic.fit = false;
+        self.schematic.auto_fit = false;
+        self.schematic.camera.center = WorldPos::new(position.x.to_mm(), position.y.to_mm());
+        self.schematic.camera.zoom = self.schematic.camera.zoom.max(10.0);
+        Ok(())
+    }
+
     pub fn set_schematic_mode(&mut self, active: bool) {
         if !active {
             self.schematic_wires.cancel();
@@ -664,6 +701,9 @@ impl ViamindApp {
                     }
                     let at = screen(p);
                     painter.circle_stroke(at, 3.0, Stroke::new(1.5, symbol_color));
+                    if self.pin_pad_probe.pin_highlighted(self.schematic.sheet, pin.id) {
+                        painter.circle_stroke(at, 10.0, Stroke::new(3.0, Color32::from_rgb(80, 230, 255)));
+                    }
                     painter.text(
                         at + egui::vec2(5.0, -4.0),
                         Align2::LEFT_BOTTOM,

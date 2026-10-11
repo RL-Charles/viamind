@@ -68,7 +68,7 @@ impl EngineHandle {
         self.with_engine(|engine| mapping(engine.project(), engine.event_cursor(), query, &requested, limit))
     }
 }
-fn mapping(
+pub(crate) fn mapping(
     project: &Project,
     source_cursor: EventCursor,
     query: &ComponentLinkQuery,

@@ -1,0 +1,20 @@
+{
+  "app_name": "viamind-pin-pad-inspection",
+  "pid": 585099,
+  "screenshot_file_path": "/home/charlesmowbray/Development/viamind-t-0079/docs/verification/t0079-board-narrow.png",
+  "screenshot_height": 1000,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 1000,
+  "window_bounds": {
+    "height": 1000,
+    "width": 1000,
+    "x": 2380,
+    "y": 1265
+  },
+  "window_id": 110379509066592,
+  "window_title": "Untitled \u2014 Viamind",
+  "product_source_revision": "b056058090f5abf153ff8f000f98cdad64bd149d",
+  "binary_sha256": "db175525adf92f2f934bc77e039b441b86a53297c2e1b4bc2cd106d0cd370131",
+  "capture_kind": "Fixed-size native production UI after actual egui terminal choice and board navigation; narrow window",
+  "inspection_source_revision": "a1f717389a911edaae7a4b3e3a33e4e1b68faf59"
+}

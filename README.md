@@ -266,3 +266,8 @@ Desktop inspection images: [export board or selected-sheet SVG/PNG](docs/desktop
 Pad route corner choices: [cardinal/45-degree posture controls and exact endpoint stubs](docs/pad-route-postures.md), with [Linux/native verification](docs/pad-route-postures-verification.md).
 
 Desktop generic assembly tables: [export BOM or placement CSV](docs/desktop-assembly-export.md).
+
+Linked components also support [pin/pad cross-probing](docs/pin-pad-cross-probing.md):
+exact numbered physical pairs, local terminal highlights and guarded explicit
+navigation, with the same bounded read-only query over MCP. Arbitrary-angle exact
+centers, legacy preview pads and mismatched terminal sets remain explicit exclusions.

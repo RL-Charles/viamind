@@ -45,6 +45,11 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand { name:"query_route_endpoints".into(),description:"Read bounded immutable UUID-ordered explicit pad routing endpoints with exact quarter-turn integer centers, derived net/outer side, rendering corners and unsupported reasons. Legacy previews omitted; arbitrary rotations/unassigned nets cannot attach. offset 0, limit 1..1000 default 100, optional exact net. Max 100000 board structural objects / 2 MiB text / 512-byte labels (route net at most 256 bytes); no unrelated schematic capture. Preserve model/selection/history; source_cursor changes require restarting pages. No continuity or guide-completion claim.".into(),input_schema:input_schema::<viamind_engine::RouteEndpointQuery>() });
         commands.push(HostCommand {
+            name: "query_linked_pin_pads".into(),
+            description: "Read-only stable component pin/explicit SMD pad mapping by exact unique terminal numbers. One component_id (part or symbol UUID), offset0, limit1..100 default100. Whole-component number bijection required for navigation; unlinked, legacy preview, mismatched and empty coverage explicit. Exact mirrored quarter-turn integer centers only; unsupported geometry has reasons. Max10000 combined sheets/symbols/parts/pins/pads,4096bytes/string,2MiB inspected text. Source_cursor pages; no electrical continuity, inferred links or session/selection/history changes.".into(),
+            input_schema: input_schema::<viamind_engine::PinPadLinkQuery>(),
+        });
+        commands.push(HostCommand {
             name: "query_linked_components".into(),
             description: "Read-only stable UUID schematic-symbol/PCB-part mapping. Deterministic source-cursor pages, explicit unlinked/unresolved rows, unknown requested IDs and exact integer positions with bounded navigation flags. Optional object_ids up to100 unique IDs; offset0, limit1..100 default100. At most10000 combined sheets/symbols/parts,4096bytes per reference,2MiB aggregate. No reference inference, model/history/selection/dirty changes or pin/net cross-probing. Restart pages after cursor changes.".into(),
             input_schema: input_schema::<viamind_engine::ComponentLinkQuery>(),
@@ -179,6 +184,10 @@ impl CommandHost for EngineHost {
         if name == "query_route_endpoints" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid endpoint query: {e}"))?;
             return serde_json::to_value(self.engine.query_route_endpoints(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "query_linked_pin_pads" {
+            let input = serde_json::from_value(input).map_err(|e| format!("invalid pin/pad query: {e}"))?;
+            return serde_json::to_value(self.engine.query_linked_pin_pads(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "query_linked_components" {
             let input: viamind_engine::ComponentLinkQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;

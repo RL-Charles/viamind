@@ -1,0 +1,20 @@
+{
+  "app_name": "viamind-pin-pad-inspection",
+  "pid": 550503,
+  "screenshot_file_path": "/home/charlesmowbray/Development/viamind-t-0079/docs/verification/t0079-schematic-wide.png",
+  "screenshot_height": 980,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 1568,
+  "window_bounds": {
+    "height": 1000,
+    "width": 1600,
+    "x": 2080,
+    "y": 1265
+  },
+  "window_id": 110379508535632,
+  "window_title": "Untitled \u2014 Viamind",
+  "product_source_revision": "b056058090f5abf153ff8f000f98cdad64bd149d",
+  "binary_sha256": "db175525adf92f2f934bc77e039b441b86a53297c2e1b4bc2cd106d0cd370131",
+  "capture_kind": "Fixed native production ViamindApp renderer; terminal state prepared by actual egui kittest button inputs, no native OS pointer injection or MCP server",
+  "inspection_source_revision": "a1f717389a911edaae7a4b3e3a33e4e1b68faf59"
+}

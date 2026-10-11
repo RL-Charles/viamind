@@ -43,6 +43,7 @@ fn no_args() -> Value {
 ui_actions! {
     DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
     SnapshotSchematicWireSheet => ("snapshot_schematic_wire_sheet", input_schema::<viamind_engine::SchematicWireSheetQuery>(), snapshot_schematic_wire_sheet),
+    QueryLinkedPinPads => ("query_linked_pin_pads", input_schema::<viamind_engine::PinPadLinkQuery>(), query_linked_pin_pads),
     QueryLinkedComponents => ("query_linked_components", input_schema::<viamind_engine::ComponentLinkQuery>(), query_linked_components),
     CreateSchematicPcbComponent => (viamind_engine::CreateSchematicPcbComponent::NAME, input_schema::<viamind_engine::CreateSchematicPcbComponent>(), create_schematic_pcb_component),
     LinkSchematicSymbol => (viamind_engine::LinkSchematicSymbol::NAME, input_schema::<viamind_engine::LinkSchematicSymbol>(), link_schematic_symbol),
@@ -284,4 +285,12 @@ fn route_pad_posture(engine: &EngineHandle, input: Value) -> Result<Value, Engin
 
 fn export_assembly_csv(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     crate::assembly_export::export(engine, input)
+}
+
+fn query_linked_pin_pads(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(
+        engine.query_linked_pin_pads(&input).map_err(|error| EngineError::Command { command: "query_linked_pin_pads".into(), error })?,
+    )
+    .map_err(encode_error)
 }
