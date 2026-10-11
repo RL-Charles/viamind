@@ -235,12 +235,20 @@ impl ViamindApp {
                                             fresh,
                                             egui::Button::new(format!(
                                                 "Show pin {} · {}",
-                                                pin.pin_number.as_deref().unwrap_or("?"),
+                                                {
+                                                    let number = pin.pin_number.as_deref().unwrap_or("?");
+                                                    let mut short: String = number.chars().take(24).collect();
+                                                    if number.chars().count() > 24 {
+                                                        short.push('…');
+                                                    }
+                                                    short
+                                                },
                                                 &pin.id.to_string()[28..]
                                             )),
                                         )
                                         .on_hover_text(format!(
-                                            "Pin {}\nSheet {}\nSymbol {}",
+                                            "Pin number {}\nPin {}\nSheet {}\nSymbol {}",
+                                            pin.pin_number.as_deref().unwrap_or("?"),
                                             pin.id,
                                             pin.sheet_id,
                                             pin.symbol_id.map_or_else(|| "absent".into(), |id| id.to_string())
