@@ -40,8 +40,13 @@ pub mod handle;
 pub mod log;
 pub mod pads;
 pub mod schematic;
+mod schematic_connectivity;
 pub use footprint::{ApplyFootprint, FootprintFile};
 pub use schematic::{DeleteSchematicSheet, EditSchematicSheet, SchematicEdit, SchematicQuery, SchematicQueryResult, SymbolInput, SymbolPinInput};
+pub use schematic_connectivity::{
+    SchematicConnectivityCoverage, SchematicConnectivityQuery, SchematicConnectivityResult, SchematicMemberKind, SchematicNet, SchematicNetMember,
+    SchematicNetName,
+};
 pub mod placement;
 pub mod query;
 pub mod registry;
