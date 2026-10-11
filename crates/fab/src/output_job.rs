@@ -97,7 +97,7 @@ impl OutputJob {
             (1, None) => companions == (None, None),
             (2, None) => companions == (Some(true), None),
             (3, None) => companions == (Some(true), Some(true)),
-            (4, Some(true)) => matches!(companions, (None, None) | (Some(true), None) | (Some(true), Some(true))),
+            (4, Some(true)) => matches!(companions, (None | Some(true), None) | (Some(true), Some(true))),
             _ => false,
         };
         if !valid {
