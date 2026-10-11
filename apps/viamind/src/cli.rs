@@ -9,6 +9,7 @@ Usage: viamind [--open PATH] [--no-mcp]
        viamind --export-csv bom|placement --open PATH --output PATH [--overwrite]
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
+       viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
        viamind --demo
 
   --headless       Serve full design MCP over stdin/stdout without a window
@@ -18,9 +19,10 @@ Usage: viamind [--open PATH] [--no-mcp]
   --export-csv KIND Export generic BOM or component-origin placement CSV and exit
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
-  --output PATH    Export destination (SVG needs a NEW file; fabrication a NEW directory)
+  --output PATH    Export destination (SVG/PNG need a NEW file; fabrication a NEW directory)
   --overwrite      Allow replacing the CSV destination
   --export-svg     Export a read-only board SVG without a window
+  --export-png     Export transparent board PNG (at most 4194304 pixels, 8 MiB)
   --view-layers LIST Comma-separated top_copper,bottom_copper,outline (default all)
   --view-bounds MM  Explicit min_x,min_y,max_x,max_y in model-space mm (default auto-fit)
   --view-size PX    Viewport width,height in pixels, each 1–4096 (default 1600,1000)
@@ -41,6 +43,7 @@ pub struct Options {
     pub open: Option<PathBuf>,
     pub save_as: Option<PathBuf>,
     pub export_svg: bool,
+    pub export_png: bool,
     pub svg_options: viamind_render::SvgOptions,
     pub export_csv: Option<viamind_fab::AssemblyCsv>,
     pub output: Option<PathBuf>,
@@ -84,6 +87,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                 );
             }
             Some("--export-svg") => options.export_svg = true,
+            Some("--export-png") => options.export_png = true,
             Some("--view-layers" | "--view-bounds" | "--view-size" | "--view-padding-mm") => {
                 let value = args.next().and_then(|s| s.into_string().ok()).ok_or_else(|| format!("{} requires a value", arg.to_string_lossy()))?;
                 match arg.to_str().unwrap() {
@@ -147,6 +151,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             || options.output.is_none()
             || options.export_csv.is_some()
             || options.export_svg
+            || options.export_png
             || options.demo
             || options.headless
             || options.no_mcp
@@ -159,14 +164,15 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         return Err("--mask-expansion-mm requires --export-gerber".into());
     }
     let has_view_options = seen.iter().any(|s| s.to_str().is_some_and(|s| s.starts_with("--view-")));
-    if has_view_options && !options.export_svg {
-        return Err("--view-* options require --export-svg".into());
+    if has_view_options && !options.export_svg && !options.export_png {
+        return Err("--view-* options require --export-svg or --export-png".into());
     }
-    if options.export_svg {
+    if options.export_svg || options.export_png {
         if options.open.is_none() || options.output.is_none() {
-            return Err("--export-svg requires --open and --output".into());
+            return Err("SVG/PNG export requires --open and --output".into());
         }
-        if options.export_gerber
+        if (options.export_svg && options.export_png)
+            || options.export_gerber
             || options.export_csv.is_some()
             || options.overwrite
             || options.demo
@@ -174,9 +180,12 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             || options.no_mcp
             || options.save_as.is_some()
         {
-            return Err("--export-svg is a separate invocation with a NEW output file".into());
+            return Err("SVG/PNG export is a separate invocation with a NEW output file".into());
         }
         options.svg_options.validate().map_err(|e| e.to_string())?;
+        if options.export_png {
+            viamind_render::validate_png_options(&options.svg_options).map_err(|e| e.to_string())?;
+        }
     }
     if options.export_csv.is_some() {
         if options.open.is_none() || options.output.is_none() {
@@ -185,7 +194,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         if options.demo || options.headless || options.no_mcp || options.save_as.is_some() {
             return Err("--export-csv is a separate invocation; use --open, --output and optional --overwrite".into());
         }
-    } else if !options.export_gerber && !options.export_svg && (options.output.is_some() || options.overwrite) {
+    } else if !options.export_gerber && !options.export_svg && !options.export_png && (options.output.is_some() || options.overwrite) {
         return Err("--output requires an export mode; --overwrite is only supported with --export-csv".into());
     }
     if options.demo && (options.headless || options.no_mcp || options.open.is_some() || options.save_as.is_some()) {

@@ -40,6 +40,20 @@ fn main() -> anyhow::Result<()> {
         eprintln!("viamind: exported {} files to {}", manifest.files.len(), path.display());
         return Ok(());
     }
+    if options.export_png {
+        let snapshot = engine.with_engine(|e| e.session_state());
+        let rendered = viamind_render::board_png(&snapshot.project, &options.svg_options)?;
+        let path =
+            viamind_render::write_png(&rendered.png, options.output.as_deref().expect("validated output"), engine.document_status().path.as_deref())?;
+        eprintln!(
+            "Exported PNG to {} ({} × {} px, {} legacy previews omitted)",
+            path.display(),
+            options.svg_options.width_px,
+            options.svg_options.height_px,
+            rendered.metadata.omitted_legacy_parts
+        );
+        return Ok(());
+    }
     if options.export_svg {
         let snapshot = engine.session_state();
         let rendered = viamind_render::board_svg(&snapshot.project, &options.svg_options)?;

@@ -91,6 +91,18 @@ fn to_call_result(value: Value) -> CallToolResult {
     if value.is_object() { CallToolResult::structured(value) } else { CallToolResult::success(vec![ContentBlock::text(value.to_string())]) }
 }
 
+/// Only trusted registration selects image output; ordinary JSON is never reinterpreted.
+fn to_png_result(mut value: Value) -> Result<CallToolResult, McpError> {
+    let data = value
+        .as_object_mut()
+        .and_then(|m| m.remove("png_base64"))
+        .and_then(|v| v.as_str().map(str::to_owned))
+        .ok_or_else(|| McpError::internal_error("PNG handler returned no image", None))?;
+    let mut result = to_call_result(value);
+    result.content.push(ContentBlock::image(data, "image/png"));
+    Ok(result)
+}
+
 impl ServerHandler for ViamindServer {
     fn get_info(&self) -> ServerConfig {
         ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
@@ -117,7 +129,7 @@ impl ServerHandler for ViamindServer {
         let client = context.client_info();
         let ctx = CallContext::new(self.agent_id(client.as_ref().map(|info| info.name.as_str())));
         match self.registry.call(&request.name, input, ctx).await {
-            Ok(value) => Ok(to_call_result(value).into()),
+            Ok(value) => Ok(if self.registry.png_output(&request.name) { to_png_result(value)? } else { to_call_result(value) }.into()),
             // Tool failures go back as tool results so the agent sees the message.
             Err(CallError::Tool(err)) => Ok(CallToolResult::error(vec![ContentBlock::text(err.to_string())]).into()),
             Err(err @ CallError::UnknownTool(_)) => Err(McpError::invalid_params(err.to_string(), None)),
@@ -168,6 +180,20 @@ mod tests {
         let result = to_call_result(json!([1, 2]));
         assert_eq!(result.structured_content, None);
         assert_eq!(result.content[0].as_text().unwrap().text, "[1,2]");
+    }
+
+    #[test]
+    fn png_content_is_single_image_without_base64_duplication_and_plain_json_is_preserved() {
+        let value = json!({"png_base64":"AA==", "media_type":"image/png", "source_cursor":null});
+        let ordinary = to_call_result(value.clone());
+        assert_eq!(ordinary.structured_content, Some(value.clone()));
+        assert!(ordinary.content.iter().all(|c| c.as_image().is_none()));
+        let image = to_png_result(value).unwrap();
+        assert_eq!(image.content.iter().filter(|c| c.as_image().is_some()).count(), 1);
+        assert_eq!(image.content.iter().find_map(|c| c.as_image()).unwrap().mime_type, "image/png");
+        assert!(!image.structured_content.unwrap().as_object().unwrap().contains_key("png_base64"));
+        assert!(image.content.iter().filter_map(|c| c.as_text()).all(|t| !t.text.contains("AA==")));
+        assert!(to_png_result(json!({})).is_err());
     }
 
     #[test]

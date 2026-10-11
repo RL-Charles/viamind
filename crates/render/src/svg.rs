@@ -169,13 +169,35 @@ fn center(x: f64, y: f64) -> io::Result<(i64, i64)> {
 fn extent(x: i64, y: i64, r: i64) -> ViewBounds {
     ViewBounds { min_x: x - r, min_y: y - r, max_x: x + r, max_y: y + r }
 }
-fn rect_attrs(r: ViewBounds) -> String {
-    format!("x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\"", mm(r.min_x), mm(r.min_y), mm(r.max_x - r.min_x), mm(r.max_y - r.min_y))
+fn rect_attrs(r: ViewBounds, origin: (i64, i64)) -> String {
+    format!(
+        "x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\"",
+        mm(r.min_x - origin.0),
+        mm(r.min_y - origin.1),
+        mm(r.max_x - r.min_x),
+        mm(r.max_y - r.min_y)
+    )
 }
 
 /// Render model geometry without inferred legacy footprint previews or model changes.
 pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg> {
+    board_svg_impl(project, options, None)
+}
+
+// Normalize at the shared I/O boundary before the rasterizer stores f32 paths.
+pub(crate) fn board_svg_for_pixels(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg> {
+    let region = match options.region_nm {
+        Some(region) => region,
+        None => board_svg(project, options)?.metadata.region_nm,
+    };
+    board_svg_impl(project, options, Some((region.min_x, region.min_y)))
+}
+
+fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option<(i64, i64)>) -> io::Result<BoardSvg> {
     options.validate()?;
+    let origin = raster_origin.unwrap_or((0, 0));
+    let x = |n: i64| mm(n - origin.0);
+    let y = |n: i64| mm(n - origin.1);
     let count = project
         .board
         .parts
@@ -212,8 +234,8 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             continue;
         }
         for pad in &explicit.0 {
-            let (x, y) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
-            let (cx, cy) = center(x, y)?;
+            let (wx, wy) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
+            let (cx, cy) = center(wx, wy)?;
             let angle = -(f64::from(part.rotation_mdeg) / 1000.0);
             let (s, c) = angle.to_radians().sin_cos();
             let rx = (pad.width.0 as f64 * c.abs() + pad.height.0 as f64 * s.abs()) / 2.0;
@@ -231,8 +253,8 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             let shape = format!(
                 "<g id=\"pad-{}\" transform=\"translate({} {}) rotate({angle:.3})\"><title>{title}</title><rect x=\"-{}\" y=\"-{}\" width=\"{}\" height=\"{}\"/></g>\n",
                 pad.id,
-                mm(cx),
-                mm(cy),
+                x(cx),
+                y(cy),
                 half(pad.width.0),
                 half(pad.height.0),
                 mm(pad.width.0),
@@ -256,10 +278,10 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
         let shape = format!(
             "<path id=\"track-{}\" d=\"M{} {} L{} {}\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"{}\" stroke-linecap=\"round\"><title>{title}</title></path>\n",
             t.id,
-            mm(t.start.x.0),
-            mm(t.start.y.0),
-            mm(t.end.x.0),
-            mm(t.end.y.0),
+            x(t.start.x.0),
+            y(t.start.y.0),
+            x(t.end.x.0),
+            y(t.end.y.0),
             mm(t.width.0)
         );
         size += shape.len();
@@ -281,8 +303,8 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             let shape = format!(
                 "<circle id=\"via-{layer:?}-{}\" cx=\"{}\" cy=\"{}\" r=\"{}\"><title>{title}</title></circle>\n",
                 v.id,
-                mm(v.position.x.0),
-                mm(v.position.y.0),
+                x(v.position.x.0),
+                y(v.position.y.0),
                 half(v.diameter.0)
             );
             size += shape.len();
@@ -299,7 +321,7 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
         let mut bounds = None;
         for ring in outline.rings() {
             for (i, p) in ring.points.iter().enumerate() {
-                write!(d, "{}{} {} ", if i == 0 { "M" } else { "L" }, mm(p.x.0), mm(p.y.0)).unwrap();
+                write!(d, "{}{} {} ", if i == 0 { "M" } else { "L" }, x(p.x.0), y(p.y.0)).unwrap();
                 let b = extent(p.x.0, p.y.0, OUTLINE_HALF_STROKE);
                 bounds = Some(bounds.map_or(b, |old: ViewBounds| old.union(b)));
             }
@@ -325,20 +347,38 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             .map_or(ViewBounds { min_x: -5_000_000, min_y: -5_000_000, max_x: 5_000_000, max_y: 5_000_000 }, |r| r.expand(options.padding_nm)),
     }
     .validate()?;
+    if raster_origin.is_some() {
+        let scale = (f64::from(options.width_px) / (region.max_x - region.min_x) as f64)
+            .min(f64::from(options.height_px) / (region.max_y - region.min_y) as f64);
+        let holes = project.board.vias.values().map(|v| extent(v.position.x.0, v.position.y.0, (v.drill.0 + 1) / 2));
+        for b in shapes.iter().map(|s| s.bounds).chain(holes) {
+            if b.max_x < region.min_x || b.min_x > region.max_x || b.max_y < region.min_y || b.min_y > region.max_y {
+                continue;
+            }
+            let magnitude =
+                [b.min_x - origin.0, b.max_x - origin.0, b.min_y - origin.1, b.max_y - origin.1].into_iter().map(|n| n.unsigned_abs()).max().unwrap()
+                    as f64;
+            if magnitude * f64::from(f32::EPSILON) * scale > 0.125 {
+                return Err(invalid(
+                    "PNG region is too small relative to intersecting geometry for the raster precision budget; zoom out or hide the large layer",
+                ));
+            }
+        }
+    }
     let mut svg = format!(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" viewBox=\"{} {} {} {}\" preserveAspectRatio=\"xMidYMid meet\" role=\"img\" aria-labelledby=\"view-title view-description\">\n<title id=\"view-title\">{name}</title>\n<desc id=\"view-description\">PCB inspection view; model origin, mm, X right/Y down; legacy previews omitted; not fabrication certification.</desc>\n<defs><clipPath id=\"view-clip\" clipPathUnits=\"userSpaceOnUse\"><rect {}/></clipPath>\n<mask id=\"through-holes\" maskUnits=\"userSpaceOnUse\" maskContentUnits=\"userSpaceOnUse\" {} style=\"mask-type:luminance\"><rect {} fill=\"white\"/>\n",
         options.width_px,
         options.height_px,
-        mm(region.min_x),
-        mm(region.min_y),
+        x(region.min_x),
+        y(region.min_y),
         mm(region.max_x - region.min_x),
         mm(region.max_y - region.min_y),
-        rect_attrs(region),
-        rect_attrs(region),
-        rect_attrs(region)
+        rect_attrs(region, origin),
+        rect_attrs(region, origin),
+        rect_attrs(region, origin)
     );
     for v in project.board.vias.values() {
-        writeln!(svg, "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"black\"/>", mm(v.position.x.0), mm(v.position.y.0), half(v.drill.0)).unwrap();
+        writeln!(svg, "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"black\"/>", x(v.position.x.0), y(v.position.y.0), half(v.drill.0)).unwrap();
     }
     svg.push_str("</mask></defs>\n<g clip-path=\"url(#view-clip)\"><g mask=\"url(#through-holes)\">\n");
     // Substrate first; top copper last. Request order does not affect stacking.
@@ -380,23 +420,27 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
 
 /// Atomically publish a NEW SVG file; protect the active native project path.
 pub fn write_svg(svg: &str, path: &Path, native: Option<&Path>) -> io::Result<PathBuf> {
+    write_view_bytes(svg.as_bytes(), path, native, MAX_BYTES, "SVG", ".viamind-svg-")
+}
+
+pub(crate) fn write_view_bytes(bytes: &[u8], path: &Path, native: Option<&Path>, limit: usize, kind: &str, prefix: &str) -> io::Result<PathBuf> {
     if path.as_os_str().is_empty() {
-        return Err(invalid("SVG output path must not be empty"));
+        return Err(invalid(format!("{kind} output path must not be empty")));
     }
-    if svg.len() > MAX_BYTES {
-        return Err(invalid("SVG view exceeds 16 MiB"));
+    if bytes.len() > limit {
+        return Err(invalid(format!("{kind} output exceeds its byte limit")));
     }
     let path = std::path::absolute(path)?;
-    let parent = path.parent().ok_or_else(|| invalid("SVG output requires a parent directory"))?;
-    let canonical = parent.canonicalize()?.join(path.file_name().ok_or_else(|| invalid("SVG output requires a filename"))?);
+    let parent = path.parent().ok_or_else(|| invalid(format!("{kind} output requires a parent directory")))?;
+    let canonical = parent.canonicalize()?.join(path.file_name().ok_or_else(|| invalid(format!("{kind} output requires a filename")))?);
     if let Some(native) = native {
         let native = native.canonicalize().unwrap_or(std::path::absolute(native)?);
         if canonical == native || path.canonicalize().is_ok_and(|p| p == native) {
-            return Err(invalid("SVG output must differ from active native project path"));
+            return Err(invalid(format!("{kind} output must differ from active native project path")));
         }
     }
-    let mut temporary = tempfile::Builder::new().prefix(".viamind-svg-").tempfile_in(parent)?;
-    temporary.write_all(svg.as_bytes())?;
+    let mut temporary = tempfile::Builder::new().prefix(prefix).tempfile_in(parent)?;
+    temporary.write_all(bytes)?;
     temporary.as_file().sync_all()?;
     temporary.persist_noclobber(&path).map_err(|e| e.error)?;
     Ok(path)

@@ -65,6 +65,7 @@ pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
     crate::assembly::register(&mut registry, engine.clone())?;
     crate::fabrication::register(&mut registry, engine.clone())?;
     crate::views::register(&mut registry, engine.clone())?;
+    crate::png_views::register(&mut registry, engine.clone())?;
     register_host(&mut registry, Arc::new(EngineHost::new(engine)))?;
     Ok(registry)
 }
