@@ -34,6 +34,9 @@ contain 1–512 UTF-8 bytes when present, with no control characters or leading/
 whitespace. Unicode, punctuation, quotes and commas are allowed. Identifiers remain
 case-sensitive and are never normalized. A complete empty/default record is
 canonicalized to absence by the setter; native readers can represent explicit defaults.
+Across the project, at most 100000 components may carry metadata and aggregate
+sourcing text is capped at 2 MiB. Metadata-free components do not count toward this
+new cap. Validate borrowed records before any mutation or model copy.
 
 Native schema 7 is required only when any metadata is present; projects without it
 retain their previous minimum schema and byte shape. Event-log version 7 accepts
