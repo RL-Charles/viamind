@@ -178,7 +178,10 @@ mod tests {
     use super::*;
     #[test]
     fn pending_form_controls_are_disabled_and_completion_reenables_them() {
-        use egui_kittest::{Harness, kittest::Queryable};
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
         let engine = EngineHandle::new(viamind_doc::Project::new("pending controls"));
         let mut app = ViamindApp::with_design(engine, None);
         app.begin_fabrication_export();
