@@ -79,6 +79,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [query\_schematic](#tool-71756572795f736368656d61746963)
 - [query\_schematic\_connectivity](#tool-71756572795f736368656d617469635f636f6e6e6563746976697479)
 - [query\_symbol\_packages](#tool-71756572795f73796d626f6c5f7061636b61676573)
+- [query\_unrouted\_nets](#tool-71756572795f756e726f757465645f6e657473)
 - [redo](#tool-7265646f)
 - [render\_board\_png](#tool-72656e6465725f626f6172645f706e67)
 - [render\_board\_view](#tool-72656e6465725f626f6172645f76696577)
@@ -13425,6 +13426,24 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "query_symbol_packages"
+}
+```
+
+<a id="tool-71756572795f756e726f757465645f6e657473"></a>
+
+## query\_unrouted\_nets
+
+```json
+{
+  "description": "Read a complete bounded board net inventory in ONE call, with exact project/full source cursor and connected/disconnected/insufficient_terminals/unknown rows. Actual doubled-integer quarter-turn rectangular pads, cardinal round-ended tracks and intact through-via annuli, including interior contacts; not guide counts. Whole-call limits:100000 structural objects,10000 nets,2MiB relevant net text,1M contact/hole candidates,8MiB result; two nonwaiting retained workers. Unsupported diagonal tracks/arbitrary pad angles and drill-affected geometry give explicit unknown; excluded legacy parts make coverage incomplete. Includes pad/copper/rule-defined names; zero/one terminal is not an interterminal routing obligation. No pagination, physical continuity/DRC/DFM certification, selection/history/session/native mutation or publication. Available in every agent mode.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "description": "Strict parameterless observation; no pagination or caller-weakened limits.",
+    "title": "UnroutedNetQuery",
+    "type": "object"
+  },
+  "name": "query_unrouted_nets"
 }
 ```
 

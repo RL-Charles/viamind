@@ -1,0 +1,100 @@
+{
+  "complete": false,
+  "connected_count": 2,
+  "coverage": {
+    "candidate_visits": 9,
+    "excluded_legacy_parts": 0,
+    "supported_pads": 7,
+    "supported_tracks": 4,
+    "supported_vias": 1,
+    "unassigned_objects": 0,
+    "unsupported_objects": 1
+  },
+  "exclusions": [
+    "Schematic obligations, legacy previews, inner copper, pours, arcs and plated pad holes are not analyzed.",
+    "Terminal connectivity is not a dangling-copper, short-circuit, DRC, manufacturing or physical continuity certificate."
+  ],
+  "insufficient_terminal_count": 3,
+  "model": "exact_cardinal_outer_copper",
+  "nets": [
+    {
+      "name": "CONNECTED",
+      "reasons": [],
+      "status": "connected",
+      "terminal_islands": 1,
+      "terminals": 2,
+      "tracks": 1,
+      "unrouted": false,
+      "vias": 0
+    },
+    {
+      "name": "ONE",
+      "reasons": [],
+      "status": "insufficient_terminals",
+      "terminal_islands": 1,
+      "terminals": 1,
+      "tracks": 0,
+      "unrouted": false,
+      "vias": 0
+    },
+    {
+      "name": "ORPHAN",
+      "reasons": [],
+      "status": "insufficient_terminals",
+      "terminal_islands": 0,
+      "terminals": 0,
+      "tracks": 1,
+      "unrouted": false,
+      "vias": 0
+    },
+    {
+      "name": "RULE_ONLY",
+      "reasons": [],
+      "status": "insufficient_terminals",
+      "terminal_islands": 0,
+      "terminals": 0,
+      "tracks": 0,
+      "unrouted": false,
+      "vias": 0
+    },
+    {
+      "name": "UNKNOWN",
+      "reasons": [
+        "unsupported_pad"
+      ],
+      "status": "unknown",
+      "terminal_islands": null,
+      "terminals": 1,
+      "tracks": 0,
+      "unrouted": null,
+      "vias": 0
+    },
+    {
+      "name": "UNROUTED",
+      "reasons": [],
+      "status": "disconnected",
+      "terminal_islands": 2,
+      "terminals": 2,
+      "tracks": 0,
+      "unrouted": true,
+      "vias": 0
+    },
+    {
+      "name": "VIA",
+      "reasons": [],
+      "status": "connected",
+      "terminal_islands": 1,
+      "terminals": 2,
+      "tracks": 2,
+      "unrouted": false,
+      "vias": 1
+    }
+  ],
+  "project_id": "12300000-0000-4000-8000-000000000001",
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "e8186503-ef93-4310-b603-38787c8f3fd2"
+  },
+  "unknown_count": 1,
+  "unrouted_count": 1
+}

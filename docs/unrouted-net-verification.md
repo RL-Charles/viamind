@@ -57,3 +57,17 @@ python3 docs/verification/t0123/verify-native.py /absolute/NEW-native-proof
 ```
 
 The inspection binary is built with `cargo build -p viamind-ui-egui --example t0123_inspection`. Capture conversion uses installed FFmpeg. The [master index](verification/t0123/verification.json) separates original source, failed build scope, successful refresh, actual production, independent reviews and native channel identities. Executables and raw large captures are retained outside Git. Final combined integration and exact-head CI are recorded separately before merge.
+
+## Final combined verification
+
+Only the six original T123 commits were transplanted, followed by one integration regression commit, onto frozen T119 proof `9a28241450969f2cecc9068e15393e515b639b97`. Final verified product source is `6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8`. The integration adds the optional absent artwork constructor and a regression with100001 invalid unused silkscreen segments: copper capture excludes that noncopper content and preserves the complete original session. All original proof above retains its original source and binary identities.
+
+The [final combined gate](verification/t0123/final-combined.log) passed format, strict workspace all-target Clippy,19 focused engine/MCP/desktop/catalog tests, the complete workspace build and inspection example build. Own Rust inputs were forced fresh under the shared whole-workspace mutex before compilation. Unique retained binaries were copied before releasing it. Actual final application discovery and committed-reference drift verification pass **115 tools**, the isolated agent workflow passes18 checks, and13 reference-tooling tests pass. No second broad workspace test run was inferred: original934 tests and this scoped integration are recorded separately.
+
+[Final production report](verification/t0123/final-production-report.json) passes all58 checks again against the retained combined binary: three startup modes, the complete1201-net call, and two initialized same-name HTTP observers on the actual read-only desktop **PID3075669 / port7957**. The original7955 process remains preserved. Final executable SHA256 is `5a2d2a81b202788436556cd4524fd9f4b1b27cea1123346625d5c8188d05142c`.
+
+The fresh [final native report](verification/t0123/final-native-report.json) uses the same production application and four actual local egui input events. The exact combined inspection executable SHA256 is `bbc3551ff275ee5040d67d659cba6bcf805df062862002a4369d83044c0d9540`. Original P7 RGBA and P6 RGB were fsynced, then all6.4million RGBA and4.8million RGB samples independently matched FFmpeg PNG decoding and the P6. Full session/native invariants and ancestor-clip readability checks pass. Inspection PID3076404 requested Close and was observed absent afterward; its launcher did not retain numeric exit status. No OS/compositor/cadence claim is made.
+
+![Final combined native query result](verification/t0123/final-native.png)
+
+The master separates original and combined binaries, raw capture paths and source IDs. Final exact-head CI is the remaining merge gate at packaging time.

@@ -56,7 +56,7 @@
     "sha256": "a14cb27a4f4c363612925c02cf37ade58c1443ed2c5622c8103a5090ac65e54e",
     "reproduction": "production-probe.py deterministically generates1201net fixture from authored seed"
   },
-  "final_combined_pending": true,
+  "final_combined_pending": false,
   "ci_pending": true,
   "claims_excluded": [
     "physical copper continuity",
@@ -68,7 +68,7 @@
   "artifacts": {
     "crates/ui-egui/examples/t0123_inspection.rs": "3d72bc2ac87ba1fd3f8cb8fd4cc76f693d0dd4dacf99ab87fa0bb36a2d8d3fff",
     "docs/specs/unrouted-net-query.md": "d61248fb2514d6509d665f35067cfb625a4664997f89f05a47e6a8b7960a3645",
-    "docs/unrouted-net-verification.md": "3a7d954636d35c44c0956f714a5caa46444cea94535e018dd9ed12ef05ef3ce5",
+    "docs/unrouted-net-verification.md": "89573979740a9ffa95cfbefc37c83ce3d68e9b68dc10fff8a78b7820403573a3",
     "docs/verification/t0123/build-refresh.log": "da67c70685d1703520eb10cd7c6feeb72a9f04774dea4d07ff5d64008ba3db45",
     "docs/verification/t0123/build-refresh.sh": "8965221e7bb1179bf52d2af1ff68a8724a78fa62dc7611c9bef902b447f701be",
     "docs/verification/t0123/desktop-result.json": "d7d4741fbbc0733db25498beefbb261f9da9e1280298433ea256b7ec528a918f",
@@ -95,6 +95,68 @@
     "docs/verification/t0123/stdio-owned.viamind.json": "1e9fe204ff07d166af8ff0146b0f1c9511c1e090092fcc7b4b4f154709ac39aa",
     "docs/verification/t0123/stdio-read-only-result.json": "6d95cafd06d5eb9e6fd7085c4e4ed256e5f66c16e2aaa99f952e4fcecf908801",
     "docs/verification/t0123/verify-native.py": "439172fa93a5fb4fe95e4cabaa8d72bfbc6dc975887c032647ed345ab2ba8ef1",
-    "fixtures/connectivity/one-call.viamind.json": "86418e6b84e23e220809b9f34a7df6930bf462a20a52d0f8c41e11ee17d9a3bf"
+    "fixtures/connectivity/one-call.viamind.json": "86418e6b84e23e220809b9f34a7df6930bf462a20a52d0f8c41e11ee17d9a3bf",
+    "docs/verification/t0123/final-combined.log": "28105fff0aab1cb93729af02fadcb6974355eecd7ca75f8e3c6783fe948b0fc9",
+    "docs/verification/t0123/final-combined.sh": "748a31035e36cb88b6b0c854a6d0e1902717f20b908f5b57acaa665a28449301",
+    "docs/verification/t0123/final-catalog-check.log": "dbc5d36878ca6df6bd741e2afa7b6c7aa680f024f2ef163ae7f73b49c9b46c70",
+    "docs/verification/t0123/final-workflow.json": "c45741c08b33f57cd225be66dadcb107a2c2d5899b756717e5844b5c83d8c4e2",
+    "docs/verification/t0123/final-production-report.json": "0c0004182a83c8550eeb91c13740ebdee9177de43715da7925a2fd439834eebe",
+    "docs/verification/t0123/final-desktop-result.json": "6f7ac24c298a864c28e3f1014d5bf74044a568887f0cda6f15890b4950fd34a5",
+    "docs/verification/t0123/final-production-proof.log": "dd0d33804e6c6bea0620329c4653dd926d515f8d5cbd130df59c9cdcf13ab571",
+    "docs/verification/t0123/final-production-runtime.log": "43b85ca7a8fe0241ffdf5ac268aa94b765ea5e15f016df508609e876ebc2fdf9",
+    "docs/verification/t0123/final-production-launch.json": "5d04c789b041f57749bb7c6673606f840f922baf6d94a549c56639cbc53049c8",
+    "docs/verification/t0123/final-native-report.json": "55f1e452449defc80fb8b4ad1e533bfcdd6587cad3accf833903be8415f271e6",
+    "docs/verification/t0123/final-native-channels.json": "551c0325adca7981814fd31bda7dbf9bd7b583576a2e95c50502ca32bdcf55ce",
+    "docs/verification/t0123/final-native.png": "50c4919cd5ac35471871bdfe41d9c45d67fdc550cd8cf3e85b819ba6a99bf20f",
+    "docs/verification/t0123/final-native-launch.json": "49f86118ae8b5952a3509ab53355d102d5d628b01d3325e3411711972385162b",
+    "docs/verification/t0123/final-native-runtime.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/generated/mcp-tools.json": "6facc67727d837490befcd10ba64a5ffa813e37f72d0f6d53a2824f59316422c",
+    "docs/generated/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954"
+  },
+  "final_combined": {
+    "source": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
+    "stack_parent": "9a28241450969f2cecc9068e15393e515b639b97",
+    "gate_exit": 0,
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_passed": 19,
+    "focused_failed": 0,
+    "workspace_build": true,
+    "inspection_build": true,
+    "actual_exact_catalog_tools": 115,
+    "actual_workflow_checks": 18,
+    "python_tooling_tests": 13,
+    "actual_production_checks": 58,
+    "production_process": {
+      "pid": 3075669,
+      "port": 7957,
+      "live_at_packaging": true,
+      "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-final-owned.viamind.json"
+    },
+    "retained_binaries": {
+      "viamind": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/viamind",
+        "sha256": "5a2d2a81b202788436556cd4524fd9f4b1b27cea1123346625d5c8188d05142c"
+      },
+      "unrouted-inspection": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/unrouted-inspection",
+        "sha256": "bbc3551ff275ee5040d67d659cba6bcf805df062862002a4369d83044c0d9540"
+      }
+    },
+    "native": {
+      "pid": 3076404,
+      "live_at_packaging": false,
+      "close_requested": true,
+      "exit_status_recorded": false,
+      "all_original_RGBA_and_RGB_verified": true,
+      "raw_capture_paths": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-final-proof/native.p7",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-final-proof/native.p6"
+      ]
+    },
+    "large_fixture": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-final-proof/large.viamind.json",
+      "sha256": "a14cb27a4f4c363612925c02cf37ade58c1443ed2c5622c8103a5090ac65e54e"
+    }
   }
 }
