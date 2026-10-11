@@ -55,11 +55,13 @@ pub struct CallContext {
     pub agent: AgentId,
     /// Transport-owned identity; untrusted names/tool arguments cannot set it.
     pub(crate) connection: Option<u64>,
+    /// Immutable endpoint ceiling, assigned by trusted registry dispatch.
+    pub(crate) endpoint_read_only: bool,
 }
 
 impl CallContext {
     /// Context for a call made by `agent`.
     pub fn new(agent: impl Into<AgentId>) -> Self {
-        Self { agent: agent.into(), connection: None }
+        Self { agent: agent.into(), connection: None, endpoint_read_only: false }
     }
 }
