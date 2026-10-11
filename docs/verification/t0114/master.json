@@ -1,0 +1,388 @@
+{
+  "ticket": "T-0114",
+  "verified_utc": "2026-10-11T20:15:27.846351+00:00",
+  "spec": "docs/specs/multi-unit-symbol-packages.md",
+  "spec_approved_before_code": "1dffdc59b5a786705786191925423b07cf0b3214",
+  "product_source": "fb9be124977b11100b0549e53555fdad3ca95e3c",
+  "base": "deb0141",
+  "source_refs": {
+    "native": "verification/t0114/native-source",
+    "foundation": "verification/t0114/foundation-source",
+    "compact": "verification/t0114/compact-source"
+  },
+  "full_linux": {
+    "session": 61754,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 874,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 109,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "entire_sequence_mutex": "/tmp/viamind-workspace-gates.lock",
+    "canonical_target": "/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target"
+  },
+  "focused": {
+    "foundation_tests": 46,
+    "complete_command_mcp_render_tests": 23,
+    "compact_actual_input_tests": 3,
+    "compact_source": "bf9bd36f1d96a7f8d2de5dbd0dd7d6d95c56a073",
+    "compact_following_inspection_lint_failure": "unused private shared helper; documented narrow allowance; corrected full gate passed all targets",
+    "poison_package_branch_budget": 5000,
+    "definition_units_max": 32,
+    "definition_pins_max": 1024
+  },
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/viamind-fb9be124977b",
+    "sha256": "98663744f73f41b3efba8e8d01216a1286d63c44926bb2fc7828648fbf8f83d2",
+    "pid": 2574825,
+    "http_port": 7944,
+    "live_exe_sha256": "98663744f73f41b3efba8e8d01216a1286d63c44926bb2fc7828648fbf8f83d2",
+    "stdio_checks": 38,
+    "two_client_actual_desktop_http_checks": 38,
+    "independent_reviewer_stdio_checks": 38,
+    "cua": "production-state.json",
+    "cua_evidence_scope": "actual owned-window metadata and pixels; AT-SPI degraded, no checked-state or OS input claim"
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/inspection-fb9be124977b",
+    "sha256": "e41e6be92731e15baf7423b0bf8a78ffa046fb52edce4b65f621c2ec5085e09c",
+    "source": "fb9be124977b11100b0549e53555fdad3ca95e3c",
+    "source_path": "crates/ui-egui/examples/package_inspection.rs",
+    "preparation_helper": "crates/ui-egui/tests/support/package_compact.rs",
+    "capture_api": "native eframe WGPU Screenshot event",
+    "os_input_claim": false,
+    "native_frame_session_invariants": true,
+    "alpha_notice": "Original Color32 RGBA retained; PNG/P6 preserve identical RGB samples, alpha omitted for review, no opaque readback assertion",
+    "captures": [
+      {
+        "name": "unit",
+        "png": "unit.png",
+        "pid": 2577955,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "ebf6a0ce61f8c3518fb7cf9dfcf440ffb50e5784e1296ae945b237877987531e",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/unit.p6",
+        "p6_sha256": "39d63e78c5c6bd516233709c78ce6fc269479610847604acaa442a2b705d4eef",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/unit.p7",
+        "p7_sha256": "4fced2a32a5332d6957f4722b1a3a47010c9549924e60dbe89c176e870ce39d9",
+        "runtime": {
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            640.1875,
+            400.1875
+          ],
+          "control_bounds": "actual native package read_response rectangles using exact safely captured labeled widget IDs",
+          "controls": [
+            [
+              144.125,
+              63.40625,
+              244.125,
+              82.40625
+            ],
+            [
+              144.125,
+              85.40625,
+              244.125,
+              104.40625
+            ],
+            [
+              144.125,
+              107.40625,
+              244.125,
+              126.40625
+            ],
+            [
+              144.125,
+              129.40625,
+              244.125,
+              148.40625
+            ],
+            [
+              144.125,
+              151.40625,
+              244.125,
+              169.40625
+            ],
+            [
+              23.40625,
+              172.40625,
+              110.03125,
+              190.40625
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "native_viewport_transparent": false,
+          "nonopaque_alpha_pixels": 268,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/unit.p6",
+          "pid": 2577955,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/unit.p7",
+          "rgba_representation": "original egui Screenshot Color32 channels",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        },
+        "self_closed_verified": true,
+        "independent_imagemagick_all_rgb_bytes_equal": true
+      },
+      {
+        "name": "completed",
+        "png": "completed.png",
+        "pid": 2579681,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "42153a8f79d31e55b2c8ad75e88866722939ebbfcf6790deac58cbab9f97d7da",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/completed.p6",
+        "p6_sha256": "64d356e02af8ac73e4e069a21261265d3755610fa6e3df5e985133b986edcfad",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/completed.p7",
+        "p7_sha256": "2e8a34b0820c02ca9da0a1dd933540047b8766406675d1d2859d018358a54aff",
+        "runtime": {
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            640.1875,
+            400.1875
+          ],
+          "control_bounds": "actual native package read_response rectangles using exact safely captured labeled widget IDs",
+          "controls": [],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "native_viewport_transparent": false,
+          "nonopaque_alpha_pixels": 268,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/completed.p6",
+          "pid": 2579681,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/completed.p7",
+          "rgba_representation": "original egui Screenshot Color32 channels",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        },
+        "self_closed_verified": true,
+        "independent_imagemagick_all_rgb_bytes_equal": true
+      },
+      {
+        "name": "placed",
+        "png": "placed.png",
+        "pid": 2589885,
+        "pixels": [
+          2667,
+          1833
+        ],
+        "rgb_sha256": "c254594d875b54e3d46a5c5ccd7f25cab1aae263007389e51f22ffed376dc184",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/placed.p6",
+        "p6_sha256": "c88afaba2a3b25f11d1cf0f12d89c02f2b66724c3d8d2f3cff9cdb06640f2a93",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/placed.p7",
+        "p7_sha256": "a3d69463fa7c7aa29d62aed3e7de57db8c4f0fb8a188997179036e3f57249031",
+        "runtime": {
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            1600.1875,
+            1099.8125
+          ],
+          "control_bounds": "actual native package read_response rectangles using exact safely captured labeled widget IDs",
+          "controls": [],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "native_viewport_transparent": false,
+          "nonopaque_alpha_pixels": 7091,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/placed.p6",
+          "pid": 2589885,
+          "pixels": [
+            2667,
+            1833
+          ],
+          "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0114/placed.p7",
+          "rgba_representation": "original egui Screenshot Color32 channels",
+          "self_close_after_capture": true,
+          "ui_passes": 12
+        },
+        "self_closed_verified": true,
+        "independent_imagemagick_all_rgb_bytes_equal": true
+      }
+    ]
+  },
+  "limitations": [
+    "Same-sheet complete 2..32 explicit units, no hidden/common/stacked pins",
+    "At this source, package-aware annotation/one-physical-PCB aggregation remain explicit separate T115/T116; legacy partial paths refuse",
+    "Fit-all placed view retains existing centered-label/pin-text crowding; not every overlapping label is claimed legible",
+    "No arbitrary body art, imported symbol equivalence, full ERC or full application completion claim"
+  ],
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1265,
+      "sha256": "98910c52b102701918067ec2eb22cc79eec86a60d3d06aec845968fbc5deb013"
+    },
+    "canceled-childless-waiter.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalog-discovery.json": {
+      "bytes": 368,
+      "sha256": "b598fadc25b6d7f40e10af5cf492f89c1f6483caf052c8e66f6ba4e5d6dc0396"
+    },
+    "catalog-exact-check.json": {
+      "bytes": 368,
+      "sha256": "b598fadc25b6d7f40e10af5cf492f89c1f6483caf052c8e66f6ba4e5d6dc0396"
+    },
+    "commands-failed.log": {
+      "bytes": 1540,
+      "sha256": "d9f9b991c2c90fe372017f32f85be910c7cabe38783707c4061c021558e9ddab"
+    },
+    "commands-pass.log": {
+      "bytes": 6903,
+      "sha256": "2f170094098e224d863c4c7304167e4a09cd90dcc8cf95c24e220ef454288172"
+    },
+    "compact-pass-inspection-lint-failed.log": {
+      "bytes": 13691,
+      "sha256": "13b67617b4e2facc90f89f04f833f2eb5932356c1c88171209f694c963f97e0b"
+    },
+    "completed-launch.json": {
+      "bytes": 190,
+      "sha256": "043dc7c3432baf8707b4eeaeb62d858792bc4a0a118a099120554c2389870e2f"
+    },
+    "completed-native.log": {
+      "bytes": 10514,
+      "sha256": "a0f2b1e657a628e55d9dddbdf219615d9ecc24b862f1f79852bd9563a2b53682"
+    },
+    "completed.png": {
+      "bytes": 86829,
+      "sha256": "e6ed36c870230b43207256d505c1e5ee496674a2296933cae9c237e60d4318af"
+    },
+    "completed.viamind-symbol-package.json": {
+      "bytes": 4029,
+      "sha256": "a394dd428f0556c48afe06afce894186f200064f9a46d1228dd7c73a2c284466"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 938,
+      "sha256": "b62950656303dc3b391de5abf15a5741e22c56841f32b3a5b2584d6d93f68b03"
+    },
+    "foundation-failed.log": {
+      "bytes": 1756,
+      "sha256": "de9a762e8a54d51de8663fe0de0578c00f63557935e1bb418077bbe34bd19bee"
+    },
+    "foundation-pass.log": {
+      "bytes": 8984,
+      "sha256": "da4edb3ab772d6aee1e2f356bd807ad11395f9e0b74bf0305fedbe30a29b8d2c"
+    },
+    "independent-native.json": {
+      "bytes": 2857,
+      "sha256": "affe09aaf07ebb78eeb47eb66da33199beea7e2198d7d2bd920f7eb239981562"
+    },
+    "independent-production-stdio.json": {
+      "bytes": 2052,
+      "sha256": "5064f345884bc97d8d7081c2284386bba9b538337b03f31b7618a8e005542c0e"
+    },
+    "launch-inspection.sh": {
+      "bytes": 156,
+      "sha256": "def8160b5f1de7216410767dc114a6e6ac2f09d2cb01710c17f74d2764139418"
+    },
+    "linux-full.log": {
+      "bytes": 142283,
+      "sha256": "b05c43bea114c892f80911c0e0a33e03ed9b847a3df5bcfbeac9f8438d10a97a"
+    },
+    "linux-full.sh": {
+      "bytes": 1626,
+      "sha256": "576e1dc68e7b795ba6fcd32c7f6dfb83850998e3e44c68338e4f888cc6b615ea"
+    },
+    "placed-launch.json": {
+      "bytes": 190,
+      "sha256": "f1da20e06c5ad4ebd8e8f5c8618c29a800340e00e9f13228840d81a92d5829e3"
+    },
+    "placed-native.log": {
+      "bytes": 10379,
+      "sha256": "bfb73443af05743f786b23aa0a2786346f25981a67991cd7d9388339cd6fe7df"
+    },
+    "placed.png": {
+      "bytes": 150735,
+      "sha256": "4ba850cc46c126bca431500a9845449e1d337016ec15e6b8183e5c3c0470fc3c"
+    },
+    "production-cua.png": {
+      "bytes": 79959,
+      "sha256": "ee252e1b9db7ebd282509ab67fdfc8f75a7d4265dae0be4b9ef38ff9a698fb86"
+    },
+    "production-http.json": {
+      "bytes": 2057,
+      "sha256": "9028a83a6d3f49aaaec8b8b1eff86fbcf1032ad369e6d0eab05acf3a2347e0b2"
+    },
+    "production-launch.json": {
+      "bytes": 595,
+      "sha256": "477e43dc83de01f43db8fefd9abb7c79bb12d6df739c66fa8c4ac7afea2b8691"
+    },
+    "production-state.json": {
+      "bytes": 1280,
+      "sha256": "8cdfacffd31963ce7ae7ee707642826994b58ff03ce799a1600fda765c02927b"
+    },
+    "production-stdio.json": {
+      "bytes": 2052,
+      "sha256": "5064f345884bc97d8d7081c2284386bba9b538337b03f31b7618a8e005542c0e"
+    },
+    "ui-compile-failed.log": {
+      "bytes": 3001,
+      "sha256": "da9d671a150f7e521f5848a42957979cc0e80fa15f9300cfaa2687ef1043ece0"
+    },
+    "ui-lint-failed.log": {
+      "bytes": 3566,
+      "sha256": "167fc0b71a3bccbf744119c06d0ca4e0bea211b6b5797497d40a244233c2ab6b"
+    },
+    "ui-test-import-failed.log": {
+      "bytes": 2200,
+      "sha256": "3d11cd3972342202822e006da4666728f95d06adbaceb39978dc340dd6350cac"
+    },
+    "ui-test-lint-failed.log": {
+      "bytes": 1949,
+      "sha256": "ee4e675c1fd98dbdaaa20e93e20b6cb91de75a4f25ba1afda5afd6c1999a041d"
+    },
+    "unit-launch.json": {
+      "bytes": 190,
+      "sha256": "ac0d63e18e6f81ad7c0391dec8ada30eb48db82ea5804853a825e5ab3185b9fa"
+    },
+    "unit-native.log": {
+      "bytes": 10670,
+      "sha256": "6081a80c826250f92af5eb1fba1b19cd62e69eef9c55d4f8f2f31d19ecd624c7"
+    },
+    "unit-refused-launch.json": {
+      "bytes": 477,
+      "sha256": "1ce2a595a4d9599da4e0661d32aeb10b214c18680757e8b01cce74fb7fc58195"
+    },
+    "unit.png": {
+      "bytes": 48591,
+      "sha256": "57e9bdc27dd44033a90cb37b651937877da35b713d0052f6da7b8a7302dd9203"
+    },
+    "verify-artifacts.py": {
+      "bytes": 3308,
+      "sha256": "10ce7b3284c5ea94c5bef46e684fde38e1f3f8a133294cba7172779ccf3302b7"
+    }
+  }
+}

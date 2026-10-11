@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "source": "fb9be124977b11100b0549e53555fdad3ca95e3c",
+  "helper_sha256": "e41e6be92731e15baf7423b0bf8a78ffa046fb52edce4b65f621c2ec5085e09c",
+  "scope": "Independent original P7/P6/PNG every sample equality, retained screenshot metadata, process self-close and native image readability; no OS-input or compositor cadence claim. Label crowding tracked T122.",
+  "captures": [
+    {
+      "name": "unit",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2577955,
+      "self_closed": true,
+      "rgba_sha256": "c4ca83fb603cf3b312aa8ba9cf89e923798bb91344c4eba8353b0fce9447345a",
+      "rgb_sha256": "ebf6a0ce61f8c3518fb7cf9dfcf440ffb50e5784e1296ae945b237877987531e",
+      "p7_sha256": "4fced2a32a5332d6957f4722b1a3a47010c9549924e60dbe89c176e870ce39d9",
+      "p6_sha256": "39d63e78c5c6bd516233709c78ce6fc269479610847604acaa442a2b705d4eef",
+      "png_sha256": "57e9bdc27dd44033a90cb37b651937877da35b713d0052f6da7b8a7302dd9203",
+      "every_rgb_sample_equal": true,
+      "root_viewed": true,
+      "view_scope": "Compact power fields and completion5units14pins readable; placed shows five qualified units but center/pin text crowding remains and is tracked as T122."
+    },
+    {
+      "name": "completed",
+      "pixels": [
+        1067,
+        667
+      ],
+      "pid": 2579681,
+      "self_closed": true,
+      "rgba_sha256": "d33c6365c1579dfbcc511c790e438adc932e67c8b3418407420a632b46257c0c",
+      "rgb_sha256": "42153a8f79d31e55b2c8ad75e88866722939ebbfcf6790deac58cbab9f97d7da",
+      "p7_sha256": "2e8a34b0820c02ca9da0a1dd933540047b8766406675d1d2859d018358a54aff",
+      "p6_sha256": "64d356e02af8ac73e4e069a21261265d3755610fa6e3df5e985133b986edcfad",
+      "png_sha256": "e6ed36c870230b43207256d505c1e5ee496674a2296933cae9c237e60d4318af",
+      "every_rgb_sample_equal": true,
+      "root_viewed": true,
+      "view_scope": "Compact power fields and completion5units14pins readable; placed shows five qualified units but center/pin text crowding remains and is tracked as T122."
+    },
+    {
+      "name": "placed",
+      "pixels": [
+        2667,
+        1833
+      ],
+      "pid": 2589885,
+      "self_closed": true,
+      "rgba_sha256": "0c354bf9785e9508f1206ed9391917f1108c8c71d92bca96accdfc00a743c05e",
+      "rgb_sha256": "c254594d875b54e3d46a5c5ccd7f25cab1aae263007389e51f22ffed376dc184",
+      "p7_sha256": "a3d69463fa7c7aa29d62aed3e7de57db8c4f0fb8a188997179036e3f57249031",
+      "p6_sha256": "c88afaba2a3b25f11d1cf0f12d89c02f2b66724c3d8d2f3cff9cdb06640f2a93",
+      "png_sha256": "4ba850cc46c126bca431500a9845449e1d337016ec15e6b8183e5c3c0470fc3c",
+      "every_rgb_sample_equal": true,
+      "root_viewed": true,
+      "view_scope": "Compact power fields and completion5units14pins readable; placed shows five qualified units but center/pin text crowding remains and is tracked as T122."
+    }
+  ]
+}

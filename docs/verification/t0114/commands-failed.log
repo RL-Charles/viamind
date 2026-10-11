@@ -1,0 +1,26 @@
+f3cee78efadfda38a98247fb294c2dcff434047f
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/apps/viamind)
+error[E0432]: unresolved import `viamind_geom`
+  --> crates/mcp/tests/symbol_packages.rs:10:5
+   |
+10 | use viamind_geom::Nm;
+   |     ^^^^^^^^^^^^ use of unresolved module or unlinked crate `viamind_geom`
+   |
+help: there is a crate or module with a similar name
+   |
+10 - use viamind_geom::Nm;
+10 + use viamind_doc::Nm;
+   |
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `viamind-mcp` (test "symbol_packages") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

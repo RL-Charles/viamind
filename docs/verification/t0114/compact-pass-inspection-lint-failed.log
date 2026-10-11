@@ -1,0 +1,321 @@
+bf9bd36f1d96a7f8d2de5dbd0dd7d6d95c56a073
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/render)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 47.18s
+     Running tests/package_compact.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/package_compact-018ebb4f010834dc)
+
+running 3 tests
+test actual_libraries_menu_opens_detached_package_editor ... ok
+REVEAL Refresh complete package target
+REVEAL Refresh complete package target
+RECT Refresh complete package target [[23.0 203.0] - [223.8 221.0]]
+RECT Refresh complete package target [[23.0 203.0] - [223.8 221.0]]
+REVEAL Package file path (load or NEW save)
+REVEAL Package definition name
+RECT Package file path (load or NEW save) [[23.0 125.0] - [303.0 144.0]]
+REVEAL Load complete package file
+RECT Package definition name [[23.0 202.0] - [303.0 221.0]]
+RECT Load complete package file [[23.0 147.0] - [189.3 165.0]]
+REVEAL Package unit to edit
+REVEAL Package default value
+RECT Package unit to edit [[23.0 203.0] - [133.1 221.0]]
+RECT Package default value [[23.0 202.0] - [303.0 221.0]]
+REVEAL Pin 2 X (mm)
+REVEAL Package footprint (optional)
+RECT Package footprint (optional) [[23.0 202.0] - [303.0 221.0]]
+REVEAL Add package unit
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+RECT Add package unit [[23.0 203.0] - [131.1 221.0]]
+REVEAL Pin 2 Y (mm)
+REVEAL Add package unit
+RECT Add package unit [[23.0 203.0] - [131.1 221.0]]
+REVEAL Add package unit
+RECT Pin 2 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+RECT Add package unit [[23.0 203.0] - [131.1 221.0]]
+REVEAL Pin 2 electrical type
+REVEAL Package unit to edit
+RECT Package unit to edit [[23.0 203.0] - [123.0 221.0]]
+REVEAL Unit display name
+RECT Unit display name [[23.0 202.0] - [303.0 221.0]]
+RECT Pin 2 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL Input
+REVEAL Functional unit
+RECT Functional unit [[147.4 203.0] - [251.6 221.0]]
+RECT Input [[151.0 213.0] - [244.0 231.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Package file path (load or NEW save)
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+RECT Package file path (load or NEW save) [[23.0 125.0] - [303.0 144.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Save NEW complete package file
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Pin 1 number
+RECT Save NEW complete package file [[23.0 203.0] - [219.1 221.0]]
+REVEAL Place complete package
+RECT Place complete package [[23.0 248.0] - [170.4 266.0]]
+RECT Pin 1 number [[143.7 62.0] - [243.7 81.0]]
+REVEAL Pin 1 name
+test actual_compact_complete_power_pin_row_save_and_atomic_package_place ... ok
+RECT Pin 1 name [[143.7 84.0] - [243.7 103.0]]
+REVEAL Pin 1 X (mm)
+RECT Pin 1 X (mm) [[143.7 106.0] - [243.7 125.0]]
+REVEAL Pin 1 Y (mm)
+RECT Pin 1 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 119.0] - [243.7 137.0]]
+REVEAL Input
+RECT Input [[151.0 186.0] - [244.0 204.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 118.0] - [243.7 136.0]]
+REVEAL Input
+RECT Input [[151.0 185.0] - [244.0 203.0]]
+REVEAL Pin 3 number
+RECT Pin 3 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 name
+RECT Pin 3 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 X (mm)
+RECT Pin 3 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 Y (mm)
+RECT Pin 3 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+REVEAL Pin 3 electrical type
+RECT Pin 3 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL Output
+RECT Output [[151.0 234.0] - [244.0 252.0]]
+REVEAL Package unit to edit
+RECT Package unit to edit [[23.0 203.0] - [133.1 221.0]]
+REVEAL Unit display name
+RECT Unit display name [[23.0 202.0] - [303.0 221.0]]
+REVEAL Functional unit
+RECT Functional unit [[147.4 203.0] - [251.6 221.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Pin 1 number
+RECT Pin 1 number [[143.7 62.0] - [243.7 81.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 84.0] - [243.7 103.0]]
+REVEAL Pin 1 X (mm)
+RECT Pin 1 X (mm) [[143.7 106.0] - [243.7 125.0]]
+REVEAL Pin 1 Y (mm)
+RECT Pin 1 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 119.0] - [243.7 137.0]]
+REVEAL Input
+RECT Input [[151.0 186.0] - [244.0 204.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 118.0] - [243.7 136.0]]
+REVEAL Input
+RECT Input [[151.0 185.0] - [244.0 203.0]]
+REVEAL Pin 3 number
+RECT Pin 3 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 name
+RECT Pin 3 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 X (mm)
+RECT Pin 3 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 Y (mm)
+RECT Pin 3 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+REVEAL Pin 3 electrical type
+RECT Pin 3 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL Output
+RECT Output [[151.0 234.0] - [244.0 252.0]]
+REVEAL Package unit to edit
+RECT Package unit to edit [[23.0 203.0] - [132.7 221.0]]
+REVEAL Unit display name
+RECT Unit display name [[23.0 202.0] - [303.0 221.0]]
+REVEAL Functional unit
+RECT Functional unit [[147.4 203.0] - [251.6 221.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Pin 1 number
+RECT Pin 1 number [[143.7 62.0] - [243.7 81.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 84.0] - [243.7 103.0]]
+REVEAL Pin 1 X (mm)
+RECT Pin 1 X (mm) [[143.7 106.0] - [243.7 125.0]]
+REVEAL Pin 1 Y (mm)
+RECT Pin 1 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 119.0] - [243.7 137.0]]
+REVEAL Input
+RECT Input [[151.0 186.0] - [244.0 204.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 118.0] - [243.7 136.0]]
+REVEAL Input
+RECT Input [[151.0 185.0] - [244.0 203.0]]
+REVEAL Pin 3 number
+RECT Pin 3 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 name
+RECT Pin 3 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 X (mm)
+RECT Pin 3 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 Y (mm)
+RECT Pin 3 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+REVEAL Pin 3 electrical type
+RECT Pin 3 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL Output
+RECT Output [[151.0 234.0] - [244.0 252.0]]
+REVEAL Package unit to edit
+RECT Package unit to edit [[23.0 203.0] - [132.3 221.0]]
+REVEAL Unit display name
+RECT Unit display name [[23.0 202.0] - [303.0 221.0]]
+REVEAL Functional unit
+RECT Functional unit [[147.4 203.0] - [251.6 221.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Pin 1 number
+RECT Pin 1 number [[143.7 62.0] - [243.7 81.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 84.0] - [243.7 103.0]]
+REVEAL Pin 1 X (mm)
+RECT Pin 1 X (mm) [[143.7 106.0] - [243.7 125.0]]
+REVEAL Pin 1 Y (mm)
+RECT Pin 1 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 119.0] - [243.7 137.0]]
+REVEAL Input
+RECT Input [[151.0 186.0] - [244.0 204.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 118.0] - [243.7 136.0]]
+REVEAL Input
+RECT Input [[151.0 185.0] - [244.0 203.0]]
+REVEAL Pin 3 number
+RECT Pin 3 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 name
+RECT Pin 3 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 X (mm)
+RECT Pin 3 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 3 Y (mm)
+RECT Pin 3 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+REVEAL Pin 3 electrical type
+RECT Pin 3 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL Output
+RECT Output [[151.0 234.0] - [244.0 252.0]]
+REVEAL Package unit to edit
+RECT Package unit to edit [[23.0 203.0] - [134.4 221.0]]
+REVEAL Unit key
+RECT Unit key [[23.0 202.0] - [303.0 221.0]]
+REVEAL Unit display name
+RECT Unit display name [[23.0 202.0] - [303.0 221.0]]
+REVEAL Power unit
+RECT Power unit [[259.6 203.0] - [340.7 221.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 203.0] - [134.7 221.0]]
+REVEAL Pin 1 number
+RECT Pin 1 number [[143.7 62.0] - [243.7 81.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 84.0] - [243.7 103.0]]
+REVEAL Pin 1 X (mm)
+RECT Pin 1 X (mm) [[143.7 106.0] - [243.7 125.0]]
+REVEAL Pin 1 Y (mm)
+RECT Pin 1 Y (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 119.0] - [243.7 137.0]]
+REVEAL PowerInput
+RECT PowerInput [[151.0 284.0] - [244.0 302.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 118.0] - [243.7 137.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 124.0] - [243.7 143.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 146.0] - [243.7 164.0]]
+REVEAL PowerInput
+RECT PowerInput [[151.0 311.0] - [244.0 329.0]]
+REVEAL Package file path (load or NEW save)
+RECT Package file path (load or NEW save) [[23.0 125.0] - [303.0 144.0]]
+REVEAL Save NEW complete package file
+RECT Save NEW complete package file [[23.0 203.0] - [219.1 221.0]]
+REVEAL Place complete package
+RECT Place complete package [[23.0 248.0] - [170.4 266.0]]
+test actual_compact_author_all_five_units_from_scratch_save_place_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.50s
+
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/apps/viamind)
+error: function `original` is never used
+   --> crates/ui-egui/examples/../tests/support/package_compact.rs:113:15
+    |
+113 | pub(crate) fn original(h: &mut Harness<'_, ViamindApp>) {
+    |               ^^^^^^^^
+    |
+    = note: `-D dead-code` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+
+error: could not compile `viamind-ui-egui` (example "package_inspection") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
