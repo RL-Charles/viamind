@@ -20,6 +20,7 @@ pub struct SetNamedNetRules {
     pub expected_cursor: EventCursor,
     /// Complete replacement, empty to clear. Duplicate exact names refuse.
     #[serde(deserialize_with = "deserialize_rows")]
+    #[schemars(length(max = 128))]
     pub rules: Vec<NamedNetRuleRow>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -112,4 +113,19 @@ fn deserialize_rows<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result
         }
     }
     deserializer.deserialize_seq(RowsVisitor)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use viamind_geom::Nm;
+    #[test]
+    fn borrowed_policy_rows_and_text_charge_shared_capture_before_copy() {
+        let mut project = Project::new("Policy capture");
+        project.board.net_rules.insert("A".into(), NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+        assert!(crate::auto_drc::snapshot_budget(&project, 0).unwrap_err().contains("structural objects"));
+        assert!(crate::auto_drc::snapshot_budget(&project, 1).is_ok());
+        project.board.net_rules.insert("large".repeat(100000), NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+        assert!(crate::auto_drc::snapshot_budget(&project, 100000).unwrap_err().contains("256"));
+    }
 }

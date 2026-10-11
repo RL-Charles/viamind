@@ -100,7 +100,7 @@ pub fn to_string(project: &Project) -> String {
 
 /// Parses the text of a project file, checking the envelope and the model's invariants.
 pub fn from_str(text: &str) -> Result<Project, FileError> {
-    let envelope: EnvelopeIn = serde_json::from_str(text)?;
+    let envelope: EnvelopeIn<'_> = serde_json::from_str(text)?;
     if envelope.format != FORMAT {
         return Err(FileError::WrongFormat(envelope.format));
     }

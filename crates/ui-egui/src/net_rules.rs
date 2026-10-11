@@ -154,6 +154,7 @@ impl ViamindApp {
             let input = (|| {
                 let mut rows = Vec::with_capacity(draft.rows.len());
                 for row in &draft.rows {
+                    viamind_doc::net_rules::validate_net_rule_name(&row.net).map_err(str::to_owned)?;
                     rows.push(NamedNetRuleRow {
                         net: row.net.clone(),
                         minimum_copper_clearance: parse_minimum_mm(&row.clearance)?,

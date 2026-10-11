@@ -117,3 +117,26 @@ fn generated_bend_and_endpoint_stub_both_receive_shared_scoped_preflight() {
         assert_eq!(e.session_state(), before);
     }
 }
+
+#[test]
+fn exact_named_width_floor_preserves_odd_nm_posture_geometry_without_widening() {
+    let (e, ids) = fixture();
+    let old = e.session_state();
+    e.execute_typed(
+        viamind_engine::SetNamedNetRules {
+            expected_project: old.project.id,
+            expected_cursor: old.cursor,
+            rules: vec![viamind_engine::NamedNetRuleRow { net: "EXACT".into(), minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300001) }],
+        },
+        Origin::User,
+    )
+    .unwrap();
+    let before = e.session_state();
+    let request = RoutePadPosture { width: Nm(300000), ..input(&e, ids) };
+    assert!(e.execute_typed(request.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), before);
+    e.execute_typed(RoutePadPosture { width: Nm(300001), ..request }, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(300001))));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+}

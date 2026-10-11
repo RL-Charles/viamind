@@ -184,3 +184,18 @@ fn joint_preflight_checks_foreign_copper_both_sides_and_physical_via_holes() {
     assert!(e.execute_typed(route, Origin::User).unwrap_err().to_string().contains("incomplete"));
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn persisted_named_width_floor_checks_both_explicit_via_legs_jointly() {
+    let (mut project, ids) = fixture();
+    project.board.net_rules.insert("SIGNAL".into(), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300001) });
+    let e = EngineHandle::new(project);
+    let before = e.session_state();
+    let request = RoutePadViaPolyline { width: Nm(300000), ..input(&e, ids) };
+    assert!(e.execute_typed(request.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), before);
+    e.execute_typed(RoutePadViaPolyline { width: Nm(300001), ..request }, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(300001))));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+}

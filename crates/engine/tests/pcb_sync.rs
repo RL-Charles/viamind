@@ -47,7 +47,7 @@ fn link_is_guarded_shared_undoable_and_versioned_even_if_final_state_unlinked() 
         let mut bytes = Vec::new();
         e.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
         assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), before.project);
-        let downgraded = String::from_utf8(bytes).unwrap().replace("\"version\":7", "\"version\":5");
+        let downgraded = String::from_utf8(bytes).unwrap().replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":5");
         assert!(EventLog::read_jsonl(downgraded.as_bytes()).is_err(), "historic linked snapshots require version6 even after unlink");
     }
 }
