@@ -41,7 +41,7 @@ pub mod session;
 pub mod transaction;
 
 pub use command::{Command, CommandError, CommandSpec, input_schema};
-pub use commands::{AddPart, DeletePart, MovePart};
+pub use commands::{AddPart, DeletePart, MovePart, UpdatePart};
 pub use delta::{Delta, apply_all, coalesce, invert};
 pub use document::{DocumentStatus, NewProject, OpenProject, ReplaceGuard, SaveProject, SaveResult};
 pub use engine::{Engine, Tx};

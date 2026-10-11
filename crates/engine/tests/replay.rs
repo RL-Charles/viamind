@@ -16,7 +16,16 @@ impl Lcg {
 }
 
 fn add(designator: String, x_mm: f64) -> AddPart {
-    AddPart { designator, value: "4.7k".into(), footprint: "R_0805".into(), x_mm, y_mm: -x_mm, rotation_deg: Some(x_mm * 3.0), side: None }
+    AddPart {
+        expected_project: None,
+        designator,
+        value: "4.7k".into(),
+        footprint: "R_0805".into(),
+        x_mm,
+        y_mm: -x_mm,
+        rotation_deg: Some(x_mm * 3.0),
+        side: None,
+    }
 }
 
 /// Drives a mix of commands, batches, failures, undo and redo from two origins.

@@ -28,7 +28,7 @@ impl Board {
 }
 
 /// A component placed on the board.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
     /// Stable id of the part.
     pub id: ObjectId,

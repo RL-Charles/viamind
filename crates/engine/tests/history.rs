@@ -7,7 +7,16 @@ use viamind_doc::{ObjectId, Project};
 use viamind_engine::{AddPart, DeletePart, EngineHandle, MovePart, Origin, TxId};
 
 fn add(designator: String, x_mm: f64) -> AddPart {
-    AddPart { designator, value: "1k".into(), footprint: "R_0603".into(), x_mm, y_mm: 0.0, rotation_deg: Some(x_mm), side: None }
+    AddPart {
+        expected_project: None,
+        designator,
+        value: "1k".into(),
+        footprint: "R_0603".into(),
+        x_mm,
+        y_mm: 0.0,
+        rotation_deg: Some(x_mm),
+        side: None,
+    }
 }
 
 /// Small deterministic generator so the test needs no extra dependency.

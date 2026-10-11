@@ -314,3 +314,33 @@ async fn agents_replace_shared_documents_and_wake_observers_for_resynchronizatio
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn property_updates_are_discoverable_shared_guarded_and_undoable() {
+    let engine = EngineHandle::new(Project::new("Property HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = connect(server.url(), "property-a").await;
+    let b = connect(server.url(), "property-b").await;
+    let tools = a.list_all_tools().await.unwrap();
+    let schema = serde_json::to_value(&tools.iter().find(|tool| tool.name == "update_part").unwrap().input_schema).unwrap();
+    assert_eq!(schema, viamind_engine::input_schema::<viamind_engine::UpdatePart>());
+    let result = call(&a, "add_part", resistor("R1", 10.0)).await.structured_content.unwrap();
+    let id = result["created"][0].clone();
+    let original = call(&b, "query_parts", json!({ "ids": [id] })).await.structured_content.unwrap()["parts"][0].clone();
+    assert_eq!(
+        call(&b, "update_part", json!({ "id": id, "expected": original, "value": "22k", "rotation_deg": -90, "side": "bottom" })).await.is_error,
+        Some(false)
+    );
+    let changed = call(&a, "query_parts", json!({ "ids": [id] })).await.structured_content.unwrap()["parts"][0].clone();
+    assert_eq!(changed["value"], "22k");
+    assert_eq!(changed["rotation_mdeg"], 270_000);
+    assert_eq!(changed["side"], "bottom");
+    assert_eq!(call(&a, "update_part", json!({ "id": id, "expected": original, "value": "stale" })).await.is_error, Some(true));
+    assert_eq!(call(&b, "undo", json!({})).await.is_error, Some(false));
+    assert_eq!(call(&a, "query_parts", json!({ "ids": [id] })).await.structured_content.unwrap()["parts"][0], original);
+    assert_eq!(call(&b, "redo", json!({})).await.is_error, Some(false));
+    assert_eq!(call(&a, "query_parts", json!({ "ids": [id] })).await.structured_content.unwrap()["parts"][0], changed);
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}

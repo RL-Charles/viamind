@@ -7,14 +7,23 @@ use viamind_engine::{AddPart, Command, CommandError, CommandRegistry, DeletePart
 use viamind_geom::{Nm, Point};
 
 fn add(designator: &str, x_mm: f64, y_mm: f64) -> AddPart {
-    AddPart { designator: designator.into(), value: "10k".into(), footprint: "R_0603".into(), x_mm, y_mm, rotation_deg: None, side: None }
+    AddPart {
+        expected_project: None,
+        designator: designator.into(),
+        value: "10k".into(),
+        footprint: "R_0603".into(),
+        x_mm,
+        y_mm,
+        rotation_deg: None,
+        side: None,
+    }
 }
 
 #[test]
 fn builtin_specs() {
     let specs = CommandRegistry::builtin().specs();
     let names: Vec<_> = specs.iter().map(|spec| spec.name.as_str()).collect();
-    assert_eq!(names, ["add_part", "delete_part", "move_part"]);
+    assert_eq!(names, ["add_part", "delete_part", "move_part", "update_part"]);
     let add = &specs[0];
     let required: Vec<_> = add.input_schema["required"].as_array().unwrap().iter().map(|v| v.as_str().unwrap()).collect();
     assert_eq!(required, ["designator", "value", "footprint", "x_mm", "y_mm"]);
@@ -106,6 +115,7 @@ fn arb_add() -> impl Strategy<Value = AddPart> {
         prop::option::of(prop_oneof![Just(Side::Top), Just(Side::Bottom)]),
     )
         .prop_map(|(designator, value, footprint, x_mm, y_mm, rotation_deg, side)| AddPart {
+            expected_project: None,
             designator,
             value,
             footprint: footprint.into(),

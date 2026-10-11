@@ -4,7 +4,10 @@
 //! parity gate. View preferences (camera, layers, tool choice, test scene) are local UI state.
 
 use serde_json::{Value, json};
-use viamind_engine::{AddPart, Command, EngineError, EngineHandle, NewProject, OpenProject, Origin, SaveProject, SetSelection, input_schema};
+use viamind_engine::{
+    AddPart, Command, DeletePart, EngineError, EngineHandle, MovePart, NewProject, OpenProject, Origin, SaveProject, SetSelection, UpdatePart,
+    input_schema,
+};
 
 macro_rules! ui_actions {
     ($( $variant:ident => ($tool:expr, $schema:expr, $handler:ident) ),+ $(,)?) => {
@@ -39,6 +42,9 @@ fn no_args() -> Value {
 ui_actions! {
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
+    UpdatePart => (UpdatePart::NAME, input_schema::<UpdatePart>(), update_part),
+    DeletePart => (DeletePart::NAME, input_schema::<DeletePart>(), delete_part),
+    MovePart => (MovePart::NAME, input_schema::<MovePart>(), move_part),
     PlacePart => (AddPart::NAME, input_schema::<AddPart>(), place_part),
     Undo => ("undo", no_args(), undo),
     Redo => ("redo", no_args(), redo),
@@ -85,4 +91,14 @@ fn open_project(engine: &EngineHandle, input: Value) -> Result<Value, EngineErro
     let input =
         serde_json::from_value(input).map_err(|error| EngineError::InvalidInput { command: "open_project".into(), message: error.to_string() })?;
     serde_json::to_value(engine.open_project(input, Origin::User)?).map_err(encode_error)
+}
+
+fn update_part(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(UpdatePart::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn delete_part(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(DeletePart::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn move_part(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(MovePart::NAME, input, Origin::User)?).map_err(encode_error)
 }
