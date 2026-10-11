@@ -27,7 +27,7 @@ class AppImageTests(unittest.TestCase):
             binary = appdir / "usr/bin/viamind"
             binary.parent.mkdir(parents=True)
             binary.write_text("#!/usr/bin/env python3\nimport os,sys,json\n"
-                              "print(json.dumps([sys.argv[1:],os.getcwd(),os.environ['VIAMIND_TEST_VALUE'],sys.stdin.read()]))\n"
+                              "print(json.dumps([sys.argv[1:],os.getcwd(),os.environ['VIAMIND_TEST_VALUE'],os.environ['appdir'],sys.stdin.read()]))\n"
                               "print('diagnostic',file=sys.stderr)\nsys.exit(17)\n")
             binary.chmod(0o755)
             launcher = appdir / "AppRun"
@@ -36,10 +36,10 @@ class AppImageTests(unittest.TestCase):
             cwd = root / "unrelated working directory"
             cwd.mkdir()
             args = ["--open", "relative board.json", "", "literal $HOME;`false`", "μΩ"]
-            result = subprocess.run([str(launcher), *args], cwd=cwd, env=dict(os.environ, VIAMIND_TEST_VALUE="kept μ"),
+            result = subprocess.run([str(launcher), *args], cwd=cwd, env=dict(os.environ, VIAMIND_TEST_VALUE="kept μ", appdir="caller sentinel"),
                                     input="protocol input\n", text=True, capture_output=True)
             self.assertEqual(result.returncode, 17)
-            self.assertEqual(json.loads(result.stdout), [args, str(cwd), "kept μ", "protocol input\n"])
+            self.assertEqual(json.loads(result.stdout), [args, str(cwd), "kept μ", "caller sentinel", "protocol input\n"])
             self.assertEqual(result.stderr, "diagnostic\n")
 
     def test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution(self):

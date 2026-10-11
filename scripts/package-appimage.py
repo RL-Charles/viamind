@@ -26,8 +26,7 @@ def linux_bundle_module():
 
 def apprun_text():
     return ('#!/bin/sh\nset -eu\n'
-            'appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\n'
-            'exec "$appdir/usr/bin/viamind" "$@"\n')
+            'exec "$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/usr/bin/viamind" "$@"\n')
 
 
 def check_runtime(runtime):
