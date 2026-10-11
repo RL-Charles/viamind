@@ -120,10 +120,10 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
     let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/asymmetric.viamind.json")).unwrap();
     let schematic = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
     project.schematic = schematic.schematic;
-    project.board.net_rules.insert(
-        "GND".into(),
-        serde_json::from_value(json!({"minimum_copper_clearance":250_000,"minimum_track_width":200_000})).unwrap(),
-    );
+    project
+        .board
+        .net_rules
+        .insert("GND".into(), serde_json::from_value(json!({"minimum_copper_clearance":250_000,"minimum_track_width":200_000})).unwrap());
     let sheet = *project.schematic.sheets.keys().next().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let native = dir.path().join("protected.viamind.json");
@@ -153,7 +153,8 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
         let policy = call(client, "query_named_net_rules", json!({})).await.unwrap().structured_content.unwrap();
         assert_eq!(policy["source_cursor"], serde_json::to_value(before.cursor).unwrap());
         assert_eq!(policy["document_net_rules"], serde_json::to_value(&before.project.board.net_rules).unwrap());
-        let library = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json");
+        let library =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json");
         let expected: Value = serde_json::from_slice(&std::fs::read(&library).unwrap()).unwrap();
         let loaded = call(client, "load_footprint_definition", json!({"path":library})).await.unwrap();
         assert_eq!(loaded.structured_content.unwrap(), expected["footprint"]);

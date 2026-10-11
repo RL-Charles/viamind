@@ -126,7 +126,10 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
     for (name, args) in [
         ("query_parts", json!({})),
         ("query_named_net_rules", json!({})),
-        ("load_footprint_definition", json!({"path":std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json")})),
+        (
+            "load_footprint_definition",
+            json!({"path":std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json")}),
+        ),
         ("run_drc", json!({})),
         ("render_board_view", json!({"options":{"width_px":128,"height_px":96}})),
         ("render_board_png", json!({"options":{"width_px":128,"height_px":96}})),
