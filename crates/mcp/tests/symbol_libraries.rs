@@ -25,6 +25,10 @@ async fn two_real_clients_share_detached_files_guarded_placement_and_scoped_undo
         .unwrap();
     let tools = a.list_all_tools().await.unwrap();
     assert_eq!(
+        serde_json::to_value(&tools.iter().find(|t| t.name == "save_symbol_template").unwrap().input_schema).unwrap(),
+        viamind_engine::input_schema::<viamind_engine::SaveSymbolTemplate>()
+    );
+    assert_eq!(
         serde_json::to_value(&tools.iter().find(|t| t.name == "load_symbol_template").unwrap().input_schema).unwrap(),
         viamind_engine::input_schema::<viamind_engine::LoadSymbolTemplate>()
     );
@@ -39,6 +43,24 @@ async fn two_real_clients_share_detached_files_guarded_placement_and_scoped_undo
     assert_eq!(call(&b, "export_symbol_template", export).await.is_error, Some(true));
     assert_eq!(std::fs::read(&path).unwrap(), bytes);
     let template = call(&b, "load_symbol_template", json!({"path":path})).await.structured_content.unwrap();
+    let detached = dir.path().join("edited.symbol.json");
+    let mut edited = template.clone();
+    edited["value"] = json!("Edited detached regulator");
+    edited["width"] = json!(4_000_001);
+    let save = json!({"template":edited,"path":detached});
+    assert_eq!(call(&a, "save_symbol_template", save.clone()).await.is_error, Some(false));
+    let saved_bytes = std::fs::read(&detached).unwrap();
+    assert_eq!(call(&b, "save_symbol_template", save.clone()).await.is_error, Some(true));
+    assert_eq!(std::fs::read(&detached).unwrap(), saved_bytes);
+    assert_eq!(call(&b, "load_symbol_template", json!({"path":detached})).await.structured_content.unwrap(), edited);
+    let mut invalid = save.clone();
+    invalid["template"]["pins"][0]["number"] = invalid["template"]["pins"][1]["number"].clone();
+    invalid["path"] = json!(dir.path().join("invalid.json"));
+    assert_eq!(call(&b, "save_symbol_template", invalid).await.is_error, Some(true));
+    assert!(!dir.path().join("invalid.json").exists());
+    let mut unknown = save;
+    unknown["extra"] = json!(true);
+    assert_eq!(call(&b, "save_symbol_template", unknown).await.is_error, Some(true));
     let guard = call(&a, "snapshot_symbol_sheet", json!({"sheet_id":sheet.id})).await.structured_content.unwrap();
     assert_eq!(engine.session_state(), before);
     let mut command = json!({"expected_project":guard["expected_project"],"source_cursor":guard["source_cursor"],"expected":guard["expected"],"template":template,"designator":"U2","position":{"x":40000001,"y":50000003},"rotation_quarters":1,"mirrored":true});

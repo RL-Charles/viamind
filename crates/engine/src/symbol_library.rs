@@ -44,6 +44,20 @@ pub struct LoadSymbolTemplate {
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
+pub struct SaveSymbolTemplate {
+    pub template: SymbolTemplate,
+    pub path: PathBuf,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SymbolTemplateSaveResult {
+    pub path: PathBuf,
+    pub name: String,
+    pub pin_count: usize,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct ExportSymbolTemplate {
     pub expected_project: ObjectId,
     pub source_cursor: EventCursor,
@@ -113,6 +127,14 @@ impl Command for PlaceSymbolTemplate {
 }
 
 impl EngineHandle {
+    /// Save a detached definition; file work never holds the design mutex.
+    pub fn save_symbol_template(&self, input: SaveSymbolTemplate) -> Result<SymbolTemplateSaveResult, EngineError> {
+        input.template.validate().map_err(|message| EngineError::File { message })?;
+        let native = self.document_status().path;
+        let path = viamind_doc::symbol_library::save_new(&input.template, &input.path, native.as_deref())
+            .map_err(|message| EngineError::File { message })?;
+        Ok(SymbolTemplateSaveResult { path, name: input.template.name, pin_count: input.template.pins.len() })
+    }
     pub fn snapshot_symbol_sheet(&self, input: &SymbolSheetQuery) -> Result<SymbolSheetSnapshot, CommandError> {
         self.with_engine(|engine| {
             let project = engine.project();
