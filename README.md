@@ -64,8 +64,9 @@ Agents share the same selection through `get_selection` and `set_selection`:
 {"ids": ["<part ID from get_design>"], "mode": "replace"}
 ```
 
-Selection preserves design undo/redo. The prototype currently draws common built-in
-footprints; schematic capture, routing and library editing are planned features.
+Selection preserves design undo/redo. The Linux application supports native
+schematic capture, guarded manual PCB routing and reusable rectangular SMD
+footprints. The workflow sections below describe each supported subset.
 
 ## Check copper and via drill rules
 
@@ -248,7 +249,7 @@ Selected native schematic sheets also support display-free SVG/PNG export and MC
 
 ### Linked schematic and PCB updates
 
-Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). New component creation and routed-net migration remain open.
+Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). Component creation uses the explicit footprint workflow below; routed-net migration remains open.
 
 ### Linked component cross-probing
 

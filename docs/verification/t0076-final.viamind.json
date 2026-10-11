@@ -1,0 +1,242 @@
+{
+  "format": "viamind",
+  "version": 4,
+  "project": {
+    "id": "c827dceb-2f0e-44bc-83cd-c68d18735549",
+    "name": "Original endpoint continuity example",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "tracks": {
+        "4b4803d6-a645-4e3d-a90a-f6232327a201": {
+          "id": "4b4803d6-a645-4e3d-a90a-f6232327a201",
+          "start": {
+            "x": 10000380,
+            "y": 10000252
+          },
+          "end": {
+            "x": 30000514,
+            "y": 10000252
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "STRAIGHT"
+        },
+        "973f00ef-a5ed-415f-8336-cba274823bb8": {
+          "id": "973f00ef-a5ed-415f-8336-cba274823bb8",
+          "start": {
+            "x": 10000000,
+            "y": 30000000
+          },
+          "end": {
+            "x": 20000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "VIA"
+        },
+        "d76bcf5c-49ac-4499-b7da-ea92c5db6282": {
+          "id": "d76bcf5c-49ac-4499-b7da-ea92c5db6282",
+          "start": {
+            "x": 20000000,
+            "y": 30000000
+          },
+          "end": {
+            "x": 30000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "VIA"
+        }
+      },
+      "vias": {
+        "839c6923-8cfb-4d75-b4f4-4cb22e07a264": {
+          "id": "839c6923-8cfb-4d75-b4f4-4cb22e07a264",
+          "position": {
+            "x": 20000000,
+            "y": 30000000
+          },
+          "diameter": 600000,
+          "drill": 300000,
+          "net": "VIA"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 70000000
+          },
+          {
+            "x": 0,
+            "y": 70000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "0a55d847-83d7-4fa6-8757-229fa35f3aa3": {
+          "pads": [
+            {
+              "id": "06ef7c57-bd99-4d51-b737-61ad42df4677",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "VIA"
+            }
+          ],
+          "id": "0a55d847-83d7-4fa6-8757-229fa35f3aa3",
+          "designator": "J3",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 10000000,
+            "y": 30000000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "2bdc7ebe-e569-4fac-96cc-77cffae21561": {
+          "pads": [
+            {
+              "id": "f5161464-aba8-48f9-b6a4-5172f0b05928",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "STRAIGHT"
+            }
+          ],
+          "id": "2bdc7ebe-e569-4fac-96cc-77cffae21561",
+          "designator": "J1",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 10000123,
+            "y": 10000129
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "2cc94414-4677-47ba-8df6-22055aa45ead": {
+          "pads": [
+            {
+              "id": "f59638d2-93e3-42bd-a3f2-be1691aec1ef",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "VIA"
+            }
+          ],
+          "id": "2cc94414-4677-47ba-8df6-22055aa45ead",
+          "designator": "J4",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 30000000,
+            "y": 30000000
+          },
+          "rotation_mdeg": 0,
+          "side": "bottom"
+        },
+        "991b27e4-b6cf-4239-a689-26acd412e115": {
+          "pads": [
+            {
+              "id": "42711189-1857-47a9-b429-4f4d78ba7385",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "UNKNOWN"
+            }
+          ],
+          "id": "991b27e4-b6cf-4239-a689-26acd412e115",
+          "designator": "J5",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 10000000,
+            "y": 50000000
+          },
+          "rotation_mdeg": 45000,
+          "side": "top"
+        },
+        "e0ad0485-b06b-44bf-902b-bd87543d7814": {
+          "pads": [
+            {
+              "id": "6a1395f0-45ac-470f-95f6-73f5f648c47a",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "STRAIGHT"
+            }
+          ],
+          "id": "e0ad0485-b06b-44bf-902b-bd87543d7814",
+          "designator": "J2",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 30000257,
+            "y": 10000129
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "ebbeaf19-9d7c-48a5-b279-3ef3d0831ad6": {
+          "pads": [
+            {
+              "id": "6cecdb87-b70f-4905-98b6-85dc29a06f37",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "UNKNOWN"
+            }
+          ],
+          "id": "ebbeaf19-9d7c-48a5-b279-3ef3d0831ad6",
+          "designator": "J6",
+          "value": "original",
+          "footprint": "original-SMD",
+          "position": {
+            "x": 30000000,
+            "y": 50000000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        }
+      }
+    }
+  }
+}
