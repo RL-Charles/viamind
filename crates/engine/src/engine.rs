@@ -8,6 +8,7 @@ use viamind_doc::Project;
 use crate::command::{Command, CommandSpec};
 use crate::delta::{Delta, apply_all, coalesce, invert};
 use crate::event::{ChangeEvent, ChangeKind, Notifier, Waker};
+use crate::log::EventLog;
 use crate::registry::{CommandRegistry, EngineError, apply_typed};
 use crate::transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo};
 
@@ -15,8 +16,10 @@ use crate::transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxI
 ///
 /// Every edit runs as a transaction: one or more commands that commit together
 /// and undo as one step. Undo and redo are per transaction and independent of
-/// origin, so the user can undo an agent's edit. Single-threaded; share it
-/// between the UI and the MCP server through [`crate::EngineHandle`].
+/// origin, so the user can undo an agent's edit. Every change is sent to
+/// subscribers as a [`ChangeEvent`] and appended to the [`EventLog`].
+/// Single-threaded; share it between the UI and the MCP server through
+/// [`crate::EngineHandle`].
 #[derive(Debug)]
 pub struct Engine {
     project: Project,
@@ -25,6 +28,7 @@ pub struct Engine {
     redo: Vec<Transaction>,
     next_tx: u64,
     notifier: Notifier,
+    log: EventLog,
 }
 
 impl Engine {
@@ -35,7 +39,15 @@ impl Engine {
 
     /// An engine for `project` accepting the commands in `registry`.
     pub fn with_registry(project: Project, registry: CommandRegistry) -> Engine {
-        Engine { project, registry, undo: Vec::new(), redo: Vec::new(), next_tx: 1, notifier: Notifier::default() }
+        Engine {
+            registry,
+            undo: Vec::new(),
+            redo: Vec::new(),
+            next_tx: 1,
+            notifier: Notifier::default(),
+            log: EventLog::new(project.clone()),
+            project,
+        }
     }
 
     /// The current project.
@@ -105,7 +117,7 @@ impl Engine {
         let result = ExecResult::new(id, deltas.clone());
         if !deltas.is_empty() {
             self.redo.clear();
-            self.notifier.send(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Applied, deltas: deltas.clone() });
+            self.emit(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Applied, deltas: deltas.clone() });
             self.undo.push(Transaction { id, origin, label: label.to_owned(), deltas });
         }
         Ok((value, result))
@@ -119,7 +131,7 @@ impl Engine {
         apply_all(&mut self.project, &deltas);
         let id = tx.id;
         self.redo.push(tx);
-        self.notifier.send(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
+        self.emit(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
         Ok(Some(id))
     }
 
@@ -131,7 +143,7 @@ impl Engine {
         let event = ChangeEvent { tx: tx.id, origin, kind: ChangeKind::Redone, deltas: tx.deltas.clone() };
         let id = tx.id;
         self.undo.push(tx);
-        self.notifier.send(event);
+        self.emit(event);
         Ok(Some(id))
     }
 
@@ -163,6 +175,18 @@ impl Engine {
     /// The redo history; the last entry is redone first.
     pub fn redo_history(&self) -> &[Transaction] {
         &self.redo
+    }
+
+    /// The append-only log of every change event since the engine was created;
+    /// [`EventLog::replay`] rebuilds the current project from it.
+    pub fn log(&self) -> &EventLog {
+        &self.log
+    }
+
+    /// Logs `event` and sends it to subscribers.
+    fn emit(&mut self, event: ChangeEvent) {
+        self.log.append(event.clone());
+        self.notifier.send(event);
     }
 
     /// Subscribes to change events: the receiver gets one [`ChangeEvent`] per

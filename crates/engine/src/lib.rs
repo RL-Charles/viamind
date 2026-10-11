@@ -32,6 +32,7 @@ pub mod delta;
 pub mod engine;
 pub mod event;
 pub mod handle;
+pub mod log;
 pub mod registry;
 pub mod transaction;
 
@@ -41,6 +42,7 @@ pub use delta::{Delta, apply_all, coalesce, invert};
 pub use engine::{Engine, Tx};
 pub use event::{ChangeEvent, ChangeKind, Waker};
 pub use handle::EngineHandle;
+pub use log::{EventLog, LogError};
 pub use registry::{CommandRegistry, EngineError};
 /// Re-exported so command input types can derive `JsonSchema` with a matching version.
 pub use schemars;
