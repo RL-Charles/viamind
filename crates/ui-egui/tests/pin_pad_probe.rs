@@ -118,6 +118,10 @@ fn actual_schematic_source_keeps_local_component_selection_and_empty_shared_sele
     let before = e.session_state();
     click(&mut h, &caption(&r.terminals[0]));
     click(&mut h, "Show PCB pad");
+    assert!(h.state().schematic.active, "selecting a symbol opens an object draft; navigation must preserve it");
+    assert!(h.query_by_label("Finish or cancel the active edit before terminal navigation.").is_some());
+    click(&mut h, "Cancel schematic draft");
+    click(&mut h, "Show PCB pad");
     assert!(!h.state().schematic.active);
     click(&mut h, "Show schematic pin");
     assert!(h.state().schematic.active);

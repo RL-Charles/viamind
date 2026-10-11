@@ -6,7 +6,9 @@ schematic endpoint and explicit PCB pad center in their respective editors.
 **Show schematic pin** and **Show PCB pad** center the view explicitly. Terminal
 choices and rings are local view state; shared PCB component selection stays as it
 was. Hidden destination copper rejects navigation and remains hidden. Finish or
-cancel active edits before using these navigation buttons.
+cancel active edits before using these navigation buttons. Selecting a symbol in
+the object list also opens its property draft; **Cancel schematic draft** retains
+that local component selection and enables terminal navigation.
 
 Mappings use only the explicit stable symbol link and exact unique terminal
 numbers. References and net names do not establish mappings. Every pin number

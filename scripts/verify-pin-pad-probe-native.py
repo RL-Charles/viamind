@@ -1,4 +1,7 @@
 """Exercise an owned production headless process; writes only new temporary files."""
+import sys
+sys.dont_write_bytecode = True
+import importlib.util
 import argparse
 import copy
 import hashlib
@@ -14,15 +17,19 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--binary", required=True)
 parser.add_argument("--fixture", default=str(Path(__file__).resolve().parent.parent / "fixtures/schematic/linked-regulator.viamind.json"))
 parser.add_argument("--report", required=True)
+parser.add_argument("--url", help="Owned actual desktop production MCP endpoint; opens fixture with current lifecycle guard")
 args = parser.parse_args()
 binary = Path(args.binary).resolve()
 env = os.environ.copy()
 env.pop("DISPLAY", None)
 env.pop("WAYLAND_DISPLAY", None)
-process = subprocess.Popen([str(binary), "--headless", "--open", str(Path(args.fixture).resolve())], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
+process = None
+clients = []
+if not args.url:
+    process = subprocess.Popen([str(binary), "--headless", "--open", str(Path(args.fixture).resolve())], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
 sequence = 0
 checks = []
-report = {"passed": False, "checks": checks, "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(), "transport": "production headless stdio"}
+report = {"passed": False, "checks": checks, "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(), "transport": args.url or "production headless stdio"}
 
 
 def rpc(method, params=None, notification=False):
@@ -45,10 +52,23 @@ def rpc(method, params=None, notification=False):
     raise AssertionError(method)
 
 
-def call(name, arguments=None, error=False):
+def call(name, arguments=None, error=False, peer=False):
     result = rpc("tools/call", {"name": name, "arguments": arguments or {}})
     assert bool(result.get("isError")) == error, result
     return result if error else result.get("structuredContent") or json.loads(result["content"][0]["text"])
+
+
+if args.url:
+    spec = importlib.util.spec_from_file_location("mcp_smoke", Path(__file__).resolve().parent / "mcp-smoke.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    clients = [module.McpClient(args.url, "native-pin-pad-a"), module.McpClient(args.url, "native-pin-pad-b")]
+    def rpc(method, params=None, notification=False):
+        assert not notification
+        return clients[0].rpc(method, params or {})
+    def call(name, arguments=None, error=False, peer=False):
+        return clients[int(peer)].call(name, arguments or {}, expect_error=error)
+    call("open_project", {"path":str(Path(args.fixture).resolve()), "expected_cursor":call("get_session_state")["cursor"]})
 
 
 def check(name, condition):
@@ -57,8 +77,9 @@ def check(name, condition):
 
 
 try:
-    rpc("initialize", {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "native-pin-pad-probe", "version": "1"}})
-    rpc("notifications/initialized", notification=True)
+    if process:
+        rpc("initialize", {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "native-pin-pad-probe", "version": "1"}})
+        rpc("notifications/initialized", notification=True)
     tools = {tool["name"] for tool in rpc("tools/list")["tools"]}
     check("bounded pin pad query discovered", "query_linked_pin_pads" in tools)
     project = call("get_design")
@@ -67,7 +88,7 @@ try:
     reports = [call("query_linked_pin_pads", {"component_id": p["id"]}) for p in parts]
     check("native regulator has seven exact physical terminal pairs", sum(r["total"] for r in reports) == 7 and all(r["coverage"] == "linked" and all(t["navigable"] for t in r["terminals"]) for r in reports))
     check("part and symbol queries produce identical paired identities", all(call("query_linked_pin_pads", {"component_id":p["schematic_symbol"]}) == r for p,r in zip(parts,reports)))
-    check("repeat query deterministic and full session preserved", all(call("query_linked_pin_pads", {"component_id":p["id"]}) == r for p,r in zip(parts,reports)) and call("get_session_state") == before)
+    check("repeat query deterministic and full session preserved", all(call("query_linked_pin_pads", {"component_id":p["id"]},peer=bool(args.url)) == r for p,r in zip(parts,reports)) and call("get_session_state") == before)
     part=parts[0]
     query={"component_id":part["id"]}
     page=call("query_linked_pin_pads",dict(query,limit=1))
@@ -76,7 +97,7 @@ try:
     call("query_linked_pin_pads",dict(query,limit=0),error=True)
     call("query_linked_pin_pads",dict(query,unexpected=True),error=True)
     check("invalid query rejects without mutation",call("get_session_state")==before)
-    call("update_part",{"id":part["id"],"designator":"RENAMED99","value":"peer"})
+    call("update_part",{"id":part["id"],"designator":"RENAMED99","value":"peer"},peer=bool(args.url))
     renamed=call("query_linked_pin_pads",query)
     check("property rename keeps physical identities with fresh cursor",renamed["terminals"]==reports[0]["terminals"] and renamed["source_cursor"]!=reports[0]["source_cursor"])
     call("update_part",{"id":part["id"],"rotation_deg":45})
@@ -106,12 +127,15 @@ try:
     call("query_linked_pin_pads",query)
     check("reopened read preserves clean entire session",call("get_session_state")==before and not call("get_document_status")["dirty"])
     report["saved_path"]=str(path)
-    process.stdin.close()
-    check("clean production exit", process.wait(timeout=15) == 0)
+    if process:
+        process.stdin.close()
+        check("clean production exit", process.wait(timeout=15) == 0)
     report["passed"] = True
 finally:
-    if process.poll() is None:
+    if process and process.poll() is None:
         process.terminate()
         process.wait(timeout=5)
+    for client in clients:
+        client.close()
     Path(args.report).write_text(json.dumps(report, indent=2) + "\n")
 print(json.dumps(report, indent=2))
