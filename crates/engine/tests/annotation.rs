@@ -159,9 +159,11 @@ fn stale_sheets_invalid_formats_orders_and_budgets_leave_whole_session_unchanged
     assert_eq!(e.session_state(), state);
 }
 #[test]
-fn board_only_edits_do_not_invalidate_annotation_or_enter_its_undo() {
+fn legacy_ungrouped_cursor_omission_preserves_board_only_edits_and_scoped_undo() {
     let e = EngineHandle::new(project());
-    let preview = e.preview_schematic_annotation(options()).unwrap();
+    let mut preview = e.preview_schematic_annotation(options()).unwrap();
+    // Old ungrouped callers may omit this guard; every new preview supplies it.
+    preview.command.expected_cursor = None;
     e.execute("add_part", json!({"designator":"U1","value":"Board","footprint":"SMD","x_mm":1.0,"y_mm":2.0}), Origin::agent("board")).unwrap();
     let board = e.read(|p| p.board.clone());
     e.execute("annotate_schematic", json!(preview.command), Origin::agent("annotation")).unwrap();

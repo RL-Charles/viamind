@@ -107,7 +107,7 @@ Rust callers supply already-owned inputs but still pass the same borrowed
 capture/plan bounds before clones. Preview validates/charges source maps while
 borrowed before retaining its bounded immutable copy. Use a bounded serialized
 counter rather than allocating an unbounded serialized buffer just to measure
-it. Shared package validation and global UUID/reference-owner invariants remain
+it. Shared package validation and existing schematic-namespace UUID/reference-owner invariants remain
 required. No new global restriction is imposed on unrelated board/assembly data.
 
 ## Desktop
