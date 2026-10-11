@@ -104,6 +104,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{}", serde_json::json!({"independently_loaded_source":parsed_source.name,"preparation_viewport":[1600,1200]}));
     let mut h = Harness::builder().with_size(egui::vec2(1600.0, 1200.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     wait(&mut h, "Target: Power regulator");
+    {
+        let id = egui::Id::new(Some(std::borrow::Cow::Borrowed("Native symbol library")));
+        let window = h.ctx.memory(|m| m.area_rect(id)).unwrap();
+        let corner = window.max - egui::vec2(3.0, 3.0);
+        let target = egui::pos2(corner.x, 1140.0);
+        h.hover_at(corner);
+        h.run_steps(3);
+        h.drag_at(corner);
+        h.run_steps(2);
+        h.hover_at(target);
+        h.run_steps(6);
+        h.drop_at(target);
+        h.run_steps(6);
+    }
     click(&mut h, "New detached definition");
     click(&mut h, "Add definition pin");
     input(&mut h, "Definition name", "Original stable symbol fields");
@@ -130,8 +144,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "{}",
         serde_json::json!({"remove_button":[button.min.x,button.min.y,button.max.x,button.max.y],"inner_paint_clip":[clip.min.x,clip.min.y,clip.max.x,clip.max.y]})
     );
-    assert!(clip.contains(button.center()), "Remove center must be inside its actual paint clip");
-    click(&mut h, "Remove pin 1");
+    assert!(clip.contains_rect(button), "Remove rectangle must fit inside its actual paint clip");
+    h.get_by_label("Remove pin 1").click();
+    h.run_steps(5);
     assert!(h.query_by_label("1 / 1024 ordered pins").is_some(), "actual Remove must reduce two pins to one");
     for (i, field) in fields.iter().enumerate() {
         assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
@@ -141,20 +156,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     input(&mut h, "NEW definition file path", &output);
     h.set_size(egui::vec2(width, height));
     h.run_steps(8);
-    if height >= 800.0 {
-        let id = egui::Id::new(Some(std::borrow::Cow::Borrowed("Native symbol library")));
-        let window = h.ctx.memory(|m| m.area_rect(id)).unwrap();
-        let corner = window.max - egui::vec2(3.0, 3.0);
-        let target = egui::pos2(corner.x, height - 60.0);
-        h.hover_at(corner);
-        h.run_steps(3);
-        h.drag_at(corner);
-        h.run_steps(2);
-        h.hover_at(target);
-        h.run_steps(6);
-        h.drop_at(target);
-        h.run_steps(6);
-    }
     if mode == "completed" {
         click(&mut h, "Save NEW definition file");
         wait(&mut h, "Created detached definition");
