@@ -835,7 +835,7 @@ mod tests {
         };
         let e = EngineHandle::new(project);
         let before = e.session_state();
-        let before_bytes = viamind_doc::file::to_string(&before.project).unwrap();
+        let before_bytes = viamind_doc::file::to_string(&before.project);
         check_graph(&e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 10_000 }).unwrap());
         let input = request(&e, id(102), id(103), p(1_000_000, -2_000_000));
         let preview = e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap();
@@ -862,7 +862,7 @@ mod tests {
         check_graph(&graph);
         assert_eq!(e.with_engine(|e| e.log().replay()), after.project);
         e.undo_own(Origin::agent("regulator mover")).unwrap();
-        assert_eq!(viamind_doc::file::to_string(&e.session_state().project).unwrap(), before_bytes);
+        assert_eq!(viamind_doc::file::to_string(&e.session_state().project), before_bytes);
         e.redo_own(Origin::agent("regulator mover")).unwrap();
         assert_eq!(e.session_state().project, after.project);
     }
