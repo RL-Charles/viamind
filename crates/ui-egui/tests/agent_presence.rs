@@ -1,5 +1,8 @@
 use egui::{Color32, Event, Key, Modifiers, Shape, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use viamind_engine::{EngineHandle, PresencePoint, SetAgentPresence};
 use viamind_ui_egui::ViamindApp;
 
