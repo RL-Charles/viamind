@@ -127,7 +127,8 @@ impl ServerHandler for ViamindServer {
         // Covers both the initialize handshake and per-request `_meta` client
         // info (the stateless protocol revisions).
         let client = context.client_info();
-        let ctx = CallContext::new(self.agent_id(client.as_ref().map(|info| info.name.as_str())));
+        let mut ctx = CallContext::new(self.agent_id(client.as_ref().map(|info| info.name.as_str())));
+        ctx.connection = Some(self.connection);
         match self.registry.call(&request.name, input, ctx).await {
             Ok(value) => Ok(if self.registry.png_output(&request.name) { to_png_result(value)? } else { to_call_result(value) }.into()),
             // Tool failures go back as tool results so the agent sees the message.

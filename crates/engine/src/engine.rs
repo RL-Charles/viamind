@@ -380,6 +380,12 @@ impl Engine {
     pub fn take_due_wakers(&mut self) -> Vec<Waker> {
         self.notifier.take_due_wakers()
     }
+
+    /// Wake attention overlays without appending document or selection events.
+    pub(crate) fn wake_transient_ui(&mut self) -> Vec<Waker> {
+        self.notifier.wake();
+        self.notifier.take_due_wakers()
+    }
 }
 
 /// An open transaction, handed to the closure of [`Engine::transaction`].
