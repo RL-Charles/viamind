@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Exact production MCP proof: --binary B --fixture F --report R [--port P]."""
-import argparse, copy, hashlib, json, subprocess, tempfile, urllib.request
+import argparse, copy, hashlib, json, os, subprocess, tempfile, urllib.request
 from pathlib import Path
 class Client:
     def __init__(self, binary, fixture, port=None):
@@ -74,6 +74,8 @@ try:
     unchanged_reject('load_symbol_template',{'path':str(bad)},'unknown nested pin field rejects atomically')
     huge=directory/'huge.json'; huge.write_bytes(b' '* (1024*1024+1)); unchanged_reject('load_symbol_template',{'path':str(huge)},'oversized regular file rejects atomically')
     unchanged_reject('load_symbol_template',{'path':str(directory)},'directory instead of regular file rejects atomically')
+    fifo=directory/'no-writer.fifo'; os.mkfifo(fifo)
+    unchanged_reject('load_symbol_template',{'path':str(fifo)},'FIFO without a writer rejects promptly and atomically')
     unchanged_reject('place_symbol_template',command('U1'),'duplicate global reference rejects atomically')
     proposal=command(); old=state(); a.call('place_symbol_template',proposal); created=state(); content=created['project']['schematic']['sheets'][sheet_id]['content']; instance=next(s for s in content['symbols'].values() if s['designator']=='U2')
     old_ids={s['id'] for s in sheet['content']['symbols'].values()}|{pin['id'] for s in sheet['content']['symbols'].values() for pin in s['pins']}; new_ids={instance['id']}|{pin['id'] for pin in instance['pins']}
