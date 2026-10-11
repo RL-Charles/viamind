@@ -65,7 +65,7 @@ impl Footprint {
         Ok(())
     }
 
-    /// Export only committed electrical geometry in the part's local frame.
+    /// Export committed pads and explicit artwork in the part's local frame.
     pub fn from_part(part: &crate::Part) -> Result<Self, String> {
         if let Some(artwork) = &part.artwork {
             artwork.validate()?;

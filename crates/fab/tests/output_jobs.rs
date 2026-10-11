@@ -66,7 +66,8 @@ fn release_is_coherent_byte_identical_and_never_clobbers() {
     for (name, kind) in [("bom.csv", AssemblyCsv::Bom), ("placement.csv", AssemblyCsv::Placement)] {
         assert_eq!(fs::read(path.join("assembly").join(name)).unwrap(), viamind_fab::csv(&original, kind).unwrap().into_bytes());
     }
-    let fab = viamind_fab::fabrication(&original, FabricationOptions { mask_expansion_mm: job().mask_expansion_mm }).unwrap();
+    let fab =
+        viamind_fab::fabrication(&original, FabricationOptions { mask_expansion_mm: job().mask_expansion_mm, include_silkscreen: false }).unwrap();
     for (name, data) in fab.files {
         assert_eq!(fs::read(path.join("fabrication").join(name)).unwrap(), data.into_bytes());
     }
@@ -198,7 +199,9 @@ fn checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_boa
         .unwrap();
     assert_eq!(manifest.files.len(), 11);
     assert_eq!(fs::read(path.join("validation/drc.json")).unwrap(), b"{\"trusted_test_callback\":true}\n");
-    for (name, bytes) in viamind_fab::fabrication(&original, FabricationOptions { mask_expansion_mm: job.mask_expansion_mm }).unwrap().files {
+    for (name, bytes) in
+        viamind_fab::fabrication(&original, FabricationOptions { mask_expansion_mm: job.mask_expansion_mm, include_silkscreen: false }).unwrap().files
+    {
         assert_eq!(fs::read(path.join("fabrication").join(name)).unwrap(), bytes.into_bytes());
     }
     let failed = temp.path().join("failed");

@@ -96,6 +96,6 @@ fn actual_stable_row_identity_and_stale_peer_refusal() {
     let before = e.session_state();
     click(&mut h, "Apply artwork");
     assert_eq!(e.session_state(), before);
-    assert!(h.query_by_label_contains("cursor").is_some());
+    assert!(h.query_by_label_contains("session changed; read get_session_state").is_some());
     click(&mut h, "Cancel");
 }

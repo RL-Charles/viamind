@@ -20,6 +20,12 @@ pub struct FabricationOptions {
     /// Applied to all explicit pads and untented vias, on both outer sides.
     #[serde(default)]
     pub mask_expansion_mm: f64,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_silkscreen: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 /// Shared desktop/MCP request. Cursor types belong to the caller, not the document.
@@ -29,6 +35,8 @@ pub struct FabricationExportRequest<C> {
     pub path: PathBuf,
     #[serde(default)]
     pub mask_expansion_mm: f64,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_silkscreen: bool,
     #[serde(default)]
     pub expected_cursor: Option<C>,
 }
@@ -50,6 +58,7 @@ pub fn fabrication_schema() -> Value {
     json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{
         "path":{"type":"string","minLength":1},
         "mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},
+        "include_silkscreen":{"type":"boolean","default":false},
         "expected_cursor":{"type":["object","null"],"additionalProperties":false,"required":["stream_id","sequence"],"properties":{
             "stream_id":{"type":"string","format":"uuid"},"sequence":{"type":"integer","minimum":0}
         }}
@@ -58,6 +67,8 @@ pub fn fabrication_schema() -> Value {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FabricationManifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub footprint_artwork: Option<FootprintArtworkSummary>,
     pub project_id: String,
     pub units: String,
     pub coordinate_system: String,
@@ -68,6 +79,17 @@ pub struct FabricationManifest {
     pub cutout_count: usize,
     pub files: Vec<String>,
     pub exclusions: Vec<String>,
+}
+
+/// Captured explicit artwork counts; no clipping or courtyard checking is certified.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct FootprintArtworkSummary {
+    pub include_silkscreen: bool,
+    pub explicit_components: usize,
+    pub top_silkscreen_segments: usize,
+    pub bottom_silkscreen_segments: usize,
+    pub courtyard_count: usize,
 }
 
 /// Fully rendered, bounded snapshot package, before filesystem publication.
@@ -171,7 +193,29 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     }
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("fabrication export requires an explicit board outline"))?;
     let mut pads = 0usize;
+    let mut artwork = FootprintArtworkSummary {
+        include_silkscreen: options.include_silkscreen,
+        explicit_components: 0,
+        top_silkscreen_segments: 0,
+        bottom_silkscreen_segments: 0,
+        courtyard_count: 0,
+    };
+    let mut artwork_primitives = 0usize;
     for part in project.board.parts.values() {
+        if let Some(art) = &part.artwork {
+            artwork_primitives = artwork_primitives.saturating_add(art.primitive_count());
+            if artwork_primitives > MAX_OBJECTS {
+                return Err(invalid("fabrication artwork exceeds200000 primitives"));
+            }
+            art.validate().map_err(invalid)?;
+            artwork.explicit_components += 1;
+            artwork.courtyard_count += usize::from(art.courtyard.is_some());
+            if part.side == Side::Top {
+                artwork.top_silkscreen_segments += art.silkscreen.len();
+            } else {
+                artwork.bottom_silkscreen_segments += art.silkscreen.len();
+            }
+        }
         let explicit = part.pads.as_ref().ok_or_else(|| {
             invalid(format!("component {} has no explicit pads; legacy graphical footprint previews cannot be fabricated", part.designator))
         })?;
@@ -182,6 +226,7 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
         .saturating_add(project.board.tracks.len())
         .saturating_add(project.board.vias.len().saturating_mul(5))
         .saturating_add(outline.rings().map(|r| r.points.len()).sum::<usize>());
+    let objects = objects.saturating_add(artwork_primitives);
     if objects > MAX_OBJECTS {
         return Err(invalid("fabrication export supports at most 200000 primitives"));
     }
@@ -191,8 +236,25 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     let expansion = (options.mask_expansion_mm * 1_000_000.0).round() as i64;
     let mut copper = [Vec::new(), Vec::new()];
     let mut mask = [Vec::new(), Vec::new()];
+    let mut legend = [Vec::new(), Vec::new()];
     for part in project.board.parts.values() {
         let side = usize::from(part.side == Side::Bottom);
+        if options.include_silkscreen
+            && let Some(art) = &part.artwork
+        {
+            for line in &art.silkscreen {
+                let transform = |p: Point| {
+                    let (x, y) = part.local_to_world_mm(p.x.to_mm(), p.y.to_mm());
+                    rotated_center(x, y)
+                };
+                legend[side].push(Graphic {
+                    aperture: circle(line.width.0, ""),
+                    start: transform(line.start)?,
+                    end: Some(transform(line.end)?),
+                    rotation: 0,
+                });
+            }
+        }
         for pad in &part.pads.as_ref().unwrap().0 {
             let (x, y) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
             let center = rotated_center(x, y)?;
@@ -243,6 +305,11 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     ] {
         files.insert(name.to_owned(), gerber(graphics, function, negative, &id));
     }
+    if options.include_silkscreen {
+        for (name, function, graphics) in [("top-silkscreen.gbr", "Legend,Top", &legend[0]), ("bottom-silkscreen.gbr", "Legend,Bot", &legend[1])] {
+            files.insert(name.into(), gerber(graphics, function, false, &id));
+        }
+    }
     let mut drill = String::from("; Viamind plated through vias, finished diameters, aligned top view\nM48\nMETRIC\n");
     for (i, (diameter, _)) in drills.iter().enumerate() {
         writeln!(drill, "T{:02}C{}", i + 1, decimal(*diameter, 6)).unwrap();
@@ -256,7 +323,15 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     }
     drill.push_str("M30\n");
     files.insert("plated-through.xnc".into(), drill);
-    let manifest=FabricationManifest { project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    let mut manifest=FabricationManifest { footprint_artwork: (options.include_silkscreen || artwork.explicit_components > 0).then_some(artwork), project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    if options.include_silkscreen {
+        manifest.exclusions[1] = manifest.exclusions[1].replace("paste, silkscreen,", "paste,");
+    }
+    if manifest.footprint_artwork.is_some() {
+        manifest.exclusions.push(if options.include_silkscreen {
+            "Stored silkscreen straight strokes only; no synthetic bodies, text, clipping, silk-to-mask or courtyard clearance checks. Courtyards are excluded.".into()
+        } else { "Explicit footprint artwork is excluded; no silkscreen or courtyard checks.".into() });
+    }
     files.insert("manifest.json".into(), serde_json::to_string_pretty(&manifest).map_err(io::Error::other)? + "\n");
     if files.values().map(String::len).sum::<usize>() > MAX_BYTES {
         return Err(invalid("fabrication export exceeds 128 MiB"));

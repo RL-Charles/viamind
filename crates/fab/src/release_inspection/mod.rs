@@ -94,6 +94,8 @@ fn nonnull<'de, T: Deserialize<'de>, D: serde::Deserializer<'de>>(d: D) -> Resul
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Manifest {
+    #[serde(default, deserialize_with = "nonnull")]
+    footprint_artwork: Option<crate::FootprintArtworkSummary>,
     format: String,
     version: u32,
     project_id: ObjectId,
@@ -111,12 +113,12 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
     impl<'de> Visitor<'de> for Files {
         type Value = BTreeMap<String, usize>;
         fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            f.write_str("at most13 unique fixed release file entries")
+            f.write_str("at most15 unique fixed release file entries")
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
             let mut files = BTreeMap::new();
             while let Some(key) = map.next_key::<String>()? {
-                if files.len() >= 13 || key.len() > 64 || files.contains_key(&key) {
+                if files.len() >= 15 || key.len() > 64 || files.contains_key(&key) {
                     return Err(de::Error::custom("duplicate/excess/oversized release file key"));
                 }
                 let size = map.next_value::<usize>()?;
@@ -133,6 +135,8 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct FabManifest {
+    #[serde(default, deserialize_with = "nonnull")]
+    footprint_artwork: Option<crate::FootprintArtworkSummary>,
     project_id: ObjectId,
     units: String,
     coordinate_system: String,
@@ -163,12 +167,16 @@ impl Manifest {
             return Err(invalid("release format/version differs from supported job"));
         }
         let mut expected = BASE_FILES.to_vec();
-        if job.version >= 2 {
+        if job.include_calibrated_placement == Some(true) {
             expected.push(CALIBRATED);
         }
-        if job.version == 3 {
+        if job.include_populated_bom == Some(true) {
             expected.push(POPULATED);
         }
+        if job.include_silkscreen == Some(true) {
+            expected.extend(["fabrication/top-silkscreen.gbr", "fabrication/bottom-silkscreen.gbr"]);
+        }
+        validate_artwork_summary(self.footprint_artwork.as_ref(), job)?;
         if job.profile == crate::CHECKED_PROFILE {
             expected.push(VALIDATION);
         }
@@ -179,17 +187,17 @@ impl Manifest {
             return Err(invalid("declared release exceeds192MiB"));
         }
         exclusions(&self.exclusions)?;
-        match (&self.calibrated_placement, job.version) {
-            (None, 1) => {}
-            (Some(cal), 2 | 3)
+        match (&self.calibrated_placement, job.include_calibrated_placement == Some(true)) {
+            (None, false) => {}
+            (Some(cal), true)
                 if cal.file == CALIBRATED
                     && cal.component_count <= 100_000
                     && cal.coordinate_convention == "global_x_right_y_up_ccw_common_top_view" => {}
             _ => return Err(invalid("calibrated summary contradicts release version/count/convention")),
         }
-        match (&self.populated_assembly, job.version) {
-            (None, 1 | 2) => {}
-            (Some(pop), 3)
+        match (&self.populated_assembly, job.include_populated_bom == Some(true)) {
+            (None, false) => {}
+            (Some(pop), true)
                 if pop.bom_file == POPULATED
                     && pop.placement_file == CALIBRATED
                     && self.calibrated_placement.as_ref().is_some_and(|c| c.component_count == pop.component_count)
@@ -200,12 +208,34 @@ impl Manifest {
         Ok(())
     }
 }
+fn validate_artwork_summary(summary: Option<&crate::FootprintArtworkSummary>, job: &crate::OutputJob) -> io::Result<()> {
+    let included = job.include_silkscreen == Some(true);
+    match summary {
+        None if !included => Ok(()),
+        Some(s)
+            if s.include_silkscreen == included
+                && (included || s.explicit_components > 0)
+                && s.explicit_components <= 100_000
+                && s.courtyard_count <= s.explicit_components
+                && s.top_silkscreen_segments.saturating_add(s.bottom_silkscreen_segments).saturating_add(s.courtyard_count.saturating_mul(4))
+                    <= 200_000
+                && (s.explicit_components > 0 || (s.top_silkscreen_segments == 0 && s.bottom_silkscreen_segments == 0)) =>
+        {
+            Ok(())
+        }
+        _ => Err(invalid("artwork summary contradicts job flag or bounded captured counts")),
+    }
+}
 fn validate_fabrication(fab: &FabManifest, manifest: &Manifest, job: &crate::OutputJob) -> io::Result<()> {
     let mut expected = BASE_FILES.iter().filter_map(|p| p.strip_prefix("fabrication/")).collect::<Vec<_>>();
+    if job.include_silkscreen == Some(true) {
+        expected.extend(["top-silkscreen.gbr", "bottom-silkscreen.gbr"]);
+    }
     expected.sort_unstable();
     let mut actual = fab.files.iter().map(String::as_str).collect::<Vec<_>>();
     actual.sort_unstable();
-    if fab.project_id != manifest.project_id
+    if fab.footprint_artwork != manifest.footprint_artwork
+        || fab.project_id != manifest.project_id
         || actual != expected
         || fab.units != "mm (Gerber 5.6, 1 nm; XNC explicit decimals)"
         || fab.coordinate_system != "Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored"

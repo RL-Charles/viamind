@@ -65,7 +65,14 @@ fn main() -> anyhow::Result<()> {
             engine.with_engine(|e| viamind_fab::FabricationSnapshot::capture(e.project()).map(|s| (s, e.document_status().path)))?;
         let output = options.output.as_deref().expect("CLI requires fabrication destination");
         let (path, manifest) = snapshot
-            .write(viamind_fab::FabricationOptions { mask_expansion_mm: options.mask_expansion_mm.unwrap_or(0.0) }, output, native.as_deref())
+            .write(
+                viamind_fab::FabricationOptions {
+                    mask_expansion_mm: options.mask_expansion_mm.unwrap_or(0.0),
+                    include_silkscreen: options.include_silkscreen,
+                },
+                output,
+                native.as_deref(),
+            )
             .with_context(|| format!("could not export fabrication {}", output.display()))?;
         eprintln!("viamind: exported {} files to {}", manifest.files.len(), path.display());
         return Ok(());

@@ -9,7 +9,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
        viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom|assembly_placement --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --inspect-output-release DIRECTORY
-       viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
+       viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N] [--include-silkscreen]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
        viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
        viamind --export-schematic-svg|--export-schematic-png --sheet UUID --open PATH --output NEW_FILE
@@ -25,6 +25,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
   --inspect-output-release DIRECTORY Read-only bounded saved-release consistency JSON
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
+  --include-silkscreen  Include stored straight-stroke Legend files with --export-gerber
   --output PATH    Export destination (SVG/PNG need a NEW file; fabrication a NEW directory)
   --overwrite      Allow replacing the CSV destination
   --export-svg     Export a read-only board SVG without a window
@@ -64,6 +65,7 @@ pub struct Options {
     pub output: Option<PathBuf>,
     pub overwrite: bool,
     pub export_gerber: bool,
+    pub include_silkscreen: bool,
     pub run_output_job: Option<PathBuf>,
     pub inspect_output_release: Option<PathBuf>,
     pub mask_expansion_mm: Option<f64>,
@@ -96,6 +98,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             Some("--no-mcp") => options.no_mcp = true,
             Some("--overwrite") => options.overwrite = true,
             Some("--export-gerber") => options.export_gerber = true,
+            Some("--include-silkscreen") => options.include_silkscreen = true,
             Some("--mask-expansion-mm") => {
                 options.mask_expansion_mm = Some(
                     args.next()
@@ -140,6 +143,10 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                             .map(|s| match s {
                                 "top_copper" => Ok(viamind_render::ViewLayer::TopCopper),
                                 "bottom_copper" => Ok(viamind_render::ViewLayer::BottomCopper),
+                                "top_silkscreen" => Ok(viamind_render::ViewLayer::TopSilkscreen),
+                                "bottom_silkscreen" => Ok(viamind_render::ViewLayer::BottomSilkscreen),
+                                "top_courtyard" => Ok(viamind_render::ViewLayer::TopCourtyard),
+                                "bottom_courtyard" => Ok(viamind_render::ViewLayer::BottomCourtyard),
                                 "outline" => Ok(viamind_render::ViewLayer::Outline),
                                 _ => Err("unknown board view layer".to_string()),
                             })
@@ -252,6 +259,9 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
     }
     if options.sheet.is_some() || seen.contains(&OsString::from("--schematic-layers")) {
         return Err("--sheet and --schematic-layers require schematic export".into());
+    }
+    if options.include_silkscreen && !options.export_gerber {
+        return Err("--include-silkscreen requires --export-gerber".into());
     }
     if options.export_gerber {
         if options.open.is_none()
