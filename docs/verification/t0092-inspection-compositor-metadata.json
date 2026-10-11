@@ -1,0 +1,47 @@
+[
+  {
+    "address": "0x6463bde5c050",
+    "mapped": true,
+    "hidden": false,
+    "visible": true,
+    "acceptsInput": true,
+    "at": [
+      2080,
+      1265
+    ],
+    "size": [
+      1600,
+      1000
+    ],
+    "workspace": {
+      "id": 2,
+      "name": "2"
+    },
+    "floating": true,
+    "monitor": 0,
+    "class": "viamind-bom-template-inspection",
+    "title": "inspection-project.json \u2014 Viamind",
+    "initialClass": "viamind-bom-template-inspection",
+    "initialTitle": "inspection-project.json \u2014 Viamind",
+    "pid": 1261069,
+    "xwayland": false,
+    "pinned": false,
+    "pinFullscreened": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "fullscreenHandler": "default",
+    "allowedOverFullscreen": true,
+    "grouped": [],
+    "tags": [
+      "default-opacity*"
+    ],
+    "swallowing": "0x0",
+    "focusHistoryID": 0,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": "",
+    "contentType": "none",
+    "tearingHint": false,
+    "stableId": "1800010d"
+  }
+]

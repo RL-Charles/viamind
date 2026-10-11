@@ -81,3 +81,6 @@ saved-job profile. Supported fabrication output lacks paste/silkscreen files
 requested by some assembly services. Manufacturer upload/review, matched parts,
 stock, procurement and acceptance remain separate user work; no complete PCBA
 release is claimed.
+
+See the [production and native verification record](assembly-bom-templates-verification.md)
+for exact artifact provenance, independent CSV parsing and compact desktop input checks.

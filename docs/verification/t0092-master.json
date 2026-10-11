@@ -1,0 +1,106 @@
+{
+  "ticket": "T-0092",
+  "artifact_source_head": "64a677564d9afecfd380a90e91a3f0137e25fcd4",
+  "artifact_base_main": "cc1813f2c734eb808d702002da4bcc2c93bf6bf3",
+  "artifact_source_ci": {
+    "run": 38139766607,
+    "url": "https://github.com/RL-Charles/viamind/actions/runs/38139766607",
+    "conclusion": "all four Linux gates passed at exact production artifact source"
+  },
+  "integration_note": "Later evidence commit changes documentation and the separately built inspection harness only. Production artifact remains exact source head above; final evidence-head CI is recorded on PR90 before merge.",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01), Linux",
+  "local_gates": {
+    "fmt": "PASS",
+    "strict_workspace_all_target_clippy": "PASS",
+    "workspace_tests": {
+      "passed": 646,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": "PASS",
+    "full_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/full.log",
+    "full_log_sha256": "49ad28e84c2c8392dc2dc5e86e846d3195d6f24c9fcd5908b18c4aff185a92b7",
+    "focused_tests": {
+      "passed": 9,
+      "failed": 0,
+      "source_head": "0c68d05b6f3a2d15af4f3422c10dd286476a8996",
+      "fmt": "PASS",
+      "strict_workspace_all_target_clippy": "PASS",
+      "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/focused.log",
+      "log_sha256": "dc3fe664ade69adfd52f4cf8154ac3b3140c926a8362b7ff582fc409bad9a246"
+    }
+  },
+  "production": {
+    "kind": "unchanged production application HTTP and no-display CLI",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/production-verified",
+    "binary_sha256": "25571b7cbd38f364fadac3c609369a684c56fc8e91c038ed119c4645973cb6de",
+    "running_exe_sha256": "25571b7cbd38f364fadac3c609369a684c56fc8e91c038ed119c4645973cb6de",
+    "postprocessing": "strip --strip-debug after successful workspace build, before native launch",
+    "pid": 1139755,
+    "window_id": 110379547656800,
+    "http": "http://127.0.0.1:7919/mcp",
+    "native_checks": 31,
+    "report": "t0092-production-report.json",
+    "launch_metadata": "t0092-production-launch.json",
+    "window_note": "Tiled 1x4 production window is launch metadata only; readable capture comes from the separately labeled wrapper. No native Cua widget-input claim."
+  },
+  "inspection": {
+    "kind": "Production ViamindApp in fixed 1600x1000 inspection-only host; no MCP listener",
+    "source": "docs/verification/t0092-native-inspection.rs",
+    "source_sha256": "d4065c161f374e428e8015f945ea04c9f8d8b85de15565189f84a89fa789f4ae",
+    "manifest_template": "docs/verification/t0092-native-Cargo.toml.in",
+    "production_rust_source_head": "64a677564d9afecfd380a90e91a3f0137e25fcd4",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/native-preview-selected",
+    "binary_sha256": "dd1384ac4f9c4671cd325e286ed017da53d5a7c19a1225a210459147a3caa775",
+    "running_exe_sha256": "dd1384ac4f9c4671cd325e286ed017da53d5a7c19a1225a210459147a3caa775",
+    "pid": 1261069,
+    "window_id": 110379550490704,
+    "http": null,
+    "build_note": "Separate private reflink acceleration cache excluded test executables/transient objects. All own crates/apps Rust inputs were touched before Cargo; log confirms fresh compilation of every own path dependency. Production source unchanged. Source frozen during successful offline single-job build.",
+    "build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/wrapper-final.log",
+    "build_log_sha256": "51feebf79cb9bf568f1cbc955ed4008c33c8500f5b0fc2debfb0a835533ba44f",
+    "launch_metadata": "t0092-inspection-launch.json",
+    "compositor_metadata": "t0092-inspection-compositor-metadata.json",
+    "capture": "t0092-native-final.png",
+    "capture_sha256": "d66d537cabef1caebdc7d23dc8d7e697d0449cfcfc0bf33233a25bd13fcbe562",
+    "capture_route": "eframe native WGPU Screenshot event; opaque P6 RGB converted losslessly to PNG with ImageMagick; independent decoded RGB equality verified",
+    "framebuffer_report": "t0092-native-framebuffer-report.json",
+    "capture_pixels": [
+      1600,
+      1000
+    ],
+    "injected_format_pointer_events": 2,
+    "full_session_unchanged": true,
+    "cua_attempt": "t0092-native-cua-attempt.json",
+    "cua_result": "Exact target refused as stale; returncode zero did not mean capture success. No Cua screenshot produced. Launch metadata returned no windows; mapped Wayland metadata recorded separately.",
+    "limitation": "Local egui input belongs only to inspection host. Actual compact 640x400 egui_kittest input/parity is separate evidence. No operating-system input or performance/cadence claim; production resize behavior unchanged."
+  },
+  "fixture": {
+    "path": "fixtures/assembly/bom-templates.viamind.json",
+    "sha256": "c479f4467d0502a8f0538df42a406cacc45d196197d39fa86b2892aa0bfc5a8f",
+    "note": "Asymmetric explicit geometry, synthetic user-entered identifiers and one do-not-populate component. No real catalog part or manufacturer acceptance claimed."
+  },
+  "prior_compatibility_artifact": {
+    "source_head": "e75a5c70fe0a7c2af9e86f50a032e64fc0a2d320",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/production-verified",
+    "binary_sha256": "6e2e97d875ac98348d41f6b8f1384a6b7da12f1658b97ee6c7d7c40fc2b362c1",
+    "comparison": "Three prior CSV formats, seven fabrication files and ten saved-job/config files exactly equal. Independent source cursor excludes the release manifest from cross-session byte comparison."
+  },
+  "portable_probe": "docs/verification/t0092-bom-template-smoke.py",
+  "scoped_limits": [
+    "100000 source components, 4096 bytes per header, 2 MiB aggregate header/sourcing text, 32 MiB CSV, two retained captures",
+    "Explicit supplier/MPN contract; populated-only new templates; old inventories and saved-job profile unchanged",
+    "No stock lookup, identifier matching, centroid inference, mounting-type inference, paste/silkscreen expansion or manufacturer acceptance"
+  ],
+  "reports_sha256": {
+    "t0092-assembly_bom.csv": "0093f995a86dc55b8812f494eda0c94f7f23252045faf8bff5982a99751e88cc",
+    "t0092-catalog_bom.csv": "7ef94a791a8c820d6a73386ee053b6d0a1a5ab4f94ffb06b411213e9368f0bc1",
+    "t0092-inspection-compositor-metadata.json": "76a22a1e83c24e21865608fcec092d36ca890a777717b1d72126ab6b740886d3",
+    "t0092-inspection-launch.json": "93d6a8e1d58ab20a2f798ddab11ebb56f1859399ca8897ae505d94925ff30dfd",
+    "t0092-native-cua-attempt.json": "7acffb7cc1c592717b1f9b12ffaaeb1fed13bfbfc2cee41efef72201a9cd6959",
+    "t0092-native-final.png": "d66d537cabef1caebdc7d23dc8d7e697d0449cfcfc0bf33233a25bd13fcbe562",
+    "t0092-native-framebuffer-report.json": "1c4fba83405aff731ecc9954084770352b154a1a6a86f9095da685cbf709a2aa",
+    "t0092-production-launch.json": "3451d14e29b920143de6f28b2d4dcf2fdc4f92900eaf7771c8747c389ff5f485",
+    "t0092-production-report.json": "caea87cc17daa1f798dc38b4acebf70722ab36f1611aad063c0196f64dd82065"
+  }
+}
