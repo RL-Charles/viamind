@@ -126,6 +126,17 @@ impl<'de> Deserialize<'de> for FootprintArtwork {
     }
 }
 
+fn point<'de, D: Deserializer<'de>>(d: D) -> Result<Point, D::Error> {
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Coordinates {
+        x: Nm,
+        y: Nm,
+    }
+    let p = Coordinates::deserialize(d)?;
+    Ok(Point::new(p.x, p.y))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -147,15 +158,4 @@ mod tests {
         assert!(error.to_string().contains("at most256"), "{error}");
         assert_eq!(serde_json::to_string(&FootprintArtwork::default()).unwrap(), "{\"silkscreen\":[]}");
     }
-}
-
-fn point<'de, D: Deserializer<'de>>(d: D) -> Result<Point, D::Error> {
-    #[derive(Deserialize)]
-    #[serde(deny_unknown_fields)]
-    struct Coordinates {
-        x: Nm,
-        y: Nm,
-    }
-    let p = Coordinates::deserialize(d)?;
-    Ok(Point::new(p.x, p.y))
 }
