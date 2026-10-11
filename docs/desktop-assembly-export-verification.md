@@ -43,9 +43,11 @@ inside. Hidden workers remain retained, duplicate starts are suppressed, and a
 disconnected worker produces a recoverable error.
 
 After those exact artifact checks, the branch was rebased onto interactive-wire
-main391fd00. Both additive wire and CSV action helpers were preserved; the CSV
-implementation and captured artifact evidence remain unchanged. Fresh combined
-CI and focused desktop/parity checks verify that integration.
+main 391fd00. Both additive wire and CSV action helpers were preserved; strict
+workspace clippy and seven desktop/parity tests passed on that integration.
+A subsequent clean rebase onto copper-connectivity main 5fb15a6 passes fmt and
+gets fresh combined CI. The CSV implementation and captured artifacts remain
+unchanged.
 
 ## Reproduction
 
