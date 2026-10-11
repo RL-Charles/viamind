@@ -79,7 +79,9 @@ their visible circular bounds. Missing/hidden/offscreen geometry is skipped.
 
 The overlay accepts no pointer/keyboard focus, changes no camera or human
 selection, and paints above copper. Clip labels within the PCB canvas at 640x400
-and normal size. While markers exist, request bounded repaint at most every
+and normal size. Successful updates wake an idle native UI through callbacks
+after releasing both locks, without appending a design or selection event.
+While markers exist, request bounded repaint at most every
 250 ms so expiry disappears without other document edits. No frame-rate claim.
 
 ## Required verification
