@@ -212,6 +212,16 @@ impl crate::FabricationSnapshot {
         publish_fabrication(self, options, path, native)
     }
 }
+// Count only emitted pad geometry; absence must preserve the old two-primitive
+// copper + legacy-mask eligibility, and intentional omission adds no primitive.
+fn emitted_pad_graphics(s: &PadApertureSummary) -> usize {
+    s.explicit_pads.saturating_add(s.legacy_pads).saturating_add(s.legacy_pads).saturating_add(s.mask_rectangles).saturating_add(if s.include_paste {
+        s.paste_rectangles
+    } else {
+        0
+    })
+}
+
 fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Result<FabricationPackage> {
     if !options.mask_expansion_mm.is_finite() || !(0.0..=10.0).contains(&options.mask_expansion_mm) {
         return Err(invalid("mask_expansion_mm must be finite and between 0 and 10 mm"));
@@ -283,8 +293,8 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
         }
     }
     aperture_summary.explicit_coverage_complete = aperture_summary.legacy_pads == 0;
-    let objects = pads
-        .saturating_mul(3)
+    let pad_graphics = emitted_pad_graphics(&aperture_summary);
+    let objects = pad_graphics
         .saturating_add(project.board.tracks.len())
         .saturating_add(project.board.vias.len().saturating_mul(5))
         .saturating_add(outline.rings().map(|r| r.points.len()).sum::<usize>());
@@ -471,5 +481,45 @@ fn publish_fabrication(
         std::fs::File::open(stage.path())?.sync_all()?;
         rustix::fs::renameat_with(rustix::fs::CWD, stage.path(), rustix::fs::CWD, &path, rustix::fs::RenameFlags::NOREPLACE)?;
         Ok((path, package.manifest))
+    }
+}
+
+#[cfg(test)]
+mod aperture_admission_tests {
+    use super::*;
+    #[test]
+    fn actual_pad_emissions_preserve_legacy_limit_and_do_not_charge_omissions() {
+        let mut s = PadApertureSummary {
+            include_paste: false,
+            explicit_pads: 0,
+            legacy_pads: 99_998,
+            mask_rectangles: 0,
+            mask_omissions: 0,
+            paste_rectangles: 0,
+            paste_omissions: 0,
+            top_mask_rectangles: 0,
+            bottom_mask_rectangles: 0,
+            top_paste_rectangles: 0,
+            bottom_paste_rectangles: 0,
+            explicit_coverage_complete: false,
+        };
+        // Four outline edges leave exactly the original legacy admission bound.
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.legacy_pads += 1;
+        assert!(emitted_pad_graphics(&s) + 4 > MAX_OBJECTS);
+        s.legacy_pads = 0;
+        s.explicit_pads = 199_996;
+        s.mask_omissions = s.explicit_pads;
+        s.paste_omissions = s.explicit_pads;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.include_paste = true;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.mask_rectangles = 1;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS + 1);
+        s.mask_rectangles = 0;
+        s.paste_rectangles = 1;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS + 1);
+        s.include_paste = false;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
     }
 }
