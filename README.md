@@ -262,3 +262,5 @@ Agents can read the same UUID mapping and exact positions through
 Create linked PCB components from explicit schematic symbols and native footprints: [workflow](docs/schematic-component-creation.md), [verification](docs/schematic-component-creation-verification.md).
 
 Desktop inspection images: [export board or selected-sheet SVG/PNG](docs/desktop-view-export.md).
+
+Pad route corner choices: [cardinal/45-degree posture controls and exact endpoint stubs](docs/pad-route-postures.md), with [Linux/native verification](docs/pad-route-postures-verification.md).

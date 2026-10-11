@@ -1,0 +1,33 @@
+{
+  "source_commit": "02c78212a61fd2beba19ca3c4aa3221b55d00538",
+  "base_commit": "c55dc7cedecc0e905234a1c2722b93ceb0f6d10d",
+  "production_binary_sha256": "f86074c03ed74607493f11773cd313db03df1465a7bc08d88676e97cd59e1526",
+  "linux_gates": {
+    "fmt": true,
+    "clippy_workspace_all_targets_strict": true,
+    "tests_passed": 461,
+    "tests_failed": 0,
+    "tests_ignored_existing": 1,
+    "build": true
+  },
+  "focused_checks": 47,
+  "native_http_checks": 27,
+  "production_pid": 413568,
+  "production_window_id": 110379506604128,
+  "production_mcp_port": 7901,
+  "inspection": {
+    "source_commit": "02c78212a61fd2beba19ca3c4aa3221b55d00538",
+    "binary_sha256": "9d54c6678934e074882f9390c52038a788525453eae406374eb4fdd829893678",
+    "viewport": [
+      1600,
+      1000
+    ],
+    "board_pid": 427859,
+    "board_window_id": 110379507239616,
+    "settings_pid": 428253,
+    "settings_window_id": 110379507663072,
+    "source": "t0077-posture-inspection.rs",
+    "source_sha256": "efdacd52c4009ba75d43913c810b759d156367c842d01ab3e998cc1c95c14e3e",
+    "scope": "Fixed-size production ViamindApp/engine/renderer, no MCP or input injection, saved original native fixture; readable visual inspection only."
+  }
+}

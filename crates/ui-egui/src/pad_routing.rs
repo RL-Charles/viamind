@@ -7,8 +7,9 @@ use crate::{
 use egui::{Color32, Key, PointerButton, Pos2, Response, Stroke, Ui};
 use std::{collections::BTreeMap, time::Instant};
 use viamind_doc::CopperLayer;
-use viamind_engine::{EngineHandle, PadEndpointId, RouteEndpoint, RouteEndpointSnapshot, RoutePadPolyline, RoutePadViaPolyline};
+use viamind_engine::{EngineHandle, PadEndpointId, RouteEndpoint, RouteEndpointSnapshot, RoutePadPolyline, RoutePadPosture, RoutePadViaPolyline};
 use viamind_geom::{Nm, Point, Rect, SpatialIndex};
+use viamind_router::{CornerMode, PadPathPlan, Posture, plan_pad_path};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Picking {
@@ -31,6 +32,7 @@ pub(crate) struct PadDraft {
     after: Vec<Point>,
     via: Option<Point>,
     via_sizes: Option<(Nm, Nm)>,
+    posture: Option<(CornerMode, Posture)>,
     hover: Option<Point>,
     hovered_pad: Option<usize>,
     width: Nm,
@@ -110,6 +112,7 @@ impl PadDraft {
             after: Vec::new(),
             via: None,
             via_sizes: None,
+            posture: None,
             hover: None,
             hovered_pad: None,
             width,
@@ -120,6 +123,17 @@ impl PadDraft {
     pub(crate) fn with_via(mut self, diameter: Nm, drill: Nm) -> Self {
         self.via_sizes = Some((diameter, drill));
         self
+    }
+    pub(crate) fn with_posture(mut self, mode: CornerMode) -> Self {
+        self.posture = Some((mode, Posture::Primary));
+        self
+    }
+    pub(crate) fn planned_path(&self) -> Result<Option<PadPathPlan>, String> {
+        let Some((mode, posture)) = self.posture else { return Ok(None) };
+        let (Some(start), Some(target)) = (self.start, self.target) else { return Ok(None) };
+        let start = self.snapshot.endpoints[start].center_nm.ok_or("Unsupported start pad")?;
+        let target = self.snapshot.endpoints[target].center_nm.ok_or("Unsupported target pad")?;
+        plan_pad_path(start, target, &self.interior, self.grid, mode, posture).map(Some).map_err(str::to_owned)
     }
     pub(crate) fn via(&self) -> Option<Point> {
         self.via
@@ -183,6 +197,25 @@ impl PadDraft {
             Picking::Via => ui.label("Place via: click empty space on the grid."),
             Picking::After => ui.label("Editing target leg: click empty space to insert before target."),
         };
+        if let Some((mode, posture)) = &mut self.posture {
+            ui.label(match mode {
+                CornerMode::Cardinal => "Cardinal corners",
+                CornerMode::Octilinear => "45-degree corners",
+            });
+            if ui.button(format!("Posture: {}", posture.label(*mode))).clicked() {
+                posture.toggle();
+            }
+            ui.label("Endpoint stubs preserve exact off-grid pad centers and may have arbitrary angles.");
+            match self.planned_path() {
+                Ok(Some(plan)) => {
+                    ui.label(format!("{} generated segments · {} exact endpoint stubs", plan.points.len() - 1, plan.endpoint_stub_segments));
+                }
+                Err(error) => {
+                    ui.colored_label(Color32::LIGHT_RED, error);
+                }
+                Ok(None) => {}
+            }
+        }
         if let Some((diameter, drill)) = self.via_sizes {
             for (label, index) in [("Start", self.start), ("Target", self.target)] {
                 if let Some(i) = index
@@ -254,7 +287,21 @@ impl PadDraft {
     pub(crate) fn finish(&self, engine: &EngineHandle) -> Result<f64, String> {
         let (Some(start), Some(target)) = self.endpoints() else { return Err("Choose start and target pads before finishing".into()) };
         let now = Instant::now();
-        let result = if let Some((via_diameter, via_drill)) = self.via_sizes {
+        let result = if let Some((mode, posture)) = self.posture {
+            let input = RoutePadPosture {
+                expected_project: self.snapshot.project_id,
+                expected_cursor: self.snapshot.source_cursor,
+                start,
+                target,
+                waypoints: self.interior.clone(),
+                grid: self.grid,
+                width: self.width,
+                mode,
+                posture,
+                rules: self.rules.clone(),
+            };
+            UiAction::RoutePadPosture.run(engine, serde_json::to_value(input).expect("posture route serializes"))
+        } else if let Some((via_diameter, via_drill)) = self.via_sizes {
             let via = self.via.ok_or("Place the through via before finishing")?;
             let input = RoutePadViaPolyline {
                 expected_project: self.snapshot.project_id,
@@ -369,7 +416,13 @@ impl PadDraft {
                     if pad.is_some() {
                         return Err("Use Choose start pad or Choose target pad to change endpoints; click empty space for an interior vertex".into());
                     }
-                    let max = if self.via_sizes.is_some() { 1022 } else { 1023 };
+                    let max = if self.posture.is_some() {
+                        510
+                    } else if self.via_sizes.is_some() {
+                        1022
+                    } else {
+                        1023
+                    };
                     if self.interior.len() + self.after.len() >= max {
                         return Err(format!("At most {max} interior vertices are supported"));
                     }
@@ -466,6 +519,19 @@ impl PadDraft {
             && let Some(p) = self.snapshot.endpoints[i].center_nm
         {
             points.push(p);
+        }
+        if let Some((mode, posture)) = self.posture
+            && let (Some(start), Some(target)) = (self.start, self.target)
+            && let (Some(start), Some(target)) = (self.snapshot.endpoints[start].center_nm, self.snapshot.endpoints[target].center_nm)
+        {
+            let mut waypoints = self.interior.clone();
+            if self.picking == Picking::Interior
+                && waypoints.len() < 510
+                && let Some(hover) = self.hover
+            {
+                waypoints.push(hover);
+            }
+            points = plan_pad_path(start, target, &waypoints, self.grid, mode, posture).map_or_else(|_| vec![], |plan| plan.points);
         }
         let painter = ui.painter().with_clip_rect(response.rect);
         let stroke = Stroke::new(((self.width.to_mm() * camera.zoom) as f32).max(1.0), Color32::from_rgb(255, 174, 64));

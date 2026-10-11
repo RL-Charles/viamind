@@ -12,3 +12,5 @@ workspace = true
 [dependencies]
 viamind-doc.workspace = true
 viamind-geom.workspace = true
+serde.workspace = true
+schemars.workspace = true

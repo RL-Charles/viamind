@@ -100,3 +100,6 @@ pub use copper::{AddTrack, AddVia, DeleteTrack, DeleteVia};
 
 pub mod route_via;
 pub use route_via::RoutePadViaPolyline;
+
+pub mod route_posture;
+pub use route_posture::RoutePadPosture;

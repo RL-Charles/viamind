@@ -42,6 +42,7 @@ fn builtin_specs() {
             "link_schematic_symbol",
             "move_part",
             "route_pad_polyline",
+            "route_pad_posture",
             "route_pad_via_polyline",
             "route_polyline",
             "set_board_outline",
