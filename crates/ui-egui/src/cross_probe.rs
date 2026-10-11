@@ -321,4 +321,28 @@ mod tests {
         ui.poll();
         assert!(ui.message.as_deref().unwrap().contains("worker stopped"));
     }
+    #[test]
+    fn stale_or_busy_navigation_does_not_change_view_or_session() {
+        let engine = viamind_engine::EngineHandle::new(
+            viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap(),
+        );
+        let report = engine.query_linked_components(&ComponentLinkQuery::default()).unwrap();
+        let row = report.components[0].clone();
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.cross_probe.current = Some(context(&report));
+        app.begin_place_part();
+        let before = engine.session_state();
+        let camera = app.schematic.camera;
+        assert!(app.navigate_counterpart(&row, false).unwrap_err().contains("Finish the active edit"));
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(app.schematic.camera, camera);
+        // A fresh app retains the old report, then a real peer edit supersedes its cursor.
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.cross_probe.current = Some(context(&report));
+        crate::actions::UiAction::UpdatePart.run(&engine, serde_json::json!({"id":row.part_id,"value":"peer edit"})).unwrap();
+        let before = engine.session_state();
+        assert!(app.navigate_counterpart(&row, false).unwrap_err().contains("changed"));
+        assert_eq!(engine.session_state(), before);
+        assert!(!app.schematic.active);
+    }
 }

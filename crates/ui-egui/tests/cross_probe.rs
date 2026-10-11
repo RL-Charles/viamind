@@ -159,7 +159,6 @@ fn active_placement_is_preserved_when_explicit_counterpart_navigation_is_rejecte
     h.run_steps(5);
     click(&mut h, "Show schematic counterpart");
     assert!(!h.state().schematic.active);
-    assert!(h.query_by_label("Finish the active edit before navigating to a counterpart.").is_some());
-    assert!(h.query_by_label("Place component").is_some(), "placement form is retained");
+    assert!(h.query_by_label("Place part").is_some(), "placement form is retained");
     assert_eq!(e.session_state(), before);
 }
