@@ -1,0 +1,10 @@
+{
+  "pid": 3025596,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/unrouted-inspection",
+  "output": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-proof",
+  "args": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/unrouted-inspection",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-owned.viamind.json",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-proof"
+  ]
+}

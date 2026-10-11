@@ -1,0 +1,47 @@
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.35s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 9 tests
+test unrouted::tests::unsupported_scalars_and_legacy_parts_are_explicit_incomplete_coverage ... ok
+test unrouted::tests::mirrored_quarter_turn_rectangles_keep_half_nm_extents_without_rounding ... ok
+test unrouted::tests::budget_identity_name_and_candidate_failures_refuse_whole_results ... ok
+test unrouted::tests::interior_crossings_pad_edges_width_contacts_and_exact_gaps_have_independent_oracles ... ok
+test unrouted::tests::annulus_pair_and_radial_interval_integer_predicates_exclude_outer_disk_false_joins ... ok
+test unrouted::tests::annulus_interior_contacts_bridge_layers_and_drill_center_never_counts_as_copper ... ok
+test unrouted::tests::purpose_capture_excludes_unused_poison_and_live_observation_preserves_complete_state ... ok
+test unrouted::tests::retained_admission_survives_caller_drop_and_workers_hold_it_through_actual_capture ... ok
+test unrouted::tests::complete_inventory_exceeds_old_pages_and_includes_zero_one_and_copper_only_definitions ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 86 filtered out; finished in 0.08s
+
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+error: this `if` statement can be collapsed
+   --> crates/engine/src/unrouted.rs:449:17
+    |
+449 | /                 if let Some(reason) = reason {
+450 | |                     if let Some(net) = other.net {
+451 | |                         self.nets[net].reasons.insert(reason);
+452 | |                     }
+453 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+    = note: `-D clippy::collapsible-if` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+    |
+449 ~                 if let Some(reason) = reason
+450 ~                     && let Some(net) = other.net {
+451 |                         self.nets[net].reasons.insert(reason);
+452 ~                     }
+    |
+
+error: could not compile `viamind-engine` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `viamind-engine` (lib test) due to 1 previous error
