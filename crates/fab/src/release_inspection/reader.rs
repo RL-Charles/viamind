@@ -128,7 +128,7 @@ fn inspect_openings(
     observed: &mut ObservedPadOpenings,
 ) -> io::Result<()> {
     let (layer, negative) = opening_layer(name).expect("only selected opening files");
-    let text = std::str::from_utf8(bytes).map_err(invalid)?;
+    let text = std::str::from_utf8(bytes).map_err(|e| invalid(e.to_string()))?;
     let geometry = parse_gerber(text, budget).map_err(invalid)?;
     if geometry.layer != layer || geometry.negative_file_polarity != negative || geometry.same_coordinates != Some(project) {
         return Err(invalid(format!("{name} opening side/polarity/common-coordinate identity differs from release")));
@@ -263,12 +263,35 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
         return Err(invalid("release manifest bytes changed during inspection"));
     }
     revalidate(&path, &root, &dirs, &files)?;
-    Ok(ReleaseInspection{
-        observed_pad_openings:observed_openings,path,format:manifest.format,version:manifest.version,profile:job.profile,project_id:manifest.project_id,exported_cursor:manifest.exported_cursor,
-        file_count:facts.len()+1,observed_bytes:total,files:facts,
-        calibrated_component_count:manifest.calibrated_placement.map(|c|c.component_count),matched_assembly:matched,release_exclusions:manifest.exclusions,
-        checks_performed:vec!["Strict supported release/job layout and version/profile/summary matrix".into(),"Declared/observed regular file byte lengths and observed path/descriptor identity stability".into(),"Fabrication manifest project/files/mask/coordinate metadata consistency".into(),"For job5: independently parsed mask/paste side, polarity, common coordinate ID, rectangular pad flash counts and mask via-circle counts (shared 10000 primitive/100000 command budget; 4 MiB/file)".into(),"When present: calibrated row/count validity and populated shared fields/component membership/identity digest".into()],
-        checks_not_performed:vec!["No authenticated file-content digest, original-export authenticity or current-board equality".into(),"No geometry equality, copper/profile/Legend Gerber, XNC/legacy assembly/validation semantic or DRC recomputation; legacy jobs do not parse openings".into(),"No vendor/manufacturing/stock acceptance or component electrical polarity checks".into(),"Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports".into(),"Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return".into()],
+    let mut checks_performed: Vec<String> = vec![
+        "Strict supported release/job layout and version/profile/summary matrix".into(),
+        "Declared/observed regular file byte lengths and observed path/descriptor identity stability".into(),
+        "Fabrication manifest project/files/mask/coordinate metadata consistency".into(),
+        "When present: calibrated row/count validity and populated shared fields/component membership/identity digest".into(),
+    ];
+    let mut checks_not_performed: Vec<String> = vec!["No authenticated file-content digest, original-export authenticity or current-board equality".into(),"No geometry/Gerber/XNC/legacy assembly/validation report semantic or DRC recomputation".into(),"No vendor/manufacturing/stock/polarity acceptance".into(),"Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports".into(),"Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return".into()];
+    if observed_openings.is_some() {
+        checks_performed.push("For job5: independently parsed mask/paste side, polarity, common coordinate ID, rectangular pad flash counts and mask via-circle counts (shared 10000 primitive/100000 command budget; 4 MiB/file)".into());
+        checks_not_performed[1] =
+            "No geometry equality, copper/profile/Legend Gerber, XNC/legacy assembly/validation semantic or DRC recomputation".into();
+        checks_not_performed[2] = "No vendor/manufacturing/stock acceptance or component electrical polarity checks".into();
+    }
+    Ok(ReleaseInspection {
+        observed_pad_openings: observed_openings,
+        path,
+        format: manifest.format,
+        version: manifest.version,
+        profile: job.profile,
+        project_id: manifest.project_id,
+        exported_cursor: manifest.exported_cursor,
+        file_count: facts.len() + 1,
+        observed_bytes: total,
+        files: facts,
+        calibrated_component_count: manifest.calibrated_placement.map(|c| c.component_count),
+        matched_assembly: matched,
+        release_exclusions: manifest.exclusions,
+        checks_performed,
+        checks_not_performed,
     })
 }
 
