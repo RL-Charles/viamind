@@ -333,7 +333,7 @@ mod tests {
             Project, Sheet,
             schematic::{Coordinate, SchematicContent},
         };
-        use viamind_engine::{EngineHandle, Origin, PackageComponentPlacement, PackageComponentRequest, PlaceSymbolPackage, UnitPose};
+        use viamind_engine::{EngineHandle, PackageComponentPlacement, PackageComponentRequest, PlaceSymbolPackage, UnitPose};
         use viamind_geom::{Nm, Point};
         let mut project = Project::new("Complete package counterpart input");
         let mut sheet = Sheet::new("Units");
@@ -354,17 +354,18 @@ mod tests {
                 mirrored: false,
             })
             .collect();
-        engine
-            .execute_typed(
-                PlaceSymbolPackage {
+        UiAction::PlaceSymbolPackage
+            .run(
+                &engine,
+                serde_json::to_value(PlaceSymbolPackage {
                     expected_project: engine.read(|p| p.id),
                     source_cursor: engine.event_cursor(),
                     expected: sheet,
                     template,
                     designator: "U1".into(),
                     placements,
-                },
-                Origin::User,
+                })
+                .unwrap(),
             )
             .unwrap();
         let package = engine.read(|p| *p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().packages.keys().next().unwrap());
@@ -384,7 +385,7 @@ mod tests {
                 },
             })
             .unwrap();
-        engine.execute_typed(preview.command, Origin::User).unwrap();
+        UiAction::CreatePackagePcbComponent.run(&engine, serde_json::to_value(preview.command).unwrap()).unwrap();
         let report = engine.query_linked_components(&ComponentLinkQuery::default()).unwrap();
         let row = &report.components[0];
         let part = row.part_id.unwrap();
