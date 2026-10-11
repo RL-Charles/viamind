@@ -1,0 +1,16 @@
+{
+  "admitted": true,
+  "admitted_utc": "2026-10-11T23:04:04.324452+00:00",
+  "source": "e7f60cf489ddb673ad416f991fb86c398c61a2ed",
+  "root_verified_binary_hashes": {
+    "native_benchmark": "6ffcedb836d1eecbd69b915f745ebf69069f5d8bc7902e04476cbd738a15af86",
+    "gpu_parity": "5244ae92e44bb7f5d29989aba240bdf41b61f4b851dc0a3d4e56373d17268967"
+  },
+  "lanes_acknowledged_quiet": [
+    "root",
+    "manufacturing_csv",
+    "outline_dxf"
+  ],
+  "mutexes": "benchmark agent retains workspace and release locks; queued root cleanup blocked",
+  "scope": "Existing five-case parity then one ordinary1260-frame baseline; default display/DPI; no reference/profile mode; no other Cargo/native/GPU/heavy verification until agent completion"
+}
