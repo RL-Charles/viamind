@@ -203,7 +203,8 @@ async fn exact_posture_routes_share_planner_and_two_agent_cursor_guards() {
 #[tokio::test]
 async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_guarded_commit() {
     use viamind_doc::{ObjectId, Pad, Pads, Part, Side};
-    use viamind_geom::{Nm, Point};
+    let nm = |value: i64| serde_json::from_value(json!(value)).unwrap();
+    let point = |x: i64, y: i64| serde_json::from_value(json!({"x":x,"y":y})).unwrap();
     let mut project = Project::new("MCP static detour");
     project.board.outline = Some(
         serde_json::from_value(json!({"outer":[{"x":0,"y":0},{"x":40000000,"y":0},{"x":40000000,"y":20000000},{"x":0,"y":20000000}],"cutouts":[]}))
@@ -213,9 +214,9 @@ async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_
         let pad = Pad {
             id: ObjectId::new(),
             number: "1".into(),
-            position: Point::ORIGIN,
-            width: Nm(1_000_000),
-            height: Nm(1_000_000),
+            position: point(0, 0),
+            width: nm(1_000_000),
+            height: nm(1_000_000),
             net: Some("N".into()),
         };
         let part = Part {
@@ -224,7 +225,7 @@ async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_
             designator: format!("J{x}"),
             value: String::new(),
             footprint: String::new(),
-            position: Point::new(Nm(x), Nm(10_000_000)),
+            position: point(x, 10_000_000),
             rotation_mdeg: 0,
             side: Side::Top,
             pads: Some(Pads::try_from(vec![pad.clone()]).unwrap()),
