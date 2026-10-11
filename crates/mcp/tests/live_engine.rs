@@ -431,10 +431,10 @@ async fn separate_agents_read_live_explicit_net_membership_without_creating_tran
     let id = engine.read(|p| p.board.part_by_designator("R1").unwrap().id);
     call(&writer, "move_part", json!({"id":id,"x_mm":40,"y_mm":20})).await;
     let moved = call(&reader, "query_connectivity", json!({"net":"GND"})).await.structured_content.unwrap();
-    assert!(moved["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"] == 40));
+    assert!(moved["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"].as_f64() == Some(40.0)));
     assert_eq!(call(&writer, "undo", json!({})).await.is_error, Some(false));
     let restored = call(&reader, "query_connectivity", json!({"net":"GND"})).await.structured_content.unwrap();
-    assert!(restored["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"] == 10));
+    assert!(restored["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"].as_f64() == Some(10.0)));
     writer.cancel().await.unwrap();
     reader.cancel().await.unwrap();
     server.shutdown();
