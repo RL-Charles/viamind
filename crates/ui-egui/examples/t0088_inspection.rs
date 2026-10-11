@@ -57,6 +57,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "{}",
         serde_json::json!({"inspection_harness":true,"production_controls_and_pointer_events":true,"project_unchanged":true,"checked_points_nm":h.state().routing.pad_planned_points()})
     );
+    // Preserve the real sidebar scroll state so the checked plan and complete
+    // Finish/Cancel controls are visible in the native inspection window.
+    h.get_by_label("Finish via route").scroll_to_me();
+    h.run_steps(5);
+    let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -74,6 +79,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
+            cc.egui_ctx.memory_mut(|m| *m = memory);
             Ok(Box::new(Inspection { app, engine, before }))
         }),
     )
