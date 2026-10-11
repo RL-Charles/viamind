@@ -4,7 +4,8 @@ Independent behavior, specified before implementation for T-0051. Public sources
 
 - [Ucamco Gerber specification 2026.05](https://www.ucamco.com/files/downloads/file_en/554/gerber-layer-format-specification-revision-2026-05_en.pdf), sections 4.2, 4.3, 4.8, 4.9, 5.6 and 6: metric Cartesian coordinates viewed from above, positive CCW rotation, flashed pads, stroked conductors, common alignment, file functions/polarity and separate closed profile contours.
 - [Ucamco XNC specification 2021.11](https://www.ucamco.com/files/downloads/file_en/452/xnc-format-specification-revision-2021-11_en.pdf), sections 2–3: documented Excellon/IPC-NC-349 subset, decimal metric coordinates, finished hole diameters, M48/METRIC/tool declarations/%/G05/tool selection/hits/M30.
-- [Gerbonara reader documentation](https://gerbolyze.gitlab.io/gerbonara/): independent Gerber/Excellon reader and SVG rendering API used for verification, not implementation.
+- [PyGerber reader documentation](https://argmaster.github.io/pygerber/stable/) and [transform-support release notes](https://github.com/Argmaster/pygerber/blob/v2.4.3/CHANGELOG.md): independent Gerber transform parsing/rendering for verification.
+- [Gerbonara reader documentation](https://gerbolyze.gitlab.io/gerbonara/): independent XNC/Excellon reader used for verification, not implementation. Its Gerber reader ignores LR and cannot validate transformed apertures.
 
 ## Supported increment and refusals
 
@@ -30,4 +31,4 @@ CLI `--export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]`
 
 ## Verification
 
-Exact deterministic output, rejection without partial publication, collision/race tests and active native protection. CLI invocation and MCP stale/snapshot behavior, accessible desktop form. Independent Gerbonara parsing/rendering validates asymmetric bottom-pad placement and rotation, track widths, via copper/drill alignment, mask dimensions and both outline rings. Linux fmt, strict all-target clippy, workspace tests/build before submission.
+Exact deterministic output, rejection without partial publication, collision/race tests and active native protection. CLI invocation and MCP stale/snapshot behavior, accessible desktop form. Independent PyGerber transformed Gerber parsing/rendering plus Gerbonara XNC parsing validates asymmetric bottom-pad placement and rotation, track widths, via copper/drill alignment, mask dimensions and both outline rings. Linux fmt, strict all-target clippy, workspace tests/build before submission.
