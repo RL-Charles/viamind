@@ -1,0 +1,10 @@
+{
+  "source_commit": "fb1cfcfecc4ef3b62e4c2b5a58ca71361f6d1408",
+  "base_commit": "9a80afc944da0531ecf9c469775ff48bafd972d9",
+  "source_status": "",
+  "rust_input_count": 324,
+  "rust_inputs_sha256": "f4c92be5aed3f1a207350f27712eb36cd737619da1477c23790063f2f6c7862d",
+  "gate_queued_utc": "2026-10-11T14:03:35.545738+00:00",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+  "gate_session": 40063
+}
