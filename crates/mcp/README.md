@@ -715,3 +715,15 @@ fixed-via and cleanup previews retain the captured rules; commits recompute unde
 the current guarded cursor. Rules match exact case-sensitive names; no patterns,
 class hierarchy, preferred sizes, region priorities or physical certification.
 See the [public specification](../../docs/specs/named-net-minima.md).
+
+### Exact named-net via minima
+
+Existing `query_named_net_rules` / guarded `set_named_net_rules` rows additionally
+accept optional integer-Nm `minimum_via_drill` and `minimum_annular_width`, each
+0..100000000. Zero/missing fields add no document floor and omit canonically;
+any nonzero via floor requires native/event schema10. Annular width is radial,
+not via diameter. Shared DRC and explicit-via route planning use the greater
+request baseline and exact matching net floor; specified drill/outer diameter
+never resize. Saved checked jobs retain the same captured policy and cannot
+weaken it with zero baselines. Class/layer/region policy and other via types
+remain outside this scope.
