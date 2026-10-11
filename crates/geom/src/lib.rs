@@ -16,6 +16,7 @@
 
 pub mod angle;
 pub mod arc;
+pub mod index;
 pub mod point;
 pub mod polygon;
 pub mod rect;
@@ -25,6 +26,7 @@ pub mod units;
 
 pub use angle::{Angle, NANODEG_PER_DEG};
 pub use arc::Arc;
+pub use index::SpatialIndex;
 pub use point::{Point, Vector};
 pub use polygon::Polygon;
 pub use rect::Rect;
