@@ -2,7 +2,7 @@ use viamind_doc::{AssemblyMetadata, assembly::validate_metadata};
 #[test]
 fn source_fields_and_global_limits_use_utf8_bytes_and_borrowed_records() {
     assert!(AssemblyMetadata::validate_field(&"é".repeat(256)).is_ok());
-    for s in ["".into(), " ".into(), "a\n".into(), "x ".into(), "\0".into(), "é".repeat(257)] {
+    for s in [String::new(), " ".into(), "a\n".into(), "x ".into(), "\0".into(), "é".repeat(257)] {
         assert!(AssemblyMetadata::validate_field(&s).is_err());
     }
     let dnp = AssemblyMetadata { populate: false, ..Default::default() };

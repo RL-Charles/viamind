@@ -122,6 +122,8 @@ impl EventLog {
         {
             return Err(LogError::BadHeader);
         }
+        let mut budget =
+            MetadataBudget::new(header.base.board.parts.values().filter_map(|p| p.assembly.as_deref())).map_err(|_| LogError::BadHeader)?;
         let mut current = header.base.clone();
         let mut log = EventLog::new(header.base);
         for (index, line) in lines {
@@ -158,9 +160,8 @@ impl EventLog {
                     if current.board.part(id).and_then(|p| p.assembly.as_deref()) != before {
                         return Err(LogError::BadHeader);
                     }
-                    let unchanged = current.board.parts.values().filter(|p| p.id != *id).filter_map(|p| p.assembly.as_deref());
                     let after = after.as_ref().and_then(|p| p.assembly.as_deref());
-                    viamind_doc::assembly::validate_metadata(unchanged.chain(after)).map_err(|_| LogError::BadHeader)?;
+                    budget.replace(before, after).map_err(|_| LogError::BadHeader)?;
                 }
                 delta.apply_to(&mut current);
             }
@@ -204,15 +205,53 @@ fn validate_event_assembly(event: &ChangeEvent) -> Result<(), &'static str> {
             state.entry(*id).or_insert_with(|| before.as_ref().and_then(|p| p.assembly.as_deref()));
         }
     }
-    viamind_doc::assembly::validate_metadata(state.values().filter_map(|m| *m))?;
+    let mut budget = MetadataBudget::new(state.values().filter_map(|m| *m))?;
     for delta in &event.deltas {
         if let crate::Delta::Part { id, before, after } = delta {
             if state.get(id).copied().flatten() != before.as_ref().and_then(|p| p.assembly.as_deref()) {
                 return Err("inconsistent assembly metadata in sequential event snapshots");
             }
-            state.insert(*id, after.as_ref().and_then(|p| p.assembly.as_deref()));
-            viamind_doc::assembly::validate_metadata(state.values().filter_map(|m| *m))?;
+            let before = before.as_ref().and_then(|p| p.assembly.as_deref());
+            let after = after.as_ref().and_then(|p| p.assembly.as_deref());
+            budget.replace(before, after)?;
+            state.insert(*id, after);
         }
     }
     Ok(())
+}
+
+/// Each sequential transition checks only its borrowed records, not the entire board.
+#[derive(Clone, Copy, Default)]
+struct MetadataBudget {
+    components: usize,
+    text: usize,
+}
+impl MetadataBudget {
+    fn new<'a>(records: impl IntoIterator<Item = &'a viamind_doc::AssemblyMetadata>) -> Result<Self, &'static str> {
+        let mut budget = Self::default();
+        for record in records {
+            budget.replace(None, Some(record))?;
+        }
+        Ok(budget)
+    }
+    fn replace(&mut self, before: Option<&viamind_doc::AssemblyMetadata>, after: Option<&viamind_doc::AssemblyMetadata>) -> Result<(), &'static str> {
+        let mut candidate = *self;
+        if let Some(before) = before {
+            candidate.components = candidate.components.checked_sub(1).ok_or("inconsistent assembly component budget")?;
+            candidate.text = candidate.text.checked_sub(before.strings().map(str::len).sum()).ok_or("inconsistent assembly text budget")?;
+        }
+        if let Some(after) = after {
+            after.validate()?;
+            candidate.components = candidate.components.saturating_add(1);
+            candidate.text = candidate.text.saturating_add(after.strings().map(str::len).sum());
+        }
+        if candidate.components > viamind_doc::assembly::MAX_SOURCING_COMPONENTS {
+            return Err("at most 100000 components may carry sourcing metadata");
+        }
+        if candidate.text > viamind_doc::assembly::MAX_SOURCING_TEXT {
+            return Err("sourcing metadata exceeds 2 MiB aggregate UTF-8 text");
+        }
+        *self = candidate;
+        Ok(())
+    }
 }

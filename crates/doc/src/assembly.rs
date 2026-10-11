@@ -2,6 +2,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+pub const MAX_SOURCING_COMPONENTS: usize = 100_000;
+pub const MAX_SOURCING_TEXT: usize = 2 * 1024 * 1024;
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AssemblyMetadata {
@@ -47,12 +50,12 @@ pub fn validate_metadata<'a>(records: impl IntoIterator<Item = &'a AssemblyMetad
     for record in records {
         record.validate()?;
         count += 1;
-        if count > 100_000 {
+        if count > MAX_SOURCING_COMPONENTS {
             return Err("at most 100000 components may carry sourcing metadata");
         }
         for s in record.strings() {
             text = text.saturating_add(s.len());
-            if text > 2 * 1024 * 1024 {
+            if text > MAX_SOURCING_TEXT {
                 return Err("sourcing metadata exceeds 2 MiB aggregate UTF-8 text");
             }
         }
