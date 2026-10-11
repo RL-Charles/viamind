@@ -57,7 +57,13 @@ async fn actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides
     for allowed in ["list_pcb_branches", "get_pcb_branch_diff"] {
         assert!(tools.iter().any(|t| t.name == allowed));
     }
-    assert_eq!(value(call(&read, "get_pcb_branch_diff", json!({"branch_id":id})).await), diff);
+    let mut read_diff = value(call(&read, "get_pcb_branch_diff", json!({"branch_id":id})).await);
+    let mut expected_diff = diff.clone();
+    // Observations do not renew the idle lease; elapsed monotonic time is metadata.
+    let read_remaining = read_diff["branch"].as_object_mut().unwrap().remove("remaining_ms").unwrap();
+    let earlier_remaining = expected_diff["branch"].as_object_mut().unwrap().remove("remaining_ms").unwrap();
+    assert!(read_remaining.as_u64().unwrap() <= earlier_remaining.as_u64().unwrap());
+    assert_eq!(read_diff, expected_diff);
     let listed = call(&read, "list_pcb_branches", json!({})).await;
     assert_eq!(listed.is_error, Some(false));
     let listed: Value = serde_json::from_str(&listed.content[0].as_text().unwrap().text).unwrap();
