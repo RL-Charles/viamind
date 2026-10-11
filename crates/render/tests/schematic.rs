@@ -127,3 +127,52 @@ fn distant_crop_is_pixel_identical_and_extreme_zoom_fails() {
     };
     assert!(schematic_svg(&schematic_view_snapshot(&p, id).unwrap(), &tiny).unwrap_err().to_string().contains("precision"));
 }
+
+#[test]
+fn explicit_package_unit_labels_and_borrowed_membership_budgets_are_preserved() {
+    use viamind_doc::{
+        Sheet,
+        schematic::{Coordinate, SchematicContent},
+        symbol_package::{PackageUnit, SchematicPackage, SymbolPackageTemplate},
+    };
+    use viamind_geom::Nm;
+    let template: SymbolPackageTemplate =
+        viamind_doc::symbol_package::from_slice(include_bytes!("../../../fixtures/symbol-packages/original-quad.viamind-symbol-package.json"))
+            .unwrap();
+    let mut p = Project::new("Explicit package view");
+    let mut sheet = Sheet::new("All units");
+    let id = sheet.id;
+    let mut c = SchematicContent::default();
+    let mut units = vec![];
+    for (i, u) in template.units.iter().enumerate() {
+        let s =
+            template.unit_template(u).instantiate("U1", Coordinate { x: Nm(i as i64 * 20_000_000), y: Nm(0) }, (i % 4) as u8, i % 2 == 1).unwrap();
+        units.push(PackageUnit { key: u.key.clone(), name: u.name.clone(), role: u.role, symbol_id: s.id });
+        c.symbols.insert(s.id, s);
+    }
+    let group = SchematicPackage { id: ObjectId::new(), template_name: template.name, units };
+    c.packages.insert(group.id, group.clone());
+    sheet.content = Some(c);
+    p.schematic.sheets.insert(id, sheet);
+    let before = p.clone();
+    let snapshot = schematic_view_snapshot(&p, id).unwrap();
+    let svg = schematic_svg(&snapshot, &Default::default()).unwrap();
+    assert_eq!(svg.metadata.pin_count, 14);
+    for u in &group.units {
+        assert!(svg.svg.contains(&format!("U1:{} ({})", u.key, u.name)), "qualified unit label absent: {}", u.key);
+    }
+    assert_eq!(schematic_png(&snapshot, &Default::default()).unwrap().png, schematic_png(&snapshot, &Default::default()).unwrap().png);
+    assert_eq!(p, before);
+    // Missing referenced symbols intentionally poison semantic validation. The
+    // count gate must win before cloning or visiting membership semantics.
+    let c = p.schematic.sheets.get_mut(&id).unwrap().content.as_mut().unwrap();
+    c.packages.clear();
+    for _ in 0..3334 {
+        let mut g = group.clone();
+        g.id = ObjectId::new();
+        g.units[0].symbol_id = ObjectId::new();
+        c.packages.insert(g.id, g);
+    }
+    let error = schematic_view_snapshot(&p, id).unwrap_err().to_string();
+    assert!(error.contains("10000"), "{error}");
+}

@@ -8,6 +8,191 @@ use viamind_doc::{
 use viamind_engine::{ChangeEvent, ChangeKind, Delta, EngineHandle, EventLog, Origin, SchematicConnectivityQuery, TxId};
 use viamind_geom::Nm;
 
+fn authored_template() -> viamind_doc::symbol_package::SymbolPackageTemplate {
+    viamind_doc::symbol_package::from_slice(include_bytes!("../../../fixtures/symbol-packages/original-quad.viamind-symbol-package.json")).unwrap()
+}
+fn empty_engine() -> EngineHandle {
+    let mut p = Project::new("Complete package");
+    let mut sheet = Sheet::new("All units");
+    sheet.content = Some(SchematicContent::default());
+    p.schematic.sheets.insert(sheet.id, sheet);
+    EngineHandle::new(p)
+}
+fn proposal(e: &EngineHandle) -> viamind_engine::PlaceSymbolPackage {
+    let sheet_id = e.read(|p| *p.schematic.sheets.keys().next().unwrap());
+    let guard = e.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id }).unwrap();
+    let template = authored_template();
+    let placements = template
+        .units
+        .iter()
+        .enumerate()
+        .map(|(i, u)| viamind_engine::UnitPose {
+            key: u.key.clone(),
+            position: Coordinate { x: Nm(i as i64 * 20_000_000 + 1), y: Nm(3) },
+            rotation_quarters: (i % 4) as u8,
+            mirrored: i % 2 == 1,
+        })
+        .collect();
+    viamind_engine::PlaceSymbolPackage {
+        expected_project: guard.expected_project,
+        source_cursor: guard.source_cursor,
+        expected: guard.expected,
+        template,
+        designator: "U1".into(),
+        placements,
+    }
+}
+
+#[test]
+fn complete_original_five_unit_placement_is_one_delta_exact_mapping_native_log_and_scoped_undo() {
+    for typed in [true, false] {
+        let e = empty_engine();
+        let before = e.session_state();
+        let command = proposal(&e);
+        let result = if typed {
+            e.execute_typed(command.clone(), Origin::agent("creator"))
+        } else {
+            e.execute("place_symbol_package", serde_json::to_value(&command).unwrap(), Origin::agent("creator"))
+        }
+        .unwrap();
+        assert_eq!(result.deltas.len(), 1);
+        let placed = e.session_state();
+        assert_eq!(placed.cursor.sequence, before.cursor.sequence + 1);
+        let report = e.query_symbol_packages(&Default::default()).unwrap();
+        assert_eq!(report.total, 1);
+        let group = &report.packages[0];
+        assert_eq!(group.units.iter().map(|u| u.key.as_str()).collect::<Vec<_>>(), ["A", "B", "C", "D", "P"]);
+        assert_eq!(group.designator, "U1");
+        let mut identities = std::collections::BTreeSet::from([group.package_id]);
+        let mut numbers = std::collections::BTreeSet::new();
+        for unit in &group.units {
+            assert!(identities.insert(unit.symbol_id));
+            let pose = command.placements.iter().find(|p| p.key == unit.key).unwrap();
+            assert_eq!((unit.position, unit.rotation_quarters, unit.mirrored), (pose.position, pose.rotation_quarters, pose.mirrored));
+            for p in &unit.pins {
+                assert!(identities.insert(p.pin.id));
+                assert!(numbers.insert(p.pin.number.clone()));
+                // Independent signed cardinal oracle; no use of the model transform.
+                let (mut x, mut y) = (p.pin.position.x.0, p.pin.position.y.0);
+                if pose.mirrored {
+                    x = -x;
+                }
+                (x, y) = match pose.rotation_quarters {
+                    0 => (x, y),
+                    1 => (y, -x),
+                    2 => (-x, -y),
+                    3 => (-y, x),
+                    _ => unreachable!(),
+                };
+                assert_eq!(p.position, Coordinate { x: Nm(pose.position.x.0 + x), y: Nm(pose.position.y.0 + y) });
+            }
+        }
+        assert_eq!(identities.len(), 20);
+        assert_eq!(numbers, (1..=14).map(|i| i.to_string()).collect());
+        assert_eq!(group.units[4].role, UnitRole::Power);
+        assert_eq!(group.units[4].pins.len(), 2);
+        let graph = e.query_schematic_connectivity(&SchematicConnectivityQuery { offset: 0, limit: 100 }).unwrap();
+        assert_eq!(graph.total_nets, 14);
+        let erc = e.run_erc(&Default::default()).unwrap();
+        assert_eq!(erc.coverage.evaluated_pins, 14);
+        assert!(erc.violations.iter().flat_map(|v| &v.pins).any(|p| p.unit_key.as_deref() == Some("P") && p.electrical == Some(PinType::PowerInput)));
+        assert_eq!(e.session_state(), placed, "read-only package/graph/ERC observations preserve every session field");
+        assert_eq!(viamind_doc::file::minimum_version(&placed.project), 11);
+        assert_eq!(viamind_doc::file::from_str(&viamind_doc::file::to_string(&placed.project)).unwrap(), placed.project);
+        e.execute("add_part", json!({"designator":"PEER1","value":"keep","footprint":"F","x_mm":1,"y_mm":2}), Origin::agent("peer")).unwrap();
+        let peer_board = e.read(|p| p.board.clone());
+        e.undo_own(Origin::agent("creator")).unwrap();
+        assert_eq!(e.read(|p| p.schematic.clone()), before.project.schematic);
+        assert_eq!(e.read(|p| p.board.clone()), peer_board);
+        e.redo_own(Origin::agent("creator")).unwrap();
+        assert_eq!(e.read(|p| p.schematic.clone()), placed.project.schematic);
+        let mut log = vec![];
+        e.with_engine(|e| e.log().write_jsonl(&mut log)).unwrap();
+        assert_eq!(EventLog::read_jsonl(log.as_slice()).unwrap().replay(), e.read(Clone::clone));
+    }
+}
+
+#[test]
+fn complete_deletion_keeps_wire_endpoints_and_restores_every_package_identity_on_undo() {
+    let e = empty_engine();
+    e.execute_typed(proposal(&e), Origin::User).unwrap();
+    let sheet_id = e.read(|p| *p.schematic.sheets.keys().next().unwrap());
+    let guard = e.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id }).unwrap();
+    e.execute("edit_schematic_sheet",json!({"expected_project":guard.expected_project,"sheet_id":sheet_id,"expected":guard.expected,"name":"All units","edits":[{"kind":"wire","start":{"x":-3000002,"y":-1000004},"end":{"x":9000000,"y":-1000004}}]}),Origin::User).unwrap();
+    let before = e.session_state();
+    let expected = before.project.schematic.sheets[&sheet_id].clone();
+    let package_id = *expected.content.as_ref().unwrap().packages.keys().next().unwrap();
+    let command = viamind_engine::DeleteSymbolPackage {
+        expected_project: before.project.id,
+        source_cursor: before.cursor,
+        expected: expected.clone(),
+        package_id,
+    };
+    assert_eq!(e.execute_typed(command.clone(), Origin::User).unwrap().deltas.len(), 1);
+    let deleted = e.read(|p| p.schematic.sheets[&sheet_id].clone());
+    let content = deleted.content.as_ref().unwrap();
+    assert!(content.packages.is_empty() && content.symbols.is_empty());
+    assert_eq!(content.wires, expected.content.as_ref().unwrap().wires);
+    let after = e.session_state();
+    assert!(e.execute_typed(command, Origin::User).is_err());
+    assert_eq!(e.session_state(), after);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(|p| p.schematic.sheets[&sheet_id].clone()), expected);
+    e.redo(Origin::User).unwrap();
+    assert_eq!(e.read(|p| p.schematic.sheets[&sheet_id].clone()), deleted);
+}
+
+#[test]
+fn incomplete_duplicate_unknown_invalid_or_stale_placements_never_mutate_any_session_field() {
+    for case in 0..10 {
+        let e = empty_engine();
+        let mut command = proposal(&e);
+        match case {
+            0 => {
+                command.placements.pop();
+            }
+            1 => command.placements[4].key = "A".into(),
+            2 => command.placements[4].key = "UNKNOWN".into(),
+            3 => command.placements[0].rotation_quarters = 4,
+            4 => command.placements[0].position.x = Nm(i64::MAX),
+            5 => command.template.units[4].pins[0].number = "1".into(),
+            6 => command.template.units[4].key = "A".into(),
+            7 => command.expected.name = "forged".into(),
+            8 => command.expected_project = ObjectId::new(),
+            _ => command.template.value = "x".repeat(4097),
+        }
+        let before = e.session_state();
+        let status = e.document_status();
+        assert!(e.execute_typed(command, Origin::User).is_err(), "case{case}");
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.document_status(), status);
+    }
+    let e = empty_engine();
+    let old = proposal(&e);
+    e.execute("add_part", json!({"designator":"PEER1","value":"keep","footprint":"F","x_mm":0,"y_mm":0}), Origin::agent("peer")).unwrap();
+    let before = e.session_state();
+    assert!(e.execute_typed(old, Origin::User).is_err());
+    assert_eq!(e.session_state(), before);
+    let e = empty_engine();
+    let old = proposal(&e);
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("same.json");
+    viamind_doc::file::save(&e.read(Clone::clone), &path).unwrap();
+    e.open_project(viamind_engine::OpenProject { path, discard_dirty: false, expected_cursor: Some(e.event_cursor()) }, Origin::User).unwrap();
+    let before = e.session_state();
+    assert_eq!(before.project.id, old.expected_project);
+    assert_eq!(before.project.schematic.sheets[&old.expected.id], old.expected);
+    assert!(e.execute_typed(old, Origin::User).is_err());
+    assert_eq!(e.session_state(), before);
+    let e = empty_engine();
+    let mut v = serde_json::to_value(proposal(&e)).unwrap();
+    v["placements"] = json!(vec![Value::Null; 33]);
+    let before = e.session_state();
+    let error = e.execute("place_symbol_package", v, Origin::User).unwrap_err().to_string();
+    assert!(error.contains("2..32"), "{error}");
+    assert_eq!(e.session_state(), before);
+}
+
 fn package_sheet() -> Sheet {
     let mut sheet = Sheet::new("Original units");
     let mut c = SchematicContent::default();
