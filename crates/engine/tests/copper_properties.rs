@@ -246,7 +246,7 @@ fn stale_sequences_streams_exact_expected_and_batch_reject_whole_transaction() {
     let e = EngineHandle::new(project);
     let stale = track(&e, tid);
     e.execute_typed(via(&e, vid), Origin::agent("peer")).unwrap();
-    reject(&e, stale, "stale");
+    reject(&e, stale, "session changed");
     let fresh = track(&e, tid);
     let mut wrong = via(&e, vid);
     wrong.expected.diameter = Nm(800_000);
@@ -267,7 +267,7 @@ fn stale_sequences_streams_exact_expected_and_batch_reject_whole_transaction() {
     assert_eq!(e.document_status(), status);
     let mut stale = track(&e, tid);
     stale.expected_cursor.stream_id = EngineHandle::new(Project::new("other stream")).event_cursor().stream_id;
-    reject(&e, stale, "stale");
+    reject(&e, stale, "session changed");
     let mut wrong = track(&e, tid);
     wrong.expected.width = Nm(1);
     reject(&e, wrong, "track changed");
