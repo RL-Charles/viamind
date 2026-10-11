@@ -3,8 +3,31 @@
 Ticket T-0121 / S-035. Public contract for independent review before Rust.
 Base `fb81457707ccd734e118e7256d49223539dbabd8` includes reviewed T118/T123.
 T120's approved aperture contract and stable document foundation are prerequisites.
-Implementation waits for its final command, render, fabrication and release handoff;
+The independently reviewed foundation phase below may precede its final consumer
+handoff. Command, render, fabrication and release integration waits for that handoff;
 only this ticket's commits will transplant onto those frozen interfaces.
+
+## Foundation phase amendment
+
+T120 supplied immutable model/persistence foundation
+`950f6160cd251072a04a0bf47bc25d24313434fc`. Its consumer tips `29d494a9` and
+`aa4f9c82` have no changes from that foundation in `part.rs`, `pad_apertures.rs`,
+`footprint.rs`, `file.rs` or the engine's `log.rs`; root verified that empty diff.
+This handoff freezes optional aperture shape, native/log14 and library3. Historical
+foundation tests are evidence of that shape, not verification of the eventual
+combined source or unfinished consumers.
+
+After independent approval of this amendment, T121 may implement only its hole
+types, strict parsing, bounded validation/global identity checks, shared geometry,
+optional Part/footprint storage, native15/library4 and log version composition.
+This includes mechanically updating constructors/copy helpers to preserve holes,
+without claiming physical-consumer support. The phase must use that exact foundation
+and retain focused evidence tied to its source. New hole commands, authoring UI,
+rendering, electrical/DRC/routing integration, fabrication and saved-release work
+remain gated on the final frozen T120 consumer handoff and a fresh interface audit.
+No intermediate foundation binary is a supported hole-enabled application or release.
+Transplant only T121's own commits when integrating the final handoff, then verify
+the combined source. All acceptance requirements below remain required before merge.
 
 ## Public references and scope
 
@@ -185,8 +208,9 @@ commands and compatibility policies below are Viamind choices.
 
 ## Consumer audit required at implementation handoff
 
-This inventory is read-only against the initial base. T120 may change signatures;
-reconcile against its final frozen source before editing Rust. Presence in this table
+This inventory is read-only against the initial base. T120 may change consumer signatures;
+reconcile consumers against its final frozen source before integrating them. The
+limited foundation phase uses the immutable handoff above. Presence in this table
 records required work, not a completed implementation or verification claim.
 
 | Boundary | Existing source | Required NPTH audit |
