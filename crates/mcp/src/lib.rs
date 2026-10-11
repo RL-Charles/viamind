@@ -11,6 +11,7 @@ pub mod agent;
 pub mod assembly;
 pub mod builtin;
 pub mod engine_host;
+pub mod fabrication;
 pub mod host;
 pub mod http;
 pub mod registry;

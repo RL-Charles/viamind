@@ -10,6 +10,7 @@ pub mod camera;
 pub mod canvas;
 pub mod copper;
 pub mod drc;
+pub mod fabrication;
 pub mod files;
 mod gpu_tiles;
 pub mod layer_panel;
@@ -123,6 +124,7 @@ pub struct ViamindApp {
     pub selection: selection::Selection,
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
+    pub fabrication: fabrication::FabricationUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
@@ -155,6 +157,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: None,
+            fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -178,6 +181,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
+            fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -304,6 +308,7 @@ impl ViamindApp {
         self.outline_dialog(ui);
         self.copper_dialog(ui);
         self.drc_window(ui);
+        self.fabrication_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -429,6 +434,10 @@ impl ViamindApp {
             }
             if self.design.is_some() {
                 ui.menu_button("Board", |ui| {
+                    if ui.button("Export fabrication…").clicked() {
+                        self.begin_fabrication_export();
+                        ui.close();
+                    }
                     if ui.button("Design rule check…").clicked() {
                         self.begin_drc();
                         ui.close();

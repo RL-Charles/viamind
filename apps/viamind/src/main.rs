@@ -27,6 +27,19 @@ fn main() -> anyhow::Result<()> {
         Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
         None => EngineHandle::new(Project::new("Untitled")),
     };
+    if options.export_gerber {
+        let snapshot = engine.session_state();
+        let output = options.output.as_deref().expect("CLI requires fabrication destination");
+        let (path, manifest) = viamind_fab::write_fabrication(
+            &snapshot.project,
+            viamind_fab::FabricationOptions { mask_expansion_mm: options.mask_expansion_mm.unwrap_or(0.0) },
+            output,
+            engine.document_status().path.as_deref(),
+        )
+        .with_context(|| format!("could not export fabrication {}", output.display()))?;
+        eprintln!("viamind: exported {} files to {}", manifest.files.len(), path.display());
+        return Ok(());
+    }
     if let Some(kind) = options.export_csv {
         let snapshot = engine.session_state();
         let output = options.output.as_deref().expect("CLI requires an export destination");

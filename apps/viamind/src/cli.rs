@@ -7,6 +7,7 @@ pub const HELP: &str = "Viamind — agent-driven PCB design
 Usage: viamind [--open PATH] [--no-mcp]
        viamind --headless [--open PATH] [--save-as PATH]
        viamind --export-csv bom|placement --open PATH --output PATH [--overwrite]
+       viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --demo
 
   --headless       Serve full design MCP over stdin/stdout without a window
@@ -14,7 +15,9 @@ Usage: viamind [--open PATH] [--no-mcp]
   --save-as PATH   Save the final headless design after the client closes stdin
   --no-mcp         Open the desktop without the HTTP MCP endpoint
   --export-csv KIND Export generic BOM or component-origin placement CSV and exit
-  --output PATH    CSV destination (existing files are refused by default)
+  --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
+  --mask-expansion-mm N  Mask expansion for fabrication export (0–10mm, default0)
+  --output PATH    Export destination (fabrication needs a NEW directory)
   --overwrite      Allow replacing the CSV destination
   --demo           Open the synthetic rendering demo
   --help           Show this help
@@ -34,6 +37,8 @@ pub struct Options {
     pub export_csv: Option<viamind_fab::AssemblyCsv>,
     pub output: Option<PathBuf>,
     pub overwrite: bool,
+    pub export_gerber: bool,
+    pub mask_expansion_mm: Option<f64>,
 }
 
 pub enum Invocation {
@@ -61,6 +66,15 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             Some("--demo") => options.demo = true,
             Some("--no-mcp") => options.no_mcp = true,
             Some("--overwrite") => options.overwrite = true,
+            Some("--export-gerber") => options.export_gerber = true,
+            Some("--mask-expansion-mm") => {
+                options.mask_expansion_mm = Some(
+                    args.next()
+                        .and_then(|s| s.to_str().and_then(|s| s.parse::<f64>().ok()))
+                        .filter(|v| v.is_finite() && (0.0..=10.0).contains(v))
+                        .ok_or("--mask-expansion-mm needs a finite number between 0 and 10")?,
+                );
+            }
             Some("--export-csv") => {
                 options.export_csv = Some(match args.next().as_deref().and_then(|arg| arg.to_str()) {
                     Some("bom") => viamind_fab::AssemblyCsv::Bom,
@@ -84,6 +98,21 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
     }
+    if options.export_gerber {
+        if options.open.is_none()
+            || options.output.is_none()
+            || options.export_csv.is_some()
+            || options.demo
+            || options.headless
+            || options.no_mcp
+            || options.save_as.is_some()
+            || options.overwrite
+        {
+            return Err("--export-gerber requires --open and --output NEW_DIRECTORY, with optional --mask-expansion-mm; existing directories cannot be overwritten".into());
+        }
+    } else if options.mask_expansion_mm.is_some() {
+        return Err("--mask-expansion-mm requires --export-gerber".into());
+    }
     if options.export_csv.is_some() {
         if options.open.is_none() || options.output.is_none() {
             return Err("--export-csv requires --open and --output".into());
@@ -91,7 +120,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         if options.demo || options.headless || options.no_mcp || options.save_as.is_some() {
             return Err("--export-csv is a separate invocation; use --open, --output and optional --overwrite".into());
         }
-    } else if options.output.is_some() || options.overwrite {
+    } else if !options.export_gerber && (options.output.is_some() || options.overwrite) {
         return Err("--output and --overwrite require --export-csv".into());
     }
     if options.demo && (options.headless || options.no_mcp || options.open.is_some() || options.save_as.is_some()) {
