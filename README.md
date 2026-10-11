@@ -28,6 +28,11 @@ claude mcp add --transport http viamind http://127.0.0.1:7878/mcp
 ```
 
 Ask your agent to place parts (`add_part`, `move_part`, `delete_part`); they appear live in the window.
+Save with **File → Save** (Ctrl+S) or **Save As** (Ctrl+Shift+S). The title marks
+unsaved changes, including agent edits. Agents use `save_project` with a native
+path, or omit the path to save the active file; `get_document_status` reads its
+path and dirty state. A supplied existing destination requires `overwrite: true`.
+See [the native save contract](docs/specs/project-saving.md).
 Undo anything with Ctrl+Z or the Edit menu; agents undo their own changes with the `undo` tool.
 `viamind --demo` opens the synthetic 10k-object test scene, and `VIAMIND_MCP_PORT` changes the port.
 

@@ -14,6 +14,12 @@ use crate::transaction::{Origin, TxId};
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
 pub enum EngineError {
+    /// Native project persistence failed; design and prior file status are unchanged.
+    #[error("native project file error: {message}")]
+    File {
+        /// File path and actionable I/O or parsing failure.
+        message: String,
+    },
     /// No command with this name is registered.
     #[error("unknown command `{name}`; available commands: {}", available.join(", "))]
     UnknownCommand {

@@ -32,6 +32,7 @@ pub struct Engine {
     log: EventLog,
     selection: crate::SelectionSnapshot,
     session: crate::session::SessionJournal,
+    document: crate::document::DocumentState,
 }
 
 impl Engine {
@@ -46,6 +47,7 @@ impl Engine {
             registry,
             selection: crate::SelectionSnapshot::default(),
             session: crate::session::SessionJournal::default(),
+            document: crate::document::DocumentState::new(project.clone()),
             undo: Vec::new(),
             redo: Vec::new(),
             next_tx: 1,
@@ -58,6 +60,18 @@ impl Engine {
     /// The current project.
     pub fn project(&self) -> &Project {
         &self.project
+    }
+
+    /// Active native path and whether the project differs from its saved baseline.
+    pub fn document_status(&self) -> crate::DocumentStatus {
+        self.document.status()
+    }
+
+    pub(crate) fn mark_saved(&mut self, saved: Project, path: std::path::PathBuf) {
+        self.document.saved = saved;
+        self.document.path = Some(path);
+        self.document.dirty = self.project != self.document.saved;
+        self.notifier.wake();
     }
 
     /// Current transient selection, shared by all clients.
@@ -297,6 +311,7 @@ impl Engine {
 
     /// Logs `event` and sends it to subscribers.
     fn emit(&mut self, event: ChangeEvent) {
+        self.document.dirty = self.project != self.document.saved;
         let before = self.selection.ids.len();
         self.selection.ids.retain(|id| self.project.board.parts.contains_key(id));
         if self.selection.ids.len() != before {

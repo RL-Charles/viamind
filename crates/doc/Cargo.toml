@@ -16,6 +16,7 @@ serde_json.workspace = true
 uuid.workspace = true
 schemars.workspace = true
 thiserror.workspace = true
+tempfile.workspace = true
 
 [dev-dependencies]
 proptest.workspace = true

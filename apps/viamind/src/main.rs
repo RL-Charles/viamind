@@ -23,11 +23,10 @@ fn main() -> anyhow::Result<()> {
     if options.demo {
         return viamind_ui_egui::run().map_err(|e| anyhow::anyhow!("{e}"));
     }
-    let project = match options.open {
-        Some(path) => file::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
-        None => Project::new("Untitled"),
+    let engine = match options.open {
+        Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
+        None => EngineHandle::new(Project::new("Untitled")),
     };
-    let engine = EngineHandle::new(project);
     if options.headless {
         let registry = viamind_mcp::engine_registry(engine.clone())?;
         eprintln!("viamind: headless design MCP on stdin/stdout; close stdin to finish");

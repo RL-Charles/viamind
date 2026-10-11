@@ -98,6 +98,16 @@ raw JSON-RPC over stdio) and `tests/host.rs` (a fake in-memory `CommandHost` ser
 `tokio::io::duplex` to real rmcp clients: tools/list, tools/call, undo/redo, get_design, host
 errors and per-connection agent ids).
 
+## Save a native project
+
+`save_project {"path":"design.viamind.json"}` atomically writes a native project and
+sets the active file path. Existing destinations are preserved unless `overwrite: true`
+is provided. `save_project {}` saves the current active file, replacing it; it requires
+an existing active path. `get_document_status {}` returns absolute `path` (or null) and
+`dirty`. Saving preserves design undo/redo, and undoing back to the saved content clears
+dirty state. Edits made while a save is in progress remain dirty. Both HTTP and stdio
+support these tools. See [the saving contract](../../docs/specs/project-saving.md).
+
 ## Shared desktop selection
 
 The live desktop engine also exposes `get_selection` and `set_selection`.
