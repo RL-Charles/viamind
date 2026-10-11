@@ -125,7 +125,7 @@ against an isolated owned desktop session, with arguments `PORT BINARY SOURCE_SH
 REPOSITORY`. It replaces only that verification document and creates NEW outputs
 beside itself. Historical evidence paths are not reusable destinations.
 
-Final combined integration source `eb7d2d937a531e3ce9ebdf20d0f90475feff6dd5` includes merged read-only
+Assembly integration source `eb7d2d937a531e3ce9ebdf20d0f90475feff6dd5` includes merged read-only
 agent admission and assembly calibration. Native feature calculation preserves
 `max(geometry, assembly metadata, named rules)`, and log10 retains strict
 assembly9 Part-before/after validation. A mixed authored fixture separately
@@ -133,7 +133,7 @@ checks drill-only, annulus-only and both floors at10, older header9 refusal,
 byte-identical restoration to assembly9 after clearing only via floors, then
 policy8 and geometry4 after clearing only their respective features.
 
-The final sequence passed formatting, strict workspace/all-target Clippy,
+That sequence passed formatting, strict workspace/all-target Clippy,
 **36 focused tests /0 failed**, workspace build, **85-tool** actual combined
 catalog generation and **18** agent workflow checks. The unique final executable
 hash is `9a93b449909c22b626614c2730f87578be63ddc0f09c02bc21ac350ec29b4f73`.
@@ -141,6 +141,20 @@ See [combined log](verification/t0101/final-combined.log),
 [actual catalog](verification/t0101/final-catalog-discovery.json) and
 [workflow](verification/t0101/final-agent-workflow.json). The historical715 full
 suite was retained; unrelated full local gates were not repeated.
+
+Agent-presence integration on merged `d8a8e57` is product source
+`653a1731cd2ca9ffb50ed736cd62025b87b34676` (the master records the exact source).
+All10 feature commits range-diff equal to prior artifact head381a7d5, whose
+CI38154093357 passed all three jobs. No application behavior changed in this
+rebase. A focused combined refresh passed fmt, strict workspace/all-target lint,
+**17 tests /0 failed**, workspace build, **88-tool** actual catalog generation
+and exact drift check, and **18** isolated agent workflow checks.
+The unique combined executable hash is
+`db89b2ebc0dcc4755f4ec42d91b7e13f33b49c3f431960509292539d8688b917`.
+See [integration log](verification/t0101/presence-integration.log),
+[actual catalog](verification/t0101/presence-catalog-discovery.json),
+[drift check](verification/t0101/presence-catalog-drift.json) and
+[workflow](verification/t0101/presence-agent-workflow.json).
 
 Exact final artifact-head CI must pass before merge;
 historical executable/image hashes stay tied to source020b70f above. Existing

@@ -331,9 +331,38 @@
     "linux-full.log": "a721f9679b624eaa5a31cc62fc7dbc832763d102cad1393e5aa621ff5b45539e",
     "linux-full.sh": "74f558bc4b0261b1c200853b8540da89698496fecc37b982220d921f361e6740",
     "linux-gates.json": "cc995bf98c10776316e5527735db874a5625e2a59101f673c03582a22a002c3d",
+    "presence-agent-workflow.json": "6c830c17bc04484f9a139964ea491ca31f2d089488e2b058b5a8de0d51a5db47",
+    "presence-catalog-discovery.json": "b48d3e83d0f77d8838e86a1d3339b2afeed8f49bf7418019e2f595f00a20a7e7",
+    "presence-catalog-drift.json": "b48d3e83d0f77d8838e86a1d3339b2afeed8f49bf7418019e2f595f00a20a7e7",
+    "presence-integration.log": "911fb71b7920204acffd45c77cfdac045a5d4ee0e45892405524a903d11a5306",
+    "presence-integration.sh": "03e00fbd3d6c49893383bb6920462a881d8f55272a97ef533e7697d9b29124e8",
     "production-launch.json": "6f2c3b0fb15418f63aad4cab68d8256664e8e0d87b3143309d3d65672ef142b9",
     "production-via-http.json": "996204def8472410198b3e46557d8b0479c1459ee65e1dc8b762bfd2febc1e73",
     "production-via.py": "250ce758644918412059f29be0e087c89e5213849f698d10de6ee330c02fc334",
     "via-rules.viamind.json": "0d3de95d99e8166258c7077dfe9fa427b2c163a85aaddee9a40884b67c583973"
+  },
+  "presence_integration": {
+    "base": "d8a8e57",
+    "source_commit": "653a1731cd2ca9ffb50ed736cd62025b87b34676",
+    "range_diff": "all10 feature commits equal to prior381a7d5; no product changes",
+    "historical_ci": {
+      "head": "381a7d5d5c36d1f726329ae616c49b396edb8fda",
+      "run": 38154093357,
+      "conclusion": "all3success"
+    },
+    "fmt": "pass",
+    "clippy": "workspace/all-targets -Dwarnings pass",
+    "targeted_tests": {
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0
+    },
+    "build": "workspace pass",
+    "catalog_tools": 88,
+    "agent_workflow_checks": 18,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/presence-integration/viamind",
+    "binary_sha256": "db89b2ebc0dcc4755f4ec42d91b7e13f33b49c3f431960509292539d8688b917",
+    "canonical_reference": "actual combined88-tool executable exact drift check PASS",
+    "native_provenance": "Historical020b70f product/inspection images and79HTTP remain unchanged; no optional native repeat for clean additive rebase. Exact latest artifact-head CI required before merge."
   }
 }
