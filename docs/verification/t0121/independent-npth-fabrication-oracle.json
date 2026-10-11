@@ -1,0 +1,418 @@
+{
+  "status": "Independent expected-data preparation only; no NPTH fabrication/parser/runtime implementation or PASS claim",
+  "contract": "verification/t0121/pre-code-spec / 04282f7b82fffef21d2201635af5c42846f86b8e",
+  "geometry_oracle_sha256": "cf123cec924a450f0d573bd7cd433d6188995c78ac903bd39cb4b3ece3bc7744",
+  "method": "Python integer Nm and decimal spelling; use previously independent eight-cardinal centers, preserve X and negate model Y once to the existing fabrication axes; group diameter then Part/hole UUID",
+  "expected_file": "nonplated-through.xnc",
+  "file_function": "NonPlated,1,2,NPTH",
+  "expected_summary": {
+    "authored_containers": 9,
+    "explicit_empty_parts": 1,
+    "physical_drill_count": 8
+  },
+  "tool_declarations": [
+    {
+      "tool": "T01",
+      "diameter_nm": 1000001,
+      "decimal_mm": "1.000001"
+    },
+    {
+      "tool": "T02",
+      "diameter_nm": 2000003,
+      "decimal_mm": "2.000003"
+    },
+    {
+      "tool": "T03",
+      "diameter_nm": 3000001,
+      "decimal_mm": "3.000001"
+    }
+  ],
+  "ordered_hits": [
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003e9",
+      "hole_id": "00000000-0000-0000-0000-0000000007d1",
+      "key": "mount-A",
+      "side": "top",
+      "rotation_mdeg": 0,
+      "model_center_nm": {
+        "x": 11000014,
+        "y": -22000020
+      },
+      "diameter_nm": 1000001,
+      "xnc_center_nm": {
+        "x": 11000014,
+        "y": 22000020
+      },
+      "expected_tool": "T01",
+      "expected_decimal_coordinates": {
+        "x": "11.000014",
+        "y": "22.000020"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003ec",
+      "hole_id": "00000000-0000-0000-0000-0000000007d4",
+      "key": "mount-A",
+      "side": "top",
+      "rotation_mdeg": 270000,
+      "model_center_nm": {
+        "x": 12000018,
+        "y": -19000010
+      },
+      "diameter_nm": 1000001,
+      "xnc_center_nm": {
+        "x": 12000018,
+        "y": 19000010
+      },
+      "expected_tool": "T01",
+      "expected_decimal_coordinates": {
+        "x": "12.000018",
+        "y": "19.000010"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003ef",
+      "hole_id": "00000000-0000-0000-0000-0000000007d7",
+      "key": "mount-A",
+      "side": "bottom",
+      "rotation_mdeg": 180000,
+      "model_center_nm": {
+        "x": 11000014,
+        "y": -18000006
+      },
+      "diameter_nm": 1000001,
+      "xnc_center_nm": {
+        "x": 11000014,
+        "y": 18000006
+      },
+      "expected_tool": "T01",
+      "expected_decimal_coordinates": {
+        "x": "11.000014",
+        "y": "18.000006"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003eb",
+      "hole_id": "00000000-0000-0000-0000-0000000007d3",
+      "key": "mount-A",
+      "side": "top",
+      "rotation_mdeg": 180000,
+      "model_center_nm": {
+        "x": 9000008,
+        "y": -18000006
+      },
+      "diameter_nm": 2000003,
+      "xnc_center_nm": {
+        "x": 9000008,
+        "y": 18000006
+      },
+      "expected_tool": "T02",
+      "expected_decimal_coordinates": {
+        "x": "9.000008",
+        "y": "18.000006"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003ee",
+      "hole_id": "00000000-0000-0000-0000-0000000007d6",
+      "key": "mount-A",
+      "side": "bottom",
+      "rotation_mdeg": 90000,
+      "model_center_nm": {
+        "x": 8000004,
+        "y": -19000010
+      },
+      "diameter_nm": 2000003,
+      "xnc_center_nm": {
+        "x": 8000004,
+        "y": 19000010
+      },
+      "expected_tool": "T02",
+      "expected_decimal_coordinates": {
+        "x": "8.000004",
+        "y": "19.000010"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003ea",
+      "hole_id": "00000000-0000-0000-0000-0000000007d2",
+      "key": "mount-A",
+      "side": "top",
+      "rotation_mdeg": 90000,
+      "model_center_nm": {
+        "x": 8000004,
+        "y": -21000016
+      },
+      "diameter_nm": 3000001,
+      "xnc_center_nm": {
+        "x": 8000004,
+        "y": 21000016
+      },
+      "expected_tool": "T03",
+      "expected_decimal_coordinates": {
+        "x": "8.000004",
+        "y": "21.000016"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003ed",
+      "hole_id": "00000000-0000-0000-0000-0000000007d5",
+      "key": "mount-A",
+      "side": "bottom",
+      "rotation_mdeg": 0,
+      "model_center_nm": {
+        "x": 9000008,
+        "y": -22000020
+      },
+      "diameter_nm": 3000001,
+      "xnc_center_nm": {
+        "x": 9000008,
+        "y": 22000020
+      },
+      "expected_tool": "T03",
+      "expected_decimal_coordinates": {
+        "x": "9.000008",
+        "y": "22.000020"
+      }
+    },
+    {
+      "part_id": "00000000-0000-0000-0000-0000000003f0",
+      "hole_id": "00000000-0000-0000-0000-0000000007d8",
+      "key": "mount-A",
+      "side": "bottom",
+      "rotation_mdeg": 270000,
+      "model_center_nm": {
+        "x": 12000018,
+        "y": -21000016
+      },
+      "diameter_nm": 3000001,
+      "xnc_center_nm": {
+        "x": 12000018,
+        "y": 21000016
+      },
+      "expected_tool": "T03",
+      "expected_decimal_coordinates": {
+        "x": "12.000018",
+        "y": "21.000016"
+      }
+    }
+  ],
+  "empty_file_case": {
+    "physical_drill_count": 0,
+    "tool_declarations": [],
+    "hits": [],
+    "must_publish_npth_file_when_opted_in": true
+  },
+  "distinct_tool_boundaries": {
+    "99_valid_positive_diameters_nm": [
+      1000001,
+      1000002,
+      1000003,
+      1000004,
+      1000005,
+      1000006,
+      1000007,
+      1000008,
+      1000009,
+      1000010,
+      1000011,
+      1000012,
+      1000013,
+      1000014,
+      1000015,
+      1000016,
+      1000017,
+      1000018,
+      1000019,
+      1000020,
+      1000021,
+      1000022,
+      1000023,
+      1000024,
+      1000025,
+      1000026,
+      1000027,
+      1000028,
+      1000029,
+      1000030,
+      1000031,
+      1000032,
+      1000033,
+      1000034,
+      1000035,
+      1000036,
+      1000037,
+      1000038,
+      1000039,
+      1000040,
+      1000041,
+      1000042,
+      1000043,
+      1000044,
+      1000045,
+      1000046,
+      1000047,
+      1000048,
+      1000049,
+      1000050,
+      1000051,
+      1000052,
+      1000053,
+      1000054,
+      1000055,
+      1000056,
+      1000057,
+      1000058,
+      1000059,
+      1000060,
+      1000061,
+      1000062,
+      1000063,
+      1000064,
+      1000065,
+      1000066,
+      1000067,
+      1000068,
+      1000069,
+      1000070,
+      1000071,
+      1000072,
+      1000073,
+      1000074,
+      1000075,
+      1000076,
+      1000077,
+      1000078,
+      1000079,
+      1000080,
+      1000081,
+      1000082,
+      1000083,
+      1000084,
+      1000085,
+      1000086,
+      1000087,
+      1000088,
+      1000089,
+      1000090,
+      1000091,
+      1000092,
+      1000093,
+      1000094,
+      1000095,
+      1000096,
+      1000097,
+      1000098,
+      1000099
+    ],
+    "100_refused_positive_diameters_nm": [
+      1000001,
+      1000002,
+      1000003,
+      1000004,
+      1000005,
+      1000006,
+      1000007,
+      1000008,
+      1000009,
+      1000010,
+      1000011,
+      1000012,
+      1000013,
+      1000014,
+      1000015,
+      1000016,
+      1000017,
+      1000018,
+      1000019,
+      1000020,
+      1000021,
+      1000022,
+      1000023,
+      1000024,
+      1000025,
+      1000026,
+      1000027,
+      1000028,
+      1000029,
+      1000030,
+      1000031,
+      1000032,
+      1000033,
+      1000034,
+      1000035,
+      1000036,
+      1000037,
+      1000038,
+      1000039,
+      1000040,
+      1000041,
+      1000042,
+      1000043,
+      1000044,
+      1000045,
+      1000046,
+      1000047,
+      1000048,
+      1000049,
+      1000050,
+      1000051,
+      1000052,
+      1000053,
+      1000054,
+      1000055,
+      1000056,
+      1000057,
+      1000058,
+      1000059,
+      1000060,
+      1000061,
+      1000062,
+      1000063,
+      1000064,
+      1000065,
+      1000066,
+      1000067,
+      1000068,
+      1000069,
+      1000070,
+      1000071,
+      1000072,
+      1000073,
+      1000074,
+      1000075,
+      1000076,
+      1000077,
+      1000078,
+      1000079,
+      1000080,
+      1000081,
+      1000082,
+      1000083,
+      1000084,
+      1000085,
+      1000086,
+      1000087,
+      1000088,
+      1000089,
+      1000090,
+      1000091,
+      1000092,
+      1000093,
+      1000094,
+      1000095,
+      1000096,
+      1000097,
+      1000098,
+      1000099,
+      1000100
+    ],
+    "refusal_precedes_staged_destination": true
+  },
+  "required_future_checks": [
+    "Compare parser-observed tool/hit geometry to these values, not to the production resolver.",
+    "Compare original plated-through bytes before/after NPTH inclusion.",
+    "Confirm padsNone Parts retain explicit mechanical drills.",
+    "Reject false/null/old-version opt-in presence and mixed plating without publication."
+  ]
+}
