@@ -15,7 +15,7 @@ fn id(n: u128) -> ObjectId {
 #[test]
 fn golden_file() {
     let mut project = Project { id: id(1), name: "golden".into(), ..Project::new("") };
-    project.schematic.sheets.insert(id(2), Sheet { id: id(2), name: "Main".into() });
+    project.schematic.sheets.insert(id(2), Sheet { id: id(2), name: "Main".into(), content: None });
     let part = Part {
         pads: None,
         id: id(3),
@@ -114,7 +114,7 @@ fn rejects_bad_files_with_clear_errors() {
     assert!(matches!(err, FileError::WrongFormat(ref f) if f == "other"), "{err}");
 
     let err = file::from_str(&good.replace("\"version\": 1", "\"version\": 99")).unwrap_err();
-    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 4)");
+    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 5)");
 
     let err = file::from_str(&good[..good.len() - 4]).unwrap_err();
     assert!(err.to_string().contains("line"), "parse errors carry a position: {err}");
@@ -150,7 +150,7 @@ fn arb_project() -> impl Strategy<Value = Project> {
         |(name, sheets, parts)| {
             let mut project = Project::new(name);
             for (name, n) in sheets {
-                project.schematic.sheets.insert(id(n), Sheet { id: id(n), name });
+                project.schematic.sheets.insert(id(n), Sheet { id: id(n), name, content: None });
             }
             for part in parts {
                 project.board.parts.insert(part.id, part);

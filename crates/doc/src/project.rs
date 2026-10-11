@@ -2,6 +2,7 @@
 
 use std::collections::BTreeMap;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::board::Board;
@@ -42,17 +43,21 @@ impl Schematic {
 }
 
 /// One schematic sheet.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct Sheet {
     /// Stable id of the sheet.
     pub id: ObjectId,
     /// Sheet title, e.g. `"Power"`.
     pub name: String,
+    /// Explicit schematic capture; omitted in legacy empty sheets.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<crate::schematic::SchematicContent>,
 }
 
 impl Sheet {
     /// Creates a sheet with a fresh id.
     pub fn new(name: impl Into<String>) -> Sheet {
-        Sheet { id: ObjectId::new(), name: name.into() }
+        Sheet { id: ObjectId::new(), name: name.into(), content: None }
     }
 }

@@ -44,6 +44,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<NewProject>(),
         });
         commands.push(HostCommand {
+            name:"query_schematic".into(),
+            description:"Read UUID-ordered bounded schematic pages. Omit sheet_id for sheet summaries; supply it for tagged symbol/wire/junction/label objects. Integer nanometres. offset defaults0, limit1..100 defaults100. Read-only; restart pages after edits. get_session_state supplies exact complete sheet snapshots before guarded edits. Electrical connectivity is not evaluated.".into(),
+            input_schema:input_schema::<viamind_engine::SchematicQuery>(),
+        });
+        commands.push(HostCommand {
             name: "import_footprint".into(),
             description: "Load a bounded native viamind-footprint version1 JSON library from a local file and apply with exact project/part guards. Rectangular SMD local Nm geometry only. Matching numbers retain pad IDs/nets; component placement is unchanged. One undoable edit. Does not read KiCad files.".into(),
             input_schema: input_schema::<viamind_engine::FootprintFile>(),
@@ -112,6 +117,10 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "query_schematic" {
+            let input: viamind_engine::SchematicQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.query_schematic(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
         if name == "import_footprint" || name == "export_footprint" {
             let input: viamind_engine::FootprintFile = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return if name == "import_footprint" {

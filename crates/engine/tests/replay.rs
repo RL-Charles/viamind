@@ -113,7 +113,7 @@ fn rejects_foreign_logs() {
     assert!(matches!(err, LogError::Parse { line: 1, .. }), "{err}");
     let mut bytes = Vec::new();
     EventLog::new(Project::new("p")).write_jsonl(&mut bytes).unwrap();
-    let text = String::from_utf8(bytes).unwrap().replace("\"version\":4", "\"version\":99");
+    let text = String::from_utf8(bytes).unwrap().replace("\"version\":5", "\"version\":99");
     assert!(matches!(EventLog::read_jsonl(text.as_bytes()), Err(LogError::BadHeader)));
     let err = EventLog::read_jsonl(format!("{}\n\n{{\"tx\":1}}\n", text.replace("\"version\":99", "\"version\":1").trim()).as_bytes()).unwrap_err();
     assert!(matches!(err, LogError::Parse { line: 3, .. }), "{err}");
