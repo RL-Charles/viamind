@@ -22,7 +22,7 @@ fn write_export(
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
     registry.register(
         "export_assembly_csv",
-        "Export generic Viamind BOM, placement or sourcing BOM CSV to a local path. Placement uses component origins in global mm, positive Y down, CCW degrees viewed from top; bottom keeps the stored transform. Sourcing BOM includes explicitly entered identifiers and population for all parts. BOM/placement ignore population. Not a manufacturer preset. Refuses existing files unless overwrite=true and always protects the active native file. Optional expected_cursor guards the exported snapshot; returns exported_cursor. Bounded to100000 components,4096 bytes/string,2 MiB aggregate text and32 MiB output. Shared two-snapshot process admission rejects busy requests. Does not change design/history/dirty state.",
+        "Export assembly CSV to a local path. bom/placement are all-component inventories ignoring population; sourcing_bom includes explicit sourcing and population for all parts. Placement uses component origins in global mm, Y down, CCW top view, stored bottom transform; no verified centroids. catalog_bom and assembly_bom include populated components only, with strict reference/required-field validation and at most200 references per row. Catalog requires explicit LCSC/JLCPCB supplier and C-digits SKU; assembly requires explicit manufacturer MPN. No lookup, stock or manufacturer acceptance is verified. Refuses existing files unless overwrite=true, protects captured/current active native files. Optional expected_cursor guards capture; returns exported_cursor and included component_count. Limits:100000 source components,4096 bytes/header,2 MiB aggregate text,32 MiB output,2 retained snapshots/process. Does not change design/history/dirty state.",
         viamind_fab::assembly_schema(),
         move |input| {
             let engine = engine.clone();
@@ -39,7 +39,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
                     let snapshot = viamind_fab::AssemblySnapshot::capture_for(engine.project(), input.kind).map_err(|e|ToolError::Failed(e.to_string()))?;
                     Ok((snapshot, cursor, engine.document_status().path))
                 })?;
-                let count = snapshot.component_count();
+                let count = snapshot.component_count_for(input.kind);
                 let kind = input.kind;
                 let path = tokio::task::spawn_blocking(move || {
                     write_export(&engine, snapshot, &input, native.as_deref(), || {})

@@ -7,7 +7,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 use viamind_doc::{Part, Project, Side};
 
-/// The two generic, deterministic Viamind assembly tables.
+/// Deterministic component inventories and explicitly sourced assembly templates.
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum AssemblyCsv {
@@ -15,8 +15,42 @@ pub enum AssemblyCsv {
     Bom,
     /// Explicit sourcing identifiers and population; includes every component.
     SourcingBom,
+    /// Populated components with explicit catalog supplier identifiers.
+    CatalogBom,
+    /// Populated components with explicit manufacturer part numbers.
+    AssemblyBom,
     /// Individual component origins in global mm and CCW degrees.
     Placement,
+}
+impl AssemblyCsv {
+    pub const ALL: [Self; 5] = [Self::Bom, Self::Placement, Self::SourcingBom, Self::CatalogBom, Self::AssemblyBom];
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Bom => "bom",
+            Self::Placement => "placement",
+            Self::SourcingBom => "sourcing_bom",
+            Self::CatalogBom => "catalog_bom",
+            Self::AssemblyBom => "assembly_bom",
+        }
+    }
+    pub fn from_name(name: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|kind| kind.name() == name)
+    }
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Bom => "BOM",
+            Self::Placement => "Placement",
+            Self::SourcingBom => "Sourcing BOM",
+            Self::CatalogBom => "Catalog BOM",
+            Self::AssemblyBom => "Assembly BOM",
+        }
+    }
+    fn needs_sourcing(self) -> bool {
+        matches!(self, Self::SourcingBom | Self::CatalogBom | Self::AssemblyBom)
+    }
+    pub(crate) fn populated_only(self) -> bool {
+        matches!(self, Self::CatalogBom | Self::AssemblyBom)
+    }
 }
 
 /// Shared desktop/MCP request; the caller supplies its source cursor type.
@@ -30,13 +64,13 @@ pub struct AssemblyExportRequest<C> {
     #[serde(default)]
     pub expected_cursor: Option<C>,
 }
-/// Unchanged generic assembly request schema, shared by desktop and MCP.
+/// Shared assembly request schema and format catalog for desktop and MCP.
 pub fn assembly_schema() -> serde_json::Value {
     serde_json::json!({
         "type": "object", "additionalProperties": false,
         "required": ["kind", "path"],
         "properties": {
-            "kind": {"type": "string", "enum": ["bom", "placement", "sourcing_bom"]},
+            "kind": {"type": "string", "enum": AssemblyCsv::ALL.map(AssemblyCsv::name)},
             "path": {"type": "string", "minLength": 1},
             "overwrite": {"type": "boolean", "default": false},
             "expected_cursor": {"type": ["object", "null"], "additionalProperties": false,
@@ -70,7 +104,7 @@ impl AssemblySnapshot {
             for value in [&part.designator, &part.value, &part.footprint] {
                 text.add(value)?;
             }
-            if kind == AssemblyCsv::SourcingBom
+            if kind.needs_sourcing()
                 && let Some(metadata) = &part.assembly
             {
                 metadata.validate().map_err(crate::snapshot::invalid)?;
@@ -79,12 +113,17 @@ impl AssemblySnapshot {
                 }
             }
         }
+        // Reference/key allocations and template-specific validation follow the
+        // borrowed count/text preflight and precede any component/string copies.
+        if kind.populated_only() {
+            crate::assembly_templates::validate(project.board.parts.values(), kind)?;
+        }
         let parts = project
             .board
             .parts
             .values()
             .map(|p| Part {
-                assembly: if kind == AssemblyCsv::SourcingBom { p.assembly.clone() } else { None },
+                assembly: if kind.needs_sourcing() { p.assembly.clone() } else { None },
                 id: p.id,
                 designator: p.designator.clone(),
                 value: p.value.clone(),
@@ -96,15 +135,23 @@ impl AssemblySnapshot {
                 schematic_symbol: None,
             })
             .collect();
-        Ok(Self { parts, sourcing: kind == AssemblyCsv::SourcingBom, _permit: permit })
+        Ok(Self { parts, sourcing: kind.needs_sourcing(), _permit: permit })
     }
     pub fn component_count(&self) -> usize {
         self.parts.len()
     }
+    /// Template counts describe included components; inventory counts stay unchanged.
+    pub fn component_count_for(&self, kind: AssemblyCsv) -> usize {
+        if kind.populated_only() {
+            self.parts.iter().filter(|part| crate::assembly_templates::populated(part)).count()
+        } else {
+            self.component_count()
+        }
+    }
     /// Render the unchanged generic CSV format, bounded to32 MiB.
     pub fn csv(&self, kind: AssemblyCsv) -> io::Result<String> {
-        if kind == AssemblyCsv::SourcingBom && !self.sourcing {
-            return Err(crate::snapshot::invalid("sourcing BOM requires a sourcing-aware capture"));
+        if kind.needs_sourcing() && !self.sourcing {
+            return Err(crate::snapshot::invalid("sourcing and template BOMs require a sourcing-aware capture"));
         }
         render_csv(&self.parts, kind)
     }
@@ -146,6 +193,10 @@ pub(crate) fn render_csv_limited<'a>(parts: impl IntoIterator<Item = &'a Part>, 
     let mut parts: Vec<_> = parts.into_iter().collect();
     parts.sort_by_key(|part| (&part.designator, part.id));
     match kind {
+        AssemblyCsv::CatalogBom | AssemblyCsv::AssemblyBom => {
+            crate::assembly_templates::validate(parts.iter().copied(), kind)?;
+            return crate::assembly_templates::render(&parts, kind, limit);
+        }
         AssemblyCsv::SourcingBom => {
             #[derive(PartialEq, Eq, PartialOrd, Ord)]
             struct Key<'a> {
@@ -242,7 +293,7 @@ fn fixed(value: i64, places: u32) -> String {
     format!("{sign}{}.{:0width$}", magnitude / scale, magnitude % scale, width = places as usize)
 }
 
-fn row_limited(output: &mut String, fields: &[&str], limit: usize) -> io::Result<()> {
+pub(crate) fn row_limited(output: &mut String, fields: &[&str], limit: usize) -> io::Result<()> {
     let mut bytes = fields.len().saturating_sub(1).saturating_add(2);
     for field in fields {
         bytes = bytes.saturating_add(field.len());
