@@ -63,7 +63,10 @@ fn policy_log_version_guards_chain_and_same_project_reopen() {
     e.with_engine(|e| e.log().write_jsonl(&mut log)).unwrap();
     assert_eq!(viamind_engine::EventLog::read_jsonl(log.as_slice()).unwrap().replay(), e.read(Clone::clone));
     let text = String::from_utf8(log).unwrap();
-    assert!(viamind_engine::EventLog::read_jsonl(text.replace("\"version\":8", "\"version\":7").as_bytes()).is_err());
+    assert!(
+        viamind_engine::EventLog::read_jsonl(text.replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":7").as_bytes())
+            .is_err()
+    );
     let mut lines: Vec<serde_json::Value> = text.lines().map(|l| serde_json::from_str(l).unwrap()).collect();
     lines[1]["deltas"][0]["before"] = lines[1]["deltas"][0]["after"].clone();
     let bad = lines.iter().map(serde_json::Value::to_string).collect::<Vec<_>>().join("\n");

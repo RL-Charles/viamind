@@ -17,6 +17,7 @@ struct GeometryCounts {
     holes: usize,
 }
 fn counts(project: &Project) -> io::Result<GeometryCounts> {
+    viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
     if project.board.parts.len() > 100_000
         || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)) > viamind_drc::MAX_COPPER_SHAPES
     {
@@ -45,6 +46,9 @@ fn counts(project: &Project) -> io::Result<GeometryCounts> {
         }
         Ok(())
     };
+    for name in project.board.net_rules.keys() {
+        charge(name)?;
+    }
     for part in project.board.parts.values() {
         charge(&part.designator)?;
         if let Some(pads) = &part.pads {
@@ -220,5 +224,32 @@ mod tests {
         assert!(output.write_all(&vec![0; REPORT_LIMIT + 1]).is_err());
         assert!(output.0.is_empty());
         assert!(checked_output_job_report(&project(), &serde_json::json!({"pass":true}), &0).is_err());
+    }
+    #[test]
+    fn rule_labels_charge_direct_checked_snapshot_budget_before_report_copy() {
+        let mut project = project();
+        let mut template = project.board.parts.values().next().unwrap().clone_without_assembly();
+        template.designator = "x".repeat(4096);
+        template.pads = None;
+        project.board.parts.clear();
+        project.board.tracks.clear();
+        project.board.vias.clear();
+        for _ in 0..512 {
+            let mut part = template.clone();
+            part.id = viamind_doc::ObjectId::new();
+            project.board.parts.insert(part.id, part);
+        }
+        assert!(counts(&project).is_ok());
+        project.board.net_rules.insert(
+            "A".into(),
+            viamind_doc::NamedNetMinima { minimum_copper_clearance: viamind_geom::Nm(0), minimum_track_width: viamind_geom::Nm(1) },
+        );
+        assert!(counts(&project).unwrap_err().to_string().contains("2 MiB"));
+        project.board.parts.clear();
+        project.board.net_rules.insert(
+            "invalid".repeat(100000),
+            viamind_doc::NamedNetMinima { minimum_copper_clearance: viamind_geom::Nm(0), minimum_track_width: viamind_geom::Nm(1) },
+        );
+        assert!(counts(&project).unwrap_err().to_string().contains("256"));
     }
 }
