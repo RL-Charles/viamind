@@ -115,7 +115,7 @@ impl PartQuery {
                 result.next_after = page.last().map(|part| part.id);
             }
         }
-        viamind_doc::assembly::validate_metadata(page.iter().filter_map(|p| p.assembly.as_ref()))
+        viamind_doc::assembly::validate_metadata(page.iter().filter_map(|p| p.assembly.as_deref()))
             .map_err(|e| CommandError::invalid("assembly", e))?;
         result.parts = page.into_iter().cloned().collect();
         Ok(result)

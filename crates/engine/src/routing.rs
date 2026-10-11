@@ -131,7 +131,7 @@ pub(crate) fn prepare_route_candidate(
         ids.insert(via.id);
         deltas.push(Delta::Via { id: via.id, before: None, after: Some(via) });
     }
-    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone() };
+    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_without_assembly() };
     for delta in &deltas {
         delta.apply_to(&mut candidate);
     }

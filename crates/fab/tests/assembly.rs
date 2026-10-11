@@ -59,8 +59,8 @@ fn sourcing_groups_exact_metadata_and_population_without_changing_existing_forma
     let first = project.board.part_by_designator("R1").unwrap().id;
     let second = project.board.part_by_designator("R2").unwrap().id;
     let metadata = viamind_doc::AssemblyMetadata { manufacturer: Some("µ, \"Demo\"".into()), mpn: Some("USER-MPN".into()), ..Default::default() };
-    project.board.parts.get_mut(&first).unwrap().assembly = Some(metadata.clone());
-    project.board.parts.get_mut(&second).unwrap().assembly = Some(metadata);
+    project.board.parts.get_mut(&first).unwrap().assembly = Some(Box::new(metadata.clone()));
+    project.board.parts.get_mut(&second).unwrap().assembly = Some(Box::new(metadata));
     let grouped = csv(&project, AssemblyCsv::SourcingBom).unwrap();
     assert!(grouped.contains(",2,\"10k,"));
     assert!(grouped.contains("\"µ, \"\"Demo\"\"\",USER-MPN,,,Populate\r\n"));
@@ -102,7 +102,8 @@ fn fabrication_and_saved_jobs_exclude_unused_sourcing_before_copy() {
         viamind_fab::OutputJob::parse(br#"{"format":"viamind-output-job","version":1,"name":"Test","profile":"generic_outer_2layer"}"#).unwrap();
     viamind_fab::OutputJobSnapshot::capture(&project, job.clone()).unwrap().write(0, &dir.path().join("before"), None).unwrap();
     for part in project.board.parts.values_mut() {
-        part.assembly = Some(viamind_doc::AssemblyMetadata { mpn: Some("unrelated".repeat(300000)), populate: false, ..Default::default() });
+        part.assembly =
+            Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("unrelated".repeat(300000)), populate: false, ..Default::default() }));
     }
     assert_eq!(viamind_fab::FabricationSnapshot::capture(&project).unwrap().render(Default::default()).unwrap().files, expected.files);
     viamind_fab::OutputJobSnapshot::capture(&project, job).unwrap().write(0, &dir.path().join("after"), None).unwrap();

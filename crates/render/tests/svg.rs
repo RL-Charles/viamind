@@ -13,7 +13,7 @@ fn direct_views_and_captures_exclude_unrelated_sourcing_before_copy() {
     let mut project = sample();
     let expected = board_svg(&project, &SvgOptions::default()).unwrap();
     for part in project.board.parts.values_mut() {
-        part.assembly = Some(viamind_doc::AssemblyMetadata { mpn: Some("unused".repeat(400000)), populate: false, ..Default::default() });
+        part.assembly = Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("unused".repeat(400000)), populate: false, ..Default::default() }));
     }
     let snapshot = viamind_render::board_view_snapshot(&project).unwrap();
     assert!(snapshot.board.parts.values().all(|p| p.assembly.is_none()));

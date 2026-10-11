@@ -59,6 +59,22 @@ fn barrier(project: &mut Project, net: Option<&str>, layer: CopperLayer) {
     project.board.tracks.insert(t.id, t);
 }
 #[test]
+fn plans_and_checked_candidate_geometry_exclude_unused_sourcing() {
+    let (project, ids) = fixture();
+    let clean = EngineHandle::new(project.clone());
+    let expected = clean.plan_pad_walkaround(&input(&clean, ids)).unwrap();
+    let mut project = project;
+    for part in project.board.parts.values_mut() {
+        part.assembly = Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("unused".repeat(400000)), populate: false, ..Default::default() }));
+    }
+    let e = EngineHandle::new(project);
+    let cmd = input(&e, ids);
+    let actual = e.plan_pad_walkaround(&cmd).unwrap();
+    assert_eq!(actual.plan, expected.plan);
+    e.execute_typed(cmd, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.parts.values().all(|p| p.assembly.as_ref().unwrap().mpn.as_ref().unwrap().len() > 2 * 1024 * 1024)));
+}
+#[test]
 fn immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage() {
     for (typed, side) in [(true, Side::Top), (false, Side::Bottom)] {
         let layer = if side == Side::Top { CopperLayer::Top } else { CopperLayer::Bottom };

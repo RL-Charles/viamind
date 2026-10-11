@@ -229,5 +229,5 @@ pub fn validate_copper(project: &Project) -> Result<(), FileError> {
 
 /// Validate borrowed sourcing metadata before native writes or model copies.
 pub fn validate_assembly(project: &Project) -> Result<(), FileError> {
-    crate::assembly::validate_metadata(project.board.parts.values().filter_map(|p| p.assembly.as_ref())).map_err(|e| FileError::Assembly(e.into()))
+    crate::assembly::validate_metadata(project.board.parts.values().filter_map(|p| p.assembly.as_deref())).map_err(|e| FileError::Assembly(e.into()))
 }

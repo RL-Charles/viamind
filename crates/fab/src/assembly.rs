@@ -70,12 +70,12 @@ impl AssemblySnapshot {
             for value in [&part.designator, &part.value, &part.footprint] {
                 text.add(value)?;
             }
-            if kind == AssemblyCsv::SourcingBom {
-                if let Some(metadata) = &part.assembly {
-                    metadata.validate().map_err(crate::snapshot::invalid)?;
-                    for s in metadata.strings() {
-                        text.add(s)?;
-                    }
+            if kind == AssemblyCsv::SourcingBom
+                && let Some(metadata) = &part.assembly
+            {
+                metadata.validate().map_err(crate::snapshot::invalid)?;
+                for s in metadata.strings() {
+                    text.add(s)?;
                 }
             }
         }

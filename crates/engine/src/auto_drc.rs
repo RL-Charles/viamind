@@ -224,7 +224,7 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
                 id: engine.project().id,
                 name: String::new(),
                 schematic: Default::default(),
-                board: engine.project().board.clone(),
+                board: engine.project().board.clone_without_assembly(),
             });
             (engine.design_stamp(), engine.event_cursor(), snapshot, capture_started.elapsed().as_secs_f64() * 1000.0)
         };
@@ -332,6 +332,37 @@ mod tests {
 
     fn enabled() -> AutoDrcConfig {
         AutoDrcConfig { enabled: true, debounce_ms: 0, ..Default::default() }
+    }
+    #[test]
+    fn worker_snapshot_excludes_invalid_unused_sourcing() {
+        let mut project = Project::new("bounded geometry");
+        crate::Command::apply(
+            crate::AddPart {
+                expected_project: None,
+                designator: "R1".into(),
+                value: "".into(),
+                footprint: "legacy".into(),
+                x_mm: 0.0,
+                y_mm: 0.0,
+                rotation_deg: None,
+                side: None,
+            },
+            &mut project,
+        )
+        .unwrap();
+        for part in project.board.parts.values_mut() {
+            part.assembly = Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("unused".repeat(400000)), ..Default::default() }));
+        }
+        let mut handle = EngineHandle::new(project);
+        let (tx, rx) = mpsc::channel();
+        Arc::get_mut(&mut handle.automatic_drc).unwrap().checker = Arc::new(move |project, rules| {
+            assert!(project.board.parts.values().all(|p| p.assembly.is_none()));
+            tx.send(()).unwrap();
+            viamind_drc::run_drc(project, rules)
+        });
+        handle.configure_auto_drc(enabled()).unwrap();
+        rx.recv_timeout(Duration::from_secs(10)).unwrap();
+        wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready);
     }
     fn wait_status(handle: &EngineHandle, predicate: impl Fn(&AutoDrcStatus) -> bool) -> AutoDrcStatus {
         let shared = &handle.automatic_drc.shared;

@@ -126,6 +126,7 @@ impl EventLog {
         let mut log = EventLog::new(header.base);
         for (index, line) in lines {
             let event: ChangeEvent = serde_json::from_str(&line?).map_err(|source| LogError::Parse { line: index + 1, source })?;
+            validate_event_assembly(&event).map_err(|_| LogError::BadHeader)?;
             if header.version < 3 && event.deltas.iter().any(|d| matches!(d, crate::Delta::Part { before, after, .. } if before.as_ref().is_some_and(|p| p.pads.is_some()) || after.as_ref().is_some_and(|p| p.pads.is_some()))) {
                 return Err(LogError::BadHeader);
             }
@@ -151,23 +152,18 @@ impl EventLog {
                     return Err(LogError::BadHeader);
                 }
             }
-            let changed: std::collections::BTreeSet<_> = event
-                .deltas
-                .iter()
-                .filter_map(|d| match d {
-                    crate::Delta::Part { id, .. } => Some(*id),
-                    _ => None,
-                })
-                .collect();
-            let afters = event.deltas.iter().filter_map(|d| match d {
-                crate::Delta::Part { after, .. } => after.as_ref().and_then(|p| p.assembly.as_ref()),
-                _ => None,
-            });
-            let unchanged = current.board.parts.values().filter(|p| !changed.contains(&p.id)).filter_map(|p| p.assembly.as_ref());
-            if viamind_doc::assembly::validate_metadata(unchanged.chain(afters)).is_err() {
-                return Err(LogError::BadHeader);
+            for delta in &event.deltas {
+                if let crate::Delta::Part { id, before, after } = delta {
+                    let before = before.as_ref().and_then(|p| p.assembly.as_deref());
+                    if current.board.part(id).and_then(|p| p.assembly.as_deref()) != before {
+                        return Err(LogError::BadHeader);
+                    }
+                    let unchanged = current.board.parts.values().filter(|p| p.id != *id).filter_map(|p| p.assembly.as_deref());
+                    let after = after.as_ref().and_then(|p| p.assembly.as_deref());
+                    viamind_doc::assembly::validate_metadata(unchanged.chain(after)).map_err(|_| LogError::BadHeader)?;
+                }
+                delta.apply_to(&mut current);
             }
-            apply_all(&mut current, &event.deltas);
             log.append(event);
         }
         if viamind_doc::file::validate_copper(&log.replay()).is_err() {
@@ -189,6 +185,34 @@ pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
 
 /// Appends one event as a single line.
 pub fn write_entry(mut out: impl Write, event: &ChangeEvent) -> io::Result<()> {
+    validate_event_assembly(event).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
     serde_json::to_writer(&mut out, event)?;
     out.write_all(b"\n")
+}
+
+/// Reconstruct the touched portion's initial sourcing state without cloning strings.
+/// The first before record supplies each ID; later records update it sequentially.
+fn validate_event_assembly(event: &ChangeEvent) -> Result<(), &'static str> {
+    let mut state = std::collections::BTreeMap::new();
+    for delta in &event.deltas {
+        if let crate::Delta::Part { id, before, after } = delta {
+            for p in before.iter().chain(after) {
+                if let Some(m) = &p.assembly {
+                    m.validate()?;
+                }
+            }
+            state.entry(*id).or_insert_with(|| before.as_ref().and_then(|p| p.assembly.as_deref()));
+        }
+    }
+    viamind_doc::assembly::validate_metadata(state.values().filter_map(|m| *m))?;
+    for delta in &event.deltas {
+        if let crate::Delta::Part { id, before, after } = delta {
+            if state.get(id).copied().flatten() != before.as_ref().and_then(|p| p.assembly.as_deref()) {
+                return Err("inconsistent assembly metadata in sequential event snapshots");
+            }
+            state.insert(*id, after.as_ref().and_then(|p| p.assembly.as_deref()));
+            viamind_doc::assembly::validate_metadata(state.values().filter_map(|m| *m))?;
+        }
+    }
+    Ok(())
 }

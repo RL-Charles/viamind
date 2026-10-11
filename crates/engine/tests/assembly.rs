@@ -72,7 +72,7 @@ fn invalid_stale_unknown_and_default_records_are_atomic() {
 fn model_budget_and_invalid_returned_query_fail_before_copy_or_native_publication() {
     let (engine, id) = sample();
     let mut project = engine.read(Clone::clone);
-    project.board.parts.get_mut(&id).unwrap().assembly = Some(AssemblyMetadata { mpn: Some("x".repeat(513)), ..Default::default() });
+    project.board.parts.get_mut(&id).unwrap().assembly = Some(Box::new(AssemblyMetadata { mpn: Some("x".repeat(513)), ..Default::default() }));
     assert!(PartQuery::default().run(&project).is_err());
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("native.json");
@@ -86,7 +86,7 @@ fn model_budget_and_invalid_returned_query_fail_before_copy_or_native_publicatio
         supplier_sku: Some("k".repeat(512)),
         ..Default::default()
     };
-    project.board.parts.get_mut(&id).unwrap().assembly = Some(valid);
+    project.board.parts.get_mut(&id).unwrap().assembly = Some(Box::new(valid));
     let first = project.board.part(&id).unwrap().clone();
     for _ in 0..1024 {
         let mut part = first.clone();
@@ -99,4 +99,47 @@ fn model_budget_and_invalid_returned_query_fail_before_copy_or_native_publicatio
     assert!(engine.execute("set_part_assembly", json!({"id":id,"assembly":metadata()}), Origin::User).is_err());
     assert_eq!(engine.session_state(), before);
     assert!(engine.save_project(viamind_engine::SaveProject { path: Some(path), overwrite: true }).is_err());
+}
+
+#[test]
+fn grouped_repeated_part_events_replay_and_oversized_before_records_never_write() {
+    let (engine, id) = sample();
+    let metadata = AssemblyMetadata {
+        manufacturer: Some("a".repeat(512)),
+        mpn: Some("b".repeat(512)),
+        supplier: Some("c".repeat(512)),
+        supplier_sku: Some("d".repeat(512)),
+        populate: true,
+    };
+    engine.execute("set_part_assembly", json!({"id":id,"assembly":metadata}), Origin::User).unwrap();
+    let project = engine.read(Clone::clone);
+    let part = project.board.part(&id).unwrap().clone();
+    let mut event = engine.with_engine(|e| e.log().entries().last().unwrap().clone());
+    // More than 2 MiB of repeated after snapshots represent only one 2 KiB state.
+    event.deltas = (0..1025).map(|_| viamind_engine::Delta::Part { id, before: Some(part.clone()), after: Some(part.clone()) }).collect();
+    let mut bytes = Vec::new();
+    viamind_engine::log::write_header(&mut bytes, &project).unwrap();
+    viamind_engine::log::write_entry(&mut bytes, &event).unwrap();
+    assert_eq!(EventLog::read_jsonl(std::io::Cursor::new(bytes)).unwrap().replay(), project);
+    event.deltas = (0..1025)
+        .map(|_| {
+            let mut p = part.clone();
+            p.id = ObjectId::new();
+            viamind_engine::Delta::Part { id: p.id, before: Some(p), after: None }
+        })
+        .collect();
+    let mut output = b"preserve existing output".to_vec();
+    assert!(viamind_engine::log::write_entry(&mut output, &event).is_err());
+    assert_eq!(output, b"preserve existing output");
+    let mut bad = Vec::new();
+    viamind_engine::log::write_header(&mut bad, &Project::new("base")).unwrap();
+    serde_json::to_writer(&mut bad, &event).unwrap();
+    bad.push(b'\n');
+    assert!(EventLog::read_jsonl(std::io::Cursor::new(bad)).is_err());
+    event.deltas.truncate(1);
+    if let viamind_engine::Delta::Part { before: Some(p), .. } = &mut event.deltas[0] {
+        p.assembly.as_mut().unwrap().mpn = Some("x".repeat(513));
+    }
+    assert!(viamind_engine::log::write_entry(&mut output, &event).is_err());
+    assert_eq!(output, b"preserve existing output");
 }

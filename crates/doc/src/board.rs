@@ -51,7 +51,7 @@ impl Board {
 pub struct Part {
     /// Optional explicitly entered sourcing and population instructions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub assembly: Option<crate::AssemblyMetadata>,
+    pub assembly: Option<Box<crate::AssemblyMetadata>>,
     /// Stable schematic symbol identity; missing symbols remain explicit unresolved links.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub schematic_symbol: Option<ObjectId>,

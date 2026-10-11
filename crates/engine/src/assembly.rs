@@ -26,13 +26,13 @@ impl Command for SetPartAssembly {
         if let Some(m) = &self.assembly {
             m.validate().map_err(|e| CommandError::invalid("assembly", e))?;
         }
-        let assembly = self.assembly.filter(|m| !m.is_default());
+        let assembly = self.assembly.filter(|m| !m.is_default()).map(Box::new);
         viamind_doc::assembly::validate_metadata(
-            project.board.parts.values().filter_map(|p| if p.id == self.id { assembly.as_ref() } else { p.assembly.as_ref() }),
+            project.board.parts.values().filter_map(|p| if p.id == self.id { assembly.as_deref() } else { p.assembly.as_deref() }),
         )
         .map_err(|e| CommandError::invalid("assembly", e))?;
         // Validate the original too before Delta::record_part copies it.
-        before.assembly.as_ref().map(AssemblyMetadata::validate).transpose().map_err(|e| CommandError::invalid("assembly", e))?;
+        before.assembly.as_deref().map(AssemblyMetadata::validate).transpose().map_err(|e| CommandError::invalid("assembly", e))?;
         if before.assembly == assembly {
             return Ok(vec![]);
         }
