@@ -151,7 +151,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(engine.document_status(), status);
     println!(
         "{}",
-        serde_json::json!({"actual_input_identity_after_removal":true,"field_ids":ids.iter().map(|id|id.0).collect::<Vec<_>>(),"full_session_unchanged":true,"document_status_unchanged":true})
+        serde_json::json!({"actual_input_identity_after_removal":true,"field_ids":ids.iter().map(|id|format!("{id:?}")).collect::<Vec<_>>(),"full_session_unchanged":true,"document_status_unchanged":true})
     );
     let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
