@@ -53,3 +53,5 @@ Cardinal pad normalization preserves centers and exact rectangular copper: 90/27
 swap width/height; 0/180 preserve dimensions. Reports disclose source/canonical
 angles and normalization. Containing footprints still require front zero-angle.
 [Cardinal normalization spec](specs/cardinal-pad-import.md) defines the exact bound.
+[Verified cardinal fixtures and native evidence](cardinal-pad-import-verification.md)
+record exact geometry, real MCP lifecycle checks and the fixture's actual DRC violation.

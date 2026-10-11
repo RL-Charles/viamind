@@ -57,3 +57,5 @@ explicit application command.
 
 [Cardinal normalization behavior](specs/cardinal-pad-import.md) defines the bounded
 angle grammar and exact geometry policy.
+[Cardinal conversion verification](cardinal-pad-import-verification.md) records
+the original odd-Nm fixtures, actual MCP checks and readable compact/native captures.

@@ -1,0 +1,58 @@
+[
+  {
+    "name": "normalization",
+    "source": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-native.ppm",
+    "source_sha256": "84f28574950dcbdde44d574c8b1cf2b4fc5b0f945f151a2f4489b841379ab564",
+    "rgb_sha256": "d79b8d1525f561dc0517e6cceb4a258d28d718e28454660b07bd2d92ce0e25f4",
+    "pixels": [
+      1600,
+      1000
+    ],
+    "png": "docs/verification/t0094/normalization-native.png",
+    "png_sha256": "885a148d73ed1192ee1f9d877850d47cc4bb4bb019afba1a7e6d092384741f26",
+    "decompressed_rgb_exact": true,
+    "independent_committed_png_crc_and_rgb_readback": true
+  },
+  {
+    "name": "compact",
+    "source": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-native.ppm",
+    "source_sha256": "281f1231c543224a49cb0e148853997154d3ce6c9697e1bbdf472f3c19b54f9e",
+    "rgb_sha256": "e0a76cdd327ebb47126be971ffe72355c1ba7c4613214ba9188aeb02fa5dc8df",
+    "pixels": [
+      640,
+      400
+    ],
+    "png": "docs/verification/t0094/compact-native.png",
+    "png_sha256": "da49a656b4891eb7adbee286ccb7c7c2b6c3acc42dd9df773d8fb5ca44a6cced",
+    "decompressed_rgb_exact": true,
+    "independent_committed_png_crc_and_rgb_readback": true
+  },
+  {
+    "name": "completed",
+    "source": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-native.ppm",
+    "source_sha256": "51dfc6cf5c8981e2af678dc4f4be57f51c6eb6258ec0266c087e0aeb26b18a12",
+    "rgb_sha256": "609aec64962b6448134111353597afeabadc79ace2138a57ae904c6f588cb190",
+    "pixels": [
+      1600,
+      1000
+    ],
+    "png": "docs/verification/t0094/completed-native.png",
+    "png_sha256": "735bdfe547316b0d8a6adb041a23caaefd327dab0ebc35324e9232f8329203a9",
+    "decompressed_rgb_exact": true,
+    "independent_committed_png_crc_and_rgb_readback": true
+  },
+  {
+    "name": "board",
+    "source": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/board-native.ppm",
+    "source_sha256": "a483324529deb4a02e2e3090471bc240288bff26a3ce262e85cb20a204632298",
+    "rgb_sha256": "7551c72ba6d2b9cf1a483cce26be5b0c119e170749f25b588d0ab05c4e3ca2d4",
+    "pixels": [
+      1600,
+      1000
+    ],
+    "png": "docs/verification/t0094/board-native.png",
+    "png_sha256": "6740c5200060b4ced09bbf52e15bed97e08e289d6a1107568ef7bc14d7db2bcc",
+    "decompressed_rgb_exact": true,
+    "independent_committed_png_crc_and_rgb_readback": true
+  }
+]
