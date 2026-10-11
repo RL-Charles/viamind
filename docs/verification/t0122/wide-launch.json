@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/launch-inspection.sh",
+  "pid": 2839058,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-label-inspection",
+      "bounds": {
+        "height": 2000,
+        "width": 3000,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 2000,
+      "is_on_screen": true,
+      "pid": 2839058,
+      "title": "Untitled — Viamind",
+      "width": 3000,
+      "window_id": 110379508599216,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}

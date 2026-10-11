@@ -1,0 +1,23 @@
+Downloading pillow (6.6MiB)
+ Downloaded pillow
+Installed 1 package in 16ms
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/schematic.svg
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/schematic.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/wrong-transform.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/wires.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/symbols.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/pins.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/junctions.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view/labels.png
+Traceback (most recent call last):
+  File "/home/charlesmowbray/Development/viamind-t-0122/scripts/verify-schematic-view.py", line 118, in <module>
+    print(json.dumps(verify(args.binary,args.native,args.new_directory),indent=2))
+                     ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/Development/viamind-t-0122/scripts/verify-schematic-view.py", line 94, in verify
+    check(layer+' isolation',ink(layer_image,(0,0,30,20))>0 and
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          (layer_image.getpixel(at(*sample))[3]>100 if layer!='labels' else ink(layer_image,text_boxes[3])>30))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/Development/viamind-t-0122/scripts/verify-schematic-view.py", line 20, in check
+    raise AssertionError(name)
+AssertionError: labels isolation
