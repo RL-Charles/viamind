@@ -42,6 +42,7 @@ fn builtin_specs() {
             "route_polyline",
             "set_board_outline",
             "set_part_pads",
+            "synchronize_schematic_pcb",
             "transform_parts",
             "update_part"
         ]

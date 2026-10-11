@@ -9,7 +9,7 @@ use viamind_geom::Point;
 use crate::id::ObjectId;
 
 /// The physical board: placed parts (more object kinds follow).
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Board {
     /// Independent routed straight copper objects.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]

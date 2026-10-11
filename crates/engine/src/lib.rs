@@ -44,7 +44,9 @@ pub mod handle;
 pub mod log;
 pub mod pads;
 mod pcb_sync;
-pub use pcb_sync::{LinkSchematicSymbol, SchematicLinkTarget};
+pub use pcb_sync::{
+    LinkSchematicSymbol, PcbSyncChange, PcbSyncDirection, PcbSyncNet, PcbSyncPreview, PcbSyncRequest, SchematicLinkTarget, SynchronizeSchematicPcb,
+};
 pub mod schematic;
 mod schematic_connectivity;
 pub use footprint::{ApplyFootprint, FootprintFile};
