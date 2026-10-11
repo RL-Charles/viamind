@@ -68,3 +68,8 @@ existing project in the desktop. See `viamind --help` for options.
 Agents can inspect a subset of parts with `query_parts`, combining IDs, exact
 fields, text, side and origin bounds, with bounded UUID cursor pages. See
 [the MCP guide](crates/mcp/README.md) for examples and the repeatable live smoke test.
+
+Agents can follow design and selection changes through `get_session_state` and
+`watch_events`. The snapshot includes a cursor that resumes after reconnecting;
+watching supports bounded long polling on HTTP and stdio. See the
+[session event contract](docs/specs/session-events.md).

@@ -31,6 +31,7 @@ pub struct Engine {
     notifier: Notifier,
     log: EventLog,
     selection: crate::SelectionSnapshot,
+    session: crate::session::SessionJournal,
 }
 
 impl Engine {
@@ -44,6 +45,7 @@ impl Engine {
         Engine {
             registry,
             selection: crate::SelectionSnapshot::default(),
+            session: crate::session::SessionJournal::default(),
             undo: Vec::new(),
             redo: Vec::new(),
             next_tx: 1,
@@ -61,6 +63,22 @@ impl Engine {
     /// Current transient selection, shared by all clients.
     pub fn selection(&self) -> &crate::SelectionSnapshot {
         &self.selection
+    }
+
+    /// Current project and selection paired with their session cursor.
+    pub fn session_state(&self) -> crate::SessionSnapshot {
+        crate::SessionSnapshot { project: self.project.clone(), selection: self.selection.clone(), cursor: self.event_cursor() }
+    }
+
+    /// The current session tail, independent of document transaction IDs.
+    pub fn event_cursor(&self) -> crate::EventCursor {
+        self.session.cursor()
+    }
+
+    /// Read one immediate session event page. Use the shared handle for long polling.
+    pub fn events_after(&self, after: crate::EventCursor, limit: usize) -> Result<crate::EventBatch, crate::SessionError> {
+        crate::WatchEvents { limit, ..Default::default() }.validate()?;
+        self.session.read(after, limit)
     }
 
     /// Updates selection atomically, validates IDs, and wakes repaint listeners.
@@ -91,6 +109,7 @@ impl Engine {
             self.selection.ids = ids;
             self.selection.revision += 1;
             self.selection.origin = Some(origin);
+            self.session.push(crate::SessionEvent::Selection(self.selection.clone()));
             self.notifier.wake();
         }
         Ok(self.selection.clone())
@@ -285,6 +304,10 @@ impl Engine {
             self.selection.origin = Some(event.origin.clone());
         }
         self.log.append(event.clone());
+        self.session.push(crate::SessionEvent::Design(event.clone()));
+        if self.selection.ids.len() != before {
+            self.session.push(crate::SessionEvent::Selection(self.selection.clone()));
+        }
         self.notifier.send(event);
     }
 

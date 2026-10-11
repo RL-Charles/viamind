@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin, PartQuery, SetSelection, input_schema};
+use viamind_engine::{EngineHandle, Origin, PartQuery, SetSelection, WatchEvents, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -37,6 +37,16 @@ impl CommandHost for EngineHost {
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
             .collect();
         commands.push(HostCommand {
+            name: "get_session_state".into(),
+            description: "Read an atomic project, selection and event cursor snapshot. Initialize or resynchronize your local view here, then call watch_events after this cursor to receive every subsequent change.".into(),
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        });
+        commands.push(HostCommand {
+            name: "watch_events".into(),
+            description: "Read design and selection changes in session order. Pass the last cursor as after, including after reconnecting. Omitted after starts at current tail. limit defaults to 100 (1–1000); timeout_ms defaults to 0 (0–30000), waiting only if no events are available. Returns events, cursor and has_more. History retains 1024 records; on expired/future/restarted cursor errors call get_session_state to resynchronize. Read-only; use one outstanding watch per observer.".into(),
+            input_schema: input_schema::<WatchEvents>(),
+        });
+        commands.push(HostCommand {
             name: "query_parts".into(),
             description: "Read a bounded page of board parts using combined filters (IDs, exact fields, text, side, origin bounds in mm). Read-only. UUID order; limit defaults to 100 (max 1000). Repeat filters with next_after as after for the next page; restart if the design changes. Returns parts, total matches and next_after; positions are integer nanometres.".into(),
             input_schema: input_schema::<PartQuery>(),
@@ -55,6 +65,17 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "get_session_state" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_session_state takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.session_state()).map_err(|e| e.to_string());
+        }
+        if name == "watch_events" {
+            let input: WatchEvents = serde_json::from_value(input).map_err(|e| format!("invalid watch_events input: {e}"))?;
+            let result = self.engine.watch_events(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
         if name == "query_parts" {
             let query: PartQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_parts input: {e}"))?;
             let result = self.engine.query_parts(&query).map_err(|e| e.to_string())?;

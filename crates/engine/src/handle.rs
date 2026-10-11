@@ -1,7 +1,8 @@
 //! Thread-safe shared access to one [`Engine`].
 
 use std::sync::mpsc::Receiver;
-use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError};
+use std::time::{Duration, Instant};
 
 use serde_json::Value;
 use viamind_doc::Project;
@@ -21,6 +22,7 @@ use crate::transaction::{CommandCall, ExecResult, Origin, TxId, TxInfo};
 #[derive(Clone, Debug)]
 pub struct EngineHandle {
     engine: Arc<Mutex<Engine>>,
+    session_changed: Arc<Condvar>,
 }
 
 impl EngineHandle {
@@ -36,7 +38,7 @@ impl EngineHandle {
 
     /// Wraps an existing engine.
     pub fn from_engine(engine: Engine) -> EngineHandle {
-        EngineHandle { engine: Arc::new(Mutex::new(engine)) }
+        EngineHandle { engine: Arc::new(Mutex::new(engine)), session_changed: Arc::new(Condvar::new()) }
     }
 
     /// Locks the engine. A panic inside a command poisons the mutex; the engine
@@ -48,11 +50,16 @@ impl EngineHandle {
     /// Runs a mutating operation under the lock, then runs any due `on_change`
     /// callbacks after the lock is released (so they may call back into the handle).
     fn mutate<R>(&self, f: impl FnOnce(&mut Engine) -> R) -> R {
-        let (result, wakers) = {
+        let (result, wakers, changed) = {
             let mut engine = self.lock();
+            let before = engine.event_cursor();
             let result = f(&mut engine);
-            (result, engine.take_due_wakers())
+            let changed = engine.event_cursor() != before;
+            (result, engine.take_due_wakers(), changed)
         };
+        if changed {
+            self.session_changed.notify_all();
+        }
         for waker in wakers {
             waker();
         }
@@ -67,6 +74,29 @@ impl EngineHandle {
     /// Current shared selection.
     pub fn selection(&self) -> crate::SelectionSnapshot {
         self.lock().selection().clone()
+    }
+
+    /// Atomically reads project, selection and the cursor for subsequent changes.
+    pub fn session_state(&self) -> crate::SessionSnapshot {
+        self.lock().session_state()
+    }
+
+    /// Read session changes, waiting at most 30 seconds when no records are available.
+    /// The lock is released while waiting; use a blocking worker from async code.
+    pub fn watch_events(&self, input: crate::WatchEvents) -> Result<crate::EventBatch, crate::SessionError> {
+        input.validate()?;
+        let deadline = Instant::now() + Duration::from_millis(input.timeout_ms);
+        let mut engine = self.lock();
+        let after = input.after.unwrap_or_else(|| engine.event_cursor());
+        loop {
+            let batch = engine.events_after(after, input.limit)?;
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if !batch.events.is_empty() || remaining.is_zero() {
+                return Ok(batch);
+            }
+            let (guard, _) = self.session_changed.wait_timeout(engine, remaining).unwrap_or_else(PoisonError::into_inner);
+            engine = guard;
+        }
     }
 
     /// Updates transient selection and wakes listeners outside the engine lock.

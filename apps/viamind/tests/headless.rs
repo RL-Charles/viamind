@@ -89,10 +89,24 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
     let (mut child, mut client) = spawn(Some(&input), &output).await;
     let tools = client.request("tools/list", json!({})).await;
     let names: Vec<_> = tools["tools"].as_array().unwrap().iter().map(|tool| tool["name"].as_str().unwrap()).collect();
-    for name in ["add_part", "move_part", "delete_part", "undo", "redo", "query_parts", "get_design", "get_selection", "set_selection"] {
+    for name in [
+        "add_part",
+        "move_part",
+        "delete_part",
+        "undo",
+        "redo",
+        "query_parts",
+        "get_design",
+        "get_selection",
+        "set_selection",
+        "get_session_state",
+        "watch_events",
+    ] {
         assert!(names.contains(&name), "missing {name}");
     }
     assert_eq!(client.tool("get_design", json!({})).await, original);
+    let baseline = client.tool("get_session_state", json!({})).await;
+    assert_eq!(baseline["project"], original);
     let added = client.tool("add_part", json!({ "designator": "R2", "value": "10k", "footprint": "R_0603", "x_mm": 1.234567, "y_mm": -2 })).await;
     let id = added["created"][0].clone();
     let page = client.tool("query_parts", json!({ "value": "10k" })).await;
@@ -106,6 +120,10 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
     assert_eq!(client.tool("get_selection", json!({})).await["ids"], json!([]));
     client.tool("redo", json!({})).await;
     let expected = client.tool("get_design", json!({})).await;
+    let events = client.tool("watch_events", json!({ "after": baseline["cursor"] })).await;
+    let kinds: Vec<_> = events["events"].as_array().unwrap().iter().map(|event| event["event"]["kind"].as_str().unwrap()).collect();
+    assert_eq!(kinds, ["design", "selection", "design", "selection", "design"]);
+    assert_eq!(events["cursor"]["sequence"], 5);
     assert!(!output.exists(), "save is after clean session EOF");
     drop(client);
     let status = timeout(TIMEOUT, child.wait()).await.expect("headless exit timeout").unwrap();

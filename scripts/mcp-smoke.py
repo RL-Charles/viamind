@@ -91,7 +91,7 @@ class McpClient:
 
 def verify(url, observe_seconds=0):
     report = {"url": url, "checks": [], "passed": False}
-    a = b = None
+    a = b = observer = None
     owned = {}
     baseline = selection = None
     failure = None
@@ -104,16 +104,32 @@ def verify(url, observe_seconds=0):
     try:
         a = McpClient(url, "viamind-smoke-a")
         b = McpClient(url, "viamind-smoke-b")
+        observer = McpClient(url, "viamind-smoke-observer")
         baseline = a.call("get_design", {})
         selection = a.call("get_selection", {})
+        snapshot = observer.call("get_session_state", {})
+        check("atomic session snapshot", snapshot["project"] == baseline and snapshot["selection"] == selection)
         tools = {tool["name"] for tool in a.rpc("tools/list", {}).get("tools", [])}
-        check("tool discovery", {"add_part", "move_part", "delete_part", "undo", "redo", "get_design", "get_selection", "set_selection", "query_parts"} <= tools)
+        check("tool discovery", {"add_part", "move_part", "delete_part", "undo", "redo", "get_design", "get_selection", "set_selection", "query_parts", "get_session_state", "watch_events"} <= tools)
         token = uuid.uuid4().hex[:12]
         args = {"designator": f"R_SMOKE_A_{token}", "value": "10k", "footprint": "R_0603", "x_mm": 60, "y_mm": 45}
         first = a.call("add_part", args)["created"][0]
         owned[first] = a
+        observed = observer.call("watch_events", {"after": snapshot["cursor"]})
+        check("observer sees attributed design event", len(observed["events"]) == 1
+              and observed["events"][0]["event"]["kind"] == "design"
+              and observed["events"][0]["event"]["data"]["origin"]["id"].startswith("viamind-smoke-a#"))
+        observer.close()
+        observer = None
         second = b.call("add_part", {**args, "designator": f"R_SMOKE_B_{token}", "x_mm": 66})["created"][0]
         owned[second] = b
+        observer = McpClient(url, "viamind-smoke-observer")
+        resumed = observer.call("watch_events", {"after": observed["cursor"]})
+        check("event cursor resumes on a new connection", len(resumed["events"]) == 1
+              and resumed["events"][0]["sequence"] == observed["cursor"]["sequence"] + 1
+              and resumed["events"][0]["event"]["data"]["origin"]["id"].startswith("viamind-smoke-b#"))
+        idle = observer.call("watch_events", {"after": resumed["cursor"], "timeout_ms": 20})
+        check("event wait timeout keeps cursor", idle["events"] == [] and idle["cursor"] == resumed["cursor"])
         check("agent placement visible to other agent", first in b.call("get_design", {})["board"]["parts"])
         a.call("undo", {})
         parts = b.call("get_design", {})["board"]["parts"]
@@ -157,8 +173,13 @@ def verify(url, observe_seconds=0):
         if observe_seconds:
             print(f"Temporary test parts selected for {observe_seconds:g}s; inspect the desktop now.", file=sys.stderr, flush=True)
             time.sleep(observe_seconds)
+        before_delete = observer.call("get_session_state", {})["cursor"]
         a.call("delete_part", {"id": first})
         check("delete prunes shared selection", first not in b.call("get_selection", {})["ids"])
+        deleted = observer.call("watch_events", {"after": before_delete})
+        check("event stream orders delete before selection pruning",
+              [record["event"]["kind"] for record in deleted["events"]] == ["design", "selection"]
+              and first not in deleted["events"][1]["event"]["data"]["ids"])
         a.call("undo", {})
         check("delete is undoable", first in b.call("get_design", {})["board"]["parts"])
         a.call("redo", {})
@@ -184,7 +205,7 @@ def verify(url, observe_seconds=0):
                 check("pre-test selection restored", a.call("get_selection", {})["ids"] == selection["ids"])
             except Exception as error:
                 failure = f"{failure or ''}; cleanup: {error}".lstrip("; ")
-        for client in (a, b):
+        for client in (a, b, observer):
             if client is not None:
                 try:
                     client.close()

@@ -159,3 +159,77 @@ async fn agents_query_the_same_live_parts_with_filters_pages_and_useful_errors()
     writer.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn observers_wait_and_resume_events_after_http_reconnect() {
+    let engine = EngineHandle::new(Project::new("event HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let writer = connect(server.url(), "event-writer").await;
+    let reader = connect(server.url(), "event-reader").await;
+    let tools = reader.list_all_tools().await.unwrap();
+    let schema = serde_json::to_value(&tools.iter().find(|tool| tool.name == "watch_events").unwrap().input_schema).unwrap();
+    assert_eq!(schema, viamind_engine::input_schema::<viamind_engine::WatchEvents>());
+    assert_eq!(schema["properties"]["timeout_ms"]["maximum"], 30000);
+    assert_eq!(schema["properties"]["limit"]["maximum"], 1000);
+    let baseline = call(&reader, "get_session_state", json!({})).await.structured_content.unwrap();
+    assert_eq!(baseline["project"], serde_json::to_value(engine.read(Clone::clone)).unwrap());
+    assert_eq!(baseline["selection"]["ids"], json!([]));
+
+    // A pending HTTP read and a concurrent writer share one engine without blocking edits.
+    let wait = call(&reader, "watch_events", json!({ "after": baseline["cursor"], "timeout_ms": 2000 }));
+    let write = async {
+        tokio::time::sleep(Duration::from_millis(20)).await;
+        call(&writer, "add_part", resistor("R1", 10.0)).await
+    };
+    let (observed, created) = tokio::join!(wait, write);
+    assert_eq!(observed.is_error, Some(false), "{observed:?}");
+    let page = observed.structured_content.unwrap();
+    assert_eq!(page["events"].as_array().unwrap().len(), 1);
+    assert_eq!(page["events"][0]["event"]["kind"], "design");
+    assert!(page["events"][0]["event"]["data"]["origin"]["id"].as_str().unwrap().starts_with("event-writer#"));
+    let id = created.structured_content.unwrap()["created"][0].clone();
+    let cursor = page["cursor"].clone();
+    reader.cancel().await.unwrap();
+
+    // Writes while the reader is disconnected must be replayed to its new connection.
+    call(&writer, "set_selection", json!({ "ids": [id] })).await;
+    call(&writer, "delete_part", json!({ "id": id })).await;
+    let reconnected = connect(server.url(), "event-reader").await;
+    let first = call(&reconnected, "watch_events", json!({ "after": cursor, "limit": 2 })).await.structured_content.unwrap();
+    assert_eq!(first["has_more"], true);
+    assert_eq!(first["events"][0]["sequence"], 2);
+    assert_eq!(first["events"][0]["event"]["kind"], "selection");
+    assert_eq!(first["events"][0]["event"]["data"]["ids"], json!([id]));
+    assert_eq!(first["events"][1]["sequence"], 3);
+    assert_eq!(first["events"][1]["event"]["kind"], "design");
+    // Repeating an unacknowledged cursor returns the same page.
+    assert_eq!(call(&reconnected, "watch_events", json!({ "after": cursor, "limit": 2 })).await.structured_content.unwrap(), first);
+    let last = call(&reconnected, "watch_events", json!({ "after": first["cursor"] })).await.structured_content.unwrap();
+    assert_eq!(last["events"].as_array().unwrap().len(), 1);
+    assert_eq!(last["events"][0]["sequence"], 4);
+    assert_eq!(last["events"][0]["event"]["kind"], "selection");
+    assert_eq!(last["events"][0]["event"]["data"]["ids"], json!([]));
+    assert_eq!(last["has_more"], false);
+    let timeout = call(&reconnected, "watch_events", json!({ "after": last["cursor"], "timeout_ms": 10 })).await.structured_content.unwrap();
+    assert_eq!(timeout["events"], json!([]));
+    assert_eq!(timeout["cursor"], last["cursor"]);
+    assert_eq!(call(&reconnected, "get_session_state", json!({})).await.structured_content.unwrap()["cursor"], last["cursor"]);
+
+    for (input, expected) in [
+        (json!({ "limit": 0 }), "limit"),
+        (json!({ "limit": 1001 }), "limit"),
+        (json!({ "timeout_ms": 30001 }), "timeout_ms"),
+        (json!({ "unknown": true }), "unknown"),
+        (json!({ "after": { "stream_id": viamind_doc::ObjectId::new(), "sequence": 0 } }), "another session"),
+        (json!({ "after": { "stream_id": last["cursor"]["stream_id"], "sequence": 100 } }), "future"),
+    ] {
+        let error = call(&reconnected, "watch_events", input).await;
+        assert_eq!(error.is_error, Some(true), "{error:?}");
+        assert!(format!("{:?}", error.content).contains(expected), "{error:?}");
+    }
+    assert_eq!(call(&reconnected, "get_session_state", json!({ "unknown": true })).await.is_error, Some(true));
+    assert_eq!(call(&reconnected, "undo", json!({})).await.is_error, Some(true), "watching grants no undo ownership");
+    reconnected.cancel().await.unwrap();
+    writer.cancel().await.unwrap();
+    server.shutdown();
+}
