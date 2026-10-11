@@ -229,7 +229,7 @@ impl PadDraft {
             Picking::After => ui.label("Editing target leg: click empty space to insert before target."),
         };
         if self.walkaround {
-            ui.label("Static cardinal walkaround · rectangular board without cutouts");
+            ui.label("Static cardinal walkaround · rectangular outer board and cutouts");
             ui.label("Request a checked plan after choosing both pads. No manual waypoints or shove.");
             if ui
                 .add_enabled(

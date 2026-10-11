@@ -184,8 +184,7 @@ fn failures_are_unchanged_with_complete_preflight_and_bounded_unrelated_content(
                 project.board.outline.as_mut().unwrap().cutouts.push(Polygon::new(vec![
                     p(1_000_000, 1_000_000),
                     p(2_000_000, 1_000_000),
-                    p(2_000_000, 2_000_000),
-                    p(1_000_000, 2_000_000),
+                    p(1_500_000, 2_000_000),
                 ]));
             }
             4 => {

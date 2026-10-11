@@ -10,11 +10,18 @@ live session and adds the entire route in one undoable operation. **Escape** or
 **Cancel pad route** discards the local preview.
 
 The board must have an explicit axis-aligned rectangular four-corner outer
-outline with no cutouts. Exact quarter-turn and mirrored pad centers are
+outline; any internal cutouts must also be axis-aligned four-corner rectangles.
+Exact quarter-turn and mirrored pad centers are
 preserved; short arbitrary-angle stubs attach off-grid centers to nearest grid
 anchors. The grid path uses only horizontal and vertical segments. Manual
 vertices are refused in this mode; the existing manual, cardinal/45 posture and
 through-via routing tools remain available.
+
+Every substrate cutout is excluded for every net/layer by its exact bounds plus
+`ceil(route width/2) + edge clearance + 1 Nm`. This uses board-edge clearance,
+independently of copper or via-hole clearance. Cutout boxes share the existing
+combined obstacle/work budgets. Nonrectangular or malformed cutouts refuse
+explicitly.
 
 Existing copper stays stationary. Foreign or unassigned pads/tracks/via copper
 on the route layer are enclosed by conservative integer clearance boxes. Every
@@ -33,7 +40,7 @@ cloning bounded board data and never clones unrelated schematic content.
 | Limit | Maximum |
 | --- | ---: |
 | Existing combined board objects before reserved candidate | 98976 |
-| Relevant obstacle boxes (copper and holes counted separately) | 64 |
+| Relevant obstacle boxes (cutouts, copper and holes combined) | 64 |
 | Cartesian graph nodes | 20000 |
 | Candidate undirected edges | 100000 |
 | Aggregate node/edge/stub versus box tests | 4000000 |
@@ -77,6 +84,6 @@ published exclusions; this is no fabrication or physical connectivity
 certificate. Conservative guide suppression uses the separate stored-endpoint
 proof, and remaining guide counts retain its limitations.
 
-No shove, 45-degree walkaround, arbitrary outlines/cutouts, new routing vias,
+No shove, 45-degree walkaround, nonrectangular outlines/cutouts, new routing vias,
 differential pairs, plane routing, worst-case latency or native 60 fps claim is
 included.
