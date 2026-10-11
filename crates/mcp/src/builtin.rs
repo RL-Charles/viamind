@@ -9,7 +9,7 @@ use crate::{
 
 /// Register `viamind_version` and `echo`.
 pub fn register_builtins(registry: &mut ToolRegistry) -> Result<(), RegistryError> {
-    registry.register(
+    registry.register_observation(
         "viamind_version",
         "Return the name and version of the running Viamind MCP server.",
         json!({
@@ -24,7 +24,7 @@ pub fn register_builtins(registry: &mut ToolRegistry) -> Result<(), RegistryErro
             }))
         },
     )?;
-    registry.register(
+    registry.register_observation(
         "echo",
         "Return the arguments unchanged. Useful to check that the connection works.",
         json!({

@@ -111,7 +111,7 @@ impl ServerHandler for ViamindServer {
                     .with_title("Viamind")
                     .with_website_url("https://github.com/RL-Charles/viamind"),
             )
-            .with_instructions(INSTRUCTIONS)
+            .with_instructions(if self.registry.is_read_only() { crate::READ_ONLY_INSTRUCTIONS } else { INSTRUCTIONS })
     }
 
     async fn list_tools(&self, _request: Option<PaginatedRequestParams>, _context: RequestContext<RoleServer>) -> Result<ListToolsResult, McpError> {

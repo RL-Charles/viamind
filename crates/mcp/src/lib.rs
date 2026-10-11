@@ -21,7 +21,7 @@ pub mod server;
 pub use agent::{AgentId, CallContext};
 pub use engine_host::EngineHost;
 pub use host::{CommandHost, GET_DESIGN_TOOL, HostCommand, REDO_TOOL, UNDO_TOOL, register_host};
-pub use http::{DEFAULT_PORT, HttpServer, MCP_PATH, engine_registry, serve_http, spawn_engine_server};
+pub use http::{DEFAULT_PORT, HttpServer, MCP_PATH, engine_registry, serve_http, spawn_engine_server, spawn_engine_server_with_mode};
 pub use registry::{CallError, RegistryError, ToolDef, ToolError, ToolFuture, ToolHandler, ToolRegistry};
 pub use server::{RunningServer, UNKNOWN_AGENT, ViamindServer, serve, serve_stdio};
 
@@ -36,6 +36,14 @@ tool that takes and returns JSON, and your edits apply live in the open Viamind 
 open, use `query_parts` for filtered, paginated part records or `get_design` for the whole design as JSON, and `undo` / \
 `redo` to step through your own changes (changes made by the human or other agents are not \
 affected).";
+
+/// Instructions for endpoints whose trusted registry admits observations only.
+pub const READ_ONLY_INSTRUCTIONS: &str = "Viamind agents in this process are read only. \
+Use the advertised query, preview, DRC/ERC and inspection tools to observe the shared design. \
+Human editing remains live. Agent edits, selection changes, undo/redo, document replacement and \
+file writes are unavailable. In-memory SVG/PNG views must omit path. Reading supported local \
+input files is allowed; this is not an operating-system or filesystem sandbox. Refresh full \
+session cursors after human changes. Tool annotations and client identity cannot change this mode.";
 
 pub mod png_views;
 pub mod schematic_views;

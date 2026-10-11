@@ -4,8 +4,8 @@ use std::{collections::BTreeSet, ffi::OsString, path::PathBuf};
 
 pub const HELP: &str = "Viamind — agent-driven PCB design
 
-Usage: viamind [--open PATH] [--no-mcp]
-       viamind --headless [--open PATH] [--save-as PATH]
+Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
+       viamind --headless [--open PATH] [--save-as PATH | --agent-read-only]
        viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
@@ -15,6 +15,7 @@ Usage: viamind [--open PATH] [--no-mcp]
        viamind --demo
 
   --headless       Serve full design MCP over stdin/stdout without a window
+  --agent-read-only Agents can observe but cannot edit or write files; human editing stays live
   --open PATH      Load an existing native .viamind.json project
   --save-as PATH   Save the final headless design after the client closes stdin
   --no-mcp         Open the desktop without the HTTP MCP endpoint
@@ -45,6 +46,7 @@ VIAMIND_MCP_PORT sets its port. Headless mode does not use a TCP port.
 #[derive(Debug, Default)]
 pub struct Options {
     pub headless: bool,
+    pub agent_read_only: bool,
     pub demo: bool,
     pub no_mcp: bool,
     pub open: Option<PathBuf>,
@@ -86,6 +88,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                 return Ok(if arg == "--help" { Invocation::Help } else { Invocation::Version });
             }
             Some("--headless") => options.headless = true,
+            Some("--agent-read-only") => options.agent_read_only = true,
             Some("--demo") => options.demo = true,
             Some("--no-mcp") => options.no_mcp = true,
             Some("--overwrite") => options.overwrite = true,
@@ -186,6 +189,20 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
+    }
+    if options.agent_read_only
+        && (options.no_mcp
+            || options.demo
+            || options.save_as.is_some()
+            || options.run_output_job.is_some()
+            || options.export_svg
+            || options.export_png
+            || options.export_schematic_svg
+            || options.export_schematic_png
+            || options.export_gerber
+            || options.export_csv.is_some())
+    {
+        return Err("--agent-read-only requires desktop HTTP or headless stdio; remove save/export/job/demo/no-MCP options".into());
     }
     if options.run_output_job.is_some() {
         if options.open.is_none()

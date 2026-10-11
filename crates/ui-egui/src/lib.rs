@@ -83,6 +83,11 @@ pub fn run() -> eframe::Result {
 /// Opens the Viamind window on a live design. Agents connected to `mcp_url` edit the same
 /// [`EngineHandle`], and their edits repaint the window as they land.
 pub fn run_design(engine: EngineHandle, mcp_url: Option<String>) -> eframe::Result {
+    run_design_with_agent_mode(engine, mcp_url, false)
+}
+
+/// Open a live human editor with a fixed agent admission status.
+pub fn run_design_with_agent_mode(engine: EngineHandle, mcp_url: Option<String>, agent_read_only: bool) -> eframe::Result {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_title("Viamind")
@@ -98,7 +103,7 @@ pub fn run_design(engine: EngineHandle, mcp_url: Option<String>) -> eframe::Resu
         Box::new(move |cc| {
             let ctx = cc.egui_ctx.clone();
             engine.on_change(move || ctx.request_repaint());
-            let mut app = ViamindApp::with_design(engine, mcp_url);
+            let mut app = ViamindApp::with_design_agent_mode(engine, mcp_url, agent_read_only);
             app.configure_renderer(cc);
             Ok(Box::new(app))
         }),
@@ -117,6 +122,8 @@ pub struct Design {
     changes: Receiver<ChangeEvent>,
     /// Where agents connect, shown in the status bar.
     pub mcp_url: Option<String>,
+    /// Fixed startup status; human actions always retain their existing engine permissions.
+    pub agent_read_only: bool,
     /// One-line description of the latest change, e.g. `applied add_part by agent claude-code#1`.
     pub last_change: Option<String>,
     /// Number of change events received, for tests and the status bar.
@@ -226,6 +233,11 @@ impl ViamindApp {
 
     /// An app showing the live design in `engine`.
     pub fn with_design(engine: EngineHandle, mcp_url: Option<String>) -> Self {
+        Self::with_design_agent_mode(engine, mcp_url, false)
+    }
+
+    /// A live human editor whose agents can be restricted independently of human commands.
+    pub fn with_design_agent_mode(engine: EngineHandle, mcp_url: Option<String>, agent_read_only: bool) -> Self {
         let changes = engine.subscribe();
         let scene = engine.read(board_scene::scene_from_project);
         let schematic = schematic::SchematicUi::with_active(
@@ -247,7 +259,7 @@ impl ViamindApp {
             canvas,
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
-            design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
+            design: Some(Design { engine, changes, mcp_url, agent_read_only, last_change: None, change_count: 0 }),
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
@@ -687,6 +699,18 @@ impl ViamindApp {
     }
 
     fn status_bar(&self, ui: &mut Ui) {
+        if let Some(design) = &self.design
+            && design.agent_read_only
+        {
+            ui.horizontal(|ui| {
+                ui.strong("Agents read only").on_hover_text(
+                    "Agents can query and preview. Human editing remains live; restart without --agent-read-only to allow agent edits.",
+                );
+                if design.mcp_url.is_none() {
+                    ui.label("MCP unavailable");
+                }
+            });
+        }
         if self.schematic.active {
             self.schematic_status(ui);
             return;
