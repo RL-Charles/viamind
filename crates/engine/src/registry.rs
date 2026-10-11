@@ -110,6 +110,7 @@ impl CommandRegistry {
             .with::<crate::DeleteVia>()
             .with::<crate::TransformParts>()
             .with::<crate::ApplyFootprint>()
+            .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()
             .with::<crate::DeleteSchematicSheet>()
     }

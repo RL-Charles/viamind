@@ -54,6 +54,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<viamind_engine::SchematicConnectivityQuery>(),
         });
         commands.push(HostCommand {
+            name: "preview_schematic_annotation".into(),
+            description: "Read-only bounded flat schematic annotation preview. Returns changes and exact guarded annotate_schematic command input. Explicit complete sheet_order or UUID default; x_then_y/y_then_x, keep_existing/reset_all, inclusive start1..999999999. Does not alter history, dirty, selection or events. Reprepare if schematic changes; no PCB synchronization.".into(),
+            input_schema: input_schema::<viamind_engine::AnnotationOptions>(),
+        });
+        commands.push(HostCommand {
             name:"query_schematic".into(),
             description:"Read UUID-ordered bounded schematic pages. Omit sheet_id for sheet summaries; supply it for tagged symbol/wire/junction/label objects. Integer nanometres. offset defaults0, limit1..100 defaults100. Read-only; restart pages after edits. get_session_state supplies exact complete sheet snapshots before guarded edits. Electrical connectivity is not evaluated.".into(),
             input_schema:input_schema::<viamind_engine::SchematicQuery>(),
@@ -144,6 +149,10 @@ impl CommandHost for EngineHost {
         if name == "query_schematic_connectivity" {
             let input: viamind_engine::SchematicConnectivityQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.query_schematic_connectivity(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "preview_schematic_annotation" {
+            let options = serde_json::from_value(input).map_err(|e| format!("invalid annotation options: {e}"))?;
+            return serde_json::to_value(self.engine.preview_schematic_annotation(options).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "query_schematic" {
             let input: viamind_engine::SchematicQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
