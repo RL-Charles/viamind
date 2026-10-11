@@ -1,0 +1,15 @@
+{
+  "source": "3287ca5f7fd5a4d487ebd7f81550afd22384e309",
+  "source_tree": "402d88270de43d6ab88ce067974e2b5f6f330470",
+  "binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/viamind",
+      "sha256": "6a1b141b67b764e372b501cc9360e8fee5c3c4bdcdfc24b484f3b1ba2d609a17"
+    },
+    "command-hooks-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/command-hooks-inspection",
+      "sha256": "f0babbbf95cc4917ac818b8ef9ab7320b5a02338028b25867ad708d0460d796e"
+    }
+  },
+  "gates": "Final scoped integration: fmt strictalltarget hooks/unrouted/artwork tests workspace and inspection builds"
+}

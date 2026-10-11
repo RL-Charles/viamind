@@ -70,3 +70,36 @@ launches the retained self-closing inspection host in three modes. Run
 `uv run --no-project --with pillow python encode-native.py NEW_DIRECTORY` to compare
 all P7/P6 channels and produce exact RGBA PNGs. These scripts prepare local egui
 input; they do not inject operating-system input.
+
+## Combined Linux verification
+
+The final product source is `3287ca5f7fd5a4d487ebd7f81550afd22384e309`,
+combining T117 approval, T122 labels, corrected T119 artwork, corrected T123
+whole-inventory queries, and T118 hooks. The two desktop inspectors and actions
+remain available. The new query refuses pre-command reentry before process worker
+admission and before a previously captured worker takes the engine lock. Its
+regression fills both worker slots, exercises typed/JSON captured work, and proves
+post-commit observation uses the committed cursor.
+
+The scoped integration passed formatting, strict workspace/all-target Clippy,
+**36 focused Rust checks**, workspace and inspection builds, **117 actual tools**,
+and **18 isolated workflow checks**. The helper exited5 after its final Python
+command searched the wrong directory and ran zero tests. The Rust/build/reference
+checks had finished successfully; the corrected remaining-only Python invocation
+passed **23 tests**, with both logs retained. No second broad Cargo run was made.
+
+The retained combined executable passed **35 actual stdio checks** across Live,
+Approval and ReadOnly and **28 actual two-client desktop HTTP checks**. Its owned
+native preview is PID3168356 on port7958, backed by the fixture in `final/`.
+Three fresh wide/veto/recovery native WGPU captures requested Close and their PIDs
+were absent afterward. Every original P7 RGBA sample matches RGBA PNG; P6 retains
+identical RGB. Local egui preparation and original alpha samples are disclosed;
+these captures do not measure compositor opacity or frame cadence.
+
+The combined evidence and immutable117-tool snapshots live in `final/`. The
+master retains the original935-test scope separately. Independent final review reproduced all35 stdio and28 HTTP checks, rehashed both
+retained executables, and decoded all three original RGBA/RGB/PNG sets exactly.
+Wide and recovery controls were independently viewed; root viewed compact veto.
+Exact final proof-head CI remains required before merge.
+
+![Combined compact veto and recovery controls](verification/t0118/final/hooks-veto.png)

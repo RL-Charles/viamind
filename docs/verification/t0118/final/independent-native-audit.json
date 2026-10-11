@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "source": "3287ca5f7fd5a4d487ebd7f81550afd22384e309",
+  "binaries_rehashed": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/viamind",
+      "sha256": "6a1b141b67b764e372b501cc9360e8fee5c3c4bdcdfc24b484f3b1ba2d609a17"
+    },
+    "command-hooks-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/command-hooks-inspection",
+      "sha256": "f0babbbf95cc4917ac818b8ef9ab7320b5a02338028b25867ad708d0460d796e"
+    }
+  },
+  "production_pid": 3168356,
+  "live_production_executable_exact": true,
+  "captures": [
+    {
+      "name": "hooks-wide",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "p7_sha256": "c14839c1f4e08afc95209dd8c6ae77af3900b398fc14fec22acaed6d691f94e1",
+      "p6_sha256": "ea62746ae3a7984d2bfd74486ff78333f4f2859fc4cbd01faa48c2294cbfb816",
+      "png_sha256": "e2df12df6a7d6fc248870b20c4c843197e25c626b4f4d44665be1b1fb3d10bee",
+      "rgba_sample_count": 17783556,
+      "rgb_sample_count": 13337667,
+      "all_rgba_and_rgb_exact": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "capture_pid": 3169922,
+      "capture_pid_absent": true
+    },
+    {
+      "name": "hooks-veto",
+      "pixels": [
+        1067,
+        667
+      ],
+      "p7_sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a",
+      "p6_sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd",
+      "png_sha256": "bc8fc31287db9616a2e245c505b73e87e968d3b53456702f91ad9cf6d814b85c",
+      "rgba_sample_count": 2846756,
+      "rgb_sample_count": 2135067,
+      "all_rgba_and_rgb_exact": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "capture_pid": 3173527,
+      "capture_pid_absent": true
+    },
+    {
+      "name": "hooks-recovery",
+      "pixels": [
+        1067,
+        667
+      ],
+      "p7_sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb",
+      "p6_sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8",
+      "png_sha256": "eb3388043e06f587c344ff1861c1948d2b3a5df0c2fc411de2f61803fde3dfba",
+      "rgba_sample_count": 2846756,
+      "rgb_sample_count": 2135067,
+      "all_rgba_and_rgb_exact": true,
+      "alpha_range": [
+        242,
+        255
+      ],
+      "capture_pid": 3174535,
+      "capture_pid_absent": true
+    }
+  ],
+  "scope": "Independent FFmpeg decode of every original P7 RGBA and P6 RGB sample against PNG; no opacity, compositor, cadence or OS input claim."
+}

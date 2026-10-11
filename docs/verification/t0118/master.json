@@ -168,9 +168,297 @@
   ],
   "scope": "Actual initialized production stdio and owned native desktop HTTP; local egui input then production UI native WGPU readback. No OS input, compositor, cadence, arbitrary-code sandbox or full DFM claim.",
   "final_integration": {
-    "pending": true
+    "pending": false,
+    "source": "3287ca5f7fd5a4d487ebd7f81550afd22384e309",
+    "source_tree": "402d88270de43d6ab88ce067974e2b5f6f330470",
+    "stack": "T117/T122/T119 corrected1293/T123 corrected13cfd own-only followups plus T118",
+    "gates": {
+      "fmt": true,
+      "strict_workspace_all_target_clippy": true,
+      "focused_passed": 36,
+      "focused_failed": 0,
+      "workspace_build": true,
+      "inspection_build": true,
+      "rust_and_build_checks_passed": true,
+      "helper_exit": 5,
+      "helper_failure": "Final Python discovery searched scripts instead of scripts/tests and ran zero tests",
+      "corrected_remaining_python_exit": 0
+    },
+    "runtime": {
+      "stdio_checks": {
+        "live": 27,
+        "approval": 4,
+        "read_only": 4
+      },
+      "actual_two_client_http_checks": 28,
+      "tool_count": 117,
+      "isolated_workflow_checks": 18,
+      "python_tests": 23
+    },
+    "production": {
+      "pid": 3168356,
+      "port": 7958,
+      "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/viamind",
+      "sha256": "6a1b141b67b764e372b501cc9360e8fee5c3c4bdcdfc24b484f3b1ba2d609a17",
+      "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-final/owned.viamind.json",
+      "native_sha256": "70fcdb46eadf73eac8249c5f0879968a70fd9994d01e57c20e4b0bb48da8ce14",
+      "headless_creation_state": {
+        "cursor": {
+          "sequence": 0,
+          "stream_id": "0172bbfb-0ba0-438a-a3e3-00a2ffcd234f"
+        },
+        "project": {
+          "board": {
+            "parts": {}
+          },
+          "id": "442d58ff-e6fc-4304-84cc-0d0932a2fb67",
+          "name": "T118 combined owned command hook proof",
+          "schematic": {
+            "sheets": {}
+          }
+        },
+        "selection": {
+          "ids": [],
+          "origin": null,
+          "revision": 0
+        }
+      },
+      "headless_creation_status": {
+        "dirty": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-final/owned.viamind.json"
+      },
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/runtime-final/launch-production",
+        "pid": 3168356,
+        "running": true,
+        "windows": [
+          {
+            "app_name": "viamind",
+            "bounds": {
+              "height": 1200,
+              "width": 1920,
+              "x": 1920,
+              "y": 1152
+            },
+            "height": 1200,
+            "is_on_screen": true,
+            "pid": 3168356,
+            "title": "owned.viamind.json \u2014 Viamind",
+            "width": 1920,
+            "window_id": 110379547786048,
+            "x": 1920,
+            "y": 1152,
+            "z_index": null
+          }
+        ]
+      },
+      "listener": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7958      0.0.0.0:*    users:((\"viamind\",pid=3168356,fd=6))\n"
+    },
+    "captures": [
+      {
+        "name": "hooks-wide",
+        "pixels": [
+          2667,
+          1667
+        ],
+        "pid": 3169922,
+        "self_closed": true,
+        "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.p7",
+        "p7_sha256": "c14839c1f4e08afc95209dd8c6ae77af3900b398fc14fec22acaed6d691f94e1",
+        "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.p6",
+        "p6_sha256": "ea62746ae3a7984d2bfd74486ff78333f4f2859fc4cbd01faa48c2294cbfb816",
+        "rgba_sha256": "714f4421c0080eeaed91f426f174afe19edce8cf912260044a6405ed87770e1f",
+        "rgb_sha256": "55bde3eb4e737d8756aff2c9fe98359fb3c0800ed356dfd4928cb9fbb5d9339e",
+        "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.png",
+        "png_sha256": "e2df12df6a7d6fc248870b20c4c843197e25c626b4f4d44665be1b1fb3d10bee",
+        "png_mode": "RGBA",
+        "every_original_color32_rgba_and_rgb_sample_equal": true,
+        "alpha_range": [
+          242,
+          255
+        ],
+        "nonopaque_alpha_pixels": 5468,
+        "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+      },
+      {
+        "name": "hooks-veto",
+        "pixels": [
+          1067,
+          667
+        ],
+        "pid": 3173527,
+        "self_closed": true,
+        "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p7",
+        "p7_sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a",
+        "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p6",
+        "p6_sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd",
+        "rgba_sha256": "6c4fbf65cd2194fa0d0d22e8bb6eb2baece9d07018050d9782747f6b1fae2199",
+        "rgb_sha256": "76c33271a8a803dfd79c7ac53765ef7fa235b39cfdffbf417271a2b9f7b55721",
+        "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.png",
+        "png_sha256": "bc8fc31287db9616a2e245c505b73e87e968d3b53456702f91ad9cf6d814b85c",
+        "png_mode": "RGBA",
+        "every_original_color32_rgba_and_rgb_sample_equal": true,
+        "alpha_range": [
+          242,
+          255
+        ],
+        "nonopaque_alpha_pixels": 1490,
+        "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+      },
+      {
+        "name": "hooks-recovery",
+        "pixels": [
+          1067,
+          667
+        ],
+        "pid": 3174535,
+        "self_closed": true,
+        "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-recovery.p7",
+        "p7_sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb",
+        "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-recovery.p6",
+        "p6_sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8",
+        "rgba_sha256": "fa517e0765cd1e7870de556421d9f2537f4b52dc74c84eff37227a778bb63d76",
+        "rgb_sha256": "d0de15fe63867cad838ac47b6537d9e305830eb9359c2a1e96ec633e18a7176e",
+        "png_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-recovery.png",
+        "png_sha256": "eb3388043e06f587c344ff1861c1948d2b3a5df0c2fc411de2f61803fde3dfba",
+        "png_mode": "RGBA",
+        "every_original_color32_rgba_and_rgb_sample_equal": true,
+        "alpha_range": [
+          242,
+          255
+        ],
+        "nonopaque_alpha_pixels": 1490,
+        "scope": "Original egui Color32 RGBA channel samples exactly retained in P7 and PNG; P6 exact RGB. No opacity/compositor/cadence/OS-input claim."
+      }
+    ],
+    "ci": "pending exact final proof head",
+    "independent_review": {
+      "source": "3287ca5f7fd5a4d487ebd7f81550afd22384e309",
+      "passed": true,
+      "stdio_checks": 35,
+      "actual_two_client_http_checks": 28,
+      "exact_native_captures": 3,
+      "binaries_rehashed": 2,
+      "scope": "Independent review of hooks/reentry/rollback/admission plus actual initialized processes and original channel comparison; wide/recovery viewed independently and compact veto viewed by root"
+    }
   },
   "artifacts": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/command-hooks-inspection",
+      "storage": "retained",
+      "bytes": 549592280,
+      "sha256": "f0babbbf95cc4917ac818b8ef9ab7320b5a02338028b25867ad708d0460d796e"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/final-verified/viamind",
+      "storage": "retained",
+      "bytes": 648464504,
+      "sha256": "6a1b141b67b764e372b501cc9360e8fee5c3c4bdcdfc24b484f3b1ba2d609a17"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/command-hooks-inspection",
+      "storage": "retained",
+      "bytes": 543635760,
+      "sha256": "6cee21e462e7c967b139ded71719b5caabf01d7fd3171b12825da0387da4a0be"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
+      "storage": "retained",
+      "bytes": 641702696,
+      "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-recovery.p6",
+      "storage": "retained",
+      "bytes": 2135083,
+      "sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-recovery.p7",
+      "storage": "retained",
+      "bytes": 2846826,
+      "sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p6",
+      "storage": "retained",
+      "bytes": 2135083,
+      "sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-veto.p7",
+      "storage": "retained",
+      "bytes": 2846826,
+      "sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.p6",
+      "storage": "retained",
+      "bytes": 13337684,
+      "sha256": "ea62746ae3a7984d2bfd74486ff78333f4f2859fc4cbd01faa48c2294cbfb816"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-final/hooks-wide.p7",
+      "storage": "retained",
+      "bytes": 17783627,
+      "sha256": "c14839c1f4e08afc95209dd8c6ae77af3900b398fc14fec22acaed6d691f94e1"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p6",
+      "storage": "retained",
+      "bytes": 2135083,
+      "sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p7",
+      "storage": "retained",
+      "bytes": 2846826,
+      "sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p6",
+      "storage": "retained",
+      "bytes": 2135083,
+      "sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p7",
+      "storage": "retained",
+      "bytes": 2846826,
+      "sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p6",
+      "storage": "retained",
+      "bytes": 13337684,
+      "sha256": "eb1a0017ecbc5dbec7e681494324d50dd2f984721abfd3e08f10e3401f588641"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p7",
+      "storage": "retained",
+      "bytes": 17783627,
+      "sha256": "0c891d3558f2f02c1b02749c2f05ec4b4edae11a78c464387a86c8ec63126560"
+    },
+    {
+      "path": "crates/ui-egui/examples/command_hooks_inspection.rs",
+      "storage": "repository",
+      "bytes": 7636,
+      "sha256": "88e6e7c1cbe6f9ae23ccd907d9893a099722df8f4956e4e138a07f391b0b88b7"
+    },
+    {
+      "path": "docs/command-hooks-verification.md",
+      "storage": "repository",
+      "bytes": 6763,
+      "sha256": "ea782c3800159b1d1168bda3b682620cf4d359fa0035447d9de0deba4fa13907"
+    },
+    {
+      "path": "docs/specs/command-hooks.md",
+      "storage": "repository",
+      "bytes": 13921,
+      "sha256": "ea28be79b14e782ebcee6b622cc348f5dcac4edf1c138a5f14205bbf619dfc3d"
+    },
     {
       "path": "docs/verification/t0118/capture-native.py",
       "storage": "repository",
@@ -188,6 +476,246 @@
       "storage": "repository",
       "bytes": 2181,
       "sha256": "4aefcf430a9209f2033b04a5e8b4ba814cb8b2fbef837d52f76f4efd658f591f"
+    },
+    {
+      "path": "docs/verification/t0118/final/binaries.json",
+      "storage": "repository",
+      "bytes": 706,
+      "sha256": "f5b8eedb2a3480dcc3b65ac41fb794f3399adbbe574747fd8011c415b0d884b6"
+    },
+    {
+      "path": "docs/verification/t0118/final/catalog-verification.json",
+      "storage": "repository",
+      "bytes": 368,
+      "sha256": "b8467766d21a00083b783d2be7dd7453cea1e1ac796ba31fedc3a6b93480d2be"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery-launch.json",
+      "storage": "repository",
+      "bytes": 627,
+      "sha256": "2e6aee794ccd9c27d9e9728b7eab18448eaed23ce7cb91d17b953dc22cba3d7e"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery-provenance.json",
+      "storage": "repository",
+      "bytes": 2246,
+      "sha256": "5a0b840d33ae962bea064aeede726120e3909e3db51572f7394c9b2959366b23"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery-runtime.log",
+      "storage": "repository",
+      "bytes": 632,
+      "sha256": "7e5e86850bc2b0e3466e20fbdab38db89cd9ce512ea571acfceee9705e2aa50b"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery-state.json",
+      "storage": "repository",
+      "bytes": 2910,
+      "sha256": "6a4771c45114282855acaf8d00d54618bd80fceee2b61f0e776f927e1a19ef03"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery.png",
+      "storage": "repository",
+      "bytes": 122615,
+      "sha256": "eb3388043e06f587c344ff1861c1948d2b3a5df0c2fc411de2f61803fde3dfba"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-recovery.viamind.json",
+      "storage": "repository",
+      "bytes": 553,
+      "sha256": "6138148b493d9d17b1bfec8be7f984f0b1e54a1d4a1b5ebb2e5a11857f2fcb70"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto-launch.json",
+      "storage": "repository",
+      "bytes": 619,
+      "sha256": "dedbc97a87dd91a5c4660897dd71411ad08fcc8f785e103bfa16f011623ed684"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto-provenance.json",
+      "storage": "repository",
+      "bytes": 2230,
+      "sha256": "8e5556438e841b8020b085744b21bdc9771afce626ed8c8ad33ea6742952bfd6"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto-runtime.log",
+      "storage": "repository",
+      "bytes": 624,
+      "sha256": "7a06b91cc15b476b24b9bd0fa89ac80ac651e269805e242674356be4a642bf25"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto-state.json",
+      "storage": "repository",
+      "bytes": 2927,
+      "sha256": "6e32307e688849b1c771774a4b29f53457b05f76cbb131eccb02fe6dd948723c"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto.png",
+      "storage": "repository",
+      "bytes": 122492,
+      "sha256": "bc8fc31287db9616a2e245c505b73e87e968d3b53456702f91ad9cf6d814b85c"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-veto.viamind.json",
+      "storage": "repository",
+      "bytes": 553,
+      "sha256": "7a73a1a71604d399ada2d873a806bc28f0446cb82f8597a4d6fa63367879c347"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide-launch.json",
+      "storage": "repository",
+      "bytes": 621,
+      "sha256": "c2e5f98419c154ad43fd19a4695d49ba041de999e26b624ae5e660756be9999f"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide-provenance.json",
+      "storage": "repository",
+      "bytes": 2243,
+      "sha256": "e5b1996d89fc53ae7cb81b1d9beb04156dc4a391f7daab53b6ffbc3e17b10e14"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide-runtime.log",
+      "storage": "repository",
+      "bytes": 635,
+      "sha256": "aa04369381fab3d9baa94e2134bb4e22a338eb1607d6c9af1842fd0ac4e09c19"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide-state.json",
+      "storage": "repository",
+      "bytes": 2927,
+      "sha256": "dd6ca523c46c591b8346215f6426990a191b5727e462a57ba7b582b830ba1dd3"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide.png",
+      "storage": "repository",
+      "bytes": 441419,
+      "sha256": "e2df12df6a7d6fc248870b20c4c843197e25c626b4f4d44665be1b1fb3d10bee"
+    },
+    {
+      "path": "docs/verification/t0118/final/hooks-wide.viamind.json",
+      "storage": "repository",
+      "bytes": 553,
+      "sha256": "d12280b13f4434ee5fc7a3967b7d2cd4d9afa0951674d801260daf22dc5e5c01"
+    },
+    {
+      "path": "docs/verification/t0118/final/independent-http.json",
+      "storage": "repository",
+      "bytes": 8079,
+      "sha256": "e4eab33ae20ed74cb38b59a39fe08ee036261e4f8b5dacb609d3d527e9b2f297"
+    },
+    {
+      "path": "docs/verification/t0118/final/independent-native-audit.json",
+      "storage": "repository",
+      "bytes": 2555,
+      "sha256": "640a7366d303d4a6ada3e24bf57f74388dab581c3723b1bd6acbef1abeece6b3"
+    },
+    {
+      "path": "docs/verification/t0118/final/independent-stdio-approval.json",
+      "storage": "repository",
+      "bytes": 1199,
+      "sha256": "6a04808fdc3c4ef6e60ec41db1a285beba671bb6d7988207d990c066ed87f661"
+    },
+    {
+      "path": "docs/verification/t0118/final/independent-stdio-live.json",
+      "storage": "repository",
+      "bytes": 8083,
+      "sha256": "4a28ebd20c947d6346e78f8ee60a01ba2a4111ccad8f9d167ce52da681c13006"
+    },
+    {
+      "path": "docs/verification/t0118/final/independent-stdio-read_only.json",
+      "storage": "repository",
+      "bytes": 1196,
+      "sha256": "fe8e01350f8f3d7769d6221e8b7cde101206d97e7c80dc2b1a0bec6b2990d04d"
+    },
+    {
+      "path": "docs/verification/t0118/final/linux-scoped.log",
+      "storage": "repository",
+      "bytes": 11150,
+      "sha256": "9b96430d92cca131ba40acfaeb796e3ef0405a14ff2a3123bd3c5a8fe70ab9b2"
+    },
+    {
+      "path": "docs/verification/t0118/final/linux-scoped.sh",
+      "storage": "repository",
+      "bytes": 2644,
+      "sha256": "e4f1a41f2a6ba6fd4e5fcb4c8d1f2ea9a49bc423879f1c72d1dbd749d1613246"
+    },
+    {
+      "path": "docs/verification/t0118/final/mcp-tools.json",
+      "storage": "repository",
+      "bytes": 940729,
+      "sha256": "00cf6f5cc95a9600acfcfaf0f7fb5a70e93135a226d7de43c3315318c0e5d1c4"
+    },
+    {
+      "path": "docs/verification/t0118/final/mcp-tools.md",
+      "storage": "repository",
+      "bytes": 877225,
+      "sha256": "3dc60c42136fb017f395f29883f3c655aafc8aa2ed260a5a7024cfc9f13a5ca0"
+    },
+    {
+      "path": "docs/verification/t0118/final/native-captures.json",
+      "storage": "repository",
+      "bytes": 3586,
+      "sha256": "cc8477b1405aa8462b2d248d057c39763dec70ce619d06562c3f0104798a6401"
+    },
+    {
+      "path": "docs/verification/t0118/final/owned.viamind.json",
+      "storage": "repository",
+      "bytes": 250,
+      "sha256": "70fcdb46eadf73eac8249c5f0879968a70fd9994d01e57c20e4b0bb48da8ce14"
+    },
+    {
+      "path": "docs/verification/t0118/final/production-bootstrap.json",
+      "storage": "repository",
+      "bytes": 1860,
+      "sha256": "cd0b21c08933643d9310c4f4d405544d6d39640c947001cde91d60b86105702f"
+    },
+    {
+      "path": "docs/verification/t0118/final/production-http.json",
+      "storage": "repository",
+      "bytes": 8077,
+      "sha256": "52e002e0073ace259f275e34073ece1ad3033f4f636a1bed0f69fe8495c61221"
+    },
+    {
+      "path": "docs/verification/t0118/final/production-launch.json",
+      "storage": "repository",
+      "bytes": 592,
+      "sha256": "b96db2906faf8cab633f750bfc70dc78671428fd6349884588a5c216877e3959"
+    },
+    {
+      "path": "docs/verification/t0118/final/production-runtime.log",
+      "storage": "repository",
+      "bytes": 137,
+      "sha256": "c3027b51d99e19f245e23e200022010a1cacf41396c1fafe7b858fdd4149a5d8"
+    },
+    {
+      "path": "docs/verification/t0118/final/python-corrected.log",
+      "storage": "repository",
+      "bytes": 3686,
+      "sha256": "06b78cd022f59b75b4a9a1a6c60975c37a92704ec0d9dd517453be271b8e4358"
+    },
+    {
+      "path": "docs/verification/t0118/final/stdio-approval.json",
+      "storage": "repository",
+      "bytes": 1200,
+      "sha256": "293483bd8d67f1783a0de1e13fa69214022da7e7b50390fa24833a609c7dd1cc"
+    },
+    {
+      "path": "docs/verification/t0118/final/stdio-live.json",
+      "storage": "repository",
+      "bytes": 8097,
+      "sha256": "5a355098fd7487a299296e41bbab10858c68b29c825c375d8ddc47c5af6c4155"
+    },
+    {
+      "path": "docs/verification/t0118/final/stdio-read-only.json",
+      "storage": "repository",
+      "bytes": 1202,
+      "sha256": "0aa156f9b47fc1624366e5f2ab6335373d8226ffce06836358a440678e2a47a3"
+    },
+    {
+      "path": "docs/verification/t0118/final/workflow-verification.json",
+      "storage": "repository",
+      "bytes": 1265,
+      "sha256": "25f0734b086bc45b4af6e69b57d0824d15a83ea0c1d1be34ecac47efa03fe5eb"
     },
     {
       "path": "docs/verification/t0118/foundation.log",
@@ -364,6 +892,18 @@
       "sha256": "e7e2de8751262244fac2dc3b17b551112ddad0bec2a9a52a0846ed520e7a6010"
     },
     {
+      "path": "docs/verification/t0118/original-mcp-tools.json",
+      "storage": "repository",
+      "bytes": 806565,
+      "sha256": "ac2d66e93b941c2735c811a704e8404c49c30b95b8df89012b8b2b51a9d43f1d"
+    },
+    {
+      "path": "docs/verification/t0118/original-mcp-tools.md",
+      "storage": "repository",
+      "bytes": 754905,
+      "sha256": "9fc58aae535b22865216436cbd67636eb1d30d5a95689cb4f3022cdf825f5f84"
+    },
+    {
       "path": "docs/verification/t0118/owned.viamind.json",
       "storage": "repository",
       "bytes": 241,
@@ -436,94 +976,16 @@
       "sha256": "d54a39b3d5b2169ada2367f432979824df1b051bf15c18c72bba52f5d07d32ca"
     },
     {
-      "path": "docs/verification/t0118/workflow-verification.json",
-      "storage": "repository",
-      "bytes": 1265,
-      "sha256": "9ebc76b7e73791cd63df538b6547d2821b59e1c48f6b1ec127fc007661a1bca4"
-    },
-    {
-      "path": "docs/specs/command-hooks.md",
-      "storage": "repository",
-      "bytes": 13921,
-      "sha256": "ea28be79b14e782ebcee6b622cc348f5dcac4edf1c138a5f14205bbf619dfc3d"
-    },
-    {
-      "path": "crates/ui-egui/examples/command_hooks_inspection.rs",
-      "storage": "repository",
-      "bytes": 7636,
-      "sha256": "88e6e7c1cbe6f9ae23ccd907d9893a099722df8f4956e4e138a07f391b0b88b7"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/viamind",
-      "storage": "retained",
-      "bytes": 641702696,
-      "sha256": "82485d59010c9d027f8fee748e25939d1f8c424764ff89f51d15c7afdff984aa"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/full-verified/command-hooks-inspection",
-      "storage": "retained",
-      "bytes": 543635760,
-      "sha256": "6cee21e462e7c967b139ded71719b5caabf01d7fd3171b12825da0387da4a0be"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p7",
-      "storage": "retained",
-      "bytes": 17783627,
-      "sha256": "0c891d3558f2f02c1b02749c2f05ec4b4edae11a78c464387a86c8ec63126560"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-wide.p6",
-      "storage": "retained",
-      "bytes": 13337684,
-      "sha256": "eb1a0017ecbc5dbec7e681494324d50dd2f984721abfd3e08f10e3401f588641"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p7",
-      "storage": "retained",
-      "bytes": 2846826,
-      "sha256": "2800ea8953b3c52ee05b562806fd6c077270bbacc4e822d882bb4a4c9275241a"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-veto.p6",
-      "storage": "retained",
-      "bytes": 2135083,
-      "sha256": "2abd5b64d6fb6a8905625223c1da2aabd4305ddb1f98a86da18507b2d904d7bd"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p7",
-      "storage": "retained",
-      "bytes": 2846826,
-      "sha256": "8490546c2946e9e2369b75eb449d6da4b4a783414cdeb197f76b84812096f7cb"
-    },
-    {
-      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0118/native-original/hooks-recovery.p6",
-      "storage": "retained",
-      "bytes": 2135083,
-      "sha256": "b68a50428aec07cb6af75bf64a0e731b0e2b83477fdac60776e766966eec41e8"
-    },
-    {
-      "path": "docs/verification/t0118/original-mcp-tools.json",
-      "storage": "repository",
-      "bytes": 806565,
-      "sha256": "ac2d66e93b941c2735c811a704e8404c49c30b95b8df89012b8b2b51a9d43f1d"
-    },
-    {
-      "path": "docs/verification/t0118/original-mcp-tools.md",
-      "storage": "repository",
-      "bytes": 754905,
-      "sha256": "9fc58aae535b22865216436cbd67636eb1d30d5a95689cb4f3022cdf825f5f84"
-    },
-    {
       "path": "docs/verification/t0118/verify-artifacts.py",
       "storage": "repository",
       "bytes": 782,
       "sha256": "e19d16d87e6fecea62c97d4d2cf60cc7dd4ba366e08432f089a3821927533860"
     },
     {
-      "path": "docs/command-hooks-verification.md",
+      "path": "docs/verification/t0118/workflow-verification.json",
       "storage": "repository",
-      "bytes": 4652,
-      "sha256": "2da83fad21404d48eb25ca6bb079dfdf038d5352e4177254fbf831dc4d21fcb4"
+      "bytes": 1265,
+      "sha256": "9ebc76b7e73791cd63df538b6547d2821b59e1c48f6b1ec127fc007661a1bca4"
     }
   ]
 }
