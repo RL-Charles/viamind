@@ -37,6 +37,11 @@ impl Point {
     pub fn from_mm(x: f64, y: f64) -> Point {
         Point::new(Nm::from_mm(x), Nm::from_mm(y))
     }
+
+    /// Euclidean distance to `other`, in nanometres.
+    pub fn distance(self, other: Point) -> f64 {
+        (other - self).length()
+    }
 }
 
 impl Vector {
@@ -51,6 +56,11 @@ impl Vector {
     /// Creates a vector from millimetre components, each rounded to the nearest nanometre.
     pub fn from_mm(x: f64, y: f64) -> Vector {
         Vector::new(Nm::from_mm(x), Nm::from_mm(y))
+    }
+
+    /// Euclidean length, in nanometres.
+    pub fn length(self) -> f64 {
+        (self.x.0 as f64).hypot(self.y.0 as f64)
     }
 }
 
