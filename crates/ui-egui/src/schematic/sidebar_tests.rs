@@ -21,13 +21,18 @@ fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) -> egui::Rect {
     rect
 }
 fn assert_button_clip(h: &Harness<'_, ViamindApp>, label: &str, rect: egui::Rect) {
-    let clip = h.output().shapes.iter().filter_map(|shape| {
-        let egui::Shape::Rect(background) = &shape.shape else { return None };
-        (background.rect.contains(rect.center())
-            && (background.rect.width() - rect.width()).abs() <= 4.0
-            && (background.rect.height() - rect.height()).abs() <= 4.0)
-            .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
-    }).min_by(|a, b| a.area().total_cmp(&b.area()))
+    let clip = h
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| {
+            let egui::Shape::Rect(background) = &shape.shape else { return None };
+            (background.rect.contains(rect.center())
+                && (background.rect.width() - rect.width()).abs() <= 4.0
+                && (background.rect.height() - rect.height()).abs() <= 4.0)
+                .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+        })
+        .min_by(|a, b| a.area().total_cmp(&b.area()))
         .unwrap_or_else(|| panic!("missing painted button {label}: {rect:?}"));
     assert!(clip.contains_rect(rect), "{label}: response {rect:?}, actual effective clip {clip:?}");
 }
@@ -43,7 +48,22 @@ fn compact_sidebar_baseline_reveals_supported_entries_without_session_changes() 
     let status = engine.document_status();
     let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
     h.run_steps(5);
-    for label in ["Multi-unit package library…", "Native symbol library…", "Electrical rule check…", "Create schematic sheet", "Rename sheet", "Delete sheet", "Reload sheet details", "Add symbol", "Add wire", "Add junction", "Add label", "Fit schematic", "Draw wires on canvas", "Annotate symbols"] {
+    for label in [
+        "Multi-unit package library…",
+        "Native symbol library…",
+        "Electrical rule check…",
+        "Create schematic sheet",
+        "Rename sheet",
+        "Delete sheet",
+        "Reload sheet details",
+        "Add symbol",
+        "Add wire",
+        "Add junction",
+        "Add label",
+        "Fit schematic",
+        "Draw wires on canvas",
+        "Annotate symbols",
+    ] {
         reveal(&mut h, label);
     }
     click(&mut h, "Fit schematic");
@@ -77,7 +97,12 @@ fn compact_sidebar_actual_wheel_reveals_footer_without_zooming_canvas() {
     assert!(!h.ctx.content_rect().contains_rect(h.get_by_label("Annotate symbols").rect()), "footer starts below the fold");
     for _ in 0..6 {
         h.event(egui::Event::PointerMoved(egui::pos2(100.0, 120.0)));
-        h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: egui::vec2(0.0, -300.0), phase: egui::TouchPhase::Move, modifiers: egui::Modifiers::NONE });
+        h.event(egui::Event::MouseWheel {
+            unit: egui::MouseWheelUnit::Point,
+            delta: egui::vec2(0.0, -300.0),
+            phase: egui::TouchPhase::Move,
+            modifiers: egui::Modifiers::NONE,
+        });
         h.run_steps(8);
     }
     assert_button_clip(&h, "Annotate symbols", h.get_by_label("Annotate symbols").rect());

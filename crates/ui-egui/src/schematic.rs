@@ -43,6 +43,7 @@ fn point(x: &str, y: &str) -> Result<Value, String> {
 }
 #[derive(Clone)]
 struct PinDraft {
+    widget: ObjectId,
     number: String,
     name: String,
     x: String,
@@ -51,10 +52,11 @@ struct PinDraft {
 }
 impl Default for PinDraft {
     fn default() -> Self {
-        Self { number: "1".into(), name: String::new(), x: "-3".into(), y: "0".into(), electrical: PinType::Passive }
+        Self { widget: ObjectId::new(), number: "1".into(), name: String::new(), x: "-3".into(), y: "0".into(), electrical: PinType::Passive }
     }
 }
 struct Draft {
+    widget: ObjectId,
     project: ObjectId,
     expected: Sheet,
     id: Option<ObjectId>,
@@ -77,6 +79,7 @@ struct Draft {
 impl Draft {
     fn new(project: ObjectId, expected: Sheet, kind: &'static str) -> Self {
         Self {
+            widget: ObjectId::new(),
             project,
             expected,
             id: None,
@@ -117,6 +120,7 @@ impl Draft {
                 .pins
                 .iter()
                 .map(|p| PinDraft {
+                    widget: ObjectId::new(),
                     number: p.number.clone(),
                     name: p.name.clone(),
                     x: mm(p.position.x),
@@ -164,6 +168,9 @@ impl Draft {
         })
     }
     fn fields(&mut self, ui: &mut Ui) {
+        ui.push_id(self.widget, |ui| self.fields_inner(ui));
+    }
+    fn fields_inner(&mut self, ui: &mut Ui) {
         ui.heading(format!("{} {}", if self.id.is_some() { "Edit" } else { "Add" }, self.kind));
         if let Some((id, key, name)) = &self.package {
             ui.label(format!("Package {id} · unit {key} ({name}). Pose only; shared metadata/body/pins belong to the complete package."));
@@ -171,23 +178,23 @@ impl Draft {
         if self.kind == "symbol" {
             ui.add_enabled_ui(self.package.is_none(), |ui| {
                 egui::Grid::new("schematic_symbol_metadata").num_columns(2).show(ui, |ui| {
-                    field(ui, "Reference", &mut self.name);
-                    field(ui, "Symbol value", &mut self.value);
-                    field(ui, "Symbol footprint", &mut self.footprint);
-                    field(ui, "Body width (mm)", &mut self.width);
-                    field(ui, "Body height (mm)", &mut self.height);
+                    field(ui, "reference", "Reference", &mut self.name);
+                    field(ui, "value", "Symbol value", &mut self.value);
+                    field(ui, "footprint", "Symbol footprint", &mut self.footprint);
+                    field(ui, "width", "Body width (mm)", &mut self.width);
+                    field(ui, "height", "Body height (mm)", &mut self.height);
                 });
             });
         }
         egui::Grid::new("schematic_fields").num_columns(2).show(ui, |ui| {
             if self.kind == "label" {
-                field(ui, "Label name", &mut self.name);
+                field(ui, "label_name", "Label name", &mut self.name);
             }
-            field(ui, "Schematic X (mm)", &mut self.x);
-            field(ui, "Schematic Y (mm)", &mut self.y);
+            field(ui, "x", "Schematic X (mm)", &mut self.x);
+            field(ui, "y", "Schematic Y (mm)", &mut self.y);
             if self.kind == "wire" {
-                field(ui, "Wire end X (mm)", &mut self.end_x);
-                field(ui, "Wire end Y (mm)", &mut self.end_y);
+                field(ui, "end_x", "Wire end X (mm)", &mut self.end_x);
+                field(ui, "end_y", "Wire end Y (mm)", &mut self.end_y);
             }
         });
         if self.kind == "symbol" {
@@ -200,13 +207,13 @@ impl Draft {
                 ui.label("Pins: local endpoints in mm");
                 let mut remove = None;
                 for (i, p) in self.pins.iter_mut().enumerate() {
-                    ui.push_id(i, |ui| {
+                    ui.push_id(p.widget, |ui| {
                         ui.group(|ui| {
                             egui::Grid::new("pin_fields").num_columns(2).show(ui, |ui| {
-                                field(ui, &format!("Pin {} number", i + 1), &mut p.number);
-                                field(ui, &format!("Pin {} name", i + 1), &mut p.name);
-                                field(ui, &format!("Pin {} X (mm)", i + 1), &mut p.x);
-                                field(ui, &format!("Pin {} Y (mm)", i + 1), &mut p.y);
+                                field(ui, "number", &format!("Pin {} number", i + 1), &mut p.number);
+                                field(ui, "name", &format!("Pin {} name", i + 1), &mut p.name);
+                                field(ui, "x", &format!("Pin {} X (mm)", i + 1), &mut p.x);
+                                field(ui, "y", &format!("Pin {} Y (mm)", i + 1), &mut p.y);
                             });
                             egui::ComboBox::from_id_salt("electrical").selected_text(format!("{:?}", p.electrical)).show_ui(ui, |ui| {
                                 for kind in [
@@ -248,9 +255,9 @@ impl Draft {
         }
     }
 }
-fn field(ui: &mut Ui, label: &str, text: &mut String) {
+fn field(ui: &mut Ui, key: &str, label: &str, text: &mut String) {
     let l = ui.label(label);
-    ui.add(egui::TextEdit::singleline(text).desired_width(120.0)).labelled_by(l.id);
+    ui.add(egui::TextEdit::singleline(text).id(ui.make_persistent_id(key)).desired_width(120.0)).labelled_by(l.id);
     ui.end_row();
 }
 
