@@ -369,3 +369,33 @@ fn flat_annotation_and_whole_pcb_sync_refuse_grouped_projects_without_mutation()
     assert!(e.preview_schematic_pcb_sync(viamind_engine::PcbSyncDirection::Forward).unwrap_err().to_string().contains("multi-unit package"));
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn new_package_command_sheet_guards_admit_borrowed_counts_and_text_before_poison_rows() {
+    let e = empty_engine();
+    let original = e.session_state();
+    let status = e.document_status();
+    let base = serde_json::to_value(proposal(&e)).unwrap();
+    let map = (0..10001).map(|i| (format!("malformed-{i}"), Value::Null)).collect::<serde_json::Map<_, _>>();
+    let cases = [
+        (json!({"symbols":map}), "10000 sheet objects"),
+        (json!({"symbols":{"invalid":{"pins":vec![Value::Null;10001]}}}), "10000 sheet pins"),
+        (json!({"packages":{"invalid":{"units":vec![Value::Null;10001]}}}), "10000 objects/package members"),
+        (json!({"symbols":{"invalid":{"value":"é".repeat(2049)}}}), "4096bytes/string"),
+        (json!({"symbols":(0..513).map(|i|(i.to_string(),json!({"value":"x".repeat(4096)}))).collect::<serde_json::Map<_,_>>()}), "2MiB"),
+    ];
+    for (content, needle) in cases {
+        let mut guard = base["expected"].clone();
+        guard["content"] = content;
+        let mut place = base.clone();
+        place["expected"] = guard.clone();
+        let delete =
+            json!({"expected_project":base["expected_project"],"source_cursor":base["source_cursor"],"expected":guard,"package_id":ObjectId::new()});
+        for (name, input) in [("place_symbol_package", place), ("delete_symbol_package", delete)] {
+            let error = e.execute(name, input, Origin::agent("adversarial guard")).unwrap_err();
+            assert!(error.to_string().contains(needle), "{name}: {error}");
+            assert_eq!(e.session_state(), original);
+            assert_eq!(e.document_status(), status);
+        }
+    }
+}

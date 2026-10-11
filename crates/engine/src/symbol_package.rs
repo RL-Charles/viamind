@@ -155,7 +155,9 @@ pub fn predecode_place(value: &serde_json::Value) -> Result<(), String> {
             return Err("placement unit keys require at most8 ASCII bytes".into());
         }
     }
-    package::predecode(value.get("template").ok_or("template is required")?)
+    package::predecode(value.get("template").ok_or("template is required")?)?;
+    crate::schematic_budget::predecode_sheet(value.get("expected").ok_or("expected sheet is required")?, "package placement guard")
+        .map_err(|e| e.to_string())
 }
 impl Command for PlaceSymbolPackage {
     const NAME: &'static str = "place_symbol_package";
@@ -247,13 +249,33 @@ impl Command for PlaceSymbolPackage {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct DeleteSymbolPackage {
     pub expected_project: ObjectId,
     pub source_cursor: EventCursor,
     pub expected: Sheet,
     pub package_id: ObjectId,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct DeleteWire {
+    expected_project: ObjectId,
+    source_cursor: EventCursor,
+    expected: Sheet,
+    package_id: ObjectId,
+}
+impl<'de> Deserialize<'de> for DeleteSymbolPackage {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let value = serde_json::Value::deserialize(d)?;
+        crate::schematic_budget::predecode_sheet(
+            value.get("expected").ok_or_else(|| de::Error::custom("expected sheet is required"))?,
+            "package deletion guard",
+        )
+        .map_err(de::Error::custom)?;
+        let wire: DeleteWire = serde_json::from_value(value).map_err(de::Error::custom)?;
+        Ok(Self { expected_project: wire.expected_project, source_cursor: wire.source_cursor, expected: wire.expected, package_id: wire.package_id })
+    }
 }
 impl Command for DeleteSymbolPackage {
     const NAME: &'static str = "delete_symbol_package";
