@@ -153,3 +153,76 @@ async fn actual_two_clients_refresh_tools_prepare_privately_and_only_human_accep
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[test]
+fn actual_four_render_publications_survive_caller_abort_and_transport_runtime_shutdown() {
+    use std::{
+        sync::mpsc,
+        time::{Duration, Instant},
+    };
+    use viamind_engine::agent_policy::AgentPolicyError;
+    use viamind_mcp::CallContext;
+    for name in ["render_board_view", "render_board_png", "render_schematic_view", "render_schematic_png"] {
+        let directory = tempfile::tempdir().unwrap();
+        let output = directory.path().join(name);
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+        let sheet = *project.schematic.sheets.keys().next().unwrap();
+        let engine = EngineHandle::new(project);
+        let before = engine.session_state();
+        let status = engine.document_status();
+        let registry = engine_registry(engine.clone()).unwrap();
+        let policy = engine.agent_policy();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let held_engine = engine.clone();
+        let holder = std::thread::spawn(move || {
+            held_engine.read(|_| {
+                entered_tx.send(()).unwrap();
+                release_rx.recv().unwrap();
+            })
+        });
+        entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        let (abort_tx, abort_rx) = tokio::sync::oneshot::channel();
+        let input = if name.starts_with("render_schematic") {
+            json!({"sheet":sheet,"path":output,"options":{"width_px":128,"height_px":96}})
+        } else {
+            json!({"path":output,"options":{"width_px":128,"height_px":96}})
+        };
+        let transport = std::thread::spawn(move || {
+            let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+            runtime.block_on(async move {
+                let caller = tokio::spawn(async move { registry.call(name, input, CallContext::new("original renderer")).await });
+                abort_rx.await.unwrap();
+                caller.abort();
+                assert!(caller.await.unwrap_err().is_cancelled());
+            });
+            drop(runtime);
+        });
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while policy.status().active_writers != 1 {
+            assert!(Instant::now() < deadline, "{name} admission");
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        assert_eq!(policy.set_mode(AgentMode::Approval), Err(AgentPolicyError::Busy(1)));
+        abort_tx.send(()).unwrap();
+        transport.join().unwrap();
+        assert!(!output.exists());
+        assert_eq!(policy.set_mode(AgentMode::ReadOnly), Err(AgentPolicyError::Busy(1)));
+        release_tx.send(()).unwrap();
+        holder.join().unwrap();
+        let deadline = Instant::now() + Duration::from_secs(15);
+        while policy.status().active_writers != 0 {
+            assert!(Instant::now() < deadline, "{name} publication");
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let bytes = std::fs::read(&output).unwrap();
+        if name.ends_with("png") {
+            assert!(bytes.starts_with(b"\x89PNG\r\n\x1a\n"));
+        } else {
+            assert!(std::str::from_utf8(&bytes).unwrap().contains("<svg"));
+        }
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(engine.document_status(), status);
+        policy.set_mode(AgentMode::ReadOnly).unwrap();
+    }
+}
