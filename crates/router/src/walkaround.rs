@@ -29,12 +29,17 @@ pub struct WalkaroundPlan {
 /// One cumulative work allowance, which may cover multiple legs of one route.
 #[derive(Clone, Debug, Default)]
 pub struct WalkaroundBudget {
-    pub used: WalkaroundWork,
+    used: WalkaroundWork,
     interior_waypoints: usize,
+}
+impl WalkaroundBudget {
+    pub fn used(&self) -> &WalkaroundWork {
+        &self.used
+    }
 }
 fn clear(bounds: Rect, obstacles: &[Rect], work: &mut WalkaroundWork, budget: &mut WalkaroundBudget) -> Result<bool, &'static str> {
     for obstacle in obstacles {
-        if budget.used.intersection_tests == MAX_WALKAROUND_INTERSECTIONS {
+        if budget.used.intersection_tests >= MAX_WALKAROUND_INTERSECTIONS {
             return Err("walkaround intersection-work limit reached; use a simpler scene or manual route");
         }
         work.intersection_tests += 1;
@@ -194,4 +199,26 @@ pub fn plan_walkaround_with_budget(
     let waypoints = if path.len() > 2 { path[1..path.len() - 1].to_vec() } else { Vec::new() };
     let path = plan_pad_path(start, target, &waypoints, grid, CornerMode::Cardinal, Posture::Primary)?;
     Ok(WalkaroundPlan { path, waypoints, work })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn cumulative_limits_refuse_before_graph_and_intersection_work() {
+        let p = |x, y| Point::new(Nm(x), Nm(y));
+        let domain = Rect::new(p(0, 0), p(100, 100));
+        let mut budget = WalkaroundBudget::default();
+        budget.used.graph_nodes = MAX_WALKAROUND_NODES;
+        assert!(plan_walkaround_with_budget(p(10, 10), p(90, 90), Nm(1), domain, &[], &mut budget).unwrap_err().contains("node/edge budget"));
+        assert_eq!(budget.used.graph_nodes, MAX_WALKAROUND_NODES);
+        budget.used.graph_nodes = 0;
+        budget.used.intersection_tests = MAX_WALKAROUND_INTERSECTIONS;
+        assert!(
+            plan_walkaround_with_budget(p(10, 10), p(90, 90), Nm(1), domain, &[Rect::new(p(40, 40), p(50, 50))], &mut budget)
+                .unwrap_err()
+                .contains("intersection-work")
+        );
+        assert_eq!(budget.used.intersection_tests, MAX_WALKAROUND_INTERSECTIONS);
+    }
 }

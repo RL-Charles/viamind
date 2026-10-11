@@ -90,17 +90,7 @@ fn combined_budget_refuses_second_leg_before_graph_expansion() {
     assert_eq!((first.work.obstacle_boxes, second.work.obstacle_boxes), (33, 33));
     let mut budget = WalkaroundBudget::default();
     plan_walkaround_with_budget(p(10, 10), p(900, 10), Nm(1), domain, &obstacles, &mut budget).unwrap();
-    let charged = budget.used.clone();
+    let charged = budget.used().clone();
     assert!(plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &obstacles, &mut budget).unwrap_err().contains("at most64"));
-    assert_eq!(budget.used, charged); // No second-leg nodes, edges or intersections.
-    // Limits are checked before allocating even a zero-obstacle second graph.
-    budget.used.graph_nodes = 20_000;
-    assert!(plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &[], &mut budget).unwrap_err().contains("node/edge budget"));
-    assert_eq!(budget.used.graph_nodes, 20_000);
-    budget.used.graph_nodes = 0;
-    budget.used.intersection_tests = 4_000_000;
-    assert!(
-        plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &obstacles[..1], &mut budget).unwrap_err().contains("intersection-work")
-    );
-    assert_eq!(budget.used.intersection_tests, 4_000_000);
+    assert_eq!(budget.used(), &charged); // No second-leg nodes, edges or intersections.
 }

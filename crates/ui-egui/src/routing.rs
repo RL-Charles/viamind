@@ -51,10 +51,35 @@ struct Draft {
     hover: Option<Point>,
 }
 #[derive(Debug)]
+pub(crate) enum WalkaroundChecked {
+    Same(viamind_engine::CheckedWalkaround),
+    Via(viamind_engine::CheckedViaWalkaround),
+}
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) enum WalkaroundInput {
+    Same(viamind_engine::RoutePadWalkaround),
+    Via(viamind_engine::RoutePadViaWalkaround),
+}
+impl WalkaroundInput {
+    fn cursor(&self) -> viamind_engine::EventCursor {
+        match self {
+            Self::Same(i) => i.expected_cursor,
+            Self::Via(i) => i.expected_cursor,
+        }
+    }
+    fn plan(&self, engine: &EngineHandle) -> Result<WalkaroundChecked, String> {
+        match self {
+            Self::Same(input) => engine.plan_pad_walkaround(input).map(WalkaroundChecked::Same),
+            Self::Via(input) => engine.plan_pad_via_walkaround(input).map(WalkaroundChecked::Via),
+        }
+        .map_err(|e| e.to_string())
+    }
+}
+#[derive(Debug)]
 struct WalkaroundWorker {
     token: viamind_doc::ObjectId,
-    input: viamind_engine::RoutePadWalkaround,
-    receiver: std::sync::mpsc::Receiver<Result<viamind_engine::CheckedWalkaround, String>>,
+    input: WalkaroundInput,
+    receiver: std::sync::mpsc::Receiver<Result<WalkaroundChecked, String>>,
 }
 #[derive(Debug, Default)]
 pub struct RoutingUi {
@@ -78,10 +103,13 @@ impl RoutingUi {
         };
         if let Some(draft) = &mut self.pad_draft {
             draft.plan_pending = false;
-            if draft.token == *token && draft.walkaround_input().as_ref() == Some(input) && engine.event_cursor() == input.expected_cursor {
+            if draft.token == *token && draft.walkaround_request().as_ref() == Some(input) && engine.event_cursor() == input.cursor() {
                 match result {
                     Ok(plan) => {
-                        draft.checked = Some(plan);
+                        match plan {
+                            WalkaroundChecked::Same(plan) => draft.checked = Some(plan),
+                            WalkaroundChecked::Via(plan) => draft.checked_via = Some(plan),
+                        }
                         self.error = None;
                     }
                     Err(error) => self.error = Some(error),
@@ -183,7 +211,7 @@ impl RoutingUi {
             if draft.plan_requested {
                 draft.plan_requested = false;
                 if self.walkaround_worker.is_none()
-                    && let Some(input) = draft.walkaround_input()
+                    && let Some(input) = draft.walkaround_request()
                 {
                     let (sender, receiver) = std::sync::mpsc::channel();
                     let captured = input.clone();
@@ -191,7 +219,7 @@ impl RoutingUi {
                     let ctx = ui.ctx().clone();
                     let token = draft.token;
                     match std::thread::Builder::new().name("walkaround-plan".into()).spawn(move || {
-                        let result = engine.plan_pad_walkaround(&captured).map_err(|e| e.to_string());
+                        let result = captured.plan(&engine);
                         let _ = sender.send(result);
                         ctx.request_repaint();
                     }) {
@@ -290,6 +318,15 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_via_walkaround_route(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_via_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.walkaround = true;
+        }
+    }
     pub fn begin_walkaround_route(&mut self) {
         if self.routing.editing() {
             return;
@@ -361,17 +398,17 @@ impl ViamindApp {
                 if settings.via_mode {for (label,value) in [("Via copper diameter (mm)",&mut settings.via_diameter),("Via drill diameter (mm)",&mut settings.via_drill)] {let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();}}
                 if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
-            if settings.pad_mode && !settings.via_mode {
+            if settings.pad_mode {
                 ui.checkbox(&mut settings.walkaround, "Static cardinal walkaround");
-                ui.add_enabled_ui(!settings.walkaround, |ui| {
+                if !settings.via_mode {ui.add_enabled_ui(!settings.walkaround, |ui| {
                     ui.radio_value(&mut settings.corner_mode, None, "Manual segments");
                     ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Cardinal), "Cardinal corners");
                     ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Octilinear), "45-degree corners");
-                });
+                });}
                 if settings.corner_mode.is_some() && !settings.walkaround {ui.label("Generated corners follow the selected posture. Exact off-grid pad attachments use short arbitrary-angle stubs, checked with the whole route.");}
             }
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
-            ui.label(if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or electrical continuity verification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
+            ui.label(if settings.via_mode && settings.walkaround {"Choose opposite-side same-net pads and one fixed snapped via. Request a joint checked two-side plan; commit recomputes both legs and via atomically. Rectangular board/cutouts only; no automatic via relocation or shove."} else if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or physical continuity certification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
             ui.horizontal(|ui|{start=ui.button("Start route").clicked();cancel=ui.button("Cancel route settings").clicked();});
         });
@@ -429,6 +466,9 @@ impl ViamindApp {
                                 let mut draft = PadDraft::new(snapshot, input.width, input.grid, input.rules);
                                 if let Some((diameter, drill)) = via_sizes {
                                     draft = draft.with_via(diameter, drill);
+                                    if walkaround {
+                                        draft = draft.with_walkaround();
+                                    }
                                 } else if walkaround {
                                     draft = draft.with_walkaround();
                                 } else if let Some(mode) = corner_mode {
@@ -470,15 +510,17 @@ mod walkaround_worker_tests {
             rules: Default::default(),
         };
         let (sender, receiver) = std::sync::mpsc::channel();
-        let mut state =
-            RoutingUi { walkaround_worker: Some(WalkaroundWorker { token: viamind_doc::ObjectId::new(), input, receiver }), ..Default::default() };
+        let mut state = RoutingUi {
+            walkaround_worker: Some(WalkaroundWorker { token: viamind_doc::ObjectId::new(), input: WalkaroundInput::Same(input), receiver }),
+            ..Default::default()
+        };
         state.cancel();
         assert!(state.walkaround_worker.is_some());
         assert!(!state.editing());
         state.sync_walkaround(&egui::Context::default(), &engine);
         assert!(state.walkaround_worker.is_some());
         sender
-            .send(Ok(viamind_engine::CheckedWalkaround {
+            .send(Ok(WalkaroundChecked::Same(viamind_engine::CheckedWalkaround {
                 project_id: engine.read(|p| p.id),
                 source_cursor: engine.event_cursor(),
                 layer: CopperLayer::Top,
@@ -489,7 +531,7 @@ mod walkaround_worker_tests {
                     work: Default::default(),
                 },
                 complete_scoped_preflight: true,
-            }))
+            })))
             .unwrap();
         state.sync_walkaround(&egui::Context::default(), &engine);
         assert!(state.walkaround_worker.is_none());

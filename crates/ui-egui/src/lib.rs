@@ -604,6 +604,10 @@ impl ViamindApp {
                         self.begin_via_route();
                         ui.close();
                     }
+                    if ui.button("Walkaround through fixed via…").clicked() {
+                        self.begin_via_walkaround_route();
+                        ui.close();
+                    }
                     if ui.button("Route pad connection…").clicked() {
                         self.begin_pad_route();
                         ui.close();

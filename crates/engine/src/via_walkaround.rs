@@ -90,7 +90,7 @@ fn prepare(project: &Project, input: &RoutePadViaWalkaround) -> Result<(CheckedV
     via.validate().map_err(invalid)?;
     let mut work = WalkaroundBudget::default();
     let mut leg = |first, last, layer| {
-        let remaining = viamind_router::walkaround::MAX_WALKAROUND_OBSTACLES - work.used.obstacle_boxes;
+        let remaining = viamind_router::walkaround::MAX_WALKAROUND_OBSTACLES - work.used().obstacle_boxes;
         let (domain, obstacles) = crate::walkaround::scene(project, layer, net, input.width, &input.rules, remaining)?;
         viamind_router::plan_walkaround_with_budget(first, last, input.grid, domain, &obstacles, &mut work).map_err(invalid)
     };
@@ -132,7 +132,7 @@ fn prepare(project: &Project, input: &RoutePadViaWalkaround) -> Result<(CheckedV
             via_drill: input.via_drill,
             before,
             after,
-            work: work.used,
+            work: work.used().clone(),
             complete_scoped_preflight: true,
         },
         deltas,

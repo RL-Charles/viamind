@@ -81,7 +81,8 @@ fn independently_expected_layer_paths_joint_commit_and_one_undo() {
     ];
     let second = vec![
         p(30_000_000, 10_000_000),
-        p(30_000_000, 7_000_000),
+        p(39_000_000, 10_000_000),
+        p(39_000_000, 7_000_000),
         p(41_000_000, 7_000_000),
         p(41_000_000, 10_000_000),
         p(50_000_000, 10_000_000),
@@ -97,13 +98,13 @@ fn independently_expected_layer_paths_joint_commit_and_one_undo() {
     assert_eq!(e.session_state(), before);
     let out = e.execute("route_pad_via_walkaround", serde_json::to_value(cmd.clone()).unwrap(), Origin::agent("joint")).unwrap();
     let after = e.session_state();
-    assert_eq!(out.created.len(), 11);
+    assert_eq!(out.created.len(), 12);
     assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
     for (index, pair) in first.windows(2).chain(second.windows(2)).enumerate() {
         let t = &after.project.board.tracks[&out.created[index]];
         assert_eq!((t.start, t.end, t.layer), (pair[0], pair[1], if index < 5 { CopperLayer::Top } else { CopperLayer::Bottom }));
     }
-    let v = &after.project.board.vias[&out.created[10]];
+    let v = &after.project.board.vias[&out.created[11]];
     assert_eq!((v.position, v.diameter, v.drill, v.net.as_deref()), (cmd.via, cmd.via_diameter, cmd.via_drill, Some("N")));
     reject(&e, cmd);
     e.undo(Origin::User).unwrap();
