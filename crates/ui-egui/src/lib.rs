@@ -552,6 +552,10 @@ impl ViamindApp {
                         self.begin_drc();
                         ui.close();
                     }
+                    if ui.button("Route pads through via…").clicked() {
+                        self.begin_via_route();
+                        ui.close();
+                    }
                     if ui.button("Route pad connection…").clicked() {
                         self.begin_pad_route();
                         ui.close();

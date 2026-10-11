@@ -540,3 +540,31 @@ one undo/redo. Arbitrary-angle attachment, unassigned pads, track endpoint
 attachment, routed vias, obstacle avoidance, shove/walkaround and verified
 copper continuity remain open. Guides are conservative pad-only estimates and
 remain after routing. See [the endpoint behavior contract](../../docs/specs/explicit-pad-routing.md).
+
+## One guarded through-via pad route
+
+Desktop **Board → Route pads through via…** and `route_pad_via_polyline` connect
+same-net explicit quarter-turn SMD pads on opposite outer copper sides through
+one new plated through via. Reuse the IDs, project and source cursor from
+`query_route_endpoints`:
+
+```json
+{"expected_project":"<project UUID>","expected_cursor":{"stream_id":"<session UUID>","sequence":0},"start":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"target":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"via":{"x":35000000,"y":20000000},"before":[{"x":20000000,"y":15000000}],"after":[{"x":50000000,"y":15000000}],"grid":250000,"width":250000,"via_diameter":600000,"via_drill":300000}
+```
+
+The command derives exact off-grid pad centers, net and each leg's layer. Via
+and interior coordinates must already be grid aligned; the UI snaps clicks.
+`before` and `after` default to empty, with at most 1022 combined vertices.
+Positive diameter/drill require drill < diameter. Optional `rules` checks scoped
+clearance, outline/cutouts, minimum drill/annular width and physical hole spacing
+for the joint track/via candidate. Any stale cursor, invalid geometry, violation
+involving new copper or incomplete report adds nothing. One undo/redo includes
+both legs and the via with stable IDs. Bounded capture excludes unrelated
+schematic data, with the same polyline preflight limits and existing exclusions.
+
+The desktop draft has Place via, Edit start leg and Edit target leg stages;
+V replaces the local via, Backspace removes active geometry, Escape cancels and
+Enter commits. Orange preview is unchecked. No inner layers, blind/buried or
+microvias, multiple transitions, automatic obstacle avoidance, push/shove or
+verified continuity. Conservative guides remain after routing. See the
+[single-via behavior contract](../../docs/specs/single-through-via-routing.md).

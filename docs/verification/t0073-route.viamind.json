@@ -1,0 +1,297 @@
+{
+  "format": "viamind",
+  "version": 4,
+  "project": {
+    "id": "6cb3cff4-71f9-44b4-8296-cea4a715cf0e",
+    "name": "Untitled",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "tracks": {
+        "0731912b-f2f2-4a17-af37-3f4447f24639": {
+          "id": "0731912b-f2f2-4a17-af37-3f4447f24639",
+          "start": {
+            "x": 20000000,
+            "y": 15000000
+          },
+          "end": {
+            "x": 35000000,
+            "y": 20000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "0939432c-18f1-4a06-9d91-ec7f88d3b050": {
+          "id": "0939432c-18f1-4a06-9d91-ec7f88d3b050",
+          "start": {
+            "x": 50000000,
+            "y": 15000000
+          },
+          "end": {
+            "x": 60000264,
+            "y": 10000126
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "SIGNAL"
+        },
+        "11c7984f-d059-4a2a-b553-98bd73f26921": {
+          "id": "11c7984f-d059-4a2a-b553-98bd73f26921",
+          "start": {
+            "x": 10000258,
+            "y": 9999880
+          },
+          "end": {
+            "x": 20000000,
+            "y": 15000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "3eca93c3-db0f-454b-b2fe-4728358b6c99": {
+          "id": "3eca93c3-db0f-454b-b2fe-4728358b6c99",
+          "start": {
+            "x": 10000124,
+            "y": 40000260
+          },
+          "end": {
+            "x": 20000000,
+            "y": 35000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "POWER"
+        },
+        "5c73e5c9-8823-4513-bb12-1c1da0523cce": {
+          "id": "5c73e5c9-8823-4513-bb12-1c1da0523cce",
+          "start": {
+            "x": 35000000,
+            "y": 30000000
+          },
+          "end": {
+            "x": 50000000,
+            "y": 35000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        },
+        "9e649022-2610-42e9-9a4d-9cfa3998e4cd": {
+          "id": "9e649022-2610-42e9-9a4d-9cfa3998e4cd",
+          "start": {
+            "x": 35000000,
+            "y": 20000000
+          },
+          "end": {
+            "x": 50000000,
+            "y": 15000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "SIGNAL"
+        },
+        "afe60554-e3cb-4359-b59f-2400b585c847": {
+          "id": "afe60554-e3cb-4359-b59f-2400b585c847",
+          "start": {
+            "x": 20000000,
+            "y": 35000000
+          },
+          "end": {
+            "x": 35000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "POWER"
+        },
+        "e5c4651c-9cec-4451-a27d-555aa7995e32": {
+          "id": "e5c4651c-9cec-4451-a27d-555aa7995e32",
+          "start": {
+            "x": 50000000,
+            "y": 35000000
+          },
+          "end": {
+            "x": 59999884,
+            "y": 40000260
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        }
+      },
+      "vias": {
+        "2fd2b776-36fb-445e-8f7a-e6f3b20d8df8": {
+          "id": "2fd2b776-36fb-445e-8f7a-e6f3b20d8df8",
+          "position": {
+            "x": 35000000,
+            "y": 30000000
+          },
+          "diameter": 600000,
+          "drill": 300000,
+          "net": "POWER"
+        },
+        "32784b58-cdef-4706-b7f8-2d44d3043932": {
+          "id": "32784b58-cdef-4706-b7f8-2d44d3043932",
+          "position": {
+            "x": 35000000,
+            "y": 20000000
+          },
+          "diameter": 600000,
+          "drill": 300000,
+          "net": "SIGNAL"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 50000000
+          },
+          {
+            "x": 0,
+            "y": 50000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "04110189-6f8f-4505-9df5-39c2200db35b": {
+          "pads": [
+            {
+              "id": "364fd2ca-3851-4b9a-90b4-a08a5c3f7507",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "04110189-6f8f-4505-9df5-39c2200db35b",
+          "designator": "J2",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 10000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "4313158b-e74b-4739-a3a2-5b08cdaef8b6": {
+          "pads": [
+            {
+              "id": "f29ef5c3-de53-473c-b8f9-4da483de9035",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "4313158b-e74b-4739-a3a2-5b08cdaef8b6",
+          "designator": "J1",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 10000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "top"
+        },
+        "48134592-9567-455a-81c6-ae23f879bc8e": {
+          "pads": [
+            {
+              "id": "fdf38225-ca62-4a9f-801d-45c210a03881",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "UNSUPPORTED"
+            }
+          ],
+          "id": "48134592-9567-455a-81c6-ae23f879bc8e",
+          "designator": "J5",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 35000000,
+            "y": 25000000
+          },
+          "rotation_mdeg": 45000,
+          "side": "top"
+        },
+        "4c75a308-e6df-4f8b-b4b5-28eb02dd63c4": {
+          "pads": [
+            {
+              "id": "bd522897-a3ab-43fb-8da8-28c3a465dab9",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "4c75a308-e6df-4f8b-b4b5-28eb02dd63c4",
+          "designator": "J3",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 40000003
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "807f2a6e-0dce-47bb-8247-a1d9e88fee3c": {
+          "pads": [
+            {
+              "id": "85cf2435-5f10-4e79-b814-259d8a3794d7",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "807f2a6e-0dce-47bb-8247-a1d9e88fee3c",
+          "designator": "J4",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 40000003
+          },
+          "rotation_mdeg": 0,
+          "side": "bottom"
+        }
+      }
+    }
+  }
+}

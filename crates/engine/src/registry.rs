@@ -111,6 +111,7 @@ impl CommandRegistry {
             .with::<crate::TransformParts>()
             .with::<crate::RoutePolyline>()
             .with::<crate::RoutePadPolyline>()
+            .with::<crate::RoutePadViaPolyline>()
             .with::<crate::ApplyFootprint>()
             .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()

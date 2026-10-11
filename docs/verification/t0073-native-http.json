@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "port": 7898,
+  "binary_sha256": "e92e1a1030a74b613cdfe8b3342dffc713898d5a8c6965c1efe3dab011d4728d",
+  "checks": [
+    "actual native via tool discovered",
+    "discovery preserves exact session",
+    "exact top and mirrored bottom quarter-turn centers",
+    "four track segments and one via committed atomically",
+    "derived two top and two bottom tracks and net",
+    "exact off-grid attachment retained",
+    "through via dimensions and position preserved",
+    "second-agent stale route changes nothing",
+    "one undo removes both legs and via",
+    "one redo restores all IDs",
+    "atomic rejection off-grid via",
+    "atomic rejection off-grid interior",
+    "atomic rejection same-side pads",
+    "atomic rejection arbitrary-angle target",
+    "atomic rejection undersized annulus",
+    "atomic rejection invalid drill",
+    "atomic rejection zero length",
+    "nearby same-net via physical hole overlap rejects all copper",
+    "concurrent side edit invalidates frozen proposal",
+    "pad-only conservative guide counts remain after both via routes"
+  ],
+  "first_http_commit_ms": 9.89590500103077,
+  "small_board_http_commit_ms": [
+    2.3851229998399504,
+    1.7485860007582232,
+    1.7095959992730059,
+    2.44469699828187,
+    2.151665998098906
+  ],
+  "small_board_http_mean_ms": 2.087933599250391
+}

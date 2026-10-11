@@ -65,12 +65,12 @@ fn layer(part: &Part) -> CopperLayer {
         Side::Bottom => CopperLayer::Bottom,
     }
 }
-fn capture_budget(project: &Project) -> Result<(), CommandError> {
+pub(crate) fn capture_budget(project: &Project) -> Result<(), CommandError> {
     crate::auto_drc::snapshot_budget(project, 100_000).map_err(|e| {
         CommandError::conflict(format!("route endpoint discovery cannot capture bounded board: {}", e.trim_start_matches("Automatic DRC skipped: ")))
     })
 }
-fn resolve(project: &Project, id: PadEndpointId) -> Result<(Point, CopperLayer, &str), CommandError> {
+pub(crate) fn resolve(project: &Project, id: PadEndpointId) -> Result<(Point, CopperLayer, &str), CommandError> {
     let part = project.board.part(&id.part_id).ok_or_else(|| CommandError::conflict("route endpoint part no longer exists"))?;
     let pad = part
         .pads
