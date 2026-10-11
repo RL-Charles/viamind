@@ -6,6 +6,7 @@ struct Inspection {
     engine: viamind_engine::EngineHandle,
     before: viamind_engine::SessionSnapshot,
     target: Option<egui::Pos2>,
+    resize_start: Option<egui::Pos2>,
     inputs: u32,
     clicks: u32,
     requested: bool,
@@ -48,6 +49,12 @@ impl eframe::App for Inspection {
         ]
         .iter()
         .all(|label| visible.iter().any(|text| text == label));
+        if self.inputs == 200 {
+            println!(
+                "{}",
+                serde_json::json!({"inspection_progress":self.inputs,"clicks":self.clicks,"target":format!("{:?}", self.target),"calibrated":calibrated,"controls":controls,"visible":visible})
+            );
+        }
         assert!(self.inputs <= 200, "bounded inspection did not complete");
         if let Some(path) = &self.capture {
             let screenshot = ui.input(|input| {
@@ -67,7 +74,7 @@ impl eframe::App for Inspection {
                 file.sync_all().expect("capture sync");
                 println!(
                     "{}",
-                    serde_json::json!({"capture":"eframe native WGPU Screenshot event","pixels":image.size,"path":path,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"local_checkbox_pointer_events":self.clicks,"companion_description_visible":calibrated,"all_job_controls_visible":controls,"visible_job_labels":visible,"full_session_unchanged":true,"source_cursor":self.before.cursor})
+                    serde_json::json!({"capture":"eframe native WGPU Screenshot event","pixels":image.size,"path":path,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"local_checkbox_pointer_events":self.clicks,"local_resize_pointer_events":3,"companion_description_visible":calibrated,"all_job_controls_visible":controls,"visible_job_labels":visible,"full_session_unchanged":true,"source_cursor":self.before.cursor})
                 );
                 std::io::stdout().flush().expect("report flush");
                 self.capture = None;
@@ -81,8 +88,28 @@ impl eframe::App for Inspection {
             ui.ctx().request_repaint();
         }
     }
-    fn raw_input_hook(&mut self, _: &egui::Context, input: &mut egui::RawInput) {
+    fn raw_input_hook(&mut self, ctx: &egui::Context, input: &mut egui::RawInput) {
         self.inputs += 1;
+        // The production scrollable egui Window starts at 420px high. Resize only this
+        // inspection-local dialog from its current native geometry, preserving production defaults.
+        if self.inputs == 35 {
+            self.resize_start = ctx.memory(|m| m.area_rect(egui::Id::new(Some("Saved output jobs")))).map(|r| r.right_bottom() - egui::vec2(3., 3.));
+        }
+        if matches!(self.inputs, 35..=37)
+            && let Some(start) = self.resize_start
+        {
+            let pos = if self.inputs == 35 { start } else { start + egui::vec2(0., 320.) };
+            input.events.push(egui::Event::PointerMoved(pos));
+            if self.inputs != 36 {
+                input.events.push(egui::Event::PointerButton {
+                    pos,
+                    button: egui::PointerButton::Primary,
+                    pressed: self.inputs == 35,
+                    modifiers: egui::Modifiers::NONE,
+                });
+            }
+        }
+
         if matches!(self.inputs, 25 | 26)
             && let Some(pos) = self.target
         {
@@ -121,7 +148,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut app = ViamindApp::with_design(engine.clone(), None);
             app.configure_renderer(cc);
             app.begin_output_jobs();
-            Ok(Box::new(Inspection { app, engine, before, target: None, inputs: 0, clicks: 0, requested: false, capture: Some(capture) }))
+            Ok(Box::new(Inspection {
+                app,
+                engine,
+                before,
+                target: None,
+                resize_start: None,
+                inputs: 0,
+                clicks: 0,
+                requested: false,
+                capture: Some(capture),
+            }))
         }),
     )
     .map_err(|error| error.to_string())?;
