@@ -1,0 +1,72 @@
+83bc7d515c01eb81b8ff58284d5ca96e9ae2f0b8
+Sun Oct 11 15:08:10 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.87s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.84s
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-23fdca9305bf3ad8)
+
+running 2 tests
+test detached_files_preserve_dirty_session_and_separate_reuse_retains_link_assembly_ids_nets ... ok
+test invalid_bounds_precision_free_integer_geometry_and_existing_files_reject_without_mutation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.24s
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-e8429931516e9938)
+
+running 1 test
+test real_two_clients_share_detached_files_with_separate_guarded_reuse_and_no_implicit_design_changes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.67s
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-39bddbbbfdfa3520)
+
+running 3 tests
+test actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retained ... ok
+test actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_and_reopen ... ok
+test actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.66s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.24s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+dfc3e2d3f52c031b35356d5c2e907d90f96badac01770b1140d49bf6719e24bc  /home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-83bc7d5
+1357aa74d3318a619a043cba32f51c8242cbd6d7e83a87e02710393cb5e25e4e  /home/charlesmowbray/.cache/viamind/native-artifacts/t0098/inspection-83bc7d5
+Verified 83 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+Sun Oct 11 15:09:23 UTC 2026

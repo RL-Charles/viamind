@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "checks": [
+    "detached load/save and separate guarded reuse tools discovered",
+    "dirty native work and shared selection established",
+    "new named native definition published with exact two-pad count",
+    "strict native envelope preserves exact asymmetric odd-Nm centers and dimensions",
+    "second client reads the same detached definition",
+    "detached file operations preserve complete session and document status",
+    "repeated NEW publication preserves previous bytes",
+    "unknown request fields reject without changing session",
+    "duplicate number blocks publication unchanged",
+    "zero dimension blocks publication unchanged",
+    "coordinate overflow blocks publication unchanged",
+    "unknown pad semantics blocks publication unchanged",
+    "symlink and active native destinations preserve bytes",
+    "FIFO and oversized paths reject without mutating work",
+    "explicit named empty definition remains valid",
+    "explicit reuse retains existing numbered pad UUID and net",
+    "new numbered pad has fresh identity and no inferred net",
+    "exact local geometry and component placement retained",
+    "stale exact part guard rejects atomically",
+    "one explicit reuse undo restores exact original project",
+    "redo restores exact reused component identities",
+    "detached library and saved native bytes unchanged through reuse",
+    "owned production child exits cleanly",
+    "production executable digest unchanged"
+  ],
+  "binary_sha256": "dfc3e2d3f52c031b35356d5c2e907d90f96badac01770b1140d49bf6719e24bc",
+  "transport": "owned production headless stdio",
+  "scope": "Detached rectangular SMD local geometry; separate guarded component reuse. No graphics, paste/mask, courtyard or fabrication checks.",
+  "native_library": {
+    "format": "viamind-footprint",
+    "version": 1,
+    "footprint": {
+      "name": "Original odd Nm definition",
+      "pads": [
+        {
+          "number": "1",
+          "position": {
+            "x": -500003,
+            "y": 250001
+          },
+          "width": 1200003,
+          "height": 800001
+        },
+        {
+          "number": "2",
+          "position": {
+            "x": 750007,
+            "y": -125003
+          },
+          "width": 600003,
+          "height": 1000001
+        }
+      ]
+    }
+  },
+  "native_library_sha256": "cfb825ea9b9dbe2e3878605f05bc059fd777cc224d4822ff0754cdae3a7f67ad"
+}
