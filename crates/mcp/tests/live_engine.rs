@@ -396,3 +396,46 @@ async fn agents_share_persistent_pads_and_reject_stale_net_assignment() {
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn separate_agents_read_live_explicit_net_membership_without_creating_transactions() {
+    let engine = EngineHandle::new(Project::new("Net HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let writer = connect(server.url(), "net-writer").await;
+    let reader = connect(server.url(), "net-reader").await;
+    for (name, x) in [("R1", 10.0), ("R2", 30.0)] {
+        assert_eq!(call(&writer, "add_part", resistor(name, x)).await.is_error, Some(false));
+        let part = engine.read(|p| p.board.part_by_designator(name).unwrap().clone());
+        assert_eq!(
+            call(
+                &writer,
+                "set_part_pads",
+                json!({"id":part.id,"expected":part,"pads":[{"number":"1","x_mm":0,"y_mm":0,"width_mm":1,"height_mm":1,"net":"GND"}]})
+            )
+            .await
+            .is_error,
+            Some(false)
+        );
+    }
+    let state = engine.session_state();
+    let nets = call(&reader, "query_nets", json!({})).await.structured_content.unwrap();
+    assert_eq!(nets["nets"][0]["guide_count"], 1);
+    let query = call(&reader, "query_connectivity", json!({"net":"GND","limit":1})).await;
+    assert_eq!(query.is_error, Some(false));
+    let page = query.structured_content.unwrap();
+    assert_eq!(page["terminal_count"], 2);
+    assert_eq!(page["guides"].as_array().unwrap().len(), 1);
+    assert_eq!(engine.session_state(), state);
+    assert_eq!(call(&reader, "query_connectivity", json!({"net":"GND","limit":0})).await.is_error, Some(true));
+    assert_eq!(call(&reader, "query_connectivity", json!({})).await.is_error, Some(true));
+    let id = engine.read(|p| p.board.part_by_designator("R1").unwrap().id);
+    call(&writer, "move_part", json!({"id":id,"x_mm":40,"y_mm":20})).await;
+    let moved = call(&reader, "query_connectivity", json!({"net":"GND"})).await.structured_content.unwrap();
+    assert!(moved["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"].as_f64() == Some(40.0)));
+    assert_eq!(call(&writer, "undo", json!({})).await.is_error, Some(false));
+    let restored = call(&reader, "query_connectivity", json!({"net":"GND"})).await.structured_content.unwrap();
+    assert!(restored["terminals"].as_array().unwrap().iter().any(|p| p["x_mm"].as_f64() == Some(10.0)));
+    writer.cancel().await.unwrap();
+    reader.cancel().await.unwrap();
+    server.shutdown();
+}

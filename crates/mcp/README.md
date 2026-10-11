@@ -228,7 +228,7 @@ See [the full session event contract](../../docs/specs/session-events.md).
 ### Electrical pads
 
 `set_part_pads` takes `id`, an exact `expected` Part snapshot from `get_design` or
-`get_parts`, and `pads`: rectangular SMD pads with `number`, `x_mm`, `y_mm`,
+`query_parts`, and `pads`: rectangular SMD pads with `number`, `x_mm`, `y_mm`,
 `width_mm`, `height_mm` and optional `net`. Omitted pad IDs preserve existing
 identities by number; include an existing `id` when renumbering a pad. Empty pads
 means no electrical pads. A stale snapshot, invalid size or duplicate number/ID
@@ -264,3 +264,23 @@ Curves, bulges, 3D geometry, open/branching loops and invalid board topology fai
 without changing the document. Import is one undoable outline change. The desktop
 has the same operation under **Board → Board outline → Import ASCII DXF**. See
 [the supported DXF subset](../../docs/specs/dxf-outline-import.md).
+
+### Named nets and connection guides
+
+`query_nets` returns case-sensitive name-sorted `nets` summaries with `terminals`
+and `guide_count`. `after` is the preceding page's `next_after`; `limit` defaults
+to 100 and is bounded to 1–1000. Only explicitly persisted, net-assigned pads
+participate; built-in footprint previews invent no connectivity.
+
+`query_connectivity` requires an exact `net` string. It returns `terminal_count`,
+`guide_count`, transformed millimetre terminal centres and centre-to-centre
+`guides`, plus `algorithm`. Both arrays use the same `offset` (default 0) and
+`limit` (default 100, max 1000); continue at `next_offset` until null. Restart
+pagination after a design change. Reads leave history, selection and events
+unchanged. Small nets (up to 256 terminals) use exact `dense_prim`; larger nets
+use a deterministic O(N logN) `coordinate_chain` approximation.
+
+The desktop draws the same cyan guides and updates them after placement, pad/net
+editing and undo. Guide count estimates routing work: no copper continuity
+analysis exists yet, and touching same-net pads may already conduct. Guides may
+cross or pass through obstacles; they are neither copper nor a DRC result.

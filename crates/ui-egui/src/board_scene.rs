@@ -48,11 +48,8 @@ fn footprint(name: &str) -> Footprint {
 
 /// Places a footprint-local point in the world: mirror for the bottom side, rotate, then translate.
 fn place(part: &Part, x: f64, y: f64) -> WorldPos {
-    let x = if part.side == Side::Bottom { -x } else { x };
-    let angle = f64::from(part.rotation_mdeg) / 1000.0;
-    let (s, c) = angle.to_radians().sin_cos();
-    // World y points down on screen, so a positive (counter-clockwise) angle uses -sin for y.
-    WorldPos::new(part.position.x.to_mm() + x * c + y * s, part.position.y.to_mm() - x * s + y * c)
+    let (x, y) = part.local_to_world_mm(x, y);
+    WorldPos::new(x, y)
 }
 
 /// True when the part is rotated by roughly 90° or 270°, so rectangular pads swap width and height.
@@ -135,7 +132,11 @@ pub fn scene_from_project(project: &Project) -> Scene {
     for part in project.board.parts.values() {
         items.extend(part_items(part));
     }
-    Scene { board, substrate, items }
+    let ratsnest = viamind_engine::connection_guides(project)
+        .into_iter()
+        .map(|edge| [WorldPos::new(edge.from.x_mm, edge.from.y_mm), WorldPos::new(edge.to.x_mm, edge.to.y_mm)])
+        .collect();
+    Scene { board, substrate, items, ratsnest }
 }
 
 /// Triangulate validated polygons once while rebuilding a scene.

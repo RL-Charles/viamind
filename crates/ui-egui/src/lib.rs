@@ -433,6 +433,10 @@ impl ViamindApp {
             if let Some(design) = &self.design {
                 let status = design.engine.document_status();
                 ui.separator();
+                ui.label(format!("{} connection guides", self.scene.ratsnest.len())).on_hover_text(
+                    "Cyan terminal connection guides estimate routing work. Touching copper is not analyzed; guides are not copper or a DRC result.",
+                );
+                ui.separator();
                 ui.label(if status.dirty {
                     "Unsaved changes"
                 } else if status.path.is_none() {
