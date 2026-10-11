@@ -52,7 +52,7 @@ impl Command for LinkSchematicSymbol {
             {
                 return Err(CommandError::invalid(
                     "target",
-                    "individual package-unit PCB links are unsupported; package aggregation is required (T116)",
+                    "individual package-unit PCB links are unsupported; use a complete explicit package link",
                 ));
             }
             Some(expected.id)
@@ -189,6 +189,10 @@ pub struct SynchronizeSchematicPcb {
 pub struct PcbSyncChange {
     pub sheet_id: ObjectId,
     pub symbol_id: ObjectId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_key: Option<String>,
     pub part_id: ObjectId,
     pub pad_id: Option<ObjectId>,
     pub field: &'static str,
@@ -260,12 +264,6 @@ struct SyncPlan {
 fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate::EventCursor) -> Result<SyncPlan, CommandError> {
     use std::collections::{BTreeMap, BTreeSet};
     validate_sync_project(project)?;
-    if project.schematic.sheets.values().filter_map(|s| s.content.as_ref()).any(|c| !c.packages.is_empty()) {
-        return Err(CommandError::invalid(
-            "project",
-            "multi-unit package PCB synchronization is unsupported; package aggregation is required (T116)",
-        ));
-    }
     let graph = crate::schematic_connectivity::project_schematic_connectivity(project, cursor)?;
     let mut pin_nets = BTreeMap::new();
     let mut nets = Vec::new();
@@ -282,26 +280,48 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
         .values()
         .flat_map(|sheet| sheet.content.iter().flat_map(move |c| c.symbols.values().map(move |symbol| (symbol.id, (sheet.id, symbol)))))
         .collect();
-    let linked: BTreeSet<_> = project.board.parts.values().filter_map(|p| p.schematic_symbol).collect();
+    // Resolve complete identities before the preserving project copy. The borrowed
+    // project budget above bounds every member and string used by this plan.
+    let mut sources = BTreeMap::new();
+    for part in project.board.parts.values() {
+        if let Some(source) = crate::package_component::component_source(project, part)? {
+            sources.insert(part.id, source);
+        }
+    }
+    let linked: BTreeSet<_> = sources.values().flat_map(|s| s.members.iter().map(|(_, symbol)| symbol.id)).collect();
     let unlinked_symbols = symbols.keys().filter(|id| !linked.contains(*id)).copied().collect();
-    let unlinked_parts = project.board.parts.values().filter(|p| p.schematic_symbol.is_none()).map(|p| p.id).collect();
+    let unlinked_parts =
+        project.board.parts.values().filter(|p| p.schematic_symbol.is_none() && p.schematic_package.is_none()).map(|p| p.id).collect();
     let copper_nets: BTreeSet<_> =
         project.board.tracks.values().filter_map(|t| t.net.as_deref()).chain(project.board.vias.values().filter_map(|v| v.net.as_deref())).collect();
     let mut after = project.clone();
     let mut changes = Vec::new();
     for part in project.board.parts.values() {
-        let Some(symbol_id) = part.schematic_symbol else { continue };
-        let (sheet_id, symbol) = symbols.get(&symbol_id).ok_or_else(|| {
-            CommandError::conflict(format!("part {} has an unresolved symbol link {}; unlink or resolve explicitly", part.id, symbol_id))
-        })?;
-        let mut record = |field, pad_id, before: Option<String>, value: Option<String>| {
+        let Some(source) = sources.get(&part.id) else { continue };
+        let shared = source.members[0].1;
+        let mut record = |symbol: &SchematicSymbol,
+                          unit: Option<&viamind_doc::symbol_package::PackageUnit>,
+                          field,
+                          pad_id,
+                          before: Option<String>,
+                          value: Option<String>| {
             if before != value {
-                changes.push(PcbSyncChange { sheet_id: *sheet_id, symbol_id, part_id: part.id, pad_id, field, before, after: value });
+                changes.push(PcbSyncChange {
+                    sheet_id: source.sheet_id,
+                    symbol_id: symbol.id,
+                    package_id: source.package_id,
+                    unit_key: unit.map(|u| u.key.clone()),
+                    part_id: part.id,
+                    pad_id,
+                    field,
+                    before,
+                    after: value,
+                });
             }
         };
         match direction {
             PcbSyncDirection::Forward => {
-                if symbol.footprint.as_ref().is_some_and(|f| f != &part.footprint) {
+                if shared.footprint.as_ref().is_some_and(|f| f != &part.footprint) {
                     return Err(CommandError::conflict(format!(
                         "part {} footprint assignment differs; explicitly apply matching geometry before synchronizing",
                         part.id
@@ -311,19 +331,25 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
                     .pads
                     .as_ref()
                     .ok_or_else(|| CommandError::conflict(format!("part {} requires explicit numbered pads before forward annotation", part.id)))?;
-                let pin_numbers: BTreeSet<_> = symbol.pins.iter().map(|p| &p.number).collect();
-                let pad_numbers: BTreeSet<_> = pads.0.iter().map(|p| &p.number).collect();
-                if pin_numbers != pad_numbers || pin_numbers.len() != symbol.pins.len() || pad_numbers.len() != pads.0.len() {
-                    return Err(CommandError::conflict(format!("part {} requires an exact unambiguous pin/pad-number bijection", part.id)));
+                let pins: BTreeMap<_, _> = source
+                    .members
+                    .iter()
+                    .flat_map(|(unit, symbol)| symbol.pins.iter().map(move |pin| (pin.number.as_str(), (*unit, *symbol, pin))))
+                    .collect();
+                let pin_count: usize = source.members.iter().map(|(_, s)| s.pins.len()).sum();
+                let pad_numbers: BTreeSet<_> = pads.0.iter().map(|p| p.number.as_str()).collect();
+                if pins.keys().copied().collect::<BTreeSet<_>>() != pad_numbers || pins.len() != pin_count || pad_numbers.len() != pads.0.len() {
+                    return Err(CommandError::conflict(format!("part {} requires an exact complete unambiguous pin/pad-number bijection", part.id)));
                 }
                 let target = after.board.parts.get_mut(&part.id).expect("captured part");
-                record("designator", None, Some(part.designator.clone()), Some(symbol.designator.clone()));
-                record("value", None, Some(part.value.clone()), Some(symbol.value.clone()));
-                target.designator = symbol.designator.clone();
-                target.value = symbol.value.clone();
+                record(shared, source.members[0].0, "designator", None, Some(part.designator.clone()), Some(shared.designator.clone()));
+                record(shared, source.members[0].0, "value", None, Some(part.value.clone()), Some(shared.value.clone()));
+                target.designator = shared.designator.clone();
+                target.value = shared.value.clone();
                 for pad in &mut target.pads.as_mut().expect("explicit pads").0 {
-                    let pin = symbol.pins.iter().find(|p| p.number == pad.number).expect("bijective pin numbers");
-                    let net = pin_nets.get(&(*sheet_id, pin.id)).ok_or_else(|| CommandError::invalid("graph", "pin omitted from complete graph"))?;
+                    let (unit, symbol, pin) = pins[pad.number.as_str()];
+                    let net =
+                        pin_nets.get(&(source.sheet_id, pin.id)).ok_or_else(|| CommandError::invalid("graph", "pin omitted from complete graph"))?;
                     let value = Some(net.clone());
                     if pad.net != value && (pad.net.as_deref().is_some_and(|n| copper_nets.contains(n)) || copper_nets.contains(net.as_str())) {
                         return Err(CommandError::conflict(format!(
@@ -331,28 +357,30 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
                             pad.id
                         )));
                     }
-                    record("pad_net", Some(pad.id), pad.net.clone(), value.clone());
+                    record(symbol, unit, "pad_net", Some(pad.id), pad.net.clone(), value.clone());
                     pad.net = value;
                 }
             }
             PcbSyncDirection::Back => {
-                let target = after
-                    .schematic
-                    .sheets
-                    .get_mut(sheet_id)
-                    .expect("captured sheet")
-                    .content
-                    .as_mut()
-                    .expect("captured content")
-                    .symbols
-                    .get_mut(&symbol_id)
-                    .expect("captured symbol");
-                record("designator", None, Some(symbol.designator.clone()), Some(part.designator.clone()));
-                record("value", None, Some(symbol.value.clone()), Some(part.value.clone()));
-                record("footprint", None, symbol.footprint.clone(), Some(part.footprint.clone()));
-                target.designator = part.designator.clone();
-                target.value = part.value.clone();
-                target.footprint = Some(part.footprint.clone());
+                for (unit, symbol) in &source.members {
+                    let target = after
+                        .schematic
+                        .sheets
+                        .get_mut(&source.sheet_id)
+                        .expect("captured sheet")
+                        .content
+                        .as_mut()
+                        .expect("captured content")
+                        .symbols
+                        .get_mut(&symbol.id)
+                        .expect("captured symbol");
+                    record(symbol, *unit, "designator", None, Some(symbol.designator.clone()), Some(part.designator.clone()));
+                    record(symbol, *unit, "value", None, Some(symbol.value.clone()), Some(part.value.clone()));
+                    record(symbol, *unit, "footprint", None, symbol.footprint.clone(), Some(part.footprint.clone()));
+                    target.designator = part.designator.clone();
+                    target.value = part.value.clone();
+                    target.footprint = Some(part.footprint.clone());
+                }
             }
         }
     }
@@ -367,7 +395,7 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
 }
 impl Command for SynchronizeSchematicPcb {
     const NAME: &'static str = "synchronize_schematic_pcb";
-    const DESCRIPTION: &'static str = "Apply a bounded exact-project/cursor guarded schematic-PCB synchronization preview. Forward copies linked references/values and exact graph pin-to-pad nets; back copies linked references/values/footprint assignments. Stable UUID links, explicit pin/pad bijection, geometry and copper preserved. Missing links, mismatched footprints, collisions, routed-net reassignment or stale stream/sequence reject atomically. Unlinked objects unchanged. No creation/deletion/hierarchy/reverse topology. One shared undo transaction.";
+    const DESCRIPTION: &'static str = "Apply a bounded exact-project/cursor guarded schematic-PCB synchronization preview. Forward copies linked references/values and actual graph pin-to-pad nets across each complete explicit package; back copies references/values/footprint assignments to every linked package unit or ordinary symbol. Stable UUID links, explicit pin/pad bijection, geometry and copper preserved. Missing links, mismatched footprints, collisions, routed-net reassignment or stale stream/sequence reject atomically. Unlinked objects unchanged. No creation/deletion/hierarchy/reverse topology. One shared undo transaction.";
     fn expected_cursor(&self) -> Option<crate::EventCursor> {
         Some(self.source_cursor)
     }

@@ -40,7 +40,7 @@ impl CrossProbeUi {
                     r.components
                         .iter()
                         .filter(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable)
-                        .filter_map(|row| row.symbol_id)
+                        .flat_map(|row| row.symbol_id.into_iter().chain(row.package_units.iter().filter(|u| u.navigable).map(|u| u.symbol_id)))
                         .collect()
                 })
                 .unwrap_or_default()
@@ -88,7 +88,11 @@ impl CrossProbeUi {
     pub(crate) fn symbol_highlighted(&self, id: ObjectId) -> bool {
         self.current.as_ref().is_some_and(|c| !c.schematic_source)
             && self.result.as_ref().is_some_and(|r| {
-                r.components.iter().any(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable && row.symbol_id == Some(id))
+                r.components.iter().any(|row| {
+                    row.status == ComponentLinkStatus::Linked
+                        && row.schematic_navigable
+                        && (row.symbol_id == Some(id) || row.package_units.iter().any(|u| u.symbol_id == id && u.navigable))
+                })
             })
     }
 }
@@ -213,6 +217,7 @@ impl ViamindApp {
                         } else {
                             ui.label(match row.status {
                                 ComponentLinkStatus::UnresolvedSymbol => "Linked symbol is missing; resolve or unlink explicitly.",
+                                ComponentLinkStatus::UnresolvedPackage => "Linked package is missing; resolve or unlink explicitly.",
                                 _ => "Component is unlinked; establish a stable link through synchronization.",
                             });
                         }
@@ -266,7 +271,9 @@ impl ViamindApp {
         let target = current
             .components
             .iter()
-            .find(|r| r.part_id == row.part_id && r.symbol_id == row.symbol_id && r.status == ComponentLinkStatus::Linked)
+            .find(|r| {
+                r.part_id == row.part_id && r.symbol_id == row.symbol_id && r.package_id == row.package_id && r.status == ComponentLinkStatus::Linked
+            })
             .ok_or("Component link changed; select the source again.")?;
         if schematic_source {
             if !target.board_navigable {

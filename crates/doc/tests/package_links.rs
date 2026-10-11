@@ -35,7 +35,9 @@ fn unresolved_package_identity_is_preserved_at_twelve_and_absence_preserves_old_
     assert_eq!(file::minimum_version(&project), 5);
     assert!(!old.contains("schematic_package"));
     assert_eq!(file::from_str(&old).unwrap(), project);
-    let fixture = include_str!("../../../fixtures/schematic/linked-regulator.viamind.json");
+    // Canonical bytes produced by retained pre-package-link production source3ec6ccb,
+    // not the authored input fixture's intentionally independent field order.
+    let fixture = include_str!("../../../fixtures/schematic/linked-regulator-canonical.viamind.json");
     assert_eq!(file::to_string(&file::from_str(fixture).unwrap()), fixture, "old symbol-link native bytes stay exact");
 }
 

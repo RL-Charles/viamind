@@ -16,6 +16,32 @@ pub(crate) struct PackageSource<'a> {
     pub package: &'a SchematicPackage,
     pub members: Vec<(&'a PackageUnit, &'a SchematicSymbol)>,
 }
+pub(crate) struct ComponentSource<'a> {
+    pub sheet_id: ObjectId,
+    pub package_id: Option<ObjectId>,
+    pub members: Vec<(Option<&'a PackageUnit>, &'a SchematicSymbol)>,
+}
+pub(crate) fn component_source<'a>(project: &'a Project, part: &Part) -> Result<Option<ComponentSource<'a>>, CommandError> {
+    part.validate_schematic_links().map_err(|e| CommandError::invalid("part", e))?;
+    if let Some(id) = part.schematic_package {
+        let source = package_source(project, id)?;
+        return Ok(Some(ComponentSource {
+            sheet_id: source.sheet_id,
+            package_id: Some(id),
+            members: source.members.into_iter().map(|(u, s)| (Some(u), s)).collect(),
+        }));
+    }
+    if let Some(id) = part.schematic_symbol {
+        let (sheet_id, symbol) = project
+            .schematic
+            .sheets
+            .values()
+            .find_map(|s| s.content.as_ref()?.symbols.get(&id).map(|symbol| (s.id, symbol)))
+            .ok_or_else(|| CommandError::conflict(format!("part {} has unresolved symbol link {id}; resolve or explicitly unlink", part.id)))?;
+        return Ok(Some(ComponentSource { sheet_id, package_id: None, members: vec![(None, symbol)] }));
+    }
+    Ok(None)
+}
 pub(crate) fn package_source(project: &Project, id: ObjectId) -> Result<PackageSource<'_>, CommandError> {
     let (sheet, content, package) = project
         .schematic

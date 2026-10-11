@@ -60,7 +60,7 @@ pub mod footprint;
 pub mod handle;
 pub mod log;
 pub mod pads;
-pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent};
+pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent, LinkedPackageUnit};
 mod pcb_sync;
 mod schematic_component;
 pub use pcb_sync::{

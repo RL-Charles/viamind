@@ -211,3 +211,110 @@ fn explicit_package_unlink_relink_preserves_geometry_nets_and_requires_original_
     assert_eq!(e.read(Clone::clone), before.project);
     assert!(e.preview_package_pcb_component(request(&e)).is_err(), "second physical owner rejected");
 }
+
+#[test]
+fn every_unit_and_package_query_resolves_one_owner_and_all_actual_transformed_pin_pad_pairs() {
+    use viamind_engine::{ComponentLinkQuery, ComponentLinkStatus, PinPadCoverage, PinPadLinkQuery};
+    let e = fixture();
+    let input = request(&e);
+    let command = e.preview_package_pcb_component(input.clone()).unwrap().command;
+    let id = e.execute_typed(command, Origin::User).unwrap().created[0];
+    let before = e.session_state();
+    let all = e.query_linked_components(&ComponentLinkQuery::default()).unwrap();
+    assert_eq!(all.total, 1, "five units share one physical row");
+    let row = &all.components[0];
+    assert_eq!(row.status, ComponentLinkStatus::Linked);
+    assert_eq!(row.symbol_id, None, "package identity never substitutes a representative unit");
+    assert_eq!(row.package_id, Some(input.placement.package_id));
+    assert_eq!(row.package_units.iter().map(|u| u.key.as_str()).collect::<Vec<_>>(), ["A", "B", "C", "D", "P"]);
+    for component_id in [id, input.placement.package_id].into_iter().chain(row.package_units.iter().map(|u| u.symbol_id)) {
+        let result = e.query_linked_components(&ComponentLinkQuery { object_ids: vec![component_id], ..Default::default() }).unwrap();
+        assert!(result.unknown_ids.is_empty());
+        assert_eq!(serde_json::to_value(&result.components).unwrap(), serde_json::to_value(&all.components).unwrap());
+        let terminals = e.query_linked_pin_pads(&PinPadLinkQuery { component_id, offset: 0, limit: Some(100) }).unwrap();
+        assert_eq!(terminals.coverage, PinPadCoverage::Linked);
+        assert_eq!(terminals.total, 14);
+        for terminal in &terminals.terminals {
+            assert_eq!(terminal.package_id, row.package_id);
+            assert!(terminal.navigable, "{:?}", terminal.unsupported_reasons);
+            let n = terminal.number.parse::<i64>().unwrap();
+            assert_eq!(terminal.board_position, Some(Point::new(Nm(40_000_258), Nm(30_000_003 + 2_000_000 * n))));
+            e.read(|p| {
+                let content = p.schematic.sheets[&terminal.sheet_id.unwrap()].content.as_ref().unwrap();
+                let symbol = &content.symbols[&terminal.symbol_id.unwrap()];
+                let pin = symbol.pins.iter().find(|p| Some(p.id) == terminal.pin_id).unwrap();
+                let transformed = symbol.pin_position(pin.position).unwrap();
+                assert_eq!(terminal.schematic_position, Some(Point::new(transformed.x, transformed.y)));
+                assert_eq!(
+                    terminal.unit_key.as_ref().unwrap(),
+                    &content.packages[&input.placement.package_id].units.iter().find(|u| u.symbol_id == symbol.id).unwrap().key
+                );
+            });
+        }
+    }
+    assert_eq!(e.session_state(), before);
+}
+
+#[test]
+fn complete_package_forward_and_back_are_atomic_preserve_geometry_metadata_and_member_identity() {
+    use viamind_engine::PcbSyncDirection;
+    let creator = fixture();
+    let command = creator.preview_package_pcb_component(request(&creator)).unwrap().command;
+    let id = creator.execute_typed(command, Origin::User).unwrap().created[0];
+    let mut project = creator.read(Clone::clone);
+    let part = project.board.parts.get_mut(&id).unwrap();
+    part.designator = "PCB9".into();
+    part.value = "Physical value".into();
+    part.assembly = Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("Explicit user provenance".into()), ..Default::default() }));
+    for pad in &mut part.pads.as_mut().unwrap().0 {
+        pad.net = None;
+    }
+    for sheet in project.schematic.sheets.values_mut() {
+        for symbol in sheet.content.iter_mut().flat_map(|c| c.symbols.values_mut()) {
+            symbol.footprint = None;
+        }
+    }
+    let e = EngineHandle::new(project.clone());
+    let before = e.session_state();
+    let forward = e.preview_schematic_pcb_sync(PcbSyncDirection::Forward).unwrap();
+    assert!(forward.unlinked_symbols.is_empty());
+    assert!(forward.unlinked_parts.is_empty());
+    assert_eq!(forward.changes.iter().filter(|c| c.field == "pad_net").count(), 14);
+    assert!(forward.changes.iter().all(|c| c.package_id == project.board.parts[&id].schematic_package && c.unit_key.is_some()));
+    assert_eq!(e.session_state(), before, "preview immutable");
+    e.execute_typed(forward.command, Origin::agent("forward")).unwrap();
+    let after = e.read(Clone::clone);
+    let mut normalized = after.clone();
+    normalized.board.parts.get_mut(&id).unwrap().designator = "PCB9".into();
+    normalized.board.parts.get_mut(&id).unwrap().value = "Physical value".into();
+    for pad in &mut normalized.board.parts.get_mut(&id).unwrap().pads.as_mut().unwrap().0 {
+        pad.net = None;
+    }
+    assert_eq!(normalized, project, "only declared forward fields change");
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), project);
+    let back = e.preview_schematic_pcb_sync(PcbSyncDirection::Back).unwrap();
+    assert_eq!(back.changes.len(), 15, "three shared fields in every one of five units");
+    assert_eq!(back.changes.iter().filter_map(|c| c.unit_key.as_deref()).collect::<BTreeSet<_>>(), BTreeSet::from(["A", "B", "C", "D", "P"]));
+    e.execute_typed(back.command, Origin::User).unwrap();
+    let back_after = e.read(Clone::clone);
+    assert_eq!(back_after.board, project.board);
+    let original_content = project.schematic.sheets.values().next().unwrap().content.as_ref().unwrap();
+    let actual_content = back_after.schematic.sheets.values().next().unwrap().content.as_ref().unwrap();
+    assert_eq!(actual_content.packages, original_content.packages);
+    for symbol in actual_content.symbols.values() {
+        let mut normalized = symbol.clone();
+        assert_eq!(
+            (symbol.designator.as_str(), symbol.value.as_str(), symbol.footprint.as_deref()),
+            ("PCB9", "Physical value", Some("Authored-14pad"))
+        );
+        normalized.designator = "U1".into();
+        normalized.value = "Authored fourteen pins".into();
+        normalized.footprint = None;
+        assert_eq!(normalized, original_content.symbols[&symbol.id]);
+    }
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), project);
+    e.redo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), back_after);
+}

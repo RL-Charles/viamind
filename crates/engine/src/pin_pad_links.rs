@@ -31,6 +31,14 @@ pub struct LinkedPinPad {
     pub number: String,
     pub pin_name: Option<String>,
     pub pin_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_key: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub symbol_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sheet_id: Option<ObjectId>,
     pub pad_id: Option<ObjectId>,
     pub schematic_position: Option<Point>,
     pub board_position: Option<Point>,
@@ -176,14 +184,24 @@ impl EngineHandle {
             .components
             .into_iter()
             .next()
-            .ok_or_else(|| invalid("component_id must identify an existing board part or schematic symbol"))?;
+            .ok_or_else(|| invalid("component_id must identify an existing board part, package or schematic unit"))?;
             let part = component.part_id.and_then(|id| project.board.parts.get(&id));
             let symbol = component
                 .sheet_id
                 .and_then(|id| project.schematic.sheets.get(&id))
                 .and_then(|s| s.content.as_ref())
                 .and_then(|c| component.symbol_id.and_then(|id| c.symbols.get(&id)));
-            let pins: BTreeMap<_, _> = symbol.into_iter().flat_map(|s| &s.pins).map(|p| (p.number.as_str(), p)).collect();
+            let source = if let Some(part) = part {
+                // Missing stable links are reported as unresolved coverage by mapping.
+                if component.status == ComponentLinkStatus::Linked { crate::package_component::component_source(project, part)? } else { None }
+            } else {
+                None
+            };
+            let pins: BTreeMap<_, _> = if let Some(source) = &source {
+                source.members.iter().flat_map(|(u, s)| s.pins.iter().map(move |p| (p.number.as_str(), (*u, *s, p)))).collect()
+            } else {
+                symbol.into_iter().flat_map(|s| s.pins.iter().map(move |p| (p.number.as_str(), (None, s, p)))).collect()
+            };
             let pads: BTreeMap<_, _> = part.and_then(|p| p.pads.as_ref()).into_iter().flat_map(|p| &p.0).map(|p| (p.number.as_str(), p)).collect();
             let coverage = if component.status != ComponentLinkStatus::Linked {
                 PinPadCoverage::Unlinked
@@ -205,7 +223,8 @@ impl EngineHandle {
                 .skip(start)
                 .take(end - start)
                 .map(|number| {
-                    let pin = pins.get(number).copied();
+                    let provenance = pins.get(number).copied();
+                    let pin = provenance.map(|(_, _, p)| p);
                     let pad = pads.get(number).copied();
                     let mut reasons = Vec::new();
                     if coverage != PinPadCoverage::Linked {
@@ -218,7 +237,7 @@ impl EngineHandle {
                         reasons.push("No explicit PCB pad has this exact terminal number".into());
                     }
                     let schematic_position = pin.and_then(|pin| {
-                        symbol.and_then(|s| {
+                        provenance.and_then(|(_, s, _)| {
                             if pin.position.validate().is_err() || s.position.validate().is_err() {
                                 return None;
                             }
@@ -249,6 +268,10 @@ impl EngineHandle {
                         number: number.into(),
                         pin_name: pin.map(|p| p.name.clone()),
                         pin_id: pin.map(|p| p.id),
+                        package_id: component.package_id,
+                        unit_key: provenance.and_then(|(u, _, _)| u.map(|u| u.key.clone())),
+                        symbol_id: component.package_id.and_then(|_| provenance.map(|(_, s, _)| s.id)),
+                        sheet_id: component.package_id.and(component.sheet_id),
                         pad_id: pad.map(|p| p.id),
                         schematic_position,
                         board_position,
