@@ -66,9 +66,11 @@ must be exact and reject fractional nanometres, overflow and nonfinite values.
    match the live target; its map key, stored ID and kind must agree.
 2. Validate original/replacement geometry, explicit property ranges and request
    rules before candidate allocation. Replacement widths/diameters/drills obey
-   existing model limits. The target net's document minimum track width, drill
-   diameter and doubled annular-width comparison use the central resolver and
-   max with request baselines. They never resize the requested properties.
+   existing model limits. Track width uses the exact target-net document minimum; existing DrcInput
+   has no track-width baseline. Drill diameter, doubled annular-width
+   comparison and copper clearance use the central resolver with the max of
+   existing request baselines and applicable document minima. They never
+   resize the requested properties.
 3. Refuse an exact no-op with no event/history mutation. Otherwise charge the
    existing 100000 structural-object/2 MiB geometry-text/512-byte label and
    named-rule borrowed snapshot budgets before one board-only geometry copy.
@@ -109,9 +111,10 @@ are not certified. No local geometry is labeled checked before Apply.
 Apply uses the shared command with the captured expected object/full cursor.
 Refusal keeps typed fields and shows an actionable error. A peer edit or
 same-project reopen disables applying the stale capture; explicit Reload
-refreshes the current original/cursor and discards local fields. Cancel/Escape
-or incompatible mode/file transitions discard the local draft without an
-engine command. Closing the property dialog does not delete or replace copper.
+refreshes the current original/cursor and discards local fields. Cancel/Escape discard the local draft without an engine command. Incompatible
+mode/file transitions use the existing busy refusal or centralized draft
+cancellation; they never apply pending properties. Closing the property dialog
+does not delete or replace copper.
 Successful Apply refreshes the retained observation to the exact committed
 object/cursor and reports scoped success; no second history event is added.
 
