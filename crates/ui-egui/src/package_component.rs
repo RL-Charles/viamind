@@ -426,7 +426,21 @@ mod tests {
         h.hover_at(rect.center());
         h.run_steps(2);
         let rect = h.get_by_label(label).rect();
-        eprintln!("REVEAL {label}: {rect:?}");
+        if label == "Link or unlink an existing physical component" {
+            // Collapsing headers paint text and an arrow; they have no rectangular
+            // background matching the accessibility label's bounds.
+            let (text_rect, clip) = h
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Text(text) = &shape.shape else { return None };
+                    (text.galley.job.text == label).then_some((text.visual_bounding_rect(), shape.clip_rect.intersect(h.ctx.content_rect())))
+                })
+                .expect("painted collapsing header text");
+            assert!(clip.contains_rect(text_rect), "{label}: {text_rect:?} clipped by {clip:?}");
+            return;
+        }
         let clip = h
             .output()
             .shapes
