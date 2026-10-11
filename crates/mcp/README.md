@@ -786,4 +786,22 @@ deterministically paged package/unit/symbol/pin identities, numbers, electrical
 types and exact transformed endpoints. Load/query are read-only observations;
 startup read-only mode refuses all three writers. No hidden/common pin joins or
 physical PCB package equivalence are inferred. The [workflow guide](../../docs/multi-unit-symbol-packages.md)
-explains bounds, native feature 11 and separately tracked annotation/PCB work.
+explains bounds and native feature 11. Whole-package reference annotation is
+available through the tools below; package-to-PCB aggregation is separate work.
+
+
+### Whole-package reference annotation
+
+`preview_schematic_annotation` assigns one reference owner to each ordinary
+symbol or complete explicit native package. All unit references in a package
+change together, including its explicit power unit. Use the returned exact
+`annotate_schematic` command with its complete expected sheet map and full source
+cursor; stale streams, sequence or sheets refuse without partial edits.
+Legacy ungrouped callers may omit the cursor.
+
+Bounds are 100 sheets, 2000 symbols, 10000 combined structural rows/pins/package
+members, 256 KiB known text, 2 MiB expected sheets and a separate 2 MiB + 8 KiB
+whole-command envelope. No inferred aliases, PCB synchronization or hierarchy.
+Desktop Annotate symbols exposes the same Prepare/Apply/Cancel workflow.
+See [behavior spec](../../docs/specs/package-aware-annotation.md) and
+[verification](../../docs/package-aware-annotation-verification.md).

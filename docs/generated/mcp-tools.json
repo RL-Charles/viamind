@@ -198,11 +198,36 @@
       "name": "add_via"
     },
     {
-      "description": "Atomically assign native flat single-unit symbol reference designators using the exact project UUID and complete expected sheet map from preview_schematic_annotation. Optional complete sheet order (default UUID), X/Y position order, inclusive start 1..999999999, keep_existing or reset_all. ASCII-letter prefixes 1..16; positive numeric/?/empty suffix. Keep existing numeric aliases must be unique ignoring prefix case/leading zeros. Bounded 100 sheets/2000 symbols/10000 members/256KiB text/2MiB guard. Preserves UUIDs, pins, geometry and board; one sheet-scoped undo transaction. Stale sheets reject. No PCB synchronization/hierarchy/multi-unit annotation.",
+      "description": "Atomically assign native flat single-unit and explicit whole-package reference designators using the exact project UUID and complete expected sheet map from preview_schematic_annotation. Optional complete sheet order (default UUID), X/Y position order, inclusive start 1..999999999, keep_existing or reset_all. ASCII-letter prefixes 1..16; positive numeric/?/empty suffix. Keep existing numeric aliases must be unique ignoring prefix case/leading zeros. Bounded 100 sheets/2000 symbols/10000 combined rows, pins, packages and members/256KiB text/2MiB expected_sheets/2MiB+8KiB whole-command envelope. Preserves UUIDs, pins, geometry and board; one sheet-scoped undo transaction. New previews include a full cursor; packages require it. Stale cursor or sheets reject. One reference per explicit package owner; all member units change atomically. No PCB synchronization/hierarchy.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false,
         "properties": {
+          "expected_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "expected_project": {
             "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
             "format": "uuid",
@@ -6419,7 +6444,7 @@
       "name": "open_project"
     },
     {
-      "description": "Place a complete explicit native multi-unit package on one sheet atomically. Requires exact project UUID/full source_cursor/expected sheet from snapshot_symbol_sheet, explicit unique shared designator and exactly one pose per template unit key. Detached template2..32 units/1..1024 total explicit distinct pins/256KiB text. Integer Nm, cardinal0..3 turns/local X mirror; exact transformed endpoints and doubled-Nm corners bounded ±10000mm before copies/UUIDs. Generates fresh package/symbol/pin identities; one Sheet delta/undo/redo. Selected/global copied object/text budgets apply. No partial package, inferred annotation, hidden power connection or PCB aggregation; those operations refuse grouped projects explicitly.",
+      "description": "Place a complete explicit native multi-unit package on one sheet atomically. Requires exact project UUID/full source_cursor/expected sheet from snapshot_symbol_sheet, explicit unique shared designator and exactly one pose per template unit key. Detached template2..32 units/1..1024 total explicit distinct pins/256KiB text. Integer Nm, cardinal0..3 turns/local X mirror; exact transformed endpoints and doubled-Nm corners bounded ±10000mm before copies/UUIDs. Generates fresh package/symbol/pin identities; one Sheet delta/undo/redo. Selected/global copied object/text budgets apply. No partial package, inferred annotation or hidden power connection. Use preview_schematic_annotation/annotate_schematic for explicit whole-package references. PCB aggregation and individual-unit PCB operations remain unsupported.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false,
@@ -8119,7 +8144,7 @@
       "name": "preview_pcb_import"
     },
     {
-      "description": "Read-only bounded flat schematic annotation preview. Returns changes and exact guarded annotate_schematic command input. Explicit complete sheet_order or UUID default; x_then_y/y_then_x, keep_existing/reset_all, inclusive start1..999999999. Does not alter history, dirty, selection or events. Reprepare if schematic changes; no PCB synchronization.",
+      "description": "Read-only bounded flat schematic annotation preview, including explicit whole packages as single reference owners. Returns actual symbol/unit and package counts, per-member changes and exact full-cursor guarded annotate_schematic command input. Explicit complete sheet_order or UUID default; x_then_y/y_then_x, keep_existing/reset_all, inclusive start1..999999999. Does not alter history, dirty, selection or events. Reprepare if full session cursor changes. One number per explicit package; no suffix inference or PCB synchronization.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false,

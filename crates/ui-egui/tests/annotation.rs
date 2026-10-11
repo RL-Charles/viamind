@@ -79,5 +79,8 @@ fn stale_preview_invalid_options_and_same_project_reopen_preserve_session() {
     e.open_project(viamind_engine::OpenProject { path, discard_dirty: false, expected_cursor: None }, Origin::agent("other")).unwrap();
     h.run_steps(5);
     assert!(h.query_by_label("Apply annotation").is_none());
+    assert!(h.query_by_label("Annotation starting number").is_none());
+    click(&mut h, "Annotate symbols");
     assert!(h.query_by_label("Annotation starting number").is_some());
+    assert!(h.query_by_label("Apply annotation").is_some());
 }

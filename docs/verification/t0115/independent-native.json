@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "annotation-wide",
+      "rgb_samples_equal": true,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "viewed_readable": true
+    },
+    {
+      "name": "annotation-compact",
+      "rgb_samples_equal": true,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "viewed_readable": true
+    }
+  ]
+}

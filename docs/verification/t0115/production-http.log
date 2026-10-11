@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "source_commit": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+  "binary_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+  "port": 7945,
+  "checks": [
+    "independent clients discover immutable preview and guarded annotation",
+    "both previews exactly agree with complete cursor and unchanged session status",
+    "twelve actual symbols and two packages produce twelve member rows",
+    "first package ordered explicit A B C D P including power unit",
+    "ordinary symbol rows omit package metadata",
+    "both packages each consume one number while singles interleave",
+    "all member identities pins roles keys package maps and board unchanged",
+    "one sheet delta and one design event",
+    "peer reads exact committed whole package project",
+    "stale sequence refuses without changes",
+    "one undo restores all units and original complete project",
+    "one redo restores all units and original identities",
+    "already current package plan has no changes",
+    "no-op creates no event history or status change",
+    "grouped legacy cursor omission refuses",
+    "exact expected sheet still guarded alongside cursor",
+    "malformed excess symbols counted before secondary typed decode",
+    "malformed excess member rows counted before typed decode",
+    "raw package strings charged before secondary typed copy",
+    "unrelated board edit invalidates full cursor despite equal expected sheets",
+    "same UUID reopen replaces stream",
+    "same UUID reopened stream refuses old proposal",
+    "retained package number reserved once with exact original spelling",
+    "whole retained package preserves exact spelling",
+    "numeric alias conflict across distinct owners refuses immutable preview",
+    "native save uses schema11 preserving explicit membership",
+    "old native header rejects package data unchanged",
+    "native roundtrip preserves complete committed project",
+    "final peer and original fixture exactly preserved"
+  ],
+  "latency_ms": {
+    "whole_package_apply": 20.3253229992697
+  },
+  "assertion_count": 29,
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json",
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json"
+  }
+}

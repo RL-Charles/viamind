@@ -1,0 +1,328 @@
+{
+  "ticket": "T-0115",
+  "verified_utc": "2026-10-11T19:33:21.329152+00:00",
+  "spec": "docs/specs/package-aware-annotation.md",
+  "approved_spec_source": "8d9ed98e1149cda0b249cbec888d5d3f6134dbd4",
+  "approved_boundary_clarification": "c22a0c4",
+  "full_linux": {
+    "source": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+    "session": 59228,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 819,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": true,
+    "inspection_build": true,
+    "target": "/home/charlesmowbray/.cache/viamind/build-target",
+    "focused_historical": {
+      "source": "db1d59616a46cf720c701853fa3decfd05844df3",
+      "passed": 30,
+      "note": "All30focused tests passed; strictlint then found one redundant cursor closure. Source272d5d2 changes only that method-reference lint and passes all required gates."
+    }
+  },
+  "production": {
+    "source": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/viamind-full-source",
+    "sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+    "pid": 2463504,
+    "live_exe_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+    "http_port": 7945,
+    "actual_two_client_desktop_http_checks": 29,
+    "read_only_headless_checks": 7,
+    "latency_ms": {
+      "whole_package_apply": 20.3253229992697
+    },
+    "latency_scope": "One12-unit/two-package authored fixture HTTP Apply under actual current load; no worst-case or large-project bound claim.",
+    "final_owned_fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json"
+  },
+  "inspection": {
+    "source": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/package-annotation-inspection-full-source",
+    "sha256": "a794fef85b8f687b07bce2058b105e2a371083e3053b51e7552ecbe51e7f91d8",
+    "scope": "Actual production ViamindApp option/text/button preparation and shared immutable preview, native WGPU Screenshot. Exact labeled button ID/read_response native bounds; fullsession/status eachUIpass; create_new/fsync/selfclose. OriginalColor32RGBA retainedP7; reviewPNG omitsalpha and everyRGB samplematchesP6/P7. Child-onlyX11 environment, logicalfocusoverride onlyhost; noOSinput/compositor/cadence claim."
+  },
+  "native_captures": [
+    {
+      "name": "annotation-wide",
+      "png": "annotation-wide.png",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "rgb_sha256": "d38f0ec29fddf95ae97fc8d3ef996e41acb24585630764ebd0e7596fa03e7d3f",
+      "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-wide.p6",
+      "p6_sha256": "63f6ec7fb5eb240082b0449962c319417795feacc95d0adba34685150982bff9",
+      "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-wide.p7",
+      "p7_sha256": "3dedbc555b88b1d08b60b287e109acbc8bd3696fd2f9d52b1a1679068a056e19",
+      "rgba_sha256": "b413a2194b4ac90731a328d7387afc77dcd40c9b2bdc8a0566544b26ded3ec60",
+      "rgba_bytes": 17783556,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 6384,
+      "all_rgba_bytes_retained": true,
+      "every_rgb_sample_matches_png": true,
+      "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+    },
+    {
+      "name": "annotation-compact",
+      "png": "annotation-compact.png",
+      "pixels": [
+        1067,
+        667
+      ],
+      "rgb_sha256": "a8b334c107b69c9f3fabdfaa26fc6a428032c042e705b550466d76bdea1a4549",
+      "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p6",
+      "p6_sha256": "27193ebe7e5d91b2fea0f2c394b92075d0c2ff48b73123e1fcd3a612091b3fa9",
+      "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p7",
+      "p7_sha256": "db380d0a351108500a6984bfed6bfc46e656467e03095c7aa6779658639c2a7b",
+      "rgba_sha256": "581a3bf6c908bae342f0cbbdb7651466a3b676ba2a640873d855b59642459ba0",
+      "rgba_bytes": 2846756,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1276,
+      "all_rgba_bytes_retained": true,
+      "every_rgb_sample_matches_png": true,
+      "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+    }
+  ],
+  "historical_failures": [
+    {
+      "log": "focused-final.log",
+      "reason": "New previews intentionally carry strict cursor. Old ungrouped compatibility test corrected to explicitly omit cursor; production contract unchanged."
+    },
+    {
+      "log": "focused-final2.log",
+      "reason": "Authored fixture incorrectly gave multiple owners identical U?. Native uniqueness correctly refused; fixture corrected to unique unnumbered U?,u?,U,u without weakening validators."
+    },
+    {
+      "log": "focused-final3.log",
+      "reason": "Engine/bounds/MCP passed; UI test missing NodeT trait import. Corrected test import."
+    },
+    {
+      "log": "full-final.log",
+      "reason": "All30focused checks pass; strictlint redundant cursor closure then corrected with direct existing method reference."
+    }
+  ],
+  "integration": {
+    "stack_base": "95faf8245a65d05cb2ef0c01ef38cdb3e374e020",
+    "parent_ticket": "T-0114",
+    "source": "14ba5353c75c7ccdd037bdebf48d3e99cbe703aa",
+    "final_transplant": "Own13commits only;12range-diff equal, one drops inherited identical Option type annotation already upstream. Additive integration prose corrections only.",
+    "gate_session": 35811,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_checks": 38,
+    "workspace_build": true,
+    "combined_binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/viamind-combined",
+    "combined_binary_sha256": "5385a45f3fe7527cbfa39b0d0c07d82e227cd82cd8d51d105fb2dbd9e75c9312",
+    "actual_tool_catalog": {
+      "tool_count": 109,
+      "generated_and_exact_checked": true,
+      "report": "docs/verification/t0115/combined-catalog.json"
+    },
+    "isolated_agent_workflow_checks": 18,
+    "exact_head_ci": "pending final integration/artifact head",
+    "scope": "Final combined source tested by scoped gate; original819full Linux and actual/native proofs remain historical272d5d2 and are not relabeled."
+  },
+  "limits": [
+    "Annotation validates the existing schematic identity namespace seeded by project ID, without rechecking unrelated PCB identity or cloning unused assembly data.",
+    "100sheets/2000symbols/10000combined schematic structural rows,pins,package members/256KiB knowntext/2MiB expected_sheets plus separate2MiB+8KiB command envelope. Rawtransport Value decoding precedes secondary typed admission.",
+    "Explicit flat packages only; no hierarchy, inferred electrical joins, PCB synchronization or package aggregation. Package PCB workflow remains separate T116.",
+    "Native inspection is distinct from actual production HTTP; historical artifact source is immutable and not relabeled as final integration. Strict native100k60fps acceptance remains open."
+  ],
+  "artifacts": [
+    {
+      "path": "docs/verification/t0115/annotation-compact-launch.json",
+      "bytes": 605,
+      "sha256": "f80f3e3ed8cf9745a684abaa76bdbdfb76043f5c75c4bcfc0f006f0832821d93"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-compact-provenance.json",
+      "bytes": 2260,
+      "sha256": "0945f9e14b03c7063999c699e2a802be7d7797aa7d0b6dcac6165ec4febbbb7a"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-compact-runtime.log",
+      "bytes": 1134,
+      "sha256": "ed458db48f3fd1a686c2a01765e4466bcd546424dae7bf8513587d7206e7a8ae"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-compact.png",
+      "bytes": 112183,
+      "sha256": "5e572f9f5334ac3c269e88728c5e91435982bac95c2c621fa027ac2139ce39d3"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-wide-launch.json",
+      "bytes": 604,
+      "sha256": "7b846506f419dd213808aa9b8067372f57b14ac53ab830ab4401ea189f8f39f2"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-wide-provenance.json",
+      "bytes": 2274,
+      "sha256": "30277bec0bd8cde080405cdd54dcb46293565cd637ad924d354bf371e14152ba"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-wide-runtime.log",
+      "bytes": 1149,
+      "sha256": "e232df44c8e808154c0a63f3b100b61a4cc39d4c6353535dcfe4db276aa14a75"
+    },
+    {
+      "path": "docs/verification/t0115/annotation-wide.png",
+      "bytes": 224634,
+      "sha256": "318857d8b3f01dfc016054b635d526e0b3f6c60b400a43a23b22f10bbd53ff1d"
+    },
+    {
+      "path": "docs/verification/t0115/capture-conversion.json",
+      "bytes": 2021,
+      "sha256": "fe374e62e81519704961ceed7225ff6e921e2b05008896f44149f010a60f8a75"
+    },
+    {
+      "path": "docs/verification/t0115/capture-native.py",
+      "bytes": 2222,
+      "sha256": "4c92e85cd9b43d9fd1965eba0ae8d40aebb6e80e8036d855b98ded99a28ea357"
+    },
+    {
+      "path": "docs/verification/t0115/client.py",
+      "bytes": 1391,
+      "sha256": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6"
+    },
+    {
+      "path": "docs/verification/t0115/combined-catalog.json",
+      "bytes": 368,
+      "sha256": "243f030536fba9858e3759804feb11ce6a4e6302224067b56d8b6552c99ae3c8"
+    },
+    {
+      "path": "docs/verification/t0115/combined-source.txt",
+      "bytes": 41,
+      "sha256": "5cd68bf7912e28010df63e9f58e5943043bc4bae531c85f4da96b4e161561467"
+    },
+    {
+      "path": "docs/verification/t0115/combined.log",
+      "bytes": 9934,
+      "sha256": "934eb515e2b7062a4b6b96e4048d314849954a99a97d16d8b0a7885024ec6dd9"
+    },
+    {
+      "path": "docs/verification/t0115/combined.sh",
+      "bytes": 1859,
+      "sha256": "da1d6c7347932e1dedf6b26ab0db3d9955dc6fc988859e57a09584c4f37939bf"
+    },
+    {
+      "path": "docs/verification/t0115/encode-native-ppm.py",
+      "bytes": 2769,
+      "sha256": "4cb83179220df676cb9ca041eebc8f41e72388a0dc2f1820df6bdbacddbb762b"
+    },
+    {
+      "path": "docs/verification/t0115/focused-final.log",
+      "bytes": 1979,
+      "sha256": "1e5a905b4feab49ac669eb3fa0f1ce20d81b32c7058d96184700bcc3394153f0"
+    },
+    {
+      "path": "docs/verification/t0115/focused-final2.log",
+      "bytes": 5220,
+      "sha256": "b4463b924720b174e0e430a3f328a644fca467cec9df6565f277b3d27f716147"
+    },
+    {
+      "path": "docs/verification/t0115/focused-final3.log",
+      "bytes": 27973,
+      "sha256": "2506f825526ae610215d221480b740357ab1a53bed439713fa56cc89fdcca541"
+    },
+    {
+      "path": "docs/verification/t0115/full-final.log",
+      "bytes": 23745,
+      "sha256": "3fb1eb18c4c6e5b86d67b263a90d3ee1ae2e6f7d1668976d01ddd2aa3e3ce89e"
+    },
+    {
+      "path": "docs/verification/t0115/full-final2.log",
+      "bytes": 116823,
+      "sha256": "d038a6e3ef98987f69862054219d557b00efcc9ab0c4439111169197de536756"
+    },
+    {
+      "path": "docs/verification/t0115/full-source.txt",
+      "bytes": 41,
+      "sha256": "c47c0f000055e68aa9cd93ea71d151cb317e22b6e63043b50fc540b8a1de7e29"
+    },
+    {
+      "path": "docs/verification/t0115/full2.sh",
+      "bytes": 957,
+      "sha256": "00672f31665f179d98bd5a718b70165cc900290228c9a1bd980ebbfd75f2b891"
+    },
+    {
+      "path": "docs/verification/t0115/independent-native.json",
+      "bytes": 356,
+      "sha256": "f8c17a803238f7e6a71ae75047ca8c6f16b75d79ea7f0daa5e279d3a8e3e978b"
+    },
+    {
+      "path": "docs/verification/t0115/independent-production-http.json",
+      "bytes": 17685,
+      "sha256": "04ff201b1da1c1d3442a44410d9309ad855b503a7ab54f55ca30c8e20d0ac476"
+    },
+    {
+      "path": "docs/verification/t0115/native-capture.log",
+      "bytes": 101,
+      "sha256": "19066d4b69894345c16aeccb7194c1b18b4ecc94247d9d77093c45826feed236"
+    },
+    {
+      "path": "docs/verification/t0115/packages.viamind.json",
+      "bytes": 14338,
+      "sha256": "0de5ad8e4f1529f5e2641057c6f9c99d22f1ce0c38560070529b6d6e610e1ed0"
+    },
+    {
+      "path": "docs/verification/t0115/production-http.json",
+      "bytes": 17657,
+      "sha256": "a79f59d41bb912c895243d55a1dc748147f2fd370b80a14c75d77b3b5749ddfc"
+    },
+    {
+      "path": "docs/verification/t0115/production-http.log",
+      "bytes": 2336,
+      "sha256": "69077e510ae500792a3ddd8dfc3a51b12a2d1bcc1c2c6621df7e0110bcbfb70f"
+    },
+    {
+      "path": "docs/verification/t0115/production-http.py",
+      "bytes": 8276,
+      "sha256": "dd90b4ecce9b32dd2b266d01080b9bad81dd180e3f533173c75d6f0a017fbbc9"
+    },
+    {
+      "path": "docs/verification/t0115/production-launch.json",
+      "bytes": 579,
+      "sha256": "5e37ed4ac25c0cda00f662419f0ac3e3c3f759df0b8fd220deff2d4d497ba5e5"
+    },
+    {
+      "path": "docs/verification/t0115/production-runtime.log",
+      "bytes": 137,
+      "sha256": "715fbed4988fdaf709a3ea22e6cc1dec4141e34152c0d2b0884699b4de781752"
+    },
+    {
+      "path": "docs/verification/t0115/read-only-probe.py",
+      "bytes": 2024,
+      "sha256": "4ed49803c5586f842c6d2286004042b2ce4cb6551113c7f597503daa1817b93b"
+    },
+    {
+      "path": "docs/verification/t0115/read-only.json",
+      "bytes": 650,
+      "sha256": "bb05539ffb9059bf6399eedcce4575a7c70186128d7a7b99f7ca61372a6fc9a1"
+    }
+  ],
+  "independent_actual_production": {
+    "reviewer": "root",
+    "checks": 29,
+    "binary_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+    "report": "docs/verification/t0115/independent-production-http.json",
+    "report_source_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/production-http.json",
+    "latency_ms": {
+      "whole_package_apply": 13.375377995544113
+    },
+    "external_fixture_after_probe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/packages.viamind.json",
+    "scope": "Fresh independent initialized desktopHTTP rerun on copied owned fixture; native source/captures remain historical272d5d2. Final stack/CI review remains pending."
+  },
+  "independent_native_review": {
+    "reviewer": "root",
+    "report": "docs/verification/t0115/independent-native.json",
+    "report_source_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/independent-native.json",
+    "scope": "Both native review PNGs viewed readable; independently decoded every RGB sample and compared with original P7 RGBA RGB channels and P6. Alpha remains explicitly retained in P7, omitted from PNG."
+  }
+}

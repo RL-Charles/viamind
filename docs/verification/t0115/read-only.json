@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "immutable annotation preview remains discoverable",
+    "annotation mutation is hidden",
+    "readonly preview has twelve unit rows and two package owners",
+    "readonly preview exact cursor and project",
+    "readonly preview preserves complete session status",
+    "hidden command refuses unchanged",
+    "native input bytes unchanged"
+  ],
+  "assertion_count": 7,
+  "binary_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json",
+  "scope": "actual no-display headless readonly process"
+}

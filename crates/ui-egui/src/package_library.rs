@@ -223,7 +223,7 @@ impl ViamindApp {
         let mut error = None;
         egui::Window::new("Native multi-unit package library").open(&mut open).default_width(560.).vscroll(true).show(ui.ctx(),|ui|{
             ui.label("Explicit complete package: all units share one reference/value/footprint. Pins retain separate identities; no implicit power or common connections.");
-            ui.label("Package-aware annotation and package-to-PCB aggregation are separate follow-ups; legacy per-unit operations refuse grouped components.");
+            ui.label("Use Annotate symbols to assign one reference to every unit of a complete package. Package-to-PCB aggregation remains a separate follow-up; individual-unit operations refuse grouped components.");
             if blocked{ui.label("Finish/cancel active schematic drafts or wires and choose a sheet before placement/deletion. Detached file editing remains available.");}
             ui.add_enabled_ui(ready,|ui|{
                 let label=ui.label("Package file path (load or NEW save)");

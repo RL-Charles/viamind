@@ -1,0 +1,80 @@
+{
+  "source": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+  "launched_utc": "2026-10-11T19:30:58.598285+00:00",
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/launch-annotation-compact",
+    "pid": 2466725,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind-package-annotation-inspection",
+        "bounds": {
+          "height": 667,
+          "width": 1067,
+          "x": 1920,
+          "y": 1152
+        },
+        "height": 667,
+        "is_on_screen": true,
+        "pid": 2466725,
+        "title": "Untitled \u2014 Viamind",
+        "width": 1067,
+        "window_id": 110379548738400,
+        "x": 1920,
+        "y": 1152,
+        "z_index": null
+      }
+    ]
+  },
+  "native": {
+    "alpha_max": 255,
+    "alpha_min": 242,
+    "capture": "eframe native WGPU Screenshot event",
+    "content_rect": [
+      0.0,
+      0.0,
+      640.1875,
+      400.1875
+    ],
+    "control_bounds": "actual native Prepare/Apply/Cancel read_response rectangles using exact safely captured labeled widget IDs",
+    "controls": [
+      [
+        31.0,
+        145.5,
+        151.53125,
+        163.5
+      ],
+      [
+        159.53125,
+        145.5,
+        267.15625,
+        163.5
+      ],
+      [
+        275.15625,
+        145.5,
+        437.21875,
+        163.5
+      ]
+    ],
+    "document_status_unchanged": true,
+    "full_session_unchanged": true,
+    "native_viewport_transparent": false,
+    "nonopaque_alpha_pixels": 1276,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p6",
+    "pid": 2466725,
+    "pixels": [
+      1067,
+      667
+    ],
+    "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+    "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p7",
+    "rgba_representation": "original egui Screenshot Color32 channels",
+    "self_close_after_capture": true,
+    "ui_passes": 11
+  },
+  "process_after_capture": "absent; self-closed",
+  "scope": "Inspection-only actual egui options/input and immutable shared preview and native WGPU Screenshot. Logical focus retained; no OS-input/compositor-capture or cadence claim."
+}
