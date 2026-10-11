@@ -311,6 +311,7 @@ mod tests {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ImportBoardOutlineDxf {
+    #[schemars(length(max = 8_388_608))]
     pub text: String,
     #[serde(default)]
     pub units: viamind_doc::dxf::DxfUnits,

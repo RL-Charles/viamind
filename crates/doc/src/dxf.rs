@@ -119,7 +119,11 @@ fn scalar<'a>(fields: &[Pair<'a>], code: u16) -> Result<Option<&'a str>, DxfErro
     Ok(result)
 }
 fn number(value: &str) -> Result<f64, DxfError> {
-    value.parse::<f64>().ok().filter(|v| v.is_finite()).ok_or_else(|| invalid(format!("invalid finite number: {value}")))
+    value
+        .parse::<f64>()
+        .ok()
+        .filter(|v| v.is_finite())
+        .ok_or_else(|| invalid(format!("invalid finite number: {}", value.chars().take(80).collect::<String>())))
 }
 fn flags(fields: &[Pair<'_>]) -> Result<u16, DxfError> {
     scalar(fields, 70)?.unwrap_or("0").parse::<u16>().map_err(|_| invalid("invalid entity flags"))
