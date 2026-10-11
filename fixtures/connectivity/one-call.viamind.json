@@ -1,0 +1,312 @@
+{
+  "format": "viamind",
+  "version": 8,
+  "project": {
+    "id": "12300000-0000-4000-8000-000000000001",
+    "name": "One-call synthetic copper inventory",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "parts": {
+        "12300000-0000-4000-8000-000000000002": {
+          "id": "12300000-0000-4000-8000-000000000002",
+          "designator": "J1",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 10000000,
+            "y": 10000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000003",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "CONNECTED"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000004": {
+          "id": "12300000-0000-4000-8000-000000000004",
+          "designator": "J2",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 30000000,
+            "y": 10000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000005",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "CONNECTED"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000007": {
+          "id": "12300000-0000-4000-8000-000000000007",
+          "designator": "J3",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 10000000,
+            "y": 30000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000008",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "UNROUTED"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000009": {
+          "id": "12300000-0000-4000-8000-000000000009",
+          "designator": "J4",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 30000000,
+            "y": 30000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000010",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "UNROUTED"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000011": {
+          "id": "12300000-0000-4000-8000-000000000011",
+          "designator": "J5",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 50000000,
+            "y": 10000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000012",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "VIA"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000013": {
+          "id": "12300000-0000-4000-8000-000000000013",
+          "designator": "J6",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 50000000,
+            "y": 30000000
+          },
+          "side": "bottom",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000014",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "VIA"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000018": {
+          "id": "12300000-0000-4000-8000-000000000018",
+          "designator": "J7",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 60000000,
+            "y": 40000000
+          },
+          "side": "top",
+          "rotation_mdeg": 0,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000019",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "ONE"
+            }
+          ]
+        },
+        "12300000-0000-4000-8000-000000000020": {
+          "id": "12300000-0000-4000-8000-000000000020",
+          "designator": "J8",
+          "value": "Original synthetic fixture",
+          "footprint": "EXPLICIT_RECTANGLE",
+          "position": {
+            "x": 70000000,
+            "y": 40000000
+          },
+          "side": "top",
+          "rotation_mdeg": 45000,
+          "pads": [
+            {
+              "id": "12300000-0000-4000-8000-000000000021",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 800000,
+              "net": "UNKNOWN"
+            }
+          ]
+        }
+      },
+      "tracks": {
+        "12300000-0000-4000-8000-000000000006": {
+          "id": "12300000-0000-4000-8000-000000000006",
+          "start": {
+            "x": 5000000,
+            "y": 10000000
+          },
+          "end": {
+            "x": 35000000,
+            "y": 10000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "CONNECTED"
+        },
+        "12300000-0000-4000-8000-000000000015": {
+          "id": "12300000-0000-4000-8000-000000000015",
+          "start": {
+            "x": 50000000,
+            "y": 10000000
+          },
+          "end": {
+            "x": 50000000,
+            "y": 20000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "VIA"
+        },
+        "12300000-0000-4000-8000-000000000016": {
+          "id": "12300000-0000-4000-8000-000000000016",
+          "start": {
+            "x": 50000000,
+            "y": 20000000
+          },
+          "end": {
+            "x": 50000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "VIA"
+        },
+        "12300000-0000-4000-8000-000000000022": {
+          "id": "12300000-0000-4000-8000-000000000022",
+          "start": {
+            "x": 60000000,
+            "y": 50000000
+          },
+          "end": {
+            "x": 70000000,
+            "y": 50000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "ORPHAN"
+        }
+      },
+      "vias": {
+        "12300000-0000-4000-8000-000000000017": {
+          "id": "12300000-0000-4000-8000-000000000017",
+          "position": {
+            "x": 50000000,
+            "y": 20000000
+          },
+          "diameter": 1000000,
+          "drill": 400000,
+          "net": "VIA"
+        }
+      },
+      "net_rules": {
+        "RULE_ONLY": {
+          "minimum_copper_clearance": 0,
+          "minimum_track_width": 1
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 60000000
+          },
+          {
+            "x": 0,
+            "y": 60000000
+          }
+        ],
+        "cutouts": []
+      }
+    }
+  }
+}

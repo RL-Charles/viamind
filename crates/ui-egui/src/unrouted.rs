@@ -50,6 +50,14 @@ impl UnroutedUi {
         }
     }
     fn start(&mut self, engine: &EngineHandle, ctx: &egui::Context) {
+        self.start_with_spawn(engine, ctx, |job| std::thread::Builder::new().name("viamind-unrouted-nets".into()).spawn(job));
+    }
+    fn start_with_spawn(
+        &mut self,
+        engine: &EngineHandle,
+        ctx: &egui::Context,
+        spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> std::io::Result<JoinHandle<()>>,
+    ) {
         if self.pending.is_some() {
             return;
         }
@@ -63,11 +71,11 @@ impl UnroutedUi {
         };
         let (sender, receiver) = sync_channel(1);
         let repaint = ctx.clone();
-        match std::thread::Builder::new().name("viamind-unrouted-nets".into()).spawn(move || {
+        match spawn(Box::new(move || {
             let result = work.run().map_err(|e| e.to_string());
             let _ = sender.send(result);
             repaint.request_repaint();
-        }) {
+        })) {
             Ok(worker) => self.pending = Some(Pending { receiver, _worker: worker }),
             Err(error) => self.message = Some(format!("Could not start unrouted-net worker: {error}")),
         }
@@ -128,26 +136,115 @@ impl ViamindApp {
                     ui.label(exclusion);
                 }
                 ui.separator();
-                for row in &report.nets {
-                    let status = match row.status {
-                        UnroutedNetStatus::Connected => "connected",
-                        UnroutedNetStatus::Disconnected => "unrouted",
-                        UnroutedNetStatus::InsufficientTerminals => "fewer than two terminals",
-                        UnroutedNetStatus::Unknown => "unknown",
-                    };
-                    ui.label(format!(
-                        "{}: {} · {} terminals · islands {}",
-                        row.name,
-                        status,
-                        row.terminals,
-                        row.terminal_islands.map_or_else(|| "unknown".into(), |n| n.to_string())
-                    ));
-                    if !row.reasons.is_empty() {
-                        ui.label(format!("Coverage reasons: {:?}", row.reasons));
-                    }
-                }
+                let row_height = ui.text_style_height(&egui::TextStyle::Body) * 3.0;
+                egui::ScrollArea::vertical().id_salt("unrouted_net_rows").max_height(240.0).show_rows(
+                    ui,
+                    row_height,
+                    report.nets.len(),
+                    |ui, range| {
+                        for i in range {
+                            let row = &report.nets[i];
+                            let status = match row.status {
+                                UnroutedNetStatus::Connected => "connected",
+                                UnroutedNetStatus::Disconnected => "unrouted",
+                                UnroutedNetStatus::InsufficientTerminals => "fewer than two terminals",
+                                UnroutedNetStatus::Unknown => "unknown",
+                            };
+                            let label = format!(
+                                "{}: {} · {} terminals · islands {}",
+                                row.name,
+                                status,
+                                row.terminals,
+                                row.terminal_islands.map_or_else(|| "unknown".into(), |n| n.to_string())
+                            );
+                            ui.add(egui::Label::new(&label).truncate()).on_hover_text(label);
+                            let reasons = format!("Coverage reasons: {:?}", row.reasons);
+                            ui.add(egui::Label::new(&reasons).truncate()).on_hover_text(reasons);
+                            ui.add_space(row_height - ui.text_style_height(&egui::TextStyle::Body) * 2.0);
+                        }
+                    },
+                );
             }
         });
         self.unrouted.open = open;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Mutex;
+    static SERIAL: Mutex<()> = Mutex::new(());
+    #[test]
+    fn controlled_spawn_failure_and_disconnected_worker_leave_no_false_busy_and_retry_succeeds() {
+        let _serial = SERIAL.lock().unwrap();
+        let engine = EngineHandle::new(viamind_doc::Project::new("Worker failures"));
+        let ctx = egui::Context::default();
+        let mut ui = UnroutedUi::default();
+        ui.start_with_spawn(&engine, &ctx, |_| Err(std::io::Error::other("controlled spawn refusal")));
+        assert!(!ui.busy());
+        assert!(ui.message().unwrap().contains("controlled spawn refusal"));
+        ui.start_with_spawn(&engine, &ctx, |job| std::thread::Builder::new().spawn(move || drop(job)));
+        for _ in 0..100 {
+            ui.poll(&ctx);
+            if !ui.busy() {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(2));
+        }
+        assert!(!ui.busy());
+        assert!(ui.message().unwrap().contains("worker stopped"));
+        ui.start(&engine, &ctx);
+        for _ in 0..100 {
+            ui.poll(&ctx);
+            if !ui.busy() {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(2));
+        }
+        assert!(!ui.busy());
+        assert!(ui.report().is_some());
+        assert!(ui.message().is_none());
+    }
+    #[test]
+    fn actual_disabled_duplicate_control_hidden_poll_and_retained_admission_survive_dialog_close() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let _serial = SERIAL.lock().unwrap();
+        let engine = EngineHandle::new(viamind_doc::Project::new("Hidden retained worker"));
+        let before = engine.session_state();
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.begin_unrouted_nets();
+        let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+        h.run_steps(5);
+        let ctx = h.ctx.clone();
+        let (release, wait) = std::sync::mpsc::sync_channel(1);
+        h.state_mut().unrouted.start_with_spawn(&engine, &ctx, |job| {
+            std::thread::Builder::new().spawn(move || {
+                wait.recv().unwrap();
+                job();
+            })
+        });
+        h.run_steps(3);
+        assert!(h.get_by_label("Query all nets").accesskit_node().is_disabled());
+        let other = engine.prepare_unrouted_nets(UnroutedNetQuery {}).unwrap();
+        assert!(engine.prepare_unrouted_nets(UnroutedNetQuery {}).is_err());
+        h.state_mut().unrouted.close();
+        h.run_steps(3);
+        assert!(h.state().unrouted.busy());
+        release.send(()).unwrap();
+        for _ in 0..100 {
+            h.run_steps(2);
+            if !h.state().unrouted.busy() {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(2));
+        }
+        assert!(!h.state().unrouted.busy());
+        assert!(h.state().unrouted.report().is_some());
+        drop(other);
+        assert_eq!(engine.session_state(), before);
     }
 }

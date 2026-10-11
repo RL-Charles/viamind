@@ -346,7 +346,7 @@ impl Snapshot {
                     .local_to_world_nm_exact(pad.position)
                     .ok()
                     .and_then(coordinate)
-                    .filter(|_| length(pad.width) && length(pad.height))
+                    .filter(|_| (0..360_000).contains(&part.rotation_mdeg) && length(pad.width) && length(pad.height))
                     .map(|center| {
                         let (w, h) =
                             if part.rotation_mdeg.rem_euclid(180_000) == 90_000 { (pad.height.0, pad.width.0) } else { (pad.width.0, pad.height.0) };
@@ -446,10 +446,10 @@ impl Snapshot {
                 } else {
                     None
                 };
-                if let Some(reason) = reason {
-                    if let Some(net) = other.net {
-                        self.nets[net].reasons.insert(reason);
-                    }
+                if let Some(reason) = reason
+                    && let Some(net) = other.net
+                {
+                    self.nets[net].reasons.insert(reason);
                 }
             }
         }
@@ -727,6 +727,8 @@ mod tests {
         let id = pad(&mut project, 0, 0, Side::Top, "N", 10, 10);
         pad(&mut project, 100, 0, Side::Top, "N", 10, 10);
         project.board.parts.get_mut(&id).unwrap().value = "x".repeat(3 * 1024 * 1024);
+        project.board.parts.get_mut(&id).unwrap().assembly =
+            Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("invalid unused metadata\n".repeat(200_000)), ..Default::default() }));
         let mut sheet = viamind_doc::Sheet::new("x".repeat(3 * 1024 * 1024));
         sheet.id = "00000000-0000-0000-0000-000000000000".parse().unwrap();
         project.schematic.sheets.insert(sheet.id, sheet);
@@ -779,6 +781,30 @@ mod tests {
         assert_eq!(result.coverage.excluded_legacy_parts, 1);
         project.board.parts.get_mut(&id).unwrap().pads = Some(Pads(vec![]));
         assert!(analyze(&project).complete);
+    }
+    #[test]
+    fn aggregate_object_text_and_distinct_net_caps_reject_before_secondary_geometry_copies() {
+        let mut project = Project::new("Pre-copy object and name admission");
+        let id = pad(&mut project, 0, 0, Side::Top, "N", 10, 10);
+        let original = project.board.parts[&id].pads.as_ref().unwrap().0[0].clone();
+        let cursor = EventCursor { stream_id: ObjectId::new(), sequence: 0 };
+        project.board.parts.get_mut(&id).unwrap().pads = Some(Pads(vec![original.clone(); MAX_OBJECTS + 1]));
+        assert!(Snapshot::capture(&project, cursor).err().unwrap().to_string().contains("object budget"));
+        let mut huge_name = original.clone();
+        huge_name.net = Some("界".repeat(128));
+        project.board.parts.get_mut(&id).unwrap().pads = Some(Pads(vec![huge_name; 6000]));
+        assert!(Snapshot::capture(&project, cursor).err().unwrap().to_string().contains("text budget"));
+        project.board.parts.get_mut(&id).unwrap().pads = Some(Pads(vec![original]));
+        let rules = viamind_doc::NamedNetMinima {
+            minimum_copper_clearance: Nm(0),
+            minimum_track_width: Nm(1),
+            minimum_via_drill: Nm(0),
+            minimum_annular_width: Nm(0),
+        };
+        for i in 0..MAX_NETS {
+            project.board.net_rules.insert(format!("NET{i:05}"), rules);
+        }
+        assert!(Snapshot::capture(&project, cursor).err().unwrap().to_string().contains("distinct net budget"));
     }
     #[test]
     fn retained_admission_survives_caller_drop_and_workers_hold_it_through_actual_capture() {
