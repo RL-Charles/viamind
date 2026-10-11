@@ -121,3 +121,6 @@ pub use symbol_library::{
 
 mod pcb_import;
 pub use pcb_import::{ImportPcb, PcbImportPreview, PcbImportResult, PreviewPcbImport};
+
+mod fabrication_view;
+pub use fabrication_view::{FabricationInspection, InspectFabricationFiles, InspectedFabricationFile};

@@ -73,6 +73,7 @@ ui_actions! {
     SaveOutputJob => ("save_output_job", viamind_fab::output_job_schema("save"), save_output_job),
     RunOutputJob => ("run_output_job", viamind_fab::output_job_schema("run"), run_output_job),
     ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
+    InspectFabricationFiles => ("inspect_fabrication_files",input_schema::<viamind_engine::InspectFabricationFiles>(),inspect_fabrication_files),
     ConfigureAutoDrc => ("configure_auto_drc", input_schema::<viamind_engine::AutoDrcConfig>(), configure_auto_drc),
     GetAutoDrcStatus => ("get_auto_drc_status", no_args(), get_auto_drc_status),
     RunErc => ("run_erc", input_schema::<viamind_engine::ErcInput>(), run_erc),
@@ -362,4 +363,10 @@ fn import_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError>
 
 fn set_part_assembly(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::SetPartAssembly::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn inspect_fabrication_files(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let invalid = |e: String| EngineError::InvalidInput { command: "inspect_fabrication_files".into(), message: e };
+    let input = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
+    serde_json::to_value(engine.inspect_fabrication_files(input)?).map_err(|e| invalid(e.to_string()))
 }

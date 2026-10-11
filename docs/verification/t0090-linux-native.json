@@ -1,0 +1,94 @@
+{
+  "ticket": "T-0090",
+  "source_commit": "b2f76539b007544d9fce362540cf4b2417ecd140",
+  "source_base": "0fb27a1",
+  "workspace_tests": {
+    "passed": 598,
+    "failed": 0,
+    "ignored": 1,
+    "focused_passed_separately": 5
+  },
+  "gates": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline",
+    "cargo build -p viamind-ui-egui --example fabrication_overlay_inspection --locked --offline"
+  ],
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0090-production-native",
+    "sha256": "74e1cf178bf7abf44937717ad2ff82abf116686349da44720546ff64ab7a67fd",
+    "pid": 1049685,
+    "port": 7916,
+    "window_id": 110379545088656,
+    "note": "Actual unmodified production desktop. Compositor provided16x4 window, excluded from readable visual proof.32 actual two-client HTTP checks passed."
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0090-inspection-native",
+    "sha256": "72174dcd4cab1ecf5e0f90b412729ee27951c3f289349a5b62a23e999c89d923",
+    "source": "crates/ui-egui/examples/fabrication_overlay_inspection.rs",
+    "wide_pid": 1050988,
+    "wide_window_id": 110379545634656,
+    "compact_pid": 1051566,
+    "compact_window_id": 110379546078624,
+    "mcp": false,
+    "note": "Same production ViamindApp; actual egui input prepares6 files and explicit Show, transfers UI memory to fixed-size native host. Asserts Show bounds and painted>0 before launch; complete SessionSnapshot equality asserted each native frame. Wide shows actual geometry; compact proves reachable Inspect/Show, dialog covers most canvas. No native input proof or 100k60fps claim."
+  },
+  "fixture": {
+    "path": "fixtures/fabrication/asymmetric.viamind.json",
+    "sha256": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea"
+  },
+  "checks": {
+    "stdio": 32,
+    "desktop_http_two_sessions": 32
+  },
+  "limitations": [
+    "Strict current exporter subset; unknown semantics reject entire inspection",
+    "Circle and drill boundary rings; rounded capsule curves approximate screen geometry, exact Nm retained in shared report",
+    "Matching project UUID is coordinate identity, not board equivalence; absent identity and drill alignment unverified",
+    "AT-SPI unavailable; Cua recovered only metadata, pixels prove native rendering; egui actual input tests prove controls",
+    "Independent file reads do not claim atomic cross-file snapshot",
+    "Historical binary/source proof; later clean integration requires fresh combined CI"
+  ],
+  "artifacts": {
+    "docs/verification/t0090-stdio.json": {
+      "sha256": "264ea6e9f262a6be542fd1fe8cead3954e92b0da0d2efe2a8a5362a340e8f55b"
+    },
+    "docs/verification/t0090-http.json": {
+      "sha256": "7335f560c9c6f39f2a4da7733a3e0d7d87286ab5c169c246ba849701914b77f4"
+    },
+    "docs/verification/t0090-full-linux-gates.log": {
+      "sha256": "10972b8c4f2c504a86f4cd9a8d2393e461334a727e40f4728da7a5bbe25d8a92"
+    },
+    "docs/verification/t0090-overlay-wide.png": {
+      "sha256": "d1bed7fa563f400c38929bb5cad2b41ce2016e1f65d4b35804f79a7e0758abd1"
+    },
+    "docs/verification/t0090-overlay-compact.png": {
+      "sha256": "9ffbcc043574a1ce2da777d78d41dc9f006d1e851632426955e34673f628632d"
+    },
+    "docs/verification/t0090-wide-driver.json": {
+      "sha256": "4f8ea2e6b94d2e56c0321a1a76e9aa36ca1dc7c3b7836196eedf03b902cef426"
+    },
+    "docs/verification/t0090-compact-driver.json": {
+      "sha256": "697066700cf499514b054f8e7ec9b37e97c719efb26e4487463e83eaf8751e8d"
+    },
+    "docs/verification/t0090-exported/bottom-copper.gbr": {
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    "docs/verification/t0090-exported/bottom-mask.gbr": {
+      "sha256": "ce15b114b9bf90830339ebac477125cf9f19cbea10ec29febe99dca45d64dc65"
+    },
+    "docs/verification/t0090-exported/plated-through.xnc": {
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    "docs/verification/t0090-exported/profile.gbr": {
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    "docs/verification/t0090-exported/top-copper.gbr": {
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    "docs/verification/t0090-exported/top-mask.gbr": {
+      "sha256": "4a83b7ca001c4ca0b3016f201d5c3c3ae03302704079b027f923bcaa083778f6"
+    }
+  }
+}
