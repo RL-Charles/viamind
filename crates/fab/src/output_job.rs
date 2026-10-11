@@ -448,7 +448,7 @@ mod tests {
 #[cfg(test)]
 mod publication_tests {
     use super::*;
-    static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    use crate::MANUFACTURING_TEST_SERIAL as SERIAL;
     #[test]
     fn raced_destination_and_injected_post_stage_failure_leave_no_partial_release() {
         let _guard = SERIAL.lock().unwrap();

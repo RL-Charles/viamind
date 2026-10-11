@@ -200,12 +200,8 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{
-        fs,
-        os::unix::fs::symlink,
-        sync::{Mutex, mpsc},
-    };
-    static SERIAL: Mutex<()> = Mutex::new(());
+    use crate::MANUFACTURING_TEST_SERIAL as SERIAL;
+    use std::{fs, os::unix::fs::symlink, sync::mpsc};
     fn release(parent: &Path, name: &str, version: u32, checked: bool) -> PathBuf {
         let project = viamind_doc::file::from_str(include_str!("../../../../fixtures/assembly/output-job-population.viamind.json")).unwrap();
         let mut job = crate::OutputJob::new("Original inspection fixture".into(), 0.);

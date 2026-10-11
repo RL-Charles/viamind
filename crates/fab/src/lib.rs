@@ -12,6 +12,11 @@ mod populated_bom;
 mod release_inspection;
 mod snapshot;
 
+// Fixture exporters and admission tests share the same production permit pool.
+// Serialize these tests together so intentional saturation has no unrelated users.
+#[cfg(test)]
+static MANUFACTURING_TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 pub use assembly::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot, PreparedAssemblyCsv, assembly_schema, csv, write_csv};
 pub use fabrication::{
     FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, fabrication, fabrication_schema, write_fabrication,
