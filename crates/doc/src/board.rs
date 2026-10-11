@@ -39,6 +39,16 @@ impl Board {
             parts: self.parts.iter().map(|(id, part)| (*id, part.clone_without_assembly())).collect(),
         }
     }
+    /// Private electrical-analysis shell: unused artwork and sourcing are never cloned.
+    pub fn clone_for_electrical_analysis(&self) -> Self {
+        Self {
+            net_rules: self.net_rules.clone(),
+            tracks: self.tracks.clone(),
+            vias: self.vias.clone(),
+            outline: self.outline.clone(),
+            parts: self.parts.iter().map(|(id, p)| (*id, p.clone_for_electrical_analysis())).collect(),
+        }
+    }
     /// The part with `id`, if any.
     pub fn part(&self, id: &ObjectId) -> Option<&Part> {
         self.parts.get(id)
@@ -53,6 +63,9 @@ impl Board {
 /// A component placed on the board.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
+    /// Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub artwork: Option<Box<crate::FootprintArtwork>>,
     /// Optional explicitly entered sourcing and population instructions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub assembly: Option<Box<crate::AssemblyMetadata>>,
@@ -95,6 +108,7 @@ impl Part {
     /// Purpose-specific copy that never clones unused sourcing strings.
     pub fn clone_without_assembly(&self) -> Self {
         Self {
+            artwork: self.artwork.clone(),
             assembly: None,
             schematic_symbol: self.schematic_symbol,
             schematic_package: self.schematic_package,
@@ -108,6 +122,24 @@ impl Part {
             side: self.side,
         }
     }
+    /// Private analysis copy only; never use for guards, live deltas, or persistence.
+    pub fn clone_for_electrical_analysis(&self) -> Self {
+        Self {
+            artwork: None,
+            assembly: None,
+            schematic_symbol: self.schematic_symbol,
+            schematic_package: self.schematic_package,
+            pads: self.pads.clone(),
+            id: self.id,
+            designator: self.designator.clone(),
+            value: self.value.clone(),
+            footprint: self.footprint.clone(),
+            position: self.position,
+            rotation_mdeg: self.rotation_mdeg,
+            side: self.side,
+        }
+    }
+
     /// Transform a footprint-local integer point exactly for quarter-turn rotations.
     /// Mirror bottom-side local X, rotate counterclockwise in y-down coordinates, then translate.
     /// Wider intermediates allow valid final coordinates even when mirroring alone overflows i64.
@@ -166,6 +198,7 @@ mod tests {
         project.schematic.sheets.insert(sheet.id, sheet);
         for (i, side) in [Side::Top, Side::Bottom].into_iter().enumerate() {
             let part = Part {
+                artwork: None,
                 assembly: None,
                 schematic_symbol: None,
                 schematic_package: None,

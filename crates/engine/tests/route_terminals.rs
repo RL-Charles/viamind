@@ -18,6 +18,7 @@ fn fixture() -> (Project, [RouteTerminalId; 3]) {
     );
     let pad = Pad { id: ObjectId::new(), number: "1".into(), position: p(1, 3), width: Nm(1_000_000), height: Nm(1_000_000), net: Some("N".into()) };
     let part = Part {
+        artwork: None,
         id: ObjectId::new(),
         assembly: None,
         schematic_symbol: None,

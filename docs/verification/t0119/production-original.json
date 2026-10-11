@@ -1,0 +1,310 @@
+{
+  "passed": true,
+  "source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+  "binary_sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e",
+  "endpoint": "http://127.0.0.1:7954/mcp",
+  "checks": [
+    "two initialized clients discover shared artwork and native/Legend workflows",
+    "owned scratch identity verified before edits",
+    "independent observation preserves full session and status",
+    "guarded artwork is one Part delta and one event with exact unrelated geometry",
+    "peer sees identical stored artwork",
+    "duplicate stale full cursor refuses unchanged",
+    "one creator undo restores exact no-art project",
+    "one redo restores exact explicit art project",
+    "exact artwork no-op emits no event",
+    "257 raw poison rows refuses full state/status unchanged",
+    "zero stroke refuses full state/status unchanged",
+    "collapsed line refuses full state/status unchanged",
+    "reversed courtyard refuses full state/status unchanged",
+    "unknown point refuses full state/status unchanged",
+    "peer edit plus undo still invalidates initial cursor",
+    "both sides contain explicit art without modifying IDs/pads/nets",
+    "nonempty artwork preserves default SVG bytes",
+    "explicit SVG layers render only requested stored art",
+    "native library2 export retains exact non-null art and omits pad IDs/nets",
+    "explicit empty remains stored and feature13",
+    "library2 import requires full source cursor",
+    "library2 guarded import restores art and preserves pads IDs/nets",
+    "native save uses13 and exact full stored project",
+    "same UUID reopen replaces stream",
+    "same UUID old-stream edit refuses unchanged",
+    "explicit Legend opt-in adds paired files with correct functions",
+    "default fabrication copper/mask/drill/profile bytes remain exact",
+    "actual manifest discloses emitted art and excluded courtyard",
+    "detached job4 canonical load retains explicit opt-in",
+    "actual job4 release and independent reader agree13files/exactcursor",
+    "exports/jobs/inspection preserve complete session/status",
+    "actual read-only stdio observes stored art and hides guarded mutation",
+    "actual no-display CLI Legend export matches same captured geometry",
+    "final two clients still agree on exact saved native session"
+  ],
+  "latency_ms": {
+    "top_artwork_commit": 1.976646002731286,
+    "bottom_artwork_commit": 1.9487749959807843,
+    "legend_export": 9.452993996092118,
+    "job4_release": 12.804168000002392
+  },
+  "cli": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "viamind: exported 9 files to /home/charlesmowbray/.cache/viamind/native-artifacts/t0119/actual-production1/cli-legend\n"
+  },
+  "check_count": 34,
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/actual-production1/authored.viamind.json",
+  "library": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/actual-production1/explicit.footprint.json",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "f88a9c21-8ac8-4251-896a-74944927fa8c"
+    },
+    "project": {
+      "board": {
+        "outline": {
+          "cutouts": [
+            [
+              {
+                "x": 45000000,
+                "y": 22000000
+              },
+              {
+                "x": 50000000,
+                "y": 22000000
+              },
+              {
+                "x": 49000000,
+                "y": 27000000
+              },
+              {
+                "x": 45000000,
+                "y": 26000000
+              }
+            ]
+          ],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 60000000,
+              "y": 0
+            },
+            {
+              "x": 57000000,
+              "y": 35000000
+            },
+            {
+              "x": 0,
+              "y": 40000000
+            }
+          ]
+        },
+        "parts": {
+          "00000000-0000-0000-0000-000000000002": {
+            "artwork": {
+              "courtyard": {
+                "max": {
+                  "x": 4000007,
+                  "y": 3000011
+                },
+                "min": {
+                  "x": -4000003,
+                  "y": -3000005
+                },
+                "width": 100001
+              },
+              "silkscreen": [
+                {
+                  "end": {
+                    "x": 3000007,
+                    "y": -2000005
+                  },
+                  "start": {
+                    "x": -3000003,
+                    "y": -2000005
+                  },
+                  "width": 150003
+                },
+                {
+                  "end": {
+                    "x": 3000007,
+                    "y": 2000011
+                  },
+                  "start": {
+                    "x": 3000007,
+                    "y": -2000005
+                  },
+                  "width": 150003
+                }
+              ]
+            },
+            "designator": "U_BOTTOM",
+            "footprint": "EXPLICIT_FIXTURE",
+            "id": "00000000-0000-0000-0000-000000000002",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "00000000-0000-0000-0000-000000000003",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 2000000,
+                  "y": 1500000
+                },
+                "width": 4000000
+              },
+              {
+                "height": 2200000,
+                "id": "00000000-0000-0000-0000-000000000004",
+                "net": "GND",
+                "number": "2",
+                "position": {
+                  "x": -3000000,
+                  "y": -1000000
+                },
+                "width": 1200000
+              }
+            ],
+            "position": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "rotation_mdeg": 30000,
+            "side": "bottom",
+            "value": "Synthetic asymmetric geometry"
+          },
+          "00000000-0000-0000-0000-000000000005": {
+            "artwork": {
+              "courtyard": {
+                "max": {
+                  "x": 4000007,
+                  "y": 3000011
+                },
+                "min": {
+                  "x": -4000003,
+                  "y": -3000005
+                },
+                "width": 100001
+              },
+              "silkscreen": [
+                {
+                  "end": {
+                    "x": 3000007,
+                    "y": -2000005
+                  },
+                  "start": {
+                    "x": -3000003,
+                    "y": -2000005
+                  },
+                  "width": 150003
+                },
+                {
+                  "end": {
+                    "x": 3000007,
+                    "y": 2000011
+                  },
+                  "start": {
+                    "x": 3000007,
+                    "y": -2000005
+                  },
+                  "width": 150003
+                }
+              ]
+            },
+            "designator": "U_TOP",
+            "footprint": "EXPLICIT_FIXTURE",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "00000000-0000-0000-0000-000000000006",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 1250000,
+                  "y": -750000
+                },
+                "width": 1300000
+              }
+            ],
+            "position": {
+              "x": 14000000,
+              "y": 24000000
+            },
+            "rotation_mdeg": 117500,
+            "side": "top",
+            "value": "Synthetic asymmetric geometry"
+          }
+        },
+        "tracks": {
+          "00000000-0000-0000-0000-000000000007": {
+            "end": {
+              "x": 18000000,
+              "y": 12000000
+            },
+            "id": "00000000-0000-0000-0000-000000000007",
+            "layer": "top",
+            "net": "GND",
+            "start": {
+              "x": 5000000,
+              "y": 8000000
+            },
+            "width": 250000
+          },
+          "00000000-0000-0000-0000-000000000008": {
+            "end": {
+              "x": 40000000,
+              "y": 9000000
+            },
+            "id": "00000000-0000-0000-0000-000000000008",
+            "layer": "bottom",
+            "net": "GND",
+            "start": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "width": 400000
+          }
+        },
+        "vias": {
+          "00000000-0000-0000-0000-000000000009": {
+            "diameter": 800000,
+            "drill": 300000,
+            "id": "00000000-0000-0000-0000-000000000009",
+            "net": "GND",
+            "position": {
+              "x": 18000000,
+              "y": 12000000
+            }
+          },
+          "00000000-0000-0000-0000-00000000000a": {
+            "diameter": 1200000,
+            "drill": 500000,
+            "id": "00000000-0000-0000-0000-00000000000a",
+            "net": "GND",
+            "position": {
+              "x": 40000000,
+              "y": 9000000
+            }
+          }
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "T119 explicit artwork owned proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/actual-production1/authored.viamind.json"
+  }
+}

@@ -12,8 +12,8 @@ fn sample() -> Project {
 fn exact_geometry_attributes_units_and_deterministic_output() {
     let _guard = TEST.lock().unwrap();
     let project = sample();
-    let package = fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001 }).unwrap();
-    assert_eq!(package.files, fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001 }).unwrap().files);
+    let package = fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false }).unwrap();
+    assert_eq!(package.files, fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false }).unwrap().files);
     assert_eq!(package.manifest.smd_pad_count, 3);
     assert_eq!(package.manifest.cutout_count, 1);
     let bottom = &package.files["bottom-copper.gbr"];
@@ -45,7 +45,7 @@ fn invalid_or_unsupported_model_produces_no_destination_or_staging() {
     invalid.board.vias.values_mut().next().unwrap().drill.0 = 0;
     assert!(write_fabrication(&invalid, FabricationOptions::default(), &target, None).is_err());
     for mask in [f64::NAN, f64::INFINITY, -0.1, 10.00001] {
-        assert!(write_fabrication(&sample(), FabricationOptions { mask_expansion_mm: mask }, &target, None).is_err());
+        assert!(write_fabrication(&sample(), FabricationOptions { mask_expansion_mm: mask, include_silkscreen: false }, &target, None).is_err());
     }
     invalid = sample();
     invalid.board.parts.values_mut().next().unwrap().position.x.0 = i64::MAX;

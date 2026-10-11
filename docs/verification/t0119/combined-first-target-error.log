@@ -1,0 +1,44 @@
+d09dfe016f2852191a97ee9d670cadd885a49d9d
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 24.36s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.30s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-4855945c5dbe28c3)
+
+running 3 tests
+test strict_library_versions_explicit_empty_and_legacy_bytes ... ok
+test mixed_artwork_package_via_and_assembly_features_max_compose_and_clear ... ok
+test native_feature_max_save_and_private_analysis_never_drop_live_artwork ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.25s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-f80c97248dc671f1)
+
+running 3 tests
+test batch_uses_one_initial_cursor_and_raw_overflow_precedes_poison ... ok
+test library_two_apply_export_native_save_pad_net_identity_and_assembly_delta_retention ... ok
+test guarded_atomic_artwork_noop_undo_log_and_reopen ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+error: no test target named `release_inspection` in `viamind-fab` package
+help: available test in `viamind-mcp` package:
+    release_inspection
+help: available test in `viamind-ui-egui` package:
+    release_inspection
+help: available test in `viamind` package:
+    release_inspection

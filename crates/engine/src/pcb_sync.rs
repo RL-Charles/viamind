@@ -93,6 +93,10 @@ pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
     };
     count_more(rule_budget.rows)?;
     for p in project.board.parts.values() {
+        if let Some(artwork) = &p.artwork {
+            count_more(artwork.structural_rows())?;
+            artwork.validate().map_err(|e| CommandError::invalid("artwork", e))?;
+        }
         count_more(p.pads.as_ref().map_or(0, |p| p.0.len()))?;
     }
     if let Some(outline) = &project.board.outline {

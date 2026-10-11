@@ -5,7 +5,7 @@
 
 use egui::Color32;
 
-/// Identifies a layer. The constants are the layers of [`LayerStack::pcb_default`].
+/// Identifies a display layer, including optional explicit artwork layers.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct LayerId(pub u16);
 
@@ -19,6 +19,8 @@ impl LayerId {
     pub const F_SILKS: Self = Self(37);
     pub const B_MASK: Self = Self(38);
     pub const F_MASK: Self = Self(39);
+    pub const B_COURTYARD: Self = Self(46);
+    pub const F_COURTYARD: Self = Self(47);
     pub const EDGE_CUTS: Self = Self(44);
     /// Plated through-holes; a display layer, not a fabrication layer.
     pub const VIAS: Self = Self(100);
@@ -35,6 +37,7 @@ impl LayerId {
 pub enum LayerKind {
     Copper,
     Silkscreen,
+    Courtyard,
     SolderMask,
     EdgeCuts,
     Vias,
@@ -108,6 +111,26 @@ impl LayerStack {
         stack.push(Layer::new(LayerId::EDGE_CUTS, "Edge.Cuts", LayerKind::EdgeCuts, rgb(208, 210, 205), 1.0));
         stack.active = LayerId::F_CU;
         stack
+    }
+
+    /// Optional artwork layers exist only for explicit stored courtyards.
+    /// Legacy/demonstration stacks retain their exact original order and count.
+    pub(crate) fn sync_courtyards(&mut self, scene: &crate::scene::Scene) {
+        for (id, name, color) in [
+            (LayerId::B_COURTYARD, "B.Courtyard", Color32::from_rgb(120, 160, 210)),
+            (LayerId::F_COURTYARD, "F.Courtyard", Color32::from_rgb(200, 120, 210)),
+        ] {
+            let present = scene.items.iter().any(|item| item.layer == id);
+            if present && self.get(id).is_none() {
+                let at = self.layers.iter().position(|layer| layer.id == LayerId::EDGE_CUTS).unwrap_or(self.layers.len());
+                self.layers.insert(at, Layer::new(id, name, LayerKind::Courtyard, color, 0.8));
+            } else if !present {
+                self.layers.retain(|layer| layer.id != id);
+                if self.active == id {
+                    self.active = LayerId::F_CU;
+                }
+            }
+        }
     }
 
     /// Adds `layer` on top. Replaces an existing layer with the same id in place.

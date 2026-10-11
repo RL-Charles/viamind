@@ -136,6 +136,7 @@ impl EngineHandle {
             if path.as_os_str().is_empty() {
                 return Err(invalid("path must not be empty".into()));
             }
+            viamind_doc::file::validate_artwork(engine.project()).map_err(|e| invalid(e.to_string()))?;
             viamind_doc::file::validate_net_rules(engine.project()).map_err(|e| invalid(e.to_string()))?;
             viamind_doc::file::validate_assembly(engine.project()).map_err(|e| invalid(e.to_string()))?;
             (engine.session_state(), path)

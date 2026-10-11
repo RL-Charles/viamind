@@ -1,0 +1,35 @@
+{
+  "format": "viamind-footprint-artwork-linux-verification",
+  "source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+  "passed": true,
+  "fmt": true,
+  "strict_workspace_all_target_clippy": true,
+  "workspace_tests": {
+    "passed": 923,
+    "failed": 0,
+    "ignored": 1,
+    "includes_doctests": true
+  },
+  "workspace_build": true,
+  "inspection_build": true,
+  "log_sha256": "0c4c52440a3b68fce1fb434bc61c9d3fcf56aadb84f8f1eb7826e4a044e67733",
+  "original_failed_run": {
+    "source": "e356ec8",
+    "log": "full.log",
+    "reason": "five UI library assertions exposed unconditional courtyard layers changing legacy default stack/synthetic demo; fixed optional layers and live Undo/redo regression"
+  },
+  "retained": {
+    "source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+    "binaries": {
+      "viamind": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+        "sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e"
+      },
+      "footprint-artwork-inspection": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/footprint-artwork-inspection",
+        "sha256": "ab29326417dee8620f067786ebeda02f615ecc856b3959c89ba5a7cc06efe9c3"
+      }
+    },
+    "gates": "fmtcheck strictworkspacealltargetclippy fullworkspace tests/build plus inspection build"
+  }
+}

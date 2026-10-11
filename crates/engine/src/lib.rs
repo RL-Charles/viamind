@@ -58,6 +58,8 @@ mod component_links;
 mod pin_pad_links;
 pub use pin_pad_links::{LinkedPinPad, PinPadCoverage, PinPadLinkQuery, PinPadLinkResult};
 pub mod footprint;
+mod footprint_artwork;
+pub use footprint_artwork::SetFootprintArtwork;
 pub mod handle;
 pub mod log;
 pub mod pads;

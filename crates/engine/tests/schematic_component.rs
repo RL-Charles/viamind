@@ -28,6 +28,7 @@ fn request(e: &EngineHandle, reference: &str) -> SchematicComponentRequest {
             side: Side::Bottom,
             rotation_mdeg: 90_000,
             footprint: Footprint {
+                artwork: None,
                 name: "Original SMD".into(),
                 pads: symbol
                     .pins
@@ -224,6 +225,7 @@ fn result_object_budget_is_checked_before_commit_and_preview() {
             .sum::<usize>();
     for n in count..9999 {
         let part = viamind_doc::Part {
+            artwork: None,
             assembly: None,
             id: ObjectId::new(),
             schematic_symbol: None,

@@ -27,6 +27,7 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
     let part = before.board.part(&id).unwrap();
     assert_eq!(part.side, Side::Bottom);
     let definition = Footprint {
+        artwork: None,
         name: "New_SMD".into(),
         pads: ["2", "1"]
             .into_iter()
@@ -38,7 +39,7 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
             })
             .collect(),
     };
-    let command = ApplyFootprint { expected_project: before.id, expected: part.clone(), footprint: definition };
+    let command = ApplyFootprint { expected_cursor: None, expected_project: before.id, expected: part.clone(), footprint: definition };
     let result = engine.execute_typed(command.clone(), Origin::agent("library")).unwrap();
     assert_eq!(result.deltas.len(), 1);
     let after = engine.read(Clone::clone);
@@ -79,7 +80,12 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
     engine.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
     assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), after);
     assert_eq!(viamind_doc::file::from_str(&viamind_doc::file::to_string(&after)).unwrap(), after);
-    let empty = ApplyFootprint { expected_project: after.id, expected: changed.clone(), footprint: Footprint { name: "Empty".into(), pads: vec![] } };
+    let empty = ApplyFootprint {
+        expected_cursor: None,
+        expected_project: after.id,
+        expected: changed.clone(),
+        footprint: Footprint { artwork: None, name: "Empty".into(), pads: vec![] },
+    };
     engine.execute_typed(empty, Origin::User).unwrap();
     assert!(engine.read(|p| p.board.part(&id).unwrap().pads.as_ref().unwrap().0.is_empty()));
     engine.undo(Origin::User).unwrap();

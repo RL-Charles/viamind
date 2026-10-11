@@ -117,6 +117,9 @@ impl PartQuery {
         }
         viamind_doc::assembly::validate_metadata(page.iter().filter_map(|p| p.assembly.as_deref()))
             .map_err(|e| CommandError::invalid("assembly", e))?;
+        for part in &page {
+            crate::footprint_artwork::validate_part_artwork(part)?;
+        }
         result.parts = page.into_iter().cloned().collect();
         Ok(result)
     }

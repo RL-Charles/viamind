@@ -18,6 +18,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
             net: Some("SIGNAL".into()),
         };
         let part = Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -137,6 +138,7 @@ fn discovery_is_immutable_sorted_filtered_paginated_and_bounded() {
     let (mut project, ids) = fixture();
     project.board.parts.get_mut(&ids[1].part_id).unwrap().rotation_mdeg = 45_000;
     let legacy = Part {
+        artwork: None,
         assembly: None,
         schematic_symbol: None,
         schematic_package: None,

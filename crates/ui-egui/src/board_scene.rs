@@ -86,10 +86,34 @@ pub fn part_items(part: &Part) -> Vec<Item> {
             items.push(Item::new(Prim::Rect(pad.expand(0.05)), mask));
         }
     }
-    let (bw, bh) = (fp.body.0 / 2.0, fp.body.1 / 2.0);
-    let corners = [place(part, -bw, -bh), place(part, bw, -bh), place(part, bw, bh), place(part, -bw, bh)];
-    for i in 0..4 {
-        items.push(Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: 0.12 }, silk));
+    if let Some(artwork) = &part.artwork {
+        // Native/command admission validates256 rows before scene copies.
+        if artwork.validate().is_ok() {
+            items.reserve(artwork.primitive_count());
+            for line in &artwork.silkscreen {
+                items.push(Item::new(
+                    Prim::Segment {
+                        a: place(part, line.start.x.to_mm(), line.start.y.to_mm()),
+                        b: place(part, line.end.x.to_mm(), line.end.y.to_mm()),
+                        width: line.width.to_mm(),
+                    },
+                    silk,
+                ));
+            }
+            if let Some(courtyard) = &artwork.courtyard {
+                let corners = courtyard.corners().map(|p| place(part, p.x.to_mm(), p.y.to_mm()));
+                let layer = if part.side == Side::Bottom { LayerId::B_COURTYARD } else { LayerId::F_COURTYARD };
+                for i in 0..4 {
+                    items.push(Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: courtyard.width.to_mm() }, layer));
+                }
+            }
+        }
+    } else {
+        let (bw, bh) = (fp.body.0 / 2.0, fp.body.1 / 2.0);
+        let corners = [place(part, -bw, -bh), place(part, bw, -bh), place(part, bw, bh), place(part, -bw, bh)];
+        for i in 0..4 {
+            items.push(Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: 0.12 }, silk));
+        }
     }
     items
 }
@@ -196,6 +220,7 @@ mod tests {
 
     pub(super) fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
         Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -328,5 +353,44 @@ mod pad_tests {
         assert!((center.y - (20.0 + 2.0_f64.sqrt())).abs() < 1e-9);
         part.pads = Some(Pads(vec![]));
         assert!(part_items(&part).iter().all(|i| i.layer == LayerId::B_SILKS));
+    }
+}
+
+#[cfg(test)]
+mod artwork_tests {
+    use super::*;
+    use viamind_doc::{FootprintArtwork, RectangularCourtyard, SilkscreenSegment};
+    use viamind_geom::{Nm, Point};
+    #[test]
+    fn stored_artwork_exact_quarter_mirror_and_explicit_empty_suppression() {
+        for (side, angle, expected) in [
+            (Side::Top, 0, (-3, 5)),
+            (Side::Top, 90000, (5, 3)),
+            (Side::Bottom, 0, (3, 5)),
+            (Side::Bottom, 90000, (5, -3)),
+            (Side::Top, 180000, (3, -5)),
+            (Side::Top, 270000, (-5, -3)),
+            (Side::Bottom, 180000, (-3, -5)),
+            (Side::Bottom, 270000, (-5, 3)),
+        ] {
+            let mut p = super::tests::part("R_0603", angle, side);
+            p.artwork = Some(Box::new(FootprintArtwork {
+                silkscreen: vec![SilkscreenSegment { start: Point::new(Nm(-3), Nm(5)), end: Point::new(Nm(7), Nm(11)), width: Nm(3) }],
+                courtyard: Some(RectangularCourtyard { min: Point::new(Nm(-13), Nm(-17)), max: Point::new(Nm(19), Nm(23)), width: Nm(5) }),
+            }));
+            let layer = if side == Side::Top { LayerId::F_SILKS } else { LayerId::B_SILKS };
+            let items = part_items(&p);
+            let silk: Vec<_> = items.iter().filter(|i| i.layer == layer).collect();
+            assert_eq!(silk.len(), 1);
+            let Prim::Segment { a, width, .. } = silk[0].prim else { panic!("silk segment") };
+            assert!((a.x - (10.0 + f64::from(expected.0) / 1_000_000.0)).abs() < 1e-12);
+            assert!((a.y - (20.0 + f64::from(expected.1) / 1_000_000.0)).abs() < 1e-12);
+            assert_eq!(width, 0.000003);
+            assert_eq!(items.iter().filter(|i| matches!(i.layer, LayerId::F_COURTYARD | LayerId::B_COURTYARD)).count(), 4);
+            p.artwork = Some(Box::default());
+            assert_eq!(part_items(&p).iter().filter(|i| i.layer == layer).count(), 0);
+            p.artwork = None;
+            assert_eq!(part_items(&p).iter().filter(|i| i.layer == layer).count(), 4);
+        }
     }
 }

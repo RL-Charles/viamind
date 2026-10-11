@@ -375,6 +375,7 @@ fn real_candidate_text_growth_boundary_preserves_unused_large_metadata() {
     let (mut project, tid, _) = fixture();
     let huge = "x".repeat(3 * 1024 * 1024);
     let part = viamind_doc::Part {
+        artwork: None,
         id: ObjectId::new(),
         assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some(huge.clone()), ..Default::default() })),
         schematic_symbol: None,

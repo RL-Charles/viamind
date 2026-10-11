@@ -62,6 +62,8 @@ pub struct OutputJob {
     pub include_calibrated_placement: Option<bool>,
     #[serde(default, deserialize_with = "present_companion", skip_serializing_if = "Option::is_none")]
     pub include_populated_bom: Option<bool>,
+    #[serde(default, deserialize_with = "present_companion", skip_serializing_if = "Option::is_none")]
+    pub include_silkscreen: Option<bool>,
 }
 fn present_companion<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<bool>, D::Error> {
     bool::deserialize(deserializer).map(Some)
@@ -80,21 +82,27 @@ impl OutputJob {
             checks: None,
             include_calibrated_placement: None,
             include_populated_bom: None,
+            include_silkscreen: None,
         }
     }
     pub fn validate(&self) -> io::Result<()> {
         if self.format != "viamind-output-job"
-            || !matches!(self.version, 1..=3)
+            || !matches!(self.version, 1..=4)
             || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE)
         {
             return Err(invalid("unsupported output job format, version or profile"));
         }
-        if !matches!(
-            (self.version, self.include_calibrated_placement, self.include_populated_bom),
-            (1, None, None) | (2, Some(true), None) | (3, Some(true), Some(true))
-        ) {
+        let companions = (self.include_calibrated_placement, self.include_populated_bom);
+        let valid = match (self.version, self.include_silkscreen) {
+            (1, None) => companions == (None, None),
+            (2, None) => companions == (Some(true), None),
+            (3, None) => companions == (Some(true), Some(true)),
+            (4, Some(true)) => matches!(companions, (None | Some(true), None) | (Some(true), Some(true))),
+            _ => false,
+        };
+        if !valid {
             return Err(invalid(
-                "version1 forbids companions; version2 requires calibrated placement only; version3 requires both include_calibrated_placement and include_populated_bom true",
+                "version1 forbids companions; version2 requires calibrated placement only; version3 requires calibrated/populated; version4 requires include_silkscreen true and populated requires calibrated",
             ));
         }
         match (self.profile.as_str(), &self.checks) {
@@ -207,8 +215,13 @@ pub fn output_job_schema(action: &str) -> Value {
         "load" => json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{"path":path}}),
         "save" => json!({"type":"object","additionalProperties":false,"required":["path","job"],"properties":{"path":path,"job":{
             "type":"object","additionalProperties":false,"required":["format","version","name","profile"],
-            "properties":{"format":{"const":"viamind-output-job"},"version":{"enum":[1,2,3]},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks,"include_calibrated_placement":{"const":true},"include_populated_bom":{"const":true}},
-            "allOf":[{"oneOf":[{"properties":{"version":{"const":1}},"not":{"anyOf":[{"required":["include_calibrated_placement"]},{"required":["include_populated_bom"]}]}},{"properties":{"version":{"const":2}},"required":["include_calibrated_placement"],"not":{"required":["include_populated_bom"]}},{"properties":{"version":{"const":3}},"required":["include_calibrated_placement","include_populated_bom"]}]}],
+            "properties":{"format":{"const":"viamind-output-job"},"version":{"enum":[1,2,3,4]},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks,"include_calibrated_placement":{"const":true},"include_populated_bom":{"const":true},"include_silkscreen":{"const":true}},
+            "allOf":[{"oneOf":[
+                {"properties":{"version":{"const":1}},"not":{"anyOf":[{"required":["include_calibrated_placement"]},{"required":["include_populated_bom"]},{"required":["include_silkscreen"]}]}},
+                {"properties":{"version":{"const":2}},"required":["include_calibrated_placement"],"not":{"anyOf":[{"required":["include_populated_bom"]},{"required":["include_silkscreen"]}]}},
+                {"properties":{"version":{"const":3}},"required":["include_calibrated_placement","include_populated_bom"],"not":{"required":["include_silkscreen"]}},
+                {"properties":{"version":{"const":4}},"required":["include_silkscreen"],"if":{"required":["include_populated_bom"]},"then":{"required":["include_calibrated_placement"]}}
+            ]}],
             "oneOf":[{"properties":{"profile":{"const":"generic_outer_2layer"}},"not":{"required":["checks"]}},{"properties":{"profile":{"const":CHECKED_PROFILE}},"required":["checks"]}]
         }}}),
         _ => {
@@ -223,6 +236,8 @@ pub struct OutputJobSnapshot {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReleaseManifest<C> {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub footprint_artwork: Option<crate::FootprintArtworkSummary>,
     pub format: String,
     pub version: u32,
     pub project_id: String,
@@ -309,7 +324,10 @@ impl OutputJobSnapshot {
         } else {
             None
         };
-        let package = self.board.render(FabricationOptions { mask_expansion_mm: self.job.mask_expansion_mm })?;
+        let package = self.board.render(FabricationOptions {
+            mask_expansion_mm: self.job.mask_expansion_mm,
+            include_silkscreen: self.job.include_silkscreen == Some(true),
+        })?;
         let mut files = BTreeMap::new();
         let mut total = 0usize;
         for (name, data) in package.files {
@@ -365,6 +383,7 @@ impl OutputJobSnapshot {
             ]
         };
         let manifest = ReleaseManifest {
+            footprint_artwork: package.manifest.footprint_artwork,
             format: "viamind-output-release".into(),
             version: self.job.version,
             project_id: self.board.project.id.to_string(),

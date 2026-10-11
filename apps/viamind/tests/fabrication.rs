@@ -32,3 +32,44 @@ fn headless_cli_exports_real_package_and_refuses_overwrite_or_invalid_invocation
     assert!(!run(&["--export-gerber".as_ref(), "--open".as_ref(), native.as_os_str(), "--output".as_ref(), native.as_os_str()]).status.success());
     assert!(viamind_doc::file::load(native).is_ok());
 }
+
+#[test]
+fn actual_cli_legend_opt_in_and_explicit_artwork_view_layers() {
+    use serde_json::json;
+    use viamind_doc::file;
+    let temp = tempfile::tempdir().unwrap();
+    let mut p = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+    let part = p.board.parts.values_mut().next().unwrap();
+    part.artwork = Some(Box::new(serde_json::from_value(json!({"silkscreen":[{"start":{"x":-3,"y":5},"end":{"x":7,"y":11},"width":3}]})).unwrap()));
+    let native = temp.path().join("art.viamind.json");
+    file::save_new(&p, &native).unwrap();
+    let out = temp.path().join("Legend");
+    let output = run(&[
+        "--export-gerber".as_ref(),
+        "--include-silkscreen".as_ref(),
+        "--open".as_ref(),
+        native.as_os_str(),
+        "--output".as_ref(),
+        out.as_os_str(),
+    ]);
+    assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+    assert!(fs::read_to_string(out.join("top-silkscreen.gbr")).unwrap().contains("Legend,Top"));
+    assert!(fs::read_to_string(out.join("bottom-silkscreen.gbr")).unwrap().contains("Legend,Bot"));
+    let svg = temp.path().join("art.svg");
+    let output = run(&[
+        "--export-svg".as_ref(),
+        "--view-layers".as_ref(),
+        "top_silkscreen,top_courtyard,bottom_silkscreen,bottom_courtyard".as_ref(),
+        "--open".as_ref(),
+        native.as_os_str(),
+        "--output".as_ref(),
+        svg.as_os_str(),
+    ]);
+    assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+    assert!(fs::read_to_string(svg).unwrap().contains("<line "));
+    for args in [vec!["--include-silkscreen".as_ref()], vec!["--include-silkscreen".as_ref(), "--export-schematic-svg".as_ref()]] {
+        let output = run(&args);
+        assert!(!output.status.success());
+        assert!(String::from_utf8_lossy(&output.stderr).contains("requires --export-gerber"));
+    }
+}

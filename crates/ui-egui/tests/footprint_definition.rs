@@ -72,6 +72,17 @@ fn actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo() {
     click(&mut h, "Footprint definitions…");
     input(&mut h, "Footprint definition name", "Original odd Nm");
     row(&mut h, &old.pads.as_ref().unwrap().0[0].number);
+    click(&mut h, "Explicit footprint artwork");
+    click(&mut h, "Add blank silkscreen line");
+    for (label, value) in [
+        ("Silk 1 Start X", "-2.000003"),
+        ("Silk 1 Start Y", "1.000005"),
+        ("Silk 1 End X", "2.000007"),
+        ("Silk 1 End Y", "1.000005"),
+        ("Silk 1 Stroke width", "0.100003"),
+    ] {
+        input(&mut h, label, value);
+    }
     click(&mut h, "Preview detached footprint");
     let definition = h.state().footprint_definition.preview().unwrap();
     assert_eq!((definition.pads[0].position.x.0, definition.pads[0].width.0, definition.pads[0].height.0), (-500003, 1200003, 800001));
@@ -92,6 +103,8 @@ fn actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo() {
     assert_eq!(applied.position, old.position);
     assert_eq!(applied.schematic_symbol, old.schematic_symbol);
     assert_eq!(applied.assembly, old.assembly);
+    assert_eq!(applied.artwork, viamind_doc::footprint::load(&path).unwrap().artwork);
+    assert_eq!(applied.artwork.as_ref().unwrap().silkscreen[0].start.x.0, -2000003);
     assert_eq!(applied.pads.as_ref().unwrap().0[0].id, old.pads.as_ref().unwrap().0[0].id);
     assert_eq!(applied.pads.as_ref().unwrap().0[0].net, old.pads.as_ref().unwrap().0[0].net);
     UiAction::Undo.run(&engine, json!({})).unwrap();
@@ -126,9 +139,33 @@ fn actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retain
     assert!(!path.exists());
     assert!(h.state().footprint_definition.definition().is_err());
     input(&mut h, "Pad 1 width (mm)", "1.200003");
+    click(&mut h, "Explicit footprint artwork");
+    click(&mut h, "Add blank silkscreen line");
+    for (label, value) in [
+        ("Silk 1 Start X", "-2.000003"),
+        ("Silk 1 Start Y", "1.000005"),
+        ("Silk 1 End X", "2.000007"),
+        ("Silk 1 End Y", "1.000005"),
+        ("Silk 1 Stroke width", "0.100003"),
+    ] {
+        input(&mut h, label, value);
+    }
+    click(&mut h, "Preview detached footprint");
+    assert_eq!(h.state().footprint_definition.preview().unwrap().artwork.as_ref().unwrap().silkscreen[0].width.0, 100003);
     click(&mut h, "Save NEW footprint definition");
     wait(&mut h);
-    assert_eq!(viamind_doc::footprint::load(&path).unwrap().pads[0].width.0, 1200003);
+    let saved = viamind_doc::footprint::load(&path).unwrap();
+    assert_eq!(saved.pads[0].width.0, 1200003);
+    assert_eq!(saved.artwork.as_ref().unwrap().silkscreen[0].start.x.0, -2000003);
+    click(&mut h, "Reset to empty footprint");
+    input(&mut h, "Native footprint source path", path.to_str().unwrap());
+    click(&mut h, "Load native footprint definition");
+    wait(&mut h);
+    assert_eq!(h.state().footprint_definition.definition().unwrap(), saved);
+    for label in ["Save NEW footprint definition", "Preview detached footprint", "Close footprint definition"] {
+        assert!(h.ctx.content_rect().contains_rect(h.get_by_label(label).rect()));
+    }
+    click(&mut h, "Close footprint definition");
     assert_eq!(engine.session_state(), before);
 }
 #[test]

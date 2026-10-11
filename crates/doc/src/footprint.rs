@@ -33,12 +33,17 @@ pub struct FootprintPad {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Footprint {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub artwork: Option<Box<crate::FootprintArtwork>>,
     pub name: String,
     pub pads: Vec<FootprintPad>,
 }
 
 impl Footprint {
     pub fn validate(&self) -> Result<(), String> {
+        if let Some(artwork) = &self.artwork {
+            artwork.validate()?;
+        }
         let name_ok = |name: &str| !name.is_empty() && name.trim() == name && name.chars().count() <= 128 && !name.chars().any(char::is_control);
         if !name_ok(&self.name) {
             return Err("footprint name must be trimmed, nonempty, at most 128 characters and contain no controls".into());
@@ -60,10 +65,14 @@ impl Footprint {
         Ok(())
     }
 
-    /// Export only committed electrical geometry in the part's local frame.
+    /// Export committed pads and explicit artwork in the part's local frame.
     pub fn from_part(part: &crate::Part) -> Result<Self, String> {
+        if let Some(artwork) = &part.artwork {
+            artwork.validate()?;
+        }
         let pads = part.pads.as_ref().ok_or("apply explicit electrical pads before exporting a footprint")?;
         let footprint = Self {
+            artwork: part.artwork.clone(),
             name: part.footprint.clone(),
             pads: pads
                 .0
@@ -94,9 +103,17 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     if bytes.len() > MAX_BYTES {
         return Err("footprint file exceeds 1 MiB".into());
     }
+    let raw: serde_json::Value = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
+    let version = raw.get("version").and_then(serde_json::Value::as_u64);
+    let artwork = raw.get("footprint").and_then(|f| f.get("artwork"));
+    if (version == Some(1) && artwork.is_some()) || (version == Some(2) && !artwork.is_some_and(serde_json::Value::is_object)) {
+        return Err("library1 requires artwork missing; library2 requires non-null artwork object".into());
+    }
+    // Decode the original bounded bytes so duplicate fields remain visible to serde.
+    // The presence preflight must never become a lossy Value-to-typed roundtrip.
     let envelope: Envelope = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
-    if envelope.format != "viamind-footprint" || envelope.version != 1 {
-        return Err("expected viamind-footprint version 1".into());
+    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1 | 2) {
+        return Err("expected viamind-footprint version1 or2".into());
     }
     envelope.footprint.validate()?;
     Ok(envelope.footprint)
@@ -104,8 +121,12 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
 
 pub fn to_vec(footprint: &Footprint) -> Result<Vec<u8>, String> {
     footprint.validate()?;
-    let mut bytes = serde_json::to_vec_pretty(&Envelope { format: "viamind-footprint".into(), version: 1, footprint: footprint.clone() })
-        .map_err(|e| e.to_string())?;
+    let mut bytes = serde_json::to_vec_pretty(&Envelope {
+        format: "viamind-footprint".into(),
+        version: if footprint.artwork.is_some() { 2 } else { 1 },
+        footprint: footprint.clone(),
+    })
+    .map_err(|e| e.to_string())?;
     bytes.push(b'\n');
     if bytes.len() > MAX_BYTES {
         return Err("footprint file exceeds 1 MiB".into());
@@ -194,7 +215,7 @@ pub fn save_new(footprint: &Footprint, path: &Path, active_project: Option<&Path
 mod io_tests {
     use super::*;
     fn footprint() -> Footprint {
-        Footprint { name: "Original".into(), pads: Vec::new() }
+        Footprint { artwork: None, name: "Original".into(), pads: Vec::new() }
     }
     #[cfg(target_os = "linux")]
     #[test]

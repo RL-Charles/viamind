@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/viamind",
+  "sha256": "1798841869bd1e2b1b25c82b0ae88815942e67505b52f3c05b045d83ddeeba1d",
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/actual-production1/authored.viamind.json",
+  "checks": [
+    "live tool list has correct artwork writer admission",
+    "live trusted startup status exact",
+    "live writer/no-op call preserves complete captured session and native status",
+    "live initialized clean EOF exits successfully",
+    "approval tool list has correct artwork writer admission",
+    "approval trusted startup status exact",
+    "approval writer/no-op call preserves complete captured session and native status",
+    "approval initialized clean EOF exits successfully",
+    "read_only tool list has correct artwork writer admission",
+    "read_only trusted startup status exact",
+    "read_only writer/no-op call preserves complete captured session and native status",
+    "read_only initialized clean EOF exits successfully"
+  ]
+}

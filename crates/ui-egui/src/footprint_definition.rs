@@ -24,6 +24,7 @@ struct Pending {
 }
 #[derive(Default)]
 pub struct FootprintDefinitionUi {
+    artwork: crate::footprint_artwork::ArtworkEditor,
     open: bool,
     name: String,
     rows: Vec<Row>,
@@ -71,7 +72,9 @@ impl FootprintDefinitionUi {
                 Ok((LocalPosition { x: parse(&r.x)?, y: parse(&r.y)? }, parse(&r.width)?, parse(&r.height)?))
             })
             .collect::<Result<Vec<_>, String>>()?;
+        let artwork = self.artwork.definition()?;
         let footprint = Footprint {
+            artwork,
             name: self.name.clone(),
             pads: self
                 .rows
@@ -106,6 +109,7 @@ impl FootprintDefinitionUi {
         if self.busy() {
             return;
         }
+        self.artwork = Default::default();
         self.name.clear();
         self.rows.clear();
         self.preview = None;
@@ -113,6 +117,7 @@ impl FootprintDefinitionUi {
     }
     fn loaded(&mut self, footprint: Footprint) -> Result<(), String> {
         validate_definition(&footprint)?;
+        self.artwork = crate::footprint_artwork::ArtworkEditor::load(footprint.artwork.as_deref())?;
         self.name = footprint.name.clone();
         self.rows = footprint
             .pads
@@ -214,7 +219,7 @@ fn field_with_id(ui: &mut egui::Ui, label: &str, value: &mut String, chars: usiz
 }
 fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
     ui.label(format!(
-        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. No courtyard, mask, paste or manufacturing checks.",
+        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. No courtyard clearance, mask, paste or manufacturing checks.",
         footprint.pads.len()
     ));
     let (rect, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 200.0), egui::Sense::hover());
@@ -225,6 +230,24 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
         for (axis, (center, size)) in [(pad.position.x.0, pad.width.0), (pad.position.y.0, pad.height.0)].into_iter().enumerate() {
             low[axis] = low[axis].min(center as f64 - size as f64 / 2.0);
             high[axis] = high[axis].max(center as f64 + size as f64 / 2.0);
+        }
+    }
+    if let Some(artwork) = &footprint.artwork {
+        for line in &artwork.silkscreen {
+            for point in [line.start, line.end] {
+                for (axis, n) in [point.x.0, point.y.0].into_iter().enumerate() {
+                    low[axis] = low[axis].min(n as f64 - line.width.0 as f64 / 2.0);
+                    high[axis] = high[axis].max(n as f64 + line.width.0 as f64 / 2.0);
+                }
+            }
+        }
+        if let Some(c) = &artwork.courtyard {
+            for point in [c.min, c.max] {
+                for (axis, n) in [point.x.0, point.y.0].into_iter().enumerate() {
+                    low[axis] = low[axis].min(n as f64 - c.width.0 as f64 / 2.0);
+                    high[axis] = high[axis].max(n as f64 + c.width.0 as f64 / 2.0);
+                }
+            }
         }
     }
     let scale = (f64::from((rect.width() - 30.0).max(1.0)) / (high[0] - low[0]).max(1.0))
@@ -244,6 +267,20 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
         painter.rect_filled(egui::Rect::from_center_size(center, size), 0.0, egui::Color32::from_rgb(170, 105, 45));
         if size.x >= 16.0 && size.y >= 16.0 {
             painter.text(center, egui::Align2::CENTER_CENTER, &pad.number, egui::FontId::proportional(12.0), egui::Color32::WHITE);
+        }
+    }
+    if let Some(artwork) = &footprint.artwork {
+        let line = |a: viamind_geom::Point, b: viamind_geom::Point, width: Nm, color: egui::Color32| {
+            painter.line_segment([at(a.x.0 as f64, a.y.0 as f64), at(b.x.0 as f64, b.y.0 as f64)], ((width.0 as f64 * scale) as f32, color));
+        };
+        for s in &artwork.silkscreen {
+            line(s.start, s.end, s.width, egui::Color32::LIGHT_YELLOW);
+        }
+        if let Some(c) = &artwork.courtyard {
+            let corners = c.corners();
+            for i in 0..4 {
+                line(corners[i], corners[(i + 1) % 4], c.width, egui::Color32::LIGHT_RED);
+            }
         }
     }
     painter.circle_stroke(origin, 4.0, (1.5, egui::Color32::LIGHT_BLUE));
@@ -267,8 +304,16 @@ impl ViamindApp {
         let mut load = false;
         let mut save = false;
         let mut changed = false;
+        let mut close = false;
+        let body_height = (ui.ctx().content_rect().height() - 130.0).max(80.0);
         egui::Window::new("Detached footprint definition").open(&mut open).default_width(620.0)
-            .max_width((ui.ctx().content_rect().width() - 24.0).max(240.0)).vscroll(true).show(ui.ctx(), |ui| {
+            .max_width((ui.ctx().content_rect().width() - 24.0).max(240.0)).show(ui.ctx(), |ui| {
+                ui.horizontal(|ui| {
+                    save=ui.add_enabled(!busy,egui::Button::new("Save NEW footprint definition")).clicked();
+                    if ui.add_enabled(!busy,egui::Button::new("Preview detached footprint")).clicked() { match form.definition() {Ok(footprint)=>{form.preview=Some(footprint);form.message=None;},Err(error)=>form.message=Some(error)} }
+                    close=ui.button("Close footprint definition").clicked();
+                });
+                egui::ScrollArea::vertical().id_salt("footprint-definition-content").max_height(body_height).show(ui,|ui| {
                 ui.label("Create or edit a native rectangular SMD library independently of placed components. Exact local mm entry; no inferred pitch or manufacturing defaults.");
                 ui.add_enabled_ui(!busy, |ui| {
                     changed |= field(ui, "Native footprint source path", &mut form.source, 4096);
@@ -289,17 +334,17 @@ impl ViamindApp {
                     });
                     if let Some(i) = remove { form.rows.remove(i); changed = true; }
                     if ui.add_enabled(form.rows.len() < 1024, egui::Button::new("Add blank rectangular pad")).clicked() { form.add(); }
-                    if ui.button("Preview detached footprint").clicked() { match form.definition() { Ok(footprint) => { form.preview = Some(footprint); form.message = None; }, Err(error) => form.message = Some(error) } }
+                    changed |= form.artwork.show(ui);
                     changed |= field(ui, "NEW footprint definition path", &mut form.destination, 4096);
-                    save = ui.button("Save NEW footprint definition").clicked();
                 });
                 if busy { ui.horizontal(|ui| { ui.spinner(); ui.label("Definition file operation pending; draft fields and Reset are disabled."); }); }
                 if changed { form.changed(); }
                 if let Some(footprint) = &form.preview { preview(ui, footprint); }
                 ui.label("Saving preserves the project and editing drafts. Reuse the saved library separately in the electrical pad editor; matching numbers retain IDs and nets.");
                 if let Some(message) = &form.message { ui.label(message); }
+                });
             });
-        form.open = open;
+        form.open = open && !close;
         if load {
             form.start(engine.clone(), true, ui.ctx().clone());
         }
@@ -314,6 +359,7 @@ mod tests {
     use super::*;
     fn original() -> Footprint {
         Footprint {
+            artwork: None,
             name: "Original".into(),
             pads: vec![FootprintPad {
                 number: "1".into(),

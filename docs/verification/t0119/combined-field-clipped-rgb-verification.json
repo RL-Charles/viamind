@@ -1,0 +1,65 @@
+[
+  {
+    "name": "artwork-wide",
+    "png": "artwork-wide.png",
+    "pixels": [
+      2667,
+      1667
+    ],
+    "rgb_sha256": "b91bb16c697a48ba3cbe4e1cc4f801944e821fa8555f6938ac34077d612c4440",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p6",
+    "p6_sha256": "7ad11959593632145c6cd035513e129b99183d87bb7e630512c40af8a0034471",
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p7",
+    "p7_sha256": "7b7cebf438b3037cf8588388400ed4e3059d80ee628dc33f051b7330a569416e",
+    "rgba_sha256": "08b8637e9006ca09f15d41ed97c0b8f5a2436a987d525d74cc86f0abe38d6c3b",
+    "rgba_bytes": 17783556,
+    "alpha_min": 247,
+    "alpha_max": 255,
+    "nonopaque_alpha_pixels": 6890,
+    "all_rgba_bytes_retained": true,
+    "every_rgb_sample_matches_png": true,
+    "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+  },
+  {
+    "name": "artwork-compact",
+    "png": "artwork-compact.png",
+    "pixels": [
+      1067,
+      667
+    ],
+    "rgb_sha256": "1d4db4bac1db0490a993bbb135e3f517e0b51af1d207c6c10e1aace705e5eb79",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p6",
+    "p6_sha256": "95b46322559f53c42276ed1616fa8cf7e26a2038d42bca6541e9223b0f3596be",
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p7",
+    "p7_sha256": "e4c37b8256fad4f4667c7b550afb2850481a1ccafd8ab033cb37601929f19caf",
+    "rgba_sha256": "8f06ae5a52a46b98ee7ded3d8411acc29624d277961fa193e82056ca46e55aba",
+    "rgba_bytes": 2846756,
+    "alpha_min": 247,
+    "alpha_max": 255,
+    "nonopaque_alpha_pixels": 2192,
+    "all_rgba_bytes_retained": true,
+    "every_rgb_sample_matches_png": true,
+    "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+  },
+  {
+    "name": "board-wide",
+    "png": "board-wide.png",
+    "pixels": [
+      2667,
+      1667
+    ],
+    "rgb_sha256": "773e5c858eda7f10c5787b69d458999872c6c5125099e6244572feb2162bdec7",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p6",
+    "p6_sha256": "a147d9a546888b953a5ad9586df954b64c57e1c17c0ec8637f942165126c70d1",
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p7",
+    "p7_sha256": "d4b749455587757b1d5e051af7bc2ecc73e962165922144869ff0654911b9058",
+    "rgba_sha256": "bf774e2277b865074e5574f2b729938ef7f84dd4c1f6866b62d73c7d2095cd8b",
+    "rgba_bytes": 17783556,
+    "alpha_min": 242,
+    "alpha_max": 255,
+    "nonopaque_alpha_pixels": 6890,
+    "all_rgba_bytes_retained": true,
+    "every_rgb_sample_matches_png": true,
+    "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+  }
+]

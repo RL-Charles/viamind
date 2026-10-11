@@ -51,7 +51,10 @@ fn detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_iden
         let expected = engine.read(|p| p.board.part(&id).unwrap().clone());
         let old_pad = &expected.pads.as_ref().unwrap().0[0];
         engine
-            .import_footprint(FootprintFile { expected_project: before.project.id, expected: expected.clone(), path: output.clone() }, Origin::User)
+            .import_footprint(
+                FootprintFile { expected_cursor: None, expected_project: before.project.id, expected: expected.clone(), path: output.clone() },
+                Origin::User,
+            )
             .unwrap();
         let changed = engine.read(|p| p.board.part(&id).unwrap().clone());
         let pads = &changed.pads.as_ref().unwrap().0;

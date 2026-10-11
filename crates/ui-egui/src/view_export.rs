@@ -92,7 +92,7 @@ pub struct ViewExportUi {
     padding: String,
     crop: bool,
     region: [String; 4],
-    board_layers: [bool; 3],
+    board_layers: [bool; 7],
     schematic_layers: [bool; 5],
     worker: Option<Receiver<Result<Value, String>>>,
     message: Option<String>,
@@ -111,7 +111,7 @@ impl Default for ViewExportUi {
             padding: "1".into(),
             crop: false,
             region: ["0".into(), "0".into(), "30".into(), "20".into()],
-            board_layers: [true; 3],
+            board_layers: [true, true, true, false, false, false, false],
             schematic_layers: [true; 5],
             worker: None,
             message: None,
@@ -161,11 +161,19 @@ impl ViewExportUi {
             None
         };
         let (action, input) = if self.target == Target::Board {
-            let layers = [ViewLayer::BottomCopper, ViewLayer::TopCopper, ViewLayer::Outline]
-                .into_iter()
-                .zip(self.board_layers)
-                .filter_map(|(layer, on)| on.then_some(layer))
-                .collect();
+            let layers = [
+                ViewLayer::BottomCopper,
+                ViewLayer::TopCopper,
+                ViewLayer::Outline,
+                ViewLayer::BottomSilkscreen,
+                ViewLayer::TopSilkscreen,
+                ViewLayer::BottomCourtyard,
+                ViewLayer::TopCourtyard,
+            ]
+            .into_iter()
+            .zip(self.board_layers)
+            .filter_map(|(layer, on)| on.then_some(layer))
+            .collect();
             let options = SvgOptions { layers, width_px, height_px, padding_nm, region_nm };
             if self.format == Format::Png { viamind_render::validate_png_options(&options) } else { options.validate() }
                 .map_err(|e| e.to_string())?;
@@ -276,7 +284,7 @@ impl ViamindApp {
                 ui.horizontal(|ui| { field(ui, "Width (px)", &mut state.width, 65.0, 5); field(ui, "Height (px)", &mut state.height, 65.0, 5); });
                 ui.label("Dimensions: 1–4096 each; PNG and schematic views: at most 4,194,304 pixels.");
                 ui.horizontal(|ui| {
-                    if state.target == Target::Board { for (value, name) in state.board_layers.iter_mut().zip(["Bottom copper", "Top copper", "Outline"]) { ui.checkbox(value, name); } }
+                    if state.target == Target::Board { for (value, name) in state.board_layers.iter_mut().zip(["Bottom copper", "Top copper", "Outline", "Bottom silkscreen", "Top silkscreen", "Bottom courtyard", "Top courtyard"]) { ui.checkbox(value, name); } }
                     else { for (value, name) in state.schematic_layers.iter_mut().zip(["Wires", "Symbols", "Pins", "Junctions", "Labels"]) { ui.checkbox(value, name); } }
                 });
                 ui.checkbox(&mut state.crop, "Explicit crop (mm, X right / Y down)");

@@ -184,7 +184,8 @@ fn preflight(project: &Project, delta: &Delta, id: ObjectId, growth: usize, rule
     }
     crate::auto_drc::snapshot_budget_with_text_growth(project, 100_000, growth)
         .map_err(|e| CommandError::conflict(format!("property preflight cannot capture bounded board: {e}")))?;
-    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_without_assembly() };
+    let mut candidate =
+        Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_for_electrical_analysis() };
     delta.apply_to(&mut candidate);
     let report = viamind_drc::run_drc(&candidate, rules).map_err(|e| CommandError::invalid("rules", e.to_string()))?;
     if report.truncated || report.incomplete_reason.is_some() {
@@ -298,6 +299,7 @@ mod tests {
     fn borrowed_replacement_growth_is_reserved_before_clone_at_exact_text_boundary() {
         let mut p = Project::new("text boundary");
         let part = viamind_doc::Part {
+            artwork: None,
             id: ObjectId::new(),
             assembly: None,
             schematic_symbol: None,

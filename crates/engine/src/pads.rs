@@ -63,6 +63,7 @@ impl Command for SetPartPads {
                 net: p.net.map(|n| n.trim().to_owned()).filter(|n| !n.is_empty()),
             });
         }
+        crate::footprint_artwork::validate_part_artwork(current)?;
         let mut after = current.clone();
         after.pads = Some(Pads::try_from(pads).map_err(|e| CommandError::invalid("pads", e))?);
         if after == *current {

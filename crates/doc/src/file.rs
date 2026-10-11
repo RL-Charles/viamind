@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 12;
+pub const VERSION: u32 = 13;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -51,6 +51,8 @@ pub enum FileError {
     /// Electrical pad schema or identity invariant failed.
     #[error("invalid electrical pads: {0}")]
     Pads(String),
+    #[error("invalid footprint artwork: {0}")]
+    Artwork(String),
     #[error("invalid named-net minima: {0}")]
     NetRules(String),
     #[error("invalid assembly metadata: {0}")]
@@ -111,6 +113,7 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
     }
+    validate_artwork(&project)?;
     validate_net_rules(&project)?;
     validate_assembly(&project)?;
     validate_pads(&project)?;
@@ -143,6 +146,7 @@ pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileErr
 }
 
 fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
+    validate_artwork(project)?;
     validate_net_rules(project)?;
     validate_assembly(project)?;
     let io_err = |source| FileError::Io { path: path.to_owned(), source };
@@ -163,6 +167,7 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
+    let artwork_version = if project.board.parts.values().any(|p| p.artwork.is_some()) { 13 } else { 1 };
     let assembly_version =
         project.board.parts.values().filter_map(|p| p.assembly.as_ref()).map(|metadata| metadata.minimum_version()).max().unwrap_or(1);
     let geometry_version = if project.board.parts.values().any(|p| p.schematic_package.is_some()) {
@@ -182,7 +187,7 @@ pub fn minimum_version(project: &Project) -> u32 {
     } else {
         1
     };
-    geometry_version.max(assembly_version).max(crate::net_rules::minimum_rule_version(&project.board.net_rules))
+    geometry_version.max(assembly_version).max(artwork_version).max(crate::net_rules::minimum_rule_version(&project.board.net_rules))
 }
 /// Validate globally unique pad identities, including collisions with other objects.
 pub fn validate_pads(project: &Project) -> Result<(), FileError> {
@@ -245,4 +250,14 @@ pub fn validate_assembly(project: &Project) -> Result<(), FileError> {
 /// Borrowed policy validation shared by native save and typed in-memory consumers.
 pub fn validate_net_rules(project: &Project) -> Result<(), FileError> {
     crate::named_net_rule_budget(&project.board.net_rules).map(|_| ()).map_err(|e| FileError::NetRules(e.into()))
+}
+
+/// Validate borrowed noncopper geometry without copying it.
+pub fn validate_artwork(project: &Project) -> Result<(), FileError> {
+    for p in project.board.parts.values() {
+        if let Some(a) = &p.artwork {
+            a.validate().map_err(FileError::Artwork)?;
+        }
+    }
+    Ok(())
 }

@@ -321,7 +321,7 @@ impl ViamindApp {
                             source_cursor: *c,
                             placement: PackageComponentPlacement {
                                 package_id: self.package_component.package.expect("enabled package"),
-                                footprint: viamind_doc::footprint::Footprint { name: String::new(), pads: vec![] },
+                                footprint: viamind_doc::footprint::Footprint { artwork: None, name: String::new(), pads: vec![] },
                                 position: Point::new(Nm(x), Nm(y)),
                                 side: self.package_component.side,
                                 rotation_mdeg: self.package_component.rotation,
@@ -403,6 +403,7 @@ mod tests {
     }
     fn footprint(path: &std::path::Path) {
         let f = Footprint {
+            artwork: None,
             name: "Authored-14pad".into(),
             pads: (1..=14)
                 .map(|n| FootprintPad {
