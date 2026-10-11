@@ -31,7 +31,7 @@ fn click_track(h: &mut Harness<'_, ViamindApp>, x: f64, modifiers: Modifiers) {
         h.event(Event::ModifiersChanged(modifiers));
         h.event(Event::PointerMoved(pos));
         h.event(Event::PointerButton { pos, button: PointerButton::Primary, pressed, modifiers });
-        h.run_steps(2);
+        h.run_steps(1);
     }
     h.event(Event::ModifiersChanged(Modifiers::NONE));
     h.run_steps(1);
