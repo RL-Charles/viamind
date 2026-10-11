@@ -16,6 +16,61 @@ fn parse_csv(path: &Path) -> Value {
 }
 
 #[test]
+fn calibrated_placement_cli_is_display_free_exact_and_refuses_incomplete_native_replacement() {
+    let temp = tempfile::tempdir().unwrap();
+    let native = temp.path().join("calibration.json");
+    let output = temp.path().join("calibration.csv");
+    let engine = EngineHandle::new(Project::new("Calibration"));
+    let id = engine
+        .execute(
+            "add_part",
+            json!({"designator":"U1","value":"µ, \"demo\"","footprint":"asym","x_mm":10,"y_mm":20,"rotation_deg":90,"side":"bottom"}),
+            Origin::User,
+        )
+        .unwrap()
+        .created[0];
+    engine
+        .execute(
+            "set_part_assembly",
+            json!({"id":id,"assembly":{"mounting":"hybrid","placement":{"centroid_local":{"x":2_000_000,"y":1_000_000},"zero_axis_mdeg":37_125}}}),
+            Origin::User,
+        )
+        .unwrap();
+    engine.read(|p| file::save(p, &native)).unwrap();
+    let native_bytes = std::fs::read(&native).unwrap();
+    let run = |path: &Path, overwrite: bool| {
+        let mut cmd = Command::new(env!("CARGO_BIN_EXE_viamind"));
+        cmd.args(["--export-csv", "assembly_placement", "--open"])
+            .arg(&native)
+            .arg("--output")
+            .arg(path)
+            .env_remove("DISPLAY")
+            .env_remove("WAYLAND_DISPLAY");
+        if overwrite {
+            cmd.arg("--overwrite");
+        }
+        cmd.output().unwrap()
+    };
+    let result = run(&output, false);
+    assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
+    assert_eq!(std::fs::read_to_string(&output).unwrap(), engine.read(|p| viamind_fab::csv(p, viamind_fab::AssemblyCsv::AssemblyPlacement)).unwrap());
+    let rows = parse_csv(&output);
+    assert_eq!(rows[1][4], "hybrid");
+    assert_eq!(rows[1][5], "11.000000");
+    assert_eq!(rows[1][6], "-22.000000");
+    assert_eq!(rows[1][7], "232.875");
+    assert!(!run(&output, false).status.success());
+    assert!(run(&output, true).status.success());
+    assert!(!run(&native, true).status.success());
+    assert_eq!(std::fs::read(&native).unwrap(), native_bytes);
+    engine.execute("set_part_assembly", json!({"id":id,"assembly":{"mounting":"surface_mount"}}), Origin::User).unwrap();
+    engine.read(|p| file::save(p, &native)).unwrap();
+    let failed = temp.path().join("missing.csv");
+    assert!(!run(&failed, false).status.success());
+    assert!(!failed.exists());
+}
+
+#[test]
 fn cli_populated_bom_templates_match_shared_writer_and_preserve_native() {
     let directory = tempfile::tempdir().unwrap();
     let native = directory.path().join("source.json");

@@ -13,17 +13,7 @@ pub(crate) fn validate<'a>(parts: impl IntoIterator<Item = &'a Part>, kind: Asse
     let mut references = BTreeSet::new();
     for part in parts.into_iter().filter(|part| populated(part)) {
         let fail = |field, reason| invalid(format!("{}: component {:?} {field} {reason}", kind.name(), part.designator));
-        let reference = part.designator.as_bytes();
-        if reference.is_empty()
-            || reference.len() > 64
-            || !reference[0].is_ascii_alphabetic()
-            || !reference.iter().all(|byte| byte.is_ascii_alphanumeric() || *byte == b'_')
-        {
-            return Err(fail("designator", "needs 1–64 ASCII letters/digits/underscores, starting with a letter"));
-        }
-        if !references.insert(part.designator.to_ascii_uppercase()) {
-            return Err(fail("designator", "duplicates another included reference after ASCII case folding"));
-        }
+        validate_reference(part, &mut references, kind.name())?;
         let clean = |value: &str| value.trim() == value && !value.chars().any(char::is_control);
         if part.footprint.is_empty() || !clean(&part.footprint) {
             return Err(fail("footprint", "must be nonempty without control or edge whitespace"));
@@ -49,6 +39,21 @@ pub(crate) fn validate<'a>(parts: impl IntoIterator<Item = &'a Part>, kind: Asse
                 return Err(fail("value", "must have no control or edge whitespace"));
             }
         }
+    }
+    Ok(())
+}
+pub(crate) fn validate_reference(part: &Part, references: &mut BTreeSet<String>, kind: &str) -> io::Result<()> {
+    let fail = |reason| invalid(format!("{kind}: component {:?} designator {reason}", part.designator));
+    let reference = part.designator.as_bytes();
+    if reference.is_empty()
+        || reference.len() > 64
+        || !reference[0].is_ascii_alphabetic()
+        || !reference.iter().all(|byte| byte.is_ascii_alphanumeric() || *byte == b'_')
+    {
+        return Err(fail("needs 1–64 ASCII letters/digits/underscores, starting with a letter"));
+    }
+    if !references.insert(part.designator.to_ascii_uppercase()) {
+        return Err(fail("duplicates another included reference after ASCII case folding"));
     }
     Ok(())
 }

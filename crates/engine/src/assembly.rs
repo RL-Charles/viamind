@@ -17,7 +17,7 @@ pub struct SetPartAssembly {
 }
 impl Command for SetPartAssembly {
     const NAME: &'static str = "set_part_assembly";
-    const DESCRIPTION: &'static str = "Set explicit board-component manufacturer, MPN, supplier, supplier SKU and population in one undoable transaction. Null clears; all-default metadata normalizes to absent. Fields are 1–512 UTF-8 bytes, no controls/edge whitespace; project limit 2 MiB sourcing text/100000 metadata-bearing parts. Optional expected full Part and expected_project reject stale drafts. No identifier inference or lookup. Only sourcing_bom exports population; existing BOM/placement/job inventories remain unchanged.";
+    const DESCRIPTION: &'static str = "Set explicit board-component sourcing, population, optional mounting (surface_mount/through_hole/hybrid) and placement calibration in one undoable transaction. Placement has required centroid_local integer nm within ±10000mm and zero_axis_mdeg 0..359999 (local +X=0, -Y=90deg marker, not universal vendor zero). Null clears all; all-default metadata normalizes absent. Sourcing fields 1–512 UTF-8 bytes, no controls/edge whitespace; project limit 2MiB text/100000 metadata-bearing parts. Optional expected full Part and expected_project reject stale drafts. No inference/lookup. Calibrated placement and template BOMs apply population; existing BOM/placement/job inventory bytes remain unchanged.";
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
         let before = project.board.part(&self.id).ok_or_else(|| CommandError::not_found("part", self.id))?;
         if self.expected_project.is_some_and(|id| id != project.id) || self.expected.as_ref().is_some_and(|p| p != before) {

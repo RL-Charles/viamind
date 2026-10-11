@@ -11,6 +11,84 @@ fn sample() -> (EngineHandle, ObjectId) {
 fn metadata() -> Value {
     json!({"manufacturer":"µ Parts, \"demo\"","mpn":"USER-ENTERED","supplier":"Example supplier","supplier_sku":"USER-SKU","populate":false})
 }
+fn calibration() -> Value {
+    json!({"mounting":"surface_mount","placement":{"centroid_local":{"x":2_000_000,"y":1_000_000},"zero_axis_mdeg":37_125}})
+}
+#[test]
+fn calibration_is_guarded_versioned_undoable_and_every_historical_record_requires_nine() {
+    let (engine, id) = sample();
+    let original = engine.read(|p| p.board.parts[&id].clone());
+    let before = engine.read(Clone::clone);
+    engine
+        .execute(
+            "set_part_assembly",
+            json!({"id":id,"assembly":calibration(),"expected":original,"expected_project":before.id}),
+            Origin::agent("first"),
+        )
+        .unwrap();
+    let after = engine.read(Clone::clone);
+    assert_eq!(file::minimum_version(&after), 9);
+    let serialized = file::to_string(&after);
+    assert_eq!(file::from_str(&serialized).unwrap(), after);
+    let mut downgraded: Value = serde_json::from_str(&serialized).unwrap();
+    downgraded["version"] = json!(8);
+    assert!(file::from_str(&downgraded.to_string()).is_err());
+    assert_eq!(engine.query_parts(&PartQuery::default()).unwrap().parts[0].assembly, after.board.parts[&id].assembly);
+    let checkpoint = engine.session_state();
+    assert!(engine.execute("set_part_assembly", json!({"id":id,"assembly":null,"expected":original}), Origin::agent("stale")).is_err());
+    assert_eq!(engine.session_state(), checkpoint);
+    engine.undo(Origin::User).unwrap();
+    assert_eq!(engine.read(Clone::clone), before);
+    engine.redo(Origin::User).unwrap();
+    assert_eq!(engine.read(Clone::clone), after);
+    engine.execute("update_part", json!({"id":id,"side":"bottom","rotation_deg":33.7}), Origin::User).unwrap();
+    assert_eq!(engine.read(|p| p.board.parts[&id].assembly.clone()), after.board.parts[&id].assembly);
+    engine.execute("set_part_assembly", json!({"id":id,"assembly":null}), Origin::User).unwrap();
+    assert_eq!(engine.read(file::minimum_version), 1);
+    let mut bytes = Vec::new();
+    engine.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
+    assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), engine.read(Clone::clone));
+    let text = String::from_utf8(bytes).unwrap();
+    let old = text.replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":8");
+    assert!(EventLog::read_jsonl(old.as_bytes()).is_err(), "cleared intermediate calibration must retain its schema requirement");
+    // Clearing the only calibration in a version8 base cannot hide a before snapshot either.
+    let engine = EngineHandle::new(after.clone());
+    engine.execute("set_part_assembly", json!({"id":id,"assembly":null}), Origin::User).unwrap();
+    let event = engine.with_engine(|e| e.log().entries().last().unwrap().clone());
+    let mut base = before;
+    let mut header = json!({"format":"viamind-log","version":8,"base":base});
+    let old = format!("{header}\n{}\n", serde_json::to_string(&event).unwrap());
+    assert!(EventLog::read_jsonl(old.as_bytes()).is_err());
+    base = after;
+    header["base"] = serde_json::to_value(base).unwrap();
+    assert!(EventLog::read_jsonl(format!("{header}\n").as_bytes()).is_err());
+}
+
+#[test]
+fn invalid_calibration_and_missing_mounting_never_mutate_or_clone_into_queries() {
+    let (engine, id) = sample();
+    let before = engine.session_state();
+    for metadata in [
+        json!({"mounting":"unknown"}),
+        json!({"placement":{}}),
+        json!({"placement":{"centroid_local":{"x":10_000_000_001_i64,"y":0},"zero_axis_mdeg":0}}),
+        json!({"placement":{"centroid_local":{"x":0,"y":0},"zero_axis_mdeg":360_000}}),
+    ] {
+        assert!(engine.execute("set_part_assembly", json!({"id":id,"assembly":metadata}), Origin::User).is_err());
+        assert_eq!(engine.session_state(), before);
+    }
+    // Both independent optional fields are legitimate persisted data; the export enforces completeness.
+    for metadata in [json!({"mounting":"hybrid"}), json!({"placement":{"centroid_local":{"x":0,"y":0},"zero_axis_mdeg":0}})] {
+        engine.execute("set_part_assembly", json!({"id":id,"assembly":metadata}), Origin::User).unwrap();
+        assert_eq!(engine.read(file::minimum_version), 9);
+    }
+    let mut project = engine.read(Clone::clone);
+    project.board.parts.get_mut(&id).unwrap().assembly.as_mut().unwrap().placement.as_mut().unwrap().zero_axis_mdeg = -1;
+    assert!(PartQuery::default().run(&project).is_err());
+    let mut output = b"unchanged".to_vec();
+    assert!(viamind_engine::log::write_header(&mut output, &project).is_err());
+    assert_eq!(output, b"unchanged");
+}
 #[test]
 fn guarded_sourcing_roundtrips_native_log_and_history_and_preserves_other_edits() {
     let (engine, id) = sample();
@@ -42,7 +120,7 @@ fn guarded_sourcing_roundtrips_native_log_and_history_and_preserves_other_edits(
     lines[0]["version"] = json!(6);
     let old = lines.iter().map(Value::to_string).collect::<Vec<_>>().join("\n");
     assert!(EventLog::read_jsonl(std::io::Cursor::new(old)).is_err());
-    lines[0]["version"] = json!(7);
+    lines[0]["version"] = json!(viamind_engine::log::LOG_VERSION);
     let event = lines.iter_mut().skip(1).find(|v| v["deltas"][0]["after"]["assembly"].is_object()).unwrap();
     event["deltas"][0]["after"]["assembly"]["mpn"] = json!("x".repeat(513));
     let bad = lines.iter().map(Value::to_string).collect::<Vec<_>>().join("\n");
@@ -110,6 +188,7 @@ fn grouped_repeated_part_events_replay_and_oversized_before_records_never_write(
         supplier: Some("c".repeat(512)),
         supplier_sku: Some("d".repeat(512)),
         populate: true,
+        ..Default::default()
     };
     engine.execute("set_part_assembly", json!({"id":id,"assembly":metadata}), Origin::User).unwrap();
     let project = engine.read(Clone::clone);

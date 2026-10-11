@@ -73,6 +73,11 @@ struct SourcingDraft {
     supplier: String,
     supplier_sku: String,
     populate: bool,
+    mounting: Option<viamind_doc::MountingTechnology>,
+    calibrated: bool,
+    centroid_x: String,
+    centroid_y: String,
+    zero_axis: String,
 }
 impl SourcingDraft {
     fn from_part(part: &Part) -> Self {
@@ -83,9 +88,33 @@ impl SourcingDraft {
             supplier: m.and_then(|m| m.supplier.clone()).unwrap_or_default(),
             supplier_sku: m.and_then(|m| m.supplier_sku.clone()).unwrap_or_default(),
             populate: m.is_none_or(|m| m.populate),
+            mounting: m.and_then(|m| m.mounting),
+            calibrated: m.is_some_and(|m| m.placement.is_some()),
+            centroid_x: m.and_then(|m| m.placement).map(|p| p.centroid_local.x.to_mm().to_string()).unwrap_or_else(|| "0".into()),
+            centroid_y: m.and_then(|m| m.placement).map(|p| p.centroid_local.y.to_mm().to_string()).unwrap_or_else(|| "0".into()),
+            zero_axis: m.and_then(|m| m.placement).map(|p| (f64::from(p.zero_axis_mdeg) / 1000.0).to_string()).unwrap_or_else(|| "0".into()),
         }
     }
     fn metadata(&self) -> Result<viamind_doc::AssemblyMetadata, String> {
+        let placement = if self.calibrated {
+            let number = |label, text: &str, scale: f64, min: i64, max: i64| {
+                let value = text.parse::<f64>().ok().filter(|value| value.is_finite()).map(|value| (value * scale).round());
+                value
+                    .filter(|value| *value >= min as f64 && *value <= max as f64)
+                    .map(|value| value as i64)
+                    .ok_or_else(|| format!("{label} must be a finite value within the documented range"))
+            };
+            let centroid = |label, text: &str| number(label, text, 1_000_000.0, -10_000_000_000, 10_000_000_000).map(viamind_geom::Nm);
+            Some(viamind_doc::AssemblyPlacement {
+                centroid_local: viamind_geom::Point::new(
+                    centroid("Local centroid X", &self.centroid_x)?,
+                    centroid("Local centroid Y", &self.centroid_y)?,
+                ),
+                zero_axis_mdeg: i32::try_from(number("Local zero-axis marker", &self.zero_axis, 1000.0, 0, 359_999)?).expect("bounded millidegrees"),
+            })
+        } else {
+            None
+        };
         for s in [&self.manufacturer, &self.mpn, &self.supplier, &self.supplier_sku].into_iter().filter(|s| !s.is_empty()) {
             viamind_doc::AssemblyMetadata::validate_field(s).map_err(str::to_owned)?;
         }
@@ -96,13 +125,15 @@ impl SourcingDraft {
             supplier: field(&self.supplier),
             supplier_sku: field(&self.supplier_sku),
             populate: self.populate,
+            mounting: self.mounting,
+            placement,
         };
         metadata.validate().map_err(str::to_owned)?;
         Ok(metadata)
     }
     fn fields(&mut self, ui: &mut Ui) {
         ui.separator();
-        ui.heading("Assembly sourcing");
+        ui.heading("Assembly metadata");
         for (label, text) in [
             ("Manufacturer", &mut self.manufacturer),
             ("Manufacturer part number", &mut self.mpn),
@@ -113,7 +144,29 @@ impl SourcingDraft {
             ui.add(egui::TextEdit::singleline(text).char_limit(512).desired_width(150.0)).labelled_by(label.id);
         }
         ui.checkbox(&mut self.populate, "Populate component");
-        ui.label("Explicit user input; fields allow 512 UTF-8 bytes each. Only Sourcing BOM applies population; BOM/placement and saved jobs inventory all components.");
+        ui.label("Explicit sourcing fields allow 512 UTF-8 bytes each. Template BOMs and calibrated placement apply population; ordinary BOM/placement and saved jobs inventory all components.");
+        ui.horizontal_wrapped(|ui| {
+            ui.selectable_value(&mut self.mounting, None, "Mounting unspecified");
+            for (value, label) in [
+                (viamind_doc::MountingTechnology::SurfaceMount, "Surface mount"),
+                (viamind_doc::MountingTechnology::ThroughHole, "Through hole"),
+                (viamind_doc::MountingTechnology::Hybrid, "Hybrid"),
+            ] {
+                ui.selectable_value(&mut self.mounting, Some(value), label);
+            }
+        });
+        ui.checkbox(&mut self.calibrated, "Explicit placement calibration");
+        ui.add_enabled_ui(self.calibrated, |ui| {
+            for (label, text) in [
+                ("Local centroid X (mm)", &mut self.centroid_x),
+                ("Local centroid Y (mm)", &mut self.centroid_y),
+                ("Local zero-axis marker (deg)", &mut self.zero_axis),
+            ] {
+                let label = ui.label(label);
+                ui.add(egui::TextEdit::singleline(text).char_limit(64).desired_width(150.0)).labelled_by(label.id);
+            }
+        });
+        ui.label("Local X right/Y down, centroid ±10000 mm. Marker 0=+X, 90=−Y; range 0..359.999°. Calibrated CSV uses global X right/Y up, CCW top view, and reflects the marker on bottom (r+180−marker). No universal vendor zero or inferred centroid.");
     }
 }
 #[derive(Default)]
@@ -256,8 +309,8 @@ impl ViamindApp {
         delete |= ui.button("Delete part").clicked();
         ui.add_enabled_ui(enabled, |ui| {
             properties.sourcing.fields(ui);
-            apply_sourcing = ui.button("Apply sourcing").clicked();
-            clear_sourcing = ui.button("Clear sourcing").clicked();
+            apply_sourcing = ui.button("Apply assembly metadata").clicked();
+            clear_sourcing = ui.button("Clear assembly metadata").clicked();
         });
         if edit_pads {
             self.begin_edit_pads(part);

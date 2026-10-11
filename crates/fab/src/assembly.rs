@@ -21,9 +21,11 @@ pub enum AssemblyCsv {
     AssemblyBom,
     /// Individual component origins in global mm and CCW degrees.
     Placement,
+    /// Populated components with explicit local centroid and orientation marker.
+    AssemblyPlacement,
 }
 impl AssemblyCsv {
-    pub const ALL: [Self; 5] = [Self::Bom, Self::Placement, Self::SourcingBom, Self::CatalogBom, Self::AssemblyBom];
+    pub const ALL: [Self; 6] = [Self::Bom, Self::Placement, Self::SourcingBom, Self::CatalogBom, Self::AssemblyBom, Self::AssemblyPlacement];
     pub fn name(self) -> &'static str {
         match self {
             Self::Bom => "bom",
@@ -31,6 +33,7 @@ impl AssemblyCsv {
             Self::SourcingBom => "sourcing_bom",
             Self::CatalogBom => "catalog_bom",
             Self::AssemblyBom => "assembly_bom",
+            Self::AssemblyPlacement => "assembly_placement",
         }
     }
     pub fn from_name(name: &str) -> Option<Self> {
@@ -43,13 +46,14 @@ impl AssemblyCsv {
             Self::SourcingBom => "Sourcing BOM",
             Self::CatalogBom => "Catalog BOM",
             Self::AssemblyBom => "Assembly BOM",
+            Self::AssemblyPlacement => "Calibrated placement",
         }
     }
     fn needs_sourcing(self) -> bool {
         matches!(self, Self::SourcingBom | Self::CatalogBom | Self::AssemblyBom)
     }
     pub(crate) fn populated_only(self) -> bool {
-        matches!(self, Self::CatalogBom | Self::AssemblyBom)
+        matches!(self, Self::CatalogBom | Self::AssemblyBom | Self::AssemblyPlacement)
     }
 }
 
@@ -85,7 +89,7 @@ pub fn assembly_schema() -> serde_json::Value {
 /// Immutable component headers; unrelated pads, copper and schematic data are never copied.
 pub struct AssemblySnapshot {
     parts: Vec<Part>,
-    sourcing: bool,
+    captured_kind: AssemblyCsv,
     _permit: crate::snapshot::Permit,
 }
 impl AssemblySnapshot {
@@ -107,7 +111,7 @@ impl AssemblySnapshot {
             if kind.needs_sourcing()
                 && let Some(metadata) = &part.assembly
             {
-                metadata.validate().map_err(crate::snapshot::invalid)?;
+                metadata.validate_sourcing().map_err(crate::snapshot::invalid)?;
                 for s in metadata.strings() {
                     text.add(s)?;
                 }
@@ -115,7 +119,9 @@ impl AssemblySnapshot {
         }
         // Reference/key allocations and template-specific validation follow the
         // borrowed count/text preflight and precede any component/string copies.
-        if kind.populated_only() {
+        if kind == AssemblyCsv::AssemblyPlacement {
+            crate::assembly_placement::validate(project.board.parts.values())?;
+        } else if kind.populated_only() {
             crate::assembly_templates::validate(project.board.parts.values(), kind)?;
         }
         let parts = project
@@ -123,7 +129,27 @@ impl AssemblySnapshot {
             .parts
             .values()
             .map(|p| Part {
-                assembly: if kind.needs_sourcing() { p.assembly.clone() } else { None },
+                assembly: p.assembly.as_ref().and_then(|metadata| {
+                    if kind.needs_sourcing() {
+                        Some(Box::new(viamind_doc::AssemblyMetadata {
+                            manufacturer: metadata.manufacturer.clone(),
+                            mpn: metadata.mpn.clone(),
+                            supplier: metadata.supplier.clone(),
+                            supplier_sku: metadata.supplier_sku.clone(),
+                            populate: metadata.populate,
+                            ..Default::default()
+                        }))
+                    } else if kind == AssemblyCsv::AssemblyPlacement {
+                        Some(Box::new(viamind_doc::AssemblyMetadata {
+                            populate: metadata.populate,
+                            mounting: metadata.mounting,
+                            placement: metadata.placement,
+                            ..Default::default()
+                        }))
+                    } else {
+                        None
+                    }
+                }),
                 id: p.id,
                 designator: p.designator.clone(),
                 value: p.value.clone(),
@@ -135,7 +161,7 @@ impl AssemblySnapshot {
                 schematic_symbol: None,
             })
             .collect();
-        Ok(Self { parts, sourcing: kind.needs_sourcing(), _permit: permit })
+        Ok(Self { parts, captured_kind: kind, _permit: permit })
     }
     pub fn component_count(&self) -> usize {
         self.parts.len()
@@ -150,8 +176,11 @@ impl AssemblySnapshot {
     }
     /// Render the unchanged generic CSV format, bounded to32 MiB.
     pub fn csv(&self, kind: AssemblyCsv) -> io::Result<String> {
-        if kind.needs_sourcing() && !self.sourcing {
+        if kind.needs_sourcing() && !self.captured_kind.needs_sourcing() {
             return Err(crate::snapshot::invalid("sourcing and template BOMs require a sourcing-aware capture"));
+        }
+        if kind == AssemblyCsv::AssemblyPlacement && self.captured_kind != kind {
+            return Err(crate::snapshot::invalid("calibrated placement requires a calibration-aware capture"));
         }
         render_csv(&self.parts, kind)
     }
@@ -193,6 +222,10 @@ pub(crate) fn render_csv_limited<'a>(parts: impl IntoIterator<Item = &'a Part>, 
     let mut parts: Vec<_> = parts.into_iter().collect();
     parts.sort_by_key(|part| (&part.designator, part.id));
     match kind {
+        AssemblyCsv::AssemblyPlacement => {
+            crate::assembly_placement::validate(parts.iter().copied())?;
+            return crate::assembly_placement::render(&parts, limit);
+        }
         AssemblyCsv::CatalogBom | AssemblyCsv::AssemblyBom => {
             crate::assembly_templates::validate(parts.iter().copied(), kind)?;
             return crate::assembly_templates::render(&parts, kind, limit);
@@ -286,7 +319,7 @@ pub(crate) fn render_csv_limited<'a>(parts: impl IntoIterator<Item = &'a Part>, 
 }
 
 // Integer formatting keeps the full i64 nanometre range exact, including MIN.
-fn fixed(value: i64, places: u32) -> String {
+pub(crate) fn fixed(value: i64, places: u32) -> String {
     let magnitude = i128::from(value).abs();
     let scale = 10_i128.pow(places);
     let sign = if value < 0 { "-" } else { "" };
