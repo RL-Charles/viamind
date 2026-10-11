@@ -9,5 +9,17 @@ repository.workspace = true
 [lints]
 workspace = true
 
+[[bin]]
+name = "viamind-mcp"
+path = "src/bin/viamind-mcp.rs"
+
 [dependencies]
 viamind-engine.workspace = true
+rmcp = { workspace = true, features = ["server", "transport-io"] }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "io-std"] }
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["process", "io-util", "time"] }
