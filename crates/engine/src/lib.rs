@@ -83,6 +83,7 @@ pub use route_terminals::{
 pub mod routing;
 pub use route_endpoints::{PadEndpointId, RouteEndpoint, RouteEndpointPage, RouteEndpointQuery, RouteEndpointSnapshot, RoutePadPolyline};
 pub use routing::RoutePolyline;
+pub mod pcb_branches;
 pub mod placement;
 pub mod query;
 pub mod registry;
