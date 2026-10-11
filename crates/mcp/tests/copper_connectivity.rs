@@ -33,6 +33,7 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
             net: Some("N".into()),
         };
         let part = Part {
+            artwork: None,
             assembly: None,
             id: ObjectId::new(),
             designator: format!("J{i}"),

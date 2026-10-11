@@ -169,6 +169,7 @@ fn make_part(placement: &PackageComponentPlacement, plan: &Plan) -> Result<Part,
         })
         .collect::<Vec<_>>();
     Ok(Part {
+        artwork: placement.footprint.artwork.clone(),
         assembly: None,
         schematic_symbol: None,
         schematic_package: Some(placement.package_id),

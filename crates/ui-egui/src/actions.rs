@@ -100,6 +100,7 @@ ui_actions! {
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
+    SetFootprintArtwork => (viamind_engine::SetFootprintArtwork::NAME, input_schema::<viamind_engine::SetFootprintArtwork>(), set_footprint_artwork),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
     PlanPadWalkaround => ("plan_pad_walkaround",input_schema::<viamind_engine::RoutePadWalkaround>(),plan_pad_walkaround),
@@ -503,4 +504,8 @@ fn query_symbol_packages(engine: &EngineHandle, input: Value) -> Result<Value, E
             .map_err(|error| EngineError::Command { command: "query_symbol_packages".into(), error })?,
     )
     .map_err(encode_error)
+}
+
+fn set_footprint_artwork(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetFootprintArtwork::NAME, input, Origin::User)?).map_err(encode_error)
 }

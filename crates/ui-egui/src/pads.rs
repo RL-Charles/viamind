@@ -41,22 +41,25 @@ impl Row {
     }
 }
 struct Draft {
+    cursor: viamind_engine::EventCursor,
     project_id: ObjectId,
     original: Part,
     rows: Vec<Row>,
 }
 #[derive(Default)]
 pub struct PadsUi {
+    pub(crate) artwork: Option<crate::footprint_artwork::ArtworkDraft>,
     draft: Option<Draft>,
     message: Option<String>,
     library_path: String,
 }
 impl PadsUi {
     pub(crate) fn editing(&self) -> bool {
-        self.draft.is_some()
+        self.draft.is_some() || self.artwork.is_some()
     }
     pub(crate) fn cancel(&mut self) {
         self.draft = None;
+        self.artwork = None;
         self.message = None;
     }
 }
@@ -90,10 +93,15 @@ impl ViamindApp {
             None => crate::board_scene::preview_pad_inputs(&part),
         };
         let Some(project_id) = self.design.as_ref().map(|d| d.engine.read(|p| p.id)) else { return };
-        self.pads.draft = Some(Draft { project_id, original: part, rows: inputs.into_iter().map(Row::from_input).collect() });
+        let cursor = self.design.as_ref().unwrap().engine.event_cursor();
+        self.pads.draft = Some(Draft { cursor, project_id, original: part, rows: inputs.into_iter().map(Row::from_input).collect() });
         self.pads.message = None;
     }
     pub(crate) fn pads_dialog(&mut self, ui: &mut egui::Ui) {
+        if self.pads.artwork.is_some() {
+            self.footprint_artwork_dialog(ui);
+            return;
+        }
         let Some(draft) = &mut self.pads.draft else { return };
         let mut apply = false;
         let mut cancel = false;
@@ -159,7 +167,7 @@ impl ViamindApp {
             let result = self.design.as_ref().ok_or_else(|| "No active design".to_owned()).and_then(|design| {
                 let action = if import { UiAction::ImportFootprint } else { UiAction::ExportFootprint };
                 action
-                    .run(&design.engine, json!({"expected_project":draft.project_id,"expected":draft.original,"path":self.pads.library_path}))
+                    .run(&design.engine, json!({"expected_cursor":draft.cursor,"expected_project":draft.project_id,"expected":draft.original,"path":self.pads.library_path}))
                     .map_err(|e| e.to_string())
             });
             match result {

@@ -76,7 +76,12 @@ impl EngineHandle {
                 return Err(CommandError::conflict("walkaround session changed; restart with the current project and full cursor"));
             }
             capture(e.project())?;
-            Ok(Project { id: e.project().id, name: String::new(), schematic: Default::default(), board: e.project().board.clone_without_assembly() })
+            Ok(Project {
+                id: e.project().id,
+                name: String::new(),
+                schematic: Default::default(),
+                board: e.project().board.clone_for_electrical_analysis(),
+            })
         })?;
         prepare(&project, input).map(|(plan, _)| plan)
     }

@@ -299,6 +299,7 @@ impl ViamindApp {
             ui.label(message);
         }
         let edit_pads = ui.button("Edit electrical pads…").clicked();
+        let edit_artwork = ui.button("Edit footprint artwork").clicked();
         let mut apply = false;
         let mut reload = false;
         let mut delete = false;
@@ -312,6 +313,9 @@ impl ViamindApp {
             apply_sourcing = ui.button("Apply assembly metadata").clicked();
             clear_sourcing = ui.button("Clear assembly metadata").clicked();
         });
+        if edit_artwork {
+            self.begin_edit_footprint_artwork(part.clone());
+        }
         if edit_pads {
             self.begin_edit_pads(part);
             return;

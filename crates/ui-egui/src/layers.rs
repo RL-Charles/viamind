@@ -19,6 +19,8 @@ impl LayerId {
     pub const F_SILKS: Self = Self(37);
     pub const B_MASK: Self = Self(38);
     pub const F_MASK: Self = Self(39);
+    pub const B_COURTYARD: Self = Self(46);
+    pub const F_COURTYARD: Self = Self(47);
     pub const EDGE_CUTS: Self = Self(44);
     /// Plated through-holes; a display layer, not a fabrication layer.
     pub const VIAS: Self = Self(100);
@@ -35,6 +37,7 @@ impl LayerId {
 pub enum LayerKind {
     Copper,
     Silkscreen,
+    Courtyard,
     SolderMask,
     EdgeCuts,
     Vias,
@@ -93,6 +96,7 @@ impl LayerStack {
         let rgb = Color32::from_rgb;
         let mut stack = Self::new();
         stack.push(Layer::new(LayerId::B_SILKS, "B.SilkS", LayerKind::Silkscreen, rgb(232, 178, 167), 0.9));
+        stack.push(Layer::new(LayerId::B_COURTYARD, "B.Courtyard", LayerKind::Courtyard, rgb(120, 160, 210), 0.8));
         stack.push(Layer::new(LayerId::B_MASK, "B.Mask", LayerKind::SolderMask, rgb(2, 255, 238), 0.25));
         stack.push(Layer::new(LayerId::B_CU, "B.Cu", LayerKind::Copper, rgb(70, 110, 220), 0.78));
         // Inner layers from the back up, cycling through distinct colours.
@@ -105,6 +109,7 @@ impl LayerStack {
         stack.push(Layer::new(LayerId::VIAS, "Vias", LayerKind::Vias, rgb(210, 190, 110), 1.0));
         stack.push(Layer::new(LayerId::F_MASK, "F.Mask", LayerKind::SolderMask, rgb(216, 100, 255), 0.25));
         stack.push(Layer::new(LayerId::F_SILKS, "F.SilkS", LayerKind::Silkscreen, rgb(242, 237, 161), 0.9));
+        stack.push(Layer::new(LayerId::F_COURTYARD, "F.Courtyard", LayerKind::Courtyard, rgb(200, 120, 210), 0.8));
         stack.push(Layer::new(LayerId::EDGE_CUTS, "Edge.Cuts", LayerKind::EdgeCuts, rgb(208, 210, 205), 1.0));
         stack.active = LayerId::F_CU;
         stack
@@ -202,7 +207,7 @@ mod tests {
         assert_eq!(stack.by_name("In2.Cu").map(|l| l.id), Some(LayerId::IN2_CU));
 
         let two = LayerStack::pcb_default(2);
-        assert_eq!(two.len(), 8);
+        assert_eq!(two.len(), 10);
         assert!(two.layers().iter().filter(|l| l.kind == LayerKind::Copper).count() == 2);
         assert_eq!(LayerStack::pcb_default(8).layers().iter().filter(|l| l.kind == LayerKind::Copper).count(), 8);
     }

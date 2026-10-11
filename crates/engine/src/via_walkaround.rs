@@ -69,7 +69,7 @@ impl EngineHandle {
 }
 fn capture(project: &Project) -> Result<Project, CommandError> {
     budget(project)?;
-    Ok(Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_without_assembly() })
+    Ok(Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_for_electrical_analysis() })
 }
 fn invalid(message: impl Into<String>) -> CommandError {
     CommandError::invalid("via_walkaround", message)
@@ -154,6 +154,7 @@ mod tests {
     fn bounded_geometry_capture_omits_unused_invalid_sourcing() {
         let mut project = Project::new("Not needed by routing");
         let part = viamind_doc::Part {
+            artwork: None,
             id: ObjectId::new(),
             schematic_symbol: None,
             schematic_package: None,
@@ -171,7 +172,7 @@ mod tests {
         assert!(viamind_doc::file::validate_assembly(&project).is_err());
         let snapshot = capture(&project).unwrap();
         assert!(snapshot.board.parts[&id].assembly.is_none());
-        assert_eq!(snapshot.board.parts[&id], project.board.parts[&id].clone_without_assembly());
+        assert_eq!(snapshot.board.parts[&id], project.board.parts[&id].clone_for_electrical_analysis());
         assert!(snapshot.name.is_empty());
         assert_eq!(project.board.parts[&id].assembly.as_ref().unwrap().mpn.as_ref().unwrap().len(), 3 * 1024 * 1024);
     }

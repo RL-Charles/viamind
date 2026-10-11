@@ -24,6 +24,7 @@ struct Pending {
 }
 #[derive(Default)]
 pub struct FootprintDefinitionUi {
+    artwork: crate::footprint_artwork::ArtworkEditor,
     open: bool,
     name: String,
     rows: Vec<Row>,
@@ -71,7 +72,9 @@ impl FootprintDefinitionUi {
                 Ok((LocalPosition { x: parse(&r.x)?, y: parse(&r.y)? }, parse(&r.width)?, parse(&r.height)?))
             })
             .collect::<Result<Vec<_>, String>>()?;
+        let artwork = self.artwork.definition()?;
         let footprint = Footprint {
+            artwork,
             name: self.name.clone(),
             pads: self
                 .rows
@@ -106,6 +109,7 @@ impl FootprintDefinitionUi {
         if self.busy() {
             return;
         }
+        self.artwork = Default::default();
         self.name.clear();
         self.rows.clear();
         self.preview = None;
@@ -113,6 +117,7 @@ impl FootprintDefinitionUi {
     }
     fn loaded(&mut self, footprint: Footprint) -> Result<(), String> {
         validate_definition(&footprint)?;
+        self.artwork = crate::footprint_artwork::ArtworkEditor::load(footprint.artwork.as_deref())?;
         self.name = footprint.name.clone();
         self.rows = footprint
             .pads
@@ -214,7 +219,7 @@ fn field_with_id(ui: &mut egui::Ui, label: &str, value: &mut String, chars: usiz
 }
 fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
     ui.label(format!(
-        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. No courtyard, mask, paste or manufacturing checks.",
+        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. No courtyard clearance, mask, paste or manufacturing checks.",
         footprint.pads.len()
     ));
     let (rect, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 200.0), egui::Sense::hover());
@@ -289,6 +294,7 @@ impl ViamindApp {
                     });
                     if let Some(i) = remove { form.rows.remove(i); changed = true; }
                     if ui.add_enabled(form.rows.len() < 1024, egui::Button::new("Add blank rectangular pad")).clicked() { form.add(); }
+                    changed |= form.artwork.show(ui);
                     if ui.button("Preview detached footprint").clicked() { match form.definition() { Ok(footprint) => { form.preview = Some(footprint); form.message = None; }, Err(error) => form.message = Some(error) } }
                     changed |= field(ui, "NEW footprint definition path", &mut form.destination, 4096);
                     save = ui.button("Save NEW footprint definition").clicked();
@@ -314,6 +320,7 @@ mod tests {
     use super::*;
     fn original() -> Footprint {
         Footprint {
+            artwork: None,
             name: "Original".into(),
             pads: vec![FootprintPad {
                 number: "1".into(),

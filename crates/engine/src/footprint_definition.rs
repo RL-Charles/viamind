@@ -27,6 +27,9 @@ pub struct FootprintDefinitionSaved {
 
 /// Bound borrowed text/counts before native serialization clones geometry.
 pub fn validate_definition(footprint: &Footprint) -> Result<(), String> {
+    if let Some(artwork) = &footprint.artwork {
+        artwork.validate()?;
+    }
     if footprint.pads.len() > 1024 || footprint.name.len() > 512 || footprint.pads.iter().any(|p| p.number.len() > 512) {
         return Err("footprint definitions require at most 1024 pads and name/number fields at most 512 UTF-8 bytes".into());
     }
@@ -67,7 +70,10 @@ mod tests {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("new.json");
         let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
-        let input = SaveFootprintDefinition { footprint: Footprint { name: "Empty explicit definition".into(), pads: vec![] }, path: path.clone() };
+        let input = SaveFootprintDefinition {
+            footprint: Footprint { artwork: None, name: "Empty explicit definition".into(), pads: vec![] },
+            path: path.clone(),
+        };
         let peer = engine.clone();
         let mut after = None;
         assert!(

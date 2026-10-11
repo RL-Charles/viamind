@@ -115,6 +115,7 @@ fn branches_width_net_diagonal_and_unselected_neighbors_are_retained_without_eve
 fn pad(project: &mut Project, center: Point, side: Side, rotation: i32) {
     let local = p(123, 129);
     let mut part = Part {
+        artwork: None,
         id: ObjectId::new(),
         schematic_symbol: None,
         schematic_package: None,

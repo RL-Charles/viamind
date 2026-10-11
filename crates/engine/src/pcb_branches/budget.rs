@@ -48,6 +48,10 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
     add(project.board.net_rules.len())?;
     add(project.schematic.sheets.len())?;
     for part in project.board.parts.values() {
+        if let Some(artwork) = &part.artwork {
+            add(artwork.structural_rows())?;
+            artwork.validate().map_err(BranchError::invalid)?;
+        }
         if let Some(pads) = &part.pads {
             add(pads.0.len())?;
         }
@@ -118,11 +122,15 @@ impl Serialize for BorrowedPart<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let p = self.0;
         let fields = 7
+            + usize::from(p.artwork.is_some())
             + usize::from(p.assembly.is_some())
             + usize::from(p.schematic_symbol.is_some())
             + usize::from(p.schematic_package.is_some())
             + usize::from(p.pads.is_some());
         let mut s = serializer.serialize_struct("Part", fields)?;
+        if let Some(artwork) = &p.artwork {
+            s.serialize_field("artwork", artwork)?;
+        }
         if let Some(assembly) = &p.assembly {
             s.serialize_field("assembly", assembly)?;
         }
@@ -156,6 +164,7 @@ mod tests {
     fn borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text() {
         let mut p = Project::new("quotes\" newline\n unicodeλ");
         let part = Part {
+            artwork: None,
             id: ObjectId::new(),
             assembly: None,
             schematic_symbol: None,
@@ -189,6 +198,13 @@ mod tests {
             assert_eq!(borrowed, native, "absent/single-symbol/complete-package field order and skips must match native bytes");
             assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
             assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+            p.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
+            let native = serde_json::to_vec(&p).unwrap();
+            let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
+            assert_eq!(borrowed, native, "explicit artwork field order must match exactly");
+            assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
+            assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+            p.board.parts.get_mut(&id).unwrap().artwork = None;
         }
     }
 }
