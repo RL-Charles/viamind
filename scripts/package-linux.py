@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and publish a new Linux tarball directory; requires Python 3.11+."""
+"""Build and publish a new Linux tarball directory; requires Python 3.12+."""
 import argparse
 import ctypes
 import hashlib
@@ -173,6 +173,8 @@ def main():
     parser.add_argument("output", type=Path, help="new output directory (parent must exist)")
     parser.add_argument("--offline", action="store_true", help="use only cached Cargo dependencies")
     args = parser.parse_args()
+    if sys.version_info < (3, 12):
+        parser.error("Python 3.12 or newer is required for safe archive verification")
     if not sys.platform.startswith("linux"):
         parser.error("this initial bundle targets Linux")
     output = args.output.absolute()

@@ -31,7 +31,7 @@ no installation. AppImage/Flatpak packaging and macOS/Windows are future work.
 
 ## Build a bundle from source
 
-Requires a native GNU/Linux Rust toolchain, Python 3.11+, Cargo dependencies and
+Requires a native GNU/Linux Rust toolchain, Python 3.12+, Cargo dependencies and
 the normal Linux build libraries. Choose a new output directory whose parent
 exists:
 
