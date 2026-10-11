@@ -1,0 +1,95 @@
+{
+  "ticket": "T-0109",
+  "spec_approved_before_code": "c0b25d5a2edc4631a2eb58c7a94e9191017e184d",
+  "full_source": "b83293fb964fa4ca7f94c2fce6794e04009e1cd0",
+  "historical_base": "c58193c",
+  "production": {
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0109/production-b83293fb964f",
+    "sha256": "5a160c98758db56dd8db9918d5f6f9d6f3fbe79254e8ff43865b24b787862bca",
+    "pid": 2047665,
+    "endpoint": "http://127.0.0.1:7939/mcp",
+    "actual_stdio_checks": 27,
+    "actual_two_client_http_checks": 27,
+    "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0109/http-proof/owned.viamind.json",
+    "native_sha256": "afed4f4f856126d71ed2b539c73daa56871f48b3d8368852dad0422bb352a855"
+  },
+  "gates": {
+    "workspace_passed": 756,
+    "failed": 0,
+    "ignored": 1,
+    "fmt": true,
+    "strict_alltarget_workspace_clippy": true,
+    "workspace_build": true,
+    "focused_passed": 20,
+    "actual_tools": 90,
+    "exact_catalog_drift": true,
+    "isolated_workflow_checks": 18,
+    "tooling_tests": 13
+  },
+  "native_scope": "Cua launched actual retained production and fresh1568x980 screenshot viewed. Degraded AX metadata; screenshot shows owned empty document only, no DRC checked-state or new UI action claim. Backend observations have actual production transport provenance, deterministic race scheduling has separate engine tests.",
+  "integration": {
+    "state": "pending exact final T108 predecessor; one combined scoped gate and exact-head CI required"
+  },
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "5aa66e8a45af4b12febd5f466279633b60dcfbde7f0abddd514a5d38e345a786"
+    },
+    "catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "d9a9282e78ec5bdc87bb1d80c79d66c59b60623750e1ef85deaa0bda2c91c20e"
+    },
+    "catalog-drift.json": {
+      "bytes": 367,
+      "sha256": "d9a9282e78ec5bdc87bb1d80c79d66c59b60623750e1ef85deaa0bda2c91c20e"
+    },
+    "focused.log": {
+      "bytes": 6046,
+      "sha256": "06b8d650c84a9b9ce86f77ec5b163d2f7a8ba3e682eccb6fd829785100676289"
+    },
+    "focused.sh": {
+      "bytes": 773,
+      "sha256": "401242546a006ca5bc8f62f9089b0a6dba645390f0239060a5e1fa675493941e"
+    },
+    "full-source.json": {
+      "bytes": 38281,
+      "sha256": "b5d90414b0c53aa287989d544577d29ce290443a1f87fa818ffc370b4c715a5c"
+    },
+    "http-proof.json": {
+      "bytes": 2186,
+      "sha256": "7fcad4589379c1cb1437bf8e1aa932674adb7c480c89dd47a3258aef4affc1fa"
+    },
+    "launch-production": {
+      "bytes": 254,
+      "sha256": "0a72664031a089cd65c21e4de44577bca6e7206587edbce4c4e704829240be31"
+    },
+    "linux-full.log": {
+      "bytes": 122132,
+      "sha256": "7f07bbc7e6e4d1e135cdaadc18c060c44c46ebbec2ea3470bb1fc614edcc466c"
+    },
+    "linux-full.sh": {
+      "bytes": 1823,
+      "sha256": "880edc7f22c2423892abedef28efdb6b0408105ec8b2ba9d0cf96503155a5519"
+    },
+    "production-cua-metadata.json": {
+      "bytes": 1143,
+      "sha256": "c906f3fd5bbe4965eefba713275df24202bea76afc7ebfa53faad139006da2da"
+    },
+    "production-cua.png": {
+      "bytes": 549287,
+      "sha256": "536a683d1e41701610ff352f2e91d50dd1023157131764d88781425ca08420f9"
+    },
+    "production-launch.json": {
+      "bytes": 566,
+      "sha256": "811c8e8909fc22bba44eda7237ada7683e48adff9c8d950833887c8bfdb5a7ba"
+    },
+    "production-probe.py": {
+      "bytes": 10074,
+      "sha256": "f5d62697f13d3036d682bfd2eff1f28a00eb5cf26a087aaa893162c5943620ad"
+    },
+    "stdio-proof.json": {
+      "bytes": 2183,
+      "sha256": "24962de20de7a5ae191a8814a3fac1971dfc6e796baad182d03a3bb0a37cd7d2"
+    }
+  }
+}

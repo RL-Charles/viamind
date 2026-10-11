@@ -4304,6 +4304,15 @@
       "name": "export_symbol_template"
     },
     {
+      "description": "Read an atomic current automatic scoped DRC status and its independent event cursor. Initialize/resynchronize here, then watch_auto_drc_events after this cursor. Detailed reports exist only in current ready status; match generation. Preserves document cursors, history and native bytes.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "get_auto_drc_event_state"
+    },
+    {
       "description": "Read shared automatic DRC config, generation, pending/running/ready/skipped/failed state, current scoped report, limits and measured worker latency. A report is present only when current. No project clone or design transaction.",
       "inputSchema": {
         "additionalProperties": false,
@@ -12061,6 +12070,57 @@
         "type": "object"
       },
       "name": "viamind_version"
+    },
+    {
+      "description": "Read automatic scoped DRC transition summaries from an independent bounded128-record journal. Reuse after cursor across initialized connections/reconnects; omitted/null after starts at current tail. limit defaults100 (1..128), timeout_ms defaults0 (0..30000). Returns events,cursor,has_more. Wrong/future/expired cursors require get_auto_drc_event_state. No full report history, design cursor mutation, or protocol resource subscription. Use one outstanding watch per observer.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "additionalProperties": false,
+            "default": null,
+            "description": "Position in one automatic DRC controller, independent of document cursors.",
+            "properties": {
+              "sequence": {
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "limit": {
+            "default": 100,
+            "format": "uint",
+            "maximum": 128,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "timeout_ms": {
+            "default": 0,
+            "format": "uint64",
+            "maximum": 30000,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "title": "WatchAutoDrcEvents",
+        "type": "object"
+      },
+      "name": "watch_auto_drc_events"
     },
     {
       "description": "Read design and selection changes in session order. Pass the last cursor as after, including after reconnecting. Omitted after starts at current tail. limit defaults to 100 (1–1000); timeout_ms defaults to 0 (0–30000), waiting only if no events are available. Returns events, cursor and has_more. History retains 1024 records; on expired/future/restarted cursor errors call get_session_state to resynchronize. Read-only; use one outstanding watch per observer.",

@@ -25,6 +25,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [export\_fabrication](#tool-6578706f72745f6661627269636174696f6e)
 - [export\_footprint](#tool-6578706f72745f666f6f747072696e74)
 - [export\_symbol\_template](#tool-6578706f72745f73796d626f6c5f74656d706c617465)
+- [get\_auto\_drc\_event\_state](#tool-6765745f6175746f5f6472635f6576656e745f7374617465)
 - [get\_auto\_drc\_status](#tool-6765745f6175746f5f6472635f737461747573)
 - [get\_design](#tool-6765745f64657369676e)
 - [get\_document\_status](#tool-6765745f646f63756d656e745f737461747573)
@@ -91,6 +92,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [undo](#tool-756e646f)
 - [update\_part](#tool-7570646174655f70617274)
 - [viamind\_version](#tool-7669616d696e645f76657273696f6e)
+- [watch\_auto\_drc\_events](#tool-77617463685f6175746f5f6472635f6576656e7473)
 - [watch\_events](#tool-77617463685f6576656e7473)
 
 <a id="tool-6164645f70617274"></a>
@@ -4538,6 +4540,22 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "export_symbol_template"
+}
+```
+
+<a id="tool-6765745f6175746f5f6472635f6576656e745f7374617465"></a>
+
+## get\_auto\_drc\_event\_state
+
+```json
+{
+  "description": "Read an atomic current automatic scoped DRC status and its independent event cursor. Initialize/resynchronize here, then watch_auto_drc_events after this cursor. Detailed reports exist only in current ready status; match generation. Preserves document cursors, history and native bytes.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  },
+  "name": "get_auto_drc_event_state"
 }
 ```
 
@@ -12759,6 +12777,64 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "viamind_version"
+}
+```
+
+<a id="tool-77617463685f6175746f5f6472635f6576656e7473"></a>
+
+## watch\_auto\_drc\_events
+
+```json
+{
+  "description": "Read automatic scoped DRC transition summaries from an independent bounded128-record journal. Reuse after cursor across initialized connections/reconnects; omitted/null after starts at current tail. limit defaults100 (1..128), timeout_ms defaults0 (0..30000). Returns events,cursor,has_more. Wrong/future/expired cursors require get_auto_drc_event_state. No full report history, design cursor mutation, or protocol resource subscription. Use one outstanding watch per observer.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "after": {
+        "additionalProperties": false,
+        "default": null,
+        "description": "Position in one automatic DRC controller, independent of document cursors.",
+        "properties": {
+          "sequence": {
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "limit": {
+        "default": 100,
+        "format": "uint",
+        "maximum": 128,
+        "minimum": 1,
+        "type": "integer"
+      },
+      "timeout_ms": {
+        "default": 0,
+        "format": "uint64",
+        "maximum": 30000,
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "title": "WatchAutoDrcEvents",
+    "type": "object"
+  },
+  "name": "watch_auto_drc_events"
 }
 ```
 
