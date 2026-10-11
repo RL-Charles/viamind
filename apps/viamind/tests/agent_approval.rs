@@ -80,7 +80,7 @@ async fn actual_approval_stdio_prepares_private_candidate_without_live_or_file_w
     drop(lines);
     let finished = timeout(WAIT, child.wait_with_output()).await.unwrap().unwrap();
     assert!(finished.status.success());
-    assert!(String::from_utf8(finished.stderr).unwrap().contains("approval"));
+    assert!(String::from_utf8(finished.stderr).unwrap().contains("trusted human desktop acceptance required"));
     assert_eq!(std::fs::read(&native).unwrap(), original);
     assert!(!output.exists());
 }
