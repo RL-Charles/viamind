@@ -41,6 +41,8 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    EditSchematicSheet => (viamind_engine::EditSchematicSheet::NAME, input_schema::<viamind_engine::EditSchematicSheet>(), edit_schematic_sheet),
+    DeleteSchematicSheet => (viamind_engine::DeleteSchematicSheet::NAME, input_schema::<viamind_engine::DeleteSchematicSheet>(), delete_schematic_sheet),
     ApplyFootprint => (viamind_engine::ApplyFootprint::NAME, input_schema::<viamind_engine::ApplyFootprint>(), apply_footprint),
     ImportFootprint => ("import_footprint", input_schema::<viamind_engine::FootprintFile>(), import_footprint),
     ExportFootprint => ("export_footprint", input_schema::<viamind_engine::FootprintFile>(), export_footprint),
@@ -186,4 +188,11 @@ fn delete_via(engine: &EngineHandle, input: Value) -> Result<Value, EngineError>
 
 fn transform_parts(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(TransformParts::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn edit_schematic_sheet(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("edit_schematic_sheet", input, Origin::User)?).map_err(encode_error)
+}
+fn delete_schematic_sheet(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("delete_schematic_sheet", input, Origin::User)?).map_err(encode_error)
 }

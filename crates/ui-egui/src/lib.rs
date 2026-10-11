@@ -22,6 +22,7 @@ pub mod pads;
 pub mod parts;
 pub mod placement;
 pub mod scene;
+pub mod schematic;
 pub mod selection;
 
 use std::sync::mpsc::Receiver;
@@ -117,6 +118,7 @@ pub struct FrameStats {
 
 /// The Viamind application state.
 pub struct ViamindApp {
+    pub schematic: schematic::SchematicUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -157,6 +159,7 @@ impl ViamindApp {
     /// An app showing [`Scene::synthetic`] with `n` objects.
     pub fn with_scene_size(n: usize) -> Self {
         Self {
+            schematic: schematic::SchematicUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -181,6 +184,7 @@ impl ViamindApp {
         let mut canvas = Canvas::default();
         canvas.fit_pending = true;
         Self {
+            schematic: schematic::SchematicUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -289,21 +293,35 @@ impl ViamindApp {
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
-        egui::Panel::left("layers").default_size(280.0).show(ui, |ui| {
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                layer_panel::show(ui, &mut self.layers);
-                if self.design.is_some() {
-                    ui.separator();
-                    self.part_properties(ui);
-                }
+        egui::Panel::left(if self.schematic.active { "schematic_tools" } else { "layers" })
+            .default_size(if self.schematic.active { 380.0 } else { 280.0 })
+            .show(ui, |ui| {
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    if self.schematic.active {
+                        self.schematic_panel(ui);
+                        return;
+                    }
+                    layer_panel::show(ui, &mut self.layers);
+                    if self.design.is_some() {
+                        ui.separator();
+                        self.part_properties(ui);
+                    }
+                });
             });
-        });
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
+            if self.schematic.active {
+                self.schematic_canvas(ui);
+                return;
+            }
             let response = self.canvas.show(ui, &self.scene, &self.layers);
             if let Some(design) = &self.design {
                 self.selection.sync(&design.engine, &self.layers);
-                let placement_enabled =
-                    !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
+                let placement_enabled = !self.schematic.active
+                    && !self.files.busy()
+                    && !self.parts.placing()
+                    && !self.outlines.editing()
+                    && !self.pads.editing()
+                    && !self.copper.editing();
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
             }
             self.paint_labels(ui);
@@ -364,6 +382,14 @@ impl ViamindApp {
 
     fn menu_bar(&mut self, ui: &mut Ui) {
         egui::MenuBar::new().ui(ui, |ui| {
+            if self.design.is_some() {
+                if ui.selectable_label(!self.schematic.active, "PCB").clicked() {
+                    self.set_schematic_mode(false);
+                }
+                if ui.selectable_label(self.schematic.active, "Schematic").clicked() {
+                    self.set_schematic_mode(true);
+                }
+            }
             ui.menu_button("File", |ui| {
                 if self.design.is_some() {
                     if ui.add(egui::Button::new("New…").shortcut_text(ui.ctx().format_shortcut(&files::NEW))).clicked() {
@@ -403,11 +429,19 @@ impl ViamindApp {
                         self.redo_design();
                         ui.close();
                     }
+                    if self.schematic.active {
+                        return;
+                    }
                     if let Some(design) = &self.design {
                         self.selection.placement_menu(
                             ui,
                             &design.engine,
-                            !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing(),
+                            !self.schematic.active
+                                && !self.files.busy()
+                                && !self.parts.placing()
+                                && !self.outlines.editing()
+                                && !self.pads.editing()
+                                && !self.copper.editing(),
                         );
                     }
                     ui.separator();
@@ -438,7 +472,7 @@ impl ViamindApp {
                     }
                 });
             }
-            if self.design.is_some() {
+            if self.design.is_some() && !self.schematic.active {
                 ui.menu_button("Board", |ui| {
                     if ui.button("Export fabrication…").clicked() {
                         self.begin_fabrication_export();
