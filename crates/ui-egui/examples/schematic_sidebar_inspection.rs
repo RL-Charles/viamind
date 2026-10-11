@@ -20,7 +20,7 @@ fn control(shapes: &[egui::epaint::ClippedShape], label: &str, content: egui::Re
             let egui::Shape::Text(text) = &s.shape else { return None };
             (text.galley.job.text == label).then_some(text.visual_bounding_rect())
         })
-        .unwrap_or_else(|| panic!("current-pass painted production label missing: {label}"));
+        .unwrap_or_else(|| panic!("current-pass painted production label missing: {label}; current texts: {:?}; shape count {}", shapes.iter().filter_map(|s| if let egui::Shape::Text(t) = &s.shape { Some(t.galley.job.text.as_str()) } else { None }).collect::<Vec<_>>(), shapes.len()));
     let (rect, clip) = shapes
         .iter()
         .filter_map(|s| {
