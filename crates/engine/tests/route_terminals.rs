@@ -255,7 +255,7 @@ fn malformed_identity_and_point_budgets_refuse_before_secondary_vectors() {
     let mut input = serde_json::to_value(manual(&e, ids)).unwrap();
     input["interior"] = serde_json::to_value(vec![p(0, 0); 1024]).unwrap();
     assert!(e.execute(RouteTerminalPolyline::NAME, input, Origin::User).unwrap_err().to_string().contains("too many route points"));
-    let mut input = serde_json::to_value(posture(&e, ids, CornerMode::Cardinal, Posture::Primary)).unwrap();
+    let mut input = serde_json::to_value(posture_input(&e, ids, CornerMode::Cardinal, Posture::Primary)).unwrap();
     input["waypoints"] = serde_json::to_value(vec![p(0, 0); 511]).unwrap();
     assert!(e.execute(RouteTerminalPosture::NAME, input, Origin::User).unwrap_err().to_string().contains("too many route points"));
     assert_eq!(e.session_state(), before);

@@ -244,7 +244,7 @@ fn bounded_points<'de, D: serde::Deserializer<'de>>(deserializer: D, maximum: us
     struct Points(usize);
     impl<'de> serde::de::Visitor<'de> for Points {
         type Value = Vec<Point>;
-        fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             write!(f, "at most{} integer points", self.0)
         }
         fn visit_seq<A: serde::de::SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
