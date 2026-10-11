@@ -1,3 +1,3 @@
-fn main() {
-    println!("Viamind {}", env!("CARGO_PKG_VERSION"));
+fn main() -> eframe::Result {
+    viamind_ui_egui::run()
 }

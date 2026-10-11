@@ -12,3 +12,10 @@ workspace = true
 [dependencies]
 viamind-engine.workspace = true
 viamind-render.workspace = true
+egui.workspace = true
+# wgpu renderer with native Wayland and X11 on Linux. `default-features = false` like the ArtCraft
+# Craft apps (CADCraft), so only the features Viamind uses are compiled.
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }
+
+[dev-dependencies]
+egui_kittest.workspace = true
