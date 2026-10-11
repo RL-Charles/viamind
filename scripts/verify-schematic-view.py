@@ -89,6 +89,16 @@ def verify(binary, native, directory):
     check('explicit pin stem crop',crop.getpixel((200,200))[3]>200 and crop.getpixel((20,200))[3]==0)
     margin=Image.open(export('png','margin','--view-bounds','0,0,30,20','--view-size','900,800')).convert('RGBA')
     check('aspect ratio margins transparent',margin.getpixel((330,30))[3]==0 and margin.getpixel((330,780))[3]==0 and margin.getpixel((330,325))[3]>200)
+    # Independent alpha envelopes prove auto-fit leaves breathing room around visible text.
+    auto=Image.open(export('png','auto-fit','--view-size','900,600')).convert('RGBA')
+    box=auto.getchannel('A').getbbox()
+    check('automatic fit contains all visible ink with transparent border',box is not None and box[0]>2 and box[1]>2 and box[2]<898 and box[3]<598)
+    long_text=json.loads(native.read_text());long_symbol=next(iter(long_text['project']['schematic']['sheets'][SHEET]['content']['symbols'].values()))
+    long_symbol['value']='éΩµЯM'*200
+    long_native=directory/'long-text.viamind.json';long_native.write_text(json.dumps(long_text))
+    long_view=Image.open(export('png','long-text','--view-size','4096,1000','--view-padding-mm','10',source=long_native)).convert('RGBA')
+    box=long_view.getchannel('A').getbbox()
+    check('long accented engineering text auto-fit envelope',box is not None and box[0]>10 and box[1]>10 and box[2]<4086 and box[3]<990)
     white=Image.new('RGBA',product.size,'white');white.alpha_composite(product);white.convert('RGB').save(directory/'inspection.png')
     return {'passed':True,'checks':checks,'uniform_interior_samples':interiors,'png':str(png),
             'independent_renderer':subprocess.check_output(['rsvg-convert','--version'],text=True).strip()}
