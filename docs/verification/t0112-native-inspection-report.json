@@ -1,0 +1,152 @@
+{
+  "capture": "eframe native WGPU Screenshot event",
+  "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/inspection-46ba551-verified",
+  "full_session_unchanged": true,
+  "historical_release_result_present": true,
+  "inspection_controls_result_and_limitations_visible": true,
+  "local_inspect_button_pointer_events": 2,
+  "local_resize_pointer_events": 3,
+  "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/native-framebuffer.ppm",
+  "path_setup": "explicit harness argument; native button has2 local pointer events",
+  "pid": 2246628,
+  "pixels": [
+    1600,
+    1000
+  ],
+  "requested_release": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-verified-proof/v3-generic",
+  "result": {
+    "calibrated_component_count": 2,
+    "checks_not_performed": [
+      "No authenticated file-content digest, original-export authenticity or current-board equality",
+      "No geometry/Gerber/XNC/legacy assembly/validation report semantic or DRC recomputation",
+      "No vendor/manufacturing/stock/polarity acceptance",
+      "Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports",
+      "Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return"
+    ],
+    "checks_performed": [
+      "Strict supported release/job layout and version/profile/summary matrix",
+      "Declared/observed regular file byte lengths and observed path/descriptor identity stability",
+      "Fabrication manifest project/files/mask/coordinate metadata consistency",
+      "When present: calibrated row/count validity and populated shared fields/component membership/identity digest"
+    ],
+    "exported_cursor": {
+      "sequence": 0,
+      "stream_id": "0e8015ee-4556-4c99-bace-cc014c46dfec"
+    },
+    "file_count": 13,
+    "files": [
+      {
+        "declared_bytes": 248,
+        "observed_bytes": 248,
+        "path": "assembly/bom.csv"
+      },
+      {
+        "declared_bytes": 388,
+        "observed_bytes": 388,
+        "path": "assembly/calibrated-placement.csv"
+      },
+      {
+        "declared_bytes": 321,
+        "observed_bytes": 321,
+        "path": "assembly/placement.csv"
+      },
+      {
+        "declared_bytes": 407,
+        "observed_bytes": 407,
+        "path": "assembly/populated-bom.csv"
+      },
+      {
+        "declared_bytes": 745,
+        "observed_bytes": 745,
+        "path": "fabrication/bottom-copper.gbr"
+      },
+      {
+        "declared_bytes": 513,
+        "observed_bytes": 513,
+        "path": "fabrication/bottom-mask.gbr"
+      },
+      {
+        "declared_bytes": 929,
+        "observed_bytes": 929,
+        "path": "fabrication/manifest.json"
+      },
+      {
+        "declared_bytes": 166,
+        "observed_bytes": 166,
+        "path": "fabrication/plated-through.xnc"
+      },
+      {
+        "declared_bytes": 734,
+        "observed_bytes": 734,
+        "path": "fabrication/profile.gbr"
+      },
+      {
+        "declared_bytes": 638,
+        "observed_bytes": 638,
+        "path": "fabrication/top-copper.gbr"
+      },
+      {
+        "declared_bytes": 439,
+        "observed_bytes": 439,
+        "path": "fabrication/top-mask.gbr"
+      },
+      {
+        "declared_bytes": 235,
+        "observed_bytes": 235,
+        "path": "job.json"
+      }
+    ],
+    "format": "viamind-output-release",
+    "matched_assembly": {
+      "component_count": 2,
+      "component_ids_sha256": "8b08ac1ca98bead3d02a7d357cb77d1154ad244e380bf906a2c0970faba5f1a7"
+    },
+    "observed_bytes": 7826,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-verified-proof/v3-generic",
+    "profile": "generic_outer_2layer",
+    "project_id": "00000000-0000-0000-0000-000000000099",
+    "release_exclusions": [
+      "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+      "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+      "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+      "Generic bom.csv and placement.csv inventory all components at component origins. populated-bom.csv and calibrated-placement.csv contain the same explicitly populated all-mounting component subset; their stable identity digest is declared separately.",
+      "Sourcing identifiers are exact user-entered values and may be unavailable; no stock, procurement, inferred identifiers or vendor certification. The generic top-view marker does not establish universal vendor zero, polarity, tape orientation or manufacturer-specific mounting filters."
+    ],
+    "version": 3
+  },
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "b5f1e22f-0425-4bc3-aa6e-f2c4c591a766"
+  },
+  "visible_inspection_labels": [
+    "Inspect saved release",
+    "Read-only historical release consistency. Existing files and the current document stay unchanged.",
+    "Fixed versions 1\u20133/layouts only. Per-file inspector limits can refuse otherwise valid larger exports.",
+    "Saved release directory",
+    "Inspect release",
+    "Version 3 / generic_outer_2layer \u00b7 13 files \u00b7 7826 observed bytes",
+    "Historical project 00000000-0000-0000-0000-000000000099",
+    "Exported cursor 0e8015ee-4556-4c99-bace-cc014c46dfec / 0",
+    "Historical provenance is independent of the current board; no equality claim.",
+    "Calibrated rows: 2",
+    "Matched populated component IDs: 2",
+    "Component identity SHA256: 8b08ac1ca98bead3d02a7d357cb77d1154ad244e380bf906a2c0970faba5f1a7",
+    "Checks performed",
+    "Strict supported release/job layout and version/profile/summary matrix",
+    "Declared/observed regular file byte lengths and observed path/descriptor identity stability",
+    "Fabrication manifest project/files/mask/coordinate metadata consistency",
+    "When present: calibrated row/count validity and populated shared fields/component membership/identity digest",
+    "Checks not performed",
+    "No authenticated file-content digest, original-export authenticity or current-board equality",
+    "No geometry/Gerber/XNC/legacy assembly/validation report semantic or DRC recomputation",
+    "No vendor/manufacturing/stock/polarity acceptance",
+    "Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports",
+    "Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return",
+    "Release-declared exclusions",
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+    "Generic bom.csv and placement.csv inventory all components at component origins. populated-bom.csv and calibrated-placement.csv contain the same explicitly populated all-mounting component subset; their stable identity digest is declared separately.",
+    "Sourcing identifiers are exact user-entered values and may be unavailable; no stock, procurement, inferred identifiers or vendor certification. The generic top-view marker does not establish universal vendor zero, polarity, tape orientation or manufacturer-specific mounting filters."
+  ]
+}

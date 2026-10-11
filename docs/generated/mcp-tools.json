@@ -4836,6 +4836,24 @@
       "name": "inspect_fabrication_files"
     },
     {
+      "description": "Read-only bounded consistency inspection of an explicit saved Viamind release directory (versions1–3). Strict fixed layout/JSON and observed regular-file lengths; calibrated row/count checks and version3 matched populated fields/component identity digest. Descriptor-anchored no-follow/nonblock Linux reads; one retained reader. Inspector caps may refuse otherwise valid larger exports. Reports historical exported cursor, not current board equivalence. No authenticated file content, geometry/DRC recomputation, atomic cross-file snapshot, unlisted-file inspection or manufacturer acceptance. No document/file payload mutation.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "type": "object"
+      },
+      "name": "inspect_output_release"
+    },
+    {
       "description": "Link an existing PCB part to an existing schematic symbol by stable UUID, or explicitly unlink with target.kind=unlink. Requires exact project, part and current symbol guards; one symbol can link to at most one part. No reference-based inference or geometry/net edits. One undoable transaction; bounded native synchronization scope.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",

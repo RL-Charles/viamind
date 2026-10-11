@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "scope": "Original full gate and native evidence; final combined T111 integration/catalog/CI pending. Verification hashes are not release content-authentication fields.",
+  "source": "46ba5513e845855f50e83b0119e3315b39eb8450",
+  "workspace_tests": {
+    "passed": 798,
+    "failed": 0,
+    "ignored": 1
+  },
+  "focused_fab": 15,
+  "focused_ui": 2,
+  "production_checks": 56,
+  "endpoint": "http://127.0.0.1:7942/mcp",
+  "production_pid": 2242966,
+  "inspection_pid": 2246628,
+  "inspection_self_closed": true,
+  "binaries": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-46ba551-verified",
+      "sha256": "3c3d9fc74e45977141c466745e58fa2750cca7cf6c5e35c8fb0f84c7e3076c4d"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/inspection-46ba551-verified",
+      "sha256": "5fbbc0cfb093f038672607d639abb590a792d789e64dbc35af702c6ae9fc4ea9"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/production-final-combined-verified",
+      "sha256": "3adbb92ff788b976a002c03ce1aa27a265ceafffd405b12a7e4c7511d05238e3"
+    }
+  ],
+  "native_ppm_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/native-framebuffer.ppm",
+  "native_ppm_sha256": "fa6cfceaa4e70bf6271228a831ef6c4eb4aaaacb7a22cd8a0dd600f0396ad244",
+  "artifacts": [
+    {
+      "path": "docs/verification/t0112-agent-workflow.json",
+      "bytes": 1264,
+      "sha256": "05349fe3e8c062030940c23fa703313d119dd6635f4fbe36ae21ee3321a22fe0"
+    },
+    {
+      "path": "docs/verification/t0112-calibrated-placement.csv",
+      "bytes": 388,
+      "sha256": "c546839c2192997eba7c0d84b7edd3e475ff05446c619a99509d2783cac25f9e"
+    },
+    {
+      "path": "docs/verification/t0112-capture-conversion.json",
+      "bytes": 556,
+      "sha256": "cfbb4b93b83fc1af69c9142f7e3d77e1adbaa55f119d7536a7e4499c1e509018"
+    },
+    {
+      "path": "docs/verification/t0112-catalog-report.json",
+      "bytes": 367,
+      "sha256": "8af41e6f4739f3a6672c1a299ea12fa7b43aad0efd964de92cf9903fc25a8ea6"
+    },
+    {
+      "path": "docs/verification/t0112-convert-capture.py",
+      "bytes": 1122,
+      "sha256": "4a961cb0f2d400746cd914c6c7ef57a0fc1d7b6690e7c25883790dfc90cf9455"
+    },
+    {
+      "path": "docs/verification/t0112-cua-inspection-launch.json",
+      "bytes": 190,
+      "sha256": "2f66b67f4c75d855b7828694c208d8b466d62277a6df1bea9eaa45253273a589"
+    },
+    {
+      "path": "docs/verification/t0112-cua-production-launch.json",
+      "bytes": 190,
+      "sha256": "f2f51f0dc47adef8e8111177d5b71bdf3c79b59ffc83e04611753508d7f24dc3"
+    },
+    {
+      "path": "docs/verification/t0112-cua-production-windows.json",
+      "bytes": 20,
+      "sha256": "07af1011d93ba97190b0f614dd99b890324a0eba5c28fc67fa28f2300aebdd9e"
+    },
+    {
+      "path": "docs/verification/t0112-focused-surfaces.log",
+      "bytes": 6691,
+      "sha256": "86782b44365b316b82600d5a07619fc5fd31e3b35a267fd05ca2160fe521d310"
+    },
+    {
+      "path": "docs/verification/t0112-full-linux.log",
+      "bytes": 132353,
+      "sha256": "738c6bbc83ada9b57b220a2bd6fa9178fe452e19b62d06398a05a93ba4aa4634"
+    },
+    {
+      "path": "docs/verification/t0112-gate.sh",
+      "bytes": 1150,
+      "sha256": "464c253c59da25ae526c97f0360c5f218d60179ec2c54c6a1966222aa986c720"
+    },
+    {
+      "path": "docs/verification/t0112-historical-full-failure.log",
+      "bytes": 59970,
+      "sha256": "1547a12f6b7a730cc73fd4eedc1d5b9e4581d3d7a344f22c6002ce274dbe9dcf"
+    },
+    {
+      "path": "docs/verification/t0112-historical-probe-failure.json",
+      "bytes": 3668,
+      "sha256": "2404285e232cbd9167035cdbf2dc18a2d50b7a93d4fcfcb2a8339e840dca3167"
+    },
+    {
+      "path": "docs/verification/t0112-historical-probe-failure.log",
+      "bytes": 638,
+      "sha256": "4fe838012634600096ab995fa5689873cbba75dec1c23d64ced624c621767c69"
+    },
+    {
+      "path": "docs/verification/t0112-historical-probe.py",
+      "bytes": 9712,
+      "sha256": "892fdef118bb4a84b2d9880328714f17956de1c8546c2e5f8fc811c9543ec7e4"
+    },
+    {
+      "path": "docs/verification/t0112-job.json",
+      "bytes": 235,
+      "sha256": "b9def95ab3e52a34a0757010c5c6af376a624953b7b5ef59e57e24c91b6bc5dd"
+    },
+    {
+      "path": "docs/verification/t0112-native-framebuffer.png",
+      "bytes": 268101,
+      "sha256": "b2889a32e4c28eb7f80a7f6c9c0fd77437a730bc109194c383679f0e92d9f4b5"
+    },
+    {
+      "path": "docs/verification/t0112-native-inspection-report.json",
+      "bytes": 7614,
+      "sha256": "a8f03a44535124cda5ba1d3c7c5a98bf92aad0c52c6acb4b4cc3dca41510a4f0"
+    },
+    {
+      "path": "docs/verification/t0112-populated-bom.csv",
+      "bytes": 407,
+      "sha256": "b0ac06a36552ee11179c0dbd39cf9e9e87bd712e6b9ebc9e739a5c0df8005c12"
+    },
+    {
+      "path": "docs/verification/t0112-production-probe.py",
+      "bytes": 9764,
+      "sha256": "35082cca91e1082002d6e2faf780738525641127a5564a117be16d610e26b4e4"
+    },
+    {
+      "path": "docs/verification/t0112-production-project.json",
+      "bytes": 4994,
+      "sha256": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05"
+    },
+    {
+      "path": "docs/verification/t0112-production-report.json",
+      "bytes": 8151,
+      "sha256": "eb6a456f07926ff6f7eeb79d8f3c87dac3dc039db3a8483a20d6752fcbc97e19"
+    },
+    {
+      "path": "docs/verification/t0112-release-manifest.json",
+      "bytes": 2063,
+      "sha256": "efa2c90be65a330b6521209c9a428ca7033217f52affb90e8c6de40d2ec89b94"
+    },
+    {
+      "path": "docs/verification/t0112-tooling.log",
+      "bytes": 2070,
+      "sha256": "96c15a9885d0388c38ad25b5a893c26a792e711a705ab242f403e91d2503825d"
+    },
+    {
+      "path": "crates/ui-egui/examples/t0112_inspection.rs",
+      "bytes": 8150,
+      "sha256": "24cac9f9be75c0245d52f919bb09c9173af0e27ead536daabba98e963b8dbd39"
+    },
+    {
+      "path": "docs/specs/saved-release-inspection.md",
+      "bytes": 12709,
+      "sha256": "d6c772f5005d5eb6ee4b705b60c1bdf7f19275c8965cfbcfa80b7391e820884b"
+    },
+    {
+      "path": "fixtures/assembly/output-job-population.viamind.json",
+      "bytes": 4994,
+      "sha256": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05"
+    },
+    {
+      "path": "docs/verification/t0112-catalog-drift.json",
+      "bytes": 367,
+      "sha256": "8af41e6f4739f3a6672c1a299ea12fa7b43aad0efd964de92cf9903fc25a8ea6"
+    }
+  ]
+}

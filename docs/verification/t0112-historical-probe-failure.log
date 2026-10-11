@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-probe.py", line 85, in <module>
+    stdio.initialize();names={tool['name'] for tool in stdio.discover()['tools']};check('actual read-only stdio advertises inspector', 'inspect_output_release' in names and 'run_output_job' not in names)
+                                                       ~~~~~~~~~~~~~~^^
+  File "/home/charlesmowbray/Development/viamind-t-0112/scripts/mcp_reference.py", line 222, in discover
+    raise ValueError("full application engine tools missing")
+ValueError: full application engine tools missing

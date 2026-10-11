@@ -1,0 +1,4 @@
+Designator,Component ID,Value,Footprint,Mounting,"X (mm, global)","Y (mm, up)","Rotation (deg CCW, top view)",Side
+A_TOP,00000000-0000-0000-0000-000000000005,"µ, ""parts""
+line",EXPLICIT_FIXTURE,through_hole,13.963514,-21.764230,154.625,top
+Z_BOTTOM,00000000-0000-0000-0000-000000000002,Synthetic asymmetric geometry,EXPLICIT_FIXTURE,surface_mount,28.767949,-18.866025,172.875,bottom

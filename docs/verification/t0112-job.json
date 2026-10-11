@@ -1,0 +1,9 @@
+{
+  "format": "viamind-output-job",
+  "version": 3,
+  "name": "Original detached reader proof",
+  "profile": "generic_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "include_calibrated_placement": true,
+  "include_populated_bom": true
+}
