@@ -1,0 +1,34 @@
+9521f02f81b199d384533a5a126305c655fdbb01
+    Checking smallvec v1.16.3
+    Checking serde_json v1.0.152
+    Checking rstar v0.13.0
+    Checking bytemuck v1.25.2
+    Checking font-types v0.12.6
+    Checking schemars v1.2.2
+    Checking read-fonts v0.41.0
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+    Checking tiny-skia-path v0.12.0
+    Checking kurbo v0.13.1
+error[E0282]: type annotations needed
+   --> crates/engine/src/schematic_connectivity.rs:266:51
+    |
+266 |         let mut push = |id, kind, position, wire, symbol_id, pin_number, electrical, name| {
+    |                                                   ^^^^^^^^^
+267 |             let unit = symbol_id.and_then(|id| units.get(&id));
+    |                        --------- type must be known at this point
+    |
+help: consider giving this closure parameter an explicit type
+    |
+266 |         let mut push = |id, kind, position, wire, symbol_id: /* Type */, pin_number, electrical, name| {
+    |                                                            ++++++++++++
+
+    Checking svgtypes v0.16.1
+    Checking skrifa v0.44.0
+    Checking harfrust v0.12.0
+For more information about this error, try `rustc --explain E0282`.
+error: could not compile `viamind-engine` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

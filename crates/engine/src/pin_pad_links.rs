@@ -71,9 +71,17 @@ fn preflight(project: &Project) -> Result<(), CommandError> {
     for sheet in project.schematic.sheets.values() {
         inspect(&sheet.name)?;
         if let Some(content) = &sheet.content {
-            count = count.saturating_add(content.symbols.len());
+            let (records, _) = viamind_doc::symbol_package::membership_budget(content).map_err(invalid)?;
+            count = count.saturating_add(content.symbols.len()).saturating_add(records);
             if count > 10000 {
                 return Err(invalid("at most 10000 combined sheets, symbols, parts, pins and explicit pads are supported"));
+            }
+            for group in content.packages.values() {
+                inspect(&group.template_name)?;
+                for unit in &group.units {
+                    inspect(&unit.key)?;
+                    inspect(&unit.name)?;
+                }
             }
             for symbol in content.symbols.values() {
                 count = count.saturating_add(symbol.pins.len());
@@ -117,6 +125,9 @@ fn preflight(project: &Project) -> Result<(), CommandError> {
     for sheet in project.schematic.sheets.values() {
         identity(sheet.id)?;
         if let Some(content) = &sheet.content {
+            for group in content.packages.values() {
+                identity(group.id)?;
+            }
             for symbol in content.symbols.values() {
                 identity(symbol.id)?;
                 for pin in &symbol.pins {

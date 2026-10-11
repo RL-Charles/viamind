@@ -64,6 +64,7 @@ pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
     let mut registry = ToolRegistry::with_builtins();
     crate::assembly::register(&mut registry, engine.clone())?;
     crate::symbol_libraries::register(&mut registry, engine.clone())?;
+    crate::symbol_packages::register(&mut registry, engine.clone())?;
     crate::agent_presence::register(&mut registry, engine.clone())?;
     crate::pcb_branches::register(&mut registry, engine.clone())?;
     crate::fabrication::register(&mut registry, engine.clone())?;

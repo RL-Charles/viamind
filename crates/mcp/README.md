@@ -772,3 +772,18 @@ and [verification](../../docs/existing-copper-properties-verification.md).
 ## Isolated PCB proposals
 
 The full application exposes bounded transient PCB command branches. Capture `get_session_state`, create a branch with its project/full cursor, apply supported original calls privately, and inspect deterministic paged before/after values. Board → Agent branches shows the same original/new geometry for human review. Exact guarded merge is one undoable transaction with retained IDs; stale sources refuse and remain discardable. Two same-name connections have different private ownership. Startup read-only clients can list/read diffs but cannot prepare, inspect private candidates, merge or discard. Live editing is the default and this voluntary feature does not enforce human approval. See [the behavior and verification guide](../../docs/pcb-command-branches-verification.md).
+
+## Explicit multi-unit symbol packages
+
+`load_symbol_package` reads a bounded detached native package definition;
+`save_symbol_package` publishes a NEW definition under the latest active native
+file guard. Neither changes the project. `snapshot_symbol_sheet` supplies the
+exact project, full cursor and sheet guard for `place_symbol_package` and
+`delete_symbol_package`. Placement takes one shared reference and an explicit
+pose for every ordered unit; creation/deletion commits one Sheet delta and is
+undoable as a complete package. `query_symbol_packages` returns captured,
+deterministically paged package/unit/symbol/pin identities, numbers, electrical
+types and exact transformed endpoints. Load/query are read-only observations;
+startup read-only mode refuses all three writers. No hidden/common pin joins or
+physical PCB package equivalence are inferred. The [workflow guide](../../docs/multi-unit-symbol-packages.md)
+explains bounds, native feature 11 and separately tracked annotation/PCB work.

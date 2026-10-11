@@ -178,12 +178,20 @@ impl EngineHandle {
                 .get(&input.sheet_id)
                 .filter(|s| s.id == input.sheet_id && !s.id.as_uuid().is_nil())
                 .ok_or_else(|| EngineError::File { message: "source sheet identity is invalid".into() })?;
+            if let Some(content) = &sheet.content {
+                viamind_doc::symbol_package::membership_budget(content).map_err(|message| EngineError::File { message })?;
+            }
             let symbol = sheet
                 .content
                 .as_ref()
                 .and_then(|c| c.symbols.get(&input.symbol_id))
                 .filter(|s| s.id == input.symbol_id && !s.id.as_uuid().is_nil())
                 .ok_or_else(|| EngineError::File { message: "source symbol no longer exists".into() })?;
+            if sheet.content.as_ref().is_some_and(|c| viamind_doc::symbol_package::package_for_symbol(c, symbol.id).is_some()) {
+                return Err(EngineError::File {
+                    message: "grouped units cannot be exported as independent templates; use the original package definition".into(),
+                });
+            }
             let template = SymbolTemplate::from_symbol(&input.name, symbol).map_err(|message| EngineError::File { message })?;
             Ok(template)
         })?;

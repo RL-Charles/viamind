@@ -79,7 +79,12 @@ pub(crate) fn mapping(
     if count > 10000 {
         return Err(invalid("mapping supports at most 10000 combined sheets, symbols and board parts"));
     }
+    let mut grouped = BTreeSet::new();
     for sheet in project.schematic.sheets.values() {
+        if let Some(c) = &sheet.content {
+            let (records, _) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
+            count = count.saturating_add(records);
+        }
         count = count.saturating_add(sheet.content.as_ref().map_or(0, |c| c.symbols.len()));
         if count > 10000 {
             return Err(invalid("mapping supports at most 10000 combined sheets, symbols and board parts"));
@@ -103,6 +108,15 @@ pub(crate) fn mapping(
     for (key, sheet) in &project.schematic.sheets {
         identity(*key, sheet.id)?;
         if let Some(content) = &sheet.content {
+            for (key, group) in &content.packages {
+                identity(*key, group.id)?;
+                reference(&group.template_name)?;
+                for unit in &group.units {
+                    reference(&unit.key)?;
+                    reference(&unit.name)?;
+                    grouped.insert(unit.symbol_id);
+                }
+            }
             for (key, symbol) in &content.symbols {
                 identity(*key, symbol.id)?;
                 reference(&symbol.designator)?;
@@ -112,6 +126,9 @@ pub(crate) fn mapping(
     }
     let mut linked = BTreeSet::new();
     for (key, part) in &project.board.parts {
+        if part.schematic_symbol.is_some_and(|id| grouped.contains(&id)) {
+            return Err(invalid("individual package-unit PCB links are unsupported; package aggregation is required"));
+        }
         identity(*key, part.id)?;
         reference(&part.designator)?;
         if let Some(symbol) = part.schematic_symbol

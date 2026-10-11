@@ -1,0 +1,33 @@
+797058910b4d8520c3870877836e236eab894ffd
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/ui-egui)
+error[E0599]: no method named `query_by_label_contains` found for struct `Harness<'a, State>` in the current scope
+   --> crates/ui-egui/tests/package_compact.rs:64:19
+    |
+ 64 |         assert!(h.query_by_label_contains(&unit.symbol_id.to_string()).is_some(), "committed unit identity visible in result");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+   ::: /home/charlesmowbray/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/kittest-0.4.0/src/query.rs:178:9
+    |
+178 |         query_by_label_contains,
+    |         ----------------------- the method is available for `Harness<'_, ViamindApp>` here
+    |
+    = help: items from traits can only be used if the trait is in scope
+help: trait `Queryable` which provides `query_by_label_contains` is implemented but not in scope; perhaps you want to import it
+    |
+  1 + use egui_kittest::kittest::Queryable;
+    |
+help: there is a method `query_all_by_label_contains` with a similar name
+    |
+ 64 |         assert!(h.query_all_by_label_contains(&unit.symbol_id.to_string()).is_some(), "committed unit identity visible in result");
+    |                         ++++
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `viamind-ui-egui` (test "package_compact") due to 1 previous error

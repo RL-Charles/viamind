@@ -71,6 +71,9 @@ fn budget(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
     for sheet in sheets.values() {
         text = text.saturating_add(sheet.name.len());
         if let Some(c) = &sheet.content {
+            if !c.packages.is_empty() {
+                return Err(invalid("multi-unit package annotation is not supported yet; keep explicit shared package references (T115)"));
+            }
             objects = objects.saturating_add(c.object_count()).saturating_add(c.pin_count());
             symbols = symbols.saturating_add(c.symbols.len());
             if objects > 10_000 || symbols > 2000 {

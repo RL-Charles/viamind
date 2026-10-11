@@ -69,6 +69,7 @@ struct Draft {
     mirrored: bool,
     scope: &'static str,
     pins: Vec<PinDraft>,
+    package: Option<(ObjectId, String, String)>,
 }
 impl Draft {
     fn new(project: ObjectId, expected: Sheet, kind: &'static str) -> Self {
@@ -90,6 +91,7 @@ impl Draft {
             mirrored: false,
             scope: "local",
             pins: vec![PinDraft::default()],
+            package: None,
         }
     }
     fn from_object(project: ObjectId, sheet: Sheet, id: ObjectId) -> Option<Self> {
@@ -98,6 +100,7 @@ impl Draft {
         d.id = Some(id);
         if let Some(s) = c.symbols.get(&id) {
             d.kind = "symbol";
+            d.package = viamind_doc::symbol_package::package_for_symbol(c, id).map(|(p, u)| (p.id, u.key.clone(), u.name.clone()));
             d.name = s.designator.clone();
             d.value = s.value.clone();
             d.footprint = s.footprint.clone().unwrap_or_default();
@@ -159,14 +162,21 @@ impl Draft {
     }
     fn fields(&mut self, ui: &mut Ui) {
         ui.heading(format!("{} {}", if self.id.is_some() { "Edit" } else { "Add" }, self.kind));
+        if let Some((id, key, name)) = &self.package {
+            ui.label(format!("Package {id} · unit {key} ({name}). Pose only; shared metadata/body/pins belong to the complete package."));
+        }
+        if self.kind == "symbol" {
+            ui.add_enabled_ui(self.package.is_none(), |ui| {
+                egui::Grid::new("schematic_symbol_metadata").num_columns(2).show(ui, |ui| {
+                    field(ui, "Reference", &mut self.name);
+                    field(ui, "Symbol value", &mut self.value);
+                    field(ui, "Symbol footprint", &mut self.footprint);
+                    field(ui, "Body width (mm)", &mut self.width);
+                    field(ui, "Body height (mm)", &mut self.height);
+                });
+            });
+        }
         egui::Grid::new("schematic_fields").num_columns(2).show(ui, |ui| {
-            if self.kind == "symbol" {
-                field(ui, "Reference", &mut self.name);
-                field(ui, "Symbol value", &mut self.value);
-                field(ui, "Symbol footprint", &mut self.footprint);
-                field(ui, "Body width (mm)", &mut self.width);
-                field(ui, "Body height (mm)", &mut self.height);
-            }
             if self.kind == "label" {
                 field(ui, "Label name", &mut self.name);
             }
@@ -183,46 +193,48 @@ impl Draft {
                 ui.add(egui::DragValue::new(&mut self.quarters).range(0..=3));
             });
             ui.checkbox(&mut self.mirrored, "Mirror local X");
-            ui.label("Pins: local endpoints in mm");
-            let mut remove = None;
-            for (i, p) in self.pins.iter_mut().enumerate() {
-                ui.push_id(i, |ui| {
-                    ui.group(|ui| {
-                        egui::Grid::new("pin_fields").num_columns(2).show(ui, |ui| {
-                            field(ui, &format!("Pin {} number", i + 1), &mut p.number);
-                            field(ui, &format!("Pin {} name", i + 1), &mut p.name);
-                            field(ui, &format!("Pin {} X (mm)", i + 1), &mut p.x);
-                            field(ui, &format!("Pin {} Y (mm)", i + 1), &mut p.y);
-                        });
-                        egui::ComboBox::from_id_salt("electrical").selected_text(format!("{:?}", p.electrical)).show_ui(ui, |ui| {
-                            for kind in [
-                                PinType::Unspecified,
-                                PinType::Passive,
-                                PinType::Input,
-                                PinType::Output,
-                                PinType::Bidirectional,
-                                PinType::TriState,
-                                PinType::OpenCollector,
-                                PinType::OpenEmitter,
-                                PinType::PowerInput,
-                                PinType::PowerOutput,
-                                PinType::NoConnect,
-                            ] {
-                                ui.selectable_value(&mut p.electrical, kind, format!("{kind:?}"));
+            ui.add_enabled_ui(self.package.is_none(), |ui| {
+                ui.label("Pins: local endpoints in mm");
+                let mut remove = None;
+                for (i, p) in self.pins.iter_mut().enumerate() {
+                    ui.push_id(i, |ui| {
+                        ui.group(|ui| {
+                            egui::Grid::new("pin_fields").num_columns(2).show(ui, |ui| {
+                                field(ui, &format!("Pin {} number", i + 1), &mut p.number);
+                                field(ui, &format!("Pin {} name", i + 1), &mut p.name);
+                                field(ui, &format!("Pin {} X (mm)", i + 1), &mut p.x);
+                                field(ui, &format!("Pin {} Y (mm)", i + 1), &mut p.y);
+                            });
+                            egui::ComboBox::from_id_salt("electrical").selected_text(format!("{:?}", p.electrical)).show_ui(ui, |ui| {
+                                for kind in [
+                                    PinType::Unspecified,
+                                    PinType::Passive,
+                                    PinType::Input,
+                                    PinType::Output,
+                                    PinType::Bidirectional,
+                                    PinType::TriState,
+                                    PinType::OpenCollector,
+                                    PinType::OpenEmitter,
+                                    PinType::PowerInput,
+                                    PinType::PowerOutput,
+                                    PinType::NoConnect,
+                                ] {
+                                    ui.selectable_value(&mut p.electrical, kind, format!("{kind:?}"));
+                                }
+                            });
+                            if ui.button("Remove pin").clicked() {
+                                remove = Some(i);
                             }
                         });
-                        if ui.button("Remove pin").clicked() {
-                            remove = Some(i);
-                        }
                     });
-                });
-            }
-            if let Some(i) = remove {
-                self.pins.remove(i);
-            }
-            if ui.add_enabled(self.pins.len() < 1024, egui::Button::new("Add pin")).clicked() {
-                self.pins.push(PinDraft { number: (self.pins.len() + 1).to_string(), ..Default::default() });
-            }
+                }
+                if let Some(i) = remove {
+                    self.pins.remove(i);
+                }
+                if ui.add_enabled(self.pins.len() < 1024, egui::Button::new("Add pin")).clicked() {
+                    self.pins.push(PinDraft { number: (self.pins.len() + 1).to_string(), ..Default::default() });
+                }
+            });
         }
         if self.kind == "label" {
             ui.horizontal(|ui| {
@@ -478,6 +490,9 @@ impl ViamindApp {
             self.schematic.sheet_guard = None;
         }
         ui.heading("Schematic capture");
+        if ui.button("Multi-unit package library…").clicked() {
+            self.begin_package_library();
+        }
         if ui.button("Native symbol library…").clicked() {
             self.begin_symbol_library();
         }
@@ -518,7 +533,17 @@ impl ViamindApp {
                 Err(e) => self.schematic.message = Some(e.to_string()),
             }
         }
-        let sheet = engine.read(|p| self.schematic.sheet.and_then(|id| p.schematic.sheets.get(&id).cloned()));
+        let sheet = if let Some(sheet_id) = self.schematic.sheet {
+            match engine.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id }) {
+                Ok(snapshot) => Some(snapshot.expected),
+                Err(error) => {
+                    ui.label(format!("Schematic snapshot unavailable: {error}"));
+                    return;
+                }
+            }
+        } else {
+            None
+        };
         if let Some(sheet) = sheet {
             let guard = self.schematic.sheet_guard.get_or_insert_with(|| sheet.clone()).clone();
             if guard != sheet {
@@ -564,10 +589,20 @@ impl ViamindApp {
             }
             ui.collapsing("Schematic objects", |ui| {
                 if let Some(c) = &sheet.content {
+                    let unit_labels: std::collections::BTreeMap<_, _> =
+                        c.packages.values().flat_map(|p| p.units.iter().map(|u| (u.symbol_id, (u.key.as_str(), u.name.as_str())))).collect();
                     let mut objects: Vec<_> = c
                         .symbols
                         .values()
-                        .map(|s| (s.id, format!("Symbol {}", s.designator)))
+                        .map(|s| {
+                            (
+                                s.id,
+                                unit_labels.get(&s.id).map_or_else(
+                                    || format!("Symbol {}", s.designator),
+                                    |(key, name)| format!("Symbol {}:{key} ({name})", s.designator),
+                                ),
+                            )
+                        })
                         .chain(c.wires.keys().map(|id| (*id, format!("Wire {id}"))))
                         .chain(c.junctions.keys().map(|id| (*id, format!("Junction {id}"))))
                         .chain(c.labels.values().map(|l| (l.id, format!("Label {}", l.name))))
@@ -601,7 +636,10 @@ impl ViamindApp {
                     cancel = ui.button("Cancel schematic draft").clicked();
                 });
                 if d.id.is_some() {
-                    delete = ui.button("Delete schematic object").clicked();
+                    delete = ui.add_enabled(d.package.is_none(), egui::Button::new("Delete schematic object")).clicked();
+                    if d.package.is_some() {
+                        ui.label("Use Native multi-unit package library to delete every unit atomically.");
+                    }
                 }
                 if apply || delete {
                     let edit = if delete { Ok(json!({"kind":"delete","id":d.id})) } else { d.edit() };
@@ -639,7 +677,18 @@ impl ViamindApp {
         ui.label("Run Electrical rule check to inspect native pin diagnostics.");
     }
     pub(crate) fn schematic_canvas(&mut self, ui: &mut Ui) {
-        let sheet = self.design.as_ref().and_then(|d| d.engine.read(|p| self.schematic.sheet.and_then(|id| p.schematic.sheets.get(&id).cloned())));
+        let sheet = self
+            .design
+            .as_ref()
+            .and_then(|d| self.schematic.sheet.map(|sheet_id| d.engine.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id })))
+            .transpose();
+        let sheet = match sheet {
+            Ok(snapshot) => snapshot.map(|s| s.expected),
+            Err(error) => {
+                ui.label(format!("Schematic canvas unavailable: {error}"));
+                return;
+            }
+        };
         let content = sheet.as_ref().and_then(|s| s.content.as_ref());
         self.schematic.object_count = content.map_or(0, SchematicContent::object_count);
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
@@ -692,12 +741,15 @@ impl ViamindApp {
         for w in c.wires.values() {
             painter.line_segment([screen(w.start), screen(w.end)], Stroke::new(2.0, color(w.id, wire_color)));
         }
+        let unit_labels: std::collections::BTreeMap<_, _> =
+            c.packages.values().flat_map(|p| p.units.iter().map(|u| (u.symbol_id, (u.key.as_str(), u.name.as_str())))).collect();
         for s in c.symbols.values() {
             let corners = body_corners(s);
             let points: Vec<_> = corners.into_iter().map(&screen).collect();
             painter.add(egui::Shape::closed_line(points, Stroke::new(2.0, color(s.id, symbol_color))));
             let at = screen(s.position);
-            painter.text(at, Align2::CENTER_CENTER, format!("{}\n{}", s.designator, s.value), FontId::proportional(13.0), symbol_color);
+            let reference = unit_labels.get(&s.id).map_or_else(|| s.designator.clone(), |(key, name)| format!("{}:{key} ({name})", s.designator));
+            painter.text(at, Align2::CENTER_CENTER, format!("{reference}\n{}", s.value), FontId::proportional(13.0), symbol_color);
             for pin in &s.pins {
                 if let Ok(p) = s.pin_position(pin.position) {
                     let body = Coordinate {
@@ -854,5 +906,62 @@ mod drawing_tests {
                 assert_eq!(body_corners(&symbol), expected);
             }
         }
+    }
+    #[test]
+    fn actual_group_unit_editor_exposes_pose_and_protects_shared_metadata() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let mut project = viamind_doc::Project::new("Group fields");
+        let sheet = Sheet::new("Main");
+        let sheet_id = sheet.id;
+        project.schematic.sheets.insert(sheet_id, sheet);
+        let engine = viamind_engine::EngineHandle::new(project);
+        let guard = engine.snapshot_symbol_sheet(&viamind_engine::SymbolSheetQuery { sheet_id }).unwrap();
+        let template =
+            viamind_doc::symbol_package::from_slice(include_bytes!("../../../fixtures/symbol-packages/original-quad.viamind-symbol-package.json"))
+                .unwrap();
+        let placements = template
+            .units
+            .iter()
+            .enumerate()
+            .map(|(i, u)| viamind_engine::UnitPose {
+                key: u.key.clone(),
+                position: Coordinate { x: Nm(i as i64 * 20_000_000), y: Nm(0) },
+                rotation_quarters: 0,
+                mirrored: false,
+            })
+            .collect();
+        UiAction::PlaceSymbolPackage
+            .run(
+                &engine,
+                serde_json::to_value(viamind_engine::PlaceSymbolPackage {
+                    expected_project: guard.expected_project,
+                    source_cursor: guard.source_cursor,
+                    expected: guard.expected,
+                    template,
+                    designator: "U1".into(),
+                    placements,
+                })
+                .unwrap(),
+            )
+            .unwrap();
+        let before = engine.session_state();
+        let sheet = before.project.schematic.sheets[&sheet_id].clone();
+        let id = *sheet.content.as_ref().unwrap().symbols.keys().next().unwrap();
+        let draft = Draft::from_object(before.project.id, sheet, id).unwrap();
+        assert!(draft.package.is_some());
+        let mut h = Harness::builder().with_size(egui::vec2(1000., 2200.)).build_ui_state(|ui, d: &mut Draft| d.fields(ui), draft);
+        h.run_steps(3);
+        for label in ["Reference", "Symbol value", "Symbol footprint", "Body width (mm)", "Pin 1 number"] {
+            assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        assert!(!h.get_by_label("Schematic X (mm)").accesskit_node().is_disabled());
+        h.get_by_label("Schematic X (mm)").click();
+        h.run_steps(2);
+        h.get_by_label("Schematic X (mm)").type_text("1");
+        h.run_steps(2);
+        assert_eq!(engine.session_state(), before, "local pose draft never applies implicitly");
     }
 }

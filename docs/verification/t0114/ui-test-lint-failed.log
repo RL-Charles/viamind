@@ -1,0 +1,28 @@
+c08035c2edd3b7fa3fe4575c78df1b84746bde41
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0114/apps/viamind)
+error: used `unwrap()` on `Some` value
+   --> crates/ui-egui/src/package_library.rs:303:26
+    |
+303 |         state.poll(Some((context.unwrap().0, engine.event_cursor(), sheet_id)));
+    |                          ^^^^^^^^^^^^^^^^
+    |
+help: remove the `Some` and `unwrap()`
+   --> crates/ui-egui/src/package_library.rs:293:23
+    |
+293 |         let context = Some((guard.expected_project, guard.source_cursor, sheet_id));
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_literal_unwrap
+    = note: `-D clippy::unnecessary-literal-unwrap` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_literal_unwrap)]`
+
+error: could not compile `viamind-ui-egui` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

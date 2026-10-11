@@ -84,6 +84,12 @@ fn plan(
         .values()
         .find_map(|sheet| sheet.content.as_ref()?.symbols.get(&placement.symbol_id).map(|symbol| (sheet.id, symbol)))
         .ok_or_else(|| CommandError::not_found("symbol", placement.symbol_id))?;
+    if project.schematic.sheets[&sheet_id].content.as_ref().is_some_and(|c| viamind_doc::symbol_package::package_for_symbol(c, symbol.id).is_some()) {
+        return Err(CommandError::invalid(
+            "symbol_id",
+            "individual package-unit PCB creation is unsupported; package aggregation is required (T116)",
+        ));
+    }
     if project.board.parts.values().any(|p| p.schematic_symbol == Some(symbol.id)) {
         return Err(CommandError::conflict("symbol already has a linked PCB component"));
     }

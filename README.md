@@ -69,6 +69,14 @@ Selection preserves design undo/redo. The Linux application supports native
 schematic capture, guarded manual PCB routing and reusable rectangular SMD
 footprints. The workflow sections below describe each supported subset.
 
+## Multi-unit schematic symbols
+
+Use **Libraries → Multi-unit package definitions…** to create detached explicit
+rectangular units, including a separate power unit, then place the complete
+package in one undoable operation. Units share a reference and retain distinct
+numbered pin identities. See the [supported workflow](docs/multi-unit-symbol-packages.md)
+for native format, limits and integration scope.
+
 ## Check copper and via drill rules
 
 Open **Board → Design rule check** for read-only batch checks of rectangular SMD

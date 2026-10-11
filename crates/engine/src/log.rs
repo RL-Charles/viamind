@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 10 to preserve guarded exact-net via minima.
-pub const LOG_VERSION: u32 = 10;
+/// New logs use version 11 to preserve explicit multi-unit symbol packages.
+pub const LOG_VERSION: u32 = 11;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -155,7 +155,10 @@ impl EventLog {
                     crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Sheet { id, before, after } => before.iter().chain(after).all(|sheet| {
-                        sheet.id == *id && viamind_doc::schematic::validate_sheet(sheet).is_ok() && (header.version >= 5 || sheet.content.is_none())
+                        sheet.id == *id
+                            && viamind_doc::schematic::validate_sheet(sheet).is_ok()
+                            && (header.version >= 5 || sheet.content.is_none())
+                            && (header.version >= 11 || sheet.content.as_ref().is_none_or(|c| c.packages.is_empty()))
                     }),
                     _ => true,
                 };
