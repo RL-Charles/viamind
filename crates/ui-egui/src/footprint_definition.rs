@@ -206,8 +206,11 @@ impl FootprintDefinitionUi {
     }
 }
 fn field(ui: &mut egui::Ui, label: &str, value: &mut String, chars: usize) -> bool {
+    field_with_id(ui, label, value, chars, ui.make_persistent_id(label))
+}
+fn field_with_id(ui: &mut egui::Ui, label: &str, value: &mut String, chars: usize, id: egui::Id) -> bool {
     let label = ui.label(label);
-    ui.add(egui::TextEdit::singleline(value).desired_width(ui.available_width().min(260.0)).char_limit(chars)).labelled_by(label.id).changed()
+    ui.add(egui::TextEdit::singleline(value).id(id).desired_width(ui.available_width().min(260.0)).char_limit(chars)).labelled_by(label.id).changed()
 }
 fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
     ui.label(format!(
@@ -277,8 +280,9 @@ impl ViamindApp {
                     let mut remove = None;
                     egui::ScrollArea::vertical().id_salt("footprint_definition_rows").max_height(300.0).show_rows(ui, row_height, form.rows.len(), |ui, rows| {
                         for i in rows { let row = &mut form.rows[i]; ui.allocate_ui(egui::vec2(ui.available_width(), row_height), |ui| { ui.push_id(row.widget, |ui| {
+                            let widget = row.widget;
                             for (name, value, limit) in [("number", &mut row.number, 128), ("X (mm)", &mut row.x, 64), ("Y (mm)", &mut row.y, 64), ("width (mm)", &mut row.width, 64), ("height (mm)", &mut row.height, 64)] {
-                                changed |= field(ui, &format!("Pad {} {name}", i + 1), value, limit);
+                                changed |= field_with_id(ui, &format!("Pad {} {name}", i + 1), value, limit, egui::Id::new(("footprint_definition_row", widget, name)));
                             }
                             if ui.button(format!("Remove definition pad {}", i + 1)).clicked() { remove = Some(i); }
                         }); }); }
