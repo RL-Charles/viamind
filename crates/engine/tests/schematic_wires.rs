@@ -35,7 +35,7 @@ fn exact_atomic_typed_dynamic_undo_native_log_and_immutable_snapshot() {
         .unwrap();
         let after = e.session_state();
         assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
-        assert_eq!(result.created.len(), 2);
+        assert!(result.created.is_empty(), "existing sheet is modified, nested wire IDs belong to its delta");
         let sheet = after.project.schematic.sheets.values().next().unwrap();
         let wires = &sheet.content.as_ref().unwrap().wires;
         assert!(wires.values().any(|w| w.start == p(-1, 3) && w.end == p(4, 3)));

@@ -96,7 +96,7 @@ impl Command for DrawSchematicWirePolyline {
         if !(2..=256).contains(&self.vertices.len()) {
             return Err(invalid("supply 2..256 confirmed vertices"));
         }
-        let object_count = self.expected.content.as_ref().map_or(0, |c| c.object_count());
+        let object_count = self.expected.content.as_ref().map_or(0, viamind_doc::schematic::SchematicContent::object_count);
         if object_count + self.vertices.len() - 1 > 10_000 {
             return Err(invalid("result would exceed 10000 sheet objects"));
         }
