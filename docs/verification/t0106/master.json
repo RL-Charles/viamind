@@ -1,0 +1,419 @@
+{
+  "ticket": "T-0106",
+  "verified_utc": "2026-10-11T17:13:37.323023+00:00",
+  "spec": "docs/specs/existing-copper-route-terminals.md",
+  "approved_spec_source": "8723f83",
+  "historical_product_source": "a265f71d3cc53cc73e8862781bf2d4d2a41aa6f3",
+  "historical_full_linux": {
+    "session": 63323,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 759,
+      "failed": 0,
+      "ignored": 1
+    },
+    "focused_tests": 17,
+    "workspace_build": true,
+    "inspection_build": true,
+    "actual_tools": 91,
+    "workflow_checks": 18
+  },
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/verified-native-v3/viamind",
+    "sha256": "44d6f49618670b9b847f89f01cf3a18d56cfa8373d76e84744e3a4a80f347a46",
+    "pid": 1966500,
+    "http_port": 7935,
+    "source": "a265f71d3cc53cc73e8862781bf2d4d2a41aa6f3",
+    "live_exe_sha256": "44d6f49618670b9b847f89f01cf3a18d56cfa8373d76e84744e3a4a80f347a46",
+    "actual_two_client_desktop_http_checks": 35,
+    "commit_roundtrip_ms": {
+      "manual_commit": 1.7856219928944483,
+      "cardinal_primary": 2.0441980013856664,
+      "cardinal_alternate": 1.7396589973941445,
+      "octilinear_primary": 1.8144220084650442,
+      "octilinear_alternate": 2.010855998378247,
+      "pad_to_existing_via": 1.4816500042797998
+    },
+    "limits": "Small fixture/current load only; not a large-board latency bound or cadence measurement. Production Cua perception metadata is degraded and cannot establish checked state."
+  },
+  "combined": {
+    "source": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee",
+    "stack_parent": "548a014d4b28b02e814036bf2bcc847736c32cf8",
+    "stack_parent_ticket": "T-0107",
+    "stack_parent_pr": 105,
+    "own_range": "14 commits; range-diff all equal; no conflicts",
+    "session": 2368,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_tests": {
+      "engine": 11,
+      "mcp_two_client": 1,
+      "mcp_read_only": 3,
+      "actual_ui": 5
+    },
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 91,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/combined-native/viamind",
+    "binary_sha256": "62abfff5c02df569462af8dfc2f0860c5b13e7fcb02f44c09ad583e6ee5dc0e8",
+    "exact_head_ci": "pending final artifact head",
+    "merge_requirement": "After predecessor merges, prospective main+HEAD tree must equal tested HEAD tree; any content difference requires new combined verification and CI."
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/combined-native/inspection",
+    "sha256": "a37df170baf9e93862527e1a62e2e595332b9a309a877cc234feed8122c16479",
+    "source": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee",
+    "host_source": "crates/ui-egui/examples/terminal_routing_inspection.rs",
+    "captures": [
+      {
+        "name": "wide-final",
+        "png": "wide-final.png",
+        "pixels": [
+          1600,
+          1000
+        ],
+        "rgb_sha256": "87ca97cd36cc9cc431d3c275e3bbdbb5d4ba45c8f9730698096c0065a7c8dd34",
+        "p6_sha256": "db84daa0a254f118397ee75ea75c7337dc7907a1d6470d19e36a11282407bb10",
+        "provenance": {
+          "source": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee",
+          "launched_utc": "2026-10-11T17:12:00.192570+00:00",
+          "launch": {
+            "active": false,
+            "bundle_id": null,
+            "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/launch-wide-final",
+            "pid": 2014143,
+            "running": true,
+            "windows": [
+              {
+                "app_name": "viamind-terminal-inspection",
+                "bounds": {
+                  "height": 1000,
+                  "width": 1600,
+                  "x": 2080,
+                  "y": 1265
+                },
+                "height": 1000,
+                "is_on_screen": true,
+                "pid": 2014143,
+                "title": "Untitled \u2014 Viamind",
+                "width": 1600,
+                "window_id": 110379539749024,
+                "x": 2080,
+                "y": 1265,
+                "z_index": null
+              }
+            ]
+          },
+          "native": {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              1600.0,
+              1000.0
+            ],
+            "controls": [
+              [
+                1235.0,
+                355.0,
+                1534.09375,
+                370.0
+              ],
+              [
+                1235.0,
+                373.0,
+                1362.84375,
+                391.0
+              ],
+              [
+                1370.84375,
+                373.0,
+                1503.75,
+                391.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/wide-final.p6",
+            "pid": 2014143,
+            "pixels": [
+              1600,
+              1000
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          },
+          "process_after_capture": "absent; self-closed",
+          "scope": "Inspection-only actual egui pointer preparation and native WGPU Screenshot. Logical focus retained; no OS-input/compositor-capture claim."
+        },
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/wide-final.p6"
+      },
+      {
+        "name": "compact-final",
+        "png": "compact-final.png",
+        "pixels": [
+          640,
+          400
+        ],
+        "rgb_sha256": "d3092b7334bf162834353d75f92c72490dd4ed78d951d704c256cb1cfafa55a2",
+        "p6_sha256": "539bd30af8dfc1eee761a7303733b470f07f63c48bfef839c881162e04818e53",
+        "provenance": {
+          "source": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee",
+          "launched_utc": "2026-10-11T17:12:01.730073+00:00",
+          "launch": {
+            "active": false,
+            "bundle_id": null,
+            "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/launch-compact-final",
+            "pid": 2014218,
+            "running": true,
+            "windows": [
+              {
+                "app_name": "viamind-terminal-inspection",
+                "bounds": {
+                  "height": 400,
+                  "width": 640,
+                  "x": 2560,
+                  "y": 1565
+                },
+                "height": 400,
+                "is_on_screen": true,
+                "pid": 2014218,
+                "title": "Untitled \u2014 Viamind",
+                "width": 640,
+                "window_id": 110379509164048,
+                "x": 2560,
+                "y": 1565,
+                "z_index": null
+              }
+            ]
+          },
+          "native": {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              640.0,
+              400.0
+            ],
+            "controls": [
+              [
+                275.0,
+                340.0,
+                574.09375,
+                355.0
+              ],
+              [
+                275.0,
+                358.0,
+                402.84375,
+                376.0
+              ],
+              [
+                410.84375,
+                358.0,
+                543.75,
+                376.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/compact-final.p6",
+            "pid": 2014218,
+            "pixels": [
+              640,
+              400
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          },
+          "process_after_capture": "absent; self-closed",
+          "scope": "Inspection-only actual egui pointer preparation and native WGPU Screenshot. Logical focus retained; no OS-input/compositor-capture claim."
+        },
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/compact-final.p6"
+      }
+    ],
+    "scope": "Actual egui pointer preparation, production ViamindApp native WGPU readback; logical-focus retention is inspection-only. No OS-input/compositor capture claim. ui_passes counts UI callbacks, not measured rendered frames. Both hosts self-closed after exclusive fsync and invariant logging."
+  },
+  "excluded_attempts": [
+    {
+      "log": "full.log",
+      "reason": "Test compilation assumed nonexistent NamedNetMinima Default; no gate pass inferred."
+    },
+    {
+      "log": "full-retry.log",
+      "reason": "Atomic incomplete-DRC rejection occurred but test asserted wrong message; corrected semantic assertion before successful full run."
+    },
+    {
+      "logs": [
+        "wide-runtime.log",
+        "compact-runtime.log"
+      ],
+      "reason": "Initial historical native host transferred cross-context egui memory and omitted floating controls. Images excluded. Fresh-area correction then persistent notice were verified by final captures."
+    }
+  ],
+  "scope_limits": [
+    "Explicit pad centers, track endpoints and through-via centers only; no midpoint split/new via/inferred sizing/shove.",
+    "Exact assigned same-net and selected outer-face attachments only; quarter-turn pads, no arbitrary-angle attachment.",
+    "Local orange preview is unchecked until guarded complete scoped joint DRC; existing unrelated/excluded objects are not certified.",
+    "Discovery 100000 row and borrowed geometry/policy bounds may refuse before filters; incomplete checks reject atomically.",
+    "Strict native100000-object60fps acceptance remains open."
+  ],
+  "source_retention": {
+    "historical_tag": "verification/t0106/native-source",
+    "historical_target": "a265f71d3cc53cc73e8862781bf2d4d2a41aa6f3",
+    "combined_tag": "verification/t0106/combined-source",
+    "combined_target": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee"
+  },
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "768a86adc3e645785d07ad66ea83474e586903da68b2416c2d309704cd71fed7"
+    },
+    "capture-native.py": {
+      "bytes": 2091,
+      "sha256": "88abd94d4b5bdf553daa42aeaad760b3b8aebb44acd0ff7e051d11a88180ff7a"
+    },
+    "catalog-check.json": {
+      "bytes": 367,
+      "sha256": "6fb480b11109db99b781f871979b0de5bda30c57aa38160d395a3982cf4f28bf"
+    },
+    "catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "6fb480b11109db99b781f871979b0de5bda30c57aa38160d395a3982cf4f28bf"
+    },
+    "client.py": {
+      "bytes": 1391,
+      "sha256": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6"
+    },
+    "combined-source.txt": {
+      "bytes": 41,
+      "sha256": "ba6593d5868ee9ce7917dc0d567614a722be7d4e95c3e9949d1cec7d51b5498e"
+    },
+    "combined.log": {
+      "bytes": 9521,
+      "sha256": "d573acf77df0a3d98ba77694922f36d68f67d0cb45c29fd02bc096d461bfce9c"
+    },
+    "combined.sh": {
+      "bytes": 1632,
+      "sha256": "98c60aec687433574d60406def9a8ed6c003c8cf0b8259343e67e800abc51012"
+    },
+    "compact-final-launch.json": {
+      "bytes": 588,
+      "sha256": "c9c3ea018a34e5020871419d1be32529f1fce73b58279135e3c05dca652fec7b"
+    },
+    "compact-final-provenance.json": {
+      "bytes": 1670,
+      "sha256": "402c46d0f94d6d3d945d44adcdb5b7786cd107549c550b57af7630fc662b7fb2"
+    },
+    "compact-final-runtime.log": {
+      "bytes": 711,
+      "sha256": "58fe7e230fa6d37250766111fc54714c3d9893b525fd695ee6829b2c6f3b0280"
+    },
+    "compact-final.png": {
+      "bytes": 53806,
+      "sha256": "7b667adb1e340d723b98af6ba36e6133c7a335d6bbfb23484388e266739568ab"
+    },
+    "compact-runtime.log": {
+      "bytes": 675,
+      "sha256": "ef512f726530ad954368bd151531f1ec4b76da5d8e09fc6647cda23d209772e5"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 1053,
+      "sha256": "05b2ed0785e3f0bea5d1eae17926ff456992e0b010de61b8f3021ff5b2c50086"
+    },
+    "final-capture-conversion.json": {
+      "bytes": 567,
+      "sha256": "ad2479ece18b93acf7c1bac84769d5a4e0024aa8c8eee1758709d6a4597813ad"
+    },
+    "full-final.log": {
+      "bytes": 125741,
+      "sha256": "37c57f98d1f9805d326efcd3791eca3b53174a49e837592eeb79961e608e247b"
+    },
+    "full-final.sh": {
+      "bytes": 1515,
+      "sha256": "5f0d7966746957ea9ae40b9daf62fba67a076c890ce14bfa5a36a2c1a32f2061"
+    },
+    "full-retry.log": {
+      "bytes": 2477,
+      "sha256": "b02551df25c5f342246c8d24c551b3cfa8cb262e907f6b0fb3aafe2b5630e5d9"
+    },
+    "full.log": {
+      "bytes": 1081,
+      "sha256": "97261acab1423298a4deeefd25ea81af2b96c003378d6851096b256c902410a1"
+    },
+    "historical-catalog.json": {
+      "bytes": 367,
+      "sha256": "f579a1506ce1886bcfb0c83b3ef6bb2d93c2127d9bedd3c8578790d51542f244"
+    },
+    "historical-source.txt": {
+      "bytes": 41,
+      "sha256": "7bab82cd07424e95f52bcd12558e96f175cead4648283fcf1d802e910d01724c"
+    },
+    "historical-workflow.json": {
+      "bytes": 1264,
+      "sha256": "46edba88b1b12ab6df3db5dc2369bd6694b7e0b4b67ca000ecadbbe141cde7e5"
+    },
+    "inspection-refresh.log": {
+      "bytes": 2163,
+      "sha256": "b8c0cdc01b5b01f44e6e91018df8d0456f2e885eefc85c5574e47beb5ab3229b"
+    },
+    "production-cua-metadata.json": {
+      "bytes": 1147,
+      "sha256": "30e41ed36d139fc4a7642e8c690b8dbab865e7b3558e9fa52748dc7824b97267"
+    },
+    "production-http.json": {
+      "bytes": 6785,
+      "sha256": "fef83941ca4db39ab3a0bb366192cade27523c1ebe0f7d711d6c5cc4548dc2c3"
+    },
+    "production-http.py": {
+      "bytes": 9989,
+      "sha256": "604207e041ffffa8ff134d2135b89ca7fdcd550fafc19d9298baa61a7725373e"
+    },
+    "production-launch.json": {
+      "bytes": 566,
+      "sha256": "3c807991d9a779d6540d3215de8f187f792dfdb8df344834a99dad7aeb31ee0b"
+    },
+    "production-probe.log": {
+      "bytes": 3137,
+      "sha256": "89f3a4d191201000129eac21b6017363e5a8cac72bcef713f8fe59fd7fc16cba"
+    },
+    "stack-range-diff.txt": {
+      "bytes": 1313,
+      "sha256": "2d319c714d64f5e644141fe1af7ba28205a646d41084d721f4f18af39d08054b"
+    },
+    "terminals.viamind.json": {
+      "bytes": 3224,
+      "sha256": "2903b723a3a28c2d083dde93fc04a85226647e1d204bf681a8f1e1c84a0b5bc6"
+    },
+    "verify-artifacts.py": {
+      "bytes": 1687,
+      "sha256": "54e43ab8ea5c1d5085d8cf3e0b86be3d44a84a41e60597e6cf6c0b6b0200cc55"
+    },
+    "wide-final-launch.json": {
+      "bytes": 589,
+      "sha256": "40fb1e8363ed12f77ba7735093574c414708f5d6ced0a823fd0a76c76678a437"
+    },
+    "wide-final-provenance.json": {
+      "bytes": 1678,
+      "sha256": "629b4a8a51253c78e82aa0cf6a59aa5ba1b5a8120ac9b409dbb9f82ece88ee8a"
+    },
+    "wide-final-runtime.log": {
+      "bytes": 718,
+      "sha256": "dab8905dc2e494d71492f5381ad3a202bb3c5db860cb5d658968238455033e5f"
+    },
+    "wide-final.png": {
+      "bytes": 115469,
+      "sha256": "c92fee533dd2696554f2a2b2f977fe62c226793f90b5f4dc4309e96866b22217"
+    },
+    "wide-runtime.log": {
+      "bytes": 680,
+      "sha256": "c648b61b5bb14ac0010962311ba09a2117c04276dfac8870a31c6ca31afddeab"
+    }
+  }
+}

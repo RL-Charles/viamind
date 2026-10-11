@@ -1,0 +1,38 @@
+ef6de49f8f85fce612407789bd5d89d79f2f1777
+Sun Oct 11 16:50:12 UTC 2026
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.74s
+     Running tests/route_terminals.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/route_terminals-858506355334ba68)
+
+running 11 tests
+test discovery_face_pagination_filters_overflow_unsupported_and_no_mutation ... ok
+test malformed_identity_and_point_budgets_refuse_before_secondary_vectors ... ok
+test stale_stream_sequence_and_grouped_command_reject_whole_transaction ... ok
+test pads_and_existing_vias_attach_on_both_explicit_faces ... ok
+test exact_track_to_via_typed_dynamic_identity_preservation_and_one_undo ... ok
+test borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state ... FAILED
+test unused_assembly_and_unrelated_schematic_text_never_enter_terminal_capture_or_route ... ok
+test complete_shared_checks_reject_foreign_copper_holes_outline_and_document_width ... ok
+test independently_expected_all_postures_preserve_negative_off_grid_stubs ... ok
+test wrong_layer_net_unassigned_missing_coincident_and_invalid_geometry_are_atomic ... ok
+test discovery_terminal_row_boundary_precedes_filter_allocation ... ok
+
+failures:
+
+---- borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state stdout ----
+
+thread 'borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state' (1941676) panicked at crates/engine/tests/route_terminals.rs:367:13:
+`route_terminal_polyline` failed: route preflight incomplete; no copper added: result limit 1 reached; more violations exist
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state
+
+test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+error: test failed, to rerun pass `-p viamind-engine --test route_terminals`

@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/launch-compact-final",
+  "pid": 2014218,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-terminal-inspection",
+      "bounds": {
+        "height": 400,
+        "width": 640,
+        "x": 2560,
+        "y": 1565
+      },
+      "height": 400,
+      "is_on_screen": true,
+      "pid": 2014218,
+      "title": "Untitled \u2014 Viamind",
+      "width": 640,
+      "window_id": 110379509164048,
+      "x": 2560,
+      "y": 1565,
+      "z_index": null
+    }
+  ]
+}
