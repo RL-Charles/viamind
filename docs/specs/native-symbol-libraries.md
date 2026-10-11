@@ -19,8 +19,9 @@ below. No external code, symbols or artwork are used.
    definitions into a detached template; it never changes the schematic.
 3. Files are regular files of at most 1 MiB; bounded reads check the opened file
    again. At most 1024 pins, 4096 UTF-8 bytes per field and 256 KiB aggregate
-   inspected text are accepted before copying or serialization. Names and pin
-   numbers are nonempty/trimmed/control-free, with unique pin numbers. Native
+   inspected text are accepted before copying or serialization. Template names
+   and pin numbers are nonempty/trimmed/control-free; pin names can be empty.
+   Pin numbers are unique. Existing native field length limits also apply. Native
    dimensions and local pin coordinates obey existing ±10000 mm limits.
 4. Export atomically publishes a NEW file in an existing directory. Existing
    files, the captured native document path and partial publication are
