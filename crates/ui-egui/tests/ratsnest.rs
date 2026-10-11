@@ -43,7 +43,13 @@ fn native_scene_guides_follow_pad_geometry_net_assignment_and_history() {
                 && ((points.iter().map(|p| p.y).sum::<f64>() / 4.0) - centre.1).abs() < 1e-9,
         _ => false,
     }));
-    engine.execute("set_part_pads", json!({"id":ids[0],"expected":expected,"pads":[]}), Origin::agent("electrical")).unwrap();
+    engine
+        .execute(
+            "set_part_pads",
+            json!({"id":ids[0],"expected":expected,"pads":[{"number":"1","x_mm":2,"y_mm":1,"width_mm":2,"height_mm":1,"net":"VCC"}]}),
+            Origin::agent("electrical"),
+        )
+        .unwrap();
     h.run_steps(5);
     assert!(h.state().scene.ratsnest.is_empty());
     h.state_mut().undo_design();
@@ -55,4 +61,10 @@ fn native_scene_guides_follow_pad_geometry_net_assignment_and_history() {
     engine.redo(Origin::User).unwrap();
     h.run_steps(5);
     assert_ne!(h.state().scene.ratsnest, initial);
+    engine.execute("delete_part", json!({"id":ids[1]}), Origin::User).unwrap();
+    h.run_steps(5);
+    assert!(h.state().scene.ratsnest.is_empty());
+    h.state_mut().undo_design();
+    h.run_steps(5);
+    assert_eq!(h.state().scene.ratsnest.len(), 1);
 }
