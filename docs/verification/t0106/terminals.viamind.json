@@ -1,0 +1,132 @@
+{
+  "format": "viamind",
+  "version": 8,
+  "project": {
+    "id": "a1da6f2f-a562-44f0-9c09-3ef004810588",
+    "name": "Existing copper terminals HTTP proof",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "net_rules": {
+        "N": {
+          "minimum_copper_clearance": 0,
+          "minimum_track_width": 250000
+        }
+      },
+      "tracks": {
+        "fbff0537-ca34-4127-bc6d-084645db1bda": {
+          "id": "fbff0537-ca34-4127-bc6d-084645db1bda",
+          "start": {
+            "x": 5000001,
+            "y": 10000007
+          },
+          "end": {
+            "x": 10000003,
+            "y": 10000007
+          },
+          "width": 500000,
+          "layer": "top",
+          "net": "N"
+        }
+      },
+      "vias": {
+        "05268289-f3af-458f-b5fd-bfba75bd1e29": {
+          "id": "05268289-f3af-458f-b5fd-bfba75bd1e29",
+          "position": {
+            "x": 30000001,
+            "y": 25000003
+          },
+          "diameter": 1000000,
+          "drill": 300000,
+          "net": "N"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 50000000,
+            "y": 0
+          },
+          {
+            "x": 50000000,
+            "y": 40000000
+          },
+          {
+            "x": 0,
+            "y": 40000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "4a5ce7d7-e62a-4172-a4fc-28fc3bb15ad0": {
+          "id": "4a5ce7d7-e62a-4172-a4fc-28fc3bb15ad0",
+          "designator": "LEGACY",
+          "value": "No invented pads",
+          "footprint": "preview only",
+          "position": {
+            "x": 8000000,
+            "y": 30000000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "5df9a1e0-75ef-4764-84fd-3d7a7648b888": {
+          "pads": [
+            {
+              "id": "387549de-594e-43b6-9f42-1d848dba6c72",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "5df9a1e0-75ef-4764-84fd-3d7a7648b888",
+          "designator": "J2",
+          "value": "Terminal fixture",
+          "footprint": "explicit",
+          "position": {
+            "x": 45000000,
+            "y": 6000000
+          },
+          "rotation_mdeg": 45000,
+          "side": "top"
+        },
+        "71bb82f9-85ec-440d-abc2-f4939e216bc0": {
+          "pads": [
+            {
+              "id": "311c0cc9-e2d4-4a6a-b41f-25a293a77fcc",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "71bb82f9-85ec-440d-abc2-f4939e216bc0",
+          "designator": "J1",
+          "value": "Terminal fixture",
+          "footprint": "explicit",
+          "position": {
+            "x": 42000000,
+            "y": 32000000
+          },
+          "rotation_mdeg": 90000,
+          "side": "top"
+        }
+      }
+    }
+  }
+}

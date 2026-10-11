@@ -1,0 +1,14 @@
+ 1:  f1ef66d =  1:  fcecc68 Specify identity-resolved existing copper route terminals
+ 2:  ce9808d =  2:  6231072 Resolve stable existing copper terminals for guarded exact routing
+ 3:  56025de =  3:  ec70b69 Specify bounded visitor lifetime and correct posture test helper
+ 4:  af73289 =  4:  825fc38 Terminate preservation assertion under workspace lint policy
+ 5:  5fae533 =  5:  5c73488 Exercise terminal row refusal through the real copper command schema
+ 6:  8ed2bd3 =  6:  fd93af5 Add local existing-terminal picker with exact preview and guarded finish
+ 7:  8cb8ac6 =  7:  80fd9fa Use actual modal accessibility and complete wheel events in UI checks
+ 8:  c5eecb9 =  8:  3880e41 Resolve terminal preview lint findings without behavior changes
+ 9:  fc82858 =  9:  872ddc6 Retain terminal routing native preview proof and checker refusal coverage
+10:  ef6de49 = 10:  afb8505 Use explicit named minima in terminal budget boundary fixture
+11:  a265f71 = 11:  a692435 Check shared incomplete-preflight reason at the exact result limit
+12:  6805036 = 12:  2159b98 Regenerate actual complete terminal routing tool reference
+13:  ad192be = 13:  22f17a4 Use fresh native area memory for anchored terminal inspection
+14:  680169e = 14:  8aacce5 Keep terminal preview validation status visible beside compact footer

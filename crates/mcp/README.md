@@ -727,3 +727,22 @@ request baseline and exact matching net floor; specified drill/outer diameter
 never resize. Saved checked jobs retain the same captured policy and cannot
 weaken it with zero baselines. Class/layer/region policy and other via types
 remain outside this scope.
+
+## Existing copper terminal routes
+
+`query_route_terminals` returns stable explicit pad, track start/end and through-via
+center identities, exact supported Nm positions, layer, assigned net, unsupported
+reasons and the full source cursor. Via faces are separate rows. Exact optional
+`net`/`layer` filters and `offset`/`limit` paginate a deterministic bounded capture;
+restart after source changes. Legacy parts without explicit pads are omitted.
+
+`route_terminal_polyline` and `route_terminal_posture` take those identities as
+`start`/`target`, explicit outer `layer`, integer-Nm `width`/`grid` and project/full
+cursor guards. Same exact assigned net is derived from live objects. Interior
+points/waypoints must already be grid aligned; exact off-grid attachments remain.
+Posture accepts cardinal/octilinear geometry and primary/alternate orientation.
+Both commands use complete scoped joint DRC before one atomic undo. The Board
+menu's **Route existing copper terminals** uses these same commands; its orange
+local preview is unchecked until commit. No resizing, midpoint splitting, new
+via, obstacle avoidance, shove or physical continuity certification. See the
+[public contract](../../docs/specs/existing-copper-route-terminals.md).

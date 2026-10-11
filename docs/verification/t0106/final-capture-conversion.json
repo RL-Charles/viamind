@@ -1,0 +1,22 @@
+[
+  {
+    "name": "wide-final",
+    "png": "wide-final.png",
+    "pixels": [
+      1600,
+      1000
+    ],
+    "rgb_sha256": "87ca97cd36cc9cc431d3c275e3bbdbb5d4ba45c8f9730698096c0065a7c8dd34",
+    "p6_sha256": "db84daa0a254f118397ee75ea75c7337dc7907a1d6470d19e36a11282407bb10"
+  },
+  {
+    "name": "compact-final",
+    "png": "compact-final.png",
+    "pixels": [
+      640,
+      400
+    ],
+    "rgb_sha256": "d3092b7334bf162834353d75f92c72490dd4ed78d951d704c256cb1cfafa55a2",
+    "p6_sha256": "539bd30af8dfc1eee761a7303733b470f07f63c48bfef839c881162e04818e53"
+  }
+]

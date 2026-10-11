@@ -1,0 +1,72 @@
+{
+  "source": "8aacce500b6ecbb7ec91635d2cf193e3f000a5ee",
+  "launched_utc": "2026-10-11T17:12:00.192570+00:00",
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/launch-wide-final",
+    "pid": 2014143,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind-terminal-inspection",
+        "bounds": {
+          "height": 1000,
+          "width": 1600,
+          "x": 2080,
+          "y": 1265
+        },
+        "height": 1000,
+        "is_on_screen": true,
+        "pid": 2014143,
+        "title": "Untitled \u2014 Viamind",
+        "width": 1600,
+        "window_id": 110379539749024,
+        "x": 2080,
+        "y": 1265,
+        "z_index": null
+      }
+    ]
+  },
+  "native": {
+    "capture": "eframe native WGPU Screenshot event",
+    "content_rect": [
+      0.0,
+      0.0,
+      1600.0,
+      1000.0
+    ],
+    "controls": [
+      [
+        1235.0,
+        355.0,
+        1534.09375,
+        370.0
+      ],
+      [
+        1235.0,
+        373.0,
+        1362.84375,
+        391.0
+      ],
+      [
+        1370.84375,
+        373.0,
+        1503.75,
+        391.0
+      ]
+    ],
+    "document_status_unchanged": true,
+    "full_session_unchanged": true,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/wide-final.p6",
+    "pid": 2014143,
+    "pixels": [
+      1600,
+      1000
+    ],
+    "self_close_after_capture": true,
+    "ui_passes": 11
+  },
+  "process_after_capture": "absent; self-closed",
+  "scope": "Inspection-only actual egui pointer preparation and native WGPU Screenshot. Logical focus retained; no OS-input/compositor-capture claim."
+}

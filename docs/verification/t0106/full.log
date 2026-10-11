@@ -1,0 +1,15 @@
+fc828581fb85d56e9dec31f4187419696320e3d0
+Sun Oct 11 16:49:34 UTC 2026
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0106/crates/engine)
+error[E0277]: the trait bound `NamedNetMinima: Default` is not satisfied
+   --> crates/engine/tests/route_terminals.rs:333:65
+    |
+333 |                 project.board.net_rules.insert("x".repeat(257), Default::default());
+    |                                                                 ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `NamedNetMinima`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `viamind-engine` (test "route_terminals") due to 1 previous error

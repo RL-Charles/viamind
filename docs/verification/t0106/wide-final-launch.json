@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0106/launch-wide-final",
+  "pid": 2014143,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-terminal-inspection",
+      "bounds": {
+        "height": 1000,
+        "width": 1600,
+        "x": 2080,
+        "y": 1265
+      },
+      "height": 1000,
+      "is_on_screen": true,
+      "pid": 2014143,
+      "title": "Untitled \u2014 Viamind",
+      "width": 1600,
+      "window_id": 110379539749024,
+      "x": 2080,
+      "y": 1265,
+      "z_index": null
+    }
+  ]
+}
