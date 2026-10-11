@@ -17,6 +17,7 @@ pub mod erc;
 pub mod fabrication;
 pub mod fabrication_view;
 pub mod files;
+pub mod footprint_conversion;
 mod gpu_tiles;
 pub mod gpu_timing;
 pub mod layer_panel;
@@ -153,6 +154,7 @@ pub struct ViamindApp {
     pub view_export: view_export::ViewExportUi,
     pub assembly_export: assembly_export::AssemblyExportUi,
     pub pcb_import: pcb_import::PcbImportUi,
+    pub footprint_conversion: footprint_conversion::FootprintConversionUi,
     pub fabrication: fabrication::FabricationUi,
     pub fabrication_view: fabrication_view::FabricationViewUi,
     pub output_jobs: output_jobs::OutputJobUi,
@@ -203,6 +205,7 @@ impl ViamindApp {
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
+            footprint_conversion: footprint_conversion::FootprintConversionUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
@@ -245,6 +248,7 @@ impl ViamindApp {
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
+            footprint_conversion: footprint_conversion::FootprintConversionUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
@@ -428,6 +432,7 @@ impl ViamindApp {
         self.view_export_window(ui);
         self.assembly_export_window(ui);
         self.pcb_import_window(ui);
+        self.footprint_conversion_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -501,6 +506,10 @@ impl ViamindApp {
                         ui.close();
                     }
 
+                    if ui.button("Convert footprint S-expression…").clicked() {
+                        self.begin_footprint_conversion();
+                        ui.close();
+                    }
                     if ui.button("Import PCB S-expression…").clicked() {
                         self.begin_pcb_import();
                         ui.close();

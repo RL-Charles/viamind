@@ -48,6 +48,8 @@ ui_actions! {
     SaveSymbolTemplate => ("save_symbol_template", input_schema::<viamind_engine::SaveSymbolTemplate>(), save_symbol_template),
     ExportSymbolTemplate => ("export_symbol_template", input_schema::<viamind_engine::ExportSymbolTemplate>(), export_symbol_template),
 
+    PreviewFootprintConversion => ("preview_footprint_conversion", input_schema::<viamind_engine::PreviewFootprintConversion>(), preview_footprint_conversion),
+    ConvertFootprintFile => ("convert_footprint_file", input_schema::<viamind_engine::ConvertFootprintFile>(), convert_footprint_file),
     PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
     ImportPcb => ("import_pcb", input_schema::<viamind_engine::ImportPcb>(), import_pcb),
     DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
@@ -369,4 +371,10 @@ fn inspect_fabrication_files(engine: &EngineHandle, input: Value) -> Result<Valu
     let invalid = |e: String| EngineError::InvalidInput { command: "inspect_fabrication_files".into(), message: e };
     let input = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
     serde_json::to_value(engine.inspect_fabrication_files(input)?).map_err(|e| invalid(e.to_string()))
+}
+fn preview_footprint_conversion(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.preview_footprint_conversion(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+fn convert_footprint_file(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.convert_footprint_file(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
 }

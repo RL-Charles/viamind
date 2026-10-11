@@ -24,7 +24,7 @@ fn detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_iden
             .unwrap();
         ids.push(id);
     }
-    engine.set_selection(ids.clone());
+    engine.set_selection(viamind_engine::SetSelection { ids: ids.clone(), mode: Default::default() }, Origin::User).unwrap();
     let before = engine.session_state();
     let status = engine.document_status();
     assert!(status.dirty);
