@@ -54,6 +54,10 @@ pub struct HostCommand {
 pub trait CommandHost: Send + Sync + 'static {
     /// The commands to expose as tools. Read once, by [`register_host`].
     fn commands(&self) -> Vec<HostCommand>;
+    /// Trusted admission classification. New host commands default to mutating.
+    fn is_observation(&self, _name: &str) -> bool {
+        false
+    }
     /// Run command `name` with `input` on behalf of `agent` and return its
     /// result. Document changes must be undoable and attributed to `agent`.
     /// Session actions such as selection preserve document history.
@@ -76,13 +80,18 @@ pub fn register_host(registry: &mut ToolRegistry, host: Arc<dyn CommandHost>) ->
     let mut staged = registry.clone();
 
     for command in host.commands() {
+        let observation = host.is_observation(&command.name);
         let host = host.clone();
         let name = command.name.clone();
+        let registered_name = name.clone();
         staged.register_with_context(command.name, command.description, command.input_schema, move |input, ctx: CallContext| {
             let host = host.clone();
             let name = name.clone();
             blocking(move || host.execute(&name, input, &ctx.agent))
         })?;
+        if observation {
+            staged.admit_observation(&registered_name);
+        }
     }
 
     let no_args = || json!({ "type": "object", "properties": {}, "additionalProperties": false });
@@ -96,7 +105,7 @@ pub fn register_host(registry: &mut ToolRegistry, host: Arc<dyn CommandHost>) ->
         let host = h.clone();
         blocking(move || host.redo(&ctx.agent))
     })?;
-    staged.register(GET_DESIGN_TOOL, GET_DESIGN_DESCRIPTION, no_args(), move |_| {
+    staged.register_observation(GET_DESIGN_TOOL, GET_DESIGN_DESCRIPTION, no_args(), move |_| {
         let host = host.clone();
         blocking(move || Ok(host.snapshot()))
     })?;

@@ -20,6 +20,28 @@ These are user-run configuration commands following the public
 `/mcp` shows connection status. Use `VIAMIND_MCP_PORT` for another desktop port.
 The separate `viamind-mcp` executable serves skeleton identification tools only.
 
+### Start with agents read only
+
+```sh
+target/release/viamind --agent-read-only --open /absolute/board.viamind.json
+# Or an isolated stdio document:
+target/release/viamind --headless --agent-read-only --open /absolute/board.viamind.json
+```
+
+This fixed startup mode applies to every agent connection in that process.
+Agents can query, inspect, plan and run supported DRC/ERC; human desktop editing
+stays live and observers see those edits. The desktop shows **Agents read only**.
+Agent edits, selection changes, undo/redo, document replacement and file writes
+are unavailable. In-memory SVG/PNG requests must omit `path`, including null.
+Supported local input/library files can still be read; this is not a filesystem
+sandbox. Client identities and tool annotation hints cannot change admission.
+
+Restart without the flag to allow agent edits. The flag cannot be combined with
+CLI exports/jobs, `--save-as`, `--no-mcp` or `--demo`. Dynamic approval overlays
+and per-agent permission settings are separate work. The canonical generated
+reference describes default live mode; discovery from a restricted endpoint
+shows only its admitted tools and render schemas without an output path.
+
 The [complete generated reference](generated/mcp-tools.md) contains every
 discovered definition, including full input schemas and nested definitions.
 Tool annotations are metadata; each tool's schema and description define its

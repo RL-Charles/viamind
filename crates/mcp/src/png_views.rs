@@ -7,7 +7,7 @@ use viamind_engine::{EngineHandle, EventCursor};
 type Input = viamind_render::BoardViewRequest<EventCursor>;
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
     let slots = Arc::new(tokio::sync::Semaphore::new(2));
-    registry.register_png("render_board_png", "Render an immutable PCB snapshot as an image/png MCP image block, with structured metadata/source_cursor and optional NEW path. Same supported geometry and options as render_board_view; transparent RGBA8, max 4194304 pixels/8 MiB, two concurrent renders per registry. Crop-relative coordinates preserve distant small features; extreme precision-limited views fail explicitly. No schematic, legacy previews or fabrication certification. expected_cursor checks the snapshot after waiting for a render slot. Does not change design/history/dirty state.", viamind_engine::input_schema::<Input>(), move |input| {
+    registry.register_in_memory_view("render_board_png", "Render an immutable PCB snapshot as an image/png MCP image block, with structured metadata/source_cursor and optional NEW path. Same supported geometry and options as render_board_view; transparent RGBA8, max 4194304 pixels/8 MiB, two concurrent renders per registry. Crop-relative coordinates preserve distant small features; extreme precision-limited views fail explicitly. No schematic, legacy previews or fabrication certification. expected_cursor checks the snapshot after waiting for a render slot. Does not change design/history/dirty state.", viamind_engine::input_schema::<Input>(),true, move |input| {
         let engine=engine.clone();
         let slots=slots.clone();
         async move {
