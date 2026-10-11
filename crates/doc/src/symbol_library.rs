@@ -232,7 +232,7 @@ mod regular_file_tests {
     fn loading_a_fifo_without_a_writer_rejects_instead_of_waiting() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("replaced.viamind-symbol.json");
-        rustix::fs::mkfifo(&path, rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR).unwrap();
+        rustix::fs::mkfifoat(rustix::fs::CWD, &path, rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR).unwrap();
         assert!(super::load(&path).unwrap_err().contains("regular file"));
     }
 }
