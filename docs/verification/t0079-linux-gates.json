@@ -1,0 +1,21 @@
+{
+  "source_revision": "b056058090f5abf153ff8f000f98cdad64bd149d",
+  "base_revision": "5fb15a6",
+  "fmt": true,
+  "clippy_workspace_all_targets_strict": true,
+  "workspace_tests_passed": 488,
+  "workspace_tests_failed": 0,
+  "workspace_tests_ignored_existing": 1,
+  "workspace_build": true,
+  "extra_targeted_desktop_tests_passed": 4,
+  "production_binary_sha256": "a4da8deb0717d747aba961e67cd0d39240accccc9bb37add96851d16d73e869f",
+  "gate_log_sha256": "cb27d7fca86252421c180806532cb23863dffae2020c0e0278a20c40a8c11f0e",
+  "commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets -- -D warnings",
+    "cargo test --workspace",
+    "cargo build --workspace"
+  ],
+  "cache_safety": "Entire sequence under flock /tmp/viamind-workspace-gates.lock, own workspace source mtimes refreshed first, verified production binary copied before releasing lock; CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=2",
+  "counting": "Workspace totals exclude the extra preliminary four-test desktop run."
+}

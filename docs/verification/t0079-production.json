@@ -1,0 +1,19 @@
+{
+  "app_name": "viamind",
+  "pid": 517579,
+  "screenshot_file_path": "/home/charlesmowbray/Development/viamind-t-0079/docs/verification/t0079-production.png",
+  "screenshot_height": 5,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 16,
+  "window_bounds": {
+    "height": 5,
+    "width": 16,
+    "x": 2382,
+    "y": 1465
+  },
+  "window_id": 110379508581344,
+  "window_title": "paired.viamind.json \u2014 Viamind",
+  "source_revision": "b056058090f5abf153ff8f000f98cdad64bd149d",
+  "binary_sha256": "a4da8deb0717d747aba961e67cd0d39240accccc9bb37add96851d16d73e869f",
+  "capture_kind": "Actual production desktop process identity; tiny compositor tile, not readable terminal evidence"
+}
