@@ -1,0 +1,34 @@
+{
+  "source_commit": "bcbeffe156adf62768a853bfb5d1fa44b340cbfd",
+  "source_base": "3c55c9f",
+  "date": "2026-10-11",
+  "platform": "Linux x86_64, Wayland/Hyprland",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "workspace_tests": {
+    "passed": 516,
+    "failed": 0,
+    "ignored": 1
+  },
+  "full_gate_log_sha256": "5d778c0bcc6d111fa5d4486dd58f27179e2ff0790e1acbf50ae9a10b08fd0d22",
+  "production_binary_sha256": "633182d74626014d3383879d98019782074ec148560cd204cd613cf2b843a41f",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --offline --locked -- -D warnings",
+    "cargo test --workspace --offline --locked",
+    "cargo build --workspace --offline --locked"
+  ],
+  "environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp"
+  },
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "preflight": "Touch workspace Rust source under entire-sequence mutex to invalidate cross-worktree local crate metadata",
+  "initial_ci": "https://github.com/RL-Charles/viamind/actions/runs/38130643555",
+  "final_integration_delta": "Clean additive fabrication rebase onto83c5dd6 plus one instruction-label match arm; fresh CI required. Production artifacts identify historical source explicitly.",
+  "integrated_source_commit": "fd9aab1649454087ce8980354d99f312303c156d",
+  "integrated_ci": "https://github.com/RL-Charles/viamind/actions/runs/38131282776",
+  "integrated_ci_all_checks": "pass"
+}

@@ -199,3 +199,67 @@ async fn exact_posture_routes_share_planner_and_two_agent_cursor_guards() {
     registry.call("redo", json!({}), a).await.unwrap();
     assert_eq!(e.read(Clone::clone), after.project);
 }
+
+#[tokio::test]
+async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_guarded_commit() {
+    use viamind_doc::{ObjectId, Pad, Pads, Part, Side};
+    let nm = |value: i64| serde_json::from_value(json!(value)).unwrap();
+    let point = |x: i64, y: i64| serde_json::from_value(json!({"x":x,"y":y})).unwrap();
+    let mut project = Project::new("MCP static detour");
+    project.board.outline = Some(
+        serde_json::from_value(json!({"outer":[{"x":0,"y":0},{"x":40000000,"y":0},{"x":40000000,"y":20000000},{"x":0,"y":20000000}],"cutouts":[]}))
+            .unwrap(),
+    );
+    let ids = [10_000_000, 30_000_000].map(|x| {
+        let pad = Pad {
+            id: ObjectId::new(),
+            number: "1".into(),
+            position: point(0, 0),
+            width: nm(1_000_000),
+            height: nm(1_000_000),
+            net: Some("N".into()),
+        };
+        let part = Part {
+            schematic_symbol: None,
+            id: ObjectId::new(),
+            designator: format!("J{x}"),
+            value: String::new(),
+            footprint: String::new(),
+            position: point(x, 10_000_000),
+            rotation_mdeg: 0,
+            side: Side::Top,
+            pads: Some(Pads::try_from(vec![pad.clone()]).unwrap()),
+        };
+        let id = json!({"part_id":part.id,"pad_id":pad.id});
+        project.board.parts.insert(part.id, part);
+        id
+    });
+    let e = EngineHandle::new(project);
+    let registry = engine_registry(e.clone()).unwrap();
+    let a = CallContext::new("walk-a");
+    let b = CallContext::new("walk-b");
+    registry
+        .call("add_track", json!({"start_x_mm":20,"start_y_mm":8,"end_x_mm":20,"end_y_mm":12,"width_mm":0.25,"net":"BLOCK","layer":"top"}), b.clone())
+        .await
+        .unwrap();
+    let before = e.session_state();
+    let input =
+        json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"start":ids[0],"target":ids[1],"grid":1000000,"width":250000});
+    let plan = registry.call("plan_pad_walkaround", input.clone(), a.clone()).await.unwrap();
+    assert_eq!(e.session_state(), before);
+    assert_eq!(plan["complete_scoped_preflight"], true);
+    assert_eq!(
+        plan["plan"]["path"]["points"],
+        json!([{"x":10000000,"y":10000000},{"x":10000000,"y":7000000},{"x":21000000,"y":7000000},{"x":21000000,"y":10000000},{"x":30000000,"y":10000000}])
+    );
+    let out = registry.call("route_pad_walkaround", input.clone(), a.clone()).await.unwrap();
+    assert_eq!(out["created"].as_array().unwrap().len(), 4);
+    let after = e.session_state();
+    assert!(registry.call("plan_pad_walkaround", input.clone(), b.clone()).await.unwrap_err().to_string().contains("session changed"));
+    assert!(registry.call("route_pad_walkaround", input, b).await.unwrap_err().to_string().contains("session changed"));
+    assert_eq!(e.session_state(), after);
+    registry.call("undo", json!({}), a.clone()).await.unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    registry.call("redo", json!({}), a).await.unwrap();
+    assert_eq!(e.read(Clone::clone), after.project);
+}

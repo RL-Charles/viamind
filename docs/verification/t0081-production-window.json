@@ -1,0 +1,16 @@
+{
+  "app_name": "viamind",
+  "pid": 658951,
+  "screenshot_file_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0081-production.png",
+  "screenshot_height": 5,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 1,
+  "window_bounds": {
+    "height": 5,
+    "width": 1,
+    "x": 2397,
+    "y": 1465
+  },
+  "window_id": 110379509888432,
+  "window_title": "t0081-route.viamind.json — Viamind"
+}

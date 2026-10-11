@@ -624,3 +624,22 @@ explicit stable component link. It pairs exact unique terminal numbers, returns
 bounded deterministic pages with source cursors, exact supported integer centers
 and explicit legacy/mismatch/angle exclusions. No electrical inference or session
 mutation occurs. See [desktop and MCP usage](../../docs/pin-pad-cross-probing.md).
+
+### Checked static cardinal walkaround
+
+Use `plan_pad_walkaround` with exact `expected_project`, full `expected_cursor`,
+`start`/`target` explicit pad IDs, positive integer `grid`/`width` Nm and optional
+existing `rules`. It captures a bounded board-only snapshot, searches stable
+horizontal/vertical paths and runs complete shared scoped joint route DRC outside
+the engine lock. The immutable result includes exact points/stubs, derived
+net/layer, work counters and captured cursor. `route_pad_walkaround` accepts the
+same guarded intent and recomputes before one atomic undoable commit.
+
+Only same-side/same-net quarter-turn explicit pad endpoints and four-corner
+axis-aligned rectangular outlines without cutouts are supported. Conservative
+foreign copper boxes and **all** via drill holes block paths; legacy route-side
+parts, unsafe stubs, malformed objects, no path, stale cursors, incomplete DRC or
+budgets refuse. Limits:64 relevant boxes,20000 nodes,100000 edges,4000000 box tests,
+510 interior waypoints,1024 segments,two retained planning/preflight operations.
+No existing copper moves, shove, global optimality or physical certification.
+See [desktop use and limits](../../docs/static-cardinal-walkaround.md).

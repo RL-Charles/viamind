@@ -94,6 +94,19 @@ pub(crate) fn apply_route_candidate(
     vias: Vec<viamind_doc::Via>,
     rules: &viamind_drc::DrcInput,
 ) -> Result<Vec<Delta>, CommandError> {
+    let deltas = prepare_route_candidate(project, tracks, vias, rules)?;
+    for delta in &deltas {
+        delta.apply_to(project);
+    }
+    Ok(deltas)
+}
+/// Complete immutable joint preflight shared by checked previews and commits.
+pub(crate) fn prepare_route_candidate(
+    project: &Project,
+    tracks: Vec<Track>,
+    vias: Vec<viamind_doc::Via>,
+    rules: &viamind_drc::DrcInput,
+) -> Result<Vec<Delta>, CommandError> {
     let count = tracks.len().saturating_add(vias.len());
     if count == 0
         || count > 1025
@@ -134,9 +147,6 @@ pub(crate) fn apply_route_candidate(
     }
     if let Some(violation) = report.violations.iter().find(|v| v.objects.iter().any(|o| ids.contains(&o.selection_id()))) {
         return Err(CommandError::conflict(format!("route preflight failed; no copper added: {}", violation.message)));
-    }
-    for delta in &deltas {
-        delta.apply_to(project);
     }
     Ok(deltas)
 }

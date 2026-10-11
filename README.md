@@ -273,3 +273,4 @@ navigation, with the same bounded read-only query over MCP. Arbitrary-angle exac
 centers, legacy preview pads and mismatched terminal sets remain explicit exclusions.
 
 Desktop fabrication snapshots: [retained export controls, complete source cursor and limits](docs/desktop-fabrication-export.md).
+PCB static cardinal walkaround: [checked pad-to-pad planning and conservative limits](docs/static-cardinal-walkaround.md).

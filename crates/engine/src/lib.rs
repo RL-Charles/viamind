@@ -105,3 +105,6 @@ pub use route_via::RoutePadViaPolyline;
 
 pub mod route_posture;
 pub use route_posture::RoutePadPosture;
+
+pub mod walkaround;
+pub use walkaround::{CheckedWalkaround, RoutePadWalkaround};
