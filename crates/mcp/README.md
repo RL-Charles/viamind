@@ -108,6 +108,18 @@ an existing active path. `get_document_status {}` returns absolute `path` (or nu
 dirty state. Edits made while a save is in progress remain dirty. Both HTTP and stdio
 support these tools. See [the saving contract](../../docs/specs/project-saving.md).
 
+## New and Open
+
+`new_project {"name":"Power board"}` creates an unnamed project; name defaults to
+Untitled. `open_project {"path":"board.viamind.json"}` validates and loads a native
+file. Both keep existing connections sharing the same document handle and reset
+undo/redo and selection. Unsaved changes reject by default. To discard them,
+provide `discard_dirty: true` and the current `expected_cursor` from
+`get_session_state`. Stale cursors and edits during loading reject the operation.
+Successful replacement starts a fresh event stream: waiting and reconnecting
+observers receive an error requesting `get_session_state` resynchronization.
+See [the lifecycle contract](../../docs/specs/document-lifecycle.md).
+
 ## Shared desktop selection
 
 The live desktop engine also exposes `get_selection` and `set_selection`.

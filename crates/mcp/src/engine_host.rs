@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin, PartQuery, SaveProject, SetSelection, WatchEvents, input_schema};
+use viamind_engine::{EngineHandle, NewProject, OpenProject, Origin, PartQuery, SaveProject, SetSelection, WatchEvents, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -36,6 +36,16 @@ impl CommandHost for EngineHost {
             .into_iter()
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
             .collect();
+        commands.push(HostCommand {
+            name: "new_project".into(),
+            description: "Create a new unnamed project in this shared session (name defaults to Untitled). Resets history and selection; old event cursors require get_session_state resynchronization. Unsaved changes reject unless discard_dirty is true with the current expected_cursor. Stale cursors reject.".into(),
+            input_schema: input_schema::<NewProject>(),
+        });
+        commands.push(HostCommand {
+            name: "open_project".into(),
+            description: "Open a native file on this machine in the shared desktop/agent session. Validates before replacement; failed reads leave the current document intact. Resets history and selection. Unsaved changes require discard_dirty with the current expected_cursor from get_session_state. Concurrent edits during loading reject; old event cursors require resynchronization.".into(),
+            input_schema: input_schema::<OpenProject>(),
+        });
         commands.push(HostCommand {
             name: "get_document_status".into(),
             description: "Read the shared active native file path (null if unnamed) and dirty state. Dirty means the design differs from its saved baseline; selection does not count.".into(),
@@ -75,6 +85,16 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "new_project" {
+            let input: NewProject = serde_json::from_value(input).map_err(|e| format!("invalid new_project input: {e}"))?;
+            let result = self.engine.new_project(input, Self::origin(agent)).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "open_project" {
+            let input: OpenProject = serde_json::from_value(input).map_err(|e| format!("invalid open_project input: {e}"))?;
+            let result = self.engine.open_project(input, Self::origin(agent)).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
         if name == "get_document_status" {
             if !input.as_object().is_some_and(serde_json::Map::is_empty) {
                 return Err("get_document_status takes an empty object".into());

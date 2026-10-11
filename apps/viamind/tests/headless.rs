@@ -144,6 +144,24 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
 }
 
 #[tokio::test]
+async fn headless_agent_can_create_save_and_reopen_in_one_connection() {
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("final.json");
+    let native = directory.path().join("created.viamind.json");
+    let (mut child, mut client) = spawn(None, &output).await;
+    let created = client.tool("new_project", json!({ "name": "Headless lifecycle" })).await;
+    client.tool("save_project", json!({ "path": native })).await;
+    client.tool("new_project", json!({ "name": "Temporary" })).await;
+    let reopened = client.tool("open_project", json!({ "path": native })).await;
+    assert_eq!(reopened["project"], created["project"]);
+    assert_ne!(reopened["cursor"]["stream_id"], created["cursor"]["stream_id"]);
+    assert_eq!(client.tool("get_document_status", json!({})).await["dirty"], false);
+    drop(client);
+    assert!(timeout(TIMEOUT, child.wait()).await.unwrap().unwrap().success());
+    assert_eq!(serde_json::to_value(file::load(output).unwrap()).unwrap(), created["project"]);
+}
+
+#[tokio::test]
 async fn output_write_failure_returns_nonzero_after_an_empty_design_session() {
     let directory = tempfile::tempdir().unwrap();
     let output = directory.path().join("missing-parent/result.viamind.json");

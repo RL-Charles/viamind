@@ -20,6 +20,55 @@ pub struct SaveProject {
     pub overwrite: bool,
 }
 
+/// Guard against losing edits when replacing a document.
+#[derive(Clone, Debug, Default, Deserialize, Serialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ReplaceGuard {
+    /// Explicitly discard unsaved changes. Requires their current expected_cursor.
+    #[serde(default)]
+    pub discard_dirty: bool,
+    /// Session cursor of the document being replaced; stale cursors reject.
+    #[serde(default)]
+    pub expected_cursor: Option<EventCursor>,
+}
+
+/// Create a new unnamed document in the shared session.
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct NewProject {
+    /// Project name; defaults to Untitled.
+    #[serde(default = "untitled")]
+    pub name: String,
+    /// Explicitly discard unsaved changes, guarded by expected_cursor.
+    #[serde(default)]
+    pub discard_dirty: bool,
+    /// Current session cursor, required for discarding unsaved changes.
+    #[serde(default)]
+    pub expected_cursor: Option<EventCursor>,
+}
+fn untitled() -> String {
+    "Untitled".into()
+}
+impl Default for NewProject {
+    fn default() -> Self {
+        Self { name: untitled(), discard_dirty: false, expected_cursor: None }
+    }
+}
+
+/// Open a native project in the shared session.
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct OpenProject {
+    /// Native project path on this machine.
+    pub path: PathBuf,
+    /// Explicitly discard unsaved changes, guarded by expected_cursor.
+    #[serde(default)]
+    pub discard_dirty: bool,
+    /// Current session cursor, required for discarding unsaved changes.
+    #[serde(default)]
+    pub expected_cursor: Option<EventCursor>,
+}
+
 /// Shared native file status. Saving and selection do not create undo steps.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct DocumentStatus {
