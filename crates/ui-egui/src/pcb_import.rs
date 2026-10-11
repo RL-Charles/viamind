@@ -171,7 +171,7 @@ impl ViamindApp {
         let mut changed = false;
         egui::Window::new("Import PCB S-expression").open(&mut open).default_width(760.0).max_width((ui.ctx().content_rect().width() - 24.0).max(240.0)).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Standalone .kicad_pcb supported geometry. Full project and fabrication fidelity are not provided.");
-            ui.label("Front zero-angle rectangular SMD pads, outer straight tracks, through vias and polygon board outline/cutouts.");
+            ui.label("Front zero-angle footprints with cardinal rectangular SMD pads (-360..360 degrees), outer straight tracks, through vias and polygon board outline/cutouts.");
             let label = ui.label("PCB source file");
             changed = ui.add(egui::TextEdit::singleline(&mut self.pcb_import.path).desired_width(ui.available_width()).char_limit(4096))
                 .labelled_by(label.id).changed();

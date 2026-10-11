@@ -1,7 +1,7 @@
 use serde_json::json;
 use viamind_doc::{ObjectId, Project};
 use viamind_engine::{EngineHandle, ImportPcb, NewProject, OpenProject, Origin, PreviewPcbImport, SaveProject};
-const SOURCE: &str = include_str!("../../../fixtures/import/original-two-layer.kicad_pcb");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_pcb");
 fn input(p: &viamind_engine::PcbImportPreview) -> ImportPcb {
     ImportPcb {
         path: p.path.clone(),
@@ -34,6 +34,11 @@ fn preview_is_read_only_import_is_unsaved_and_native_roundtrip_retains_exact_geo
     assert!(!engine.can_redo());
     let imported = engine.session_state().project;
     let id = *imported.board.parts.keys().next().unwrap();
+    let pads = &imported.board.parts[&id].pads.as_ref().unwrap().0;
+    assert_eq!((pads[0].width.0, pads[0].height.0), (1_200_003, 800_001));
+    assert_eq!(pads[0].net.as_deref(), Some("VIN"));
+    assert_eq!(pads[1].net.as_deref(), Some("GND"));
+    assert_eq!(pads[0].id.to_string(), "30000000-0000-4000-8000-000000000001");
     engine.execute("update_part", json!({"id":id,"designator":"U2"}), Origin::User).unwrap();
     engine.undo(Origin::User).unwrap();
     assert_eq!(engine.session_state().project, imported);

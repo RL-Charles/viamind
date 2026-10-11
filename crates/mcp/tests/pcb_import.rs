@@ -8,7 +8,7 @@ use serde_json::{Value, json};
 use viamind_engine::EngineHandle;
 use viamind_mcp::{engine_registry, serve_http};
 type Client = RunningService<RoleClient, ClientConfig>;
-const SOURCE: &str = include_str!("../../../fixtures/import/original-two-layer.kicad_pcb");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_pcb");
 async fn call(client: &Client, name: &'static str, input: Value) -> CallToolResult {
     client.call_tool(CallToolRequestParams::new(name).with_arguments(input.as_object().unwrap().clone())).await.unwrap()
 }
@@ -62,6 +62,16 @@ async fn two_actual_clients_preview_exact_source_and_protect_dirty_stale_and_nat
     assert_ne!(imported["cursor"]["stream_id"], fresh["expected_cursor"]["stream_id"]);
     let project = engine.session_state().project;
     assert_eq!(project.board.parts.len(), 1);
+    let pads = &project.board.parts.values().next().unwrap().pads.as_ref().unwrap().0;
+    assert_eq!((pads[0].width.0, pads[0].height.0), (1_200_003, 800_001));
+    assert_eq!(pads[0].net.as_deref(), Some("VIN"));
+    assert!(
+        preview["report"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|i| i["reason"].as_str().unwrap().contains("source angle -180 degrees, canonical 180 degrees"))
+    );
     assert_eq!(project.board.tracks.len(), 2);
     assert_eq!(project.board.vias.len(), 1);
     assert_eq!(call(&a, "import_pcb", apply(&fresh)).await.is_error, Some(true));

@@ -4,7 +4,7 @@ use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::{ViamindApp, actions::UiAction};
-const SOURCE: &str = include_str!("../../../fixtures/import/original-rect-smd.kicad_mod");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_mod");
 static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
     h.get_by_label(label).scroll_to_me();
@@ -62,6 +62,10 @@ fn actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged()
     click(&mut h, "Preview footprint conversion");
     wait(&mut h);
     assert!(h.state().footprint_conversion.preview().unwrap().can_convert);
+    let preview = h.state().footprint_conversion.preview().unwrap();
+    let pad = &preview.footprint.as_ref().unwrap().pads[0];
+    assert_eq!((pad.width.0, pad.height.0), (1_200_003, 800_001));
+    assert!(preview.report.items.iter().any(|i| i.reason.contains("source angle 90 degrees, canonical 90 degrees")));
     assert!(h.query_all_by_label_contains("2 rectangular pads").next().is_some());
     click(&mut h, "Create new native footprint file");
     wait(&mut h);

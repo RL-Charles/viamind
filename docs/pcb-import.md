@@ -7,7 +7,7 @@ per-object fidelity report: each source list has a stable path, source byte offs
 optional source UUID, disposition and reason. Full fidelity is explicitly false.
 
 This initial converter supports front-side, zero-angle footprints with explicit
-rectangular SMD pads, straight outer-layer tracks, circular through vias and
+rectangular SMD pads at exact cardinal angles within -360..360 degrees, straight outer-layer tracks, circular through vias and
 polygon `Edge.Cuts` outlines/cutouts. Decimal coordinates are converted exactly to
 integer nanometres; nonzero sub-Nm precision is rejected. Pad numbers, native
 part/pad/track/via UUIDs and exact net-table assignments are retained. Source edge
@@ -48,3 +48,8 @@ Use native DRC and inspect omitted rules before fabrication. Format dates tested
 by this grammar are 20221018, 20240108 and 20241229; this does not imply every file
 from those releases is supported. [Public-source behavior spec](specs/pcb-sexpr-import.md)
 defines the exact subset and exclusions.
+
+Cardinal pad normalization preserves centers and exact rectangular copper: 90/270
+swap width/height; 0/180 preserve dimensions. Reports disclose source/canonical
+angles and normalization. Containing footprints still require front zero-angle.
+[Cardinal normalization spec](specs/cardinal-pad-import.md) defines the exact bound.

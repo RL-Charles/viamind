@@ -1,7 +1,7 @@
 use serde_json::json;
 use viamind_doc::Project;
 use viamind_engine::{ConvertFootprintFile, EngineHandle, FootprintFile, Origin, PreviewFootprintConversion};
-const SOURCE: &str = include_str!("../../../fixtures/import/original-rect-smd.kicad_mod");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_mod");
 #[test]
 fn detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_identity_and_nets() {
     let directory = tempfile::tempdir().unwrap();
@@ -41,6 +41,9 @@ fn detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_iden
         })
         .unwrap();
     assert_eq!(result.footprint, viamind_doc::footprint::load(&output).unwrap());
+    assert_eq!((result.footprint.pads[0].width.0, result.footprint.pads[0].height.0), (1_200_003, 800_001));
+    assert_eq!((result.footprint.pads[1].width.0, result.footprint.pads[1].height.0), (600_003, 1_000_001));
+    assert!(result.report.items.iter().any(|i| i.reason.contains("source angle -270 degrees, canonical 90 degrees")));
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
     let mut new_pad_ids = Vec::new();
