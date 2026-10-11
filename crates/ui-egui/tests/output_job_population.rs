@@ -1,6 +1,9 @@
 //! Actual compact fabrication controls and immutable shared writer parity.
 use egui::{Event, Key, Modifiers, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::ViamindApp;
 static TEST: std::sync::Mutex<()> = std::sync::Mutex::new(());
@@ -64,10 +67,22 @@ fn compact_matched_population_dependencies_save_load_run_and_live_mcp_bytes() {
     assert_eq!(saved.include_calibrated_placement, Some(true));
     click(&mut h, "Include calibrated placement companion (version 2)");
     assert!(h.get_by_label("Include matched populated BOM (version 3)").accesskit_node().is_disabled());
+    let cleared = temp.path().join("cleared.json");
+    input(&mut h, "Saved job file", cleared.to_str().unwrap());
+    click(&mut h, "Save NEW job file");
+    wait(&mut h);
+    let reset = viamind_fab::load_output_job(&cleared).unwrap();
+    assert_eq!(reset.version, 1);
+    assert!(reset.include_calibrated_placement.is_none() && reset.include_populated_bom.is_none());
+    input(&mut h, "Saved job file", job.to_str().unwrap());
     input(&mut h, "Job name", "Unsaved name");
     click(&mut h, "Load job");
     wait(&mut h);
-    assert_eq!(viamind_fab::load_output_job(&job).unwrap().name, "UI release λ");
+    let restored = temp.path().join("restored.json");
+    input(&mut h, "Saved job file", restored.to_str().unwrap());
+    click(&mut h, "Save NEW job file");
+    wait(&mut h);
+    assert_eq!(viamind_fab::load_output_job(&restored).unwrap(), saved);
     input(&mut h, "NEW release directory", release.to_str().unwrap());
     h.get_by_label("Run saved job to NEW directory").scroll_to_me();
     h.run_steps(5);
