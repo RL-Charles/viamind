@@ -120,7 +120,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         viewport: egui::ViewportBuilder::default()
             .with_title("Viamind — native 100k benchmark")
             .with_app_id("viamind-benchmark")
-            .with_inner_size([1600.0, 1000.0]),
+            .with_inner_size([1600.0, 1000.0])
+            // Fixed size also requests an independent floating surface on tiling desktops.
+            .with_min_inner_size([1600.0, 1000.0])
+            .with_max_inner_size([1600.0, 1000.0])
+            .with_resizable(false),
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
