@@ -619,6 +619,9 @@ mod contract_tests {
                 );
                 assert!(policy.set_mode(AgentMode::Approval).is_err());
                 assert!(policy.admit(AgentEffect::LiveWriter).is_err());
+                assert!(policy.admit(AgentEffect::Observation).is_err());
+                assert!(catch_unwind(AssertUnwindSafe(||policy.status())).is_err());
+                assert!(catch_unwind(AssertUnwindSafe(||policy.subscribe())).is_err());
                 assert!(
                     captured
                         .create_pcb_branch(

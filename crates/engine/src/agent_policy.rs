@@ -67,9 +67,11 @@ impl AgentPolicy {
         self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
     }
     pub fn status(&self) -> AgentModeStatus {
+        crate::command_hooks::read_allowed();
         self.state().clone()
     }
     pub fn subscribe(&self) -> watch::Receiver<u64> {
+        crate::command_hooks::write_allowed();
         self.changes.subscribe()
     }
     pub fn set_mode(&self, mode: AgentMode) -> Result<AgentModeStatus, AgentPolicyError> {
@@ -110,7 +112,9 @@ impl AgentPolicy {
         Ok(result)
     }
     pub fn admit(self: &Arc<Self>, effect: AgentEffect) -> Result<Option<AgentWriterPermit>, AgentPolicyError> {
-        if effect != AgentEffect::Observation {
+        if effect == AgentEffect::Observation {
+            crate::command_hooks::check_read().map_err(|_| AgentPolicyError::HookReentry)?;
+        } else {
             crate::command_hooks::check_write().map_err(|_| AgentPolicyError::HookReentry)?;
         }
         let mut state = self.state();
