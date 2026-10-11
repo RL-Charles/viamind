@@ -50,6 +50,11 @@ whole-package Apply, Undo and Redo, exact peer reads, stale sequence/reopen,
 malformed raw guards and schema 11 round trips. Seven actual headless read-only checks
 passed. One Apply with 12 units and two packages measured 20.33 ms under current load; this is
 a fixture observation, not a worst-case latency claim.
+Root independently reran all 29 checks against the same retained production
+binary on a fresh owned copy and observed 13.38 ms for Apply. Its exact report is
+[indexed separately](verification/t0115/independent-production-http.json).
+The desktop now shows that external verification fixture; original fixture bytes
+and all historical capture/source identities remain unchanged.
 
 [Master](verification/t0115/master.json) indexes durable logs, drivers, exact
 source and binary hashes, launch metadata and native outputs. Every indexed

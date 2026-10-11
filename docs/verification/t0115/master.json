@@ -217,6 +217,11 @@
       "sha256": "00672f31665f179d98bd5a718b70165cc900290228c9a1bd980ebbfd75f2b891"
     },
     {
+      "path": "docs/verification/t0115/independent-production-http.json",
+      "bytes": 17685,
+      "sha256": "04ff201b1da1c1d3442a44410d9309ad855b503a7ab54f55ca30c8e20d0ac476"
+    },
+    {
       "path": "docs/verification/t0115/native-capture.log",
       "bytes": 101,
       "sha256": "19066d4b69894345c16aeccb7194c1b18b4ecc94247d9d77093c45826feed236"
@@ -261,5 +266,17 @@
       "bytes": 650,
       "sha256": "bb05539ffb9059bf6399eedcce4575a7c70186128d7a7b99f7ca61372a6fc9a1"
     }
-  ]
+  ],
+  "independent_actual_production": {
+    "reviewer": "root",
+    "checks": 29,
+    "binary_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+    "report": "docs/verification/t0115/independent-production-http.json",
+    "report_source_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/production-http.json",
+    "latency_ms": {
+      "whole_package_apply": 13.375377995544113
+    },
+    "external_fixture_after_probe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/packages.viamind.json",
+    "scope": "Fresh independent initialized desktopHTTP rerun on copied owned fixture; native source/captures remain historical272d5d2. Final stack/CI review remains pending."
+  }
 }
