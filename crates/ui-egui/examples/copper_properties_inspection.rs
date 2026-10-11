@@ -54,7 +54,9 @@ impl eframe::App for Inspect {
             })
         });
         if let Some(image) = image {
-            assert!(image.pixels.len() <= 4_194_304);
+            // Requested logical size may map to a 2x native DPI framebuffer.
+            // Keep readback bounded at 16M pixels (64 MiB original RGBA).
+            assert!(image.pixels.len() <= 16_777_216, "bounded native readback {:?}", image.size);
             // X11 opaque surfaces can return nonopaque stored alpha; preserve every
             // original Screenshot-event channel separately from the RGB review view.
             let alpha_min = image.pixels.iter().map(egui::Color32::a).min().unwrap();
