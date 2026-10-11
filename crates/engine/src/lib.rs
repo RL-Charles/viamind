@@ -129,3 +129,6 @@ pub use fabrication_view::{FabricationInspection, InspectFabricationFiles, Inspe
 
 mod footprint_conversion;
 pub use footprint_conversion::{ConvertFootprintFile, ConvertedFootprintFile, FootprintConversionPreview, PreviewFootprintConversion};
+
+mod footprint_definition;
+pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, validate_definition};
