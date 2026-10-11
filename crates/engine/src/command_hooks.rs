@@ -765,4 +765,79 @@ mod contract_tests {
         assert!(!dropped.load(Ordering::SeqCst));
         assert!(e.project().board.parts.is_empty());
     }
+    #[test]
+    fn immutable_post_fact_retains_original_cursor_while_peer_advances() {
+        use std::sync::mpsc;
+        use std::time::Duration;
+        let e = EngineHandle::new(Project::new("peer advance"));
+        let source = e.event_cursor();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let release = Arc::new(Mutex::new(release_rx));
+        let facts = Arc::new(Mutex::new(Vec::new()));
+        let recorded = facts.clone();
+        let callback = e.clone();
+        e.register_post_command_hook(
+            "original_fact".into(),
+            Arc::new(move |fact| {
+                if fact.tx == TxId(1) {
+                    entered_tx.send(()).unwrap();
+                    release.lock().unwrap().recv_timeout(Duration::from_secs(5)).unwrap();
+                    assert_eq!(callback.event_cursor().sequence, source.sequence + 2);
+                }
+                recorded.lock().unwrap().push(fact.clone());
+                Ok(())
+            }),
+        )
+        .unwrap();
+        let worker = e.clone();
+        let thread = std::thread::spawn(move || add_handle(&worker, "R1").unwrap());
+        entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        assert_eq!(add_handle(&e, "R2").unwrap().tx, TxId(2));
+        release_tx.send(()).unwrap();
+        assert_eq!(thread.join().unwrap().tx, TxId(1));
+        let facts = facts.lock().unwrap();
+        let first = facts.iter().find(|f| f.tx == TxId(1)).unwrap();
+        let second = facts.iter().find(|f| f.tx == TxId(2)).unwrap();
+        assert_eq!(first.source_cursor, source);
+        assert_eq!(first.committed_cursor.sequence, source.sequence + 1);
+        assert_eq!(second.source_cursor, first.committed_cursor);
+        assert_eq!(second.committed_cursor, e.event_cursor());
+        assert_eq!(first.delta_counts.parts, 1);
+        assert_eq!(first.configuration_generation, 1);
+        assert!(e.command_hook_status().diagnostics.is_empty());
+    }
+    #[test]
+    fn typed_veto_and_selective_redo_preserve_peer_state_and_history() {
+        let mut e = Engine::new(Project::new("selective hooks"));
+        let a = Origin::agent("a");
+        let b = Origin::agent("b");
+        let make = |name: &str| serde_json::from_value::<crate::commands::AddPart>(input(name)).unwrap();
+        assert_eq!(e.execute_typed(make("A1"), a.clone()).unwrap().tx, TxId(1));
+        assert_eq!(e.execute_typed(make("B1"), b.clone()).unwrap().tx, TxId(2));
+        e.register_pre_command_hook("deny".into(), Arc::new(|_| Err("disabled edit".into()))).unwrap();
+        let before = e.session_state();
+        let log = e.log().clone();
+        assert!(e.execute_typed(make("A2"), a.clone()).is_err());
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.log().clone(), log);
+        assert_eq!(e.undo_own(a.clone()).unwrap(), Some(TxId(1)));
+        assert_eq!(e.project().board.parts.len(), 1);
+        assert_eq!(e.project().board.parts.values().next().unwrap().designator, "B1");
+        let undone = e.session_state();
+        let redo = e.redo_history().to_vec();
+        let undo = e.undo_history().to_vec();
+        let status = e.document_status();
+        let log = e.log().clone();
+        assert!(e.redo_own(a.clone()).is_err());
+        assert_eq!(e.session_state(), undone);
+        assert_eq!(e.document_status(), status);
+        assert_eq!(e.redo_history(), redo);
+        assert_eq!(e.undo_history(), undo);
+        assert_eq!(e.log().clone(), log);
+        e.remove_command_hook("deny").unwrap();
+        assert_eq!(e.redo_own(a.clone()).unwrap(), Some(TxId(1)));
+        assert_eq!(e.project(), &before.project);
+        assert_eq!(e.execute_typed(make("A2"), a).unwrap().tx, TxId(3));
+    }
 }
