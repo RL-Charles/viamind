@@ -54,7 +54,7 @@ impl Command for LinkSchematicSymbol {
 }
 
 /// Check counts and string sizes before any whole-project synchronization copy.
-fn sync_budget(project: &Project) -> Result<(), CommandError> {
+pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
     const MAX_OBJECTS: usize = 10_000;
     const MAX_TEXT: usize = 4 * 1024 * 1024;
     if project.id.as_uuid().is_nil() {
@@ -216,7 +216,7 @@ impl crate::EngineHandle {
         })
     }
 }
-fn validate_sync_project(project: &Project) -> Result<(), CommandError> {
+pub(crate) fn validate_sync_project(project: &Project) -> Result<(), CommandError> {
     sync_budget(project)?;
     // Structural/text limits precede this allocation; this also bounds command output.
     if serde_json::to_vec(project).map_err(|e| CommandError::invalid("project", e.to_string()))?.len() > 8 * 1024 * 1024 {

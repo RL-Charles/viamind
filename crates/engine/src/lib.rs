@@ -46,8 +46,12 @@ pub mod log;
 pub mod pads;
 pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent};
 mod pcb_sync;
+mod schematic_component;
 pub use pcb_sync::{
     LinkSchematicSymbol, PcbSyncChange, PcbSyncDirection, PcbSyncNet, PcbSyncPreview, PcbSyncRequest, SchematicLinkTarget, SynchronizeSchematicPcb,
+};
+pub use schematic_component::{
+    ComponentPadNet, CreateSchematicPcbComponent, SchematicComponentPlacement, SchematicComponentPreview, SchematicComponentRequest,
 };
 pub mod schematic;
 mod schematic_connectivity;

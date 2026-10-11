@@ -125,12 +125,14 @@ impl ViamindApp {
             return;
         }
         let mut open = self.pcb_sync.open;
+        let mut create_component = false;
         let mut refresh = false;
         let mut prepare = false;
         let mut link = None;
         let mut apply = None;
         egui::Window::new("Schematic and PCB synchronization").open(&mut open).default_width(740.0).default_height(640.0).show(ui.ctx(), |ui| {
             ui.label("Link existing components by identity, then inspect proposed changes. Undo restores the complete update.");
+            create_component = ui.button("Create PCB component from symbol…").clicked();
             ui.collapsing("Component links", |ui| {
                 refresh = ui.add_enabled(self.pcb_sync.pending.is_none(), egui::Button::new("Refresh component links")).clicked();
                 if let Some((project, source)) = &self.pcb_sync.snapshot {
@@ -182,6 +184,10 @@ impl ViamindApp {
             if let Some(message) = &self.pcb_sync.message { ui.label(message); }
         });
         self.pcb_sync.open = open;
+        if create_component {
+            self.pcb_sync.open = false;
+            self.begin_schematic_component();
+        }
         if refresh {
             self.pcb_sync.start(engine.clone(), false);
         }

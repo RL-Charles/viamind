@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "creation and preview discovery with object schemas",
+    "preview is deterministic and preserves full session",
+    "stale preview preserves peer edit and entire session",
+    "one transaction creates linked exact bottom quarter-turn component",
+    "all existing geometry copper and schematic content preserved",
+    "one creator undo removes whole linked component",
+    "redo preserves all new part and pad UUIDs",
+    "already linked symbol explicitly rejects without session mutation",
+    "invalid pin pad bijection leaves entire session unchanged",
+    "independently expected VIN 3V3 and GND groups across three created components",
+    "created parts require no further forward net synchronization",
+    "unlinked symbol with occupied board reference rejects without session mutation",
+    "unlink undo restores exact component association",
+    "native schema6 persists all created links identities and nets",
+    "same reopened UUID has identical command project guard",
+    "old stream alone refuses otherwise valid creation unchanged",
+    "clean production process exit"
+  ],
+  "binary_sha256": "e1ba954636ec4c9bfd1bf46c0f18a8a204df5ab5a7cf498722d3b91e8c7a1ef4",
+  "transport": "production headless stdio",
+  "create_ms": 2.762393996817991,
+  "saved_path": "/tmp/viamind-t0072-native-72o811rj/final.viamind.json"
+}

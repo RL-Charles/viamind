@@ -31,6 +31,7 @@ fn builtin_specs() {
             "add_via",
             "annotate_schematic",
             "apply_footprint",
+            "create_schematic_pcb_component",
             "delete_part",
             "delete_schematic_sheet",
             "delete_track",

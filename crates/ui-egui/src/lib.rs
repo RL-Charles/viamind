@@ -29,6 +29,7 @@ pub mod placement;
 pub mod routing;
 pub mod scene;
 pub mod schematic;
+pub mod schematic_component;
 pub mod selection;
 
 use std::sync::mpsc::Receiver;
@@ -128,6 +129,7 @@ pub struct ViamindApp {
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
     pub cross_probe: cross_probe::CrossProbeUi,
+    pub schematic_component: schematic_component::SchematicComponentUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -171,6 +173,7 @@ impl ViamindApp {
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
+            schematic_component: schematic_component::SchematicComponentUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -204,6 +207,7 @@ impl ViamindApp {
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
+            schematic_component: schematic_component::SchematicComponentUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -345,6 +349,7 @@ impl ViamindApp {
                 });
             });
         self.pcb_sync_window(ui);
+        self.schematic_component_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
