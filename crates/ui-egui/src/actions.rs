@@ -40,6 +40,7 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
@@ -116,4 +117,13 @@ fn set_part_pads(engine: &EngineHandle, input: Value) -> Result<Value, EngineErr
 
 fn import_board_outline_dxf(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(ImportBoardOutlineDxf::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn run_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let invalid = |message: String| EngineError::InvalidInput { command: "run_drc".into(), message };
+    let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
+    input.validate().map_err(|e| invalid(e.to_string()))?;
+    let snapshot = engine.session_state();
+    let report = viamind_drc::run_drc(&snapshot.project, &input).map_err(|e| invalid(e.to_string()))?;
+    Ok(json!({"source_cursor":snapshot.cursor,"report":report}))
 }

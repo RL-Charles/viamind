@@ -69,6 +69,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<WatchEvents>(),
         });
         commands.push(HostCommand {
+            name: "run_drc".into(),
+            description: "Read-only batch checks of a captured design: explicit rectangular SMD pad copper clearance, polygon board/cutout containment and edge clearance. Returns report and source_cursor; later edits make this snapshot stale. Input copper_clearance_mm/edge_clearance_mm finite 0..100, max_violations 1..10000. Reports stable part/pad IDs and coverage/exclusions, including legacy preview-only parts, tracks/vias and unimplemented fabrication/connectivity checks. Truncated results are incomplete. Not full manufacturing DRC.".into(),
+            input_schema: input_schema::<viamind_drc::DrcInput>(),
+        });
+        commands.push(HostCommand {
             name: "query_parts".into(),
             description: "Read a bounded page of board parts using combined filters (IDs, exact fields, text, side, origin bounds in mm). Read-only. UUID order; limit defaults to 100 (max 1000). Repeat filters with next_after as after for the next page; restart if the design changes. Returns parts, total matches and next_after; positions are integer nanometres.".into(),
             input_schema: input_schema::<PartQuery>(),
@@ -128,6 +133,13 @@ impl CommandHost for EngineHost {
             let input: WatchEvents = serde_json::from_value(input).map_err(|e| format!("invalid watch_events input: {e}"))?;
             let result = self.engine.watch_events(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "run_drc" {
+            let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| format!("invalid run_drc input: {e}"))?;
+            input.validate().map_err(|e| e.to_string())?;
+            let snapshot = self.engine.session_state();
+            let report = viamind_drc::run_drc(&snapshot.project, &input).map_err(|e| e.to_string())?;
+            return Ok(json!({"source_cursor":snapshot.cursor,"report":report}));
         }
         if name == "query_parts" {
             let query: PartQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_parts input: {e}"))?;
