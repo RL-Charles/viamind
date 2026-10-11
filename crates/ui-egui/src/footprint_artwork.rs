@@ -115,7 +115,7 @@ impl ArtworkEditor {
                                 .changed();
                         }
                         if ui.button(format!("Remove silkscreen line {}", i + 1)).clicked() {
-                            remove = Some(i)
+                            remove = Some(i);
                         }
                     });
                 });
@@ -123,7 +123,7 @@ impl ArtworkEditor {
         });
         if let Some(i) = remove {
             self.rows.remove(i);
-            changed = true
+            changed = true;
         }
         changed
     }
@@ -185,7 +185,7 @@ impl crate::ViamindApp {
             let part = self.design.as_ref().and_then(|d| d.engine.read(|p| p.board.part(&id).cloned()));
             self.pads.cancel();
             if let Some(part) = part {
-                self.begin_edit_footprint_artwork(part)
+                self.begin_edit_footprint_artwork(part);
             }
             return;
         }
