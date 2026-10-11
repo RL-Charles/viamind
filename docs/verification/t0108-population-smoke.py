@@ -38,7 +38,7 @@ def matched_oracle(project,release,summary):
     for part,row in zip(parts,bom):
         digest.update(uuid.UUID(part['id']).bytes)
         assert row['Quantity']=='1' and row['Designator']==part['designator'] and row['Value']==part['value'] and row['Footprint']==part['footprint'] and row['Mounting']==part['assembly']['mounting']
-        for column,field in [('Manufacturer','manufacturer'),('MPN','mpn'),('Supplier','supplier'),('Supplier SKU','supplier_sku')]:assert row[column]==part['assembly'].get(field,'')
+        for column,field in [('Manufacturer','manufacturer'),('MPN','mpn'),('Supplier','supplier'),('Supplier SKU','supplier_sku')]:assert row[column]==(part['assembly'].get(field) or '')
     assert summary['component_count']==len(parts) and summary['component_ids_sha256']==digest.hexdigest()
     assert summary['bom_file']=='assembly/populated-bom.csv' and summary['placement_file']=='assembly/calibrated-placement.csv'
     return True
