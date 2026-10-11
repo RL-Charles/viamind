@@ -7,7 +7,6 @@ use rmcp::{
 use serde_json::{Value, json};
 use viamind_doc::{ObjectId, Pad, Pads, Part, Project, Side};
 use viamind_engine::EngineHandle;
-use viamind_geom::{Nm, Point};
 use viamind_mcp::{engine_registry, serve_http};
 type Client = RunningService<RoleClient, ClientConfig>;
 async fn call(c: &Client, n: &'static str, args: Value) -> Value {
@@ -28,9 +27,9 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
         let pad = Pad {
             id: ObjectId::new(),
             number: "1".into(),
-            position: Point::ORIGIN,
-            width: Nm(1_000_000),
-            height: Nm(1_000_000),
+            position: serde_json::from_value(json!({"x":0,"y":0})).unwrap(),
+            width: serde_json::from_value(json!(1_000_000)).unwrap(),
+            height: serde_json::from_value(json!(1_000_000)).unwrap(),
             net: Some("N".into()),
         };
         let part = Part {
@@ -38,7 +37,7 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
             designator: format!("J{i}"),
             value: String::new(),
             footprint: String::new(),
-            position: Point::new(Nm(x), Nm(10_000_129)),
+            position: serde_json::from_value(json!({"x":x,"y":10_000_129})).unwrap(),
             rotation_mdeg: 0,
             side: Side::Bottom,
             pads: Some(Pads::try_from(vec![pad]).unwrap()),
