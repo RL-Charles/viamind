@@ -1,5 +1,7 @@
 //! Dedicated schematic capture workspace. All persisted edits use shared sheet commands.
 mod labels;
+#[cfg(test)]
+mod sidebar_tests;
 use crate::{
     ViamindApp,
     actions::UiAction,
