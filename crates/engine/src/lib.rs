@@ -110,7 +110,11 @@ pub use session::{EventBatch, EventCursor, SESSION_EVENT_CAPACITY, SessionError,
 pub use transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo};
 
 pub mod copper;
+mod copper_properties;
 pub use copper::{AddTrack, AddVia, DeleteTrack, DeleteVia};
+pub use copper_properties::{
+    CopperPropertyId, CopperPropertyObject, CopperPropertyQuery, CopperPropertySnapshot, SetTrackProperties, SetViaProperties,
+};
 
 pub mod route_via;
 pub use route_via::RoutePadViaPolyline;
