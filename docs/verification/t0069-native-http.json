@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "port": 7894,
+  "binary_sha256": "fe744bcd6a38e0721c1bb9205b36f2deef45146b233e247d2a74db33cbeb384f",
+  "checks": [
+    "actual native tools discovered",
+    "immutable discovery preserves session",
+    "exact mirrored quarter-turn bottom center",
+    "arbitrary-angle endpoint explicitly unsupported",
+    "two exact pad-route segments committed",
+    "derived bottom copper and assigned net",
+    "exact off-grid start and target retained",
+    "second-agent stale cursor rejects whole route",
+    "one own undo removes both segments",
+    "one redo restores exact track identities",
+    "atomic rejection J1 J3 []",
+    "atomic rejection J3 J5 []",
+    "atomic rejection J1 J2 [{'x': 1, 'y': 1}]",
+    "concurrent pad net edit invalidates frozen endpoint draft",
+    "same-side different-net pads reject atomically",
+    "conservative guide count persists after routing"
+  ],
+  "first_http_commit_ms": 2.381051002885215,
+  "small_board_http_commit_ms": [
+    2.7317349959048443,
+    2.905332003138028,
+    2.64876100118272,
+    2.512384999135975,
+    4.44778199744178
+  ],
+  "small_board_http_mean_ms": 3.0491989993606694
+}

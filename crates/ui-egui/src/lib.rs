@@ -20,6 +20,7 @@ pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
 pub mod outlines;
+mod pad_routing;
 pub mod pads;
 pub mod parts;
 pub mod pcb_sync;
@@ -356,7 +357,7 @@ impl ViamindApp {
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
                 let routing_enabled =
                     !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
-                self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, routing_enabled);
+                self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
             self.paint_labels(ui);
         });
@@ -528,6 +529,10 @@ impl ViamindApp {
                     }
                     if ui.button("Design rule check…").clicked() {
                         self.begin_drc();
+                        ui.close();
+                    }
+                    if ui.button("Route pad connection…").clicked() {
+                        self.begin_pad_route();
                         ui.close();
                     }
                     if ui.button("Route polyline…").clicked() {

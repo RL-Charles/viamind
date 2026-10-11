@@ -1,0 +1,219 @@
+{
+  "format": "viamind",
+  "version": 4,
+  "project": {
+    "id": "ae347629-e6ca-4ca7-90b8-c8c747e23755",
+    "name": "Untitled",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "tracks": {
+        "1458d68a-703a-4a1a-9a19-d701aefb45ef": {
+          "id": "1458d68a-703a-4a1a-9a19-d701aefb45ef",
+          "start": {
+            "x": 10000124,
+            "y": 40000260
+          },
+          "end": {
+            "x": 35000000,
+            "y": 35000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "POWER"
+        },
+        "3a33126f-8d2e-499e-9431-e05d3eaf2697": {
+          "id": "3a33126f-8d2e-499e-9431-e05d3eaf2697",
+          "start": {
+            "x": 35000000,
+            "y": 15000000
+          },
+          "end": {
+            "x": 60000264,
+            "y": 10000126
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "SIGNAL"
+        },
+        "5970242a-f01f-46ec-b9a3-ce045fbc56e7": {
+          "id": "5970242a-f01f-46ec-b9a3-ce045fbc56e7",
+          "start": {
+            "x": 35000000,
+            "y": 35000000
+          },
+          "end": {
+            "x": 60000130,
+            "y": 40000260
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "POWER"
+        },
+        "7ef73ac4-c6bb-4f83-aabf-817c38082d39": {
+          "id": "7ef73ac4-c6bb-4f83-aabf-817c38082d39",
+          "start": {
+            "x": 10000258,
+            "y": 10000126
+          },
+          "end": {
+            "x": 35000000,
+            "y": 15000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "SIGNAL"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 50000000
+          },
+          {
+            "x": 0,
+            "y": 50000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "0c707a72-7d58-40e5-8891-883b73a5978b": {
+          "pads": [
+            {
+              "id": "2d5fb74d-949d-4434-b5ad-cf315d722aa4",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "0c707a72-7d58-40e5-8891-883b73a5978b",
+          "designator": "J3",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 40000003
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "28fbee42-7785-42ed-a476-948439fbe11e": {
+          "pads": [
+            {
+              "id": "e2c5e1cc-883a-421b-9d31-6e3cb474d76f",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "28fbee42-7785-42ed-a476-948439fbe11e",
+          "designator": "J2",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 10000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "359308b5-272a-43aa-b1cc-3e1073378e31": {
+          "pads": [
+            {
+              "id": "e6ab3f70-9a9f-4dff-a46b-582d6672beaa",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "UNSUPPORTED"
+            }
+          ],
+          "id": "359308b5-272a-43aa-b1cc-3e1073378e31",
+          "designator": "J5",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 35000000,
+            "y": 25000000
+          },
+          "rotation_mdeg": 45000,
+          "side": "top"
+        },
+        "c1edf55d-e3f1-4f3b-bf40-b81a5dc479ae": {
+          "pads": [
+            {
+              "id": "8ff8805c-0765-46c8-a9de-82978c8c79f5",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "c1edf55d-e3f1-4f3b-bf40-b81a5dc479ae",
+          "designator": "J1",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 10000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "e47940e2-fad9-46fe-a44e-0f54cb45c85f": {
+          "pads": [
+            {
+              "id": "8f7612de-6c71-4f3a-826b-8f02ab517ad5",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "e47940e2-fad9-46fe-a44e-0f54cb45c85f",
+          "designator": "J4",
+          "value": "Connector",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 40000003
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        }
+      }
+    }
+  }
+}

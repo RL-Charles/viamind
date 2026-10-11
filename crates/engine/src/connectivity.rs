@@ -161,6 +161,19 @@ pub fn connection_guides(project: &Project) -> Vec<ConnectionGuide> {
         .flat_map(|(net, members)| tree(&members).into_iter().map(move |(a, b)| guide(&net, &members[a], &members[b])))
         .collect()
 }
+/// Same deterministic trees as visible guides, without cloning per-edge labels.
+pub(crate) fn connection_guide_ids(project: &Project) -> Vec<[crate::PadEndpointId; 2]> {
+    terminals(project, None)
+        .into_values()
+        .flat_map(|members| {
+            tree(&members).into_iter().map(move |(a, b)| {
+                let mut pair = [a, b].map(|i| crate::PadEndpointId { part_id: members[i].part_id, pad_id: members[i].pad_id });
+                pair.sort();
+                pair
+            })
+        })
+        .collect()
+}
 fn distance2(a: &Terminal, b: &Terminal) -> f64 {
     (a.x_mm - b.x_mm).powi(2) + (a.y_mm - b.y_mm).powi(2)
 }

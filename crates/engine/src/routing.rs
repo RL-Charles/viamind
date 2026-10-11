@@ -30,6 +30,13 @@ impl Command for RoutePolyline {
         Some(self.expected_cursor)
     }
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
+        self.apply_resolved(project, false)
+    }
+}
+impl RoutePolyline {
+    /// The pad command alone may exempt its independently resolved exact endpoints
+    /// from the grid. All geometry, budgets and preflight remain shared.
+    pub(crate) fn apply_resolved(self, project: &mut Project, pad_endpoints: bool) -> Result<Vec<Delta>, CommandError> {
         if self.expected_project != project.id {
             return Err(CommandError::conflict("project changed; restart the route"));
         }
@@ -53,7 +60,10 @@ impl Command for RoutePolyline {
         if project.board.outline.is_none() {
             return Err(CommandError::invalid("outline", "set an explicit board outline before routing"));
         }
-        for point in &self.points {
+        for (index, point) in self.points.iter().enumerate() {
+            if pad_endpoints && (index == 0 || index + 1 == self.points.len()) {
+                continue;
+            }
             let snapped = viamind_router::snap(*point, self.grid).map_err(|e| CommandError::invalid("points", e))?;
             if snapped != *point {
                 return Err(CommandError::invalid("points", "each vertex must lie exactly on the requested grid"));

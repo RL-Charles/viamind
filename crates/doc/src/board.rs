@@ -62,9 +62,27 @@ pub struct Part {
 }
 
 impl Part {
+    /// Transform a footprint-local integer point exactly for quarter-turn rotations.
+    /// Mirror bottom-side local X, rotate counterclockwise in y-down coordinates, then translate.
+    /// Wider intermediates allow valid final coordinates even when mirroring alone overflows i64.
+    pub fn local_to_world_nm_exact(&self, local: Point) -> Result<Point, &'static str> {
+        let x = i128::from(local.x.0) * if self.side == Side::Bottom { -1 } else { 1 };
+        let y = i128::from(local.y.0);
+        let (x, y) = match self.rotation_mdeg.rem_euclid(360_000) {
+            0 => (x, y),
+            90_000 => (y, -x),
+            180_000 => (-x, -y),
+            270_000 => (-y, x),
+            _ => return Err("exact pad attachment supports quarter-turn part rotations only"),
+        };
+        let x = i64::try_from(i128::from(self.position.x.0) + x).map_err(|_| "transformed pad center overflows integer coordinates")?;
+        let y = i64::try_from(i128::from(self.position.y.0) + y).map_err(|_| "transformed pad center overflows integer coordinates")?;
+        Ok(Point::new(viamind_geom::Nm(x), viamind_geom::Nm(y)))
+    }
+
     /// Transform a footprint-local millimetre point at a render or query boundary.
     /// Mirrors local X for bottom-side parts, then rotates counterclockwise in y-down coordinates.
-    /// This does not modify or store floating-point geometry in the design model.
+    /// Supports arbitrary angles without storing floating-point geometry in the design model.
     pub fn local_to_world_mm(&self, x_mm: f64, y_mm: f64) -> (f64, f64) {
         let x = if self.side == Side::Bottom { -x_mm } else { x_mm };
         let (s, c) = match self.rotation_mdeg {
@@ -115,6 +133,32 @@ mod tests {
             project.board.parts.insert(part.id, part);
         }
         project
+    }
+
+    #[test]
+    fn exact_integer_transforms_match_rendering_quadrants_and_check_overflow() {
+        let project = sample();
+        let mut part = project.board.parts.values().next().unwrap().clone();
+        part.position = Point::new(Nm(1234567), Nm(-7654321));
+        let local = Point::new(Nm(345), Nm(-789));
+        for side in [Side::Top, Side::Bottom] {
+            for angle in [0, 90000, 180000, 270000, -90000, 450000] {
+                part.side = side;
+                part.rotation_mdeg = angle;
+                let exact = part.local_to_world_nm_exact(local).unwrap();
+                let (x, y) = part.local_to_world_mm(local.x.to_mm(), local.y.to_mm());
+                assert!((exact.x.to_mm() - x).abs() < 1e-12);
+                assert!((exact.y.to_mm() - y).abs() < 1e-12);
+            }
+        }
+        part.rotation_mdeg = 45000;
+        assert!(part.local_to_world_nm_exact(local).is_err());
+        part.rotation_mdeg = 0;
+        part.side = Side::Bottom;
+        part.position = Point::new(Nm(-1), Nm(0));
+        assert_eq!(part.local_to_world_nm_exact(Point::new(Nm(i64::MIN), Nm(0))).unwrap().x, Nm(i64::MAX));
+        part.position = Point::ORIGIN;
+        assert!(part.local_to_world_nm_exact(Point::new(Nm(i64::MIN), Nm(0))).is_err());
     }
 
     #[test]

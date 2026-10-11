@@ -499,7 +499,7 @@ An explicit board outline is required. Preflight checks explicit pads, tracks,
 through vias, outline and cutouts; existing unrelated violations may remain.
 Parts without explicit pads and other `run_drc` exclusions remain unchecked.
 Board capture is bounded to 100000 structural objects including proposed tracks,
-2 MiB of text and 256-byte labels. Unrelated schematic contents are not copied.
+2 MiB of text and 512-byte labels. Unrelated schematic contents are not copied.
 DRC runs synchronously during commit and can delay other edits; preview is local
 and unchecked. No push/shove, obstacle avoidance, automatic pad attachment,
 routing vias or electrical continuity verification is implemented. Ratsnest
@@ -509,3 +509,34 @@ connection guides remain conservative pad-only estimates. See the
 ## Selected-sheet schematic views
 
 `render_schematic_view` and `render_schematic_png` require a `sheet` UUID and accept optional `options`, exact `expected_cursor` and NEW `path`. Options select `wires`, `symbols`, `pins`, `junctions`, `labels`, integer-nm region/padding and pixel viewport. The immutable capture copies only bounded selected-sheet content; unrelated board/sheets are excluded. SVG contains bundled Hack glyph outlines, semantic text and IDs, with a pixel viewBox and declared absolute region mapping. PNG returns an actual image content block plus metadata/source cursor. No system fonts or external resources; unsupported visible glyphs fail explicitly. Two shared schematic jobs per registry; max 4194304 pixels, 16 MiB SVG, 8 MiB PNG. Existing/native destinations are protected. No hierarchy/custom artwork/electrical certification. See [schematic view usage and limits](../../docs/schematic-views.md).
+
+## Exact explicit-pad endpoint routing
+
+Desktop **Board → Route pad connection…** can choose visible explicit pads or a
+conservative connection guide, then add local snapped interior vertices. Read
+`query_route_endpoints {"net":"GND","offset":0,"limit":100}` for the same persisted
+part/pad references, derived net/outer side, exact quarter-turn `center_nm`,
+presentation-only `corners_mm`, unsupported reasons and source cursor. Rows are
+UUID ordered; restart pagination after a cursor change. Legacy graphical pads are
+omitted. Discovery is bounded to 100000 board structural objects, 2 MiB board
+text and 512-byte labels; unrelated schematic data is not captured.
+
+Call `route_pad_polyline` with the query's project/cursor and endpoint `id` objects:
+
+```json
+{"expected_project":"<project UUID>","expected_cursor":{"stream_id":"<session UUID>","sequence":0},"start":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"target":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"interior":[{"x":20000000,"y":20000000}],"grid":250000,"width":250000}
+```
+
+`interior` defaults to empty, with at most 1023 points. Endpoint centers are
+resolved again from the guarded live model, with exact integer bottom mirroring
+and normalized quarter turns. Both pads must have the same exact assigned net
+(at most 256 bytes) and outer copper side. Endpoint centers can be off-grid;
+supplied interior points must already lie exactly on the grid or the whole
+command rejects. The desktop alone snaps clicked interior vertices. No caller
+net/layer override or conversion from floating query coordinates is used.
+
+The command shares polyline scoped preflight, incomplete-result rejection and
+one undo/redo. Arbitrary-angle attachment, unassigned pads, track endpoint
+attachment, routed vias, obstacle avoidance, shove/walkaround and verified
+copper continuity remain open. Guides are conservative pad-only estimates and
+remain after routing. See [the endpoint behavior contract](../../docs/specs/explicit-pad-routing.md).
