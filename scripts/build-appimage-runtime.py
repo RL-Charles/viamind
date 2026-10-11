@@ -3,11 +3,12 @@
 import argparse
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 
 from appimage_support import ROOT, cached_input, digest, extract_regular, pins, publish_new
@@ -58,17 +59,25 @@ def build(output, cache, offline=False):
                 raise ValueError("runtime dependency differs from included source: " + expected)
         notices = result / "licenses"
         notices.mkdir()
-        for index, source in enumerate(sources):
-            tree = scratch / ("license-source-" + str(index))
-            extract_regular(source, tree)
+        for source in sources:
             copied = 0
-            for file in tree.rglob("*"):
-                if file.is_file() and any(x in file.name.lower() for x in ["license", "licence", "copying", "copyright", "lgpl", "gpl2"]):
-                    relative = file.relative_to(tree)
-                    target = notices / source.name / relative
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copyfile(file, target)
-                    copied += 1
+            # Read only legal text from pinned source archives. Never extract their
+            # unrelated test symlinks (the zstd archive contains two such links).
+            total = 0
+            with tarfile.open(source) as archive:
+                for member in archive:
+                    name = PurePosixPath(member.name)
+                    if name.is_absolute() or ".." in name.parts:
+                        raise ValueError("escaping source archive path")
+                    if member.isfile() and any(x in name.name.lower() for x in ["license", "licence", "copying", "copyright", "lgpl", "gpl2"]):
+                        total += member.size
+                        if total > 4 * 1024 * 1024:
+                            raise ValueError("license inventory exceeds cap")
+                        target = notices / source.name / member.name
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        with archive.extractfile(member) as stream:
+                            target.write_bytes(stream.read(member.size))
+                        copied += 1
             if not copied:
                 raise ValueError("source lacks retained license text: " + source.name)
         shutil.copyfile(ROOT / "packaging/appimage/build-runtime.sh", result / "build-runtime.sh")
