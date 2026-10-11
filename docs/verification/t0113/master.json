@@ -129,6 +129,11 @@
       "sha256": "764391c05fba1a6a4d5e0462415c09042c56e5bd728ee1d935f4c986b6b97301"
     },
     {
+      "path": "docs/verification/t0113/historical-ci-clippy-failure.log",
+      "bytes": 61293,
+      "sha256": "0413b193cd466757d8fc1b34c7209b21988f4b2f2801cba22f4ab2fd616e4dd2"
+    },
+    {
       "path": "docs/verification/t0113/independent-final-stdio.json",
       "bytes": 1707,
       "sha256": "3f38c3a4d2d4bc26d128fd5b592636cc51108b12d609de50975e9e4ea13d427f"
@@ -254,5 +259,11 @@
     "read_only_checks": 8,
     "python_reference_tests": 13
   },
-  "independent_final_stdio_checks": 23
+  "independent_final_stdio_checks": 23,
+  "historical_ci_failure": {
+    "run": 38167257944,
+    "job": 114552283286,
+    "scope": "Clippy1.99 needless borrows in three noncapturing summary closures; corrected by removing borrow only",
+    "retained_production_source_unchanged": "b54593abcd733e3d02e11d0fe58d08ec7b7dbbfb"
+  }
 }
