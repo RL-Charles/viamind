@@ -340,7 +340,7 @@ mod tests {
             crate::AddPart {
                 expected_project: None,
                 designator: "R1".into(),
-                value: "".into(),
+                value: String::new(),
                 footprint: "legacy".into(),
                 x_mm: 0.0,
                 y_mm: 0.0,
