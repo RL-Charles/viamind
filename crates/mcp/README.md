@@ -374,3 +374,16 @@ are preserved. Exports contain no UUIDs, nets or placement.
 Matching numbers preserve pad identities and nets; new pads get fresh IDs and no
 net. Component placement is retained. See
 [the native library guide](../../docs/footprint-libraries.md).
+
+## Scoped fabrication snapshot
+
+`export_fabrication {"path":"new-directory","mask_expansion_mm":0.05}` exports
+outer Gerber X2 copper/mask, explicit polygon profile and XNC Excellon-subset
+through-via finished-hole drill. All files align in mm, model origin, X right and
+Y up, viewed from above without mirroring bottom files. Explicit pads and outline
+are required; there is no legacy footprint geometry inference. Mask expansion
+is optional, default 0 mm (0–10); all vias untented. Existing files/directories and
+symlinks always reject, with Linux atomic directory publication. The active
+native path is protected. Optional `expected_cursor` rejects a stale snapshot;
+response includes `exported_cursor` and a manifest. Export preserves document,
+selection, history and dirty state; subsequent edits are not included.
