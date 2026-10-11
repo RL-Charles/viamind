@@ -4,6 +4,7 @@ use egui::{Event, Modifiers, MouseWheelUnit, TouchPhase, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
 use viamind_ui_egui::ViamindApp;
+use viamind_ui_egui::layers::LayerId;
 
 fn harness(objects: usize) -> Harness<'static, ViamindApp> {
     Harness::builder()
@@ -59,4 +60,59 @@ fn view_menu_switches_scene_size() {
     h.run_steps(2);
     assert_eq!(h.state().scene.items.len(), 100_000);
     assert_eq!(h.state().canvas.drawn, 100_000);
+}
+
+fn items_on(app: &ViamindApp, layer: LayerId) -> usize {
+    app.scene.items.iter().filter(|i| i.layer == layer).count()
+}
+
+#[test]
+fn layer_list_toggles_visibility() {
+    let mut h = harness(10_000);
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.drawn, 10_000);
+    let f_cu = items_on(h.state(), LayerId::F_CU);
+    assert!(f_cu > 1_000);
+
+    h.get_by_label("F.Cu visible").click();
+    h.run_steps(2);
+    assert!(!h.state().layers.get(LayerId::F_CU).unwrap().visible);
+    assert_eq!(h.state().canvas.drawn, 10_000 - f_cu);
+
+    let vias = items_on(h.state(), LayerId::VIAS);
+    h.get_by_label("Vias visible").click();
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.drawn, 10_000 - f_cu - vias);
+
+    h.get_by_label("F.Cu visible").click();
+    h.run_steps(1);
+    h.get_by_label("Vias visible").click();
+    h.run_steps(2);
+    assert!(h.state().layers.layers().iter().all(|l| l.visible));
+    assert_eq!(h.state().canvas.drawn, 10_000);
+}
+
+#[test]
+fn layer_list_sets_active_layer_and_order() {
+    let mut h = harness(1_000);
+    h.run_steps(2);
+    assert_eq!(h.state().layers.active(), LayerId::F_CU);
+
+    h.get_by_label("B.Cu").click();
+    h.run_steps(1);
+    assert_eq!(h.state().layers.active(), LayerId::B_CU);
+
+    h.get_by_label("Active layer on top").click();
+    h.run_steps(1);
+    assert!(h.state().layers.active_on_top);
+    assert_eq!(h.state().layers.draw_order().last().map(|l| l.id), Some(LayerId::B_CU));
+
+    let position = |h: &Harness<'_, ViamindApp>| h.state().layers.layers().iter().position(|l| l.id == LayerId::B_CU);
+    let before = position(&h).unwrap();
+    h.get_by_label("Up").click();
+    h.run_steps(1);
+    assert_eq!(position(&h), Some(before + 1));
+    h.get_by_label("Down").click();
+    h.run_steps(1);
+    assert_eq!(position(&h), Some(before));
 }
