@@ -9,12 +9,16 @@
 
 pub mod agent;
 pub mod builtin;
+pub mod engine_host;
 pub mod host;
+pub mod http;
 pub mod registry;
 pub mod server;
 
 pub use agent::{AgentId, CallContext};
+pub use engine_host::EngineHost;
 pub use host::{CommandHost, GET_DESIGN_TOOL, HostCommand, REDO_TOOL, UNDO_TOOL, register_host};
+pub use http::{DEFAULT_PORT, HttpServer, MCP_PATH, engine_registry, serve_http, spawn_engine_server};
 pub use registry::{CallError, RegistryError, ToolDef, ToolError, ToolFuture, ToolHandler, ToolRegistry};
 pub use server::{RunningServer, UNKNOWN_AGENT, ViamindServer, serve, serve_stdio};
 
