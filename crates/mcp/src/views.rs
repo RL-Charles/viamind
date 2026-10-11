@@ -19,7 +19,7 @@ pub(crate) fn capture_board(
     })
 }
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
-    registry.register_in_memory_view("render_board_view", "Render an immutable PCB snapshot as self-contained SVG (image/svg+xml). options selects outer copper/outline layers, explicit region_nm or auto-fit, padding_nm and viewport pixels. Explicit pads/tracks/vias/polygon cutouts only; legacy previews omitted and reported, no schematic/PNG/fabrication certification. Optional expected_cursor guards snapshot. Optional path publishes a NEW file with native/collision protection. Returns SVG, metadata and source_cursor without changing document/history/dirty state.", viamind_engine::input_schema::<Input>(),false, move |input| {
+    registry.register_in_memory_view("render_board_view", "Render an immutable PCB snapshot as self-contained SVG (image/svg+xml). options selects outer copper/outline or explicit mounted-side silkscreen/courtyard layers, explicit region_nm or auto-fit, padding_nm and viewport pixels. Pads/tracks/vias/polygon cutouts and stored straight artwork only; no synthetic bodies, text, silk clipping or courtyard checks; legacy previews omitted and reported, no schematic/PNG/fabrication certification. Optional expected_cursor guards snapshot. Optional path publishes a NEW file with native/collision protection. Returns SVG, metadata and source_cursor without changing document/history/dirty state.", viamind_engine::input_schema::<Input>(),false, move |input| {
         let engine=engine.clone();
         async move {
             let input: Input=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;
