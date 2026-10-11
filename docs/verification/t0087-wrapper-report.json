@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "endpoint": "http://127.0.0.1:7915/mcp",
+  "checks": [
+    "selected component metadata matches explicit fixture",
+    "generic sourcing CSV exported at full captured cursor",
+    "inspection/export leaves full shared session unchanged",
+    "wrapper CSV equals independently checked production CLI/HTTP"
+  ],
+  "kind": "fixed-size production ViamindApp wrapper with one inspection-only egui scroll; no native Cua input claimed",
+  "source_cursor": {
+    "sequence": 1,
+    "stream_id": "932dae92-4a21-408a-abde-95ddfc530d44"
+  },
+  "status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/inspection-project.json"
+  },
+  "selected": {
+    "ids": [
+      "00000000-0000-0000-0000-000000000002"
+    ],
+    "origin": {
+      "kind": "user"
+    },
+    "revision": 1
+  },
+  "metadata": {
+    "manufacturer": "User μ, \"Example\"",
+    "mpn": "USER-ENTERED-MPN",
+    "populate": false,
+    "supplier": "Example supplier",
+    "supplier_sku": "USER-ENTERED-SKU"
+  },
+  "csv_sha256": "6bd73d2c708269e3263ea5270e333ca48685f75aea52cf6b468a05fb5edc5e05"
+}

@@ -46,3 +46,6 @@ record restores the prior minimum schema. Older projects remain readable and kee
 their canonical shape. Sourcing does not change Gerber/XNC or board view geometry.
 Assembly variants, alternatives, procurement, substitutions and vendor acceptance
 remain outside this increment.
+
+See [the native and compatibility verification](component-sourcing-verification.md)
+for reproducible CLI/MCP and desktop evidence.

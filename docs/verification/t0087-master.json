@@ -1,0 +1,96 @@
+{
+  "ticket": "T-0087",
+  "artifact_source_head": "e75a5c70fe0a7c2af9e86f50a032e64fc0a2d320",
+  "artifact_base_main": "0fb27a1fe3d35fdaa2a42b0d0e6fac2104921aa3",
+  "artifact_source_ci": {
+    "run": 38136339753,
+    "url": "https://github.com/RL-Charles/viamind/actions/runs/38136339753",
+    "conclusion": "all four Linux gates passed at exact artifact source"
+  },
+  "integration_note": "Native evidence proves the retained artifact source above. Later documentation and unrelated routing integration may change the PR head; final combined CI is recorded on PR86 before merge.",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01), Linux",
+  "local_gates": {
+    "fmt": "PASS",
+    "strict_workspace_all_target_clippy": "PASS",
+    "workspace_tests": {
+      "passed": 595,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": "PASS",
+    "additional_focused_pcb_sync_tests": 9,
+    "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/full-final.log",
+    "log_sha256": "00db4137946c5b15c7f663dc72dd07c97a56f52f75f88e240bcb90cbb5e3369d"
+  },
+  "production": {
+    "kind": "unchanged production application HTTP and no-display CLI",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/production-verified",
+    "launch_path": "/tmp/viamind-t0087-verified",
+    "binary_sha256": "6e2e97d875ac98348d41f6b8f1384a6b7da12f1658b97ee6c7d7c40fc2b362c1",
+    "running_exe_sha256": "6e2e97d875ac98348d41f6b8f1384a6b7da12f1658b97ee6c7d7c40fc2b362c1",
+    "postprocessing": "strip --strip-debug after successful workspace build, before any native launch",
+    "pid": 1003561,
+    "cmdline": [
+      "/tmp/viamind-t0087-verified",
+      "--open",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/production-project.json"
+    ],
+    "http": "http://127.0.0.1:7913/mcp",
+    "native_checks": 35,
+    "report": "t0087-production-report.json",
+    "discovery_snapshot": "t0087-production-cua.json",
+    "window_note": "Tiled 46×22 window is discovery only; no readable production-window capture or native Cua widget input claimed."
+  },
+  "inspection": {
+    "kind": "production ViamindApp in fixed 1600×1000 wrapper with first-part selection and one inspection-only egui scroll",
+    "source": "docs/verification/t0087-native-inspection.rs",
+    "manifest_template": "docs/verification/t0087-native-Cargo.toml.in",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/native-preview-verified",
+    "launch_path": "/tmp/viamind-t0087-native-preview-verified",
+    "binary_sha256": "f914fc16a59b791b97f96c6c5d5679a45b25e891776df828bc3c2faec3d3381c",
+    "running_exe_sha256": "f914fc16a59b791b97f96c6c5d5679a45b25e891776df828bc3c2faec3d3381c",
+    "pid": 983304,
+    "window_id": 110379541923056,
+    "cmdline": [
+      "/tmp/viamind-t0087-native-preview-verified",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/inspection-project.json",
+      "7915"
+    ],
+    "http": "http://127.0.0.1:7915/mcp",
+    "read_only_checks": 4,
+    "report": "t0087-wrapper-report.json",
+    "capture": "t0087-native-final.png",
+    "capture_sha256": "b831f879fa3956c7c79c1cc425195673471e2909ba56b52fca80f590945b6dcd",
+    "cua_snapshot": "t0087-native-cua.json",
+    "limitation": "AT-SPI unavailable; Cua X11 metadata fallback cannot establish widget state. Readable screenshot plus actual compact egui_kittest interactions and shared MCP state establish separate claims. Production resize behavior unchanged."
+  },
+  "fixture": {
+    "path": "fixtures/assembly/sourcing.viamind.json",
+    "sha256": "4db88ae832e8704973a7c4cec9ffc90c3d8bcb3452100f92814b9ad46aa7a743",
+    "baseline": "fixtures/fabrication/asymmetric.viamind.json",
+    "baseline_sha256": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea",
+    "note": "Original asymmetric geometry; explicit synthetic user-entered sourcing labels and one do-not-populate component. No real MPN or manufacturer approval claimed."
+  },
+  "prior_compatibility_artifact": {
+    "source_head": "026518e3d358034d44d94c987f150e4daa2a720d",
+    "binary_path": "/tmp/viamind-t0084-verified",
+    "binary_sha256": "fd1977296d64e85f2b5c2c866cf14f807e1f8f1ff69f23bcb757928ebb2fe6cd",
+    "comparison": "Existing BOM/placement, seven fabrication files, SVG and ten saved-job output/config files exactly equal. Release-manifest source cursors belong to independent sessions and are excluded from cross-session byte equality."
+  },
+  "portable_probes": [
+    "docs/verification/t0087-sourcing-smoke.py",
+    "docs/verification/t0087-wrapper-observe.py"
+  ],
+  "scoped_limits": [
+    "512 UTF-8 bytes per optional field, no controls/edge whitespace",
+    "2 MiB model-wide sourcing text and 100000 metadata-bearing components",
+    "Existing inventory/job profile ignores sourcing/population; sourcing BOM includes every group with explicit population",
+    "No sourcing lookup, stock, vendor presets, assembly centroids, procurement or manufacturer acceptance"
+  ],
+  "reports_sha256": {
+    "t0087-production-report.json": "5088a0d8d3676099d8d5366ad40afbbacf8496c39f2d776ba77a1b1b05ac3adf",
+    "t0087-wrapper-report.json": "9554fe18e757a14068ad8838db0f4f504ef5ce204e5fd91988f2e10833cf3567",
+    "t0087-native-cua.json": "dbfdd8e2ed9776c2c0dbb4de9c412ed0325c87f92f158a37ccb1ef76187631dc",
+    "t0087-production-cua.json": "36b43e6b5cfdaad9915a1ed4600d5ef948a44f0e908ba29c868fccc2499442da"
+  }
+}
