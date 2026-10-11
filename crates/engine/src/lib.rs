@@ -8,10 +8,12 @@
 //! JSON Schema) and runs them from JSON, which is how agents call them over MCP.
 
 pub mod command;
+pub mod commands;
 pub mod delta;
 pub mod registry;
 
 pub use command::{Command, CommandError, CommandSpec, input_schema};
+pub use commands::{AddPart, DeletePart, MovePart};
 pub use delta::{Delta, apply_all, invert};
 pub use registry::{CommandRegistry, EngineError};
 /// Re-exported so command input types can derive `JsonSchema` with a matching version.
