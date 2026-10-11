@@ -1,35 +1,65 @@
-//! Viamind desktop app: opens a design and serves it to AI agents over MCP while it is open.
-//!
-//! ```text
-//! viamind              open a new design; agents connect to http://127.0.0.1:7878/mcp
-//! viamind --demo       open the synthetic 10k-object test scene instead (no design, no MCP)
-//! viamind --no-mcp     open a design without the agent endpoint
-//! ```
-//! `VIAMIND_MCP_PORT` changes the port.
+//! Viamind desktop and headless MCP entry points. See `viamind --help`.
+
+mod cli;
 
 use std::net::{Ipv4Addr, SocketAddr};
 
-use viamind_doc::Project;
+use anyhow::Context;
+use viamind_doc::{Project, file};
 use viamind_engine::EngineHandle;
 
-fn main() -> eframe::Result {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    if args.iter().any(|a| a == "--demo") {
-        return viamind_ui_egui::run();
+fn main() -> anyhow::Result<()> {
+    let options = match cli::parse(std::env::args_os().skip(1)).map_err(anyhow::Error::msg)? {
+        cli::Invocation::Help => {
+            print!("{}", cli::HELP);
+            return Ok(());
+        }
+        cli::Invocation::Version => {
+            println!("viamind {}", env!("CARGO_PKG_VERSION"));
+            return Ok(());
+        }
+        cli::Invocation::Run(options) => options,
+    };
+    if options.demo {
+        return viamind_ui_egui::run().map_err(|e| anyhow::anyhow!("{e}"));
+    }
+    let project = match options.open {
+        Some(path) => file::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
+        None => Project::new("Untitled"),
+    };
+    let engine = EngineHandle::new(project);
+    if options.headless {
+        let registry = viamind_mcp::engine_registry(engine.clone())?;
+        eprintln!("viamind: headless design MCP on stdin/stdout; close stdin to finish");
+        tokio::runtime::Runtime::new()?.block_on(viamind_mcp::serve_stdio(registry))?;
+        if let Some(path) = options.save_as {
+            engine.read(|project| file::save(project, &path)).with_context(|| format!("could not save project {}", path.display()))?;
+            eprintln!("viamind: saved {}", path.display());
+        }
+        return Ok(());
     }
 
-    let engine = EngineHandle::new(Project::new("Untitled"));
+    let mut server = None;
     let mut mcp_url = None;
-    if !args.iter().any(|a| a == "--no-mcp") {
-        let port = std::env::var("VIAMIND_MCP_PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(viamind_mcp::DEFAULT_PORT);
+    if !options.no_mcp {
+        let port = match std::env::var("VIAMIND_MCP_PORT") {
+            Ok(value) => value.parse::<u16>().context("VIAMIND_MCP_PORT must be an integer from 0 to 65535")?,
+            Err(std::env::VarError::NotPresent) => viamind_mcp::DEFAULT_PORT,
+            Err(error) => anyhow::bail!("invalid VIAMIND_MCP_PORT: {error}"),
+        };
         match viamind_mcp::spawn_engine_server(engine.clone(), SocketAddr::from((Ipv4Addr::LOCALHOST, port))) {
-            Ok(server) => {
-                eprintln!("viamind: agents can connect at {}", server.url());
-                eprintln!("viamind: e.g. claude mcp add --transport http viamind {}", server.url());
-                mcp_url = Some(server.url());
+            Ok(endpoint) => {
+                eprintln!("viamind: agents can connect at {}", endpoint.url());
+                eprintln!("viamind: e.g. claude mcp add --transport http viamind {}", endpoint.url());
+                mcp_url = Some(endpoint.url());
+                server = Some(endpoint);
             }
             Err(e) => eprintln!("viamind: MCP endpoint not started: {e:#}"),
         }
     }
-    viamind_ui_egui::run_design(engine, mcp_url)
+    let result = viamind_ui_egui::run_design(engine, mcp_url).map_err(|e| anyhow::anyhow!("{e}"));
+    if let Some(server) = server {
+        server.shutdown();
+    }
+    result
 }
