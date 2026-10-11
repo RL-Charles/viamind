@@ -113,6 +113,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     input(&mut h, "Pin 2 Y (mm)", "-2.000007");
     let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
     let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
+    // Virtualized overscan nodes can exist outside the inner clip. Return the
+    // actual pin viewport to its top before targeting the first row's button.
+    h.get_by_label("Pin 2 name").scroll_to_me();
+    h.run_steps(6);
+    h.get_by_label("Pin 2 name").focus();
+    h.run_steps(5);
+    h.hover_at(h.get_by_label("Pin 2 name").rect().center());
+    h.run_steps(2);
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        phase: egui::TouchPhase::Move,
+        delta: egui::vec2(0.0, 4000.0),
+        modifiers: egui::Modifiers::NONE,
+    });
+    h.run_steps(8);
     click(&mut h, "Remove pin 1");
     assert!(h.query_by_label("1 / 1024 ordered pins").is_some(), "actual Remove must reduce two pins to one");
     for (i, field) in fields.iter().enumerate() {
