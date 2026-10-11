@@ -24,6 +24,7 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
             apertures: None,
         };
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,

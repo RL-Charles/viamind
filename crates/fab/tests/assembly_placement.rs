@@ -7,6 +7,7 @@ fn sample() -> Project {
     let mut project = Project::new("calibration");
     for (name, side) in [("U1", Side::Top), ("U2", Side::Bottom)] {
         let part = Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             designator: name.into(),

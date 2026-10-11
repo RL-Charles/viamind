@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version14 to preserve explicit pad apertures and footprint artwork and earlier features.
-pub const LOG_VERSION: u32 = 14;
+/// New logs use version15 to preserve explicit nonplated holes and earlier features.
+pub const LOG_VERSION: u32 = 15;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -115,6 +115,7 @@ impl EventLog {
         if header.format != LOG_FORMAT
             || header.version > LOG_VERSION
             || (header.version < viamind_doc::file::minimum_version(&header.base))
+            || viamind_doc::file::validate_holes(&header.base).is_err()
             || viamind_doc::file::validate_net_rules(&header.base).is_err()
             || viamind_doc::file::validate_assembly(&header.base).is_err()
             || viamind_doc::file::validate_pads(&header.base).is_err()
@@ -140,6 +141,11 @@ impl EventLog {
                 let valid_id = match delta {
                     crate::Delta::Part { id, before, after } => before.iter().chain(after).all(|part| {
                         part.id == *id
+                            && part.holes.as_ref().is_none_or(|holes| {
+                                header.version >= 15
+                                    && viamind_doc::footprint_holes::validate_part_holes(holes).is_ok()
+                                    && holes.iter().all(|hole| viamind_doc::resolve_hole(part, hole).is_ok())
+                            })
                             && part.pads.as_ref().is_none_or(|pads| {
                                 pads.0.iter().all(|pad| {
                                     pad.apertures.as_ref().is_none_or(|policy| header.version >= 14 && policy.validate_at(pad.position).is_ok())
@@ -175,6 +181,11 @@ impl EventLog {
             }
             for delta in &event.deltas {
                 if let crate::Delta::Part { id, before, after } = delta {
+                    let current_holes = current.board.part(id).and_then(|p| p.holes.as_ref());
+                    let before_holes = before.as_ref().and_then(|p| p.holes.as_ref());
+                    if (current_holes.is_some() || before_holes.is_some()) && current_holes != before_holes {
+                        return Err(LogError::BadHeader);
+                    }
                     let before = before.as_ref().and_then(|p| p.assembly.as_deref());
                     if current.board.part(id).and_then(|p| p.assembly.as_deref()) != before {
                         return Err(LogError::BadHeader);
@@ -189,6 +200,7 @@ impl EventLog {
                 }
                 delta.apply_to(&mut current);
             }
+            viamind_doc::file::validate_holes(&current).map_err(|_| LogError::BadHeader)?;
             log.append(event);
         }
         if viamind_doc::file::validate_copper(&log.replay()).is_err() {
@@ -203,6 +215,7 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
+    viamind_doc::file::validate_holes(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     viamind_doc::file::validate_net_rules(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     viamind_doc::file::validate_assembly(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: LOG_VERSION, base })?;
@@ -211,6 +224,18 @@ pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
 
 /// Appends one event as a single line.
 pub fn write_entry(mut out: impl Write, event: &ChangeEvent) -> io::Result<()> {
+    for delta in &event.deltas {
+        if let crate::Delta::Part { before, after, .. } = delta {
+            for part in before.iter().chain(after) {
+                if let Some(holes) = &part.holes {
+                    viamind_doc::footprint_holes::validate_part_holes(holes).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+                    for hole in holes {
+                        viamind_doc::resolve_hole(part, hole).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+                    }
+                }
+            }
+        }
+    }
     validate_event_assembly(event).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
     serde_json::to_writer(&mut out, event)?;
     out.write_all(b"\n")

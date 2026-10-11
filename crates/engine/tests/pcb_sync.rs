@@ -100,6 +100,7 @@ fn linked_project() -> Project {
             })
             .collect();
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: Some(Box::new(viamind_doc::AssemblyMetadata {
                 mpn: Some("Explicit user input retained through synchronization".into()),

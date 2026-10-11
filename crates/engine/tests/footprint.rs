@@ -27,6 +27,7 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
     let part = before.board.part(&id).unwrap();
     assert_eq!(part.side, Side::Bottom);
     let definition = Footprint {
+        holes: None,
         artwork: None,
         name: "New_SMD".into(),
         pads: ["2", "1"]
@@ -85,7 +86,7 @@ fn reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo() {
         expected_cursor: None,
         expected_project: after.id,
         expected: changed.clone(),
-        footprint: Footprint { artwork: None, name: "Empty".into(), pads: vec![] },
+        footprint: Footprint { holes: None, artwork: None, name: "Empty".into(), pads: vec![] },
     };
     engine.execute_typed(empty, Origin::User).unwrap();
     assert!(engine.read(|p| p.board.part(&id).unwrap().pads.as_ref().unwrap().0.is_empty()));

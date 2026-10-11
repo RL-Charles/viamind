@@ -253,6 +253,7 @@ pub fn validate_sheet(sheet: &Sheet) -> Result<(), String> {
 
 /// Validate all sheet geometry and global identities. A replacement is checked before commit.
 pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Result<(), String> {
+    crate::footprint_holes::preflight_project(project, replacement)?;
     if project.schematic.sheets.iter().any(|(key, sheet)| *key != sheet.id) {
         return Err("schematic sheet map key must match ID".into());
     }
@@ -268,6 +269,13 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
     insert_existing(&mut ids, project.id)?;
     for p in project.board.parts.values() {
         insert_existing(&mut ids, p.id)?;
+        if let Some(holes) = &p.holes {
+            crate::footprint_holes::validate_part_holes(holes)?;
+            for hole in holes {
+                crate::resolve_hole(p, hole)?;
+                insert(&mut ids, hole.id)?;
+            }
+        }
         for pad in p.pads.iter().flat_map(|p| &p.0) {
             insert_existing(&mut ids, pad.id)?;
         }

@@ -7,7 +7,7 @@ use viamind_geom::{Nm, Point};
 
 #[test]
 fn strict_library_versions_explicit_empty_and_legacy_bytes() {
-    let old = Footprint { artwork: None, name: "Empty pads".into(), pads: vec![] };
+    let old = Footprint { holes: None, artwork: None, name: "Empty pads".into(), pads: vec![] };
     let legacy = footprint::to_vec(&old).unwrap();
     assert_eq!(footprint::from_slice(&legacy).unwrap(), old);
     assert!(!String::from_utf8(legacy.clone()).unwrap().contains("artwork"));

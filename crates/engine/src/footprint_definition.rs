@@ -124,7 +124,7 @@ mod tests {
         let path = directory.path().join("new.json");
         let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
         let input = SaveFootprintDefinition {
-            footprint: Footprint { artwork: None, name: "Empty explicit definition".into(), pads: vec![] },
+            footprint: Footprint { holes: None, artwork: None, name: "Empty explicit definition".into(), pads: vec![] },
             path: path.clone(),
         };
         let peer = engine.clone();

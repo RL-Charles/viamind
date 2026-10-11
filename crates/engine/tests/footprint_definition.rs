@@ -8,6 +8,7 @@ use viamind_geom::Nm;
 
 fn original() -> Footprint {
     Footprint {
+        holes: None,
         artwork: None,
         name: "Original asymmetric definition".into(),
         pads: vec![
@@ -110,7 +111,7 @@ fn invalid_bounds_precision_free_integer_geometry_and_existing_files_reject_with
     let empty = directory.path().join("empty.json");
     engine
         .save_footprint_definition(SaveFootprintDefinition {
-            footprint: Footprint { artwork: None, name: "Explicit empty".into(), pads: vec![] },
+            footprint: Footprint { holes: None, artwork: None, name: "Explicit empty".into(), pads: vec![] },
             path: empty.clone(),
         })
         .unwrap();
