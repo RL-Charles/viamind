@@ -214,3 +214,31 @@ fn real_peer_edit_and_reopened_stream_reject_typed_dynamic_and_grouped_requests(
     assert_ne!(e.event_cursor().stream_id, stale.expected_cursor.stream_id);
     reject(&e, stale);
 }
+#[test]
+fn via_minima_refuse_before_both_leg_search_and_equal_plan_commits_without_resize() {
+    let _guard = TEST.lock().unwrap();
+    let (mut project, ids) = fixture();
+    project.board.net_rules.insert(
+        "SIGNAL".into(),
+        serde_json::from_value(
+            serde_json::json!({"minimum_copper_clearance":0,"minimum_track_width":1,"minimum_via_drill":300001,"minimum_annular_width":150001}),
+        )
+        .unwrap(),
+    );
+    let e = EngineHandle::new(project);
+    let before = e.session_state();
+    for (drill, diameter) in [(300000, 600002), (300001, 600002)] {
+        let cmd = RoutePadViaWalkaround { via_drill: Nm(drill), via_diameter: Nm(diameter), ..input(&e, ids) };
+        assert!(e.plan_pad_via_walkaround(&cmd).unwrap_err().to_string().contains("no resizing"));
+        reject(&e, cmd);
+    }
+    let cmd = RoutePadViaWalkaround { via_drill: Nm(300001), via_diameter: Nm(600003), ..input(&e, ids) };
+    let plan = e.plan_pad_via_walkaround(&cmd).unwrap();
+    assert!(plan.complete_scoped_preflight);
+    assert_eq!(plan.document_net_rules, before.project.board.net_rules);
+    e.execute_typed(cmd, Origin::User).unwrap();
+    let via = e.read(|p| p.board.vias.values().next().unwrap().clone());
+    assert_eq!((via.drill, via.diameter), (Nm(300001), Nm(600003)));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.session_state().project, before.project);
+}

@@ -242,13 +242,23 @@ mod tests {
         assert!(counts(&project).is_ok());
         project.board.net_rules.insert(
             "A".into(),
-            viamind_doc::NamedNetMinima { minimum_copper_clearance: viamind_geom::Nm(0), minimum_track_width: viamind_geom::Nm(1) },
+            viamind_doc::NamedNetMinima {
+                minimum_copper_clearance: viamind_geom::Nm(0),
+                minimum_track_width: viamind_geom::Nm(1),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
         );
         assert!(counts(&project).unwrap_err().to_string().contains("2 MiB"));
         project.board.parts.clear();
         project.board.net_rules.insert(
             "invalid".repeat(100000),
-            viamind_doc::NamedNetMinima { minimum_copper_clearance: viamind_geom::Nm(0), minimum_track_width: viamind_geom::Nm(1) },
+            viamind_doc::NamedNetMinima {
+                minimum_copper_clearance: viamind_geom::Nm(0),
+                minimum_track_width: viamind_geom::Nm(1),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
         );
         assert!(counts(&project).unwrap_err().to_string().contains("256"));
     }

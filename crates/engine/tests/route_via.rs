@@ -188,7 +188,15 @@ fn joint_preflight_checks_foreign_copper_both_sides_and_physical_via_holes() {
 #[test]
 fn persisted_named_width_floor_checks_both_explicit_via_legs_jointly() {
     let (mut project, ids) = fixture();
-    project.board.net_rules.insert("SIGNAL".into(), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300001) });
+    project.board.net_rules.insert(
+        "SIGNAL".into(),
+        viamind_doc::NamedNetMinima {
+            minimum_copper_clearance: Nm(0),
+            minimum_track_width: Nm(300001),
+            minimum_via_drill: viamind_geom::Nm(0),
+            minimum_annular_width: viamind_geom::Nm(0),
+        },
+    );
     let e = EngineHandle::new(project);
     let before = e.session_state();
     let request = RoutePadViaPolyline { width: Nm(300000), ..input(&e, ids) };
@@ -198,4 +206,34 @@ fn persisted_named_width_floor_checks_both_explicit_via_legs_jointly() {
     assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(300001))));
     e.undo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
+}
+#[test]
+fn explicit_via_dimensions_refuse_named_drill_and_half_nm_annulus_then_commit_equal() {
+    for (drill, diameter, success) in [(300000, 600002, false), (300001, 600002, false), (300001, 600003, true), (300002, 600005, true)] {
+        let (mut project, ids) = fixture();
+        project.board.net_rules.insert(
+            "SIGNAL".into(),
+            viamind_doc::NamedNetMinima {
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(1),
+                minimum_via_drill: Nm(300001),
+                minimum_annular_width: Nm(150001),
+            },
+        );
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let cmd = RoutePadViaPolyline { via_diameter: Nm(diameter), via_drill: Nm(drill), ..input(&e, ids) };
+        let result = e.execute_typed(cmd, Origin::User);
+        if success {
+            result.unwrap();
+            let via = e.read(|p| p.board.vias.values().next().unwrap().clone());
+            assert_eq!(via.diameter, Nm(diameter));
+            assert_eq!(via.drill, Nm(drill));
+            e.undo(Origin::User).unwrap();
+            assert_eq!(e.session_state().project, before.project);
+        } else {
+            assert!(result.unwrap_err().to_string().contains("no resizing"));
+            assert_eq!(e.session_state(), before);
+        }
+    }
 }

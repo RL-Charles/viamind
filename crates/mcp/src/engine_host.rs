@@ -59,7 +59,7 @@ impl CommandHost for EngineHost {
             .collect();
         commands.push(HostCommand {
             name: "query_named_net_rules".into(),
-            description: "Read-only bounded exact document named-net minimum clearance/track-width policy and full source cursor. Empty map preserves existing request baselines. No mutation; use set_named_net_rules for guarded undoable replacement.".into(),
+            description: "Read-only bounded exact document named-net minimum clearance/track-width/via-drill/annular policy and full source cursor. Empty map preserves existing request baselines. No mutation; use set_named_net_rules for guarded undoable replacement.".into(),
             input_schema: json!({"type":"object", "properties":{}, "additionalProperties":false}),
         });
         commands.push(HostCommand {

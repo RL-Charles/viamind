@@ -54,7 +54,7 @@ hole-to-copper, edge clearance and copper rules keep their current semantics.
 The central resolver lives with the shared document policy and is used by the
 existing scoped DRC, never reimplemented in saved-output helpers.
 
-Drill comparison uses exact stored integer diameter. Annular width is half the
+Drill comparison uses exact stored integer drill diameter. Annular width is half the
 integer difference between outer diameter and drill. Compare the doubled
 annulus `diameter - drill` against `2 * required_annular_width` using checked
 integer arithmetic, avoiding rounding that changes equality. Preserve current

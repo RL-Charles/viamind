@@ -218,6 +218,8 @@ fn persisted_width_floor_refuses_one_nm_below_and_equality_keeps_explicit_geomet
                 net: "GND".into(),
                 minimum_copper_clearance: Nm(700_001),
                 minimum_track_width: Nm(250_001),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
             }],
         },
         Origin::User,
