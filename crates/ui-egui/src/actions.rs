@@ -66,6 +66,7 @@ ui_actions! {
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    RoutePadViaPolyline => (viamind_engine::RoutePadViaPolyline::NAME,input_schema::<viamind_engine::RoutePadViaPolyline>(),route_pad_via_polyline),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
     RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
@@ -254,4 +255,8 @@ fn render_schematic_svg(e: &EngineHandle, input: Value) -> Result<Value, EngineE
 }
 fn render_schematic_png(e: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     crate::view_export::export(e, UiAction::RenderSchematicPng, input)
+}
+
+fn route_pad_via_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RoutePadViaPolyline::NAME, input, Origin::User)?).map_err(encode_error)
 }

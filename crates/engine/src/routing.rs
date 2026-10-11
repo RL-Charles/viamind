@@ -34,9 +34,15 @@ impl Command for RoutePolyline {
     }
 }
 impl RoutePolyline {
-    /// The pad command alone may exempt its independently resolved exact endpoints
+    /// Pad routing commands may exempt independently resolved exact endpoints
     /// from the grid. All geometry, budgets and preflight remain shared.
     pub(crate) fn apply_resolved(self, project: &mut Project, pad_endpoints: bool) -> Result<Vec<Delta>, CommandError> {
+        let rules = self.rules.clone();
+        let tracks = self.prepare_segments(project, pad_endpoints)?;
+        apply_route_candidate(project, tracks, Vec::new(), &rules)
+    }
+    /// Build validated bounded geometry without mutating or cloning the board.
+    pub(crate) fn prepare_segments(self, project: &Project, exact_endpoints: bool) -> Result<Vec<Track>, CommandError> {
         if self.expected_project != project.id {
             return Err(CommandError::conflict("project changed; restart the route"));
         }
@@ -61,7 +67,7 @@ impl RoutePolyline {
             return Err(CommandError::invalid("outline", "set an explicit board outline before routing"));
         }
         for (index, point) in self.points.iter().enumerate() {
-            if pad_endpoints && (index == 0 || index + 1 == self.points.len()) {
+            if exact_endpoints && (index == 0 || index + 1 == self.points.len()) {
                 continue;
             }
             let snapped = viamind_router::snap(*point, self.grid).map_err(|e| CommandError::invalid("points", e))?;
@@ -70,39 +76,67 @@ impl RoutePolyline {
             }
         }
         self.rules.validate().map_err(|e| CommandError::invalid("rules", e.to_string()))?;
-        crate::auto_drc::snapshot_budget(project, 100_000 - (self.points.len() - 1)).map_err(|e| {
-            CommandError::conflict(format!("route preflight cannot capture bounded board: {}", e.trim_start_matches("Automatic DRC skipped: ")))
-        })?;
-        // Capture only the bounded board; unrelated schematic content and project text are
-        // neither inspected nor cloned while routing holds the engine lock.
-        let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone() };
-        let mut deltas = Vec::with_capacity(self.points.len() - 1);
-        let mut ids = BTreeSet::new();
+        let mut tracks = Vec::with_capacity(self.points.len() - 1);
         for pair in self.points.windows(2) {
             let track =
                 Track { id: ObjectId::new(), start: pair[0], end: pair[1], width: self.width, layer: self.layer, net: Some(self.net.clone()) };
             track.validate().map_err(|e| CommandError::invalid("route", e))?;
-            ids.insert(track.id);
-            let delta = Delta::Track { id: track.id, before: None, after: Some(track) };
-            delta.apply_to(&mut candidate);
-            deltas.push(delta);
+            tracks.push(track);
         }
-        crate::auto_drc::snapshot_budget(&candidate, 100_000).map_err(|e| {
-            CommandError::conflict(format!("route preflight cannot capture bounded board: {}", e.trim_start_matches("Automatic DRC skipped: ")))
-        })?;
-        let report = viamind_drc::run_drc(&candidate, &self.rules).map_err(|e| CommandError::invalid("rules", e.to_string()))?;
-        if report.truncated || report.incomplete_reason.is_some() {
-            return Err(CommandError::conflict(format!(
-                "route preflight incomplete; no segments added: {}",
-                report.incomplete_reason.as_deref().unwrap_or("DRC result truncated")
-            )));
-        }
-        if let Some(violation) = report.violations.iter().find(|v| v.objects.iter().any(|o| ids.contains(&o.selection_id()))) {
-            return Err(CommandError::conflict(format!("route preflight failed; no segments added: {}", violation.message)));
-        }
-        for delta in &deltas {
-            delta.apply_to(project);
-        }
-        Ok(deltas)
+        Ok(tracks)
     }
+}
+/// Preflight one joint new-copper plan, including through-via issues, before any mutation.
+/// Capture only bounded board data; unrelated schematic/project contents are never cloned.
+pub(crate) fn apply_route_candidate(
+    project: &mut Project,
+    tracks: Vec<Track>,
+    vias: Vec<viamind_doc::Via>,
+    rules: &viamind_drc::DrcInput,
+) -> Result<Vec<Delta>, CommandError> {
+    let count = tracks.len().saturating_add(vias.len());
+    if count == 0
+        || count > 1025
+        || project.board.tracks.len().saturating_add(tracks.len()) > MAX_COPPER_OBJECTS
+        || project.board.vias.len().saturating_add(vias.len()) > MAX_COPPER_OBJECTS
+    {
+        return Err(CommandError::invalid("route", "new copper plan exceeds bounded capacity"));
+    }
+    rules.validate().map_err(|e| CommandError::invalid("rules", e.to_string()))?;
+    crate::auto_drc::snapshot_budget(project, 100_000 - count).map_err(|e| {
+        CommandError::conflict(format!("route preflight cannot capture bounded board: {}", e.trim_start_matches("Automatic DRC skipped: ")))
+    })?;
+    let mut deltas = Vec::with_capacity(count);
+    let mut ids = BTreeSet::new();
+    for track in tracks {
+        track.validate().map_err(|e| CommandError::invalid("route", e))?;
+        ids.insert(track.id);
+        deltas.push(Delta::Track { id: track.id, before: None, after: Some(track) });
+    }
+    for via in vias {
+        via.validate().map_err(|e| CommandError::invalid("via", e))?;
+        ids.insert(via.id);
+        deltas.push(Delta::Via { id: via.id, before: None, after: Some(via) });
+    }
+    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone() };
+    for delta in &deltas {
+        delta.apply_to(&mut candidate);
+    }
+    crate::auto_drc::snapshot_budget(&candidate, 100_000).map_err(|e| {
+        CommandError::conflict(format!("route preflight cannot capture bounded board: {}", e.trim_start_matches("Automatic DRC skipped: ")))
+    })?;
+    let report = viamind_drc::run_drc(&candidate, rules).map_err(|e| CommandError::invalid("rules", e.to_string()))?;
+    if report.truncated || report.incomplete_reason.is_some() {
+        return Err(CommandError::conflict(format!(
+            "route preflight incomplete; no copper added: {}",
+            report.incomplete_reason.as_deref().unwrap_or("DRC result truncated")
+        )));
+    }
+    if let Some(violation) = report.violations.iter().find(|v| v.objects.iter().any(|o| ids.contains(&o.selection_id()))) {
+        return Err(CommandError::conflict(format!("route preflight failed; no copper added: {}", violation.message)));
+    }
+    for delta in &deltas {
+        delta.apply_to(project);
+    }
+    Ok(deltas)
 }

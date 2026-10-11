@@ -20,6 +20,9 @@ struct Settings {
     edge: String,
     layer: CopperLayer,
     pad_mode: bool,
+    via_mode: bool,
+    via_diameter: String,
+    via_drill: String,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -31,6 +34,9 @@ impl Default for Settings {
             edge: "0.25".into(),
             layer: CopperLayer::Top,
             pad_mode: false,
+            via_mode: false,
+            via_diameter: "0.6".into(),
+            via_drill: "0.3".into(),
         }
     }
 }
@@ -62,6 +68,12 @@ impl RoutingUi {
     }
     pub fn pad_endpoints(&self) -> (Option<PadEndpointId>, Option<PadEndpointId>) {
         self.pad_draft.as_ref().map_or((None, None), PadDraft::endpoints)
+    }
+    pub fn pad_via(&self) -> Option<Point> {
+        self.pad_draft.as_ref().and_then(PadDraft::via)
+    }
+    pub fn pad_after(&self) -> &[Point] {
+        self.pad_draft.as_ref().map_or(&[], PadDraft::after)
     }
     pub fn pad_interior(&self) -> &[Point] {
         self.pad_draft.as_ref().map_or(&[], PadDraft::interior)
@@ -215,6 +227,16 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_via_route(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_pad_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.via_mode = true;
+        }
+    }
+
     pub fn begin_pad_route(&mut self) {
         if self.routing.editing() {
             return;
@@ -249,16 +271,17 @@ impl ViamindApp {
         let mut start = false;
         let mut cancel = false;
         let modal=egui::Modal::new(egui::Id::new("route_settings")).show(ui.ctx(),|ui|{
-            ui.heading(if settings.pad_mode {"Route pad connection"} else {"Route PCB polyline"});
+            ui.heading(if settings.via_mode {"Route pads through via"} else if settings.pad_mode {"Route pad connection"} else {"Route PCB polyline"});
             egui::Grid::new("route_fields").num_columns(2).show(ui,|ui|{
                 if !settings.pad_mode {let label=ui.label("Route net");ui.add(egui::TextEdit::singleline(&mut settings.net).id_salt("Route net")).labelled_by(label.id);ui.end_row();}
                 for (label,value) in [("Route width (mm)",&mut settings.width),("Route grid (mm)",&mut settings.grid),("Route copper clearance (mm)",&mut settings.clearance),("Route edge clearance (mm)",&mut settings.edge)] {
                     let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();
                 }
+                if settings.via_mode {for (label,value) in [("Via copper diameter (mm)",&mut settings.via_diameter),("Via drill diameter (mm)",&mut settings.via_drill)] {let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();}}
                 if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
-            ui.label(if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. No electrical continuity verification or guide suppression."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
+            ui.label(if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or electrical continuity verification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. No electrical continuity verification or guide suppression."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
             ui.horizontal(|ui|{start=ui.button("Start route").clicked();cancel=ui.button("Cancel route settings").clicked();});
         });
@@ -282,22 +305,41 @@ impl ViamindApp {
                 }
                 let (project, cursor) =
                     self.design.as_ref().ok_or("Open a project before routing")?.engine.with_engine(|e| (e.project().id, e.event_cursor()));
-                Ok(RoutePolyline {
-                    expected_project: project,
-                    expected_cursor: cursor,
-                    points: Vec::new(),
-                    width,
-                    grid,
-                    layer: settings.layer,
-                    net,
-                    rules,
-                })
+                let via_sizes = if settings.via_mode {
+                    let diameter = mm(&settings.via_diameter, true)?;
+                    let drill = mm(&settings.via_drill, true)?;
+                    if drill >= diameter {
+                        return Err("Via drill must be smaller than copper diameter".into());
+                    }
+                    Some((diameter, drill))
+                } else {
+                    None
+                };
+                Ok((
+                    RoutePolyline {
+                        expected_project: project,
+                        expected_cursor: cursor,
+                        points: Vec::new(),
+                        width,
+                        grid,
+                        layer: settings.layer,
+                        net,
+                        rules,
+                    },
+                    via_sizes,
+                ))
             })();
             match result {
-                Ok(input) => {
+                Ok((input, via_sizes)) => {
                     if pad_mode {
                         match self.design.as_ref().unwrap().engine.route_endpoint_snapshot() {
-                            Ok(snapshot) => self.routing.pad_draft = Some(PadDraft::new(snapshot, input.width, input.grid, input.rules)),
+                            Ok(snapshot) => {
+                                let mut draft = PadDraft::new(snapshot, input.width, input.grid, input.rules);
+                                if let Some((diameter, drill)) = via_sizes {
+                                    draft = draft.with_via(diameter, drill);
+                                }
+                                self.routing.pad_draft = Some(draft);
+                            }
                             Err(e) => {
                                 self.routing.error = Some(e.to_string());
                                 return;

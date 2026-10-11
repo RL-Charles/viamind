@@ -93,3 +93,6 @@ pub use transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo
 
 pub mod copper;
 pub use copper::{AddTrack, AddVia, DeleteTrack, DeleteVia};
+
+pub mod route_via;
+pub use route_via::RoutePadViaPolyline;

@@ -7,7 +7,7 @@ use crate::{
 use egui::{Color32, Key, PointerButton, Pos2, Response, Stroke, Ui};
 use std::{collections::BTreeMap, time::Instant};
 use viamind_doc::CopperLayer;
-use viamind_engine::{EngineHandle, PadEndpointId, RouteEndpoint, RouteEndpointSnapshot, RoutePadPolyline};
+use viamind_engine::{EngineHandle, PadEndpointId, RouteEndpoint, RouteEndpointSnapshot, RoutePadPolyline, RoutePadViaPolyline};
 use viamind_geom::{Nm, Point, Rect, SpatialIndex};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -15,6 +15,8 @@ enum Picking {
     Start,
     Target,
     Interior,
+    Via,
+    After,
 }
 #[derive(Debug)]
 pub(crate) struct PadDraft {
@@ -26,6 +28,9 @@ pub(crate) struct PadDraft {
     start: Option<usize>,
     target: Option<usize>,
     interior: Vec<Point>,
+    after: Vec<Point>,
+    via: Option<Point>,
+    via_sizes: Option<(Nm, Nm)>,
     hover: Option<Point>,
     hovered_pad: Option<usize>,
     width: Nm,
@@ -102,12 +107,33 @@ impl PadDraft {
             start: None,
             target: None,
             interior: Vec::new(),
+            after: Vec::new(),
+            via: None,
+            via_sizes: None,
             hover: None,
             hovered_pad: None,
             width,
             grid,
             rules,
         }
+    }
+    pub(crate) fn with_via(mut self, diameter: Nm, drill: Nm) -> Self {
+        self.via_sizes = Some((diameter, drill));
+        self
+    }
+    pub(crate) fn via(&self) -> Option<Point> {
+        self.via
+    }
+    pub(crate) fn after(&self) -> &[Point] {
+        &self.after
+    }
+    fn clear_geometry(&mut self) {
+        self.interior.clear();
+        self.after.clear();
+        self.via = None;
+    }
+    fn next_stage(&self) -> Picking {
+        if self.via_sizes.is_some() { Picking::Via } else { Picking::Interior }
     }
     pub(crate) fn endpoints(&self) -> (Option<PadEndpointId>, Option<PadEndpointId>) {
         (self.start.map(|i| self.snapshot.endpoints[i].id), self.target.map(|i| self.snapshot.endpoints[i].id))
@@ -124,17 +150,23 @@ impl PadDraft {
         if a.id == b.id {
             return Err("Choose a different target pad".into());
         }
-        if a.layer != b.layer || a.net != b.net {
-            return Err("Choose a pad on the same copper side with the exact same assigned net".into());
+        if a.net != b.net {
+            return Err("Choose a pad with the exact same assigned net".into());
         }
-        if a.center_nm == b.center_nm {
+        if self.via_sizes.is_some() && a.layer == b.layer {
+            return Err("Choose a pad on the opposite outer copper side for one through via".into());
+        }
+        if self.via_sizes.is_none() && a.layer != b.layer {
+            return Err("Choose a pad on the same copper side; use Route pads through via for opposite sides".into());
+        }
+        if self.via_sizes.is_none() && a.center_nm == b.center_nm {
             return Err("Endpoint centers coincide".into());
         }
         Ok(())
     }
     pub(crate) fn panel(&mut self, ui: &mut Ui, engine: &EngineHandle) -> (bool, bool) {
         ui.separator();
-        ui.heading("Pad connection preview");
+        ui.heading(if self.via_sizes.is_some() { "Through-via route preview" } else { "Pad connection preview" });
         let label = |id: Option<usize>| {
             id.map_or("Choose a pad".into(), |i| {
                 let r = &self.snapshot.endpoints[i];
@@ -146,8 +178,38 @@ impl PadDraft {
         match self.picking {
             Picking::Start => ui.label("Click a visible explicit pad or connection guide."),
             Picking::Target => ui.label("Click a compatible target pad."),
+            Picking::Interior if self.via_sizes.is_some() => ui.label("Editing start leg: click empty space to insert before via."),
             Picking::Interior => ui.label("Click: insert grid vertex before target · Backspace: remove · Enter: finish"),
+            Picking::Via => ui.label("Place via: click empty space on the grid."),
+            Picking::After => ui.label("Editing target leg: click empty space to insert before target."),
         };
+        if let Some((diameter, drill)) = self.via_sizes {
+            for (label, index) in [("Start", self.start), ("Target", self.target)] {
+                if let Some(i) = index
+                    && let Some(p) = self.snapshot.endpoints[i].center_nm
+                {
+                    ui.monospace(format!("{label} X {} Y {} nm", p.x.0, p.y.0));
+                }
+            }
+            ui.label(format!("Via copper {:.6} / drill {:.6} mm", diameter.to_mm(), drill.to_mm()));
+            if let Some(p) = self.via {
+                ui.monospace(format!("Via X {:.6} Y {:.6} mm", p.x.to_mm(), p.y.to_mm()));
+            }
+            ui.label("V: replace via · Backspace: remove active vertex · Enter: finish");
+            if self.start.is_some() && self.target.is_some() {
+                if ui.button("Place via").clicked() {
+                    self.picking = Picking::Via;
+                }
+                ui.horizontal(|ui| {
+                    if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit start leg")).clicked() {
+                        self.picking = Picking::Interior;
+                    }
+                    if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit target leg")).clicked() {
+                        self.picking = Picking::After;
+                    }
+                });
+            }
+        }
         if let Some(i) = self.hovered_pad {
             let row = &self.snapshot.endpoints[i];
             ui.label(format!("Hover: {} pad {} · {} · {:?}", row.designator, row.number, row.net.as_deref().unwrap_or("unassigned"), row.layer));
@@ -161,7 +223,7 @@ impl PadDraft {
         ui.label("Orange preview is unchecked. Guide counts remain conservative after routing.");
         ui.label(format!(
             "{} interior vertices · {} unsupported pads · {} legacy parts omitted",
-            self.interior.len(),
+            self.interior.len() + self.after.len(),
             self.snapshot.unsupported_endpoints,
             self.snapshot.omitted_legacy_parts
         ));
@@ -179,25 +241,50 @@ impl PadDraft {
         let mut finish = false;
         let mut cancel = false;
         ui.horizontal(|ui| {
-            finish = ui.add_enabled(self.start.is_some() && self.target.is_some(), egui::Button::new("Finish pad route")).clicked();
+            finish = ui
+                .add_enabled(
+                    self.start.is_some() && self.target.is_some() && (self.via_sizes.is_none() || self.via.is_some()),
+                    egui::Button::new(if self.via_sizes.is_some() { "Finish via route" } else { "Finish pad route" }),
+                )
+                .clicked();
             cancel = ui.button("Cancel pad route").clicked();
         });
         (finish, cancel)
     }
     pub(crate) fn finish(&self, engine: &EngineHandle) -> Result<f64, String> {
         let (Some(start), Some(target)) = self.endpoints() else { return Err("Choose start and target pads before finishing".into()) };
-        let input = RoutePadPolyline {
-            expected_project: self.snapshot.project_id,
-            expected_cursor: self.snapshot.source_cursor,
-            start,
-            target,
-            interior: self.interior.clone(),
-            grid: self.grid,
-            width: self.width,
-            rules: self.rules.clone(),
-        };
         let now = Instant::now();
-        UiAction::RoutePadPolyline.run(engine, serde_json::to_value(input).expect("pad route serializes")).map_err(|e| e.to_string())?;
+        let result = if let Some((via_diameter, via_drill)) = self.via_sizes {
+            let via = self.via.ok_or("Place the through via before finishing")?;
+            let input = RoutePadViaPolyline {
+                expected_project: self.snapshot.project_id,
+                expected_cursor: self.snapshot.source_cursor,
+                start,
+                target,
+                via,
+                before: self.interior.clone(),
+                after: self.after.clone(),
+                grid: self.grid,
+                width: self.width,
+                via_diameter,
+                via_drill,
+                rules: self.rules.clone(),
+            };
+            UiAction::RoutePadViaPolyline.run(engine, serde_json::to_value(input).expect("via route serializes"))
+        } else {
+            let input = RoutePadPolyline {
+                expected_project: self.snapshot.project_id,
+                expected_cursor: self.snapshot.source_cursor,
+                start,
+                target,
+                interior: self.interior.clone(),
+                grid: self.grid,
+                width: self.width,
+                rules: self.rules.clone(),
+            };
+            UiAction::RoutePadPolyline.run(engine, serde_json::to_value(input).expect("pad route serializes"))
+        };
+        result.map_err(|e| e.to_string())?;
         Ok(now.elapsed().as_secs_f64() * 1000.0)
     }
     fn pick_pad(&self, position: Pos2, response: &Response, camera: &Camera, layers: &LayerStack) -> Option<(usize, f32)> {
@@ -236,8 +323,22 @@ impl PadDraft {
         }
         let keyboard = !ui.ctx().egui_wants_keyboard_input();
         if keyboard && ui.input(|i| i.key_pressed(Key::Backspace)) {
-            self.interior.pop();
+            match self.picking {
+                Picking::After => {
+                    self.after.pop();
+                }
+                Picking::Via => {
+                    self.via = None;
+                }
+                _ => {
+                    self.interior.pop();
+                }
+            }
+
             *error = None;
+        }
+        if self.via_sizes.is_some() && keyboard && ui.input(|i| i.key_pressed(Key::V)) && self.start.is_some() && self.target.is_some() {
+            self.picking = Picking::Via;
         }
         self.hover = response.hover_pos().and_then(|p| {
             let p = camera.screen_to_world(p, response.rect);
@@ -256,15 +357,27 @@ impl PadDraft {
             let tolerance = Nm::from_mm(6.0 / camera.zoom);
             let pad = self.hovered_pad.map(|i| (i, 0.0));
             let result = (|| -> Result<(), String> {
-                if self.picking == Picking::Interior {
+                if self.picking == Picking::Via {
+                    if pad.is_some() {
+                        return Err("Choose empty space for the through via".into());
+                    }
+                    self.via = Some(self.hover.ok_or("Choose a valid grid position for the via")?);
+                    self.picking = Picking::Interior;
+                    return Ok(());
+                }
+                if matches!(self.picking, Picking::Interior | Picking::After) {
                     if pad.is_some() {
                         return Err("Use Choose start pad or Choose target pad to change endpoints; click empty space for an interior vertex".into());
                     }
+                    let max = if self.via_sizes.is_some() { 1022 } else { 1023 };
+                    if self.interior.len() + self.after.len() >= max {
+                        return Err(format!("At most {max} interior vertices are supported"));
+                    }
+                    let active = if self.picking == Picking::After { &mut self.after } else { &mut self.interior };
                     if let Some(point) = self.hover
-                        && self.interior.last() != Some(&point)
-                        && self.interior.len() < 1023
+                        && active.last() != Some(&point)
                     {
-                        self.interior.push(point);
+                        active.push(point);
                     }
                     return Ok(());
                 }
@@ -275,12 +388,15 @@ impl PadDraft {
                     if self.picking == Picking::Start {
                         self.start = Some(i);
                         self.target = None;
-                        self.interior.clear();
+                        self.clear_geometry();
                         self.picking = Picking::Target;
                     } else if let Some(a) = self.start {
                         self.compatible(a, i)?;
                         self.target = Some(i);
-                        self.picking = Picking::Interior;
+                        if self.via_sizes.is_some() {
+                            self.clear_geometry();
+                        }
+                        self.picking = self.next_stage();
                     } else {
                         return Err("Choose the start pad first".into());
                     }
@@ -312,8 +428,8 @@ impl PadDraft {
                         }
                         self.start = Some(pair[0]);
                         self.target = Some(pair[1]);
-                        self.interior.clear();
-                        self.picking = Picking::Interior;
+                        self.clear_geometry();
+                        self.picking = self.next_stage();
                         return Ok(());
                     }
                 }
@@ -322,7 +438,7 @@ impl PadDraft {
             *error = result.err();
         }
         let screen = |p: Point| camera.world_to_screen(world(p), response.rect);
-        let mut points = Vec::with_capacity(self.interior.len() + 3);
+        let mut points = Vec::with_capacity(self.interior.len() + self.after.len() + 4);
         if let Some(i) = self.start
             && let Some(p) = self.snapshot.endpoints[i].center_nm
         {
@@ -333,6 +449,18 @@ impl PadDraft {
             && let Some(p) = self.hover
         {
             points.push(p);
+        }
+        let preview_via = if self.picking == Picking::Via { self.hover.or(self.via) } else { self.via };
+        if self.via_sizes.is_some() {
+            if let Some(p) = preview_via {
+                points.push(p);
+            }
+            points.extend_from_slice(&self.after);
+            if self.picking == Picking::After
+                && let Some(p) = self.hover
+            {
+                points.push(p);
+            }
         }
         if let Some(i) = self.target
             && let Some(p) = self.snapshot.endpoints[i].center_nm
@@ -347,8 +475,20 @@ impl PadDraft {
                 painter.line_segment([corners[j], corners[(j + 1) % 4]], Stroke::new(2.0, Color32::YELLOW));
             }
         }
-        for pair in points.windows(2) {
-            painter.line_segment([screen(pair[0]), screen(pair[1])], stroke);
+        if self.via_sizes.is_none() || preview_via.is_some() {
+            for pair in points.windows(2) {
+                painter.line_segment([screen(pair[0]), screen(pair[1])], stroke);
+            }
+        }
+        if let Some((diameter, drill)) = self.via_sizes
+            && let Some(p) = preview_via
+        {
+            painter.circle_stroke(
+                screen(p),
+                ((diameter.to_mm() * camera.zoom / 2.0) as f32).max(3.0),
+                Stroke::new(2.0, Color32::from_rgb(255, 174, 64)),
+            );
+            painter.circle_stroke(screen(p), ((drill.to_mm() * camera.zoom / 2.0) as f32).max(1.0), Stroke::new(1.0, Color32::WHITE));
         }
         for point in points {
             painter.circle_stroke(screen(point), 5.0, Stroke::new(1.0, Color32::WHITE));
