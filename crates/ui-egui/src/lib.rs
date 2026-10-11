@@ -53,6 +53,7 @@ mod symbol_definition;
 pub mod symbol_library;
 mod terminal_routing;
 pub mod track_cleanup;
+pub mod unrouted;
 pub mod view_export;
 
 use std::sync::mpsc::Receiver;
@@ -193,6 +194,7 @@ pub struct ViamindApp {
     pub net_rules: net_rules::NetRulesUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
+    pub unrouted: unrouted::UnroutedUi,
     pub erc: erc::ErcUi,
     last_frame_time: Option<f64>,
 }
@@ -252,6 +254,7 @@ impl ViamindApp {
             net_rules: net_rules::NetRulesUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
+            unrouted: unrouted::UnroutedUi::default(),
             erc: erc::ErcUi::default(),
             last_frame_time: None,
         }
@@ -313,6 +316,7 @@ impl ViamindApp {
             net_rules: net_rules::NetRulesUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
+            unrouted: unrouted::UnroutedUi::default(),
             erc: erc::ErcUi::default(),
             last_frame_time: None,
         }
@@ -503,6 +507,7 @@ impl ViamindApp {
         self.copper_dialog(ui);
         self.route_dialog(ui);
         self.drc_window(ui);
+        self.unrouted_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);
         self.fabrication_inspection_window(ui);
@@ -686,6 +691,10 @@ impl ViamindApp {
             }
             if self.design.is_some() {
                 ui.menu_button("Inspect", |ui| {
+                    if ui.button("Unrouted nets…").clicked() {
+                        self.begin_unrouted_nets();
+                        ui.close();
+                    }
                     if ui.button("Electrical rule check…").clicked() {
                         self.begin_erc();
                         ui.close();
