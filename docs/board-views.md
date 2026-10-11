@@ -48,7 +48,7 @@ U+FFFD and reported. Views contain no external resources or executable content.
 Legacy graphical footprint previews are omitted and counted. No pads are
 inferred from a footprint name. Schematics, inner copper and pours are excluded.
 This is an inspection view, without electrical or fabrication certification.
-Board PNG and SVG are supported; schematic views remain separate work.
+Board PNG and SVG are supported; selected-sheet schematic SVG/PNG have [separate options and text styling](schematic-views.md).
 
 ## PNG rendering limits
 
@@ -56,8 +56,8 @@ PNG uses the same geometry builder with a private crop-relative coordinate origi
 response regions retain absolute model coordinates. This preserves small features
 near distant model origins. Extreme zooms reject if intersecting geometry bounds
 exceed a conservative 1/8-pixel float precision budget; zoom out or hide the large
-layer. Geometry is rasterized by pinned resvg with text/fonts and external image
-loading disabled. PNG is static RGBA8 with transparent background, holes, cutouts
+layer. Geometry is rasterized by pinned resvg without loading fonts; external image
+resolution is denied. Schematic views separately load one bundled font. PNG is static RGBA8 with transparent background, holes, cutouts
 and aspect margins. PNG has an additional 4194304-pixel area limit and an 8 MiB
 encoded byte limit. Same inputs are deterministic within the pinned build;
 anti-aliasing can differ between renderer versions.

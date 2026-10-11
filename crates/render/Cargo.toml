@@ -11,6 +11,9 @@ workspace = true
 
 [dependencies]
 resvg.workspace = true
+epaint_default_fonts.workspace = true
+skrifa.workspace = true
+serde_json.workspace = true
 viamind-geom.workspace = true
 viamind-doc.workspace = true
 serde.workspace = true
@@ -20,4 +23,3 @@ tempfile.workspace = true
 [dev-dependencies]
 png.workspace = true
 quick-xml.workspace = true
-serde_json.workspace = true

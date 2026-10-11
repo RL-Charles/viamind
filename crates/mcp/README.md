@@ -505,3 +505,7 @@ and unchecked. No push/shove, obstacle avoidance, automatic pad attachment,
 routing vias or electrical continuity verification is implemented. Ratsnest
 connection guides remain conservative pad-only estimates. See the
 [routing behavior and limits](../../docs/specs/interactive-polyline-routing.md).
+
+## Selected-sheet schematic views
+
+`render_schematic_view` and `render_schematic_png` require a `sheet` UUID and accept optional `options`, exact `expected_cursor` and NEW `path`. Options select `wires`, `symbols`, `pins`, `junctions`, `labels`, integer-nm region/padding and pixel viewport. The immutable capture copies only bounded selected-sheet content; unrelated board/sheets are excluded. SVG contains bundled Hack glyph outlines, semantic text and IDs, with a pixel viewBox and declared absolute region mapping. PNG returns an actual image content block plus metadata/source cursor. No system fonts or external resources; unsupported visible glyphs fail explicitly. Two shared schematic jobs per registry; max 4194304 pixels, 16 MiB SVG, 8 MiB PNG. Existing/native destinations are protected. No hierarchy/custom artwork/electrical certification. See [schematic view usage and limits](../../docs/schematic-views.md).

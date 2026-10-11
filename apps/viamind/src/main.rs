@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
             println!("viamind {}", env!("CARGO_PKG_VERSION"));
             return Ok(());
         }
-        cli::Invocation::Run(options) => options,
+        cli::Invocation::Run(options) => *options,
     };
     if options.demo {
         return viamind_ui_egui::run().map_err(|e| anyhow::anyhow!("{e}"));
@@ -27,6 +27,21 @@ fn main() -> anyhow::Result<()> {
         Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
         None => EngineHandle::new(Project::new("Untitled")),
     };
+    if options.export_schematic_svg || options.export_schematic_png {
+        let sheet = options.sheet.expect("validated sheet");
+        let snapshot = engine.read(|p| viamind_render::schematic_view_snapshot(p, sheet))?;
+        let output = options.output.as_deref().expect("validated output");
+        let native = engine.document_status().path;
+        let path = if options.export_schematic_png {
+            let rendered = viamind_render::schematic_png(&snapshot, &options.schematic_options)?;
+            viamind_render::write_png(&rendered.png, output, native.as_deref())?
+        } else {
+            let rendered = viamind_render::schematic_svg(&snapshot, &options.schematic_options)?;
+            viamind_render::write_svg(&rendered.svg, output, native.as_deref())?
+        };
+        eprintln!("Exported schematic sheet {sheet} to {}", path.display());
+        return Ok(());
+    }
     if options.export_gerber {
         let snapshot = engine.session_state();
         let output = options.output.as_deref().expect("CLI requires fabrication destination");
