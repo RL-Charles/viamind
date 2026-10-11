@@ -1,0 +1,14 @@
+[package]
+name = "viamind-render"
+description = "Viamind canvas rendering of schematics and boards"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+viamind-geom.workspace = true
+viamind-doc.workspace = true

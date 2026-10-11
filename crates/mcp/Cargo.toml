@@ -1,0 +1,13 @@
+[package]
+name = "viamind-mcp"
+description = "Viamind agent harness: MCP server exposing every engine command to agents"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+viamind-engine.workspace = true

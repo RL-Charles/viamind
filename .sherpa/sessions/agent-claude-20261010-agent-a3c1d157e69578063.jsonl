@@ -1,0 +1,2 @@
+{"ts":"2026-10-10T23:57:05Z","actor":"agent:claude","session":"agent-claude-20261010-agent-a3c1d157e69578063","item":"T-0007","type":"claim","from":"ready","to":"in_progress","commit":"48fadc0"}
+{"ts":"2026-10-10T23:57:05Z","actor":"agent:claude","session":"agent-claude-20261010-agent-a3c1d157e69578063","item":"T-0007","type":"log","kind":"decision","message":"Corpus kept as in-repo manifest (corpus/manifest.toml), no separate viamind-corpus GitHub repo; design files fetched on demand into gitignored corpus/cache/, never committed","commit":"48fadc0"}

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/*"]
+members = ["crates/*", "apps/*"]
 
 [workspace.package]
 version = "0.1.0"
@@ -8,7 +8,16 @@ edition = "2024"
 license = "MIT"
 repository = "https://github.com/RL-Charles/viamind"
 
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
 [workspace.dependencies]
-viamind-core = { path = "crates/viamind-core" }
-viamind-schematic = { path = "crates/viamind-schematic" }
-viamind-pcb = { path = "crates/viamind-pcb" }
+viamind-geom = { path = "crates/geom" }
+viamind-doc = { path = "crates/doc" }
+viamind-engine = { path = "crates/engine" }
+viamind-render = { path = "crates/render" }
+viamind-mcp = { path = "crates/mcp" }
+viamind-ui-egui = { path = "crates/ui-egui" }
+viamind-router = { path = "crates/router" }
+viamind-drc = { path = "crates/drc" }
+viamind-fab = { path = "crates/fab" }

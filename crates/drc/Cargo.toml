@@ -1,0 +1,14 @@
+[package]
+name = "viamind-drc"
+description = "Viamind design rule checking"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+viamind-doc.workspace = true
+viamind-geom.workspace = true
