@@ -704,7 +704,7 @@ source cursor. `set_named_net_rules` atomically replaces the map using
 `expected_project`, `expected_cursor` and at most128 distinct rule rows. Each row
 contains exact `net`, integer-Nm `minimum_copper_clearance` (0..100000000) and
 `minimum_track_width` (1..100000000). Empty rows clear the policy; nonempty native
-files require schema8. One undo restores the previous map. The Board menu's
+files require at least schema8 (nonzero via floors require10). One undo restores the previous map. The Board menu's
 **Exact named-net minima** editor uses the same command and exact decimal mm input.
 
 Shared scoped DRC resolves the greater request baseline and both matching net
