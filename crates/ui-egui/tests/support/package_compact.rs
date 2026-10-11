@@ -38,6 +38,17 @@ pub(crate) fn painted_clip(h: &Harness<'_, ViamindApp>, rect: Rect) -> Rect {
                 .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
         })
         .min_by(|a, b| a.area().total_cmp(&b.area()))
+        .or_else(|| {
+            // Radio/selectable controls may paint circles/text rather than an
+            // enclosing rectangle. Their actual paint clips are still authoritative.
+            h.output()
+                .shapes
+                .iter()
+                .filter(|s| s.shape.visual_bounding_rect().intersects(rect))
+                .map(|s| s.clip_rect.intersect(h.ctx.content_rect()))
+                .filter(|clip| clip.intersects(rect))
+                .min_by(|a, b| a.area().total_cmp(&b.area()))
+        })
         .expect("actual painted control shape")
 }
 pub(crate) fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) -> Rect {

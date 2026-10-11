@@ -1,5 +1,6 @@
 #[path = "support/package_compact.rs"]
 mod support;
+use egui_kittest::kittest::Queryable;
 use support::*;
 
 #[test]
@@ -69,7 +70,7 @@ fn actual_compact_author_all_five_units_from_scratch_save_place_and_undo() {
 
 #[test]
 fn actual_libraries_menu_opens_detached_package_editor() {
-    use egui_kittest::{Harness, kittest::Queryable};
+    use egui_kittest::Harness;
     let e = engine();
     let before = e.session_state();
     let status = e.document_status();
