@@ -12,4 +12,4 @@ Public sources: [egui-wgpu callback lifecycle](https://docs.rs/egui-wgpu/0.36.2/
 
 ## Limits
 
-Rebuilding a layer still serializes and uploads its resident geometry, and zoom bucket crossings still tessellate visible tiles. Batching reduces allocation and draw overhead; measured improvement is required before claiming a cadence benefit. Native verification uses the existing single-sample, default-filtering, 1 pixel/point configuration; other DPI/sample/depth configurations remain unverified as in T50. No geometry is hidden to improve timings.
+Rebuilding a layer still serializes and uploads its resident geometry, and zoom bucket crossings still tessellate visible tiles. Batching reduces allocation and draw overhead; measured improvement is required before claiming a cadence benefit. Native verification uses the existing single-sample, default-filtering, 1 pixel/point configuration; other DPI/sample/depth configurations remain unverified as in T50. No geometry is hidden to improve timings. A layer must fit within the device maximum buffer size; extremely large layers need future subdivision.
