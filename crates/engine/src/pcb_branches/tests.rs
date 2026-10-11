@@ -6,6 +6,58 @@ use viamind_geom::{Nm, Point};
 
 // The retained permit is process-wide, so these tests deliberately serialize.
 static TEST_LOCK: Mutex<()> = Mutex::new(());
+
+#[test]
+fn saved_native_status_and_drc_journal_are_unchanged_until_merge_and_selection_stales_merge() {
+    let _lock = TEST_LOCK.lock().unwrap();
+    let e = engine();
+    let id = e.execute("add_part", add("LIVE").input, Origin::User).unwrap().created[0];
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("protected.json");
+    e.save_project(crate::SaveProject { path: Some(path.clone()), overwrite: false }).unwrap();
+    let native = std::fs::read(&path).unwrap();
+    let original = e.session_state();
+    let status = e.document_status();
+    let journal = e.auto_drc_event_state();
+    let actor = BranchActor::agent(1, "native invariant");
+    let b = create(&e, actor.clone());
+    let a = apply(&e, &b, &actor, vec![add("PRIVATE")]).unwrap();
+    diff(&e, &a.branch);
+    board(&e, &a.branch, &actor);
+    assert_eq!(e.session_state(), original);
+    assert_eq!(e.document_status(), status);
+    assert_eq!(e.auto_drc_event_state(), journal);
+    assert_eq!(std::fs::read(&path).unwrap(), native);
+    e.set_selection(crate::SetSelection { ids: vec![id], mode: Default::default() }, Origin::User).unwrap();
+    let selected = e.session_state();
+    assert!(e.merge_pcb_branch(merge(&a.branch), &actor).is_err());
+    assert_eq!(e.session_state(), selected);
+    // Saving the unchanged project never consumes a session cursor.
+    e.discard_pcb_branch(PcbBranchRevision { branch_id: a.branch.branch_id, expected_revision: 1 }, &actor).unwrap();
+    let fresh = create(&e, actor.clone());
+    let fresh = apply(&e, &fresh, &actor, vec![add("PRIVATE")]).unwrap();
+    e.save_project(crate::SaveProject::default()).unwrap();
+    e.merge_pcb_branch(merge(&fresh.branch), &actor).unwrap();
+    assert!(e.document_status().dirty);
+    assert_eq!(std::fs::read(&path).unwrap(), native);
+}
+
+#[test]
+fn per_step_candidate_byte_overflow_refuses_whole_private_batch_without_renewal() {
+    let _lock = TEST_LOCK.lock().unwrap();
+    let mut p = Project::new("x".repeat(DATA_LIMIT - 1024));
+    assert!(budget::project(&p).is_ok());
+    let e = EngineHandle::new(p.clone());
+    let actor = BranchActor::human();
+    let b = create(&e, actor.clone());
+    let mut command = add("U1");
+    command.input["value"] = json!("x".repeat(2048));
+    assert!(apply(&e, &b, &actor, vec![command]).is_err());
+    assert!(board(&e, &b, &actor).parts.is_empty());
+    assert_eq!(e.list_pcb_branches()[0].revision, 0);
+    assert_eq!(e.read(Clone::clone), p);
+    p.name.clear();
+}
 fn engine() -> EngineHandle {
     EngineHandle::new(Project::new("branch contracts"))
 }

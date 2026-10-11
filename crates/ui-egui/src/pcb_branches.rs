@@ -22,6 +22,8 @@ pub struct PcbBranchesUi {
     shown: bool,
     selected: Option<ObjectId>,
     branches: Vec<PcbBranchInfo>,
+    observed_stream: Option<ObjectId>,
+    controls: Vec<(egui::Rect, egui::Rect)>,
     cached: Option<GhostCache>,
     message: Option<String>,
 }
@@ -38,7 +40,16 @@ impl PcbBranchesUi {
     pub fn ghost_items(&self) -> usize {
         self.cached.as_ref().map_or(0, |cache| cache.items.len())
     }
+    /// Actual current-pass review response bounds and their effective paint clips.
+    pub fn control_rects(&self) -> &[(egui::Rect, egui::Rect)] {
+        &self.controls
+    }
     fn refresh(&mut self, engine: &EngineHandle) {
+        let current = engine.event_cursor();
+        if self.observed_stream.is_some_and(|stream| stream != current.stream_id) {
+            self.clear();
+        }
+        self.observed_stream = Some(current.stream_id);
         match UiAction::ListPcbBranches.run(engine, json!({})).and_then(|v| {
             serde_json::from_value(v).map_err(|e| viamind_engine::EngineError::InvalidInput { command: "pcb_branch".into(), message: e.to_string() })
         }) {
@@ -50,9 +61,9 @@ impl PcbBranchesUi {
                 self.clear();
                 return;
             };
-            if info.source_cursor.stream_id != engine.event_cursor().stream_id || info.project_id != engine.read(|p| p.id) {
-                self.clear();
-                return;
+            let foreign = info.source_cursor.stream_id != current.stream_id || info.project_id != engine.read(|p| p.id);
+            if foreign {
+                self.shown = false;
             }
             if self.cached.as_ref().is_some_and(|cache| cache.id == id && cache.revision == info.revision) {
                 return;
@@ -61,7 +72,12 @@ impl PcbBranchesUi {
                 Ok(value) => match serde_json::from_value::<PcbBranchDiff>(value) {
                     Ok(diff) => {
                         let details = details(&diff.deltas);
-                        self.cached = Some(GhostCache { id, revision: diff.branch.revision, items: ghosts(diff.deltas), details });
+                        self.cached = Some(GhostCache {
+                            id,
+                            revision: diff.branch.revision,
+                            items: if foreign { Vec::new() } else { ghosts(diff.deltas) },
+                            details,
+                        });
                     }
                     Err(error) => {
                         self.cached = None;
@@ -241,6 +257,7 @@ impl ViamindApp {
         }
     }
     pub(crate) fn pcb_branches_window(&mut self, ui: &mut Ui) {
+        self.pcb_branches.controls.clear();
         if !self.pcb_branches.open || self.branch_incompatible() || self.schematic.active {
             return;
         }
@@ -265,9 +282,15 @@ impl ViamindApp {
                     ui.label(format!("Source: {} / {}",b.project_id,b.source_cursor.sequence));
                     ui.label(format!("{} · {} · {} seconds left",if b.stale {"Stale"} else {"Current"},if b.busy {"Busy"} else {"Ready"},b.remaining_ms/1000));
                     ui.horizontal_wrapped(|ui| {
-                        if ui.button("Inspect diff").clicked() { inspect=Some(b.branch_id); }
-                        if ui.add_enabled(!b.stale && !b.busy && b.changed_objects>0,egui::Button::new("Merge branch")).clicked() {action=Some((UiAction::MergePcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision,"expected_project":b.project_id,"expected_cursor":b.source_cursor})));}
-                        if ui.add_enabled(!b.busy,egui::Button::new("Discard branch")).clicked() {action=Some((UiAction::DiscardPcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision})));}
+                        let response=ui.button("Inspect diff");
+                        self.pcb_branches.controls.push((response.rect,ui.clip_rect()));
+                        if response.clicked() { inspect=Some(b.branch_id); }
+                        let response=ui.add_enabled(!b.stale && !b.busy && b.changed_objects>0,egui::Button::new("Merge branch"));
+                        self.pcb_branches.controls.push((response.rect,ui.clip_rect()));
+                        if response.clicked() {action=Some((UiAction::MergePcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision,"expected_project":b.project_id,"expected_cursor":b.source_cursor})));}
+                        let response=ui.add_enabled(!b.busy,egui::Button::new("Discard branch"));
+                        self.pcb_branches.controls.push((response.rect,ui.clip_rect()));
+                        if response.clicked() {action=Some((UiAction::DiscardPcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision})));}
                     });
                 }
                 if self.pcb_branches.selected.is_some() { ui.checkbox(&mut self.pcb_branches.shown,"Show branch diff"); }
