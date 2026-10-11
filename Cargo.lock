@@ -4631,6 +4631,7 @@ name = "viamind-engine"
 version = "0.1.0"
 dependencies = [
  "proptest",
+ "rustix 1.1.5",
  "schemars",
  "serde",
  "serde_json",
