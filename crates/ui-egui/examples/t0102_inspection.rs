@@ -100,11 +100,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let status = engine.document_status();
     let mut app = ViamindApp::with_design(engine.clone(), None);
     app.begin_symbol_library();
-    let mut h = Harness::builder().with_size(egui::vec2(width, height)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    let parsed_source = viamind_doc::symbol_library::load(std::path::Path::new(&source))?;
+    println!("{}", serde_json::json!({"independently_loaded_source":parsed_source.name,"preparation_viewport":[1600,1200]}));
+    let mut h = Harness::builder().with_size(egui::vec2(1600.0, 1200.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     wait(&mut h, "Target: Power regulator");
-    input(&mut h, "Symbol library file path", &source);
-    click(&mut h, "Load symbol template");
-    wait(&mut h, "Loaded Original regulator");
     click(&mut h, "New detached definition");
     click(&mut h, "Add definition pin");
     input(&mut h, "Definition name", "Original stable symbol fields");
@@ -113,21 +112,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     input(&mut h, "Pin 2 Y (mm)", "-2.000007");
     let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
     let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
-    // Virtualized overscan nodes can exist outside the inner clip. Return the
-    // actual pin viewport to its top before targeting the first row's button.
-    h.get_by_label("Pin 2 name").scroll_to_me();
+    h.get_by_label("Remove pin 1").scroll_to_me();
     h.run_steps(6);
-    h.get_by_label("Pin 2 name").focus();
-    h.run_steps(5);
-    h.hover_at(h.get_by_label("Pin 2 name").rect().center());
-    h.run_steps(2);
-    h.event(egui::Event::MouseWheel {
-        unit: egui::MouseWheelUnit::Point,
-        phase: egui::TouchPhase::Move,
-        delta: egui::vec2(0.0, 4000.0),
-        modifiers: egui::Modifiers::NONE,
-    });
-    h.run_steps(8);
+    let button = h.get_by_label("Remove pin 1").rect();
+    let clip = h
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| {
+            let bounds = shape.shape.visual_bounding_rect();
+            (bounds.contains(button.center()) && bounds.width() <= button.width() + 8.0 && bounds.height() <= button.height() + 8.0)
+                .then_some(shape.clip_rect)
+        })
+        .min_by(|a, b| a.area().total_cmp(&b.area()))
+        .expect("painted Remove button shape");
+    println!(
+        "{}",
+        serde_json::json!({"remove_button":[button.min.x,button.min.y,button.max.x,button.max.y],"inner_paint_clip":[clip.min.x,clip.min.y,clip.max.x,clip.max.y]})
+    );
+    assert!(clip.contains(button.center()), "Remove center must be inside its actual paint clip");
     click(&mut h, "Remove pin 1");
     assert!(h.query_by_label("1 / 1024 ordered pins").is_some(), "actual Remove must reduce two pins to one");
     for (i, field) in fields.iter().enumerate() {
@@ -136,6 +139,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     click(&mut h, "Pin 1 electrical type");
     click(&mut h, "Input");
     input(&mut h, "NEW definition file path", &output);
+    h.set_size(egui::vec2(width, height));
+    h.run_steps(8);
     if height >= 800.0 {
         let id = egui::Id::new(Some(std::borrow::Cow::Borrowed("Native symbol library")));
         let window = h.ctx.memory(|m| m.area_rect(id)).unwrap();
