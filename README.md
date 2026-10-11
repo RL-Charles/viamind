@@ -251,3 +251,5 @@ Agents can read the same UUID mapping and exact positions through
 `query_linked_components`. See [usage and limits](docs/component-cross-probing.md).
 
 Create linked PCB components from explicit schematic symbols and native footprints: [workflow](docs/schematic-component-creation.md), [verification](docs/schematic-component-creation-verification.md).
+
+Desktop inspection images: [export board or selected-sheet SVG/PNG](docs/desktop-view-export.md).

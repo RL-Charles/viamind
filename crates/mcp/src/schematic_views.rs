@@ -1,24 +1,12 @@
 //! Selected-sheet inspection views share bounded capture and trusted image responses.
 use crate::{RegistryError, ToolError, ToolRegistry};
 use base64::Engine as _;
-use schemars::JsonSchema;
-use serde::Deserialize;
 use serde_json::json;
 use std::{path::PathBuf, sync::Arc};
 use viamind_doc::ObjectId;
 use viamind_engine::{EngineHandle, EventCursor};
-use viamind_render::{SchematicSnapshot, SchematicViewOptions};
-#[derive(Deserialize, JsonSchema)]
-#[serde(deny_unknown_fields)]
-struct Input {
-    sheet: ObjectId,
-    #[serde(default)]
-    options: SchematicViewOptions,
-    #[serde(default)]
-    path: Option<PathBuf>,
-    #[serde(default)]
-    expected_cursor: Option<EventCursor>,
-}
+use viamind_render::SchematicSnapshot;
+type Input = viamind_render::SchematicViewRequest<EventCursor>;
 fn capture(
     engine: &EngineHandle,
     sheet: ObjectId,

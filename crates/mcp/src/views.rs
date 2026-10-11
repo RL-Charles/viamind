@@ -1,22 +1,9 @@
 //! Read-only, cursor-guarded board SVG snapshot tool.
 use crate::{RegistryError, ToolError, ToolRegistry};
-use schemars::JsonSchema;
-use serde::Deserialize;
 use serde_json::json;
 use std::path::PathBuf;
 use viamind_engine::{EngineHandle, EventCursor};
-use viamind_render::SvgOptions;
-#[derive(Deserialize, JsonSchema)]
-#[serde(deny_unknown_fields)]
-struct Input {
-    #[serde(default)]
-    options: SvgOptions,
-    /// Optional NEW file destination; existing destinations are always preserved.
-    #[serde(default)]
-    path: Option<PathBuf>,
-    #[serde(default)]
-    expected_cursor: Option<EventCursor>,
-}
+type Input = viamind_render::BoardViewRequest<EventCursor>;
 /// Capture only bounded board content under the same lock as cursor/native path.
 pub(crate) fn capture_board(
     engine: &EngineHandle,

@@ -31,6 +31,7 @@ pub mod scene;
 pub mod schematic;
 pub mod schematic_component;
 pub mod selection;
+pub mod view_export;
 
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
@@ -138,6 +139,7 @@ pub struct ViamindApp {
     pub selection: selection::Selection,
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
+    pub view_export: view_export::ViewExportUi,
     pub fabrication: fabrication::FabricationUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
@@ -180,6 +182,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: None,
+            view_export: view_export::ViewExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -214,6 +217,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
+            view_export: view_export::ViewExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -382,6 +386,7 @@ impl ViamindApp {
         self.drc_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);
+        self.view_export_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -450,6 +455,10 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    if ui.button("Export rendered view…").clicked() {
+                        self.begin_view_export();
+                        ui.close();
+                    }
                     if ui.add(egui::Button::new("Save").shortcut_text(ui.ctx().format_shortcut(&files::SAVE))).clicked() {
                         self.save_design();
                         ui.close();

@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "checks": [
+    "production --help works without display",
+    "production --version works without display",
+    "production board svg export succeeds",
+    "board SVG independently parses viewport",
+    "production board svg collision preserves exact bytes",
+    "production board png export succeeds",
+    "board PNG independently decodes RGBA at requested default size",
+    "production board png collision preserves exact bytes",
+    "production schematic svg export succeeds",
+    "schematic SVG independently parses viewport",
+    "production schematic svg collision preserves exact bytes",
+    "production schematic png export succeeds",
+    "schematic PNG independently decodes RGBA at requested default size",
+    "production schematic png collision preserves exact bytes",
+    "production exports preserve native file"
+  ],
+  "binary": "/tmp/viamind-t0071-verified",
+  "binary_sha256": "17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be",
+  "source_head": "e5c1144fa91b904ddd0ba210c53ac202a1bfaf8c",
+  "outputs": {
+    "board_svg": {
+      "path": "/tmp/viamind-t0071-cli-board.svg",
+      "sha256": "420325a580caf6088ee3d12e4b1110386968ff67c69cc4692311a4bf18a6354f",
+      "bytes": 3747
+    },
+    "board_png": {
+      "path": "/tmp/viamind-t0071-cli-board.png",
+      "sha256": "93b52972eb37d8453c99047f13d5e14ccdf376895049b0342415676ae20be4a6",
+      "bytes": 21412
+    },
+    "schematic_svg": {
+      "path": "/tmp/viamind-t0071-cli-schematic.svg",
+      "sha256": "460ab7e50adfbbc035935db174d296fb6c3b24d81409924a9b137a6247ef5e74",
+      "bytes": 32792
+    },
+    "schematic_png": {
+      "path": "/tmp/viamind-t0071-cli-schematic.png",
+      "sha256": "0b833b8bc477dc1a8179941d2645aaa25ae263a9dcec6003d816bcd069c28fc8",
+      "bytes": 30995
+    }
+  }
+}
