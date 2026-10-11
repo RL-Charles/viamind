@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "utc": "2026-10-11T17:31:39.800945+00:00",
+  "endpoint": "http://127.0.0.1:7939/mcp",
+  "scope": "Independent fresh initialized two-client read-only observations and invalid watch boundaries; no deliberate design/configuration/file mutations.",
+  "actual_tools": 90,
+  "same_complete_session_and_status": true,
+  "same_atomic_status_cursor": true,
+  "empty_timeout_preserves_baseline": true,
+  "invalid_bounds_and_future_cursor_refusals": 4,
+  "controller_unchanged": true
+}

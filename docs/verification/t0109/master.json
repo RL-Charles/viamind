@@ -28,7 +28,20 @@
   },
   "native_scope": "Cua launched actual retained production and fresh1568x980 screenshot viewed. Degraded AX metadata; screenshot shows owned empty document only, no DRC checked-state or new UI action claim. Backend observations have actual production transport provenance, deterministic race scheduling has separate engine tests.",
   "integration": {
-    "state": "pending exact final T108 predecessor; one combined scoped gate and exact-head CI required"
+    "state": "combined gate passed; independent final review and fresh exact-head CI required before merge",
+    "source": "1bd2221d98ec49b5c48f58d177386220817966ef",
+    "stack_base": "67173d990df3502ecefd944a1bb858f70d5a6da9",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0109/combined-1bd2221d98ec",
+    "sha256": "349165202a61584c492e53b0ca13db7d0c3fd24a9f0c192b3589239376e6e268",
+    "focused_tests_passed": 21,
+    "fmt": true,
+    "strict_alltarget_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tools": 93,
+    "exact_catalog_drift": true,
+    "isolated_workflow_checks": 18,
+    "tooling_tests": 13,
+    "own_six_commits_range_diff": "all equal; originalc58193c..523bb92 vs67173d9..1bd2221"
   },
   "artifacts": {
     "agent-workflow.json": {
@@ -90,6 +103,39 @@
     "stdio-proof.json": {
       "bytes": 2183,
       "sha256": "24962de20de7a5ae191a8814a3fac1971dfc6e796baad182d03a3bb0a37cd7d2"
+    },
+    "combined.sh": {
+      "bytes": 1948,
+      "sha256": "abf9da11dbe1651df7ca790a4c8938dd3e3e28ced495253585ce16b0e8214aff"
+    },
+    "combined.log": {
+      "bytes": 7161,
+      "sha256": "a8bdacad94ae673676077a33f619d6a17ade150a81695035931c039310501221"
+    },
+    "combined-catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "a7e18d2e14225b643ad5f8001e0829bb98c4602b9210aeac4ed0c6127f434c3b"
+    },
+    "combined-catalog-drift.json": {
+      "bytes": 367,
+      "sha256": "a7e18d2e14225b643ad5f8001e0829bb98c4602b9210aeac4ed0c6127f434c3b"
+    },
+    "combined-workflow.json": {
+      "bytes": 1264,
+      "sha256": "07556047d03016782ffaee3b5418c0ce024dc4461364e60338d01a20e8c51cd7"
+    },
+    "independent-production-proof.json": {
+      "bytes": 2199,
+      "sha256": "aec179afa085292b8bfdd752f719fb20a54c4f7f4250e75391ae0b8de7d5e746"
+    },
+    "independent-observations.json": {
+      "bytes": 497,
+      "sha256": "bf77eb2be011f8cd47c000f67e193404e6c6dab147b1ab78714404251fabe36d"
     }
+  },
+  "independent_review": {
+    "manufacturing": "all15 original hashes and live executable identity PASS; actual27-check production rerun PASS",
+    "outline": "actual two-client readonly observation/cursor/error/session invariance PASS",
+    "scope": "Historical retained production source b832; final combined integration source1bd; no repeated native/full gate attributed to combined source."
   }
 }

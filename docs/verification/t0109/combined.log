@@ -1,0 +1,102 @@
+Sun Oct 11 17:35:54 UTC 2026
+1bd2221d98ec49b5c48f58d177386220817966ef
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.97s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.46s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 11 tests
+test auto_drc_events::tests::retention_boundary_paging_and_utf8_messages_are_exact ... ok
+test auto_drc::tests::config_and_project_replacement_supersede_running_snapshot ... ok
+test auto_drc::tests::blocked_worker_does_not_block_edits_coalesces_and_rejects_old_result ... ok
+test auto_drc::tests::last_handle_drop_stops_worker_without_retaining_engine ... ok
+test auto_drc::tests::spawn_failure_records_and_wakes_without_touching_document ... ok
+test auto_drc::tests::selection_during_blocked_check_keeps_original_capture_cursor ... ok
+test auto_drc::tests::bounded_snapshot_skips_without_all_clear_and_can_recover ... ok
+test auto_drc::tests::worker_snapshot_excludes_invalid_unused_sourcing ... ok
+test auto_drc::tests::disable_and_invalid_config_are_atomic_and_read_only_selection_does_not_rerun ... ok
+test auto_drc::tests::disabled_running_generation_cannot_publish_and_checker_failure_can_recover ... ok
+test auto_drc::tests::independent_observers_timeout_and_selection_keep_document_guards ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 0.03s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.30s
+     Running tests/auto_drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc-65bf3880d7d6cf6a)
+
+running 3 tests
+test via_policy_edit_and_undo_refresh_exact_automatic_sources_and_geometry ... ok
+test named_policy_edit_and_undo_refresh_captured_automatic_checker_sources ... ok
+test moderate_board_worker_timing_and_undo_redo_refresh_are_measured ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.71s
+     Running tests/auto_drc_events.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc_events-5fcfaeae5f30b13d)
+
+running 2 tests
+test actual_read_only_observers_report_exact_retention_and_refuse_configuration ... ok
+test actual_http_observers_resume_page_and_follow_peer_undo_and_same_uuid_reopen ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-2d70ff680f176173)
+
+running 2 tests
+test automatic_drc_configuration_and_edit_refresh_are_shared_between_http_clients ... ok
+test batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edits ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/read_only.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-67467d205ede723a)
+
+running 3 tests
+test restriction_survives_clones_and_every_default_registration_without_running_handlers ... ok
+test mixed_view_refuses_every_path_before_handler_and_preserves_live_definition ... ok
+test two_http_observers_preserve_native_and_session_and_follow_undoable_human_edits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0109/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 21.82s
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.444s
+
+OK
+Verified 93 full-application tools (2025-03-26)
+Verified 93 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+349165202a61584c492e53b0ca13db7d0c3fd24a9f0c192b3589239376e6e268  /home/charlesmowbray/.cache/viamind/native-artifacts/t0109/combined-1bd2221d98ec
+Sun Oct 11 17:37:12 UTC 2026
