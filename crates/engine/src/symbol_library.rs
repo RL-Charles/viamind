@@ -127,12 +127,14 @@ impl Command for PlaceSymbolTemplate {
 }
 
 impl EngineHandle {
-    /// Save a detached definition; file work never holds the design mutex.
+    /// Stage outside locks; publish under the current native-file lifecycle guard.
     pub fn save_symbol_template(&self, input: SaveSymbolTemplate) -> Result<SymbolTemplateSaveResult, EngineError> {
-        input.template.validate().map_err(|message| EngineError::File { message })?;
-        let native = self.document_status().path;
-        let path = viamind_doc::symbol_library::save_new(&input.template, &input.path, native.as_deref())
-            .map_err(|message| EngineError::File { message })?;
+        self.save_symbol_before_publish(input, || {})
+    }
+    fn save_symbol_before_publish(&self, input: SaveSymbolTemplate, before_publish: impl FnOnce()) -> Result<SymbolTemplateSaveResult, EngineError> {
+        let staged = viamind_doc::symbol_library::stage_new(&input.template, &input.path).map_err(|message| EngineError::File { message })?;
+        before_publish();
+        let path = self.with_native_file_guard(|native| staged.publish(native)).map_err(|message| EngineError::File { message })?;
         Ok(SymbolTemplateSaveResult { path, name: input.template.name, pin_count: input.template.pins.len() })
     }
     pub fn snapshot_symbol_sheet(&self, input: &SymbolSheetQuery) -> Result<SymbolSheetSnapshot, CommandError> {
@@ -155,7 +157,14 @@ impl EngineHandle {
     }
     /// Capture only one bounded symbol definition; never clone a project or sheet.
     pub fn export_symbol_template(&self, input: ExportSymbolTemplate) -> Result<SymbolTemplateExportResult, EngineError> {
-        let (template, native) = self.with_engine(|engine| {
+        self.export_symbol_before_publish(input, || {})
+    }
+    fn export_symbol_before_publish(
+        &self,
+        input: ExportSymbolTemplate,
+        before_publish: impl FnOnce(),
+    ) -> Result<SymbolTemplateExportResult, EngineError> {
+        let template = self.with_engine(|engine| {
             let project = engine.project();
             if project.id.as_uuid().is_nil() || project.id != input.expected_project || engine.event_cursor() != input.source_cursor {
                 return Err(EngineError::InvalidInput {
@@ -176,12 +185,145 @@ impl EngineHandle {
                 .filter(|s| s.id == input.symbol_id && !s.id.as_uuid().is_nil())
                 .ok_or_else(|| EngineError::File { message: "source symbol no longer exists".into() })?;
             let template = SymbolTemplate::from_symbol(&input.name, symbol).map_err(|message| EngineError::File { message })?;
-            Ok((template, engine.document_status().path))
+            Ok(template)
         })?;
         let pin_count = template.pins.len();
         let name = template.name.clone();
-        let path =
-            viamind_doc::symbol_library::save_new(&template, &input.path, native.as_deref()).map_err(|message| EngineError::File { message })?;
+        let staged = viamind_doc::symbol_library::stage_new(&template, &input.path).map_err(|message| EngineError::File { message })?;
+        before_publish();
+        let path = self.with_native_file_guard(|native| staged.publish(native)).map_err(|message| EngineError::File { message })?;
         Ok(SymbolTemplateExportResult { path, exported_cursor: input.source_cursor, name, pin_count })
+    }
+}
+
+#[cfg(test)]
+mod publication_tests {
+    use super::*;
+    use crate::{OpenProject, Origin, SaveProject};
+    use viamind_doc::{file, symbol_library::load};
+
+    fn fixture() -> EngineHandle {
+        EngineHandle::new(file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap())
+    }
+    fn export_input(engine: &EngineHandle, path: PathBuf) -> ExportSymbolTemplate {
+        engine.with_engine(|e| {
+            let sheet = e.project().schematic.sheets.values().next().unwrap();
+            let symbol = sheet.content.as_ref().unwrap().symbols.values().find(|s| s.designator == "U1").unwrap();
+            ExportSymbolTemplate {
+                expected_project: e.project().id,
+                source_cursor: e.event_cursor(),
+                sheet_id: sheet.id,
+                symbol_id: symbol.id,
+                name: "Exact regulator".into(),
+                path,
+            }
+        })
+    }
+    fn definition(engine: &EngineHandle, input: &ExportSymbolTemplate) -> SymbolTemplate {
+        engine.read(|p| {
+            SymbolTemplate::from_symbol(&input.name, &p.schematic.sheets[&input.sheet_id].content.as_ref().unwrap().symbols[&input.symbol_id])
+                .unwrap()
+        })
+    }
+
+    #[test]
+    fn both_symbol_writers_protect_latest_peer_saved_and_opened_native_path() {
+        for exporting in [false, true] {
+            for opening in [false, true] {
+                let directory = tempfile::tempdir().unwrap();
+                let path = directory.path().join("became-native.json");
+                let engine = fixture();
+                let input = export_input(&engine, path.clone());
+                let template = definition(&engine, &input);
+                let peer = engine.clone();
+                let mut after = None;
+                let before_publish = || {
+                    if opening {
+                        file::save_new(&viamind_doc::Project::new("Peer opened native"), &path).unwrap();
+                        peer.open_project(
+                            OpenProject { path: path.clone(), discard_dirty: true, expected_cursor: Some(peer.event_cursor()) },
+                            Origin::agent("peer"),
+                        )
+                        .unwrap();
+                    } else {
+                        peer.save_project(SaveProject { path: Some(path.clone()), overwrite: false }).unwrap();
+                    }
+                    after = Some((peer.session_state(), peer.document_status(), std::fs::read(&path).unwrap()));
+                };
+                let error = if exporting {
+                    engine.export_symbol_before_publish(input, before_publish).unwrap_err()
+                } else {
+                    engine.save_symbol_before_publish(SaveSymbolTemplate { template, path: path.clone() }, before_publish).unwrap_err()
+                };
+                assert!(error.to_string().contains("active native"), "latest path guard must precede generic collision: {error}");
+                let (session, status, bytes) = after.unwrap();
+                assert_eq!(engine.session_state(), session);
+                assert_eq!(engine.document_status(), status);
+                assert_eq!(std::fs::read(path).unwrap(), bytes);
+                assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1, "private stage cleaned");
+            }
+        }
+    }
+
+    #[test]
+    fn both_writers_preserve_a_racing_destination_and_full_dirty_session() {
+        for exporting in [false, true] {
+            let directory = tempfile::tempdir().unwrap();
+            let path = directory.path().join("racing.json");
+            let engine = fixture();
+            engine
+                .execute("add_part", serde_json::json!({"designator":"KEEP1","value":"dirty","footprint":"F","x_mm":1,"y_mm":2}), Origin::User)
+                .unwrap();
+            let before = engine.session_state();
+            let status = engine.document_status();
+            let input = export_input(&engine, path.clone());
+            let template = definition(&engine, &input);
+            let racing = || std::fs::write(&path, b"racing destination bytes").unwrap();
+            if exporting {
+                assert!(engine.export_symbol_before_publish(input, racing).is_err());
+            } else {
+                assert!(engine.save_symbol_before_publish(SaveSymbolTemplate { template, path: path.clone() }, racing).is_err());
+            }
+            assert_eq!(engine.session_state(), before);
+            assert_eq!(engine.document_status(), status);
+            assert_eq!(std::fs::read(path).unwrap(), b"racing destination bytes");
+            assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        }
+    }
+
+    #[test]
+    fn ordinary_peer_edits_during_staging_remain_live_and_export_retains_capture_cursor() {
+        for exporting in [false, true] {
+            let directory = tempfile::tempdir().unwrap();
+            let path = directory.path().join("valid.json");
+            let engine = fixture();
+            let input = export_input(&engine, path.clone());
+            let captured_cursor = input.source_cursor;
+            let template = definition(&engine, &input);
+            let expected_bytes = viamind_doc::symbol_library::to_vec(&template).unwrap();
+            let mut after = None;
+            let edit = || {
+                engine
+                    .execute(
+                        "add_part",
+                        serde_json::json!({"designator":"PEER1","value":"keep","footprint":"F","x_mm":3,"y_mm":4}),
+                        Origin::agent("peer"),
+                    )
+                    .unwrap();
+                after = Some((engine.session_state(), engine.document_status()));
+            };
+            if exporting {
+                assert_eq!(engine.export_symbol_before_publish(input, edit).unwrap().exported_cursor, captured_cursor);
+            } else {
+                engine.save_symbol_before_publish(SaveSymbolTemplate { template: template.clone(), path: path.clone() }, edit).unwrap();
+            }
+            let (session, status) = after.unwrap();
+            assert_eq!(engine.session_state(), session);
+            assert_eq!(engine.document_status(), status);
+            assert_ne!(session.cursor, captured_cursor);
+            assert_eq!(std::fs::read(&path).unwrap(), expected_bytes);
+            assert_eq!(load(&path).unwrap(), template);
+            assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        }
     }
 }

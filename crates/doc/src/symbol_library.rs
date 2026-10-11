@@ -236,21 +236,103 @@ mod regular_file_tests {
         assert!(super::load(&path).unwrap_err().contains("regular file"));
     }
 }
-/// Publish a new library entry atomically; never replace an existing file.
-pub fn save_new(template: &SymbolTemplate, path: &Path, native: Option<&Path>) -> Result<PathBuf, String> {
+/// Bounded synchronized symbol bytes awaiting NEW publication.
+pub struct StagedSymbolFile {
+    temporary: tempfile::NamedTempFile,
+    path: PathBuf,
+}
+impl StagedSymbolFile {
+    /// Publish without replacing an existing destination, protecting the current native path.
+    pub fn publish(self, native: Option<&Path>) -> Result<PathBuf, String> {
+        if let Some(native) = native {
+            let native = native.canonicalize().unwrap_or_else(|_| native.to_owned());
+            if self.path == native || self.path.canonicalize().is_ok_and(|p| p == native) {
+                return Err("cannot replace the active native project with a symbol template".into());
+            }
+        }
+        self.temporary.persist_noclobber(&self.path).map_err(|e| format!("{}: {}", self.path.display(), e.error))?;
+        Ok(self.path)
+    }
+}
+
+/// Validate, serialize and synchronize a private sibling without publishing the destination.
+pub fn stage_new(template: &SymbolTemplate, path: &Path) -> Result<StagedSymbolFile, String> {
     check_path(path)?;
     let parent = path.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new(".")).canonicalize().map_err(|e| e.to_string())?;
     let target = parent.join(path.file_name().ok_or("choose a symbol file name")?);
-    if let Some(native) = native {
-        let native = native.canonicalize().unwrap_or_else(|_| native.to_owned());
-        if target == native || target.canonicalize().is_ok_and(|p| p == native) {
-            return Err("cannot replace the active native project with a symbol template".into());
-        }
+    if target.as_os_str().as_encoded_bytes().len() > 4096 {
+        return Err("resolved symbol path exceeds 4096 encoded bytes".into());
     }
     let bytes = to_vec(template)?;
     let mut temporary = tempfile::NamedTempFile::new_in(parent).map_err(|e| e.to_string())?;
     temporary.write_all(&bytes).map_err(|e| e.to_string())?;
     temporary.as_file().sync_all().map_err(|e| e.to_string())?;
-    temporary.persist_noclobber(&target).map_err(|e| format!("{}: {}", target.display(), e.error))?;
-    Ok(target)
+    Ok(StagedSymbolFile { temporary, path: target })
+}
+
+/// Publish only a NEW library entry. Engine callers supply the current native lifecycle guard.
+pub fn save_new(template: &SymbolTemplate, path: &Path, native: Option<&Path>) -> Result<PathBuf, String> {
+    stage_new(template, path)?.publish(native)
+}
+
+#[cfg(test)]
+mod publication_tests {
+    use super::*;
+    fn template() -> SymbolTemplate {
+        SymbolTemplate {
+            name: "Original odd geometry".into(),
+            value: "Exact".into(),
+            footprint: None,
+            width: Nm(1_000_001),
+            height: Nm(2_000_003),
+            pins: vec![TemplatePin {
+                number: "1".into(),
+                name: "IN".into(),
+                position: Coordinate { x: Nm(3), y: Nm(-5) },
+                electrical: PinType::Input,
+            }],
+        }
+    }
+    #[test]
+    fn private_staging_exact_publication_drop_and_conflicts_preserve_destinations() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("definition.json");
+        let definition = template();
+        let staged = stage_new(&definition, &path).unwrap();
+        assert!(!path.exists());
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        drop(staged);
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
+        let staged = stage_new(&definition, &path).unwrap();
+        assert!(staged.publish(Some(&path)).unwrap_err().contains("active native"));
+        assert!(!path.exists());
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
+        let staged = stage_new(&definition, &path).unwrap();
+        assert_eq!(staged.publish(None).unwrap(), path);
+        assert_eq!(std::fs::read(&path).unwrap(), to_vec(&definition).unwrap());
+        assert_eq!(load(&path).unwrap(), definition);
+        assert!(save_new(&definition, &path, None).is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), to_vec(&definition).unwrap());
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+    }
+    #[test]
+    fn destination_created_after_stage_and_symlink_alias_are_never_replaced() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("racing.json");
+        let staged = stage_new(&template(), &path).unwrap();
+        std::fs::write(&path, b"peer bytes").unwrap();
+        assert!(staged.publish(None).is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), b"peer bytes");
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+        #[cfg(unix)]
+        {
+            let alias = directory.path().join("alias.json");
+            std::os::unix::fs::symlink(&path, &alias).unwrap();
+            assert!(stage_new(&template(), &alias).unwrap().publish(Some(&path)).unwrap_err().contains("active native"));
+            assert!(save_new(&template(), &alias, None).is_err());
+            assert_eq!(std::fs::read(&path).unwrap(), b"peer bytes");
+            assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 2);
+        }
+        assert!(stage_new(&template(), &PathBuf::from("x".repeat(4097))).err().unwrap().contains("4096"));
+    }
 }

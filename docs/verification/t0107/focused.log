@@ -1,0 +1,60 @@
+bcc19a1c9310bc7d5a973e371d916d4145548b6a
+Sun Oct 11 16:35:01 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.84s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.16s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_doc-f18b61220e93c6c7)
+
+running 2 tests
+test symbol_library::publication_tests::destination_created_after_stage_and_symlink_alias_are_never_replaced ... ok
+test symbol_library::publication_tests::private_staging_exact_publication_drop_and_conflicts_preserve_destinations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s
+
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.27s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 3 tests
+test symbol_library::publication_tests::both_writers_preserve_a_racing_destination_and_full_dirty_session ... ok
+test symbol_library::publication_tests::ordinary_peer_edits_during_staging_remain_live_and_export_retains_capture_cursor ... ok
+test symbol_library::publication_tests::both_symbol_writers_protect_latest_peer_saved_and_opened_native_path ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 59 filtered out; finished in 0.04s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 1 test
+test handle::save_tests::native_publication_waits_for_in_flight_save_and_keeps_commands_available ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 61 filtered out; finished in 0.01s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.48s
+     Running tests/symbol_library.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_library-f3abdddd7c396ef5)
+
+running 5 tests
+test source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content ... ok
+test typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable_undo ... ok
+test selected_and_global_preflight_bound_unrelated_data_before_inherited_validation ... ok
+test malformed_ambiguous_stale_and_reopened_proposals_leave_entire_sessions_unchanged ... ok
+test proposed_fresh_symbol_and_pin_are_included_in_global_identity_budget ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+Sun Oct 11 16:35:34 UTC 2026

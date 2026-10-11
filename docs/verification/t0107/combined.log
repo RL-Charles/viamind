@@ -1,0 +1,117 @@
+8771051b57da788cb1948c57b7f603e8d18c443d
+Sun Oct 11 17:05:51 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.25s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.33s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_doc-f18b61220e93c6c7)
+
+running 2 tests
+test symbol_library::publication_tests::destination_created_after_stage_and_symlink_alias_are_never_replaced ... ok
+test symbol_library::publication_tests::private_staging_exact_publication_drop_and_conflicts_preserve_destinations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s
+
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.71s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 3 tests
+test symbol_library::publication_tests::ordinary_peer_edits_during_staging_remain_live_and_export_retains_capture_cursor ... ok
+test symbol_library::publication_tests::both_writers_preserve_a_racing_destination_and_full_dirty_session ... ok
+test symbol_library::publication_tests::both_symbol_writers_protect_latest_peer_saved_and_opened_native_path ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 61 filtered out; finished in 0.03s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 1 test
+test handle::save_tests::native_publication_waits_for_in_flight_save_and_keeps_commands_available ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.01s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.32s
+     Running tests/symbol_library.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_library-f3abdddd7c396ef5)
+
+running 5 tests
+test source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content ... ok
+test typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable_undo ... ok
+test selected_and_global_preflight_bound_unrelated_data_before_inherited_validation ... ok
+test malformed_ambiguous_stale_and_reopened_proposals_leave_entire_sessions_unchanged ... ok
+test proposed_fresh_symbol_and_pin_are_included_in_global_identity_budget ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.58s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_mcp-87cb856e139322bc)
+
+running 1 test
+test symbol_libraries::tests::exact_borrowed_text_boundary_is_accepted_before_typed_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.17s
+     Running tests/symbol_libraries.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_libraries-95e6e21bc00c5209)
+
+running 1 test
+test two_real_clients_share_detached_files_guarded_placement_and_scoped_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.10s
+     Running tests/symbol_library.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_library-553e71f201412dc1)
+
+running 7 tests
+test compact_viewport_reaches_export_and_error_results_by_scrolling ... ok
+test actual_new_export_and_collision_use_detached_writer_without_session_changes ... ok
+test actual_invalid_coordinates_peer_edit_and_reopened_context_never_place_old_template ... ok
+test actual_library_file_transform_placement_and_undo_preserve_original_instances ... ok
+test invalid_local_edits_and_compact_save_collisions_preserve_inputs_and_loaded_source ... ok
+test actual_definition_field_identity_survives_removal_virtualization_and_fresh_replacement ... ok
+test create_edit_save_and_use_detached_definition_through_actual_controls ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.47s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0107/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.69s
+f120bd5fded1e46b7cd54ab9543f63997caa9fceca715676815e14ede642f95b  /home/charlesmowbray/.cache/viamind/native-artifacts/t0107/combined-viamind-8771051b57da
+Verified 88 full-application tools (2025-03-26)
+Verified 88 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+{"passed": true, "checks": 18, "report": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0107/combined-detached-stdio-8771051b57da.json"}
+{"passed": true, "checks": 17, "report": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0107/combined-publication-stdio-8771051b57da.json"}
+Sun Oct 11 17:07:14 UTC 2026
