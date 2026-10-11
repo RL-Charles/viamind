@@ -102,3 +102,17 @@ against concurrent agent changes. These pads rotate and mirror with their parent
 part; absent explicit pads retain the built-in graphical preview. Explicit pads
 use native schema version 3. Routing, other pad shapes and schematic net transfer
 remain roadmap work.
+
+## Export assembly tables
+
+Produce generic BOM and component-origin placement CSV without opening a window:
+
+```sh
+viamind --export-csv bom --open design.viamind.json --output bom.csv
+viamind --export-csv placement --open design.viamind.json --output placement.csv
+```
+
+Existing destinations require `--overwrite`. Agents export unsaved shared designs
+with `export_assembly_csv`; exports preserve native dirty state and undo history.
+See [assembly export conventions](docs/assembly-exports.md) for exact units,
+bottom-side transforms, grouping, file publication and manufacturer limitations.

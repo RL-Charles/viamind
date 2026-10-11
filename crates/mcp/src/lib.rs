@@ -8,6 +8,7 @@
 //! transport and [`serve_stdio`] on stdin/stdout, as the `viamind-mcp` binary does.
 
 pub mod agent;
+pub mod assembly;
 pub mod builtin;
 pub mod engine_host;
 pub mod host;

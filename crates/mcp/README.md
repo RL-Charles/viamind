@@ -234,3 +234,20 @@ identities by number; include an existing `id` when renumbering a pad. Empty pad
 means no electrical pads. A stale snapshot, invalid size or duplicate number/ID
 rejects the whole edit. Pads are included in part queries, events, undo and native
 version-3 saves. Matching case-sensitive net names identify shared membership.
+
+## Assembly CSV from a live design
+
+`engine_registry` exposes `export_assembly_csv` in both desktop HTTP and headless
+stdio sessions. For example:
+
+```json
+{"kind":"bom","path":"/home/me/design/bom.csv","overwrite":false}
+```
+
+`kind` is `bom` or `placement`. Include `expected_cursor` from `get_session_state`
+to reject stale exports. The response contains `path`, `kind`, `component_count`
+and `exported_cursor`. Each file is published atomically; existing files require
+explicit overwrite and the active native path is protected. Exporting leaves the
+native saved baseline, selection and design history unchanged. See
+[generic assembly CSV conventions](../../docs/assembly-exports.md) before using
+component-origin placement coordinates for assembly work.

@@ -15,6 +15,8 @@ path = "src/bin/viamind-mcp.rs"
 
 [dependencies]
 viamind-engine.workspace = true
+viamind-fab.workspace = true
+serde.workspace = true
 rmcp = { workspace = true, features = ["server", "transport-io", "transport-streamable-http-server"] }
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "io-std", "net"] }
 axum.workspace = true

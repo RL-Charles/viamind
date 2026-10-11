@@ -105,6 +105,7 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
         "watch_events",
         "get_document_status",
         "save_project",
+        "export_assembly_csv",
     ] {
         assert!(names.contains(&name), "missing {name}");
     }
@@ -141,6 +142,11 @@ async fn full_engine_edits_without_display_and_saves_on_client_eof() {
     let kinds: Vec<_> = events["events"].as_array().unwrap().iter().map(|event| event["event"]["kind"].as_str().unwrap()).collect();
     assert_eq!(kinds, ["design", "selection", "design", "selection", "design", "design", "design"]);
     assert_eq!(events["cursor"]["sequence"], 7);
+    let csv_path = directory.path().join("agent-placement.csv");
+    let exported = client.tool("export_assembly_csv", json!({"kind":"placement","path":csv_path,"expected_cursor":events["cursor"]})).await;
+    assert_eq!(exported["exported_cursor"], events["cursor"]);
+    assert_eq!(exported["component_count"], 2);
+    assert!(std::fs::read_to_string(csv_path).unwrap().contains("1.234567,-2.000000,45.000,Bottom"));
     let explicit = directory.path().join("tool-saved.viamind.json");
     let saved = client.tool("save_project", json!({ "path": explicit })).await;
     assert_eq!(saved["dirty"], false);
