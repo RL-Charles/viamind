@@ -5,6 +5,7 @@
 //! (CADCraft, MIT/Apache-2.0): `default-features = false` plus only the features we use.
 
 pub mod actions;
+pub mod annotation;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
@@ -119,6 +120,7 @@ pub struct FrameStats {
 /// The Viamind application state.
 pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
+    pub annotation: annotation::AnnotationUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -157,6 +159,7 @@ impl ViamindApp {
     pub fn with_scene_size(n: usize) -> Self {
         Self {
             schematic: schematic::SchematicUi::default(),
+            annotation: annotation::AnnotationUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -185,6 +188,7 @@ impl ViamindApp {
         canvas.fit_pending = true;
         Self {
             schematic,
+            annotation: annotation::AnnotationUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,

@@ -481,6 +481,7 @@ impl ViamindApp {
             ui.label(message);
         }
         ui.separator();
+        self.annotation_panel(ui);
         ui.label("Middle drag / Space+drag pan · wheel zoom · Home fit");
         ui.label("Electrical connectivity and ERC are not evaluated.");
     }
