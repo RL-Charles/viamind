@@ -57,6 +57,14 @@ impl Default for Canvas {
 }
 
 impl Canvas {
+    /// Explicit view navigation disables startup auto-fit without changing selection.
+    pub(crate) fn focus_world(&mut self, at: WorldPos) {
+        self.auto_fit = false;
+        self.fit_pending = false;
+        self.camera.center = at;
+        self.camera.zoom = self.camera.zoom.max(10.0);
+    }
+
     /// Tells the canvas that the scene's items changed, so cached meshes are rebuilt.
     pub fn scene_changed(&mut self) {
         self.cache.invalidate();

@@ -41,6 +41,7 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    QueryLinkedComponents => ("query_linked_components", input_schema::<viamind_engine::ComponentLinkQuery>(), query_linked_components),
     LinkSchematicSymbol => (viamind_engine::LinkSchematicSymbol::NAME, input_schema::<viamind_engine::LinkSchematicSymbol>(), link_schematic_symbol),
     SynchronizeSchematicPcb => (viamind_engine::SynchronizeSchematicPcb::NAME, input_schema::<viamind_engine::SynchronizeSchematicPcb>(), synchronize_schematic_pcb),
     AnnotateSchematic => (viamind_engine::AnnotateSchematic::NAME, input_schema::<viamind_engine::AnnotateSchematic>(), annotate_schematic),
@@ -224,4 +225,12 @@ fn synchronize_schematic_pcb(engine: &EngineHandle, input: Value) -> Result<Valu
 }
 fn route_pad_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePadPolyline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn query_linked_components(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(
+        engine.query_linked_components(&input).map_err(|error| EngineError::Command { command: "query_linked_components".into(), error })?,
+    )
+    .map_err(encode_error)
 }

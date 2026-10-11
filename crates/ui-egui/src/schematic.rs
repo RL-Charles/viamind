@@ -251,6 +251,7 @@ pub struct SchematicUi {
     message: Option<String>,
     pub camera: Camera,
     fit: bool,
+    auto_fit: bool,
     pub viewport: egui::Rect,
     cursor_world: Option<WorldPos>,
     object_count: usize,
@@ -269,6 +270,7 @@ impl Default for SchematicUi {
             message: None,
             camera: Camera::default(),
             fit: true,
+            auto_fit: true,
             viewport: egui::Rect::NOTHING,
             cursor_world: None,
             object_count: 0,
@@ -281,6 +283,51 @@ impl SchematicUi {
     }
 }
 impl ViamindApp {
+    pub(crate) fn schematic_probe_selection(&self, project: ObjectId, stream: ObjectId) -> Option<ObjectId> {
+        (self.schematic.project == Some(project) && self.schematic.stream == Some(stream)).then_some(self.schematic.selected).flatten()
+    }
+    pub(crate) fn navigate_probe_symbol(
+        &mut self,
+        project: ObjectId,
+        cursor: viamind_engine::EventCursor,
+        target: &viamind_engine::LinkedComponent,
+    ) -> Result<(), String> {
+        let sheet_id = target.sheet_id.ok_or("Containing sheet is missing.")?;
+        if self.schematic.draft.as_ref().is_some_and(|draft| draft.expected.id != sheet_id || draft.id != target.symbol_id) {
+            return Err("Finish or cancel the schematic object draft before navigating to another symbol.".into());
+        }
+        let sheet_name = self
+            .design
+            .as_ref()
+            .ok_or("Document closed.")?
+            .engine
+            .with_engine(|e| {
+                if e.project().id != project || e.event_cursor() != cursor {
+                    return None;
+                }
+                e.project().schematic.sheets.get(&sheet_id).map(|s| s.name.clone())
+            })
+            .ok_or("Document changed; select the component again.")?;
+        self.set_schematic_mode(true);
+        if !self.schematic.active {
+            return Err("Finish the active edit before switching editors.".into());
+        }
+        if self.schematic.sheet != Some(sheet_id) {
+            self.schematic.selected = None;
+        }
+        self.schematic.project = Some(project);
+        self.schematic.stream = Some(cursor.stream_id);
+        self.schematic.sheet = Some(sheet_id);
+        self.schematic.sheet_name = sheet_name;
+        self.schematic.sheet_guard = None;
+        self.schematic.fit = false;
+        self.schematic.auto_fit = false;
+        let at = target.schematic_position.ok_or("Symbol coordinates are missing.")?;
+        self.schematic.camera.center = WorldPos::new(at.x.to_mm(), at.y.to_mm());
+        self.schematic.camera.zoom = self.schematic.camera.zoom.max(10.0);
+        Ok(())
+    }
+
     pub fn set_schematic_mode(&mut self, active: bool) {
         if active {
             self.routing.cancel();
@@ -534,18 +581,27 @@ impl ViamindApp {
         self.schematic.object_count = content.map_or(0, SchematicContent::object_count);
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
-        if self.schematic.fit || self.schematic.viewport.size() != viewport.size() || ui.input(|i| i.key_pressed(Key::Home)) {
+        let fit_requested = self.schematic.fit || ui.input(|i| i.key_pressed(Key::Home));
+        if fit_requested {
+            self.schematic.auto_fit = true;
+        }
+        if fit_requested || (self.schematic.auto_fit && self.schematic.viewport.size() != viewport.size()) {
             self.schematic.camera.zoom_to_fit(bounds(content), viewport, 50.0);
             self.schematic.fit = false;
         }
         self.schematic.viewport = viewport;
         self.schematic.cursor_world = response.hover_pos().map(|p| self.schematic.camera.screen_to_world(p, viewport));
         if response.dragged_by(PointerButton::Middle) || (response.dragged_by(PointerButton::Primary) && ui.input(|i| i.key_down(Key::Space))) {
+            self.schematic.auto_fit = false;
             self.schematic.camera.pan_by_screen(response.drag_delta());
         }
         if let Some(at) = response.hover_pos() {
             let (scroll, pinch) = ui.input(|i| (i.smooth_scroll_delta.y, i.zoom_delta()));
-            self.schematic.camera.zoom_about(at, viewport, f64::from(pinch) * (f64::from(scroll) * 0.0025).exp());
+            let factor = f64::from(pinch) * (f64::from(scroll) * 0.0025).exp();
+            if factor != 1.0 {
+                self.schematic.auto_fit = false;
+            }
+            self.schematic.camera.zoom_about(at, viewport, factor);
         }
         painter.rect_filled(viewport, 0.0, Color32::from_rgb(22, 25, 30));
         let Some(c) = content else {
@@ -557,7 +613,15 @@ impl ViamindApp {
         let wire_color = Color32::from_rgb(100, 220, 150);
         let symbol_color = Color32::from_rgb(235, 210, 130);
         let selected = self.schematic.selected;
-        let color = |id, normal| if selected == Some(id) { Color32::from_rgb(255, 160, 60) } else { normal };
+        let color = |id, normal| {
+            if selected == Some(id) {
+                Color32::from_rgb(255, 160, 60)
+            } else if self.cross_probe.symbol_highlighted(id) {
+                Color32::from_rgb(255, 100, 220)
+            } else {
+                normal
+            }
+        };
         for w in c.wires.values() {
             painter.line_segment([screen(w.start), screen(w.end)], Stroke::new(2.0, color(w.id, wire_color)));
         }
