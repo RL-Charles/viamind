@@ -1,7 +1,7 @@
 # Bounded manufacturing export verification (T75)
 
 [Master provenance](verification/t0075-master.json) records the full local Linux
-gate: fmt, strict workspace all-target clippy,446 passing tests with one existing
+gate: fmt, strict workspace all-target clippy,454 passing tests with one existing
 ignored test, and workspace build. The final exact copied production binary was built
 from bb6b61d on combined main c55dc7c, SHA256
 `2b63011a0f05e628791bdac260c2b2005c102451c60a52ea40d9929304282cd1`.
