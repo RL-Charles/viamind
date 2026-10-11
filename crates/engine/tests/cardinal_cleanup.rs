@@ -1,6 +1,9 @@
 use viamind_doc::{BoardOutline, CopperLayer, ObjectId, Pad, Pads, Part, Project, Side, Track, Via};
 use viamind_engine::{CleanupCardinalTracks, CleanupTracks, Command, CommandCall, EngineHandle, Origin};
 use viamind_geom::{Nm, Point, Polygon};
+// These cases verify precise refusal reasons, independently of the intentional
+// process-wide two-operation admission tested separately in the module unit.
+static TEST: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 fn p(x: i64, y: i64) -> Point {
     Point::new(Nm(x), Nm(y))
@@ -40,6 +43,7 @@ fn reject(e: &EngineHandle, input: CleanupCardinalTracks) {
 }
 #[test]
 fn exact_signed_chains_survivor_ids_full_session_immutability_and_atomic_undo() {
+    let _guard = TEST.lock().unwrap();
     for layer in [CopperLayer::Top, CopperLayer::Bottom] {
         let mut project = fixture();
         let ids = [
@@ -80,6 +84,7 @@ fn exact_signed_chains_survivor_ids_full_session_immutability_and_atomic_undo() 
 }
 #[test]
 fn branches_width_net_diagonal_and_unselected_neighbors_are_retained_without_events() {
+    let _guard = TEST.lock().unwrap();
     for condition in 0..6 {
         let mut project = fixture();
         let a = track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
@@ -137,6 +142,7 @@ fn pad(project: &mut Project, center: Point, side: Side, rotation: i32) {
 }
 #[test]
 fn exact_mirrored_pad_anchors_and_all_net_hole_contact_preserve_guides() {
+    let _guard = TEST.lock().unwrap();
     for side in [Side::Top, Side::Bottom] {
         let layer = if side == Side::Bottom { CopperLayer::Bottom } else { CopperLayer::Top };
         let mut project = fixture();
@@ -171,6 +177,7 @@ fn exact_mirrored_pad_anchors_and_all_net_hole_contact_preserve_guides() {
 }
 #[test]
 fn successful_cleanup_preserves_existing_guide_endpoints_and_duplicate_full_track_retains_chain() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
     track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
@@ -193,6 +200,7 @@ fn successful_cleanup_preserves_existing_guide_endpoints_and_duplicate_full_trac
 }
 #[test]
 fn guarded_queries_typed_dynamic_batches_and_same_uuid_reopen_are_atomic() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     let ids = [track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top), track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top)];
     let e = EngineHandle::new(project);
@@ -230,6 +238,7 @@ fn guarded_queries_typed_dynamic_batches_and_same_uuid_reopen_are_atomic() {
 }
 #[test]
 fn affected_joint_drc_failure_unsupported_transforms_and_merge_budget_reject_whole_operation() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
     track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
@@ -253,6 +262,7 @@ fn affected_joint_drc_failure_unsupported_transforms_and_merge_budget_reject_who
 
 #[test]
 fn unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_copy() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
     track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
@@ -275,7 +285,8 @@ fn unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_co
     pad(&mut project, p(0, 0), Side::Top, 0);
     project.board.parts.values_mut().next().unwrap().value = "x".repeat(2 * 1024 * 1024 + 1);
     let e = EngineHandle::new(project);
-    assert!(e.plan_cardinal_track_cleanup(&request(&e)).unwrap_err().to_string().contains("snapshot text"));
+    let error = e.plan_cardinal_track_cleanup(&request(&e)).unwrap_err();
+    assert!(error.to_string().contains("snapshot text"), "{error}");
     reject(&e, request(&e));
     let mut project = fixture();
     for i in 0..2049 {
@@ -288,6 +299,7 @@ fn unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_co
 
 #[test]
 fn incomplete_joint_report_refuses_even_with_only_unrelated_existing_violations() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
     track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
@@ -306,6 +318,7 @@ fn incomplete_joint_report_refuses_even_with_only_unrelated_existing_violations(
 
 #[test]
 fn aggregate_hole_candidate_budget_refuses_before_joint_drc_without_partial_cleanup() {
+    let _guard = TEST.lock().unwrap();
     let mut project = fixture();
     for i in 0..12 {
         let joint = p(1_000_000 + i * 10_000, 0);
