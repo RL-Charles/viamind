@@ -95,30 +95,43 @@ fn version5_companion_matrix_exact_release_files_and_null_summary_refuse() {
             pad.apertures = Some(PadApertures { mask: None, paste: None });
         }
     }
-    for silk in [false, true] {
-        for (cal, pop) in [(false, false), (true, false), (true, true)] {
-            let mut job = OutputJob::new("Explicit openings".into(), 0.0);
-            job.version = 5;
-            job.include_paste = Some(true);
-            job.include_silkscreen = silk.then_some(true);
-            job.include_calibrated_placement = cal.then_some(true);
-            job.include_populated_bom = pop.then_some(true);
-            assert_eq!(OutputJob::parse(&job.canonical_bytes().unwrap()).unwrap(), job);
-            let temp = tempfile::tempdir().unwrap();
-            let snapshot = OutputJobSnapshot::capture(&p, job.clone()).unwrap();
-            let (path, manifest) =
-                snapshot.write(ReleaseCursor { stream_id: viamind_doc::ObjectId::new(), sequence: 7 }, &temp.path().join("new"), None).unwrap();
-            assert_eq!(manifest.files.len() + 1, 13 + usize::from(silk) * 2 + usize::from(cal) + usize::from(pop));
-            inspect_output_release(&InspectOutputRelease { path: path.clone() }).unwrap_or_else(|e| panic!("silk={silk} cal={cal} pop={pop}: {e}"));
-            let file = path.join("release-manifest.json");
-            let mut raw: serde_json::Value = serde_json::from_slice(&fs::read(&file).unwrap()).unwrap();
-            raw["pad_apertures"] = serde_json::Value::Null;
-            fs::write(&file, serde_json::to_vec(&raw).unwrap()).unwrap();
-            assert!(inspect_output_release(&InspectOutputRelease { path }).is_err());
-            for flag in [serde_json::Value::Null, serde_json::json!(false)] {
-                let mut raw = serde_json::to_value(&job).unwrap();
-                raw["include_paste"] = flag;
-                assert!(OutputJob::parse(&serde_json::to_vec(&raw).unwrap()).is_err());
+    for checked in [false, true] {
+        for silk in [false, true] {
+            for (cal, pop) in [(false, false), (true, false), (true, true)] {
+                let mut job = OutputJob::new("Explicit openings".into(), 0.0);
+                job.version = 5;
+                if checked {
+                    job.profile = viamind_fab::CHECKED_PROFILE.into();
+                    job.checks = Some(serde_json::from_value(serde_json::json!({"copper_clearance_mm":0,"edge_clearance_mm":0,"minimum_via_drill_mm":0,"minimum_annular_width_mm":0,"hole_clearance_mm":0,"hole_to_copper_clearance_mm":0,"max_violations":100})).unwrap());
+                }
+                job.include_paste = Some(true);
+                job.include_silkscreen = silk.then_some(true);
+                job.include_calibrated_placement = cal.then_some(true);
+                job.include_populated_bom = pop.then_some(true);
+                assert_eq!(OutputJob::parse(&job.canonical_bytes().unwrap()).unwrap(), job);
+                let temp = tempfile::tempdir().unwrap();
+                let snapshot = OutputJobSnapshot::capture(&p, job.clone()).unwrap();
+                let (path, manifest) = snapshot
+                    .write_with_validation(
+                        ReleaseCursor { stream_id: viamind_doc::ObjectId::new(), sequence: 7 },
+                        &temp.path().join("new"),
+                        None,
+                        |_, _, _| Ok(b"opaque test receipt; no DRC authorization claim".to_vec()),
+                    )
+                    .unwrap();
+                assert_eq!(manifest.files.len() + 1, 13 + usize::from(silk) * 2 + usize::from(cal) + usize::from(pop) + usize::from(checked));
+                inspect_output_release(&InspectOutputRelease { path: path.clone() })
+                    .unwrap_or_else(|e| panic!("checked={checked} silk={silk} cal={cal} pop={pop}: {e}"));
+                let file = path.join("release-manifest.json");
+                let mut raw: serde_json::Value = serde_json::from_slice(&fs::read(&file).unwrap()).unwrap();
+                raw["pad_apertures"] = serde_json::Value::Null;
+                fs::write(&file, serde_json::to_vec(&raw).unwrap()).unwrap();
+                assert!(inspect_output_release(&InspectOutputRelease { path }).is_err());
+                for flag in [serde_json::Value::Null, serde_json::json!(false)] {
+                    let mut raw = serde_json::to_value(&job).unwrap();
+                    raw["include_paste"] = flag;
+                    assert!(OutputJob::parse(&serde_json::to_vec(&raw).unwrap()).is_err());
+                }
             }
         }
     }
