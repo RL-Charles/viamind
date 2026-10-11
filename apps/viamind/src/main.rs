@@ -27,6 +27,14 @@ fn main() -> anyhow::Result<()> {
         Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
         None => EngineHandle::new(Project::new("Untitled")),
     };
+    if let Some(kind) = options.export_csv {
+        let snapshot = engine.session_state();
+        let output = options.output.as_deref().expect("CLI requires an export destination");
+        let path = viamind_fab::write_csv(&snapshot.project, kind, output, options.overwrite, engine.document_status().path.as_deref())
+            .with_context(|| format!("could not export CSV {}", output.display()))?;
+        eprintln!("viamind: exported {}", path.display());
+        return Ok(());
+    }
     if options.headless {
         let registry = viamind_mcp::engine_registry(engine.clone())?;
         eprintln!("viamind: headless design MCP on stdin/stdout; close stdin to finish");
