@@ -125,12 +125,15 @@ fn actual_report_scroll_reaches_exact_cardinal_normalization_without_session_cha
     wait(&mut h);
     click(&mut h, "Footprint per-list fidelity report");
     let label = "source angle 90 degrees, canonical 90 degrees";
+    let header = h.get_by_label("Footprint per-list fidelity report").rect();
+    let inside_report = egui::pos2(header.center().x, header.max.y + 120.0);
+    assert!(inside_report.y < 1000.0);
     for _ in 0..150 {
         if h.query_by_label_contains(label).is_some() {
             break;
         }
-        // The first virtual row may be clipped; target the next visible heading.
-        h.query_all_by_label_contains(" @byte").nth(1).unwrap().hover();
+        // Anchor input inside the report rather than on its clipped virtual rows.
+        h.event(Event::PointerMoved(inside_report));
         h.event(Event::MouseWheel {
             unit: egui::MouseWheelUnit::Point,
             delta: vec2(0.0, -100.0),

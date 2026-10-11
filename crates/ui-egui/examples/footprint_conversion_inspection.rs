@@ -64,12 +64,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if mode == "normalization" {
         let label = "source angle 90 degrees, canonical 90 degrees";
+        let header = h.get_by_label("Footprint per-list fidelity report").rect();
+        let inside_report = egui::pos2(header.center().x, header.max.y + 120.0);
+        assert!(inside_report.y < height, "report viewport must fit inspection window");
         for _ in 0..150 {
             if h.query_by_label_contains(label).is_some() {
                 break;
             }
-            // The first virtual row may be clipped above the inner scroll viewport.
-            h.query_all_by_label_contains(" @byte").nth(1).ok_or("visible report row required")?.hover();
+            // Keep the pointer inside the report viewport; virtual rows can be clipped.
+            h.event(egui::Event::PointerMoved(inside_report));
             h.event(egui::Event::MouseWheel {
                 unit: egui::MouseWheelUnit::Point,
                 delta: egui::vec2(0.0, -100.0),
