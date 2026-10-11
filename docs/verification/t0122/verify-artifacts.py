@@ -41,8 +41,9 @@ for capture in master['inspection']['captures']:
 if args.retained:
     for item in master['retained_binaries']:
         assert hashlib.sha256(Path(item['path']).read_bytes()).hexdigest() == item['sha256']
-    live = Path(f"/proc/{master['production']['pid']}/exe")
-    assert hashlib.sha256(live.read_bytes()).hexdigest() == master['production']['sha256']
+    for production in [master['production'], master['final_integration']['production']]:
+        live = Path(f"/proc/{production['pid']}/exe")
+        assert hashlib.sha256(live.read_bytes()).hexdigest() == production['sha256']
     for capture in master['inspection']['captures']:
         assert not Path(f"/proc/{capture['pid']}").exists(), capture['name']
         p6 = Path(capture['retained_p6_path']).read_bytes()

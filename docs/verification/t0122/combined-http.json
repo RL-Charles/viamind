@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "checks": [
+    "actual SVG/PNG and immutable session tools discovered",
+    "two independent clients return byte-identical SVG/metadata/source cursor",
+    "exact source cursor and no output path for in-memory SVG",
+    "five complete units and fourteen pins produce24 declared labels",
+    "explicit unit-qualified reference A",
+    "explicit unit-qualified reference B",
+    "explicit unit-qualified reference C",
+    "explicit unit-qualified reference D",
+    "explicit unit-qualified reference P",
+    "every leader starts at independently transformed exact source endpoint",
+    "all labels retain stable source ownership and unique role IDs",
+    "owned symbol label envelopes are disjoint",
+    "SVG contains outlined glyphs and no active text/font dependencies",
+    "actual PNG response has one image/png block",
+    "PNG metadata shares exact native-world labels and source cursor",
+    "PNG independently decodes static RGBA8 at requested size",
+    "auto-fit retains all ink within transparent margin",
+    "actual symbols layer preserves isolated text roles",
+    "actual symbols leader isolation",
+    "actual pins layer preserves isolated text roles",
+    "actual pins leader isolation",
+    "stale full-cursor render rejects before response",
+    "empty category selection is explicit validation error",
+    "NEW SVG publication exactly matches in-memory bytes",
+    "collision/native path refusals preserve both files",
+    "all successful and failed renders preserve dirty full session/status/graph",
+    "abbreviation does not hide unsupported selected source tail",
+    "unsupported omitted value does not poison Pins-only export",
+    "unsupported-tail render success/refusal retains full state",
+    "actual long labels display32scalars+explicitellipsis and retain complete source",
+    "long display and graph metadata preserve latest full session"
+  ],
+  "binary_sha256": "7873d71334078232b69b7f77a602abda67577f161371e6948ee1e1ed2f9578f7",
+  "transport": "http://127.0.0.1:7953/mcp",
+  "tool_count": 113,
+  "latencies": [
+    {
+      "tool": "get_session_state",
+      "milliseconds": 1.8227129912702367
+    },
+    {
+      "tool": "open_project",
+      "milliseconds": 3.30368299910333
+    },
+    {
+      "tool": "add_part",
+      "milliseconds": 5.655654997099191
+    },
+    {
+      "tool": "set_selection",
+      "milliseconds": 1.189774993690662
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 1.7772259889170527
+    },
+    {
+      "tool": "get_document_status",
+      "milliseconds": 1.1371759901521727
+    },
+    {
+      "tool": "query_schematic_connectivity",
+      "milliseconds": 2.384360006544739
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 33.688073002849706
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 41.23612999683246
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 21.018186991568655
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 16.505948005942628
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 1.4005190023453906
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 1.0792899993248284
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 33.73069300141651
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 15.990608997526579
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 15.89893500204198
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 2.31120600074064
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 1.3158049987396225
+    },
+    {
+      "tool": "get_document_status",
+      "milliseconds": 0.7787089998601004
+    },
+    {
+      "tool": "query_schematic_connectivity",
+      "milliseconds": 2.186244004406035
+    },
+    {
+      "tool": "open_project",
+      "milliseconds": 2.0760869956575334
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 1.7297940066782758
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 1.6778129938757047
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 15.920717007247731
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 3.7554059963440523
+    },
+    {
+      "tool": "open_project",
+      "milliseconds": 3.1840470037423074
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 1.9007660011993721
+    },
+    {
+      "tool": "render_schematic_view",
+      "milliseconds": 37.1462189941667
+    },
+    {
+      "tool": "get_session_state",
+      "milliseconds": 2.223717005108483
+    }
+  ],
+  "scope": "Read-only render calls preserve dirty complete engine state and exact original geometry. Setup explicitly replaces only the owned scratch project. Native WGPU UI screenshots/bounds are separate inspection artifacts; no OS input or global page-collision claim."
+}

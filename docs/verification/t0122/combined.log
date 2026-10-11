@@ -1,0 +1,239 @@
+6157a2b647a63e0c305d289145c2d687bae932ba
+Sun Oct 11 21:20:32 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 18.52s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.03s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_render-93c8faa9d28a5854)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/png.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/png-eedd21d9d4970d03)
+
+running 4 tests
+test pixel_limits_and_atomic_png_publication_preserve_native_and_collisions ... ok
+test board_only_capture_excludes_unrelated_schematic_and_bounds_text_before_copy ... ok
+test tiny_far_origin_crop_matches_near_origin_and_extreme_large_geometry_rejects ... ok
+test png_decodes_deterministically_with_shared_layers_physical_holes_cutouts_and_margins ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.51s
+
+     Running tests/schematic.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic-23a84bbe650d9bf8)
+
+running 5 tests
+test filters_regions_legacy_and_invalid_selected_inputs_are_explicit ... ok
+test all_budgets_fail_before_clone_or_publication ... ok
+test distant_crop_is_pixel_identical_and_extreme_zoom_fails ... ok
+test explicit_package_unit_labels_and_borrowed_membership_budgets_are_preserved ... ok
+test outlined_text_geometry_is_deterministic_and_snapshot_excludes_unrelated_data ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.15s
+
+     Running tests/schematic_labels.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_labels-318dc2f1320c7dce)
+
+running 6 tests
+test dense_coincident_pins_keep_exact_identity_and_number_order_and_do_not_overlap ... ok
+test independent_odd_geometry_endpoints_and_disjoint_owned_labels_all_poses ... ok
+test generated_ellipsis_suffixes_are_charged_before_display_strings ... ok
+test selected_symbol_and_pin_layers_isolate_text_leaders_and_full_source_glyph_admission ... ok
+test source_bounds_precede_malformed_geometry_and_abbreviation_does_not_hide_unsupported_glyphs ... ok
+test complete_original_package_and_export_adapters_share_exact_labels_and_preserve_project ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+     Running tests/svg.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/svg-3c3bc6a7421dfe77)
+
+running 6 tests
+test transformed_geometry_exact_half_nanometres_and_stable_layers ... ok
+test xml_unicode_entities_controls_and_no_active_content_roundtrip_parse ... ok
+test region_layers_deduplicate_and_empty_fit_is_declared ... ok
+test direct_views_and_captures_exclude_unrelated_sourcing_before_copy ... ok
+test publication_preserves_native_collisions_links_and_concurrent_winner ... ok
+test invalid_requests_models_metadata_and_bounds_are_rejected ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Doc-tests viamind_render
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.99s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 2 tests
+test schematic::labels::tests::measured_fallback_never_escapes_envelope_and_refusal_identifies_source ... ok
+test schematic::labels::tests::actual_default_font_non_ascii_ink_fits_shared_envelopes_at_supported_zooms ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 95 filtered out; finished in 0.09s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.67s
+     Running tests/schematic.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic-96bfece8c8b235f4)
+
+running 4 tests
+test reopen_same_project_resets_old_draft_using_session_stream ... ok
+test view_fit_and_status_follow_the_visible_schematic_camera ... ok
+test invalid_and_stale_drafts_preserve_every_session_field_until_explicit_reload ... ok
+test actual_forms_create_all_schematic_types_edit_and_undo_without_board_changes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+     Running tests/schematic_labels.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_labels-5fa3061e5b9fcb43)
+
+running 3 tests
+test actual_low_zoom_notice_replaces_symbol_text_without_moving_the_model ... ok
+test actual_compact_inspection_dense_labels_fit_and_presentation_is_not_a_pick_anchor ... ok
+test actual_fit_wheel_center_pick_and_mode_switch_preserve_shared_session_and_geometry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/schematic_wires.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_wires-4056095aa22f6d93)
+
+running 4 tests
+test actual_posture_backspace_pan_zoom_and_escape_keep_entire_model_unchanged ... ok
+test actual_crossing_does_not_join_and_grid_t_endpoint_does ... ok
+test actual_pointer_exact_rotated_mirrored_offgrid_attachment_finish_and_undo ... ok
+test actual_stale_peer_edit_reopen_and_object_draft_guards_preserve_content ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running tests/view_export.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/view_export-ab28717900efe5e4)
+
+running 4 tests
+test catalog_actions_reject_stale_cursor_missing_sheet_and_native_destination_atomically ... ok
+test compact_viewport_scrolls_to_schematic_crop_export_and_result ... ok
+test cropped_layers_dimensions_and_decimal_padding_are_validated_in_the_form ... ok
+test actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_without_edits ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.49s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.91s
+     Running tests/png_views.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/png_views-7f2e9b068dc35422)
+
+running 2 tests
+test svg_and_png_capture_only_board_and_reject_aggregate_budget_without_state_changes ... ok
+test png_views_return_exact_read_only_cursor_and_shared_bytes_with_stale_guards ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.22s
+
+     Running tests/schematic_views.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_views-024dbed4e881406b)
+
+running 2 tests
+test unrelated_giant_content_is_excluded_and_selected_budget_rejects_unchanged ... ok
+test selected_sheet_views_are_guarded_bounded_and_immutable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+     Running tests/schematic_wires.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_wires-878562b4e7d996d8)
+
+running 1 test
+test two_real_agents_snapshot_stale_atomic_path_and_own_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.95s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.24s
+7873d71334078232b69b7f77a602abda67577f161371e6948ee1e1ed2f9578f7  /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/viamind-combined-6157a2b
+073c934fbe082d8b27a3b07ee8e06d48eb072eae2828e766c38bccf575dd73c8  /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-combined-6157a2b
+test_buffered_record_and_expensive_decode_respect_deadline (test_mcp_reference.ReferenceTests.test_buffered_record_and_expensive_decode_respect_deadline) ... ok
+test_check_regular_same_fd_limits_fifo_and_symlink (test_mcp_reference.ReferenceTests.test_check_regular_same_fd_limits_fifo_and_symlink) ... ok
+test_deterministic_complete_markdown_escaping_and_injective_anchors (test_mcp_reference.ReferenceTests.test_deterministic_complete_markdown_escaping_and_injective_anchors) ... ok
+test_duplicate_and_repeated_cursor_and_skeleton_reject (test_mcp_reference.ReferenceTests.test_duplicate_and_repeated_cursor_and_skeleton_reject) ... ok
+test_new_publication_existing_paths_symlink_race_preserve (test_mcp_reference.ReferenceTests.test_new_publication_existing_paths_symlink_race_preserve) ... ok
+test_notifications_drain_and_normal_finish (test_mcp_reference.ReferenceTests.test_notifications_drain_and_normal_finish) ... ok
+test_object_input_schema_required (test_mcp_reference.ReferenceTests.test_object_input_schema_required) ... ok
+test_page_tool_cursor_total_byte_budgets_and_failed_exit (test_mcp_reference.ReferenceTests.test_page_tool_cursor_total_byte_budgets_and_failed_exit) ... ok
+test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit (test_mcp_reference.ReferenceTests.test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit) ... ok
+test_strict_json_duplicate_depth_nonfinite_utf8 (test_mcp_reference.ReferenceTests.test_strict_json_duplicate_depth_nonfinite_utf8) ... ok
+test_timeout_and_unterminated_stdout_and_stderr_bounded (test_mcp_reference.ReferenceTests.test_timeout_and_unterminated_stdout_and_stderr_bounded) ... ok
+test_tool_error_status_requires_actual_boolean (test_mcp_reference.ReferenceTests.test_tool_error_status_requires_actual_boolean) ... ok
+test_wrong_identity_protocol_error_and_invalid_json_reject (test_mcp_reference.ReferenceTests.test_wrong_identity_protocol_error_and_invalid_json_reject) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.409s
+
+OK
+Verified 113 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+{"passed": true, "checks": 31, "report": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-stdio.json"}
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/schematic.svg
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/schematic.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/wrong-transform.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/wires.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/symbols.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/pins.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/junctions.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/labels.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/crop.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/margin.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/auto-fit.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/long-text.png
+{
+  "passed": true,
+  "checks": [
+    "outlined text has stable object IDs and no runtime fonts",
+    "semantic Unicode and XML escaping preserved",
+    "unchanged font license accompanies outlines",
+    "absolute region and pixel mapping declared",
+    "independent static RGBA8 decoding",
+    "uniform interiors match independent librsvg",
+    "mirrored quarter-turn asymmetric pin stem one",
+    "mirrored quarter-turn asymmetric pin stem two",
+    "rectangular body corner orientation",
+    "junction is explicit filled dot",
+    "wire center and round cap",
+    "unpainted sheet is transparent",
+    "shared label envelopes are explicit and inside the fixture crop",
+    "reference value pin and scoped label visible",
+    "missing-text negative control rejected",
+    "wrong-quarter-turn negative control rejected",
+    "wires isolation",
+    "symbols isolation",
+    "pins isolation",
+    "junctions isolation",
+    "labels isolation",
+    "explicit pin stem crop",
+    "aspect ratio margins transparent",
+    "automatic fit contains all visible ink with transparent border",
+    "long accented engineering text auto-fit envelope"
+  ],
+  "uniform_interior_samples": 57628,
+  "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-static-view/schematic.png",
+  "independent_renderer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3"
+}
+Sun Oct 11 21:22:27 UTC 2026
