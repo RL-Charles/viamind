@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "checks": [
+    "native HTTP exposes four desktop-matched render tools",
+    "board svg native tool succeeds",
+    "board svg exact source snapshot",
+    "board svg HTTP file production CLI bytes identical",
+    "board png native tool succeeds",
+    "board png exact source snapshot",
+    "board PNG is actual compact image block",
+    "board PNG independently decodes RGBA",
+    "board png HTTP file production CLI bytes identical",
+    "schematic svg native tool succeeds",
+    "schematic svg exact source snapshot",
+    "schematic svg HTTP file production CLI bytes identical",
+    "schematic png native tool succeeds",
+    "schematic png exact source snapshot",
+    "schematic PNG is actual compact image block",
+    "schematic PNG independently decodes RGBA",
+    "schematic png HTTP file production CLI bytes identical",
+    "native view calls preserve full session and status",
+    "active native and existing outputs preserved",
+    "other native agent invalidates stale export with no file",
+    "native editor undo restores project",
+    "distinct native transport sessions"
+  ],
+  "runtime": "fixed-size wrapper using production ViamindApp and shared engine/MCP; form opened through public UI entry point",
+  "port": 7896,
+  "binary": "/tmp/viamind-t0071-native-preview-verified",
+  "binary_sha256": "51f432acc1b777618cab2435926b49420ae09cc4c69678d5955f03f002ab6233",
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "15bf5442-d973-433a-8b0b-6e41f4951fd0"
+  }
+}

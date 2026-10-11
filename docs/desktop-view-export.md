@@ -22,3 +22,5 @@ Both formats use the existing production renderers and protected publication API
 ## Agent parity
 
 The desktop action catalog and MCP use the same typed request schemas for `render_board_view`, `render_board_png`, `render_schematic_view` and `render_schematic_png`. They call the same bounded snapshot/render/write APIs. Desktop results show metadata/path/cursor; MCP also transports the SVG or trusted PNG image content. CLI equivalents are documented in the view guides.
+
+[Linux/native verification and portable reproduction](desktop-view-export-verification.md).

@@ -1,0 +1,130 @@
+{
+  "ticket": "T-0071",
+  "pull_request": "https://github.com/RL-Charles/viamind/pull/68",
+  "final_source_head": "72ae2d4e3178440eaa4b3028fef08743f5d20dd6",
+  "artifact_source_head": "e5c1144fa91b904ddd0ba210c53ac202a1bfaf8c",
+  "rebase_note": "Final source rebased onto unrelated cross-probing main4618c28; native evidence remains exact copied pre-rebase source. Final combined CI is required.",
+  "linux_gates": {
+    "log": "/tmp/viamind-t0071-full-gates.log",
+    "fmt": true,
+    "strict_clippy": true,
+    "workspace_tests_passed": 417,
+    "workspace_tests_ignored": 1,
+    "workspace_build": true
+  },
+  "production_cli": {
+    "passed": true,
+    "checks": [
+      "production --help works without display",
+      "production --version works without display",
+      "production board svg export succeeds",
+      "board SVG independently parses viewport",
+      "production board svg collision preserves exact bytes",
+      "production board png export succeeds",
+      "board PNG independently decodes RGBA at requested default size",
+      "production board png collision preserves exact bytes",
+      "production schematic svg export succeeds",
+      "schematic SVG independently parses viewport",
+      "production schematic svg collision preserves exact bytes",
+      "production schematic png export succeeds",
+      "schematic PNG independently decodes RGBA at requested default size",
+      "production schematic png collision preserves exact bytes",
+      "production exports preserve native file"
+    ],
+    "binary": "/tmp/viamind-t0071-verified",
+    "binary_sha256": "17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be",
+    "source_head": "e5c1144fa91b904ddd0ba210c53ac202a1bfaf8c",
+    "outputs": {
+      "board_svg": {
+        "path": "/tmp/viamind-t0071-cli-board.svg",
+        "sha256": "420325a580caf6088ee3d12e4b1110386968ff67c69cc4692311a4bf18a6354f",
+        "bytes": 3747
+      },
+      "board_png": {
+        "path": "/tmp/viamind-t0071-cli-board.png",
+        "sha256": "93b52972eb37d8453c99047f13d5e14ccdf376895049b0342415676ae20be4a6",
+        "bytes": 21412
+      },
+      "schematic_svg": {
+        "path": "/tmp/viamind-t0071-cli-schematic.svg",
+        "sha256": "460ab7e50adfbbc035935db174d296fb6c3b24d81409924a9b137a6247ef5e74",
+        "bytes": 32792
+      },
+      "schematic_png": {
+        "path": "/tmp/viamind-t0071-cli-schematic.png",
+        "sha256": "0b833b8bc477dc1a8179941d2645aaa25ae263a9dcec6003d816bcd069c28fc8",
+        "bytes": 30995
+      }
+    }
+  },
+  "native_wrapper_http": {
+    "passed": true,
+    "checks": [
+      "native HTTP exposes four desktop-matched render tools",
+      "board svg native tool succeeds",
+      "board svg exact source snapshot",
+      "board svg HTTP file production CLI bytes identical",
+      "board png native tool succeeds",
+      "board png exact source snapshot",
+      "board PNG is actual compact image block",
+      "board PNG independently decodes RGBA",
+      "board png HTTP file production CLI bytes identical",
+      "schematic svg native tool succeeds",
+      "schematic svg exact source snapshot",
+      "schematic svg HTTP file production CLI bytes identical",
+      "schematic png native tool succeeds",
+      "schematic png exact source snapshot",
+      "schematic PNG is actual compact image block",
+      "schematic PNG independently decodes RGBA",
+      "schematic png HTTP file production CLI bytes identical",
+      "native view calls preserve full session and status",
+      "active native and existing outputs preserved",
+      "other native agent invalidates stale export with no file",
+      "native editor undo restores project",
+      "distinct native transport sessions"
+    ],
+    "runtime": "fixed-size wrapper using production ViamindApp and shared engine/MCP; form opened through public UI entry point",
+    "port": 7896,
+    "binary": "/tmp/viamind-t0071-native-preview-verified",
+    "binary_sha256": "51f432acc1b777618cab2435926b49420ae09cc4c69678d5955f03f002ab6233",
+    "source_cursor": {
+      "sequence": 0,
+      "stream_id": "15bf5442-d973-433a-8b0b-6e41f4951fd0"
+    }
+  },
+  "native_cua": {
+    "report": "/tmp/viamind-t0071-native-cua.json",
+    "screenshot": "/tmp/viamind-t0071-native-cua.png",
+    "pid": 181252,
+    "window_id": 110379502695344,
+    "port": 7896,
+    "input_limitation": "AT-SPI unavailable; metadata and screenshot only. Actual controls verified by egui input tests, including compact640x400 scroll-to-Export."
+  },
+  "binaries": [
+    {
+      "path": "/tmp/viamind-t0071-verified",
+      "sha256": "17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be"
+    },
+    {
+      "path": "/tmp/viamind-t0071-native-preview-verified",
+      "sha256": "51f432acc1b777618cab2435926b49420ae09cc4c69678d5955f03f002ab6233"
+    }
+  ],
+  "final_ci": {
+    "url": "https://github.com/RL-Charles/viamind/actions/runs/38124965478",
+    "head": "72ae2d4e3178440eaa4b3028fef08743f5d20dd6",
+    "all_required_checks_passed": true
+  },
+  "tracked_evidence": {
+    "production_cli": "t0071-cli.json",
+    "native_wrapper_http": "t0071-native-http.json",
+    "cua_report": "t0071-native-cua.json",
+    "screenshot": "t0071-native-export.png",
+    "fixture": "t0071-export.viamind.json",
+    "inspection_wrapper": "t0071-native-inspection.rs",
+    "reproduction": [
+      "t0071-cli-smoke.py",
+      "t0071-native-smoke.py"
+    ]
+  }
+}
