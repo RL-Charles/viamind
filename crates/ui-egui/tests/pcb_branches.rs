@@ -136,7 +136,7 @@ fn opening_existing_copper_properties_clears_private_ghost_without_live_mutation
     assert!(h.state().pcb_branches.ghost_items() > 4);
     h.state_mut().begin_copper_properties();
     h.run_steps(5);
-    assert!(h.state().copper.editing());
+    assert!(h.get_by_label("Apply properties").accesskit_node().is_disabled());
     assert!(!h.state().pcb_branches.visible());
     assert_eq!(h.state().pcb_branches.ghost_items(), 0);
     assert_eq!(e.session_state(), before);
