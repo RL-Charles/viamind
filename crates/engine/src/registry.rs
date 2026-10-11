@@ -197,7 +197,7 @@ pub(crate) fn apply_typed<C: Command>(command: C, project: &mut Project, cursor:
     {
         return Err(EngineError::Command {
             command: C::NAME.into(),
-            error: CommandError::conflict("session changed; read get_session_state and restart the route"),
+            error: CommandError::conflict("session changed; read get_session_state and rebuild this command"),
         });
     }
     command.apply(project).map_err(|error| EngineError::Command { command: C::NAME.to_owned(), error })
