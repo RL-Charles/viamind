@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 3;
+pub const VERSION: u32 = 4;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -51,6 +51,12 @@ pub enum FileError {
     /// Electrical pad schema or identity invariant failed.
     #[error("invalid electrical pads: {0}")]
     Pads(String),
+    /// Project features were placed in an older envelope.
+    #[error("project features require native version {0} or newer")]
+    FeatureVersion(u32),
+    /// Copper geometry or identity validation failed.
+    #[error("invalid copper: {0}")]
+    Copper(String),
     /// A map key does not match the id of the object stored under it.
     #[error("{object} stored under key {key} has id {id}; the key must equal the object's id")]
     KeyMismatch {
@@ -99,8 +105,9 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
         return Err(FileError::OutlineVersion);
     }
     validate_pads(&project)?;
+    validate_copper(&project)?;
     if envelope.version < minimum_version(&project) {
-        return Err(FileError::Pads("explicit pads require version 3".into()));
+        return Err(FileError::FeatureVersion(minimum_version(&project)));
     }
     check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
     check_keys("part", &project.board.parts, |part| part.id)?;
@@ -144,7 +151,9 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    if project.board.parts.values().any(|p| p.pads.is_some()) {
+    if !project.board.tracks.is_empty() || !project.board.vias.is_empty() {
+        4
+    } else if project.board.parts.values().any(|p| p.pads.is_some()) {
         3
     } else if project.board.outline.is_some() {
         2
@@ -165,6 +174,41 @@ pub fn validate_pads(project: &Project) -> Result<(), FileError> {
                     return Err(FileError::Pads(format!("duplicate object identity {}", pad.id)));
                 }
             }
+        }
+    }
+    Ok(())
+}
+
+/// Validate independent copper geometry, map keys and globally distinct identities.
+pub fn validate_copper(project: &Project) -> Result<(), FileError> {
+    if project.board.tracks.len() > crate::MAX_COPPER_OBJECTS || project.board.vias.len() > crate::MAX_COPPER_OBJECTS {
+        return Err(FileError::Copper("at most 100000 tracks and 100000 vias per board".into()));
+    }
+    let mut ids = std::collections::BTreeSet::from([project.id]);
+    for id in project.schematic.sheets.keys().chain(project.board.parts.keys()) {
+        if !ids.insert(*id) {
+            return Err(FileError::Copper(format!("duplicate object identity {id}")));
+        }
+    }
+    for p in project.board.parts.values() {
+        for pad in p.pads.iter().flat_map(|pads| &pads.0) {
+            if !ids.insert(pad.id) {
+                return Err(FileError::Copper(format!("duplicate object identity {}", pad.id)));
+            }
+        }
+    }
+    check_keys("track", &project.board.tracks, |v| v.id)?;
+    check_keys("via", &project.board.vias, |v| v.id)?;
+    for track in project.board.tracks.values() {
+        track.validate().map_err(FileError::Copper)?;
+        if !ids.insert(track.id) {
+            return Err(FileError::Copper(format!("duplicate object identity {}", track.id)));
+        }
+    }
+    for via in project.board.vias.values() {
+        via.validate().map_err(FileError::Copper)?;
+        if !ids.insert(via.id) {
+            return Err(FileError::Copper(format!("duplicate object identity {}", via.id)));
         }
     }
     Ok(())

@@ -19,3 +19,6 @@ pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};
 pub use pad::{Pad, Pads};
 pub use project::{Project, Schematic, Sheet};
+
+pub mod copper;
+pub use copper::{CopperLayer, MAX_COPPER_OBJECTS, Track, Via};

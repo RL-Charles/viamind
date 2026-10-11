@@ -11,6 +11,12 @@ use crate::id::ObjectId;
 /// The physical board: placed parts (more object kinds follow).
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Board {
+    /// Independent routed straight copper objects.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub tracks: BTreeMap<ObjectId, crate::Track>,
+    /// Through vias; other via types are not represented.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub vias: BTreeMap<ObjectId, crate::Via>,
     /// Explicit substrate boundary; absent in legacy projects with an automatic preview.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<crate::BoardOutline>,

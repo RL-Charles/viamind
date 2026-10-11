@@ -66,3 +66,12 @@ validates geometry and globally unique pad identities. New event logs always use
 version 3, including empty bases: later appended part snapshots can then contain
 pads without older readers silently discarding them. Legacy logs remain readable;
 pad-bearing snapshots in a mislabeled older log are rejected.
+
+### Copper geometry (version 4)
+
+Independent straight copper tracks and circular through vias are stored in board
+maps keyed by stable IDs, with integer nanometre geometry and validated top/bottom
+layers and net labels. Nonempty copper requires schema version 4; empty maps are
+omitted to preserve earlier schema output. Native loading validates object keys,
+global identity uniqueness, dimensions, coordinates and object count bounds.
+See [the copper specification](../specs/copper-tracks-vias.md).

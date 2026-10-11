@@ -45,6 +45,10 @@ ui_actions! {
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
+    DeleteTrack => (viamind_engine::DeleteTrack::NAME, input_schema::<viamind_engine::DeleteTrack>(), delete_track),
+    AddVia => (viamind_engine::AddVia::NAME, input_schema::<viamind_engine::AddVia>(), add_via),
+    DeleteVia => (viamind_engine::DeleteVia::NAME, input_schema::<viamind_engine::DeleteVia>(), delete_via),
     SetBoardOutline => (SetBoardOutline::NAME, input_schema::<SetBoardOutline>(), set_board_outline),
     UpdatePart => (UpdatePart::NAME, input_schema::<UpdatePart>(), update_part),
     DeletePart => (DeletePart::NAME, input_schema::<DeletePart>(), delete_part),
@@ -126,4 +130,20 @@ fn run_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let snapshot = engine.session_state();
     let report = viamind_drc::run_drc(&snapshot.project, &input).map_err(|e| invalid(e.to_string()))?;
     Ok(json!({"source_cursor":snapshot.cursor,"report":report}))
+}
+
+fn add_track(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("add_track", input, Origin::User)?).map_err(encode_error)
+}
+
+fn delete_track(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("delete_track", input, Origin::User)?).map_err(encode_error)
+}
+
+fn add_via(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("add_via", input, Origin::User)?).map_err(encode_error)
+}
+
+fn delete_via(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("delete_via", input, Origin::User)?).map_err(encode_error)
 }

@@ -12,6 +12,8 @@ pub enum Prim {
     Quad([WorldPos; 4]),
     /// A round pad or via.
     Circle { center: WorldPos, radius: f64 },
+    /// A through via with exact outer and drilled diameters.
+    Via { center: WorldPos, radius: f64, drill_radius: f64 },
     /// A track segment of the given width.
     Segment { a: WorldPos, b: WorldPos, width: f64 },
 }
@@ -24,7 +26,7 @@ impl Prim {
             Self::Quad(points) => points.iter().skip(1).fold(WorldRect::from_points(points[0], points[0]), |r, p| {
                 WorldRect::new(WorldPos::new(r.min.x.min(p.x), r.min.y.min(p.y)), WorldPos::new(r.max.x.max(p.x), r.max.y.max(p.y)))
             }),
-            Self::Circle { center, radius } => {
+            Self::Circle { center, radius } | Self::Via { center, radius, .. } => {
                 WorldRect::new(WorldPos::new(center.x - radius, center.y - radius), WorldPos::new(center.x + radius, center.y + radius))
             }
             Self::Segment { a, b, width } => WorldRect::from_points(a, b).expand(width * 0.5),
