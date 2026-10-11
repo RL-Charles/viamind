@@ -10,7 +10,7 @@ Source export checks its project UUID/full cursor and source sheet/symbol identi
 
 ## Deterministic and full Linux checks
 
-The [master](verification/t0107/master.json) indexes23 durable artifacts. Focused gate58974 at source`bcc19a1c9310bc7d5a973e371d916d4145548b6a` passed formatting, strict workspace/all-target Clippy and11 tests:2doc-stage,3both-writer engine,1shared lifecycle-lock liveness and5existing symbol integration cases.
+The [master](verification/t0107/master.json) indexes31 durable artifacts. Focused gate58974 at source`bcc19a1c9310bc7d5a973e371d916d4145548b6a` passed formatting, strict workspace/all-target Clippy and11 tests:2doc-stage,3both-writer engine,1shared lifecycle-lock liveness and5existing symbol integration cases.
 
 For **both** writers, hooks after staging complete a peer native save or guarded open before publication. The latest active-native error must precede a generic collision error, and the peer's resulting full session/status/native bytes remain exact. Separate racing-destination cases preserve bytes and clean stages. Ordinary peer edits remain live during staging, retain their complete state and leave exported bytes/capture cursor intact. Shared lifecycle tests prove publication waits for in-flight save, excludes native transitions and permits ordinary commands inside the publication section. These deterministic test hooks are not described as production MCP scheduling evidence.
 
@@ -26,8 +26,14 @@ The unchanged T102 inspection example was built from the **new product source**;
 
 ![Completed guarded NEW symbol publication](verification/t0107/completed.png)
 
-Repeat `scripts/verify-symbol-publication-native.py --binary RETAINED_APP --report NEW_REPORT` for isolated stdio. Add `--url` only for an explicitly owned scratch engine: the verifier opens a temporary project and makes deliberate peer edits. `verify-symbol-definition-native.py` repeats the bounded detached writer cases. All output paths must be NEW. `docs/verification/t0107/verify-artifacts.py` verifies23 durable hashes and the complete native PNG RGB image.
+Repeat `scripts/verify-symbol-publication-native.py --binary RETAINED_APP --report NEW_REPORT` for isolated stdio. Add `--url` only for an explicitly owned scratch engine: the verifier opens a temporary project and makes deliberate peer edits. `verify-symbol-definition-native.py` repeats the bounded detached writer cases. All output paths must be NEW. `docs/verification/t0107/verify-artifacts.py` verifies31 durable hashes and the complete native PNG RGB image.
 
 Final combined CI and independent final review remain merge gates. Multi-unit symbols and the inherited compact nested pin-layout clipping remain separate work.
 
 Historical product/native ancestry is retained by annotated tag`verification/t0107/native-source` at`29d351bf0b83ab7cf6487094edc800dfab3abedc`; GitHub resolves the exact product source. Later stacked integration evidence is recorded separately without relabeling this proof.
+
+## Final stacked integration
+
+Own five commits were transplanted cleanly onto frozen T105 head`6047239d13ae8991d0cf0889a9c73f04b2a92349` (PR104). All five range-diff entries are equal; no implementation change or conflict resolution occurred. Combined source`8771051b57da788cb1948c57b7f603e8d18c443d` passed gate24363: formatting, strict workspace/all-target Clippy,20focused doc/engine/lifecycle/MCP/actual desktop tests, workspace build,88-tool full discovery/exact canonical catalog,18isolated agent workflow checks and35fresh stdio writer checks. Unique combined executable SHA-256`f120bd5fded1e46b7cd54ab9543f63997caa9fceca715676815e14ede642f95b` and logs/reports are retained separately. The historical747/native proof above retains its original exact source and binaries.
+
+Final exact-head CI and independent review are required. After T104/T105 merges, the prospective main-plus-HEAD merge tree must equal this tested HEAD tree; any content difference requires another combined verification and CI.

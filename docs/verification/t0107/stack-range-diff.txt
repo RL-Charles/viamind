@@ -1,0 +1,5 @@
+1:  c00a8fe = 1:  4ce6ed2 Specify current-native guarded symbol publication
+2:  00765cb = 2:  2ac5641 Stage symbol save and export under current native publication guard
+3:  3921f3c = 3:  68ee03b Add actual both-writer native publication verification
+4:  29d351b = 4:  1c9702f Retain guarded symbol publication Linux MCP and native evidence
+5:  6ddd46c = 5:  8771051 Record public guarded symbol proof ancestry
