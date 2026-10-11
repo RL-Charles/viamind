@@ -13,7 +13,7 @@
     },
     "build": "workspace pass",
     "focused": {
-      "source_commit": "7d77fd6",
+      "source_commit": "7d77fd60aa5d8252e7749a2cd40886ea612f2f42",
       "passed": 42,
       "failed": 0
     },
@@ -287,9 +287,22 @@
     ]
   },
   "integration": {
-    "base_after_clean_rebase": "b9b09fc8f432e100436ab12b9b8749ec3c02d58f",
-    "source": "179b2fdb670c8648ead35091a1a04c892d1b4fec",
-    "note": "T99 unrelated read-only integration, clean rebase; historical production/native evidence retains exact source020b70f. Final combined catalog and CI pending."
+    "base": "f568574",
+    "source_commit": "eb7d2d937a531e3ce9ebdf20d0f90475feff6dd5",
+    "note": "T99 read-only plus T100 assembly calibration integration. Minimum native version=max(geometry,assembly,named rules); historical production/native artifacts remain exact020b70f. Mixed authored test proves drill-only/annulus-only/both10, header9 refusal, byte-identical clear-to-assembly9, then old policy8 and geometry4. Final exact artifact-head CI is required before merge.",
+    "fmt": "pass",
+    "clippy": "workspace/all-targets -Dwarnings pass",
+    "targeted_tests": {
+      "passed": 36,
+      "failed": 0,
+      "ignored": 0
+    },
+    "build": "workspace pass",
+    "catalog_tools": 85,
+    "agent_workflow_checks": 18,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/final-combined/viamind",
+    "binary_sha256": "9a93b449909c22b626614c2730f87578be63ddc0f09c02bc21ac350ec29b4f73",
+    "canonical_reference": "actual final combined executable exact drift check PASS"
   },
   "artifact_sha256": {
     "agent-workflow.json": "a32798d953d415d867f473863d77c00823baa1cebd64e691b53cd7d15540a850",
@@ -302,6 +315,11 @@
     "client.py": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6",
     "editor-compact.png": "5d901a5f3cdd5a8d523f49a79923c6268a0024ceaee6de26ea8c2243539dfbcb",
     "editor-wide.png": "bc17d6bbc4316616241f498eee80920a2dc08a59d766353221c138f01f706489",
+    "final-agent-workflow.json": "5bf58a266bccbf49b7d8c6a6dcbfe337c0802c8adc090c27ff870836ffd70149",
+    "final-catalog-discovery.json": "47ddcd6250597d6ba675a9270a97d05dc8d53115b09f954448b34f199614c2f0",
+    "final-catalog-drift.json": "47ddcd6250597d6ba675a9270a97d05dc8d53115b09f954448b34f199614c2f0",
+    "final-combined.log": "46148dbf4eaa1ec9fb890967a00c9da6c81db5c1ab6eb74ca1fc30c6b287c1e6",
+    "final-combined.sh": "5634f57129f732ea6d9d154acd79b0155b07b6e753dfb4fb3752dc21370a7c9e",
     "focused-pass.log": "c9f8fcc5d886b83722d12f8e60c639c2f6abf78815afa0ce26af5f329133fb09",
     "inspection-compact-launch.json": "ccb5e6c3ff5d189e6fbc8e19656d54c0b58d62ab147e07519bd7f49b04b4bc2e",
     "inspection-compact.log": "c23d88c8e9ac38c0d27f4fe0e9504df1234d154e88ba0249c4822effc1ed350f",

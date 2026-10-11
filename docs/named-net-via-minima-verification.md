@@ -125,8 +125,24 @@ against an isolated owned desktop session, with arguments `PORT BINARY SOURCE_SH
 REPOSITORY`. It replaces only that verification document and creates NEW outputs
 beside itself. Historical evidence paths are not reusable destinations.
 
-T99 read-only integration rebased cleanly after all native copies were retained.
-Final combined catalog and exact artifact-head CI must pass before merge;
+Final combined integration source `eb7d2d937a531e3ce9ebdf20d0f90475feff6dd5` includes merged read-only
+agent admission and assembly calibration. Native feature calculation preserves
+`max(geometry, assembly metadata, named rules)`, and log10 retains strict
+assembly9 Part-before/after validation. A mixed authored fixture separately
+checks drill-only, annulus-only and both floors at10, older header9 refusal,
+byte-identical restoration to assembly9 after clearing only via floors, then
+policy8 and geometry4 after clearing only their respective features.
+
+The final sequence passed formatting, strict workspace/all-target Clippy,
+**36 focused tests /0 failed**, workspace build, **85-tool** actual combined
+catalog generation and **18** agent workflow checks. The unique final executable
+hash is `9a93b449909c22b626614c2730f87578be63ddc0f09c02bc21ac350ec29b4f73`.
+See [combined log](verification/t0101/final-combined.log),
+[actual catalog](verification/t0101/final-catalog-discovery.json) and
+[workflow](verification/t0101/final-agent-workflow.json). The historical715 full
+suite was retained; unrelated full local gates were not repeated.
+
+Exact final artifact-head CI must pass before merge;
 historical executable/image hashes stay tied to source020b70f above. Existing
 scoped DRC geometry coverage, exclusions and limits remain authoritative. No
 preferred-size inference, resizing, net-class/region hierarchy, blind/buried or
