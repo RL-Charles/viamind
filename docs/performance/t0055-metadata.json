@@ -1,0 +1,51 @@
+{
+  "ticket": "T-0055",
+  "source": "f9a66d81b3603e1c376219911bd940c3ee8de92c",
+  "base": "14943af",
+  "binaries": {
+    "native_benchmark_t0055": {
+      "sha256": "30304ca1d7cef2616e45500173ebb2c608d1dd210a61d63467fbfbb033c748d8"
+    },
+    "gpu_parity_t0055": {
+      "sha256": "53fcc41ca08e74f89ab03f413ba95e8b34f63c317985b47236724059e733541f"
+    },
+    "native_benchmark_t0050_integrated": {
+      "source": "4e60cfb1ce919485159437a3b62a430f4e20bf03",
+      "sha256": "c0805d90f3d50da975ec169d1d2dd4fe4ca305d1ab01735a205945b11fdce196"
+    }
+  },
+  "run_order": [
+    "t0055-reference.json",
+    "t0055-t0050-tiles.json",
+    "t0055-layers.json"
+  ],
+  "observed_utc": {
+    "reference_start": "2026-10-11T06:10:50Z",
+    "reference_complete_by": "2026-10-11T06:12:58Z",
+    "tiles_start": "2026-10-11T06:13:06Z",
+    "tiles_complete_by": "2026-10-11T06:14:48Z",
+    "layers_start": "2026-10-11T06:14:56Z",
+    "layers_complete_by": "2026-10-11T06:15:58Z"
+  },
+  "load_average_observed_range": [
+    11.28,
+    18.2
+  ],
+  "concurrent_activity": "Unrelated CPU tests/compilation and existing native design previews; this ticket builds completed before timing.",
+  "measurement_limits": [
+    "Sequential runs with varying host load, not isolated hardware limits",
+    "One Cua window snapshot during mesh reference run; no screenshots/input during GPU runs",
+    "Native frame intervals and previous-frame CPU, not GPU timestamps",
+    "Default single-sample native configuration, 1 pixel/point; other DPI/sample/depth settings unverified"
+  ],
+  "local_gates": {
+    "workspace_tests_passed": 277,
+    "workspace_tests_failed": 0,
+    "existing_ignored": 1,
+    "fmt": "pass",
+    "strict_all_target_clippy": "pass",
+    "workspace_build": "pass"
+  },
+  "same_geometry_check": "All reports have 100000 objects, 1260 native frames, 1320x954 canvas and identical per-phase visible-count bounds.",
+  "strict_60fps": "All phase cadence checks fail; original acceptance remains open."
+}
