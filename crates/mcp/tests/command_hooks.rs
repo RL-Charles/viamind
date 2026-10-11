@@ -7,7 +7,7 @@ use rmcp::{
 use serde_json::{Value, json};
 use viamind_doc::Project;
 use viamind_engine::{
-    EngineHandle, Origin,
+    EngineHandle,
     agent_policy::{AgentMode, AgentPolicyError},
 };
 use viamind_mcp::{engine_registry, serve_http};
@@ -62,11 +62,12 @@ async fn actual_two_client_gate_rollback_repair_undo_redo_and_all_mode_admission
         let tools = a.list_all_tools().await.unwrap();
         assert!(tools.iter().any(|t| t.name == "get_command_hooks"));
         assert!(!tools.iter().any(|t| t.name == "configure_command_hooks"));
-        assert_eq!(call(&a, "configure_command_hooks", json!({"enabled":false})).await.is_error, Some(true));
+        assert!(a.call_tool(CallToolRequestParams::new("configure_command_hooks").with_arguments(serde_json::Map::new())).await.is_err());
         value(&b, "get_command_hooks", json!({})).await;
     }
     e.agent_policy().lock_read_only().unwrap();
-    assert_eq!(call(&b, "configure_command_hooks", json!({"enabled":false})).await.is_error, Some(true));
+    assert!(b.call_tool(CallToolRequestParams::new("configure_command_hooks").with_arguments(serde_json::Map::new())).await.is_err());
+    value(&b, "get_command_hooks", json!({})).await;
     assert_eq!(e.session_state(), undone);
     assert_eq!(std::fs::read(native).unwrap(), bytes);
     a.cancel().await.unwrap();
@@ -108,6 +109,5 @@ async fn abandoned_transport_keeps_writer_permit_until_post_callback_finishes() 
     assert_eq!(e.agent_policy().status().active_writers, 0);
     e.agent_policy().set_mode(AgentMode::Approval).unwrap();
     assert_eq!(e.read(|p| p.board.parts.len()), 1);
-    e.undo(Origin::User).unwrap();
     server.shutdown();
 }
