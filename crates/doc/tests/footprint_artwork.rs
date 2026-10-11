@@ -83,7 +83,7 @@ fn mixed_artwork_package_via_and_assembly_features_max_compose_and_clear() {
         Some(Box::new(AssemblyMetadata { mounting: Some(MountingTechnology::Hybrid), ..Default::default() }));
     p.board.net_rules.insert(
         "Exact".into(),
-        NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(0), minimum_via_drill: Nm(3), minimum_annular_width: Nm(5) },
+        NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1), minimum_via_drill: Nm(3), minimum_annular_width: Nm(5) },
     );
     p.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
     assert_eq!(file::minimum_version(&p), 13);
