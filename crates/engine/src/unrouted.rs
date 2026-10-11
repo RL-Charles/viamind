@@ -606,8 +606,15 @@ mod tests {
         Point::new(Nm(x), Nm(y))
     }
     fn pad(project: &mut Project, x: i64, y: i64, side: Side, name: &str, width: i64, height: i64) -> ObjectId {
-        let pad =
-            Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(width), height: Nm(height), net: Some(name.into()) };
+        let pad = Pad {
+            apertures: None,
+            id: ObjectId::new(),
+            number: "1".into(),
+            position: Point::ORIGIN,
+            width: Nm(width),
+            height: Nm(height),
+            net: Some(name.into()),
+        };
         let part = Part {
             assembly: None,
             artwork: None,

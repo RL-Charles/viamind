@@ -97,9 +97,9 @@ impl ApertureEditor {
                     Ok(values) => {
                         self.fields[i] = values;
                         if i == 0 {
-                            self.mask = true
+                            self.mask = true;
                         } else {
-                            self.paste = true
+                            self.paste = true;
                         }
                         changed = true;
                         self.message = None;
@@ -186,12 +186,12 @@ impl crate::ViamindApp {
             self.pads.cancel();
             return;
         }
-        if let Some(id) = chosen {
-            if let Some(p) = d.expected.pads.as_ref().unwrap().0.iter().find(|p| p.id == id) {
-                d.pad_id = id;
-                d.editor = ApertureEditor::load(p.apertures.as_ref());
-                d.message = None;
-            }
+        if let Some(id) = chosen
+            && let Some(p) = d.expected.pads.as_ref().unwrap().0.iter().find(|p| p.id == id)
+        {
+            d.pad_id = id;
+            d.editor = ApertureEditor::load(p.apertures.as_ref());
+            d.message = None;
         }
         if reload {
             let id = d.expected.id;
