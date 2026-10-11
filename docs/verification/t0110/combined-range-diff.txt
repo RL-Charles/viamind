@@ -1,0 +1,11 @@
+ 1:  39a50ca =  1:  22e3a58 Specify reachable compact detached symbol definition fields
+ 2:  cd0e64f =  2:  0aadd00 Keep compact symbol pin viewport tall enough for complete rows
+ 3:  237cb86 =  3:  871c10b Reveal parent pin region before compact child scroll actions
+ 4:  95f89be =  4:  9da9496 Use actual widget backgrounds for compact ancestor clip checks
+ 5:  311ca14 =  5:  397fae6 Center complete compact pin row with actual wheel input
+ 6:  9fda75d =  6:  6df6c7d Assert actual native NEW collision error text
+ 7:  5dc92d1 =  7:  ade9fe1 Inspect compact symbol row and NEW save through shared actual input
+ 8:  1b60cc5 =  8:  08b4e94 Remove unused compact inspection helper import
+ 9:  c8e6fab =  9:  6ecdd18 Retain compact symbol Linux MCP and native row proof
+10:  e55db5b = 10:  5d19af7 Keep compact verification hashes and links exact
+11:  018231f = 11:  062eeb6 Record public compact proof source retention

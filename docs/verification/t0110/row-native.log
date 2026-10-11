@@ -1,0 +1,24 @@
+REVEAL New detached definition
+RECT New detached definition [[23.0 174.0] - [174.0 192.0]]
+REVEAL Definition name
+RECT Definition name [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 262.0] - [134.7 280.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 190.0] - [243.7 209.0]]
+REVEAL Remove pin 1
+RECT Remove pin 1 [[23.0 185.0] - [109.6 203.0]]
+REVEAL Pin 1 electrical type
+RECT Pin 1 electrical type [[143.7 216.0] - [243.7 234.0]]
+REVEAL Input
+RECT Input [[151.0 51.0] - [244.0 69.0]]
+REVEAL Remove pin 1
+RECT Remove pin 1 [[23.0 237.0] - [109.6 255.0]]
+{"complete_row_in_actual_clip":true,"inner_clip":[17.0,128.0,515.0,259.0],"stable_pin_ids":true}
+{"capture":"eframe native WGPU Screenshot event","content_rect":[0.0,0.0,640.0,400.0],"controls":[[143.71875,128.0,243.71875,147.0],[143.71875,150.0,243.71875,169.0],[143.71875,172.0,243.71875,191.0],[143.71875,194.0,243.71875,213.0],[143.71875,216.0,243.71875,234.0],[23.0,237.0,109.625,255.0]],"document_status_unchanged":true,"full_session_unchanged":true,"path":"/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row.ppm","pid":2093703,"pixels":[640,400],"self_close_after_capture":true,"ui_passes":11}

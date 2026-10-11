@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    "both writers and native loader advertised",
+    "owned native fixture opens with dirty peer work retained",
+    "export reports exact captured cursor/name/count/path",
+    "peer loader returns exact detached ordered source fields",
+    "export retains complete dirty session/status/native bytes",
+    "detached NEW save retains original exact native bytes",
+    "detached save preserves complete dirty session and status",
+    "export_symbol_template native/collision refusal 7",
+    "save_symbol_template native/collision refusal 8",
+    "export_symbol_template native/collision refusal 9",
+    "save_symbol_template native/collision refusal 10",
+    "save_symbol_template canonical native alias rejected",
+    "export_symbol_template canonical native alias rejected",
+    "stale export cursor rejects before destination publication",
+    "stale refusal preserves newer peer session/status/files",
+    "original repository fixture bytes preserved",
+    "retained production executable unchanged"
+  ],
+  "binary_sha256": "b1fb52f8134211cac5ffd4c9335380150720a3b98d2e7c12bcbc6fc11aaa897f",
+  "transport": "owned production headless stdio",
+  "scope": "Actual bounded native save/export and strict refusal/session preservation. Deterministic between-stage lifecycle races are separate engine tests, not a production scheduling claim."
+}
