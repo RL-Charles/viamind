@@ -54,3 +54,26 @@ fn optional_calibration_is_strict_bounded_and_absent_bytes_stay_identical() {
         assert!(serde_json::from_value::<AssemblyMetadata>(invalid.clone()).is_err(), "{invalid}");
     }
 }
+
+#[test]
+fn mixed_named_net_policy_and_calibration_use_maximum_feature_version() {
+    use viamind_doc::{MountingTechnology, NamedNetMinima, file};
+    use viamind_geom::Nm;
+    let mut project = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+    let id = *project.board.parts.keys().next().unwrap();
+    project.board.net_rules.insert("GND".into(), NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(250_000) });
+    assert_eq!(file::minimum_version(&project), 8);
+    project.board.parts.get_mut(&id).unwrap().assembly =
+        Some(Box::new(AssemblyMetadata { mpn: Some("explicit".into()), mounting: Some(MountingTechnology::Hybrid), ..Default::default() }));
+    assert_eq!(file::minimum_version(&project), 9);
+    assert_eq!(file::from_str(&file::to_string(&project)).unwrap(), project);
+    let mut old: serde_json::Value = serde_json::from_str(&file::to_string(&project)).unwrap();
+    old["version"] = serde_json::json!(8);
+    assert!(file::from_str(&old.to_string()).is_err());
+    project.board.parts.get_mut(&id).unwrap().assembly.as_mut().unwrap().mounting = None;
+    assert_eq!(file::minimum_version(&project), 8);
+    project.board.net_rules.clear();
+    assert_eq!(file::minimum_version(&project), 7);
+    project.board.parts.get_mut(&id).unwrap().assembly = None;
+    assert_eq!(file::minimum_version(&project), 4);
+}

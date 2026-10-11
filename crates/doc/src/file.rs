@@ -163,7 +163,8 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    let assembly_version = project.board.parts.values().filter_map(|p| p.assembly.as_ref()).map(|metadata| metadata.minimum_version()).max().unwrap_or(1);
+    let assembly_version =
+        project.board.parts.values().filter_map(|p| p.assembly.as_ref()).map(|metadata| metadata.minimum_version()).max().unwrap_or(1);
     let geometry_version = if project.board.parts.values().any(|p| p.schematic_symbol.is_some()) {
         6
     } else if project.schematic.sheets.values().any(|s| s.content.is_some()) {
