@@ -17,12 +17,31 @@ struct GeometryCounts {
     holes: usize,
 }
 fn counts(project: &Project) -> io::Result<GeometryCounts> {
+    if project.board.parts.len() > 100_000
+        || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)) > viamind_drc::MAX_COPPER_SHAPES
+    {
+        return Err(invalid("checked job exceeds bounded DRC copper coverage"));
+    }
+    let pads = project.board.parts.values().try_fold(0usize, |count, part| {
+        let count = count.checked_add(part.pads.as_ref().map_or(0, |pads| pads.0.len())).ok_or_else(|| invalid("checked pad count overflow"))?;
+        if count > viamind_drc::MAX_PADS {
+            return Err(invalid("checked job exceeds bounded DRC pad coverage"));
+        }
+        Ok(count)
+    })?;
+    if project.board.parts.len() > 100_000
+        || pads > viamind_drc::MAX_PADS
+        || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)).saturating_add(pads) > viamind_drc::MAX_COPPER_SHAPES
+    {
+        return Err(invalid("checked job exceeds bounded DRC copper coverage"));
+    }
+
     // Borrowed preflight also protects direct internal callers before DRC clones labels.
     let mut text = 0usize;
     let mut charge = |value: &str| -> io::Result<()> {
         text = text.saturating_add(value.len());
         if value.len() > 4096 || text > 2 * 1024 * 1024 {
-            return Err(invalid("checked DRC snapshot text exceeds4096bytes/string or2MiB aggregate"));
+            return Err(invalid("checked DRC snapshot text exceeds 4096 bytes/string or 2 MiB aggregate"));
         }
         Ok(())
     };
@@ -42,18 +61,13 @@ fn counts(project: &Project) -> io::Result<GeometryCounts> {
     {
         charge(net)?;
     }
-    if project.board.outline.as_ref().is_some_and(|outline| outline.rings().map(|ring| ring.points.len().saturating_add(1)).sum::<usize>() > 200_000)
+    if project
+        .board
+        .outline
+        .as_ref()
+        .is_some_and(|outline| outline.rings().map(|ring| ring.points.len().saturating_add(1)).fold(0usize, usize::saturating_add) > 200_000)
     {
-        return Err(invalid("checked DRC outline exceeds200000 primitives"));
-    }
-    let pads = project.board.parts.values().try_fold(0usize, |count, part| {
-        count.checked_add(part.pads.as_ref().map_or(0, |pads| pads.0.len())).ok_or_else(|| invalid("checked pad count overflow"))
-    })?;
-    if project.board.parts.len() > 100_000
-        || pads > viamind_drc::MAX_PADS
-        || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)).saturating_add(pads) > viamind_drc::MAX_COPPER_SHAPES
-    {
-        return Err(invalid("checked job exceeds bounded DRC copper coverage"));
+        return Err(invalid("checked DRC outline exceeds 200000 primitives"));
     }
     Ok(GeometryCounts { pads, tracks: project.board.tracks.len(), vias: project.board.vias.len(), holes: project.board.vias.len() })
 }
@@ -91,7 +105,7 @@ struct BoundedReport(Vec<u8>);
 impl Write for BoundedReport {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
         if bytes.len() > REPORT_LIMIT.saturating_sub(self.0.len()) {
-            return Err(invalid("checked validation artifact exceeds16MiB"));
+            return Err(invalid("checked validation artifact exceeds 16 MiB"));
         }
         self.0.extend_from_slice(bytes);
         Ok(bytes.len())
@@ -190,6 +204,10 @@ mod tests {
         let mut strict = rules.clone();
         strict.edge_clearance_mm = 100.;
         assert!(checked_output_job_report(&project, &serde_json::to_value(strict).unwrap(), &0).unwrap_err().to_string().contains("violations"));
+        let mut limited = rules.clone();
+        limited.edge_clearance_mm = 100.;
+        limited.max_violations = 1;
+        assert!(checked_output_job_report(&project, &serde_json::to_value(limited).unwrap(), &0).unwrap_err().to_string().contains("incomplete"));
         project.board.parts.values_mut().next().unwrap().pads = None;
         assert!(checked_output_job_report(&project, &serde_json::to_value(&rules).unwrap(), &0).unwrap_err().to_string().contains("excluded"));
         project.board.parts.clear();

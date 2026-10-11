@@ -37,11 +37,11 @@ impl OutputJobChecks {
             self.hole_to_copper_clearance_mm,
         ] {
             if !value.is_finite() || !(0.0..=100.0).contains(&value) {
-                return Err(invalid("checked job distance baselines must be finite within0..100mm"));
+                return Err(invalid("checked job distance baselines must be finite within 0..100 mm"));
             }
         }
         if !(1..=10000).contains(&self.max_violations) {
-            return Err(invalid("checked job max_violations must be within1..10000"));
+            return Err(invalid("checked job max_violations must be within 1..10000"));
         }
         Ok(())
     }
@@ -251,7 +251,7 @@ impl OutputJobSnapshot {
             let input = serde_json::to_value(checks).map_err(invalid_json)?;
             let bytes = validate(&self.board.project, &input, &cursor)?;
             if bytes.len() > VALIDATION_LIMIT {
-                return Err(invalid("checked validation artifact exceeds16MiB"));
+                return Err(invalid("checked validation artifact exceeds 16 MiB"));
             }
             Some(bytes)
         } else {

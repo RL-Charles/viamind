@@ -63,7 +63,7 @@ impl OutputJobUi {
         let mut job = OutputJob::new(self.name.clone(), mask);
         if self.checked {
             let parse =
-                |index: usize| self.checks[index].parse::<f64>().map_err(|_| format!("{} needs a finite number in0..100mm", CHECK_LABELS[index]));
+                |index: usize| self.checks[index].parse::<f64>().map_err(|_| format!("{} needs a finite number in 0..100 mm", CHECK_LABELS[index]));
             job.profile = viamind_fab::CHECKED_PROFILE.into();
             job.checks = Some(OutputJobChecks {
                 copper_clearance_mm: parse(0)?,
@@ -72,7 +72,7 @@ impl OutputJobUi {
                 minimum_annular_width_mm: parse(3)?,
                 hole_clearance_mm: parse(4)?,
                 hole_to_copper_clearance_mm: parse(5)?,
-                max_violations: self.checks[6].parse().map_err(|_| "Maximum DRC violations needs an integer in1..10000".to_string())?,
+                max_violations: self.checks[6].parse().map_err(|_| "Maximum DRC violations needs an integer in 1..10000".to_string())?,
             });
         }
         job.validate().map_err(|e| e.to_string())?;
@@ -319,6 +319,7 @@ mod tests {
         let mut app = ViamindApp::with_design(engine, None);
         app.begin_output_jobs();
         app.output_jobs.worker = Some(rx);
+        app.output_jobs.checked = true;
         let mut h = Harness::builder().build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
         h.run_steps(3);
         for label in [
@@ -330,6 +331,9 @@ mod tests {
             "Save NEW job file",
             "Run saved job to NEW directory",
         ] {
+            assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        for label in CHECK_LABELS.iter().copied().chain(["Generic outer 2-layer", "Checked outer 2-layer"]) {
             assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
         }
         tx.send(Err("controlled failure".into())).unwrap();
