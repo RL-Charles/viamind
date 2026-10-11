@@ -1,0 +1,72 @@
+{
+  "format": "viamind-generated-mcp-verification",
+  "version": 1,
+  "verified_utc": "2026-10-11T14:25:35.528541+00:00",
+  "tooling_source_commit": "36245f33d66be50d916d422156ba58a3e97ff537",
+  "queued_source_commit": "fb1cfcfecc4ef3b62e4c2b5a58ca71361f6d1408",
+  "base_commit": "9a80afc944da0531ecf9c469775ff48bafd972d9",
+  "source_trees": {
+    "crates": "578c98c07507e6693152a9f1d6aff2d61c90717f",
+    "apps": "cab628887f5ae4d721baca81a39034fa8ab8087e",
+    "Cargo.toml": "eaca2e88aaabdcbb93db9319f04ba414f29d59c9",
+    "Cargo.lock": "e3540f9af73daadff33e300e31c0a27a6d6ef7cd"
+  },
+  "rust_source_note": "Queued source fb1cfcf and tooling source36245f3 have identical crates/apps/Cargo.toml/Cargo.lock. Python-only reviewed fixes landed before mutex acquisition; all current tooling executed after the fresh build. Own Rust inputs remained frozen throughout. No native rendering changes.",
+  "gate": {
+    "session": 40063,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_test_passed": 664,
+    "workspace_test_failed": 0,
+    "workspace_test_ignored": 1,
+    "workspace_build": true,
+    "python_tests_passed": 13,
+    "tool_count": 81,
+    "workflow_checks_passed": 18
+  },
+  "binary": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0096/viamind",
+    "bytes": 599571592,
+    "sha256": "bc2db97ec25fb88ae22a122ec79bb2345f6ecd1748d84ecdab6155cac85305dc"
+  },
+  "artifacts": {
+    "docs/generated/mcp-tools.json": {
+      "bytes": 486600,
+      "sha256": "6a7c4b5ba651f3c4bbaef005d66b1725596aea48a963d450fb29975ae0d93ccd"
+    },
+    "docs/generated/mcp-tools.md": {
+      "bytes": 455320,
+      "sha256": "904b1e33a414abf277c621610af5db993a667016c466fa8272f5f89ba8b2d0de"
+    },
+    "docs/verification/t0096/agent-board.viamind.json": {
+      "bytes": 977,
+      "sha256": "6ba43ec7d09361ff21f236972404c494003529bdeb1b43c1276a6246868b3328"
+    },
+    "docs/verification/t0096/discovery.json": {
+      "bytes": 367,
+      "sha256": "c20ffd200ab23a83d604cb2058a33c68af5f319fc591b84bf530e60d1cf0443b"
+    },
+    "docs/verification/t0096/full-linux.log": {
+      "bytes": 108992,
+      "sha256": "4763940541b59b2b45cc0209becb762e13b178facb34af0b68df0aa9c040f4b6"
+    },
+    "docs/verification/t0096/full-linux.sh": {
+      "bytes": 1321,
+      "sha256": "5c52ca06ae261469caa6a5ba5930e4fc81a10cb75350ba959dde7805eca48c7e"
+    },
+    "docs/verification/t0096/queued-build-source.json": {
+      "bytes": 573,
+      "sha256": "682f7544430f09e156b1608ad6e25562407c0ad872228ede374fd8f303829ba6"
+    },
+    "docs/verification/t0096/reference-checks.json": {
+      "bytes": 1522,
+      "sha256": "6947e5f4e1764fb8259884d40966ce3cf34575fe00dc836deb959122e602c3e6"
+    },
+    "docs/verification/t0096/workflow.json": {
+      "bytes": 1264,
+      "sha256": "fd2cada548fdce42fac5235bd2344394ce6a7c14212b3ef273eb6af67c1d0b0e"
+    }
+  },
+  "scope": "Fresh owned stdio application; complete MCP discovery and original isolated graphical component workflow. No GUI rendering change, electrical completeness or manufacturing approval claim."
+}

@@ -63,3 +63,13 @@ jobs:
       - run: cargo test --workspace --locked
       - name: Build Linux workspace
         run: cargo build --workspace --locked
+      - name: Verify bounded MCP reference tooling
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s scripts/tests -p test_mcp_reference.py -v
+      - name: Check full application tool reference and isolated agent workflow
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 scripts/generate-mcp-reference.py --binary target/debug/viamind --check docs/generated
+          python3 scripts/mcp-agent-workflow.py --binary target/debug/viamind

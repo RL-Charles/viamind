@@ -17,12 +17,18 @@ engine yet, so it serves the built-ins only.
 ## Use it from Claude Code
 
 ```sh
-cargo build --release -p viamind-mcp
-claude mcp add viamind -- "$PWD/target/release/viamind-mcp"
+cargo build --release -p viamind
+claude mcp add --transport stdio viamind-headless -- "$PWD/target/release/viamind" --headless
 ```
 
-Any other MCP client works the same way: run `viamind-mcp` with no arguments and speak MCP on
-its stdin/stdout.
+Any MCP client can run `viamind --headless` and speak MCP on stdin/stdout.
+Each process owns a separate document. To share the running desktop's design,
+connect with `claude mcp add --transport http viamind http://127.0.0.1:7878/mcp`.
+The standalone `viamind-mcp` binary is a skeleton with identification/echo only.
+
+See the [generated complete tool reference](../../docs/generated/mcp-tools.md)
+and [guarded agent workflows](../../docs/agent-workflows.md) for schemas,
+full application setup, exact guards and runnable isolated examples.
 
 ## Expose engine commands
 

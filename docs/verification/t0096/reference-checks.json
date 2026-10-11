@@ -1,0 +1,18 @@
+{
+  "exact_committed_reference": {
+    "returncode": 0,
+    "stdout": "Verified 81 full-application tools (2025-03-26)\n",
+    "stderr": ""
+  },
+  "drift_rejected": {
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/charlesmowbray/Development/viamind-t-0096/scripts/generate-mcp-reference.py\", line 30, in <module>\n    main()\n    ~~~~^^\n  File \"/home/charlesmowbray/Development/viamind-t-0096/scripts/generate-mcp-reference.py\", line 21, in main\n    raise ValueError(f\"MCP reference drift: {name}; regenerate from current full application\")\nValueError: MCP reference drift: mcp-tools.json; regenerate from current full application\n"
+  },
+  "existing_output_rejected": {
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/charlesmowbray/Development/viamind-t-0096/scripts/generate-mcp-reference.py\", line 30, in <module>\n    main()\n    ~~~~^^\n  File \"/home/charlesmowbray/Development/viamind-t-0096/scripts/generate-mcp-reference.py\", line 23, in main\n    publish_files(files, args.output)\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/home/charlesmowbray/Development/viamind-t-0096/scripts/mcp_reference.py\", line 319, in publish_files\n    raise FileExistsError(f\"NEW output already exists: {destination}\")\nFileExistsError: NEW output already exists: /home/charlesmowbray/.cache/viamind/native-artifacts/t0096/check-fwh5p_us/drift\n"
+  },
+  "both_failures_preserved_all_bytes": true
+}
