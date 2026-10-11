@@ -4461,6 +4461,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui_kittest",
+ "serde",
  "serde_json",
  "tempfile",
  "tokio",

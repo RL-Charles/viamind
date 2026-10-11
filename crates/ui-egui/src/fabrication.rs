@@ -88,7 +88,7 @@ impl ViamindApp {
             ui.add(egui::TextEdit::singleline(&mut self.fabrication.path).desired_width(500.0)).labelled_by(label.id);
             let label = ui.label("Mask expansion (mm)");
             ui.add(egui::TextEdit::singleline(&mut self.fabrication.mask).desired_width(100.0)).labelled_by(label.id);
-            ui.label("Default0: mask opening equals pad; all vias untented. Export X right/Y up; common top view.");
+            ui.label("Default 0 mm: mask opening equals pad; all vias untented. Export X right/Y up; common top view.");
             export = ui.add_enabled(self.fabrication.worker.is_none(), egui::Button::new("Export fabrication snapshot")).clicked();
             if self.fabrication.worker.is_some() {
                 ui.label("Exporting snapshot…");
