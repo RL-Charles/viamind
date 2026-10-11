@@ -131,7 +131,8 @@ impl ViamindApp {
             egui::ScrollArea::vertical().id_salt("pin_pad_rows").max_height(180.0).show(ui, |ui| {
                 for (index, row) in report.terminals.iter().enumerate() {
                     let caption = format!(
-                        "{} {} · pin {} / pad {}",
+                        "{}{} {} · pin {} / pad {}",
+                        row.unit_key.as_ref().map_or_else(String::new, |key| format!("Unit {key} · ")),
                         row.number,
                         row.pin_name.as_deref().unwrap_or(""),
                         if row.pin_id.is_some() { "present" } else { "missing" },
@@ -139,7 +140,10 @@ impl ViamindApp {
                     );
                     if ui
                         .selectable_label(self.pin_pad_probe.selected == Some(index), &caption)
-                        .on_hover_text(format!("Pin {:?}\nPad {:?}", row.pin_id, row.pad_id))
+                        .on_hover_text(format!(
+                            "Package {:?}\nUnit {:?}\nSymbol {:?}\nPin {:?}\nPad {:?}",
+                            row.package_id, row.unit_key, row.symbol_id, row.pin_id, row.pad_id
+                        ))
                         .clicked()
                     {
                         self.pin_pad_probe.selected = Some(index);
