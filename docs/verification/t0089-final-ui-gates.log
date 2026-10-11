@@ -1,0 +1,38 @@
+d17344b5c0a96c32a8d05d357a27ef70741b9498
+Sun Oct 11 12:05:29 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.91s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 37.87s
+     Running tests/footprint_conversion.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_conversion-4d2a3a9a532bfec6)
+
+running 3 tests
+test actual_compact_scroll_reaches_conversion_and_changed_source_error_without_touching_work ... ok
+test actual_context_and_path_changes_discard_preview_and_unsupported_source_never_enables_conversion ... ok
+test actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.03s
+
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.68s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0089/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.60s
+4f57014b31979e89273de650e5051ce290b62a06f6bedecaf765db5ecf31c176  /home/charlesmowbray/.cache/viamind/native-artifacts/t0089/production-final
+c11037d96dcb1b6df5b4066b92458841d299833b06a3ddf688b29702cf42ed45  /home/charlesmowbray/.cache/viamind/native-artifacts/t0089/inspection-final
+Sun Oct 11 12:06:45 UTC 2026

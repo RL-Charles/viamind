@@ -291,3 +291,7 @@ Native symbol definition editing: [create reusable symbols](docs/native-symbol-d
 ## Standalone PCB geometry import
 
 File → Import PCB S-expression… provides a bounded read-only fidelity preview and guarded conversion of the explicitly supported standalone PCB subset. Imported geometry starts as an unsaved native document; dirty work and source changes are protected. See [workflow and exclusions](docs/pcb-import.md). Full project/corpus and fabrication equivalence remain open.
+
+## Standalone footprint conversion
+
+File → Convert footprint S-expression… previews the restricted standalone rectangular SMD subset and creates one new detached native footprint library. Conversion preserves dirty work; applying the library is a separate guarded, undoable action. Source IDs, art and manufacturing defaults are not retained. See [workflow, exact subset and fidelity exclusions](docs/footprint-conversion.md).

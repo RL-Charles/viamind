@@ -124,3 +124,6 @@ pub use pcb_import::{ImportPcb, PcbImportPreview, PcbImportResult, PreviewPcbImp
 
 mod fabrication_view;
 pub use fabrication_view::{FabricationInspection, InspectFabricationFiles, InspectedFabricationFile};
+
+mod footprint_conversion;
+pub use footprint_conversion::{ConvertFootprintFile, ConvertedFootprintFile, FootprintConversionPreview, PreviewFootprintConversion};

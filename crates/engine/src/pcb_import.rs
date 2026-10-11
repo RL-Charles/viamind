@@ -48,7 +48,7 @@ fn invalid(message: impl Into<String>) -> EngineError {
 fn read_source(path: &Path) -> Result<(PathBuf, Vec<u8>), EngineError> {
     read_source_with_before_open(path, || {})
 }
-fn source_absolute_path(path: &Path) -> Result<PathBuf, EngineError> {
+pub(crate) fn source_absolute_path(path: &Path) -> Result<PathBuf, EngineError> {
     if path.as_os_str().as_encoded_bytes().len() > 4096 {
         return Err(invalid("source path exceeds 4096 encoded bytes"));
     }
@@ -62,10 +62,16 @@ fn source_absolute_path(path: &Path) -> Result<PathBuf, EngineError> {
     Ok(path)
 }
 fn read_source_with_before_open(path: &Path, before_open: impl FnOnce()) -> Result<(PathBuf, Vec<u8>), EngineError> {
+    read_source_limited_with_before_open(path, MAX_SOURCE_BYTES, before_open)
+}
+pub(crate) fn read_source_bounded(path: &Path, maximum: usize) -> Result<(PathBuf, Vec<u8>), EngineError> {
+    read_source_limited_with_before_open(path, maximum, || {})
+}
+fn read_source_limited_with_before_open(path: &Path, maximum: usize, before_open: impl FnOnce()) -> Result<(PathBuf, Vec<u8>), EngineError> {
     let path = source_absolute_path(path)?;
     let before = std::fs::metadata(&path).map_err(|e| invalid(format!("cannot inspect source: {e}")))?;
-    if !before.is_file() || before.len() > MAX_SOURCE_BYTES as u64 {
-        return Err(invalid("source must be a regular file at most 8 MiB; FIFOs/devices/directories are unsupported"));
+    if !before.is_file() || before.len() > maximum as u64 {
+        return Err(invalid(format!("source must be a regular file at most {maximum} bytes; FIFOs/devices/directories are unsupported")));
     }
     before_open();
     // NONBLOCK prevents a regular-file→FIFO replacement from blocking this worker.
@@ -74,19 +80,19 @@ fn read_source_with_before_open(path: &Path, before_open: impl FnOnce()) -> Resu
             .map_err(|e| invalid(format!("cannot open source: {e}")))?;
     let file = File::from(fd);
     let opened = file.metadata().map_err(|e| invalid(e.to_string()))?;
-    if !opened.is_file() || opened.len() > MAX_SOURCE_BYTES as u64 {
-        return Err(invalid("opened source must be a regular file at most 8 MiB"));
+    if !opened.is_file() || opened.len() > maximum as u64 {
+        return Err(invalid(format!("opened source must be a regular file at most {maximum} bytes")));
     }
     let mut bytes = Vec::new();
-    file.take(MAX_SOURCE_BYTES as u64 + 1).read_to_end(&mut bytes).map_err(|e| invalid(e.to_string()))?;
+    file.take(maximum as u64 + 1).read_to_end(&mut bytes).map_err(|e| invalid(e.to_string()))?;
     let after = std::fs::metadata(&path).map_err(|e| invalid(e.to_string()))?;
-    if bytes.len() > MAX_SOURCE_BYTES
+    if bytes.len() > maximum
         || bytes.len() as u64 != opened.len()
         || !after.is_file()
         || after.len() != opened.len()
         || after.modified().ok() != opened.modified().ok()
     {
-        return Err(invalid("source changed while reading or exceeded 8 MiB; preview again"));
+        return Err(invalid("source changed while reading or exceeded the bounded size; preview again"));
     }
     Ok((path, bytes))
 }
@@ -94,7 +100,7 @@ fn parse(bytes: &[u8]) -> Result<ParsedPcb, EngineError> {
     let text = std::str::from_utf8(bytes).map_err(|_| invalid("source must be UTF-8 text"))?;
     viamind_doc::pcb_sexpr::parse(text).map_err(|e| invalid(e.to_string()))
 }
-fn digest(bytes: &[u8]) -> String {
+pub(crate) fn digest(bytes: &[u8]) -> String {
     Sha256::digest(bytes).iter().map(|b| format!("{b:02x}")).collect()
 }
 impl EngineHandle {

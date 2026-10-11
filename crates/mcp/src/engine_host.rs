@@ -43,6 +43,8 @@ impl CommandHost for EngineHost {
             description: "Read-only strict bounded Gerber/XNC geometry inspection. Requires exact expected_project/full expected_cursor and one to six explicit paths. Supports native-export metric5.6 circular/rectangular flashes, linear circular strokes, aperture rotation, mask openings/profile and metric drill hits. Unknown semantics reject atomically. Max4MiB/file,16MiB total,100000 commands,10000 primitives; one nonwaiting reader retained inside blocking work. Returns native downward-Y geometry, exact file SHA256, captured cursor and file attributes. SameCoordinates UUID mismatch rejects; drill common origin unverified. Files are read independently, not an atomic package snapshot or fabrication/equivalence certification. No design/history/selection/file mutation.".into(),
             input_schema: input_schema::<viamind_engine::InspectFabricationFiles>(),
         });
+        commands.push(HostCommand { name: "preview_footprint_conversion".into(), description: "Read-only bounded standalone footprint S-expression preview. Front zero-angle rectangular SMD pads only, exact integer nm and exhaustive per-list fidelity report with full_fidelity=false. Source UUIDs and cosmetic/model metadata are report-only omissions; meaningful source nets, unsupported geometry and unknown semantics block conversion. Regular UTF-8 file <=1MiB. Returns exact source SHA256; never changes the project or writes source.".into(), input_schema: input_schema::<viamind_engine::PreviewFootprintConversion>() });
+        commands.push(HostCommand { name: "convert_footprint_file".into(), description: "Reparse the exact SHA256-guarded footprint source and publish one explicit new detached native footprint library without overwriting source, existing files or the current native project. Dirty work, history, selection and active native path remain unchanged. Converted libraries omit source UUIDs/nets and require separate explicit import_footprint to reuse: matching pad numbers retain native IDs/nets; new numbers receive fresh IDs and no net. No full fidelity claim.".into(), input_schema: input_schema::<viamind_engine::ConvertFootprintFile>() });
         commands.push(HostCommand { name: "preview_pcb_import".into(), description: "Read-only bounded standalone PCB S-expression preview. Exact nm front zero-angle rectangular SMD pads, straight outer tracks, through vias and polygon Edge.Cuts outline/cutouts only. Returns per-list disposition/reasons and source IDs, explicit full_fidelity=false, source SHA256 plus current project/full cursor guards. Unknown copper/outline semantics block import. Regular file <=8MiB; no source writes, mutation or native-path activation.".into(), input_schema: input_schema::<viamind_engine::PreviewPcbImport>() });
         commands.push(HostCommand { name: "import_pcb".into(), description: "Replace a clean shared session with reparsed supported standalone PCB geometry guarded by exact expected_project, full expected_cursor and lowercase expected_source_sha256 from preview. Reject dirty native work, stale context, changed source or blocked fidelity. Imported project has fresh project UUID, preserved supported native object UUIDs, new event stream, empty history/selection, path null and dirty=true until native Save As. Source files never written. Lifecycle replacement is not an undoable edit; subsequent native edits are undoable.".into(), input_schema: input_schema::<viamind_engine::ImportPcb>() });
         commands.push(HostCommand {
@@ -180,6 +182,14 @@ impl CommandHost for EngineHost {
         if name == "inspect_fabrication_files" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.inspect_fabrication_files(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "preview_footprint_conversion" {
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.preview_footprint_conversion(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "convert_footprint_file" {
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.convert_footprint_file(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "preview_pcb_import" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;

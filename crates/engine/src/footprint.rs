@@ -72,14 +72,15 @@ impl crate::EngineHandle {
 
     /// Publish committed local geometry without changing design/history/dirty state.
     pub fn export_footprint(&self, input: FootprintFile) -> Result<std::path::PathBuf, crate::EngineError> {
-        let (part, native) = self.with_engine(|engine| {
+        let part = self.with_engine(|engine| {
             let project = engine.project();
             if project.id != input.expected_project || project.board.part(&input.expected.id) != Some(&input.expected) {
                 return Err(crate::EngineError::File { message: "project or part changed; reload before exporting footprint".into() });
             }
-            Ok((input.expected.clone(), engine.document_status().path))
+            Ok(input.expected.clone())
         })?;
         let footprint = Footprint::from_part(&part).map_err(|message| crate::EngineError::File { message })?;
-        viamind_doc::footprint::save_new(&footprint, &input.path, native.as_deref()).map_err(|message| crate::EngineError::File { message })
+        let staged = viamind_doc::footprint::stage_new(&footprint, &input.path).map_err(|message| crate::EngineError::File { message })?;
+        self.with_native_file_guard(|native| staged.publish(native)).map_err(|message| crate::EngineError::File { message })
     }
 }

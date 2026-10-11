@@ -1,0 +1,16 @@
+{
+  "app_name": "viamind",
+  "pid": 1026091,
+  "screenshot_file_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0089/production-window.png",
+  "screenshot_height": 22,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 16,
+  "window_bounds": {
+    "height": 22,
+    "width": 16,
+    "x": 2026,
+    "y": 1303
+  },
+  "window_id": 110379543321456,
+  "window_title": "Untitled — Viamind"
+}

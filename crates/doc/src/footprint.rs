@@ -113,37 +113,124 @@ pub fn to_vec(footprint: &Footprint) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
-pub fn load(path: &Path) -> Result<Footprint, String> {
-    if !std::fs::metadata(path).map_err(|e| e.to_string())?.is_file() {
-        return Err("footprint path must be a regular file".into());
+fn absolute_path(path: &Path) -> Result<PathBuf, String> {
+    if path.as_os_str().is_empty() || path.as_os_str().as_encoded_bytes().len() > 4096 {
+        return Err("choose a nonempty footprint path at most 4096 encoded bytes".into());
     }
-    let file = std::fs::File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
-    if !file.metadata().map_err(|e| e.to_string())?.is_file() {
-        return Err("footprint path must be a regular file".into());
+    let absolute = std::path::absolute(path).map_err(|e| e.to_string())?;
+    if absolute.as_os_str().as_encoded_bytes().len() > 4096 {
+        return Err("absolute footprint path exceeds 4096 encoded bytes".into());
+    }
+    Ok(absolute)
+}
+
+pub fn load(path: &Path) -> Result<Footprint, String> {
+    load_with_before_open(path, || {})
+}
+fn load_with_before_open(path: &Path, before_open: impl FnOnce()) -> Result<Footprint, String> {
+    let path = absolute_path(path)?;
+    let before = std::fs::metadata(&path).map_err(|e| e.to_string())?;
+    if !before.is_file() || before.len() > MAX_BYTES as u64 {
+        return Err("footprint path must be a regular file at most 1 MiB".into());
+    }
+    before_open();
+    let fd =
+        rustix::fs::open(&path, rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::NONBLOCK | rustix::fs::OFlags::CLOEXEC, rustix::fs::Mode::empty())
+            .map_err(|e| e.to_string())?;
+    let file = std::fs::File::from(fd);
+    let opened = file.metadata().map_err(|e| e.to_string())?;
+    if !opened.is_file() || opened.len() > MAX_BYTES as u64 {
+        return Err("opened footprint must be a regular file at most 1 MiB".into());
     }
     let mut bytes = Vec::new();
     file.take((MAX_BYTES + 1) as u64).read_to_end(&mut bytes).map_err(|e| e.to_string())?;
+    let after = std::fs::metadata(&path).map_err(|e| e.to_string())?;
+    if bytes.len() as u64 != opened.len() || !after.is_file() || after.len() != opened.len() || after.modified().ok() != opened.modified().ok() {
+        return Err("footprint file changed while reading; reload".into());
+    }
     from_slice(&bytes)
+}
+
+/// Bounded synced output, staged before acquiring the native lifecycle guard.
+pub struct StagedFootprintFile {
+    temporary: tempfile::NamedTempFile,
+    path: PathBuf,
+}
+impl StagedFootprintFile {
+    /// Atomically publish only a new file, with the current active native path protected.
+    pub fn publish(self, active_project: Option<&Path>) -> Result<PathBuf, String> {
+        if let Some(active) = active_project {
+            let active = active.canonicalize().unwrap_or_else(|_| active.to_owned());
+            if self.path == active || self.path.canonicalize().is_ok_and(|p| p == active) {
+                return Err("cannot replace the active native project with a footprint".into());
+            }
+        }
+        self.temporary.persist_noclobber(&self.path).map_err(|e| format!("{}: {}", self.path.display(), e.error))?;
+        Ok(self.path)
+    }
+}
+
+/// Serialize/sync bounded native geometry without publishing any destination yet.
+pub fn stage_new(footprint: &Footprint, path: &Path) -> Result<StagedFootprintFile, String> {
+    let path = absolute_path(path)?;
+    let parent = path.parent().ok_or("choose a footprint parent directory")?.canonicalize().map_err(|e| e.to_string())?;
+    let target = parent.join(path.file_name().ok_or("choose a file name")?);
+    if target.as_os_str().as_encoded_bytes().len() > 4096 {
+        return Err("resolved footprint path exceeds 4096 encoded bytes".into());
+    }
+    let bytes = to_vec(footprint)?;
+    let mut temporary = tempfile::NamedTempFile::new_in(&parent).map_err(|e| e.to_string())?;
+    temporary.write_all(&bytes).map_err(|e| e.to_string())?;
+    temporary.as_file().sync_all().map_err(|e| e.to_string())?;
+    Ok(StagedFootprintFile { temporary, path: target })
 }
 
 /// Atomically publish a new library file; existing entries are always preserved.
 pub fn save_new(footprint: &Footprint, path: &Path, active_project: Option<&Path>) -> Result<PathBuf, String> {
-    if path.as_os_str().is_empty() {
-        return Err("choose a footprint file path".into());
+    stage_new(footprint, path)?.publish(active_project)
+}
+
+#[cfg(test)]
+mod io_tests {
+    use super::*;
+    fn footprint() -> Footprint {
+        Footprint { name: "Original".into(), pads: Vec::new() }
     }
-    let parent = path.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new("."));
-    let parent = parent.canonicalize().map_err(|e| e.to_string())?;
-    let target = parent.join(path.file_name().ok_or("choose a file name")?);
-    if let Some(active) = active_project {
-        let active = active.canonicalize().unwrap_or_else(|_| active.to_owned());
-        if target == active || target.canonicalize().is_ok_and(|p| p == active) {
-            return Err("cannot replace the active native project with a footprint".into());
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn raced_fifo_native_library_open_never_waits_for_a_writer() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("library");
+        std::fs::write(&path, to_vec(&footprint()).unwrap()).unwrap();
+        let error = load_with_before_open(&path, || {
+            std::fs::remove_file(&path).unwrap();
+            assert!(std::process::Command::new("mkfifo").arg(&path).status().unwrap().success());
+        })
+        .unwrap_err();
+        assert!(error.contains("regular file"));
+    }
+    #[test]
+    fn staged_publication_refuses_native_paths_conflicts_and_symlinks_without_changing_bytes() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("new-library.json");
+        let staged = stage_new(&footprint(), &path).unwrap();
+        assert!(!path.exists());
+        assert!(staged.publish(Some(&path)).unwrap_err().contains("native project"));
+        assert!(!path.exists());
+        let bytes = b"existing destination";
+        let staged = stage_new(&footprint(), &path).unwrap();
+        std::fs::write(&path, bytes).unwrap();
+        assert!(staged.publish(None).is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        #[cfg(unix)]
+        {
+            let alias = directory.path().join("alias.json");
+            std::os::unix::fs::symlink(&path, &alias).unwrap();
+            assert!(save_new(&footprint(), &alias, None).is_err());
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
         }
+        let too_long = PathBuf::from("x".repeat(4097));
+        assert!(load(&too_long).unwrap_err().contains("4096"));
+        assert!(save_new(&footprint(), &too_long, None).is_err());
     }
-    let bytes = to_vec(footprint)?;
-    let mut temp = tempfile::NamedTempFile::new_in(&parent).map_err(|e| e.to_string())?;
-    temp.write_all(&bytes).map_err(|e| e.to_string())?;
-    temp.as_file().sync_all().map_err(|e| e.to_string())?;
-    temp.persist_noclobber(&target).map_err(|e| format!("{}: {}", target.display(), e.error))?;
-    Ok(target)
 }

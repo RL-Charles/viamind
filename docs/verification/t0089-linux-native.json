@@ -1,0 +1,144 @@
+{
+  "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+  "source_base": "0fb27a1fe3d35fdaa2a42b0d0e6fac2104921aa3",
+  "platform": "Linux x86_64 Wayland/Hyprland",
+  "date": "2026-10-11",
+  "profile": "unoptimized debug, copied with debug information stripped under entire-sequence mutex",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "inspection_build": "pass",
+  "workspace_tests": {
+    "passed": 602,
+    "failed": 0,
+    "ignored": 1
+  },
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "environment": {
+    "CARGO_TARGET_DIR": "/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "preflight": "Touch all own crates/apps Rust sources before gates under flock; retain exact binary copies before releasing mutex.",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline",
+    "cargo build -p viamind-ui-egui --example footprint_conversion_inspection --locked --offline"
+  ],
+  "gate_log_sha256": "10b93ea483b99163cba78180b16f8f66cee05b6102d88e0f36ca97183c59de63",
+  "production": {
+    "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+    "binary_sha256": "9cf92dc6462ce75ab4440db0c10d0b036a50710a6392e6f4c2ad059f3f6ea043",
+    "pid": 1026091,
+    "mcp_port": 7917,
+    "window_id": 110379543321456,
+    "stdio_checks": 17,
+    "actual_desktop_two_client_http_checks": 16,
+    "production_window": "Compositor 16x22 window is provenance only; readable native proof uses actual-input prepared production UI in separate fixed-size wrapper."
+  },
+  "initial_inspection": {
+    "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+    "binary_sha256": "5b1882dd8051fab5620c48f69e741f2c4ee2b55f6e7bacaa25f7eaf1c46ce38e",
+    "operating_system_input_claim": false,
+    "actual_egui_input_preparation": true,
+    "complete_session_unchanged_every_native_frame": true,
+    "preview": {
+      "pid": 1027237,
+      "window_id": 110379543868944,
+      "viewport": [
+        1600,
+        1000
+      ],
+      "capture": "t0089-initial-preview-wide.png",
+      "scope": "Expanded report initial view; outer scrolling reaches Create."
+    },
+    "compact": {
+      "pid": 1028339,
+      "window_id": 110379544206144,
+      "viewport": [
+        640,
+        400
+      ],
+      "capture": "t0089-initial-preview-compact.png",
+      "actual_create_bounds_asserted": true
+    },
+    "completed": {
+      "pid": 1029902,
+      "window_id": 110379544671776,
+      "viewport": [
+        1600,
+        1000
+      ],
+      "capture": "t0089-initial-completed-wide.png",
+      "new_native_library_pads": 2
+    },
+    "known_display_issue": "Historical introductory Unicode arrow displayed as missing glyph. Final plain-text correction and fresh captures below resolve it; original captures retain historical provenance."
+  },
+  "final_refresh": {
+    "source_commit": "d17344b5c0a96c32a8d05d357a27ef70741b9498",
+    "source_base": "f5a6b963827debd5c43e35650cc65e2769b8a31b",
+    "reason": "Clean additive routing integration and one introductory UI label changed from unsupported arrow glyph to plain to. Original full workspace and actual desktop backend proof remains explicitly tied to ce71d1a.",
+    "fmt": "pass",
+    "clippy_ui_all_targets_deny_warnings": "pass",
+    "actual_desktop_interaction_tests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "production_build": "pass",
+    "inspection_build": "pass",
+    "gate_commands": [
+      "cargo fmt --all -- --check",
+      "cargo clippy -p viamind-ui-egui --all-targets --locked --offline -- -D warnings",
+      "cargo test -p viamind-ui-egui --test footprint_conversion --locked --offline",
+      "cargo build -p viamind --locked --offline",
+      "cargo build -p viamind-ui-egui --example footprint_conversion_inspection --locked --offline"
+    ],
+    "gate_log": "t0089-final-ui-gates.log",
+    "gate_log_sha256": "19d2721ba408904644831fbeeb149e65ce8a4578b0d1eebc789189271d02d86f",
+    "production_binary_sha256": "4f57014b31979e89273de650e5051ce290b62a06f6bedecaf765db5ecf31c176",
+    "production_stdio_checks": 17,
+    "production_stdio_report": "t0089-final-production-stdio.json",
+    "inspection_binary_sha256": "c11037d96dcb1b6df5b4066b92458841d299833b06a3ddf688b29702cf42ed45",
+    "operating_system_input_claim": false,
+    "actual_egui_input_preparation": true,
+    "complete_session_unchanged_every_native_frame": true,
+    "captures": [
+      {
+        "pid": 1058515,
+        "window_id": 110379546535328,
+        "viewport": [
+          1600,
+          1000
+        ],
+        "capture": "t0089-preview-wide.png",
+        "sha256": "4e2e08cb64cba3583bb4ee9bb09f1b492b8bdaad00f08abb737b23e4a609cc99",
+        "scope": "Expanded per-list report; outer scrolling reaches Create."
+      },
+      {
+        "pid": 1058915,
+        "window_id": 110379546980720,
+        "viewport": [
+          640,
+          400
+        ],
+        "capture": "t0089-preview-compact.png",
+        "sha256": "f4b3f7c534c5b8b09bdddcf29afbf25f6df4b47a2c385d9c7f4cd22b6ec5f352",
+        "scope": "Create bounds asserted within viewport."
+      },
+      {
+        "pid": 1059381,
+        "window_id": 110379547236656,
+        "viewport": [
+          1600,
+          1000
+        ],
+        "capture": "t0089-completed-wide.png",
+        "sha256": "14b14c98f84ece1153503e0b2c465f71d62b4378f4bdca9870c7c8c0a3e4be6c",
+        "scope": "Actual new-file conversion completed; entire session remains unchanged."
+      }
+    ]
+  }
+}
