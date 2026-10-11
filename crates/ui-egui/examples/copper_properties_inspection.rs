@@ -132,7 +132,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         h.get_by_label(label).focus();
         h.run_steps(3);
         assert!(h.get_by_label(label).is_focused());
-        let id = h.ctx.memory(|m| m.focused()).expect("labeled button focus gives its safe egui ID");
+        let id = h.ctx.memory(egui::Memory::focused).expect("labeled button focus gives its safe egui ID");
         let response = h.ctx.read_response(id).expect("prepared footer button");
         assert_eq!(response.rect, h.get_by_label(label).rect());
         assert!(response.rect.min.x >= 0. && response.rect.min.y >= 0. && response.rect.max.x <= width && response.rect.max.y <= height);
