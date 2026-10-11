@@ -30,6 +30,7 @@ struct Gesture {
 #[derive(Debug, Default)]
 pub struct Selection {
     pub tool: SelectionTool,
+    pub placement: crate::placement::PlacementGesture,
     index: SpatialIndex<ObjectId>,
     visible_layers: Vec<LayerId>,
     dirty: bool,
@@ -129,12 +130,22 @@ impl Selection {
 
     /// Handle the canvas response and paint selection above the cached scene.
     pub fn show(&mut self, ui: &Ui, response: &Response, camera: &Camera, engine: &EngineHandle) {
+        self.show_enabled(ui, response, camera, engine, true);
+    }
+
+    pub fn show_enabled(&mut self, ui: &Ui, response: &Response, camera: &Camera, engine: &EngineHandle, enabled: bool) {
         let viewport = response.rect;
         let pointer = ui.input(|i| i.pointer.interact_pos());
         let to_point = |p: Pos2| point(camera.screen_to_world(p, viewport));
         let to_screen = |p: Point| camera.world_to_screen(world(p), viewport);
+        let drag_hit = response.drag_started_by(PointerButton::Primary)
+            && ui
+                .input(|i| i.pointer.press_origin())
+                .and_then(|start| self.pick(to_point(start), Nm::from_mm(5.0 / camera.zoom)))
+                .is_some_and(|id| engine.selection().ids.contains(&id));
+        let placement_handled = self.placement.show(ui, response, camera, engine, drag_hit, enabled);
         let space = ui.input(|i| i.key_down(Key::Space));
-        let keyboard = (response.hovered() || self.gesture.is_some()) && !ui.ctx().egui_wants_keyboard_input();
+        let keyboard = enabled && !placement_handled && (response.hovered() || self.gesture.is_some()) && !ui.ctx().egui_wants_keyboard_input();
         if keyboard && ui.input(|i| i.key_pressed(Key::Escape)) {
             if self.gesture.take().is_some() {
                 self.cancelled = true;
@@ -145,13 +156,15 @@ impl Selection {
         if keyboard && ui.input_mut(|i| i.consume_shortcut(&egui::KeyboardShortcut::new(Modifiers::COMMAND, Key::A))) {
             self.select_all(engine);
         }
-        if space {
+        if space || !enabled {
             self.gesture = None;
             if ui.input(|i| i.pointer.primary_down()) {
                 self.cancelled = true;
             }
         }
-        if !space
+        if enabled
+            && !placement_handled
+            && !space
             && !self.cancelled
             && response.drag_started_by(PointerButton::Primary)
             && let Some(start) = ui.input(|i| i.pointer.press_origin())
@@ -169,7 +182,9 @@ impl Selection {
                 gesture.points.push(p);
             }
         }
-        if response.drag_stopped_by(PointerButton::Primary) {
+        if placement_handled {
+            self.gesture = None;
+        } else if enabled && response.drag_stopped_by(PointerButton::Primary) {
             if let Some(gesture) = self.gesture.take() {
                 let ids = match gesture.tool {
                     SelectionTool::Box => self.box_ids(gesture.points[0], *gesture.points.last().unwrap()),
@@ -177,7 +192,8 @@ impl Selection {
                 };
                 self.apply(engine, ids, gesture.mode);
             }
-        } else if !space
+        } else if enabled
+            && !space
             && !self.cancelled
             && response.clicked_by(PointerButton::Primary)
             && let Some(at) = pointer
@@ -211,5 +227,43 @@ impl Selection {
                 }
             }
         }
+    }
+}
+
+impl Selection {
+    /// Shared placement operations; alignment/distribution explicitly act on part origins.
+    pub fn placement_menu(&mut self, ui: &mut Ui, engine: &EngineHandle, enabled: bool) {
+        use viamind_engine::{OriginAlignment, PartPlacement, PlacementAxis};
+        let count = engine.selection().ids.len();
+        ui.separator();
+        for (label, operation) in
+            [("Rotate selected 90° (R)", PartPlacement::Rotate { degrees: 90 }), ("Flip selected side (F)", PartPlacement::Flip)]
+        {
+            if ui.add_enabled(enabled && count > 0 && !self.placement.moving(), egui::Button::new(label)).clicked() {
+                self.placement.transform_selected(engine, operation);
+                ui.close();
+            }
+        }
+        ui.menu_button("Arrange part origins", |ui| {
+            for (label, axis, reference) in [
+                ("Align origins X minimum", PlacementAxis::X, OriginAlignment::Minimum),
+                ("Align origins X centre", PlacementAxis::X, OriginAlignment::Centre),
+                ("Align origins X maximum", PlacementAxis::X, OriginAlignment::Maximum),
+                ("Align origins Y minimum", PlacementAxis::Y, OriginAlignment::Minimum),
+                ("Align origins Y centre", PlacementAxis::Y, OriginAlignment::Centre),
+                ("Align origins Y maximum", PlacementAxis::Y, OriginAlignment::Maximum),
+            ] {
+                if ui.add_enabled(enabled && count >= 2 && !self.placement.moving(), egui::Button::new(label)).clicked() {
+                    self.placement.transform_selected(engine, PartPlacement::Align { axis, reference });
+                    ui.close();
+                }
+            }
+            for (label, axis) in [("Distribute origins X", PlacementAxis::X), ("Distribute origins Y", PlacementAxis::Y)] {
+                if ui.add_enabled(enabled && count >= 3 && !self.placement.moving(), egui::Button::new(label)).clicked() {
+                    self.placement.transform_selected(engine, PartPlacement::Distribute { axis });
+                    ui.close();
+                }
+            }
+        });
     }
 }

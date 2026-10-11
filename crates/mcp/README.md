@@ -328,3 +328,18 @@ Coordinates use the document's Y-down frame. New copper is persistent, undoable
 and replayable, but electrical continuity/clearance checking and automatic routing
 are separate features. Only straight top/bottom tracks and through vias are
 supported; blind/buried/microvias and inner-layer tracks reject unsupported input.
+
+### Grouped part placement
+
+`transform_parts` requires `expected_project`, `expected` (exact full Part records
+from `query_parts`/`get_design`) and `operation`. A changed or missing member rejects
+the entire group. IDs and local pad geometry are preserved, and undo restores the
+whole group in one step. The desktop uses this command for pointer release,
+rotate/flip keys and Edit → Arrange part origins.
+
+Operations are tagged with `kind`: `translate` plus integer nanometre
+`delta: {x,y}`; `rotate` plus integer `degrees` in -360..360; `flip`; `align`
+plus `axis: "x"|"y"` and `reference: "minimum"|"centre"|"maximum"`; or
+`distribute` plus `axis`. Alignment and distribution use part origins, not body
+edges. Distribution keeps outermost origins fixed. Rotation and flip act at each
+part's own origin. Selection size is bounded to10000 unique parts.

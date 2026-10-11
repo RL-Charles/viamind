@@ -17,6 +17,7 @@ pub mod mesh_cache;
 pub mod outlines;
 pub mod pads;
 pub mod parts;
+pub mod placement;
 pub mod scene;
 pub mod selection;
 
@@ -273,7 +274,8 @@ impl ViamindApp {
             let response = self.canvas.show(ui, &self.scene, &self.layers);
             if let Some(design) = &self.design {
                 self.selection.sync(&design.engine, &self.layers);
-                self.selection.show(ui, &response, &self.canvas.camera, &design.engine);
+                let placement_enabled = !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing();
+                self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
             }
             self.paint_labels(ui);
         });
@@ -370,6 +372,13 @@ impl ViamindApp {
                     if ui.add_enabled(can_redo, redo).clicked() {
                         self.redo_design();
                         ui.close();
+                    }
+                    if let Some(design) = &self.design {
+                        self.selection.placement_menu(
+                            ui,
+                            &design.engine,
+                            !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing(),
+                        );
                     }
                     ui.separator();
                     ui.label("Selection tool");

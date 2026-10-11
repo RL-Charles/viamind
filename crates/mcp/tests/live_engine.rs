@@ -439,3 +439,33 @@ async fn separate_agents_read_live_explicit_net_membership_without_creating_tran
     reader.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn grouped_placement_rejects_a_stale_member_across_agents_and_undo_is_atomic() {
+    let engine = EngineHandle::new(Project::new("Group HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let placer = connect(server.url(), "group-placer").await;
+    let other = connect(server.url(), "group-other").await;
+    call(&placer, "add_part", resistor("R1", 10.0)).await;
+    call(&placer, "add_part", resistor("R2", 20.0)).await;
+    let original = call(&placer, "get_design", json!({})).await.structured_content.unwrap();
+    let expected = original["board"]["parts"].as_object().unwrap().values().cloned().collect::<Vec<_>>();
+    let request = json!({"expected_project":original["id"],"expected":expected,"operation":{"kind":"translate","delta":{"x":1000000,"y":0}}});
+    let id = expected[1]["id"].clone();
+    call(&other, "move_part", json!({"id":id,"x_mm":30,"y_mm":20})).await;
+    let state = engine.session_state();
+    assert_eq!(call(&placer, "transform_parts", request).await.is_error, Some(true));
+    assert_eq!(engine.session_state(), state);
+    let design = call(&placer, "get_design", json!({})).await.structured_content.unwrap();
+    let expected = design["board"]["parts"].as_object().unwrap().values().cloned().collect::<Vec<_>>();
+    assert_eq!(
+        call(&placer, "transform_parts", json!({"expected_project":design["id"],"expected":expected,"operation":{"kind":"flip"}})).await.is_error,
+        Some(false)
+    );
+    assert!(engine.read(|p| p.board.parts.values().all(|p| p.side == viamind_doc::Side::Bottom)));
+    assert_eq!(call(&placer, "undo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), state.project);
+    placer.cancel().await.unwrap();
+    other.cancel().await.unwrap();
+    server.shutdown();
+}
