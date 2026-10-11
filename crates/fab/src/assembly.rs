@@ -117,9 +117,14 @@ pub fn csv(project: &Project, kind: AssemblyCsv) -> io::Result<String> {
     AssemblySnapshot::capture(project)?.csv(kind)
 }
 
-fn render_csv(parts: &[Part], kind: AssemblyCsv) -> io::Result<String> {
+pub(crate) fn render_csv<'a>(parts: impl IntoIterator<Item = &'a Part>, kind: AssemblyCsv) -> io::Result<String> {
+    render_csv_limited(parts, kind, 32 * 1024 * 1024)
+}
+pub(crate) fn render_csv_limited<'a>(parts: impl IntoIterator<Item = &'a Part>, kind: AssemblyCsv, limit: usize) -> io::Result<String> {
+    let limit = limit.min(32 * 1024 * 1024);
+    let row = |output: &mut String, fields: &[&str]| row_limited(output, fields, limit);
     let mut output = String::new();
-    let mut parts: Vec<_> = parts.iter().collect();
+    let mut parts: Vec<_> = parts.into_iter().collect();
     parts.sort_by_key(|part| (&part.designator, part.id));
     match kind {
         AssemblyCsv::Bom => {
@@ -169,7 +174,7 @@ fn fixed(value: i64, places: u32) -> String {
     format!("{sign}{}.{:0width$}", magnitude / scale, magnitude % scale, width = places as usize)
 }
 
-fn row(output: &mut String, fields: &[&str]) -> io::Result<()> {
+fn row_limited(output: &mut String, fields: &[&str], limit: usize) -> io::Result<()> {
     let mut bytes = fields.len().saturating_sub(1).saturating_add(2);
     for field in fields {
         bytes = bytes.saturating_add(field.len());
@@ -177,7 +182,7 @@ fn row(output: &mut String, fields: &[&str]) -> io::Result<()> {
             bytes = bytes.saturating_add(2).saturating_add(field.bytes().filter(|&b| b == b'"').count());
         }
     }
-    if output.len().saturating_add(bytes) > 32 * 1024 * 1024 {
+    if output.len().saturating_add(bytes) > limit {
         return Err(crate::snapshot::invalid("assembly CSV exceeds 32 MiB"));
     }
     for (index, field) in fields.iter().enumerate() {

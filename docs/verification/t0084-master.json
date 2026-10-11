@@ -1,0 +1,43 @@
+{
+  "ticket": "T-0084",
+  "artifact_source_head": "026518e3d358034d44d94c987f150e4daa2a720d",
+  "base_main": "83c5dd6",
+  "integration_main": "063433372eaf6c6086e02f92c5f1c9986b4485d9",
+  "integration_note": "Subsequent static routing and native symbol-library integrations rebased with only README append conflicts; all links, additive actions and hooks preserved. Native artifact proves source026518e; final combined CI covers the integration. Production resize behavior unchanged.",
+  "linux_gates": {
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "tests_passed": 523,
+    "tests_ignored": 1,
+    "build": true,
+    "local_log": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0084/full-gates.log"
+  },
+  "production_binary_sha256": "fd1977296d64e85f2b5c2c866cf14f807e1f8f1ff69f23bcb757928ebb2fe6cd",
+  "production_postprocessing": "Planned strip --strip-debug -o home-artifact shared-target/debug/viamind after successful workspace build, avoiding /tmp quota. Version/help and actual CLI output-job exports verify this exact artifact. /tmp names symlink to unique home files.",
+  "native_verification": {
+    "runtime": "Fixed1600x1000 inspection wrapper using production ViamindApp, EngineHandle and shared MCP; actual production CLI binary verified separately",
+    "wrapper_binary_sha256": "02112fa8dbd2b378e4982f2467145024ec4bd9ef00362db82b31fd9edb838ca4",
+    "wrapper_build": "cargo rustc --manifest-path external-inspection/Cargo.toml --offline -- -C link-arg=-Wl,--strip-debug; source touched under shared flock, TMPDIR/home artifacts avoid quota",
+    "endpoint": "http://127.0.0.1:7910/mcp",
+    "pid": 774313,
+    "window_id": 110379536137856,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "report": "t0084-native-output-job.json",
+    "passed_checks": 45,
+    "source": "t0084-native-inspection.rs",
+    "manifest_template": "t0084-native-Cargo.toml.in",
+    "script": "t0084-output-job-smoke.py",
+    "fixture": "../../fixtures/fabrication/asymmetric.viamind.json",
+    "prior_production_binary_sha256": "7a85830884a6abc824e7a7dfb93dd10a6083f05b27d395906c475e9ad5bd888f",
+    "prior_artifact_source": "44e29fa110641f30453a9ca4faaf9c8e3610ad99"
+  },
+  "cua": {
+    "report": "t0084-native-cua.json",
+    "screenshot": "t0084-native-output-job.png",
+    "limitation": "Cua reports unavailable AT-SPI and X11 window metadata fallback. Fresh screenshot verifies readable production form in fixed wrapper; actual pointer/text/640x400 scrolling and disabled controls verified by egui_kittest, not native raw input."
+  },
+  "ci_note": "Artifact source026518e passed all local Linux gates; its draft conflicted with concurrently merged main and had no CI run. Superseded intermediate integration CI was canceled on push. Final exact integration CI is recorded in the PR before merge."
+}

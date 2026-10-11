@@ -7,6 +7,7 @@ pub const HELP: &str = "Viamind — agent-driven PCB design
 Usage: viamind [--open PATH] [--no-mcp]
        viamind --headless [--open PATH] [--save-as PATH]
        viamind --export-csv bom|placement --open PATH --output PATH [--overwrite]
+       viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
        viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
@@ -18,6 +19,7 @@ Usage: viamind [--open PATH] [--no-mcp]
   --save-as PATH   Save the final headless design after the client closes stdin
   --no-mcp         Open the desktop without the HTTP MCP endpoint
   --export-csv KIND Export generic BOM or component-origin placement CSV and exit
+  --run-output-job JOB Run saved manufacturing settings into a NEW release directory
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
   --output PATH    Export destination (SVG/PNG need a NEW file; fabrication a NEW directory)
@@ -58,6 +60,7 @@ pub struct Options {
     pub output: Option<PathBuf>,
     pub overwrite: bool,
     pub export_gerber: bool,
+    pub run_output_job: Option<PathBuf>,
     pub mask_expansion_mm: Option<f64>,
 }
 
@@ -164,12 +167,14 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                     _ => return Err("--export-csv requires bom or placement".into()),
                 });
             }
-            Some("--open" | "--save-as" | "--output") => {
+            Some("--open" | "--save-as" | "--output" | "--run-output-job") => {
                 let path = args
                     .next()
                     .filter(|path| !path.is_empty() && !path.to_string_lossy().starts_with("--"))
                     .ok_or_else(|| format!("{} requires a path", arg.to_string_lossy()))?;
-                if arg == "--open" {
+                if arg == "--run-output-job" {
+                    options.run_output_job = Some(path.into());
+                } else if arg == "--open" {
                     options.open = Some(path.into());
                 } else if arg == "--output" {
                     options.output = Some(path.into());
@@ -179,6 +184,15 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
+    }
+    if options.run_output_job.is_some() {
+        if options.open.is_none()
+            || options.output.is_none()
+            || seen.iter().any(|flag| !["--run-output-job", "--open", "--output"].iter().any(|allowed| flag == *allowed))
+        {
+            return Err("--run-output-job requires only --open and --output NEW_RELEASE_DIRECTORY".into());
+        }
+        return Ok(Invocation::Run(Box::new(options)));
     }
     let schematic_export = options.export_schematic_svg || options.export_schematic_png;
     if schematic_export {
