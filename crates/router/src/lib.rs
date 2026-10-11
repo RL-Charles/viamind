@@ -1,4 +1,7 @@
 //! Exact grid snapping shared by local PCB route previews and committed commands.
+pub mod posture;
+pub use posture::{CornerMode, PadPathPlan, Posture, plan_pad_path};
+
 use viamind_geom::{Nm, Point};
 
 /// Snap to the nearest origin-anchored grid, with exact ties away from zero.
