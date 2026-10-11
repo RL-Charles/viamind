@@ -430,10 +430,8 @@ fn query_rejects_oversized_selected_text_and_policy_before_owned_copy() {
 fn advertised_nullable_net_is_required_exactly_like_command_deserialization() {
     let (project, tid, vid) = fixture();
     let e = EngineHandle::new(project);
-    for (name, input) in [
-        (SetTrackProperties::NAME, serde_json::to_value(track(&e, tid)).unwrap()),
-        (SetViaProperties::NAME, serde_json::to_value(via(&e, vid)).unwrap()),
-    ] {
+    for (name, is_via) in [(SetTrackProperties::NAME, false), (SetViaProperties::NAME, true)] {
+        let input = if is_via { serde_json::to_value(via(&e, vid)).unwrap() } else { serde_json::to_value(track(&e, tid)).unwrap() };
         let registry = viamind_engine::CommandRegistry::builtin();
         let schema = &registry.spec(name).unwrap().input_schema;
         assert!(schema["required"].as_array().unwrap().contains(&json!("net")));
