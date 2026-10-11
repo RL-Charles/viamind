@@ -30,7 +30,17 @@ fn settle(h: &mut Harness<'_, ViamindApp>, label: &str) {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let project = viamind_doc::file::load(std::env::args_os().nth(1).ok_or("project path required")?)?;
     let engine = EngineHandle::new(project);
-    let id = engine.read(|p| p.board.parts.values().find(|p| p.designator == "U1").expect("U1").id);
+    let id = engine.read(|p| {
+        let symbol = p
+            .schematic
+            .sheets
+            .values()
+            .filter_map(|s| s.content.as_ref())
+            .flat_map(|c| c.symbols.values())
+            .find(|s| s.designator == "U1")
+            .expect("U1 symbol");
+        p.board.parts.values().find(|part| part.schematic_symbol == Some(symbol.id)).expect("explicit linked PCB part").id
+    });
     engine.set_selection(SetSelection { ids: vec![id], mode: SelectionMode::Replace }, Origin::agent("inspection-fixture"))?;
     let before = engine.session_state();
     let r = engine.query_linked_pin_pads(&viamind_engine::PinPadLinkQuery { component_id: id, offset: 0, limit: None })?;
