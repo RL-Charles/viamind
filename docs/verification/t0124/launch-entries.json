@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/launch-inspection.sh",
+  "pid": 3076058,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-sidebar-inspection",
+      "bounds": {
+        "height": 400,
+        "width": 640,
+        "x": 2560,
+        "y": 1565
+      },
+      "height": 400,
+      "is_on_screen": true,
+      "pid": 3076058,
+      "title": "Untitled — Viamind",
+      "width": 640,
+      "window_id": 110379492011008,
+      "x": 2560,
+      "y": 1565,
+      "z_index": null
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/render)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/mcp)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 24.41s

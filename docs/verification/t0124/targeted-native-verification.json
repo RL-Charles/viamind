@@ -1,0 +1,153 @@
+{
+  "passed": true,
+  "source": "041b44c",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/schematic-sidebar-inspection-wheel",
+  "binary_sha256": "7bbb473638acbd82a4313bb78ed74b32d22613924531a69e216bf66d7e3e45bd",
+  "captures": [
+    {
+      "mode": "entries",
+      "pid": 3105508,
+      "process_after_capture": "absent; self-closed",
+      "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/entries-wheel.png",
+      "png_sha256": "c6cdb56befa1ab8875e8ac3f75dc2a8b8f2672156569afe3dad667b97338fc57",
+      "p6_sha256": "877c6bf7c7b55bd00648cd98dc998ec27dd4d23c455440e926164969893663e7",
+      "p7_sha256": "3036b0c4cf13a8a8af0038bd69a17f6869c172815454563c6b3bf5bc07d9f5d8",
+      "exact_rgb_channels": true,
+      "pixels": [
+        640,
+        400
+      ],
+      "native": {
+        "alpha_max": 255,
+        "alpha_min": 255,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "current_pass_controls": [
+          {
+            "effective_clip": [
+              0.0,
+              25.0,
+              380.0,
+              354.0
+            ],
+            "label": "Draw wires on canvas",
+            "rect": [
+              8.0,
+              279.0,
+              139.65625,
+              297.0
+            ]
+          },
+          {
+            "effective_clip": [
+              0.0,
+              25.0,
+              380.0,
+              354.0
+            ],
+            "label": "Annotate symbols",
+            "rect": [
+              8.0,
+              300.0,
+              120.4375,
+              318.0
+            ]
+          }
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "injected_wheel_events": 2,
+        "os_input_claim": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/entries-wheel.p6",
+        "pid": 3105508,
+        "pixels": [
+          640,
+          400
+        ],
+        "preparation": "egui test preparation plus native raw_input_hook wheel events; no OS input",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/entries-wheel.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 16
+      }
+    },
+    {
+      "mode": "draft",
+      "pid": 3107885,
+      "process_after_capture": "absent; self-closed",
+      "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/draft-wheel.png",
+      "png_sha256": "6063cd1b07706d00ae4c0273c25a4eec4d3b0d76489ba256a24308f04458f3ac",
+      "p6_sha256": "24bc0481915c3d97b268c50027b643b75b26ff3c2abdbfaa98ff4108c5abed4b",
+      "p7_sha256": "0d3a1b0015faca74346b0a2ec414fd15b8cfb0bd90cf98b899caec557fbec9be",
+      "exact_rgb_channels": true,
+      "pixels": [
+        640,
+        400
+      ],
+      "native": {
+        "alpha_max": 255,
+        "alpha_min": 255,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "current_pass_controls": [
+          {
+            "effective_clip": [
+              0.0,
+              25.0,
+              455.0,
+              354.0
+            ],
+            "label": "Apply schematic object",
+            "rect": [
+              8.0,
+              324.0,
+              149.25,
+              342.0
+            ]
+          },
+          {
+            "effective_clip": [
+              0.0,
+              25.0,
+              455.0,
+              354.0
+            ],
+            "label": "Reload schematic draft",
+            "rect": [
+              157.25,
+              324.0,
+              298.375,
+              342.0
+            ]
+          },
+          {
+            "effective_clip": [
+              0.0,
+              25.0,
+              455.0,
+              354.0
+            ],
+            "label": "Cancel schematic draft",
+            "rect": [
+              306.375,
+              324.0,
+              445.625,
+              342.0
+            ]
+          }
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "injected_wheel_events": 6,
+        "os_input_claim": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/draft-wheel.p6",
+        "pid": 3107885,
+        "pixels": [
+          640,
+          400
+        ],
+        "preparation": "egui test preparation plus native raw_input_hook wheel events; no OS input",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/draft-wheel.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 34
+      }
+    }
+  ]
+}

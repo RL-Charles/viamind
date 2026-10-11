@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "source": "33981e0532b7d0bba317d577d67d05bd017cb905",
+  "indexed_artifacts": 57,
+  "captures": 2,
+  "channels": "independent Pillow PNG RGB equals every P6 sample and P7 RGB channel; original alpha all255",
+  "native_pids_absent": true,
+  "production_pid": 3317369,
+  "scope": "Retained native/binary/artifact milestone only; sidebar contract coverage findings still open"
+}
