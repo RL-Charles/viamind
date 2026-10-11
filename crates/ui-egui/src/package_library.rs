@@ -300,7 +300,7 @@ mod tests {
         assert_eq!(content.symbols.len(), 5);
         assert_eq!(content.symbols.values().map(|s| s.pins.len()).sum::<usize>(), 14);
         assert!(state.proposal().is_ok(), "local cached context is explicitly updated by poll");
-        state.poll(Some((context.unwrap().0, engine.event_cursor(), sheet_id)));
+        state.poll(Some((original.project.id, engine.event_cursor(), sheet_id)));
         assert!(state.proposal().is_err());
         UiAction::Undo.run(&engine, serde_json::json!({})).unwrap();
         assert_eq!(engine.session_state().project, original.project);
