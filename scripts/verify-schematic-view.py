@@ -92,7 +92,7 @@ def verify(binary, native, directory):
     for layer, sample in [('wires',(18,7)),('symbols',(7,9)),('pins',(11,7.5)),('junctions',(16,7)),('labels',(21,5.5))]:
         layer_image=Image.open(export('png',layer,*common,'--schematic-layers',layer)).convert('RGBA')
         check(layer+' isolation',ink(layer_image,(0,0,30,20))>0 and
-              (layer_image.getpixel(at(*sample))[3]>100 if layer!='labels' else ink(layer_image,text_boxes[3])>30))
+              (layer_image.getpixel(at(*sample))[3]>100 if layer!='labels' else ink(layer_image,text_boxes[-1])>30))
     crop=Image.open(export('png','crop','--view-bounds','10.5,7,11.5,8','--view-size','400,400','--schematic-layers','pins')).convert('RGBA')
     check('explicit pin stem crop',crop.getpixel((200,200))[3]>200 and crop.getpixel((20,200))[3]==0)
     margin=Image.open(export('png','margin','--view-bounds','0,0,30,20','--view-size','900,800')).convert('RGBA')
