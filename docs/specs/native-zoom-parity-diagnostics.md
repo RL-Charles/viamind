@@ -39,6 +39,60 @@ requirements below only after causal evidence review. This ordering prevents
 instrumentation from concealing a harness failure before it can be explained.
 Both stages have the same image/work bounds, objects and pixel criteria.
 
+## Amendment: one deferred-I/O comparison after unreproduced failure
+
+The first bounded legacy trace on diagnostic source
+`ce135b238667993f5bf215254389fd71958d4635` passed all five comparisons with
+valid recorded pair provenance. Its first four results exactly match the original
+failure run, but case 4 drew 606 objects rather than 581. Physical window size,
+monitor and DPI agree. Original camera/pass receipts do not exist, so this pass
+does not explain or correct the historical failure. No renderer behavior changed.
+The retained fixture via and quad are offscreen in this trace's case 4; that fact
+does not remove them or weaken the whole-canvas comparison.
+
+After independent approval of this amendment, add a separate diagnostic-only
+deferred-I/O variant and perform at most ONE stated comparison capture. This is
+not permission for retries until passing or for a renderer correction.
+
+- First run bounded headless tests through the actual production app and cache
+  render-mode sequence: the original five case operations, fixed 1400x1000 input,
+  and controlled one-pixel viewport perturbations. Limit each test to 120 native
+  input steps with the unchanged 5002-item fixture. Record/assert actual cameras
+  and viewports. Programmatic camera edits currently leave startup auto-fit active;
+  demonstrate whether a resize can reset that camera. This establishes a possible
+  state hazard, not proof that the original native failure used it. No native
+  raster or performance claim follows from a headless test.
+- The optional deferred variant retains at most ten screenshot `Arc` handles and
+  ten fixed image receipts in precharged slots. Shared reference/current-event
+  handles do not copy their pixel buffers. Charge each unique retained image's
+  checked raw byte size before retaining it: <=16M pixels and <=64MiB per image,
+  <=640MiB in aggregate. This explicitly replaces the initial variant's two-image
+  retention limit only for this deferred comparison. Framework-owned readback
+  allocations remain outside the diagnostic's ownership claim.
+- During the legacy case sequence, perform no raw image or JSON serialization,
+  file writes or fsync. Create/validate the NEW destination before native launch.
+  Defer image/receipt serialization until all ten arrivals or a terminal abort;
+  stop case advancement before flushing. Flush/fsync each original RGBA image and
+  its receipt, then release its handle. Preserve the original small final parity
+  report behavior and original tokens, transitions, cameras, layers and criteria.
+- Add only fixed, bounded camera-relevant input observations per UI pass: counts
+  of pointer motion/button, wheel/zoom and Home/Space events, scroll/zoom deltas
+  and relevant held buttons/keys. Read borrowed input; never record text, clipboard
+  contents or arbitrary key strings. Refuse >100000 input events in one pass before
+  scanning/retention. Charge these typed slots before allocation within the same
+  combined 1MiB retained-plus-serialized metadata budget. Keep ten-image, one-request,
+  900-frame, 180-second and reserved bounded failure-report limits unchanged.
+- Meaningful tests cover deferred ownership/admission and flush-on-abort, no
+  before-finish image/JSON files, count/byte caps before retaining an extra image,
+  and exact raw samples after final flushing. Retain existing duplicate-event,
+  repeated-pass token, both-direction extent and metadata regressions.
+- Before that ONE native comparison, retain a unique scoped-verified binary and
+  obtain fresh quiet admission under both shared mutexes. Preserve the original
+  failure and initial passing trace. Independently inspect all raw pair/provenance
+  receipts before considering a correction. A repeated pass still leaves the
+  historical cause unresolved; stop after the single comparison and report that
+  limitation. No cadence run or visual-correctness closure follows automatically.
+
 1. Preserve the original failed report and both original release binary hashes.
    Add optional diagnostics to the existing five-case example, retaining the same
    synthetic 5000 scene, added via, quad, ratsnest, layer operations, camera
