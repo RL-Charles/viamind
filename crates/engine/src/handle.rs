@@ -229,6 +229,11 @@ impl EngineHandle {
         self.lock().selection().clone()
     }
 
+    /// Read the current event cursor without cloning document contents.
+    pub fn event_cursor(&self) -> crate::EventCursor {
+        self.lock().event_cursor()
+    }
+
     /// Atomically reads project, selection and the cursor for subsequent changes.
     pub fn session_state(&self) -> crate::SessionSnapshot {
         self.lock().session_state()

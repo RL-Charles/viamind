@@ -57,6 +57,7 @@ ui_actions! {
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
     DeleteTrack => (viamind_engine::DeleteTrack::NAME, input_schema::<viamind_engine::DeleteTrack>(), delete_track),
     AddVia => (viamind_engine::AddVia::NAME, input_schema::<viamind_engine::AddVia>(), add_via),
@@ -200,4 +201,8 @@ fn delete_schematic_sheet(engine: &EngineHandle, input: Value) -> Result<Value, 
 
 fn annotate_schematic(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::AnnotateSchematic::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn route_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RoutePolyline::NAME, input, Origin::User)?).map_err(encode_error)
 }

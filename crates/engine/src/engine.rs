@@ -197,7 +197,8 @@ impl Engine {
         label: &str,
         f: impl FnOnce(&mut Tx<'_>) -> Result<R, EngineError>,
     ) -> Result<(R, ExecResult), EngineError> {
-        let mut tx = Tx { project: &mut self.project, registry: &self.registry, deltas: Vec::new() };
+        let cursor = self.event_cursor();
+        let mut tx = Tx { project: &mut self.project, registry: &self.registry, deltas: Vec::new(), cursor };
         let value = match f(&mut tx) {
             Ok(value) => value,
             Err(error) => {
@@ -381,6 +382,7 @@ pub struct Tx<'a> {
     project: &'a mut Project,
     registry: &'a CommandRegistry,
     deltas: Vec<Delta>,
+    cursor: crate::EventCursor,
 }
 
 impl Tx<'_> {
@@ -392,14 +394,14 @@ impl Tx<'_> {
     /// Runs the command called `name` with JSON `input` inside this transaction
     /// and returns the deltas of this step.
     pub fn execute(&mut self, name: &str, input: Value) -> Result<Vec<Delta>, EngineError> {
-        let deltas = self.registry.dispatch(name, input, self.project)?;
+        let deltas = self.registry.dispatch_with_cursor(name, input, self.project, Some(self.cursor))?;
         self.deltas.extend_from_slice(&deltas);
         Ok(deltas)
     }
 
     /// Runs a typed command inside this transaction and returns the deltas of this step.
     pub fn execute_typed<C: Command>(&mut self, command: C) -> Result<Vec<Delta>, EngineError> {
-        let deltas = apply_typed(command, self.project)?;
+        let deltas = apply_typed(command, self.project, Some(self.cursor))?;
         self.deltas.extend_from_slice(&deltas);
         Ok(deltas)
     }

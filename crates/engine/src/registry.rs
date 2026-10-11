@@ -65,7 +65,7 @@ pub enum EngineError {
     },
 }
 
-type RunFn = fn(Value, &mut Project) -> Result<Vec<Delta>, EngineError>;
+type RunFn = fn(Value, &mut Project, Option<crate::EventCursor>) -> Result<Vec<Delta>, EngineError>;
 
 struct Entry {
     spec: CommandSpec,
@@ -109,6 +109,7 @@ impl CommandRegistry {
             .with::<crate::AddVia>()
             .with::<crate::DeleteVia>()
             .with::<crate::TransformParts>()
+            .with::<crate::RoutePolyline>()
             .with::<crate::ApplyFootprint>()
             .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()
@@ -163,24 +164,42 @@ impl CommandRegistry {
     /// `null` input is treated as `{}` (for commands without arguments). On error
     /// the project is unchanged.
     pub fn dispatch(&self, name: &str, input: Value, project: &mut Project) -> Result<Vec<Delta>, EngineError> {
+        self.dispatch_with_cursor(name, input, project, None)
+    }
+
+    pub(crate) fn dispatch_with_cursor(
+        &self,
+        name: &str,
+        input: Value,
+        project: &mut Project,
+        cursor: Option<crate::EventCursor>,
+    ) -> Result<Vec<Delta>, EngineError> {
         let entry = self
             .commands
             .get(name)
             .ok_or_else(|| EngineError::UnknownCommand { name: name.to_owned(), available: self.names().map(str::to_owned).collect() })?;
-        (entry.run)(input, project)
+        (entry.run)(input, project, cursor)
     }
 }
 
 /// Type-erased entry point for command `C`.
-fn run<C: Command>(input: Value, project: &mut Project) -> Result<Vec<Delta>, EngineError> {
+fn run<C: Command>(input: Value, project: &mut Project, cursor: Option<crate::EventCursor>) -> Result<Vec<Delta>, EngineError> {
     let input = if input.is_null() { Value::Object(serde_json::Map::new()) } else { input };
     let command: C =
         serde_json::from_value(input).map_err(|err| EngineError::InvalidInput { command: C::NAME.to_owned(), message: err.to_string() })?;
-    apply_typed(command, project)
+    apply_typed(command, project, cursor)
 }
 
 /// Applies an already-built command, mapping its error to [`EngineError::Command`].
-pub(crate) fn apply_typed<C: Command>(command: C, project: &mut Project) -> Result<Vec<Delta>, EngineError> {
+pub(crate) fn apply_typed<C: Command>(command: C, project: &mut Project, cursor: Option<crate::EventCursor>) -> Result<Vec<Delta>, EngineError> {
+    if let Some(expected) = command.expected_cursor()
+        && cursor != Some(expected)
+    {
+        return Err(EngineError::Command {
+            command: C::NAME.into(),
+            error: CommandError::conflict("session changed; read get_session_state and restart the route"),
+        });
+    }
     command.apply(project).map_err(|error| EngineError::Command { command: C::NAME.to_owned(), error })
 }
 

@@ -29,6 +29,13 @@ pub trait Command: DeserializeOwned + JsonSchema + Send + 'static {
     /// One-paragraph description for agents and the UI command palette.
     const DESCRIPTION: &'static str;
 
+    /// Optional optimistic guard against the session cursor captured at transaction start.
+    /// Commands requiring a cursor reject dispatch without a live engine context. All calls
+    /// in one transaction compare the same initial cursor, including deliberate batch steps.
+    fn expected_cursor(&self) -> Option<crate::EventCursor> {
+        None
+    }
+
     /// Performs the edit on `project` and returns what changed.
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError>;
 }

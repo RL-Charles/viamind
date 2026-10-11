@@ -282,6 +282,9 @@ impl SchematicUi {
 }
 impl ViamindApp {
     pub fn set_schematic_mode(&mut self, active: bool) {
+        if active {
+            self.routing.cancel();
+        }
         if active && (self.files.busy() || self.parts.placing() || self.outlines.editing() || self.pads.editing() || self.copper.editing()) {
             return;
         }

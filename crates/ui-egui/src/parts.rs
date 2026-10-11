@@ -84,7 +84,13 @@ impl PartUi {
 impl ViamindApp {
     /// Place an arbitrary part using the same command available to agents.
     pub fn begin_place_part(&mut self) {
-        if self.files.busy() || self.copper.editing() || self.parts.placing() || self.outlines.editing() || self.pads.editing() {
+        if self.routing.editing()
+            || self.files.busy()
+            || self.copper.editing()
+            || self.parts.placing()
+            || self.outlines.editing()
+            || self.pads.editing()
+        {
             return;
         }
         let Some(design) = &self.design else { return };
@@ -130,6 +136,9 @@ impl ViamindApp {
     }
 
     pub(crate) fn part_properties(&mut self, ui: &mut Ui) {
+        if self.routing.editing() {
+            return;
+        }
         let Some(design) = &self.design else { return };
         // Read selection, part and stream consistently; avoid cloning the whole project per frame.
         let current = design.engine.with_engine(|e| {
