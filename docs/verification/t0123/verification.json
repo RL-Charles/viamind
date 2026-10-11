@@ -114,7 +114,8 @@
     "docs/verification/t0123/ci-refresh.log": "7db84954017a7f8ca586abb3d4adfae7079ba321ff54c6bd74d064620966f9d8",
     "docs/verification/t0123/final-ci-clippy-failed.log": "5434c48862d7f39d7639f70c1bfef2d11a713fb7bcc89a0e05d13cc2ebcd2e0d",
     "docs/verification/t0123/catalog-final/mcp-tools.json": "6facc67727d837490befcd10ba64a5ffa813e37f72d0f6d53a2824f59316422c",
-    "docs/verification/t0123/catalog-final/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954"
+    "docs/verification/t0123/catalog-final/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954",
+    "docs/verification/t0123/inherited-property-ci-failed.log": "81a5deba3c003b82fbb20b46914551a1618166b7283c42a0f02ba3b9412f39a9"
   },
   "final_combined": {
     "source": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
@@ -190,7 +191,9 @@
       "format": "success",
       "clippy": "success",
       "linux_at_integration": "in_progress",
-      "failure_inferred": false
+      "failure_inferred": false,
+      "linux_final": "failure",
+      "failure": "Inherited stale_properties test expectedR9 but remainedR1, parts.rs82; same correction already integrated"
     },
     "exact_final_ci_pending": true
   }
