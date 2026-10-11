@@ -114,7 +114,7 @@ pub struct SvgMetadata {
     pub replaced_invalid_xml_text: bool,
     pub exclusions: Vec<&'static str>,
 }
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct BoardSvg {
     pub svg: String,
     pub metadata: SvgMetadata,
@@ -211,10 +211,8 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             continue;
         }
         for pad in &explicit.0 {
-            let (cx, cy) = center(
-                part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm()).0,
-                part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm()).1,
-            )?;
+            let (x, y) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
+            let (cx, cy) = center(x, y)?;
             let angle = -(f64::from(part.rotation_mdeg) / 1000.0);
             let (s, c) = angle.to_radians().sin_cos();
             let rx = (pad.width.0 as f64 * c.abs() + pad.height.0 as f64 * s.abs()) / 2.0;
@@ -323,8 +321,7 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             .iter()
             .map(|s| s.bounds)
             .reduce(ViewBounds::union)
-            .unwrap_or(ViewBounds { min_x: -5_000_000, min_y: -5_000_000, max_x: 5_000_000, max_y: 5_000_000 })
-            .expand(options.padding_nm),
+            .map_or(ViewBounds { min_x: -5_000_000, min_y: -5_000_000, max_x: 5_000_000, max_y: 5_000_000 }, |r| r.expand(options.padding_nm)),
     }
     .validate()?;
     let mut svg = format!(

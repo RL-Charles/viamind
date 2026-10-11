@@ -45,7 +45,14 @@ fn main() -> anyhow::Result<()> {
         let rendered = viamind_render::board_svg(&snapshot.project, &options.svg_options)?;
         let output = options.output.as_deref().expect("CLI requires a view destination");
         let path = viamind_render::write_svg(&rendered.svg, output, engine.document_status().path.as_deref())?;
-        eprintln!("viamind: rendered board SVG {}", path.display());
+        eprintln!(
+            "viamind: rendered board SVG {} ({} pads, {} tracks, {} through vias; {} legacy previews omitted)",
+            path.display(),
+            rendered.metadata.pad_count,
+            rendered.metadata.track_count,
+            rendered.metadata.through_via_count,
+            rendered.metadata.omitted_legacy_parts
+        );
         return Ok(());
     }
     if let Some(kind) = options.export_csv {
