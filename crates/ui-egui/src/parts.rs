@@ -90,18 +90,18 @@ impl SourcingDraft {
             populate: m.is_none_or(|m| m.populate),
             mounting: m.and_then(|m| m.mounting),
             calibrated: m.is_some_and(|m| m.placement.is_some()),
-            centroid_x: m.and_then(|m| m.placement).map(|p| p.centroid_local.x.to_mm().to_string()).unwrap_or_else(|| "0".into()),
-            centroid_y: m.and_then(|m| m.placement).map(|p| p.centroid_local.y.to_mm().to_string()).unwrap_or_else(|| "0".into()),
-            zero_axis: m.and_then(|m| m.placement).map(|p| (f64::from(p.zero_axis_mdeg) / 1000.0).to_string()).unwrap_or_else(|| "0".into()),
+            centroid_x: m.and_then(|m| m.placement).map_or_else(|| "0".into(), |p| p.centroid_local.x.to_mm().to_string()),
+            centroid_y: m.and_then(|m| m.placement).map_or_else(|| "0".into(), |p| p.centroid_local.y.to_mm().to_string()),
+            zero_axis: m.and_then(|m| m.placement).map_or_else(|| "0".into(), |p| (f64::from(p.zero_axis_mdeg) / 1000.0).to_string()),
         }
     }
     fn metadata(&self) -> Result<viamind_doc::AssemblyMetadata, String> {
         let placement = if self.calibrated {
             let number = |label, text: &str, scale: f64, min: i64, max: i64| {
-                let value = text.parse::<f64>().ok().filter(|value| value.is_finite()).map(|value| (value * scale).round());
+                let value = text.parse::<f64>().ok().filter(|value| value.is_finite()).map(|value| value * scale);
                 value
                     .filter(|value| *value >= min as f64 && *value <= max as f64)
-                    .map(|value| value as i64)
+                    .map(|value| value.round() as i64)
                     .ok_or_else(|| format!("{label} must be a finite value within the documented range"))
             };
             let centroid = |label, text: &str| number(label, text, 1_000_000.0, -10_000_000_000, 10_000_000_000).map(viamind_geom::Nm);

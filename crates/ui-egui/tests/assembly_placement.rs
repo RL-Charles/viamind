@@ -61,8 +61,14 @@ fn compact_calibration_input_history_preservation_and_export_match_mcp() {
     click(&mut h, "Apply assembly metadata");
     assert_eq!(engine.read(|p| p.board.parts[&id].assembly.as_ref().unwrap().placement), metadata.placement);
     h.run_steps(5);
-    input(&mut h, "Local zero-axis marker (deg)", "359.9996");
     let unchanged = engine.session_state();
+    for value in ["359.9996", "-0.0001", "NaN"] {
+        input(&mut h, "Local zero-axis marker (deg)", value);
+        click(&mut h, "Apply assembly metadata");
+        assert_eq!(engine.session_state(), unchanged);
+    }
+    input(&mut h, "Local zero-axis marker (deg)", "37.125");
+    input(&mut h, "Local centroid X (mm)", "10000.0000004");
     click(&mut h, "Apply assembly metadata");
     assert_eq!(engine.session_state(), unchanged);
     click(&mut h, "Reload");
