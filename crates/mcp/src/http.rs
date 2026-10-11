@@ -62,6 +62,7 @@ pub async fn serve_http(registry: impl Into<Arc<ToolRegistry>>, addr: SocketAddr
 /// `undo`, `redo` and `get_design`.
 pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
     let mut registry = ToolRegistry::with_builtins().with_agent_policy(engine.agent_policy());
+    crate::agent_mode::register(&mut registry)?;
     crate::assembly::register(&mut registry, engine.clone())?;
     crate::symbol_libraries::register(&mut registry, engine.clone())?;
     crate::agent_presence::register(&mut registry, engine.clone())?;
