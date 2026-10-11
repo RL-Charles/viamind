@@ -6,6 +6,7 @@
 
 pub mod camera;
 pub mod canvas;
+pub mod mesh_cache;
 pub mod scene;
 
 use std::time::Instant;
@@ -67,6 +68,7 @@ impl ViamindApp {
     pub fn set_scene_size(&mut self, n: usize) {
         if self.scene.items.len() != n {
             self.scene = Scene::synthetic(n);
+            self.canvas.scene_changed();
             self.canvas.fit_pending = true;
         }
     }

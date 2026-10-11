@@ -1,5 +1,7 @@
 //! Frame-time measurement for the 100k-object scene (CPU side: ui build plus tessellation).
 //!
+//! Measures the canvas with its tessellation cache (the default) and without it, the reference.
+//!
 //! Ignored by default because debug builds are not representative. Run with:
 //! `cargo test --release -p viamind-ui-egui --test perf -- --ignored --nocapture`
 
@@ -25,9 +27,10 @@ fn button(pos: Pos2, button: PointerButton, pressed: bool) -> Event {
 
 /// Runs `FRAMES` frames of a middle-drag pan back and forth over the canvas at the zoom given by
 /// `zoom_factor` relative to zoom-to-fit, and returns per-frame timings.
-fn measure(objects: usize, zoom_factor: f64) -> (Vec<Timing>, usize) {
+fn measure(objects: usize, zoom_factor: f64, cached: bool) -> (Vec<Timing>, usize) {
     let ctx = egui::Context::default();
     let mut app = ViamindApp::with_scene_size(objects);
+    app.canvas.cached = cached;
     let screen = Rect::from_min_size(Pos2::ZERO, vec2(1600.0, 1000.0));
     let center = pos2(900.0, 500.0);
     let mut t = 0.0;
@@ -64,8 +67,8 @@ fn ms(d: Duration) -> f64 {
     d.as_secs_f64() * 1000.0
 }
 
-fn report(label: &str, objects: usize, zoom_factor: f64) -> f64 {
-    let (timings, drawn) = measure(objects, zoom_factor);
+fn report(label: &str, objects: usize, zoom_factor: f64, cached: bool) -> f64 {
+    let (timings, drawn) = measure(objects, zoom_factor, cached);
     let mut total: Vec<f64> = timings.iter().map(|t| ms(t.ui + t.tessellate)).collect();
     total.sort_by(f64::total_cmp);
     let median = total[total.len() / 2];
@@ -82,8 +85,11 @@ fn report(label: &str, objects: usize, zoom_factor: f64) -> f64 {
 #[test]
 #[ignore = "timing; run in release with --ignored --nocapture"]
 fn frame_time_100k_scene() {
-    let fit = report("100k fit (all visible)", 100_000, 1.0);
-    report("100k zoomed 8x (culled)", 100_000, 8.0);
-    report("10k fit", 10_000, 1.0);
-    println!("100k scene frame ms = {fit:.2}");
+    let fit = report("100k fit (all visible)", 100_000, 1.0, true);
+    report("100k zoomed 8x (culled)", 100_000, 8.0, true);
+    report("10k fit", 10_000, 1.0, true);
+    let uncached = report("uncached 100k fit", 100_000, 1.0, false);
+    report("uncached 100k zoomed 8x", 100_000, 8.0, false);
+    println!("100k scene frame ms = {fit:.2} (uncached {uncached:.2})");
+    assert!(fit < 16.7, "100k fit frame {fit:.2} ms is over the 60 fps budget");
 }

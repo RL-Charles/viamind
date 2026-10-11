@@ -3,7 +3,8 @@
 use egui::{Color32, CornerRadius, Key, PointerButton, Rect, Sense, Shape, Stroke, Ui, Vec2, pos2};
 
 use crate::camera::{Camera, WorldPos, WorldRect};
-use crate::scene::{Layer, Prim, Scene};
+use crate::mesh_cache::MeshCache;
+use crate::scene::{Item, Layer, Prim, Scene};
 
 /// Screen points between the scene bounds and the canvas edge after zoom to fit.
 const FIT_MARGIN: f32 = 24.0;
@@ -33,23 +34,45 @@ pub struct Canvas {
     pub fit_pending: bool,
     /// World position under the pointer, if it is over the canvas.
     pub cursor_world: Option<WorldPos>,
-    /// Items painted last frame (after culling).
+    /// Items visible last frame (after culling).
     pub drawn: usize,
-    /// Reused across frames so painting 100k items does not reallocate.
+    /// The canvas area last frame, in screen points.
+    pub viewport: Rect,
+    /// Paint through the tessellation cache (default). `false` builds every shape each frame,
+    /// the reference the cache is tested against.
+    pub cached: bool,
+    /// Tessellated scene tiles.
+    pub cache: MeshCache,
+    /// Reused across frames so uncached painting of 100k items does not reallocate.
     shapes: Vec<Shape>,
 }
 
 impl Default for Canvas {
     fn default() -> Self {
-        Self { camera: Camera::default(), fit_pending: true, cursor_world: None, drawn: 0, shapes: Vec::new() }
+        Self {
+            camera: Camera::default(),
+            fit_pending: true,
+            cursor_world: None,
+            drawn: 0,
+            viewport: Rect::NOTHING,
+            cached: true,
+            cache: MeshCache::default(),
+            shapes: Vec::new(),
+        }
     }
 }
 
 impl Canvas {
+    /// Tells the canvas that the scene's items changed, so cached meshes are rebuilt.
+    pub fn scene_changed(&mut self) {
+        self.cache.invalidate();
+    }
+
     /// Fills the remaining space of `ui` with the canvas.
     pub fn show(&mut self, ui: &mut Ui, scene: &Scene) {
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
+        self.viewport = viewport;
 
         // Zoom to fit: on request, at start-up, and on the Home key.
         if self.fit_pending || ui.input(|i| i.key_pressed(Key::Home)) {
@@ -92,22 +115,31 @@ impl Canvas {
         paint_grid(painter, &cam, viewport);
         painter.rect_stroke(board, CornerRadius::ZERO, Stroke::new(1.0, BOARD_EDGE), egui::StrokeKind::Middle);
 
+        if self.cached {
+            self.drawn = self.cache.paint(painter, scene, &cam, viewport);
+            return;
+        }
+
         // Cull to the visible area (slightly grown so strokes at the edge are not clipped).
         let visible = cam.visible_world_rect(viewport).expand(2.0 / cam.zoom);
-        let zoom = cam.zoom as f32;
         let mut shapes = std::mem::take(&mut self.shapes);
         shapes.clear();
-        for item in scene.items.iter().filter(|i| i.bounds.intersects(&visible)) {
-            let color = layer_color(item.layer);
-            shapes.push(match item.prim {
-                Prim::Rect(r) => Shape::rect_filled(screen_rect(r), CornerRadius::ZERO, color),
-                Prim::Circle { center, radius } => Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
-                Prim::Segment { a, b, width } => Shape::line_segment([to_screen(a), to_screen(b)], Stroke::new(width as f32 * zoom, color)),
-            });
-        }
+        shapes.extend(scene.items.iter().filter(|i| i.bounds.intersects(&visible)).map(|item| item_shape(item, &cam, viewport)));
         self.drawn = shapes.len();
         painter.extend(shapes.drain(..));
         self.shapes = shapes;
+    }
+}
+
+/// The egui shape for `item` seen through `cam` in `viewport`.
+pub(crate) fn item_shape(item: &Item, cam: &Camera, viewport: Rect) -> Shape {
+    let to_screen = |p: WorldPos| cam.world_to_screen(p, viewport);
+    let color = layer_color(item.layer);
+    let zoom = cam.zoom as f32;
+    match item.prim {
+        Prim::Rect(r) => Shape::rect_filled(Rect::from_min_max(to_screen(r.min), to_screen(r.max)), CornerRadius::ZERO, color),
+        Prim::Circle { center, radius } => Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
+        Prim::Segment { a, b, width } => Shape::line_segment([to_screen(a), to_screen(b)], Stroke::new(width as f32 * zoom, color)),
     }
 }
 
