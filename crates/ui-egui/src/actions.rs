@@ -43,6 +43,10 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    ListPcbBranches => ("list_pcb_branches", no_args(), list_pcb_branches),
+    GetPcbBranchDiff => ("get_pcb_branch_diff", input_schema::<viamind_engine::pcb_branches::PcbBranchDiffInput>(), get_pcb_branch_diff),
+    MergePcbBranch => ("merge_pcb_branch", input_schema::<viamind_engine::pcb_branches::MergePcbBranch>(), merge_pcb_branch),
+    DiscardPcbBranch => ("discard_pcb_branch", input_schema::<viamind_engine::pcb_branches::PcbBranchRevision>(), discard_pcb_branch),
     QueryNamedNetRules => ("query_named_net_rules", no_args(), query_named_net_rules),
     SetNamedNetRules => (viamind_engine::SetNamedNetRules::NAME, input_schema::<viamind_engine::SetNamedNetRules>(), set_named_net_rules),
     PlaceSymbolTemplate => (viamind_engine::PlaceSymbolTemplate::NAME, input_schema::<viamind_engine::PlaceSymbolTemplate>(), place_symbol_template),
@@ -119,6 +123,35 @@ ui_actions! {
     Redo => ("redo", no_args(), redo),
     SetSelection => ("set_selection", input_schema::<SetSelection>(), set_selection),
     SaveProject => ("save_project", input_schema::<SaveProject>(), save_project),
+}
+
+fn branch_error(error: impl std::fmt::Display) -> EngineError {
+    EngineError::InvalidInput { command: "pcb_branch".into(), message: error.to_string() }
+}
+fn list_pcb_branches(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+        return Err(branch_error("list_pcb_branches takes an empty object"));
+    }
+    serde_json::to_value(engine.list_pcb_branches()).map_err(encode_error)
+}
+fn get_pcb_branch_diff(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.diff_pcb_branch(serde_json::from_value(input).map_err(encode_error)?).map_err(branch_error)?).map_err(encode_error)
+}
+fn merge_pcb_branch(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(
+        engine
+            .merge_pcb_branch(serde_json::from_value(input).map_err(encode_error)?, &viamind_engine::pcb_branches::BranchActor::human())
+            .map_err(branch_error)?,
+    )
+    .map_err(encode_error)
+}
+fn discard_pcb_branch(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(
+        engine
+            .discard_pcb_branch(serde_json::from_value(input).map_err(encode_error)?, &viamind_engine::pcb_branches::BranchActor::human())
+            .map_err(branch_error)?,
+    )
+    .map_err(encode_error)
 }
 
 fn apply_footprint(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {

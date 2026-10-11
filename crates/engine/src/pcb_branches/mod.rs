@@ -139,7 +139,7 @@ pub struct PcbBranchDiffInput {
     #[serde(default = "default_limit")]
     pub limit: usize,
 }
-#[derive(Clone, Debug, Serialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub struct PcbBranchInfo {
     pub branch_id: ObjectId,
     pub label: String,
@@ -157,7 +157,7 @@ pub struct PcbBranchState {
     pub branch: PcbBranchInfo,
     pub board: Board,
 }
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct PcbBranchDiff {
     pub branch: PcbBranchInfo,
     pub offset: usize,
