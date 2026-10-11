@@ -91,6 +91,19 @@ impl PcbImportUi {
         }
     }
     fn start(&mut self, engine: EngineHandle, project: ObjectId, cursor: EventCursor, apply: bool, ctx: egui::Context) {
+        self.start_with(engine, project, cursor, apply, ctx, |task| {
+            std::thread::Builder::new().name("viamind-pcb-import".into()).spawn(task).map(|_| ())
+        });
+    }
+    fn start_with(
+        &mut self,
+        engine: EngineHandle,
+        project: ObjectId,
+        cursor: EventCursor,
+        apply: bool,
+        ctx: egui::Context,
+        spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> std::io::Result<()>,
+    ) {
         if self.busy() {
             return;
         }
@@ -112,12 +125,12 @@ impl PcbImportUi {
         };
         let context = Context { project, cursor, path: self.path.clone(), generation: self.generation };
         let (tx, rx) = mpsc::channel();
-        match std::thread::Builder::new().name("viamind-pcb-import".into()).spawn(move || {
+        match spawn(Box::new(move || {
             let value = action.run(&engine, input).map_err(|e| e.to_string());
             let _ = tx.send(value);
             ctx.request_repaint();
-        }) {
-            Ok(_) => {
+        })) {
+            Ok(()) => {
                 self.worker = Some(Worker { receiver: rx, context, apply });
                 self.message = None;
             }
@@ -156,11 +169,11 @@ impl ViamindApp {
         let mut preview_clicked = false;
         let mut apply_clicked = false;
         let mut changed = false;
-        egui::Window::new("Import PCB S-expression").open(&mut open).default_width(760.0).show(ui.ctx(), |ui| {
+        egui::Window::new("Import PCB S-expression").open(&mut open).default_width(760.0).max_width((ui.ctx().content_rect().width() - 24.0).max(240.0)).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Standalone .kicad_pcb supported geometry. Full project and fabrication fidelity are not provided.");
             ui.label("Front zero-angle rectangular SMD pads, outer straight tracks, through vias and polygon board outline/cutouts.");
             let label = ui.label("PCB source file");
-            changed = ui.add(egui::TextEdit::singleline(&mut self.pcb_import.path).desired_width(650.0).char_limit(4096))
+            changed = ui.add(egui::TextEdit::singleline(&mut self.pcb_import.path).desired_width(ui.available_width()).char_limit(4096))
                 .labelled_by(label.id).changed();
             preview_clicked = ui.add_enabled(!busy, egui::Button::new("Preview PCB import")).clicked();
             if busy {
@@ -282,5 +295,22 @@ mod tests {
         form.worker = Some(Worker { receiver: rx, context: source.clone(), apply: false });
         form.poll(source.project, source.cursor, &egui::Context::default());
         assert!(form.message.as_ref().unwrap().contains("disconnected"));
+    }
+    #[test]
+    fn failed_spawn_is_actionable_and_duplicate_start_keeps_owned_receiver() {
+        let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
+        let before = engine.session_state();
+        let project = before.project.id;
+        let cursor = before.cursor;
+        let mut form = PcbImportUi { open: true, path: "source".into(), ..Default::default() };
+        form.start_with(engine.clone(), project, cursor, false, egui::Context::default(), |_| Err(std::io::Error::other("controlled spawn failure")));
+        assert!(!form.busy());
+        assert!(form.message.as_ref().unwrap().contains("controlled spawn failure"));
+        assert_eq!(engine.session_state(), before);
+        let (_sender, receiver) = mpsc::channel();
+        form.worker = Some(Worker { receiver, context: Context { project, cursor, path: "source".into(), generation: 0 }, apply: false });
+        form.start_with(engine.clone(), project, cursor, false, egui::Context::default(), |_| panic!("must retain existing worker"));
+        assert!(form.busy());
+        assert_eq!(engine.session_state(), before);
     }
 }

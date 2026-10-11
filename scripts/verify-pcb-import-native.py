@@ -125,7 +125,7 @@ try:
     pad=next(p for p in pads if p['number']=='1')
     check('native exact odd-Nm geometry and original IDs/nets preserved',part['position']=={'x':4000007,'y':5000011} and pad['position']=={'x':-500003,'y':250001} and pad['net']=='VIN' and len(project['board']['tracks'])==2 and len(project['board']['vias'])==1 and len(project['board']['outline']['cutouts'])==1)
     drc_before=call('get_session_state')
-    drc=call('run_drc',{})
+    drc=call('run_drc',{})['report']
     coverage=drc['coverage']
     check('native bounded DRC checks imported objects without source-rule equivalence claim',coverage['checked_pads']==2 and coverage['checked_tracks']==2 and coverage['checked_vias']==1 and coverage['checked_holes']==1 and coverage['explicit_outline_checked'] and coverage['excluded_part_count']==0 and coverage['checks_not_performed'] and not drc['truncated'] and call('get_session_state')==drc_before)
     report['native_drc']=drc

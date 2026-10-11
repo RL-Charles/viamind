@@ -74,5 +74,5 @@ async fn two_actual_clients_preview_exact_source_and_protect_dirty_stale_and_nat
     assert_eq!(viamind_doc::file::load(&existing).unwrap(), saved.project);
     a.cancel().await.unwrap();
     b.cancel().await.unwrap();
-    server.shutdown().await.unwrap();
+    server.shutdown();
 }

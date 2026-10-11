@@ -74,7 +74,7 @@ pub struct OpenProject {
 pub struct DocumentStatus {
     /// Absolute active path, or none for an unnamed document.
     pub path: Option<PathBuf>,
-    /// Whether the current project differs from the exact saved baseline.
+    /// Whether the project differs from its saved baseline or an imported conversion still needs a native save.
     pub dirty: bool,
 }
 

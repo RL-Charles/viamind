@@ -1,7 +1,7 @@
 # Standalone PCB geometry import
 
 Choose **File → Import PCB S-expression…**, enter a `.kicad_pcb` path and choose
-**Preview PCB import**. Preview runs one bounded background job and preserves the
+**Preview PCB import**. The form scrolls in compact windows so Apply and errors stay reachable. Preview runs one bounded background job and preserves the
 complete native document, selection, history and save destination. Inspect the
 per-object fidelity report: each source list has a stable path, source byte offset,
 optional source UUID, disposition and reason. Full fidelity is explicitly false.

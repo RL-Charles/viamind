@@ -14,6 +14,8 @@ fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
     h.run_steps(3);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, text: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).focus();
     for pressed in [true, false] {
         h.event(Event::Key { key: Key::A, physical_key: None, pressed, repeat: false, modifiers: Modifiers::COMMAND });
@@ -129,4 +131,36 @@ fn unsupported_report_and_local_draft_guards_are_visible_without_cancellation() 
     click(&mut h, "Apply PCB import as unsaved native document");
     assert!(h.state().schematic_wires.active());
     assert_eq!(engine.session_state(), before);
+}
+
+#[test]
+fn compact_actual_scroll_reaches_apply_and_source_error_within_viewport() {
+    let _serial = SERIAL.lock().unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("original.kicad_pcb");
+    std::fs::write(&path, SOURCE).unwrap();
+    let engine = EngineHandle::new(Project::new("keep"));
+    let before = engine.session_state();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_pcb_import();
+    let mut h = Harness::builder().with_size(vec2(640.0, 400.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(5);
+    input(&mut h, "PCB source file", path.to_str().unwrap());
+    click(&mut h, "Preview PCB import");
+    wait(&mut h);
+    assert!(h.state().pcb_import.preview().unwrap().can_import);
+    let apply = "Apply PCB import as unsaved native document";
+    h.get_by_label(apply).scroll_to_me();
+    h.run_steps(8);
+    let rect = h.get_by_label(apply).rect();
+    assert!(rect.min.x >= 0.0 && rect.max.x <= 640.0 && rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+    std::fs::write(&path, format!("{SOURCE}\n")).unwrap();
+    click(&mut h, apply);
+    wait(&mut h);
+    h.query_all_by_label_contains("source bytes changed").next().expect("source error").scroll_to_me();
+    h.run_steps(8);
+    let rect = h.query_all_by_label_contains("source bytes changed").next().expect("visible source error").rect();
+    assert!(rect.min.x >= 0.0 && rect.max.x <= 640.0 && rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+    assert_eq!(engine.session_state(), before);
+    assert!(!engine.document_status().dirty);
 }
