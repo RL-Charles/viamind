@@ -25,7 +25,7 @@ impl Inspection {
         assert!(image.pixels.iter().all(|p| p.a() == 255));
         let path = self.output.join(name);
         let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).expect("NEW P6");
-        write!(file, "P6\n1600 1000\n255\n").unwrap();
+        file.write_all(b"P6\n1600 1000\n255\n").unwrap();
         let rgb: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
         file.write_all(&rgb).unwrap();
         file.sync_all().unwrap();
