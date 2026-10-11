@@ -9135,7 +9135,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile11 files; checked profile12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Request baselines never weaken captured document minima. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Uses the explicit saved scoped DRC baselines. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {

@@ -7,7 +7,7 @@
     "url": "https://github.com/RL-Charles/viamind/actions/runs/38145197262",
     "conclusion": "all four Linux gates passed at exact retained production source"
   },
-  "integration_note": "Later branch rebase adds unrelated merged features and corrects a desktop sentence to explicit saved baselines. Current-label focused/build and native inspection evidence is separate below. Final combined CI is recorded on PR94 before merge.",
+  "integration_note": "Later branch rebase adds unrelated merged CI/docs tooling; desktop and MCP descriptions were corrected to explicit saved baselines. Current-label focused/build and native inspection evidence is separate below. Final combined source/reference proof includes the description correction. Final exact evidence/reference-head CI is recorded on PR94 before merge.",
   "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01)",
   "production_local_gates": {
     "fmt": "PASS",
@@ -112,18 +112,23 @@
     "t0095-native-framebuffer-report.json": "0328f53faa7208b01c00d9da4ef0f75e7cfafa5d445e67e6b8f6d8af07b910e6",
     "t0095-production-launch.json": "fe3967d6596a9617e9bc966a0b2ec08abd07ed90ab3731d40faa6a82da0a724d",
     "t0095-production-report.json": "f259c4e16573dea84b0a0b70f316ad79e08da6c5c2947ec746f361b0a2b6e8e0",
-    "t0095-reference-report.json": "5573defbcb5b466d80e4e3bb5209e256dce433fcf74630807b47b932a4447333",
-    "t0095-workflow-report.json": "743c1fc9f84182a094318154dec35dcccc6e342eb128f2dcc7618de870fa7f6d"
+    "t0095-reference-report.json": "82d4ab5df8fd3dbeb420228261bfa4ad9f1fbde003d617fa4451371bdce9be14",
+    "t0095-workflow-report.json": "8ddc4ace33b00bafbf813d41221ba82f957f97a8913e1464db90b0fc91cfb1c0"
   },
   "final_combined_integration": {
-    "source_head": "a93d9ff671a86ad73fdbb0254a2c55514539310f",
+    "source_head": "0b381d862e977808c25228dc6400e7f7877a5b03",
     "base_main": "f7d73811f5229ff77712014628861f19d6beea4f",
     "fmt": "PASS",
+    "focused_mcp_tests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "strict_workspace_all_target_clippy": "PASS",
     "workspace_build": "PASS",
-    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-combined-verified",
-    "binary_sha256": "0919a233316cd45d1dd4d4f1ccf3a1a12c0092c356d7ecc4ac3d4b8c882afd59",
-    "build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/combined-build.log",
-    "build_log_sha256": "2ec806fdd0f77aec7bbd7d20bd1fef1f99aed16917fc625ddac74e2614be1b06",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/production-description-verified",
+    "binary_sha256": "a43670fb5630a302371ffb7ec064dc12d3538237d1874f500f32509148ed8e6e",
+    "build_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0095/description-refresh.log",
+    "build_log_sha256": "311cd3b2777f3a5e59a3416a317907f31e42e93370f12f55de099dff96437023",
     "tooling_unit_tests": {
       "passed": 13,
       "failed": 0
@@ -132,6 +137,6 @@
     "reference_report": "t0095-reference-report.json",
     "isolated_agent_workflow_checks": 18,
     "workflow_report": "t0095-workflow-report.json",
-    "note": "Merged main changes are CI/docs/Python tooling only; no production Rust changes from the current-label build. All own Rust inputs forced fresh for combined build. Canonical catalog regenerated from this unique executable; final drift check PASS. Final exact evidence/reference-head CI remains the PR94 merge gate."
+    "note": "Merged main changes are CI/docs/Python tooling only. Final production Rust change corrects one MCP description to explicit saved baselines; export behavior is unchanged. Canonical catalog regenerated from this unique executable; read-only final drift check PASS. Final exact evidence/reference-head CI remains the PR94 merge gate."
   }
 }

@@ -72,16 +72,16 @@ seven rule controls are disabled during retained work and re-enabled afterward.
 
 ## Final combined reference integration
 
-After merging the MCP-reference tooling, a clean rebase onto main `f7d73811` and
-fresh compilation of every own Rust crate produced a unique combined executable
-at source `a93d9ff671a86ad73fdbb0254a2c55514539310f`. Its binary hash equals the
-current-label production build. The merged changes contain no production Rust
-changes. Formatting and workspace build passed; [canonical discovery](verification/t0095-reference-report.json)
+After a clean rebase onto main `f7d73811`, the MCP description was corrected to
+state only explicit saved request baselines. Export behavior is unchanged. The
+unique combined executable at source `0b381d862e977808c25228dc6400e7f7877a5b03`
+passed formatting, two focused MCP tests, strict workspace/all-target Clippy and
+workspace build. [Canonical discovery](verification/t0095-reference-report.json)
 regenerated both reference files for 81 actual application tools. Thirteen tooling
 tests and [18 isolated agent workflow checks](verification/t0095-workflow-report.json)
 passed. A subsequent read-only drift check matched the committed references.
 Final exact-head combined CI is recorded on PR94 before merge; these records keep
-the original production, current desktop and combined reference proofs separate.
+the original production, current desktop and final combined reference proofs separate.
 
 ## Reproduce
 

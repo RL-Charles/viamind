@@ -1,5 +1,5 @@
 {
-  "binary_sha256": "0919a233316cd45d1dd4d4f1ccf3a1a12c0092c356d7ecc4ac3d4b8c882afd59",
+  "binary_sha256": "a43670fb5630a302371ffb7ec064dc12d3538237d1874f500f32509148ed8e6e",
   "checks": [
     "discovered new_project request fields",
     "discovered add_part request fields",
@@ -21,7 +21,7 @@
     "executable identity unchanged"
   ],
   "format": "viamind-agent-workflow",
-  "native_sha256": "fe7310705328b0d3c1395b3e80cae64415f849367add592c365c65f0051ca707",
+  "native_sha256": "d30a72b0b90922184d15b68d894cdc6b8070bdc4510720e99eac76b3e0578c55",
   "passed": true,
   "scope": "Original component placement/properties; legacy graphical footprints, no explicit electrical pads or manufacturing approval.",
   "tool_count": 81,
