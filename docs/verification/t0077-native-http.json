@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "port": 7901,
+  "binary_sha256": "f86074c03ed74607493f11773cd313db03df1465a7bc08d88676e97cd59e1526",
+  "checks": [
+    "actual native posture tool discovered",
+    "endpoint discovery is immutable",
+    "exact quarter-turn centers retained",
+    "cardinal primary exact generated path and stubs",
+    "cardinal primary second-agent stale rejects whole plan",
+    "cardinal primary one undo removes all planned segments",
+    "cardinal primary redo preserves all generated IDs",
+    "cardinal alternate exact generated path and stubs",
+    "cardinal alternate second-agent stale rejects whole plan",
+    "cardinal alternate one undo removes all planned segments",
+    "cardinal alternate redo preserves all generated IDs",
+    "octilinear primary exact generated path and stubs",
+    "octilinear primary second-agent stale rejects whole plan",
+    "octilinear primary one undo removes all planned segments",
+    "octilinear primary redo preserves all generated IDs",
+    "octilinear alternate exact generated path and stubs",
+    "octilinear alternate second-agent stale rejects whole plan",
+    "octilinear alternate one undo removes all planned segments",
+    "octilinear alternate redo preserves all generated IDs",
+    "atomic rejection off-grid waypoint",
+    "atomic rejection waypoint capacity",
+    "atomic rejection zero grid",
+    "atomic rejection opposite side",
+    "atomic rejection same endpoint",
+    "real concurrent side edit invalidates frozen plan",
+    "generated segment gets joint scoped clearance preflight",
+    "connectivity remains a separate immutable API"
+  ],
+  "posture_http_commit_ms": [
+    {
+      "mode": "cardinal",
+      "posture": "primary",
+      "ms": 6.161530000099447
+    },
+    {
+      "mode": "cardinal",
+      "posture": "alternate",
+      "ms": 2.8394760010996833
+    },
+    {
+      "mode": "octilinear",
+      "posture": "primary",
+      "ms": 4.65454700315604
+    },
+    {
+      "mode": "octilinear",
+      "posture": "alternate",
+      "ms": 2.721584001847077
+    }
+  ],
+  "warm_http_commit_ms": [
+    2.4110860031214543,
+    4.794960004801396,
+    3.10533499578014,
+    3.403627997613512,
+    2.9974029966979288
+  ],
+  "warm_http_mean_ms": 3.3424823996028863
+}

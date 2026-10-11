@@ -1,0 +1,16 @@
+{
+  "app_name": "viamind",
+  "pid": 413568,
+  "screenshot_file_path": "/tmp/viamind-t0077-production-native.png",
+  "screenshot_height": 23,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 16,
+  "window_bounds": {
+    "height": 23,
+    "width": 16,
+    "x": 2382,
+    "y": 1447
+  },
+  "window_id": 110379506604128,
+  "window_title": "viamind-t0077-route.viamind.json — Viamind"
+}

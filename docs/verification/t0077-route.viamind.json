@@ -1,0 +1,250 @@
+{
+  "format": "viamind",
+  "version": 4,
+  "project": {
+    "id": "682a1225-9cbb-4944-9eab-c904b67c392f",
+    "name": "Untitled",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "tracks": {
+        "165968eb-db42-4a72-ba5c-9dce3c6ce6ee": {
+          "id": "165968eb-db42-4a72-ba5c-9dce3c6ce6ee",
+          "start": {
+            "x": 10000000,
+            "y": 10000000
+          },
+          "end": {
+            "x": 40000000,
+            "y": 10000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "2c861d3d-9d59-48e7-a88f-4e9a9ca3e8c9": {
+          "id": "2c861d3d-9d59-48e7-a88f-4e9a9ca3e8c9",
+          "start": {
+            "x": 10000258,
+            "y": 40000126
+          },
+          "end": {
+            "x": 10000000,
+            "y": 40000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        },
+        "485fad72-f4cf-4634-a896-9841840fcd24": {
+          "id": "485fad72-f4cf-4634-a896-9841840fcd24",
+          "start": {
+            "x": 10000000,
+            "y": 40000000
+          },
+          "end": {
+            "x": 60000000,
+            "y": 40000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        },
+        "4fc60bdd-dda4-46ae-b3fd-a9a9884e5cb7": {
+          "id": "4fc60bdd-dda4-46ae-b3fd-a9a9884e5cb7",
+          "start": {
+            "x": 10000258,
+            "y": 9999880
+          },
+          "end": {
+            "x": 10000000,
+            "y": 10000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "9be6a58b-fc14-4d55-9ef4-5bcd7900b66e": {
+          "id": "9be6a58b-fc14-4d55-9ef4-5bcd7900b66e",
+          "start": {
+            "x": 60000000,
+            "y": 30000000
+          },
+          "end": {
+            "x": 60000264,
+            "y": 30000134
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        },
+        "9cee6f3b-4ffd-48ac-8bd0-8c0d38b4cbfb": {
+          "id": "9cee6f3b-4ffd-48ac-8bd0-8c0d38b4cbfb",
+          "start": {
+            "x": 40000000,
+            "y": 10000000
+          },
+          "end": {
+            "x": 60000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "9e428b69-2fcc-4b7f-a2f6-3a1e28068f85": {
+          "id": "9e428b69-2fcc-4b7f-a2f6-3a1e28068f85",
+          "start": {
+            "x": 60000000,
+            "y": 30000000
+          },
+          "end": {
+            "x": 60000264,
+            "y": 29999888
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "SIGNAL"
+        },
+        "bf565d6b-ec95-4ea3-9aec-74166ff147ba": {
+          "id": "bf565d6b-ec95-4ea3-9aec-74166ff147ba",
+          "start": {
+            "x": 60000000,
+            "y": 40000000
+          },
+          "end": {
+            "x": 60000000,
+            "y": 30000000
+          },
+          "width": 250000,
+          "layer": "bottom",
+          "net": "POWER"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 0
+          },
+          {
+            "x": 80000000,
+            "y": 50000000
+          },
+          {
+            "x": 0,
+            "y": 50000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "284dbd48-67a3-4cb1-b20c-7d91f7be132d": {
+          "pads": [
+            {
+              "id": "4d4b504c-76f0-4321-b107-1915685c0b49",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "284dbd48-67a3-4cb1-b20c-7d91f7be132d",
+          "designator": "J3",
+          "value": "Original",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 40000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "9b205359-05e6-43ec-a814-a22789187a8a": {
+          "pads": [
+            {
+              "id": "4280b87e-6980-4f36-a9f6-bfef162a50d4",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "9b205359-05e6-43ec-a814-a22789187a8a",
+          "designator": "J1",
+          "value": "Original",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000001,
+            "y": 10000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "top"
+        },
+        "a4efde20-ff9c-4f40-aae0-dca29663282a": {
+          "pads": [
+            {
+              "id": "a4654a7a-abba-4972-907b-24b8f286afb1",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "POWER"
+            }
+          ],
+          "id": "a4efde20-ff9c-4f40-aae0-dca29663282a",
+          "designator": "J4",
+          "value": "Original",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 30000011
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        },
+        "fbe7c1e7-3251-4374-9571-8a07920cd07d": {
+          "pads": [
+            {
+              "id": "87cb7291-4753-45d4-bdc6-7fd6f79990ef",
+              "number": "1",
+              "position": {
+                "x": 123,
+                "y": 257
+              },
+              "width": 2000000,
+              "height": 2000000,
+              "net": "SIGNAL"
+            }
+          ],
+          "id": "fbe7c1e7-3251-4374-9571-8a07920cd07d",
+          "designator": "J2",
+          "value": "Original",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000007,
+            "y": 30000011
+          },
+          "rotation_mdeg": 90000,
+          "side": "top"
+        }
+      }
+    }
+  }
+}
