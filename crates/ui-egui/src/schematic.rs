@@ -551,7 +551,8 @@ impl ViamindApp {
             let at = screen(l.position);
             let tint = color(l.id, Color32::from_rgb(160, 200, 255));
             painter.circle_stroke(at, 3.0, Stroke::new(1.0, tint));
-            painter.text(at + egui::vec2(6.0, -4.0), Align2::LEFT_BOTTOM, format!("{} ({:?})", l.name, l.scope), FontId::proportional(13.0), tint);
+            // Keep attached net labels above the pin-number/name row at the same anchor.
+            painter.text(at + egui::vec2(6.0, -20.0), Align2::LEFT_BOTTOM, format!("{} ({:?})", l.name, l.scope), FontId::proportional(13.0), tint);
         }
         if response.clicked()
             && !ui.input(|i| i.key_down(Key::Space))
