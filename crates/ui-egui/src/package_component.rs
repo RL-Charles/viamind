@@ -403,6 +403,7 @@ mod tests {
     }
     fn footprint(path: &std::path::Path) {
         let f = Footprint {
+            artwork: None,
             name: "Authored-14pad".into(),
             pads: (1..=14)
                 .map(|n| FootprintPad {
