@@ -122,3 +122,100 @@ async fn batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edi
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn automatic_drc_configuration_and_edit_refresh_are_shared_between_http_clients() {
+    let engine = EngineHandle::new(Project::new("automatic HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = ClientConfig::new(ClientCapabilities::default(), Implementation::new("auto-a", "1"))
+        .serve(StreamableHttpClientTransport::from_uri(server.url()))
+        .await
+        .unwrap();
+    let b = ClientConfig::new(ClientCapabilities::default(), Implementation::new("auto-b", "1"))
+        .serve(StreamableHttpClientTransport::from_uri(server.url()))
+        .await
+        .unwrap();
+    let tools = a.list_all_tools().await.unwrap();
+    assert_eq!(
+        serde_json::to_value(&tools.iter().find(|t| t.name == "configure_auto_drc").unwrap().input_schema).unwrap(),
+        viamind_engine::input_schema::<viamind_engine::AutoDrcConfig>()
+    );
+    assert!(tools.iter().any(|t| t.name == "get_auto_drc_status"));
+    let before = engine.session_state();
+    let configured = a
+        .call_tool(
+            CallToolRequestParams::new("configure_auto_drc").with_arguments(json!({"enabled":true,"debounce_ms":0}).as_object().unwrap().clone()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(configured.is_error, Some(false));
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(10);
+    loop {
+        let status = b
+            .call_tool(CallToolRequestParams::new("get_auto_drc_status").with_arguments(Default::default()))
+            .await
+            .unwrap()
+            .structured_content
+            .unwrap();
+        if status["phase"] == "ready" {
+            assert_eq!(status["report"]["coverage"]["checked_tracks"], 0);
+            break;
+        }
+        assert!(tokio::time::Instant::now() < deadline);
+        tokio::time::sleep(std::time::Duration::from_millis(2)).await;
+    }
+    assert_eq!(engine.session_state(), before);
+    for bad in
+        [json!({"enabled":true,"max_objects":0}), json!({"debounce_ms":2001}), json!({"rules":{"copper_clearance_mm":-1}}), json!({"unknown":true})]
+    {
+        assert_eq!(
+            a.call_tool(CallToolRequestParams::new("configure_auto_drc").with_arguments(bad.as_object().unwrap().clone())).await.unwrap().is_error,
+            Some(true)
+        );
+    }
+    assert_eq!(
+        b.call_tool(CallToolRequestParams::new("get_auto_drc_status").with_arguments(json!({"unknown":true}).as_object().unwrap().clone()))
+            .await
+            .unwrap()
+            .is_error,
+        Some(true)
+    );
+    let edit = b
+        .call_tool(
+            CallToolRequestParams::new("add_via")
+                .with_arguments(json!({"x_mm":10,"y_mm":10,"diameter_mm":0.6,"drill_mm":0.1,"net":"A"}).as_object().unwrap().clone()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(edit.is_error, Some(false));
+    let cursor = engine.session_state().cursor;
+    loop {
+        let status = a
+            .call_tool(CallToolRequestParams::new("get_auto_drc_status").with_arguments(Default::default()))
+            .await
+            .unwrap()
+            .structured_content
+            .unwrap();
+        if status["phase"] == "ready" && status["generation"] == 2 {
+            assert_eq!(status["source_cursor"], serde_json::to_value(cursor).unwrap());
+            assert_eq!(status["report"]["coverage"]["checked_vias"], 1);
+            assert_eq!(status["report"]["violations"][0]["kind"], "minimum_via_drill");
+            assert!(status["check_ms"].as_f64().unwrap().is_finite());
+            // JSON floating-point timings can differ by a final rounding bit.
+            let mut native = serde_json::to_value(engine.auto_drc_status()).unwrap();
+            let mut remote = status;
+            for field in ["check_ms", "snapshot_capture_ms", "request_to_publication_ms"] {
+                assert!((native[field].as_f64().unwrap() - remote[field].as_f64().unwrap()).abs() < 1e-9);
+                native.as_object_mut().unwrap().remove(field);
+                remote.as_object_mut().unwrap().remove(field);
+            }
+            assert_eq!(remote, native);
+            break;
+        }
+        assert!(tokio::time::Instant::now() < deadline);
+        tokio::time::sleep(std::time::Duration::from_millis(2)).await;
+    }
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}

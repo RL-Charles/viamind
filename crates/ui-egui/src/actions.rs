@@ -46,6 +46,8 @@ ui_actions! {
     ExportFootprint => ("export_footprint", input_schema::<viamind_engine::FootprintFile>(), export_footprint),
 
     ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
+    ConfigureAutoDrc => ("configure_auto_drc", input_schema::<viamind_engine::AutoDrcConfig>(), configure_auto_drc),
+    GetAutoDrcStatus => ("get_auto_drc_status", no_args(), get_auto_drc_status),
     RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
@@ -142,6 +144,19 @@ fn set_part_pads(engine: &EngineHandle, input: Value) -> Result<Value, EngineErr
 
 fn import_board_outline_dxf(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(ImportBoardOutlineDxf::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn configure_auto_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let config =
+        serde_json::from_value(input).map_err(|e| EngineError::InvalidInput { command: "configure_auto_drc".into(), message: e.to_string() })?;
+    serde_json::to_value(engine.configure_auto_drc(config)?).map_err(encode_error)
+}
+
+fn get_auto_drc_status(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+        return Err(EngineError::InvalidInput { command: "get_auto_drc_status".into(), message: "expected an empty object".into() });
+    }
+    serde_json::to_value(engine.auto_drc_status()).map_err(encode_error)
 }
 
 fn run_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
