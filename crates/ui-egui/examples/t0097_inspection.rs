@@ -9,10 +9,16 @@ struct Inspection {
     capture: PathBuf,
     ui_passes: usize,
     requested: bool,
+    captured: bool,
     bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspection {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        if self.captured {
+            assert_eq!(self.engine.session_state(), self.before);
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+            return;
+        }
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.));
         self.ui_passes += 1;
         assert_eq!(self.engine.session_state(), self.before);
@@ -37,6 +43,7 @@ impl eframe::App for Inspection {
                 serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","path":self.capture,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"prepared_actual_egui_control_bounds_fit_native_viewport":true,"self_close_after_fsync":true,"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
             );
             std::io::stdout().flush().unwrap();
+            self.captured = true;
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         } else {
             if self.ui_passes >= 8 && !self.requested {
@@ -91,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            Ok(Box::new(Inspection { app, engine, before, capture, ui_passes: 0, requested: false, bounds }))
+            Ok(Box::new(Inspection { app, engine, before, capture, ui_passes: 0, requested: false, captured: false, bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;
