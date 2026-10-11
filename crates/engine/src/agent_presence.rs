@@ -25,11 +25,46 @@ pub struct PresencePoint {
     pub y: Nm,
 }
 
+/// One connection attends to either PCB or one explicitly identified sheet.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum PresenceSurface {
+    #[default]
+    Pcb,
+    Schematic {
+        sheet: ObjectId,
+    },
+}
+impl PresenceSurface {
+    fn is_pcb(&self) -> bool {
+        matches!(self, Self::Pcb)
+    }
+    fn exists(self, project: &Project) -> bool {
+        match self {
+            Self::Pcb => true,
+            Self::Schematic { sheet } => project.schematic.sheets.contains_key(&sheet),
+        }
+    }
+    fn contains(self, project: &Project, id: &ObjectId) -> bool {
+        match self {
+            Self::Pcb => board_object(project, id),
+            Self::Schematic { sheet } => project.schematic.sheets.get(&sheet).and_then(|sheet| sheet.content.as_ref()).is_some_and(|content| {
+                content.symbols.contains_key(id)
+                    || content.wires.contains_key(id)
+                    || content.junctions.contains_key(id)
+                    || content.labels.contains_key(id)
+            }),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SetAgentPresence {
     pub expected_project: ObjectId,
     pub expected_stream: ObjectId,
+    #[serde(default, skip_serializing_if = "PresenceSurface::is_pcb")]
+    pub surface: PresenceSurface,
     pub cursor: PresencePoint,
     #[schemars(length(max = 64))]
     pub selection: Vec<ObjectId>,
@@ -48,6 +83,8 @@ pub struct ClearAgentPresence {
 pub struct AgentPresence {
     pub connection: u64,
     pub display_name: String,
+    #[serde(skip_serializing_if = "PresenceSurface::is_pcb")]
+    pub surface: PresenceSurface,
     pub cursor: PresencePoint,
     pub selection: Vec<ObjectId>,
     pub working_on: String,
@@ -75,12 +112,12 @@ pub(crate) struct PresenceStore {
 }
 
 impl PresenceStore {
-    fn refresh(&mut self, stream: ObjectId, now: Instant) {
+    fn refresh(&mut self, project: &Project, stream: ObjectId, now: Instant) {
         if self.stream != Some(stream) {
             self.leases.clear();
             self.stream = Some(stream);
         }
-        self.leases.retain(|_, lease| lease.expires > now);
+        self.leases.retain(|_, lease| lease.expires > now && lease.presence.surface.exists(project));
     }
     fn snapshot(&self, project: &Project, cursor: EventCursor, now: Instant) -> AgentPresenceSnapshot {
         let agents = self
@@ -88,7 +125,7 @@ impl PresenceStore {
             .values()
             .map(|lease| {
                 let mut presence = lease.presence.clone();
-                presence.selection.retain(|id| board_object(project, id));
+                presence.selection.retain(|id| presence.surface.contains(project, id));
                 presence.remaining_lease_ms = lease.expires.saturating_duration_since(now).as_millis().min(30_000) as u64;
                 presence
             })
@@ -122,7 +159,7 @@ impl EngineHandle {
         let engine = self.engine.lock().unwrap_or_else(PoisonError::into_inner);
         let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
         let now = clock();
-        store.refresh(engine.event_cursor().stream_id, now);
+        store.refresh(engine.project(), engine.event_cursor().stream_id, now);
         store.snapshot(engine.project(), engine.event_cursor(), now)
     }
 
@@ -159,13 +196,16 @@ impl EngineHandle {
             if input.expected_project != engine.project().id || input.expected_stream != engine.event_cursor().stream_id {
                 return Err("project or stream changed; refresh presence context".into());
             }
+            if !input.surface.exists(engine.project()) {
+                return Err("presence requires an existing schematic sheet".into());
+            }
             let mut unique = BTreeSet::new();
-            if input.selection.iter().any(|id| !unique.insert(*id) || !board_object(engine.project(), id)) {
-                return Err("presence selection requires distinct existing board part/track/via IDs".into());
+            if input.selection.iter().any(|id| !unique.insert(*id) || !input.surface.contains(engine.project(), id)) {
+                return Err("presence selection requires distinct existing objects in the chosen surface".into());
             }
             let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
             let now = clock();
-            store.refresh(engine.event_cursor().stream_id, now);
+            store.refresh(engine.project(), engine.event_cursor().stream_id, now);
             if !store.leases.contains_key(&connection) && store.leases.len() >= AGENT_PRESENCE_CAPACITY {
                 return Err("presence has 32 active leases; wait for expiry or clear your own marker".into());
             }
@@ -176,6 +216,7 @@ impl EngineHandle {
                     presence: AgentPresence {
                         connection,
                         display_name: display_name(name),
+                        surface: input.surface,
                         cursor: input.cursor,
                         selection: input.selection,
                         working_on: input.working_on,
@@ -205,7 +246,7 @@ impl EngineHandle {
             }
             let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
             let now = Instant::now();
-            store.refresh(engine.event_cursor().stream_id, now);
+            store.refresh(engine.project(), engine.event_cursor().stream_id, now);
             let removed = store.leases.remove(&connection).is_some();
             let snapshot = store.snapshot(engine.project(), engine.event_cursor(), now);
             (snapshot, if removed { engine.wake_transient_ui() } else { Vec::new() })
@@ -230,10 +271,88 @@ mod tests {
         SetAgentPresence {
             expected_project: engine.read(|p| p.id),
             expected_stream: engine.event_cursor().stream_id,
+            surface: PresenceSurface::Pcb,
             cursor: PresencePoint { x: Nm(1), y: Nm(-3) },
             selection: vec![],
             working_on: "Checking route".into(),
         }
+    }
+
+    #[test]
+    fn strict_surface_forms_preserve_legacy_pcb_serialization() {
+        use serde_json::json;
+        let engine = EngineHandle::new(Project::new("attention"));
+        let old = serde_json::to_value(input(&engine)).unwrap();
+        assert!(old.get("surface").is_none());
+        assert_eq!(serde_json::from_value::<SetAgentPresence>(old.clone()).unwrap().surface, PresenceSurface::Pcb);
+        for surface in [
+            json!(null),
+            json!({"kind":"other"}),
+            json!({"kind":"pcb","sheet":ObjectId::new()}),
+            json!({"kind":"schematic"}),
+            json!({"kind":"schematic","sheet":ObjectId::new(),"owner":1}),
+        ] {
+            let mut v = old.clone();
+            v["surface"] = surface;
+            assert!(serde_json::from_value::<SetAgentPresence>(v.clone()).is_err(), "{v}");
+        }
+        let response = engine.set_agent_presence(1, "pcb", input(&engine)).unwrap();
+        assert!(serde_json::to_value(response).unwrap()["agents"][0].get("surface").is_none());
+    }
+
+    #[test]
+    fn explicit_sheet_identity_capacity_switch_deleted_objects_and_sheet_pruning() {
+        use serde_json::json;
+        let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+        let sheet = project.schematic.sheets.values().next().unwrap().clone();
+        let content = sheet.content.as_ref().unwrap();
+        let symbol = content.symbols.values().next().unwrap();
+        let pin = symbol.pins[0].id;
+        let selected =
+            vec![symbol.id, *content.wires.keys().next().unwrap(), *content.junctions.keys().next().unwrap(), *content.labels.keys().next().unwrap()];
+        let empty = viamind_doc::Sheet { id: ObjectId::new(), name: "Empty".into(), content: None };
+        project.schematic.sheets.insert(empty.id, empty.clone());
+        let engine = EngineHandle::new(project.clone());
+        let before = engine.session_state();
+        let now = Instant::now();
+        for connection in 1..=32 {
+            engine.set_presence_with_clock(connection, "pcb", input(&engine), || now).unwrap();
+        }
+        let mut attention = input(&engine);
+        attention.surface = PresenceSurface::Schematic { sheet: sheet.id };
+        attention.selection = selected.clone();
+        engine.set_presence_with_clock(1, "schematic", attention.clone(), || now).unwrap();
+        let expected = engine.presence_with_clock(|| now);
+        assert_eq!(expected.agents.len(), 32);
+        assert_eq!(expected.agents[0].selection, selected);
+        for (surface, ids) in [
+            (PresenceSurface::Schematic { sheet: empty.id }, selected.clone()),
+            (attention.surface, vec![pin]),
+            (PresenceSurface::Schematic { sheet: ObjectId::new() }, vec![]),
+        ] {
+            let mut invalid = attention.clone();
+            invalid.surface = surface;
+            invalid.selection = ids;
+            assert!(engine.set_presence_with_clock(1, "changed", invalid, || now).is_err());
+            assert_eq!(engine.presence_with_clock(|| now), expected);
+        }
+        assert_eq!(engine.session_state(), before);
+        assert!(engine.set_presence_with_clock(33, "new", attention.clone(), || now).unwrap_err().contains("32 active"));
+        // Existing participant can attend to an empty sheet at capacity.
+        let mut empty_attention = attention.clone();
+        empty_attention.surface = PresenceSurface::Schematic { sheet: empty.id };
+        empty_attention.selection.clear();
+        engine.set_presence_with_clock(2, "empty", empty_attention, || now).unwrap();
+        engine.execute("edit_schematic_sheet",json!({"expected_project":project.id,"sheet_id":sheet.id,"expected":sheet,"name":sheet.name,"edits":[{"kind":"delete","id":symbol.id}]}),Origin::User).unwrap();
+        assert!(!engine.query_agent_presence().agents[0].selection.contains(&symbol.id));
+        engine.undo(Origin::User).unwrap();
+        assert_eq!(engine.query_agent_presence().agents[0].selection, selected);
+        engine.execute("delete_schematic_sheet", json!({"expected_project":project.id,"expected":empty}), Origin::User).unwrap();
+        assert!(engine.query_agent_presence().agents.iter().all(|a| a.connection != 2));
+        engine.undo(Origin::User).unwrap();
+        assert!(engine.query_agent_presence().agents.iter().all(|a| a.connection != 2), "undo never recreates a pruned marker");
+        assert_eq!(engine.read(Clone::clone), project);
+        assert_eq!(engine.presence_with_clock(|| now + AGENT_PRESENCE_LEASE).agents.len(), 0);
     }
 
     #[test]

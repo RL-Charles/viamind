@@ -21,7 +21,7 @@ fn preflight(input: &Value) -> Result<(), ToolError> {
 
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
     let query = engine.clone();
-    registry.register_observation("query_agent_presence", "Read bounded ephemeral PCB agent cursors, selected board IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.", serde_json::json!({"type":"object","properties":{},"additionalProperties":false}), move |input| {
+    registry.register_observation("query_agent_presence", "Read bounded ephemeral PCB or explicit-sheet schematic agent cursors, selected surface IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.", serde_json::json!({"type":"object","properties":{},"additionalProperties":false}), move |input| {
         let engine = query.clone();
         async move {
             if !input.as_object().is_some_and(serde_json::Map::is_empty) { return Err(ToolError::Failed("query_agent_presence takes an empty object".into())); }
@@ -30,7 +30,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
         }
     })?;
     let setter = engine.clone();
-    registry.register_with_context("set_agent_presence", "Publish or renew only this MCP connection's ephemeral PCB cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; at most64 distinct existing board part/track/via IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.", input_schema::<SetAgentPresence>(), move |input, ctx| {
+    registry.register_with_context("set_agent_presence", "Publish or renew only this MCP connection's ephemeral PCB or explicit schematic-sheet cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; Optional strict surface {kind:pcb} (default/omitted) or {kind:schematic,sheet:UUID}; at most64 distinct existing board part/track/via IDs or chosen-sheet symbol/wire/junction/label IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.", input_schema::<SetAgentPresence>(), move |input, ctx| {
         let engine = setter.clone();
         async move {
             let connection = ctx.connection.ok_or_else(|| ToolError::Failed("presence requires a trusted MCP connection".into()))?;
@@ -44,7 +44,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
                 .await.map_err(|e| ToolError::Failed(e.to_string()))?
         }
     })?;
-    registry.register_with_context("clear_agent_presence", "Clear only this trusted MCP connection's PCB attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.", input_schema::<ClearAgentPresence>(), move |input, ctx| {
+    registry.register_with_context("clear_agent_presence", "Clear only this trusted MCP connection's PCB or schematic attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.", input_schema::<ClearAgentPresence>(), move |input, ctx| {
         let engine = engine.clone();
         async move {
             let connection = ctx.connection.ok_or_else(|| ToolError::Failed("presence requires a trusted MCP connection".into()))?;
