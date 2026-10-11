@@ -135,3 +135,6 @@ pub use checked_output_job::checked_output_job_report;
 
 mod net_rules;
 pub use net_rules::{NamedNetRuleRow, NamedNetRuleSnapshot, SetNamedNetRules};
+
+mod footprint_definition;
+pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, validate_definition};
