@@ -513,6 +513,7 @@ fn footprint(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]
         assembly: None,
         id: identity(n, items)?,
         schematic_symbol: None,
+        schematic_package: None,
         pads: Some(Pads::try_from(pads).map_err(bad)?),
         designator: name(&reference.ok_or_else(|| bad("missing explicit Reference"))?)?,
         value: value.unwrap_or_default(),

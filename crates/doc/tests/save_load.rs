@@ -19,6 +19,7 @@ fn golden_file() {
     let part = Part {
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         pads: None,
         id: id(3),
         designator: "R1".into(),
@@ -89,6 +90,7 @@ fn save_load_and_resave_on_disk() {
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             pads: None,
             id: ObjectId::new(),
             designator: format!("C{i}"),
@@ -139,6 +141,7 @@ fn arb_part() -> impl Strategy<Value = Part> {
         |(n, designator, value, footprint, x, y, rotation_mdeg, bottom)| Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             pads: None,
             id: id(n),
             designator,

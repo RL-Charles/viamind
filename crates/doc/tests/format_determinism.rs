@@ -10,6 +10,7 @@ fn parts() -> Vec<Part> {
         .map(|i| Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             pads: None,
             id: ObjectId::new(),
             designator: format!("R{i}"),

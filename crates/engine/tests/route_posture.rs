@@ -22,6 +22,7 @@ fn fixture() -> (EngineHandle, [PadEndpointId; 2]) {
             assembly: None,
             id: ObjectId::new(),
             schematic_symbol: None,
+            schematic_package: None,
             designator: format!("J{x}"),
             value: String::new(),
             footprint: String::new(),

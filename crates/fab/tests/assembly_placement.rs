@@ -16,6 +16,7 @@ fn sample() -> Project {
             side,
             pads: None,
             schematic_symbol: None,
+            schematic_package: None,
             assembly: Some(Box::new(AssemblyMetadata {
                 mounting: Some(MountingTechnology::SurfaceMount),
                 placement: Some(AssemblyPlacement { centroid_local: Point::from_mm(2., 1.), zero_axis_mdeg: 37_125 }),

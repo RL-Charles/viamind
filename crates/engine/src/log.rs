@@ -17,7 +17,7 @@ use crate::event::ChangeEvent;
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
 /// New logs use version 11 to preserve explicit multi-unit symbol packages.
-pub const LOG_VERSION: u32 = 11;
+pub const LOG_VERSION: u32 = 12;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -141,6 +141,7 @@ impl EventLog {
                     crate::Delta::Part { id, before, after } => before.iter().chain(after).all(|part| {
                         part.id == *id
                             && (header.version >= 6 || part.schematic_symbol.is_none())
+                            && (header.version >= 12 || part.schematic_package.is_none())
                             && part.assembly.as_ref().is_none_or(|m| header.version >= m.minimum_version())
                             && part.assembly.as_ref().is_none_or(|m| m.validate().is_ok())
                     }),
@@ -222,6 +223,7 @@ fn validate_event_assembly(event: &ChangeEvent) -> Result<(), &'static str> {
     for delta in &event.deltas {
         if let crate::Delta::Part { id, before, after } = delta {
             for p in before.iter().chain(after) {
+                p.validate_schematic_links()?;
                 if let Some(m) = &p.assembly {
                     m.validate()?;
                 }

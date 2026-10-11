@@ -117,6 +117,7 @@ fn pad(project: &mut Project, center: Point, side: Side, rotation: i32) {
     let mut part = Part {
         id: ObjectId::new(),
         schematic_symbol: None,
+        schematic_package: None,
         assembly: None,
         designator: format!("J{}", project.board.parts.len()),
         value: String::new(),

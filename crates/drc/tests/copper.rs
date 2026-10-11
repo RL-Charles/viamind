@@ -25,6 +25,7 @@ fn part() -> Part {
     Part {
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         id: ObjectId::new(),
         designator: "P1".into(),
         value: "test".into(),

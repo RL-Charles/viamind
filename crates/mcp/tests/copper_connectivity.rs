@@ -43,6 +43,7 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
             side: Side::Bottom,
             pads: Some(Pads::try_from(vec![pad]).unwrap()),
             schematic_symbol: None,
+            schematic_package: None,
         };
         project.board.parts.insert(part.id, part);
     }

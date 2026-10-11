@@ -227,6 +227,7 @@ fn result_object_budget_is_checked_before_commit_and_preview() {
             assembly: None,
             id: ObjectId::new(),
             schematic_symbol: None,
+            schematic_package: None,
             pads: None,
             designator: format!("Z{n}"),
             value: String::new(),

@@ -6,6 +6,7 @@ fn part(designator: &str, x: f64, y: f64, width: f64, height: f64, angle: i32, s
     Part {
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         id: ObjectId::new(),
         designator: designator.into(),
         value: "test".into(),

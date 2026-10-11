@@ -155,6 +155,7 @@ fn make_part(placement: &SchematicComponentPlacement, designator: String, value:
         assembly: None,
         id: ObjectId::new(),
         schematic_symbol: Some(placement.symbol_id),
+        schematic_package: None,
         designator,
         value,
         footprint: placement.footprint.name.clone(),
