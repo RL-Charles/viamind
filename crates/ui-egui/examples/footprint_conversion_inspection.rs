@@ -68,7 +68,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if h.query_by_label_contains(label).is_some() {
                 break;
             }
-            h.query_all_by_label_contains(" @byte").next().ok_or("visible report row required")?.hover();
+            // The first virtual row may be clipped above the inner scroll viewport.
+            h.query_all_by_label_contains(" @byte").nth(1).ok_or("visible report row required")?.hover();
             h.event(egui::Event::MouseWheel {
                 unit: egui::MouseWheelUnit::Point,
                 delta: egui::vec2(0.0, -100.0),

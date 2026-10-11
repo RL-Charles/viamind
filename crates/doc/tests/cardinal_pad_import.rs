@@ -61,6 +61,7 @@ fn both_public_parsers_preserve_signed_cardinal_odd_nm_geometry_and_exhaustive_r
         assert_eq!(part.local_to_world_nm_exact(pad.position).unwrap().x, Nm(3_500_004));
         assert_eq!(part.local_to_world_nm_exact(pad.position).unwrap().y, Nm(5_250_012));
         assert_eq!(pad.net.as_deref(), Some("VIN"));
+        assert!(part.assembly.is_none(), "pad normalization must not infer sourcing or population metadata");
         assert_eq!(pad.id.to_string(), "30000000-0000-4000-8000-000000000001");
         for report in [&pcb.report, &detached.report] {
             assert!(!report.full_fidelity);
@@ -134,5 +135,13 @@ fn malformed_noncardinal_fractional_and_out_of_bounds_angles_block_the_whole_res
     for root in ["(at 0 0 90)", "(at 1 0 0)"] {
         let source = MOD.replacen("(attr smd)", &format!("(attr smd) {root}"), 1);
         assert!(footprint_sexpr::parse(&source).unwrap().footprint.is_none());
+    }
+    for original in [PCB, MOD] {
+        let source = original.replace("(attr smd)", "(attr smd dnp)");
+        if original == PCB {
+            assert!(!pcb_sexpr::parse(&source).unwrap().report.can_import(), "unmodeled source DNP must still block");
+        } else {
+            assert!(footprint_sexpr::parse(&source).unwrap().footprint.is_none(), "unmodeled source DNP must still block");
+        }
     }
 }

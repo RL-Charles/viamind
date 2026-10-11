@@ -129,7 +129,8 @@ fn actual_report_scroll_reaches_exact_cardinal_normalization_without_session_cha
         if h.query_by_label_contains(label).is_some() {
             break;
         }
-        h.query_all_by_label_contains(" @byte").next().unwrap().hover();
+        // The first virtual row may be clipped; target the next visible heading.
+        h.query_all_by_label_contains(" @byte").nth(1).unwrap().hover();
         h.event(Event::MouseWheel {
             unit: egui::MouseWheelUnit::Point,
             delta: vec2(0.0, -100.0),
