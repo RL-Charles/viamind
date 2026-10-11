@@ -59,9 +59,13 @@ fn barrier(project: &mut Project, net: Option<&str>, layer: CopperLayer) {
 }
 #[test]
 fn immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage() {
-    for typed in [true, false] {
+    for (typed, side) in [(true, Side::Top), (false, Side::Bottom)] {
+        let layer = if side == Side::Top { CopperLayer::Top } else { CopperLayer::Bottom };
         let (mut project, ids) = fixture();
-        barrier(&mut project, Some("FOREIGN"), CopperLayer::Top);
+        for part in project.board.parts.values_mut() {
+            part.side = side;
+        }
+        barrier(&mut project, Some("FOREIGN"), layer);
         let e = EngineHandle::new(project);
         let cmd = input(&e, ids);
         let before = e.session_state();
@@ -83,7 +87,7 @@ fn immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage() {
         let after = e.read(Clone::clone);
         for (id, pair) in out.created.iter().zip(plan.plan.path.points.windows(2)) {
             let t = &after.board.tracks[id];
-            assert_eq!((t.start, t.end, t.net.as_deref(), t.layer), (pair[0], pair[1], Some("N"), CopperLayer::Top));
+            assert_eq!((t.start, t.end, t.net.as_deref(), t.layer), (pair[0], pair[1], Some("N"), layer));
         }
         assert_eq!(e.event_cursor().sequence, before.cursor.sequence + 1);
         e.undo(Origin::User).unwrap();

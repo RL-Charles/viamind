@@ -457,7 +457,7 @@ impl ViamindApp {
 mod walkaround_worker_tests {
     use super::*;
     #[test]
-    fn cancellation_retains_worker_until_completion_and_discards_old_errors() {
+    fn cancellation_retains_worker_until_completion_and_discards_old_checked_plans() {
         let engine = EngineHandle::new(viamind_doc::Project::new("retained worker"));
         let id = PadEndpointId { part_id: viamind_doc::ObjectId::new(), pad_id: viamind_doc::ObjectId::new() };
         let input = viamind_engine::RoutePadWalkaround {
@@ -477,7 +477,20 @@ mod walkaround_worker_tests {
         assert!(!state.editing());
         state.sync_walkaround(&egui::Context::default(), &engine);
         assert!(state.walkaround_worker.is_some());
-        sender.send(Err("old cancelled work failed".into())).unwrap();
+        sender
+            .send(Ok(viamind_engine::CheckedWalkaround {
+                project_id: engine.read(|p| p.id),
+                source_cursor: engine.event_cursor(),
+                layer: CopperLayer::Top,
+                net: "N".into(),
+                plan: viamind_router::WalkaroundPlan {
+                    path: viamind_router::PadPathPlan { points: vec![Point::ORIGIN, Point::new(Nm(1), Nm(0))], endpoint_stub_segments: 0 },
+                    waypoints: Vec::new(),
+                    work: Default::default(),
+                },
+                complete_scoped_preflight: true,
+            }))
+            .unwrap();
         state.sync_walkaround(&egui::Context::default(), &engine);
         assert!(state.walkaround_worker.is_none());
         assert!(state.error.is_none());
