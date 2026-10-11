@@ -164,3 +164,24 @@ their identities and nets; placement stays unchanged and import is one undoable
 edit. Agents share `apply_footprint`, `import_footprint` and `export_footprint`.
 See [footprint library instructions](docs/footprint-libraries.md) for the strict
 integer geometry format and bounds.
+
+## Scoped outer-layer fabrication export
+
+```sh
+viamind --export-gerber --open board.viamind.json --output new-fabrication-directory --mask-expansion-mm 0.05
+```
+
+The output includes aligned top/bottom Gerber X2 copper and mask openings,
+polygon profile/cutouts, XNC (documented Excellon subset) plated through-via
+finished-hole drill and a manifest. All files use mm, the model origin and
+X-right/Y-up top view; bottom files are not mirrored. Every part needs explicit
+pads and the board needs an explicit outline. Existing destinations always
+reject. Mask expansion defaults to0mm; vias are untented. **Board → Export
+fabrication** and MCP `export_fabrication` export the same immutable snapshot.
+
+Only explicit rectangular SMD pads, straight outer tracks and through vias are
+supported. Legacy footprint previews, inner layers, pours, paste/silkscreen,
+component through holes/slots and X3 assembly/material instructions are excluded.
+This is a scoped geometry export, not fabrication certification. See
+[the specification](docs/specs/fabrication-gerber.md) and the independent reader
+check in [scripts/verify-fabrication.py](scripts/verify-fabrication.py).

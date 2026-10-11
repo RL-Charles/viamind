@@ -3,6 +3,7 @@
 //! The declaration generates both the dispatcher and its complete enumeration for the MCP
 //! parity gate. View preferences (camera, layers, tool choice, test scene) are local UI state.
 
+use crate::fabrication::export_fabrication;
 use serde_json::{Value, json};
 use viamind_engine::{
     AddPart, Command, DeletePart, EngineError, EngineHandle, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin, SaveProject,
@@ -43,7 +44,8 @@ ui_actions! {
     ApplyFootprint => (viamind_engine::ApplyFootprint::NAME, input_schema::<viamind_engine::ApplyFootprint>(), apply_footprint),
     ImportFootprint => ("import_footprint", input_schema::<viamind_engine::FootprintFile>(), import_footprint),
     ExportFootprint => ("export_footprint", input_schema::<viamind_engine::FootprintFile>(), export_footprint),
-    ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), crate::fabrication::export_fabrication),
+
+    ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
     RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
