@@ -1,0 +1,2027 @@
+032740a386c47f5adf98d91bbe954d26b947deaf
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 40.53s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7m 16s
+     Running unittests src/main.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind-389c803c73924da1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/assembly.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-61fcbc191591a138)
+
+running 3 tests
+test calibrated_placement_cli_is_display_free_exact_and_refuses_incomplete_native_replacement ... ok
+test cli_populated_bom_templates_match_shared_writer_and_preserve_native ... ok
+test cli_exports_lossless_tables_without_display_and_requires_explicit_replacement ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
+
+     Running tests/fabrication.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-26f756360943fe72)
+
+running 1 test
+test headless_cli_exports_real_package_and_refuses_overwrite_or_invalid_invocation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/headless.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/headless-190ae34f33db2daf)
+
+running 5 tests
+test invalid_native_input_is_reported_and_never_overwritten ... ok
+test output_write_failure_returns_nonzero_after_an_empty_design_session ... ok
+test headless_agent_can_create_save_and_reopen_in_one_connection ... ok
+test usage_and_invalid_options_return_without_initializing_a_display ... ok
+test full_engine_edits_without_display_and_saves_on_client_eof ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/output_job_calibration.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-b53750669f64d2e6)
+
+running 1 test
+test headless_cli_optional_companion_matches_standalone_and_default_payloads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/output_job_population.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-40d4f6dd755d4793)
+
+running 1 test
+test headless_cli_matched_population_preserves_calibration_and_refuses_invalid_versions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-372fbfa54ca2619a)
+
+running 2 tests
+test checked_headless_job_reports_same_snapshot_and_failure_publishes_nothing ... ok
+test real_headless_saved_job_release_and_separate_mode_validation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/png_views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png_views-e11738c1ec78c15c)
+
+running 1 test
+test cli_png_renders_without_display_and_preserves_collisions_native_and_invalid_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.73s
+
+     Running tests/read_only.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-1e3220efb165e2e5)
+
+running 2 tests
+test contradictory_read_only_invocations_reject_before_open_output_or_endpoint ... ok
+test actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/schematic_views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_views-e473a3e6d905b65a)
+
+running 1 test
+test selected_sheet_svg_png_work_without_display_and_protect_outputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.81s
+
+     Running tests/views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/views-03d5a45ece09d2eb)
+
+running 1 test
+test cli_renders_selected_region_without_display_and_preserves_collisions_native_and_invalid_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_doc-24ae1786f1bbf840)
+
+running 22 tests
+test board::tests::lookups ... ok
+test board::tests::serde_shape ... ok
+test board::tests::exact_integer_transforms_match_rendering_quadrants_and_check_overflow ... ok
+test board::tests::serde_round_trip_keeps_ids_and_order ... ok
+test board::tests::every_object_has_a_distinct_id ... ok
+test id::tests::display_parse_and_serde_agree ... ok
+test footprint_sexpr::tests::exact_original_detached_geometry_and_full_source_report_are_deterministic ... ok
+test footprint_sexpr::tests::tested_headers_optional_source_ids_unassigned_markers_and_zero_origin ... ok
+test id::tests::schema_is_a_uuid_string ... ok
+test footprint_sexpr::omitted_metadata_tests::recognized_ignored_fields_and_art_cannot_hide_unknown_semantic_lists ... ok
+test pad::tests::bounded_sizes_names_counts_and_duplicate_identities_are_validated ... ok
+test symbol_library::regular_file_tests::loading_a_fifo_without_a_writer_rejects_instead_of_waiting ... ok
+test footprint::io_tests::raced_fifo_native_library_open_never_waits_for_a_writer ... ok
+test id::tests::new_ids_are_unique_v4 ... ok
+test pcb_sexpr::ignored_pin_metadata_tests::scalar_pin_metadata_never_hides_semantic_children_or_duplicate_fields ... ok
+test footprint_sexpr::tests::unknown_long_tokens_retain_exact_provenance_without_diagnostic_amplification ... ok
+test footprint_sexpr::tests::malformed_ids_names_fields_and_exact_decimal_inputs_are_rejected_or_blocked ... ok
+test footprint_sexpr::tests::unsupported_geometry_nets_placement_and_unknown_semantics_never_export_partial_library ... ok
+test footprint::io_tests::staged_publication_refuses_native_paths_conflicts_and_symlinks_without_changing_bytes ... ok
+test symbol_library::publication_tests::destination_created_after_stage_and_symlink_alias_are_never_replaced ... ok
+test symbol_library::publication_tests::private_staging_exact_publication_drop_and_conflicts_preserve_destinations ... ok
+test footprint_sexpr::tests::all_source_and_parser_work_limits_precede_unbounded_native_collection ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/assembly_metadata.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_metadata-583b6bc3652297d6)
+
+running 3 tests
+test optional_calibration_is_strict_bounded_and_absent_bytes_stay_identical ... ok
+test mixed_named_net_policy_and_calibration_use_maximum_feature_version ... ok
+test source_fields_and_global_limits_use_utf8_bytes_and_borrowed_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/atomic_save.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/atomic_save-9a24b876f85f59de)
+
+running 2 tests
+test simultaneous_no_clobber_saves_have_exactly_one_complete_winner ... ok
+test unique_temporaries_preserve_unrelated_files_and_cleanup_after_failure ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/cardinal_pad_import.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cardinal_pad_import-1fd7dbafec3354f9)
+
+running 2 tests
+test malformed_noncardinal_fractional_and_out_of_bounds_angles_block_the_whole_result ... ok
+test both_public_parsers_preserve_signed_cardinal_odd_nm_geometry_and_exhaustive_reports ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-ca38debfc52d7ecc)
+
+running 3 tests
+test native_copper_round_trip_identity_geometry_and_legacy_bytes ... ok
+test malformed_native_geometry_keys_layers_nets_and_global_ids_reject ... ok
+test native_copper_count_is_bounded_before_geometry_scan ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests/dxf.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/dxf-606c12c1072362d9)
+
+running 5 tests
+test asymmetric_coordinates_preserve_dxf_visual_orientation_and_parent_layer_selection ... ok
+test import_classifies_polylines_and_assembles_unordered_lines ... ok
+test units_require_header_or_an_explicit_override_and_round_to_nm ... ok
+test layer_filter_and_board_topology_never_silently_drop_selected_geometry ... ok
+test malformed_curved_3d_open_and_ambiguous_drawings_fail_with_context ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-b6290dbcdeef53c6)
+
+running 4 tests
+test original_odd_signed_coordinates_rectangles_and_linear_strokes_preserve_native_frame ... ok
+test mask_openings_profile_zero_centerlines_and_xnc_exact_hits_are_distinct ... ok
+test malformed_unsupported_and_ambiguous_graphics_never_return_a_partial_picture ... ok
+test aggregate_budget_is_shared_across_files_and_exact_boundary_does_not_truncate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/footprint.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-73680a2869b9595b)
+
+running 2 tests
+test strict_integer_geometry_roundtrips_without_design_fields ... ok
+test bounded_io_preserves_existing_paths_and_native_project_aliases ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/format_determinism.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/format_determinism-313dee05d5fb6e4c)
+
+running 1 test
+test insertion_order_does_not_change_the_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/net_rules.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-a50ab12fceb4bafe)
+
+running 5 tests
+test native_original_tokens_reject_duplicate_rules_and_preserve_header_precedence ... ok
+test native_empty_bytes_omit_policy_and_nonempty_require_version_eight ... ok
+test zero_via_fields_preserve_exact_v8_record_bytes_and_nonzero_requires_ten ... ok
+test borrowed_and_native_bounds_reject_names_rows_and_scalars ... ok
+test via_ten_and_assembly_nine_compose_and_clear_without_losing_older_features ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/outlines.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/outlines-2102f04ce4dffd59)
+
+running 2 tests
+test rejects_invalid_rings_and_cutout_topology_in_either_winding ... ok
+test native_outlines_round_trip_and_legacy_documents_keep_exact_bytes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pcb_sexpr.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sexpr-cad46f247f927cb9)
+
+running 8 tests
+test tested_header_and_identity_alias_grammars_are_supported ... ok
+test exact_line_loops_connect_but_open_duplicate_and_crossed_boundaries_block ... ok
+test canonical_layer_table_rejects_ambiguous_arity_ids_types_and_order ... ok
+test original_asymmetric_exact_nm_geometry_nets_ids_and_complete_fidelity ... ok
+test unsupported_copper_transforms_semantics_and_outline_never_look_complete ... ok
+test long_unknown_tokens_do_not_amplify_each_descendant_diagnostic ... ok
+test malformed_identity_net_fields_precision_and_resources_reject ... ok
+test parser_node_token_aggregate_and_physical_work_limits_are_explicit ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/save_load.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/save_load-6a7062283dfd8b20)
+
+running 4 tests
+test golden_file ... ok
+test rejects_bad_files_with_clear_errors ... ok
+test save_load_and_resave_on_disk ... ok
+test round_trip ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.15s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-e0dd2b56c68f22fb)
+
+running 3 tests
+test exact_cardinal_and_mirror_pin_transforms_roundtrip_native_v5 ... ok
+test malformed_geometry_keys_global_ids_and_unknown_fields_reject ... ok
+test bounded_counts_and_transformed_world_range_are_enforced ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/schematic_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_links-ad082281489f7b3e)
+
+running 2 tests
+test native_links_survive_reference_changes_and_require_schema_six ... ok
+test duplicate_nil_and_wrong_kind_links_reject_but_missing_symbols_remain_unresolved ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/symbol_library.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-6e53836fd674c47a)
+
+running 5 tests
+test exact_mirrored_quarter_turn_and_odd_body_bounds_have_fresh_identities ... ok
+test detached_roundtrip_preserves_definitions_and_excludes_every_instance_field ... ok
+test utf8_field_and_aggregate_budgets_are_checked_before_source_copy ... ok
+test strict_envelopes_and_definition_limits_reject_design_fields_and_malformed_templates ... ok
+test bounded_regular_file_loading_and_atomic_new_publication_preserve_existing_paths ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_drc-95aaf71b8d6b5106)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/batch.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/batch-74e3d2c616775153)
+
+running 8 tests
+test copper_touching_zero_rules_and_half_nm_edges_are_evaluated_without_rounding_geometry ... ok
+test copper_checks_real_rotated_rectangles_not_aabb_and_respects_layer_net_semantics ... ok
+test edge_clearance_checks_cutout_boundaries_and_exact_threshold ... ok
+test coverage_limits_native_roundtrip_and_ordering_are_honest_and_deterministic ... ok
+test substrate_checks_detect_enclosed_cutouts_concave_notches_tangency_and_rotated_tips ... ok
+test legacy_heavy_coverage_keeps_total_and_bounds_actionable_details ... ok
+test sparse_pad_broadphase_avoids_quadratic_pair_distance_evaluations ... ok
+test dense_exempt_copper_pairs_still_obey_the_work_budget_and_report_incomplete ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.52s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-c563b03da7c67fb0)
+
+running 9 tests
+test minimum_drill_annular_width_and_half_nm_thresholds_are_exact ... ok
+test capsule_round_caps_exact_gap_layers_nets_and_unassigned_policy ... ok
+test diagonal_capsules_and_rotated_pad_use_geometry_instead_of_bounds ... ok
+test round_caps_and_actual_annuli_check_substrate_not_centres_or_outer_disks ... ok
+test annular_copper_excludes_drill_interiors_but_physical_hole_checks_remain ... ok
+test through_vias_share_both_layers_and_same_net_holes_still_need_spacing ... ok
+test offset_annuli_and_inside_drill_board_edge_clearance_have_exact_geometric_gaps ... ok
+test mixed_native_roundtrip_limits_and_invalid_new_rules_are_read_only ... ok
+test sparse_mixed_ten_thousand_objects_skip_quadratic_pair_checks ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/net_rules.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-1b1b4d606f127a0b)
+
+running 5 tests
+test exact_width_floor_equality_unassigned_and_case_sensitive_names ... ok
+test far_pairs_are_discovered_but_unrelated_large_rules_do_not_pollute_pair_minima ... ok
+test empty_policy_preserves_report_bytes_and_old_report_deserialization ... ok
+test exact_via_drill_and_half_nm_annulus_use_matching_maxima_without_resizing ... ok
+test zero_via_fields_keep_legacy_report_policy_bytes_and_half_nm_decisions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-4765a7d19bb35aac)
+
+running 77 tests
+test auto_drc::tests::spawn_failure_records_and_wakes_without_touching_document ... ok
+test auto_drc::tests::config_and_project_replacement_supersede_running_snapshot ... ok
+test auto_drc_events::tests::retention_boundary_paging_and_utf8_messages_are_exact ... ok
+test cardinal_cleanup::tests::third_retained_operation_refuses_and_dropped_admission_recovers ... ok
+test checked_output_job::tests::exact_geometry_report_exclusions_and_requested_rules_are_explicit ... ok
+test agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization ... ok
+test checked_output_job::tests::report_append_budget_is_charged_before_allocation ... ok
+test auto_drc::tests::bounded_snapshot_skips_without_all_clear_and_can_recover ... ok
+test agent_presence::tests::explicit_sheet_identity_capacity_switch_deleted_objects_and_sheet_pruning ... ok
+test agent_presence::tests::exact_deadline_capacity_renewal_and_failed_update_preserve_prior_lease ... ok
+test command::tests::apply_then_invert_restores_exactly ... ok
+test command::tests::errors_leave_project_unchanged_and_read_well ... ok
+test commands::tests::positions_are_validated ... ok
+test commands::tests::rotation_is_normalised ... ok
+test command::tests::spec_has_object_schema_from_the_type ... ok
+test delta::tests::coalesce_keeps_first_before_and_last_after ... ok
+test delta::tests::record_then_invert_restores ... ok
+test checked_output_job::tests::unsupported_outline_violations_and_incomplete_counts_cannot_authorize_release ... ok
+test agent_presence::tests::shared_clone_own_clear_lifecycle_bounds_and_wakers_leave_session_untouched ... ok
+test delta::tests::serde_shape ... ok
+test agent_presence::tests::lease_clock_is_sampled_after_both_locks_for_query_and_admission ... ok
+test auto_drc::tests::selection_during_blocked_check_keeps_original_capture_cursor ... ok
+test auto_drc::tests::last_handle_drop_stops_worker_without_retaining_engine ... ok
+test auto_drc::tests::disable_and_invalid_config_are_atomic_and_read_only_selection_does_not_rerun ... ok
+test checked_output_job::tests::rule_labels_charge_direct_checked_snapshot_budget_before_report_copy ... ok
+test auto_drc::tests::blocked_worker_does_not_block_edits_coalesces_and_rejects_old_result ... ok
+test auto_drc::tests::independent_observers_timeout_and_selection_keep_document_guards ... ok
+test fabrication_view::tests::raced_fifo_read_never_waits_for_a_writer ... ok
+test engine::tests::failed_transaction_rolls_back ... ok
+test engine::tests::batch_commits_as_one_transaction ... ok
+test engine::tests::new_edit_clears_redo_but_no_op_does_not ... ok
+test engine::tests::grouped_commands_undo_as_one_step ... ok
+test engine::tests::tx_ids_increase ... ok
+test auto_drc::tests::worker_snapshot_excludes_invalid_unused_sourcing ... ok
+test auto_drc::tests::disabled_running_generation_cannot_publish_and_checker_failure_can_recover ... ok
+test net_rules::tests::borrowed_policy_rows_and_text_charge_shared_capture_before_copy ... ok
+test erc::tests::matrix_is_complete_symmetric_deliberate_and_overrides_are_unordered ... ok
+test pcb_branches::budget::tests::borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text ... ok
+test fabrication_view::tests::reader_admission_is_nonwaiting_and_releases_on_error_and_drop ... ok
+test erc::tests::invalid_graph_rejects_instead_of_a_clean_erc_report ... ok
+test handle::save_tests::concurrent_edit_during_open_rejects_the_loaded_document ... ok
+test erc::tests::crossing_requires_junction_and_dangling_wire_does_not_drive_input ... ok
+test pcb_branches::tests::blocked_private_worker_retains_permit_allows_live_edit_and_reopen_refuses_publish ... ok
+test handle::save_tests::native_publication_waits_for_in_flight_save_and_keeps_commands_available ... ok
+test handle::save_tests::edits_during_file_io_remain_dirty_and_are_not_in_the_saved_snapshot ... ok
+test handle::save_tests::saved_callbacks_run_after_both_engine_and_save_locks_are_released ... ok
+test pcb_import::tests::raced_fifo_open_returns_without_waiting_for_a_writer ... ok
+test registry::tests::dispatches_json_by_name ... ok
+test registry::tests::duplicate_names_panic - should panic ... ok
+test registry::tests::lists_specs_in_name_order ... ok
+test registry::tests::reports_unknown_commands_and_bad_input ... ok
+test erc::tests::explicit_power_label_never_supplies_power_and_no_connect_attachment_is_checked ... ok
+test footprint_conversion::tests::current_native_path_is_checked_after_staging_and_peer_edits_remain_available ... ok
+test footprint_definition::tests::latest_native_path_and_racing_destination_are_preserved_after_staging ... ok
+test pcb_import::tests::peer_change_during_import_load_rejects_without_replacement ... ok
+test schematic_connectivity::tests::diagonal_integer_contacts_and_one_nm_near_misses_at_extremes ... ok
+test schematic_connectivity::tests::label_crossing_rejects_without_partial_result_and_junction_resolves ... ok
+test schematic_connectivity::tests::local_global_power_scope_literal_case_alias_priority_and_isolated_members ... ok
+test schematic_connectivity::tests::crossing_needs_junction_but_t_and_overlap_connect ... ok
+test schematic_connectivity::tests::spatial_budget_rejects_dense_candidates_without_partial_results ... ok
+test schematic_connectivity::tests::pagination_bounds_legacy_coverage_and_invalid_content_are_honest ... ok
+test symbol_library::publication_tests::both_writers_preserve_a_racing_destination_and_full_dirty_session ... ok
+test erc::tests::truncation_is_an_honest_prefix_and_exact_threshold_can_be_complete ... ok
+test walkaround::tests::admission_refuses_third_retained_operation_and_releases_on_drop ... ok
+test via_walkaround::tests::bounded_geometry_capture_omits_unused_invalid_sourcing ... ok
+test erc::tests::isolated_inputs_short_outputs_missing_power_and_passive_signal_policy ... ok
+test symbol_library::publication_tests::ordinary_peer_edits_during_staging_remain_live_and_export_retains_capture_cursor ... ok
+test schematic_connectivity::tests::pin_interior_requires_junction_and_mirror_quarter_transform_is_exact ... ok
+test schematic_connectivity::tests::sparse_thousand_wire_board_independent_query_uses_broadphase ... ok
+test symbol_library::publication_tests::both_symbol_writers_protect_latest_peer_saved_and_opened_native_path ... ok
+test pcb_branches::tests::count_before_malformed_input_and_structural_or_serialized_project_limits ... ok
+test pcb_branches::tests::isolated_commands_coalesce_and_merge_one_transaction_with_exact_undo_redo_ids ... ok
+test pcb_branches::tests::monotonic_expiry_reads_errors_and_four_branch_capacity_do_not_renew ... ok
+test pcb_branches::tests::ownership_atomic_errors_noops_and_exact_private_object_guards ... ok
+test pcb_branches::tests::per_step_candidate_byte_overflow_refuses_whole_private_batch_without_renewal ... ok
+test pcb_branches::tests::saved_native_status_and_drc_journal_are_unchanged_until_merge_and_selection_stales_merge ... ok
+test pcb_branches::tests::stale_live_cursor_and_wrong_merge_guards_preserve_candidate_and_peer_edits ... ok
+
+test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.13s
+
+     Running tests/annotation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-c1b1d2b1d96fd68f)
+
+running 5 tests
+test board_only_edits_do_not_invalidate_annotation_or_enter_its_undo ... ok
+test keep_existing_reserves_gaps_case_and_numeric_aliases_and_exhaustion_are_atomic ... ok
+test valid_large_text_and_symbol_snapshots_are_bounded_before_copy_and_project_ids_cannot_collide ... ok
+test deterministic_explicit_sheet_position_ties_and_one_undo_preserve_every_other_field ... ok
+test stale_sheets_invalid_formats_orders_and_budgets_leave_whole_session_unchanged ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/assembly.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-7bd963c396739ffa)
+
+running 6 tests
+test invalid_stale_unknown_and_default_records_are_atomic ... ok
+test invalid_calibration_and_missing_mounting_never_mutate_or_clone_into_queries ... ok
+test guarded_sourcing_roundtrips_native_log_and_history_and_preserves_other_edits ... ok
+test calibration_is_guarded_versioned_undoable_and_every_historical_record_requires_nine ... ok
+test model_budget_and_invalid_returned_query_fail_before_copy_or_native_publication ... ok
+test grouped_repeated_part_events_replay_and_oversized_before_records_never_write ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s
+
+     Running tests/auto_drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc-63277ef8463a6344)
+
+running 3 tests
+test named_policy_edit_and_undo_refresh_captured_automatic_checker_sources ... ok
+test via_policy_edit_and_undo_refresh_exact_automatic_sources_and_geometry ... ok
+test moderate_board_worker_timing_and_undo_redo_refresh_are_measured ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/cardinal_cleanup.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cardinal_cleanup-3e9e65d4ff79a263)
+
+running 10 tests
+test affected_joint_drc_failure_unsupported_transforms_and_merge_budget_reject_whole_operation ... ok
+test branches_width_net_diagonal_and_unselected_neighbors_are_retained_without_events ... ok
+test aggregate_hole_candidate_budget_refuses_before_joint_drc_without_partial_cleanup ... ok
+test exact_mirrored_pad_anchors_and_all_net_hole_contact_preserve_guides ... ok
+test exact_signed_chains_survivor_ids_full_session_immutability_and_atomic_undo ... ok
+test named_width_floor_applies_to_complete_cleanup_candidate_and_report_sources ... ok
+test guarded_queries_typed_dynamic_batches_and_same_uuid_reopen_are_atomic ... ok
+test successful_cleanup_preserves_existing_guide_endpoints_and_duplicate_full_track_retains_chain ... ok
+test incomplete_joint_report_refuses_even_with_only_unrelated_existing_violations ... ok
+test unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_copy ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.80s
+
+     Running tests/component_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/component_links-cf101da5d775df50)
+
+running 3 tests
+test stable_mapping_pages_filters_and_reference_renames_preserve_exact_session ... ok
+test unresolved_unlinked_and_extreme_coordinates_are_explicit_without_float_conversion ... ok
+test invalid_queries_identities_text_and_object_bounds_reject_without_mutation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/connectivity-0c7907e3271a5576)
+
+running 3 tests
+test mirrored_arbitrary_rotation_uses_the_shared_query_render_transform ... ok
+test exact_tree_membership_pages_transforms_and_read_only_state ... ok
+test large_nets_are_deterministic_connected_linear_size_even_for_coincident_pads ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-160a3bce1f0be2b5)
+
+running 3 tests
+test copper_create_delete_undo_redo_replay_and_guarded_failures ... ok
+test malformed_log_copper_identity_or_native_collision_is_rejected ... ok
+test failed_batch_and_agent_undo_preserve_other_copper ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/copper_connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_connectivity-807050add11df1a7)
+
+running 7 tests
+test drilled_away_shapes_and_foreign_midsegment_holes_never_hide_guides ... ok
+test chains_merge_islands_and_leave_a_deterministic_residual_forest ... ok
+test one_nanometer_gap_wrong_side_net_and_interior_crossings_never_prove_a_join ... ok
+test through_via_bridges_exact_sides_only_with_annulus_reaching_incident_tracks ... ok
+test mirrored_quarter_turn_exact_off_grid_routes_disappear_and_undo_restores_guides ... ok
+test count_and_text_budgets_disable_all_suppression_without_mutation ... ok
+test dense_hole_candidates_and_invalid_via_geometry_disable_all_proofs_explicitly ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+     Running tests/dxf.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/dxf-5d8c36d7963f70d2)
+
+running 1 test
+test import_is_guarded_atomic_undoable_and_replayable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/events.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/events-2baa307e0ce3d017)
+
+running 5 tests
+test dropped_subscribers_are_removed ... ok
+test on_change_runs_after_each_change_outside_the_lock ... ok
+test event_json_shape ... ok
+test one_typed_diff_per_transaction ... ok
+test ui_and_mcp_consume_the_same_stream ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-0dd62a82d4c73e11)
+
+running 2 tests
+test invalid_files_paths_and_request_limits_reject_without_partial_result ... ok
+test read_only_exact_file_content_hash_and_stale_input_guards_preserve_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/footprint.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-eb9366d49a721613)
+
+running 1 test
+test reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/footprint_conversion.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-ba6a74fe0d7b8981)
+
+running 2 tests
+test detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_identity_and_nets ... ok
+test changed_blocked_sources_conflicts_native_aliases_and_bounded_io_preserve_all_bytes_and_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-954c3082a70c5076)
+
+running 2 tests
+test detached_files_preserve_dirty_session_and_separate_reuse_retains_link_assembly_ids_nets ... ok
+test invalid_bounds_precision_free_integer_geometry_and_existing_files_reject_without_mutation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/history.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/history-388aa3cd2221258c)
+
+running 3 tests
+test user_undoes_an_agent_edit ... ok
+test handles_are_shared_across_threads ... ok
+test ten_thousand_step_history ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+     Running tests/lifecycle.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/lifecycle-7b8e79e60dc72b7d)
+
+running 2 tests
+test unsafe_stale_and_failed_replacements_preserve_everything ... ok
+test new_and_open_reset_documents_but_preserve_shared_clients_and_listeners ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/net_rules.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-eaeddee93827b449)
+
+running 6 tests
+test duplicate_and_batch_stale_policy_reject_the_entire_edit ... ok
+test grouped_rule_edits_share_initial_cursor_coalesce_and_undo_as_one_map ... ok
+test policy_log_version_guards_chain_and_same_project_reopen ... ok
+test raw_request_row_count_and_name_bounds_refuse_before_row_materialization ... ok
+test typed_dynamic_policy_has_one_undo_redo_noop_and_stale_atomic_refusal ... ok
+test via_floor_policy_delta_before_after_and_base_require_log_ten_and_one_undo ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/outlines.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/outlines-938ad3e05dd5ec05)
+
+running 1 test
+test outline_changes_are_atomic_undoable_and_replayable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/own_undo.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/own_undo-9b34167e1d0c720d)
+
+running 4 tests
+test redo_own_waits_for_earlier_undone_changes ... ok
+test agent_undo_leaves_user_changes_alone ... ok
+test conflicting_undo_is_refused_and_changes_nothing ... ok
+test mixed_undo_keeps_history_consistent ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/pads.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pads-49d3735fcb89013d)
+
+running 2 tests
+test editing_a_pad_blocks_selective_undo_of_its_part_creation ... ok
+test pad_identities_history_versioning_and_atomic_guards ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/part_commands.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/part_commands-b418838f171cd9cd)
+
+running 5 tests
+test add_move_delete_over_json ... ok
+test errors_are_actionable_and_change_nothing ... ok
+test builtin_specs ... ok
+test apply_invert_round_trip ... ok
+test json_and_typed_agree ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.45s
+
+     Running tests/pcb_import.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-6743015a2cecdda8)
+
+running 4 tests
+test stale_source_project_cursor_dirty_and_unsupported_imports_preserve_everything ... ok
+test preview_is_read_only_import_is_unsaved_and_native_roundtrip_retains_exact_geometry ... ok
+test externally_replaced_active_native_source_and_canonical_alias_reject_without_mutation ... ok
+test nonregular_long_path_invalid_utf8_and_large_sources_reject_read_only ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/pcb_sync.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-eeae1b09a2e92254)
+
+running 9 tests
+test stale_symbol_duplicate_link_and_missing_explicit_target_preserve_session ... ok
+test identical_local_labels_on_two_sheets_remain_separate_while_power_labels_join ... ok
+test synchronization_rejects_oversized_sourcing_in_expected_guard_before_copying ... ok
+test back_annotation_changes_only_linked_symbol_properties_and_links_survive_renumbering ... ok
+test synchronization_rejects_stale_project_stream_and_batch_without_partial_publication ... ok
+test link_is_guarded_shared_undoable_and_versioned_even_if_final_state_unlinked ... ok
+test routed_net_reassignment_rejects_and_existing_unchanged_routes_are_preserved ... ok
+test forward_preview_preserves_geometry_and_assigns_independently_expected_regulator_nets_atomically ... ok
+test ambiguous_mappings_footprints_missing_links_budgets_and_reference_collisions_reject ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/pin_pad_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_links-804839bcb22177d9)
+
+running 4 tests
+test deterministic_pages_exact_pairing_and_read_only_session_survive_reference_and_net_changes ... ok
+test exact_odd_nanometre_mirrored_quarter_turn_geometry_and_honest_unsupported_centers ... ok
+test mismatch_legacy_unlinked_and_empty_coverage_never_offer_partial_navigation ... ok
+test malformed_identities_numbers_queries_and_unrelated_structure_limits_reject_unchanged ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/placement-3f1d809c7b5fa2a9)
+
+running 3 tests
+test grouped_moves_preserve_exact_model_geometry_and_undo_as_one_transaction ... ok
+test stale_member_missing_targets_invalid_bounds_and_duplicates_change_nothing ... ok
+test origin_distribution_and_alignment_keep_other_axis_and_have_noop_history ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/queries.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/queries-53ec2d2a8eaafea9)
+
+running 4 tests
+test cursor_pages_have_no_duplicates_or_omissions_and_keep_total ... ok
+test invalid_input_is_actionable_and_queries_preserve_all_state ... ok
+test default_page_is_bounded_on_large_designs ... ok
+test filters_return_known_records_and_combine_with_and ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/replay.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/replay-1b960b0208e2ba2a)
+
+running 3 tests
+test rejects_foreign_logs ... ok
+test streaming_append_matches_the_engine_log ... ok
+test replaying_the_log_rebuilds_a_byte_identical_project ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.20s
+
+     Running tests/route_endpoints.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_endpoints-7febc2322b3259df)
+
+running 5 tests
+test foreign_copper_and_incomplete_preflight_reject_all_pad_segments ... ok
+test stale_stream_sequence_and_batch_fail_without_partial_routes ... ok
+test exact_off_grid_bottom_endpoints_shared_typed_dynamic_and_single_undo ... ok
+test discovery_is_immutable_sorted_filtered_paginated_and_bounded ... ok
+test incompatible_missing_arbitrary_and_invalid_interior_reject_atomically ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/route_posture.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_posture-9cd667c68a090464)
+
+running 4 tests
+test malformed_waypoints_and_stale_proposal_leave_entire_session_unchanged ... ok
+test exact_named_width_floor_preserves_odd_nm_posture_geometry_without_widening ... ok
+test generated_bend_and_endpoint_stub_both_receive_shared_scoped_preflight ... ok
+test typed_dynamic_postures_keep_exact_stubs_and_one_undo_with_derived_net_side ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/route_terminals.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_terminals-e3d13f89dec57465)
+
+running 11 tests
+test discovery_face_pagination_filters_overflow_unsupported_and_no_mutation ... ok
+test malformed_identity_and_point_budgets_refuse_before_secondary_vectors ... ok
+test exact_track_to_via_typed_dynamic_identity_preservation_and_one_undo ... ok
+test borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state ... ok
+test pads_and_existing_vias_attach_on_both_explicit_faces ... ok
+test stale_stream_sequence_and_grouped_command_reject_whole_transaction ... ok
+test unused_assembly_and_unrelated_schematic_text_never_enter_terminal_capture_or_route ... ok
+test independently_expected_all_postures_preserve_negative_off_grid_stubs ... ok
+test complete_shared_checks_reject_foreign_copper_holes_outline_and_document_width ... ok
+test wrong_layer_net_unassigned_missing_coincident_and_invalid_geometry_are_atomic ... ok
+test discovery_terminal_row_boundary_precedes_filter_allocation ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running tests/route_via.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_via-a3b6b29e2af9c981)
+
+running 6 tests
+test malformed_grid_dimensions_zero_length_and_via_rules_reject_all_copper ... ok
+test persisted_named_width_floor_checks_both_explicit_via_legs_jointly ... ok
+test joint_preflight_checks_foreign_copper_both_sides_and_physical_via_holes ... ok
+test exact_opposite_side_legs_and_via_commit_together_typed_dynamic_and_single_undo ... ok
+test explicit_via_dimensions_refuse_named_drill_and_half_nm_annulus_then_commit_equal ... ok
+test incompatible_missing_arbitrary_pads_and_stale_group_reject_atomically ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-2b345e6253b0700b)
+
+running 6 tests
+test persisted_width_floor_refuses_one_nm_below_and_equality_keeps_explicit_geometry ... ok
+test batch_uses_one_captured_cursor_and_rejects_stale_batches_atomically ... ok
+test typed_and_dynamic_routes_preserve_exact_points_ids_and_one_undo_redo ... ok
+test preflight_rejects_foreign_copper_and_cutouts_but_preserves_existing_unrelated_violations ... ok
+test invalid_points_and_stale_stream_sequence_reject_without_state_history_events ... ok
+test bounded_board_capture_ignores_large_unrelated_schematic_and_rejects_oversized_board_text ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/saving.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/saving-cf576108ec5ac73d)
+
+running 2 tests
+test failed_saves_leave_files_metadata_and_redo_unchanged ... ok
+test saved_baseline_and_active_path_are_shared_and_undo_restores_clean_state ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-6141fe83efe863ce)
+
+running 3 tests
+test selective_undo_distinguishes_sheets_and_detects_same_sheet_conflict ... ok
+test log_base_rejects_sheet_identity_key_mismatch ... ok
+test sheet_atomic_guards_pin_identity_paging_and_history_roundtrip ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/schematic_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-fd8dde189521fe54)
+
+running 5 tests
+test stale_exact_project_sequence_reopen_and_failed_batch_do_not_create_parts ... ok
+test duplicate_reference_link_and_assignment_mismatch_are_explicit ... ok
+test typed_dynamic_creation_exact_independent_regulator_groups_persistence_and_one_undo ... ok
+test malformed_geometry_mapping_bounds_and_identity_preserve_entire_session ... ok
+test result_object_budget_is_checked_before_commit_and_preview ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+
+     Running tests/schematic_wires.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-4cc71ac080cec379)
+
+running 5 tests
+test crossing_stays_separate_and_t_endpoint_joins_without_implicit_junctions ... ok
+test exact_atomic_typed_dynamic_undo_native_log_and_immutable_snapshot ... ok
+test invalid_stale_forged_reopen_and_batch_leave_whole_session_unchanged ... ok
+test result_and_snapshot_budgets_reject_before_copy_or_commit ... ok
+test unrelated_global_validator_work_is_bounded_before_identity_set_allocation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+     Running tests/selection.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/selection-92613a7d7c075014)
+
+running 3 tests
+test selection_is_shared_atomic_and_preserves_document_history ... ok
+test deleted_and_undone_parts_leave_selection_and_redo_does_not_restore_it ... ok
+test mixed_part_track_via_selection_is_atomic_transient_and_pruned_on_deletion ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/session.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/session-b3d12725f531f49f)
+
+running 5 tests
+test reads_noops_errors_and_selection_preserve_history_and_redo ... ok
+test independent_waiters_wake_for_design_and_selection_without_holding_the_lock ... ok
+test snapshot_replay_orders_design_selection_and_pruning_with_origins ... ok
+test bounded_history_pages_and_cursor_errors_allow_resynchronization ... ok
+test absent_cursor_starts_at_tail_and_timeout_returns_unchanged_cursor ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/symbol_library.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-97154424602a0a98)
+
+running 5 tests
+test source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content ... ok
+test typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable_undo ... ok
+test selected_and_global_preflight_bound_unrelated_data_before_inherited_validation ... ok
+test malformed_ambiguous_stale_and_reopened_proposals_leave_entire_sessions_unchanged ... ok
+test proposed_fresh_symbol_and_pin_are_included_in_global_identity_budget ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/update_part.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/update_part-c3ead8c9e4c24ea3)
+
+running 3 tests
+test properties_apply_as_one_exact_undoable_saved_change ... ok
+test omitted_coordinates_keep_exact_model_values_and_placement_rejects_a_different_project ... ok
+test invalid_conflicting_and_stale_edits_leave_model_history_and_events_unchanged ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/via_walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/via_walkaround-38268211bd427bee)
+
+running 6 tests
+test independently_expected_layer_paths_joint_commit_and_one_undo ... ok
+test both_sides_charge_each_cutout_against_one_aggregate_cap ... ok
+test individual_paths_do_not_publish_when_joint_via_or_input_fails ... ok
+test real_peer_edit_and_reopened_stream_reject_typed_dynamic_and_grouped_requests ... ok
+test both_side_paths_ignore_unrelated_invalid_sourcing_without_mutation ... ok
+test via_minima_refuse_before_both_leg_search_and_equal_plan_commits_without_resize ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround-5b297a3701739f56)
+
+running 4 tests
+test immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage ... ok
+test failures_are_unchanged_with_complete_preflight_and_bounded_unrelated_content ... ok
+test named_pair_clearance_inflates_only_matching_obstacles_and_width_floor_refuses ... ok
+test plans_and_checked_candidate_geometry_exclude_unused_sourcing ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/walkaround_cutouts.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround_cutouts-8d227a338de2f7eb)
+
+running 3 tests
+test cutout_refusals_and_combined_obstacle_budget_preserve_complete_session ... ok
+test real_outline_edits_and_reopen_invalidate_checked_cutout_intents ... ok
+test exact_cutout_detours_ignore_winding_net_side_and_copper_clearance ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_fab-7573c3bcf83232ee)
+
+running 6 tests
+test assembly_templates::tests::escaped_bytes_are_charged_before_row_append ... ok
+test assembly_placement::tests::calibrated_header_limit_is_charged_before_append ... ok
+test output_job::tests::byte_limits_reject_before_append ... ok
+test output_job::publication_tests::calibrated_capture_budget_precedes_reference_keys_and_only_fixed_metadata_survives ... ok
+test output_job::publication_tests::raced_destination_and_injected_post_stage_failure_leave_no_partial_release ... ok
+test output_job::publication_tests::one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/assembly.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-1a5e6969f8582e10)
+
+running 5 tests
+test fabrication_and_saved_jobs_exclude_unused_sourcing_before_copy ... ok
+test concurrent_no_clobber_publication_has_one_winner ... ok
+test publication_refuses_collisions_cleans_temporary_and_protects_native_path ... ok
+test sourcing_groups_exact_metadata_and_population_without_changing_existing_formats ... ok
+test text_order_exact_units_and_grouping ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/assembly_placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-e46ef595fd0f12a5)
+
+running 4 tests
+test noncardinal_reflection_matches_independent_vector_oracle_and_output_is_bounded ... ok
+test asymmetric_centroids_mirrored_markers_and_escaped_text_parse_independently ... ok
+test older_csv_formats_ignore_unused_calibration_and_keep_exact_bytes ... ok
+test population_completeness_reference_collisions_and_purpose_specific_captures ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/assembly_templates.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-98bbe397d0e2f3af)
+
+running 4 tests
+test excluded_missing_fields_empty_set_budgets_and_admission_are_explicit ... ok
+test exact_templates_unicode_population_and_old_outputs_are_preserved ... ok
+test two_hundred_reference_split_quantity_order_and_distinct_supplier_records ... ok
+test required_fields_case_collisions_and_sku_errors_fail_before_publication ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/fabrication.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-ba09b681a109fbc6)
+
+running 5 tests
+test empty_geometry_and_xnc_two_digit_tool_boundary_are_explicit ... ok
+test exact_geometry_attributes_units_and_deterministic_output ... ok
+test invalid_or_unsupported_model_produces_no_destination_or_staging ... ok
+test export_primitive_bound_rejects_before_any_files_are_created ... ok
+test no_replace_directory_publication_guards_native_symlinks_and_races ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-a9c75c5920ebc356)
+
+running 1 test
+test all_native_export_layers_parse_independently_with_exact_profile_tracks_drills_and_rotated_pads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/limits.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/limits-d43da29c8c9a6c38)
+
+running 3 tests
+test text_and_component_budgets_reject_before_publication_and_preserve_existing_bytes ... ok
+test admission_is_shared_and_releases_after_failed_capture_or_drop ... ok
+test unrelated_schematic_and_assembly_geometry_are_excluded_from_direct_calls ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+     Running tests/output_job_calibration.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-e16f6c4d1ce3a713)
+
+running 4 tests
+test companion_has_standalone_bytes_and_stable_population_without_changing_legacy_payloads ... ok
+test explicit_version_two_is_strict_and_legacy_canonical_bytes_are_unchanged ... ok
+test purpose_capture_excludes_unused_source_strings_and_sheets_and_admission_is_one_slot ... ok
+test incomplete_calibration_collision_and_empty_population_have_atomic_results ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/output_job_population.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-3c1182d9de38f082)
+
+running 5 tests
+test aggregate_included_sourcing_budget_refuses_before_copy_without_restricting_v2 ... ok
+test empty_population_is_headers_only_and_invalid_included_id_mapping_rejects_before_copy ... ok
+test included_source_preflight_precedes_calibration_and_one_capture_retains_one_permit ... ok
+test explicit_matched_version_three_does_not_reinterpret_legacy_settings ... ok
+test matched_bom_has_exact_explicit_fields_digest_and_unchanged_calibrated_inventory_bytes ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-279c478311e2d183)
+
+running 6 tests
+test strict_checked_descriptor_requires_every_numeric_baseline_and_preserves_generic_bytes ... ok
+test job_component_budget_precedes_board_capture ... ok
+test checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_board ... ok
+test release_failure_cleans_staging_and_rejects_board_budget_before_copy ... ok
+test release_is_coherent_byte_identical_and_never_clobbers ... ok
+test strict_descriptor_and_bounded_regular_file_loading ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_geom-59e65e8bbf05457b)
+
+running 19 tests
+test angle::tests::conversions_and_wrapping ... ok
+test arc::tests::flatten_ends_on_endpoints ... ok
+test arc::tests::quarter_arc ... ok
+test arc::tests::three_points ... ok
+test point::tests::point_vector_algebra ... ok
+test index::tests::insert_update_remove ... ok
+test point::tests::serde_shape ... ok
+test boolean::tests::large_coordinates_use_wide_engine ... ok
+test rect::tests::basics ... ok
+test polygon::tests::square_with_notch ... ok
+test segment::tests::crossings ... ok
+test segment::tests::point_distance ... ok
+test shape::tests::clearances ... ok
+test units::tests::arithmetic ... ok
+test units::tests::constants ... ok
+test units::tests::rounds_to_nearest ... ok
+test units::tests::serde_is_bare_integer ... ok
+test boolean::tests::union_and_difference ... ok
+test boolean::tests::offset_grows_and_shrinks ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/boolean.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/boolean-990ebc1d6408eba6)
+
+running 3 tests
+test rect_booleans_are_exact ... ok
+test boolean_membership_matches_point_tests ... ok
+test offset_contains_input_and_respects_distance ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/index.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/index-664c24f84c5a20e3)
+
+running 1 test
+test index_matches_brute_force ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+
+     Running tests/primitives.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/primitives-0a1971f351ef14d5)
+
+running 18 tests
+test point_segment_distance_is_the_minimum ... ok
+test rect_union_contains_both ... ok
+test capsule_bbox_holds_its_outline ... ok
+test rect_intersects_matches_intersection ... ok
+test segment_intersection_lies_on_both ... ok
+test circle_clearance_is_centre_distance_minus_radii ... ok
+test segment_distance_is_symmetric_and_bounded ... ok
+test rect_inflate_is_an_offset ... ok
+test arc_from_three_points_round_trips ... ok
+test rect_polygon_matches_rect ... ok
+test segment_overlap_on_grid ... ok
+test segment_intersects_is_symmetric_and_invariant ... ok
+test inflating_reduces_clearance_by_the_offset ... ok
+test polygon_area_and_containment_survive_moves ... ok
+test segments_at_ten_metres_stay_exact ... ok
+test shape_contains_its_reference_points ... ok
+test arc_points_lie_on_circle_and_in_bbox ... ok
+test shape_distance_is_symmetric_and_translation_invariant ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/units.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/units-7ac33939aee4c918)
+
+running 6 tests
+test nm_round_trips_through_mm_mil_inch ... ok
+test mil_round_trips_within_1nm ... ok
+test mm_round_trips_within_1nm ... ok
+test inch_round_trips_within_1nm ... ok
+test serde_json_round_trip ... ok
+test thousand_moves_then_reversed_have_zero_drift ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_mcp-1ec20348f83168e4)
+
+running 16 tests
+test host::tests::registration_is_all_or_nothing ... ok
+test registry::tests::builtins_are_registered ... ok
+test registry::tests::registers_lists_and_calls ... ok
+test registry::tests::context_reaches_the_handler ... ok
+test registry::tests::only_explicit_trusted_registration_selects_image_output ... ok
+test registry::tests::rejects_duplicates_bad_names_and_bad_schemas ... ok
+test server::tests::info_and_tools_come_from_the_registry ... ok
+test server::tests::agent_ids_combine_client_name_and_connection ... ok
+test server::tests::objects_are_structured_other_values_are_text ... ok
+test host::tests::host_commands_become_tools ... ok
+test server::tests::png_content_is_single_image_without_base64_duplication_and_plain_json_is_preserved ... ok
+test registry::tests::handler_errors_and_unknown_tools ... ok
+test symbol_libraries::tests::exact_borrowed_text_boundary_is_accepted_before_typed_semantics ... ok
+test pcb_branches::tests::canceling_real_create_awaiter_does_not_release_its_blocked_worker_permit ... ok
+test assembly::tests::other_agent_open_between_staging_and_mcp_publication_cannot_be_overwritten ... ok
+test pcb_branches::tests::oversized_or_control_creator_refuses_instead_of_losing_original_undo_attribution ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/bin/viamind-mcp.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_mcp-a8be6e6541739f1d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/agent_presence.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-7a00006729ff50fe)
+
+running 2 tests
+test actual_sheet_scoped_clients_switch_and_reject_foreign_ids_without_design_changes ... ok
+test actual_same_named_clients_own_distinct_markers_and_cannot_spoof_peers_or_edit_read_only_presence ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/annotation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-134e0aeb283a2df8)
+
+running 1 test
+test actual_http_clients_preview_atomic_annotation_stale_conflicts_and_connection_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+     Running tests/assembly.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-efa9c7c36c891ded)
+
+running 1 test
+test exports_shared_snapshot_and_rejects_stale_guards_and_bad_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/assembly_placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-0ce2c79360fb3436)
+
+running 1 test
+test calibrated_shared_setter_two_clients_full_guards_and_publication_are_atomic ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/assembly_templates.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-ad605ad06be8ece3)
+
+running 1 test
+test two_agents_template_counts_guards_and_publication_match_shared_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/auto_drc_events.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc_events-eca95269a949499d)
+
+running 2 tests
+test actual_read_only_observers_report_exact_retention_and_refuse_configuration ... ok
+test actual_http_observers_resume_page_and_follow_peer_undo_and_same_uuid_reopen ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s
+
+     Running tests/component_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/component_links-a41cdb94b3ea53fc)
+
+running 1 test
+test two_actual_http_clients_query_stable_links_across_peer_rename_unlink_and_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-5faa246683e57883)
+
+running 1 test
+test independent_agent_copper_edits_share_ids_and_own_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/copper_connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_connectivity-b6b07e0209d705c9)
+
+running 1 test
+test actual_independent_http_agents_see_same_conservative_guides_through_route_peer_edit_and_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-e3fc196ecf72ea1e)
+
+running 2 tests
+test automatic_drc_configuration_and_edit_refresh_are_shared_between_http_clients ... ok
+test batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edits ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/dxf.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/dxf-39240d21a62dda2b)
+
+running 1 test
+test dxf_import_is_discoverable_and_shared_over_http ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/erc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/erc-449273d6aad03a36)
+
+running 1 test
+test live_clients_share_exact_erc_with_configurable_matrix_guards_undo_and_honest_coverage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/fabrication.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-b3351b706137c41c)
+
+running 1 test
+test snapshot_export_is_shared_read_only_and_rejects_stale_or_collision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-68340b917e531b37)
+
+running 1 test
+test two_real_clients_inspect_exact_files_without_mutating_and_share_strict_cursor_guards ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/footprint_conversion.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-08e1f82f8b5b14de)
+
+running 1 test
+test actual_two_clients_convert_without_project_changes_and_reuse_only_by_explicit_number_mapping ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-7d16ea4997779773)
+
+running 2 tests
+test borrowed_definition_limits_precede_typed_row_decoding_and_preserve_session ... ok
+test real_two_clients_share_detached_files_with_separate_guarded_reuse_and_no_implicit_design_changes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/host.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/host-0c0c6453776cb16d)
+
+running 4 tests
+test tools_list_shows_host_commands_and_builtins ... ok
+test host_errors_are_tool_errors ... ok
+test each_connection_is_its_own_agent ... ok
+test call_execute_undo_redo_and_get_design ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/live_engine.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/live_engine-1a78dfa058e1f3df)
+
+running 12 tests
+test agents_share_persistent_pads_and_reject_stale_net_assignment ... ok
+test grouped_placement_rejects_a_stale_member_across_agents_and_undo_is_atomic ... ok
+test live_footprint_library_has_shared_identity_guards_and_connection_undo ... ok
+test board_outline_changes_are_shared_and_guarded_over_http ... ok
+test separate_agents_read_live_explicit_net_membership_without_creating_transactions ... ok
+test agents_replace_shared_documents_and_wake_observers_for_resynchronization ... ok
+test agents_query_the_same_live_parts_with_filters_pages_and_useful_errors ... ok
+test property_updates_are_discoverable_shared_guarded_and_undoable ... ok
+test agent_places_resistor_live_and_it_can_be_undone ... ok
+test live_schematic_agents_share_guarded_atomic_sheets_and_connection_undo ... ok
+test observers_wait_and_resume_events_after_http_reconnect ... ok
+test agents_share_save_path_dirty_state_and_preserve_unapproved_files ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+
+     Running tests/manufacturing_limits.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/manufacturing_limits-4845ac6a4bfb85d6)
+
+running 1 test
+test bounded_capture_busy_stale_and_canceled_worker_ownership_preserve_engine ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/output_job_calibration.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-1b0a12f91b9c8f70)
+
+running 1 test
+test companion_shared_job_keeps_exact_capture_rules_publication_and_read_only_contracts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/output_job_population.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-727d654f57885807)
+
+running 1 test
+test matched_population_shared_job_keeps_exact_capture_rules_publication_and_read_only_contracts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-04cd05c9e09a9b72)
+
+running 4 tests
+test checked_job_uses_production_drc_without_report_override_and_refuses_atomic_failures ... ok
+test checked_saved_zero_baselines_cannot_weaken_captured_via_minima ... ok
+test checked_job_cannot_weaken_named_width_floor_and_reports_both_captured_sources ... ok
+test saved_jobs_roundtrip_guard_admission_and_preserve_full_session ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+
+     Running tests/pcb_branches.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_branches-114f27e9e6a1d04f)
+
+running 1 test
+test actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides_all_writers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/pcb_import.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-c629517350a47fd5)
+
+running 1 test
+test two_actual_clients_preview_exact_source_and_protect_dirty_stale_and_native_sessions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/pcb_sync.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-bda9d28aa1ef5b69)
+
+running 1 test
+test two_real_http_agents_preview_stale_rejection_atomic_update_native_persistence_and_own_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/pin_pad_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_links-8c33e1c04675e395)
+
+running 1 test
+test two_actual_http_clients_query_terminal_pairs_across_peer_edit_unlink_and_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/png_transport.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png_transport-d1992d030f870c07)
+
+running 1 test
+test png_image_roundtrips_over_http_without_json_duplication_and_two_agents_share_guards ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/png_views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png_views-760f692e1113ee2d)
+
+running 2 tests
+test svg_and_png_capture_only_board_and_reject_aggregate_budget_without_state_changes ... ok
+test png_views_return_exact_read_only_cursor_and_shared_bytes_with_stale_guards ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.96s
+
+     Running tests/read_only.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-98bfeaeaaac78939)
+
+running 3 tests
+test restriction_survives_clones_and_every_default_registration_without_running_handlers ... ok
+test mixed_view_refuses_every_path_before_handler_and_preserves_live_definition ... ok
+test two_http_observers_preserve_native_and_session_and_follow_undoable_human_edits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.06s
+
+     Running tests/route_terminals.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_terminals-c162031cf5ecb7e4)
+
+running 1 test
+test two_clients_discover_existing_copper_and_commit_atomic_shared_commands_read_only_parity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-5db8055f243e36ac)
+
+running 6 tests
+test checked_cardinal_cleanup_is_read_only_guarded_and_one_undo_for_two_agents ... ok
+test opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agents ... ok
+test immutable_pad_discovery_resolves_exact_identity_and_derives_net_side_with_agent_guards ... ok
+test independent_agents_route_atomic_polylines_and_reject_stale_session_cursors ... ok
+test exact_posture_routes_share_planner_and_two_agent_cursor_guards ... ok
+test checked_walkaround_query_preserves_session_and_two_agents_share_atomic_guarded_commit ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/schematic_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-1a624f7e9fd64293)
+
+running 1 test
+test two_real_agents_preview_shared_creation_stale_conflict_own_undo_and_native_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests/schematic_connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_connectivity-12326a1b2a5b6c45)
+
+running 1 test
+test clients_discover_exact_nets_edits_junction_ambiguity_scope_and_undo_read_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+     Running tests/schematic_transport.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_transport-9601ab26a62d52a3)
+
+running 1 test
+test schematic_png_roundtrips_as_one_real_image_with_shared_guards ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/schematic_views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_views-46c5f99f66e35b25)
+
+running 2 tests
+test unrelated_giant_content_is_excluded_and_selected_budget_rejects_unchanged ... ok
+test selected_sheet_views_are_guarded_bounded_and_immutable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.27s
+
+     Running tests/schematic_wires.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-bbfdf0063f0992d9)
+
+running 1 test
+test two_real_agents_snapshot_stale_atomic_path_and_own_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/stdio.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/stdio-bc81fc5b6cef7be9)
+
+running 1 test
+test initialize_list_and_call_over_stdio ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/symbol_libraries.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_libraries-91b0c43cdb78f82d)
+
+running 1 test
+test two_real_clients_share_detached_files_guarded_placement_and_scoped_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+
+     Running tests/views.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/views-433f6383efa812d5)
+
+running 1 test
+test views_return_exact_read_only_cursor_and_shared_bytes_with_stale_guards ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_render-33289c0e722fe0eb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/png.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/png-8c5c94000d36ac96)
+
+running 4 tests
+test pixel_limits_and_atomic_png_publication_preserve_native_and_collisions ... ok
+test board_only_capture_excludes_unrelated_schematic_and_bounds_text_before_copy ... ok
+test tiny_far_origin_crop_matches_near_origin_and_extreme_large_geometry_rejects ... ok
+test png_decodes_deterministically_with_shared_layers_physical_holes_cutouts_and_margins ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.34s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-972765f068241190)
+
+running 4 tests
+test all_budgets_fail_before_clone_or_publication ... ok
+test filters_regions_legacy_and_invalid_selected_inputs_are_explicit ... ok
+test distant_crop_is_pixel_identical_and_extreme_zoom_fails ... ok
+test outlined_text_geometry_is_deterministic_and_snapshot_excludes_unrelated_data ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.56s
+
+     Running tests/svg.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/svg-39033988f9d82458)
+
+running 6 tests
+test transformed_geometry_exact_half_nanometres_and_stable_layers ... ok
+test xml_unicode_entities_controls_and_no_active_content_roundtrip_parse ... ok
+test region_layers_deduplicate_and_empty_fit_is_declared ... ok
+test direct_views_and_captures_exclude_unrelated_sourcing_before_copy ... ok
+test publication_preserves_native_collisions_links_and_concurrent_winner ... ok
+test invalid_requests_models_metadata_and_bounds_are_rejected ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_router-e1850c64d0258cc3)
+
+running 3 tests
+test tests::extreme_coordinates_never_wrap ... ok
+test tests::signed_ties_and_odd_grids_are_exact ... ok
+test walkaround::tests::cumulative_limits_refuse_before_graph_and_intersection_work ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/posture.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/posture-65707788905d41da)
+
+running 4 tests
+test exact_offgrid_odd_signed_stubs_and_grid_constraints_are_preserved ... ok
+test single_segments_deduplicate_bends_but_preserve_ordered_revisits ... ok
+test explicit_postures_have_independent_expected_bends_in_all_quadrants ... ok
+test invalid_bounded_inputs_and_impossible_model_anchor_reject_without_overflow ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround-9a036f4e5df0319d)
+
+running 5 tests
+test zero_obstacles_coincident_anchors_and_domain_refusals_are_explicit ... ok
+test signed_odd_grid_and_exact_endpoint_stubs_are_preserved ... ok
+test blocked_direct_path_has_deterministic_shortest_grid_detour ... ok
+test dense_work_is_bounded_before_search_can_run_unchecked ... ok
+test combined_budget_refuses_second_leg_before_graph_expansion ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-b84b2a559b4edebb)
+
+running 81 tests
+test camera::tests::pan_moves_content_with_the_pointer ... ok
+test camera::tests::world_screen_world_round_trip ... ok
+test camera::tests::viewport_center_shows_camera_center ... ok
+test camera::tests::screen_world_screen_round_trip ... ok
+test camera::tests::zoom_is_clamped_and_still_keeps_point_fixed ... ok
+test camera::tests::zoom_to_fit_shows_whole_bounds ... ok
+test camera::tests::zoom_about_point_keeps_point_fixed ... ok
+test canvas::tests::grid_lines_stay_bounded_at_any_zoom ... ok
+test canvas::tests::grid_step_follows_1_2_5 ... ok
+test board_scene::tests::resistor_has_two_pads_masks_and_outline ... ok
+test board_scene::pad_tests::explicit_copper_uses_true_rotated_mirrored_corners ... ok
+test board_scene::tests::quarter_turn_swaps_pad_axes ... ok
+test board_scene::tests::scene_contains_outline_and_parts ... ok
+test board_scene::tests::bottom_side_parts_use_bottom_layers ... ok
+test fabrication_view::tests::circular_strokes_include_round_endpoint_envelopes_and_zero_length_disks ... ok
+test fabrication_view::tests::exact_odd_rectangles_use_file_ccw_rotation_in_native_downward_y ... ok
+test board_scene::outline_tests::concave_substrate_triangulation_excludes_cutouts_and_keeps_fixed_boundaries ... ok
+test footprint_conversion::tests::close_path_change_and_reopen_retain_one_worker_and_discard_completion ... ok
+test erc::tests::one_pending_job_and_deterministic_policy_and_cursor_freshness ... ok
+test erc::tests::completion_after_edits_remains_visible_but_stale_and_disconnect_is_actionable ... ok
+test assembly_export::tests::pending_worker_is_retained_while_hidden_and_prevents_duplicate_start ... ok
+test cross_probe::tests::unsupported_positions_never_become_navigation_highlights ... ok
+test cross_probe::tests::one_receiver_survives_replacement_and_discards_old_completion ... ok
+test footprint_definition::tests::exact_entry_stable_rows_and_bounds_never_infer_geometry ... ok
+test fabrication::tests::retained_hidden_worker_suppresses_duplicate_start_and_recovers_from_disconnect ... ok
+test fabrication_view::tests::retained_worker_handles_duplicate_spawn_disconnect_hidden_and_stale_completion ... ok
+test gpu_timing::tests::backpressure_and_discarded_callbacks_preserve_new_reservations ... ok
+test gpu_timing::tests::delayed_mapping_completion_recycles_only_its_own_generation ... ok
+test gpu_timing::tests::history_and_error_storage_stay_bounded_and_failed_readback_releases_slot ... ok
+test gpu_timing::tests::timestamp_payload_uses_queue_period_and_rejects_invalid_values ... ok
+test gpu_tiles::tests::shared_basis_matches_direct_tile_camera_at_large_world_origins ... ok
+test footprint_conversion::tests::old_stream_completion_disconnection_and_failed_spawn_are_actionable ... ok
+test layers::tests::active_layer_on_top_reorders_only_when_enabled ... ok
+test gpu_tiles::tests::dynamic_uniform_records_preserve_viewport_camera_and_padding ... ok
+test layers::tests::default_stack_has_the_usual_pcb_layers ... ok
+test gpu_tiles::tests::packed_layers_keep_every_attribute_and_triangle_order ... ok
+test gpu_tiles::tests::visible_ranges_merge_adjacent_tiles_without_bridging_hidden_indices ... ok
+test layers::tests::paint_color_applies_opacity ... ok
+test layers::tests::move_layer_swaps_neighbours ... ok
+test mesh_cache::tests::empty_scene_has_no_tiles ... ok
+test footprint_definition::tests::retained_worker_blocks_reset_and_duplicates_and_close_still_delivers_load ... ok
+test cross_probe::tests::stale_or_busy_navigation_does_not_change_view_or_session ... ok
+test pcb_import::tests::old_stream_completion_and_disconnected_worker_are_actionable_without_new_preview ... ok
+test pcb_import::tests::stale_context_close_and_path_changes_retain_one_receiver_then_discard_completion ... ok
+test footprint_definition::tests::changed_generation_and_failed_spawn_disconnection_retain_draft_without_applying ... ok
+test erc::tests::replacement_and_same_id_reopen_reject_old_completions_and_keep_one_job ... ok
+test assembly_export::tests::native_open_after_csv_staging_is_protected_without_changing_the_new_session ... ok
+test fabrication::tests::fallible_spawn_error_preserves_inputs_and_allows_retry ... ok
+test scene::tests::synthetic_is_deterministic_and_mixed ... ok
+test scene::tests::synthetic_has_n_items_on_the_board ... ok
+test pcb_import::tests::failed_spawn_is_actionable_and_duplicate_start_keeps_owned_receiver ... ok
+test schematic::tests::exact_mm_input_rejects_sub_nm_and_overflow ... ok
+test schematic::drawing_tests::regulator_fixture_body_transforms_and_fit_bounds_are_exact ... ok
+test mesh_cache::tests::tiles_cover_every_item_once_per_layer ... ok
+test cross_probe::tests::changed_source_and_cursor_cannot_publish_old_highlights_and_disconnect_is_actionable ... ok
+test scene::tests::synthetic_uses_every_default_layer ... ok
+test routing::walkaround_worker_tests::cancellation_retains_worker_until_completion_and_discards_old_checked_plans ... ok
+test output_jobs::tests::retained_hidden_worker_duplicate_disconnect_and_fallible_spawn ... ok
+test pin_pad_probe::tests::completion_with_changed_cursor_or_disconnect_never_publishes_terminal_highlights ... ok
+test schematic_wires::tests::active_wire_draft_blocks_erc_navigation_and_repeated_activation ... ok
+test schematic_component::tests::same_stream_completion_keeps_literal_cursor_for_stale_ui_guard ... ok
+test schematic_wires::tests::finish_checks_selected_sheet_even_before_the_next_frame_poll ... ok
+test symbol_library::tests::exact_decimal_coordinates_reject_rounding_and_overflow ... ok
+test schematic_component::tests::hidden_worker_is_retained_and_old_stream_completion_is_discarded ... ok
+test schematic_wires::tests::path_budget_and_exact_anchor_priority_over_grid ... ok
+test schematic_wires::tests::retained_worker_cancel_and_replacement_discard_completion ... ok
+test view_export::tests::decimal_millimetres_are_exact_and_invalid_precision_is_rejected ... ok
+test schematic_wires::tests::same_context_cancel_and_changed_sequence_never_publish ... ok
+test symbol_library::tests::detached_save_stays_retained_hidden_reports_after_reopen_and_recovers_from_failures ... ok
+test pin_pad_probe::tests::one_pending_receiver_survives_replacement_and_rejects_old_stream_selection_and_page ... ok
+test symbol_library::tests::duplicate_start_retains_worker_and_export_reports_complete_old_cursor ... ok
+test track_cleanup::tests::cancelled_retained_worker_cannot_publish_into_reopened_draft ... ok
+test view_export::tests::pending_job_prevents_duplicates_and_hidden_poll_handles_completion_and_disconnect ... ok
+test mesh_cache::tests::gpu_draws_keep_base_geometry_and_release_replaced_tiles ... ok
+test mesh_cache::tests::distant_pan_rebases_visible_tiles_and_releases_old_layer_generations ... ok
+test symbol_library::tests::retained_hidden_worker_replacement_staleness_and_disconnect_do_not_publish_old_previews ... ok
+test symbol_library::tests::pending_detached_save_disables_editor_and_preserves_fields_after_error ... ok
+test pcb_sync::tests::actual_direction_change_during_pending_worker_discards_old_policy_completion ... ok
+test output_jobs::tests::pending_fields_and_all_buttons_are_disabled_then_enabled ... ok
+test fabrication::tests::pending_form_controls_are_disabled_and_completion_reenables_them ... ok
+test symbol_definition::tests::exact_editor_roundtrip_pin_limit_and_surviving_widget_identity ... ok
+
+test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.50s
+
+     Running tests/agent_mode.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_mode-a391644beb89709c)
+
+running 2 tests
+test unavailable_endpoint_is_distinct_and_default_live_helpers_remain_live ... ok
+test compact_read_only_status_keeps_human_menu_placement_and_keyboard_undo_live ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+     Running tests/agent_presence.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_presence-f1d0276e43cf8cb7)
+
+running 2 tests
+test compact_colored_attention_is_clipped_and_human_edit_undo_stays_live ... ok
+test schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves_human_undo ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+     Running tests/annotation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-688b94a5fdcec608)
+
+running 2 tests
+test actual_preview_apply_and_undo_references_preserve_board_and_geometry ... ok
+test stale_preview_invalid_options_and_same_project_reopen_preserve_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+     Running tests/app.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/app-42f31ef4fe2c92e8)
+
+running 5 tests
+test builds_frames_with_10k_scene ... ok
+test layer_list_sets_active_layer_and_order ... ok
+test layer_list_toggles_visibility ... ok
+test scroll_zooms_about_cursor_and_home_fits ... ok
+test view_menu_switches_scene_size ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s
+
+     Running tests/assembly_export.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_export-3e4623235ab370e5)
+
+running 3 tests
+test file_menu_exports_both_kinds_matches_live_mcp_and_only_overwrites_explicitly ... ok
+test compact_form_exports_with_pointer_input_and_native_overwrite_error_stays_visible ... ok
+test catalog_stale_busy_budget_and_native_guards_preserve_files_and_state ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.81s
+
+     Running tests/assembly_placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_placement-a382ff6004210bc3)
+
+running 1 test
+test compact_calibration_input_history_preservation_and_export_match_mcp ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.35s
+
+     Running tests/assembly_templates.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly_templates-bd551a4407541184)
+
+running 1 test
+test compact_template_choices_export_counts_and_errors_match_mcp ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s
+
+     Running tests/cache.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cache-79bb05ee053908f2)
+
+running 5 tests
+test zoom_rebuilds_only_outside_the_bucket ... ok
+test transient_guides_paint_identically_in_cached_and_immediate_paths ... ok
+test cached_frame_matches_uncached_at_fit ... ok
+test layer_edits_match_uncached_and_rebuild_only_on_colour ... ok
+test cached_frame_matches_uncached_after_pan ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.40s
+
+     Running tests/cardinal_cleanup.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cardinal_cleanup-78ddf849607edf35)
+
+running 3 tests
+test actual_net_source_cancel_peer_invalidation_and_modal_guards ... ok
+test actual_track_selection_checked_preview_atomic_apply_and_undo ... ok
+test compact_actual_preview_apply_cancel_bounds_and_legacy_coverage_are_visible ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+     Running tests/command_parity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/command_parity-fbe5541c3c364be2)
+
+running 4 tests
+test ui_and_agent_actions_operate_on_the_same_engine ... ok
+test parity_gate_detects_a_missing_tool ... ok
+test every_ui_action_has_a_matching_mcp_tool_and_input_schema ... ok
+test ui_mutations_route_through_the_catalog ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-637cc2b2a0af8db4)
+
+running 1 test
+test coordinate_form_adds_tracks_and_vias_deletes_and_rejects_stale_document ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+     Running tests/cross_probe.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cross_probe-7298b2c9f703d3e2)
+
+running 5 tests
+test peer_unlink_and_same_id_reopen_clear_counterparts_and_stale_navigation ... ok
+test unsupported_selection_and_large_selection_have_explicit_messages ... ok
+test actual_board_click_highlights_and_navigates_symbol_without_propagating_selection_or_edits ... ok
+test actual_schematic_select_highlights_hidden_pcb_counterpart_and_navigates_without_shared_selection_changes ... ok
+test active_route_preview_is_preserved_when_counterpart_navigation_is_rejected ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s
+
+     Running tests/drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/drc-57bcffe3eaa961ac)
+
+running 3 tests
+test desktop_automatic_drc_applies_rules_refreshes_after_agent_edit_and_disables_even_with_bad_draft ... ok
+test desktop_mixed_copper_drc_rules_select_actual_objects_and_refresh_after_delete ... ok
+test desktop_drc_reports_coverage_selects_issue_parts_and_marks_agent_edits_stale ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.29s
+
+     Running tests/erc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/erc-d63d240e7afd501c)
+
+running 6 tests
+test virtualized_results_reach_final_diagnostic_after_large_scroll ... ok
+test real_policy_form_updates_results_and_same_project_reopen_clears_old_reports ... ok
+test empty_project_states_supported_scope_and_ui_catalog_matches_mcp_tool ... ok
+test first_erc_navigation_from_pcb_preserves_exact_pin_center_through_initial_schematic_layout ... ok
+test real_erc_run_navigates_exact_pin_without_mutation_and_blocks_stale_results ... ok
+test actual_matrix_override_in_narrow_layout_changes_two_output_conflict_severity ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+
+     Running tests/fabrication.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-179ac3fc12a161a3)
+
+running 3 tests
+test compact_form_full_cursor_live_mcp_bytes_and_collision_native_errors_are_accessible ... ok
+test export_window_keeps_invalid_input_then_exports_snapshot_without_design_changes ... ok
+test typed_action_validates_after_cursor_before_admission_and_preserves_state_on_failures ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.55s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-f25aa9c2054ffe13)
+
+running 2 tests
+test actual_file_menu_inspection_visibility_and_peer_edit_keep_overlay_current_and_read_only ... ok
+test actual_compact_inspect_and_unsupported_error_are_reachable_and_preserve_fields ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s
+
+     Running tests/footprint.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-bc6cdf57d541cbbf)
+
+running 1 test
+test library_form_exports_committed_pads_reuses_geometry_and_rejects_stale_parts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s
+
+     Running tests/footprint_conversion.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-31ced6444fae5174)
+
+running 4 tests
+test actual_context_and_path_changes_discard_preview_and_unsupported_source_never_enables_conversion ... ok
+test actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged ... ok
+test actual_report_scroll_reaches_exact_cardinal_normalization_without_session_changes ... ok
+test actual_compact_scroll_reaches_conversion_and_changed_source_error_without_touching_work ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.01s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-554c9c599f4a5ffc)
+
+running 3 tests
+test actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_and_reopen ... ok
+test actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retained ... ok
+test actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.20s
+
+     Running tests/lifecycle.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/lifecycle-cf7c023124997988)
+
+running 4 tests
+test native_close_is_canceled_and_requires_a_current_discard_confirmation ... ok
+test new_cancel_stale_discard_and_open_share_the_live_engine ... ok
+test failed_save_and_edits_arriving_after_save_keep_the_document_open ... ok
+test save_before_new_and_cancel_save_as_preserve_the_current_design ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+
+     Running tests/live_design.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/live_design-63f08f4fd6ea0009)
+
+running 3 tests
+test edit_menu_places_a_resistor_as_the_user ... ok
+test agent_edit_appears_and_user_undoes_it ... ok
+test loaded_project_fits_after_startup_resize_and_preserves_manual_navigation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+     Running tests/net_rules.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-43c4e556ff812299)
+
+running 4 tests
+test exact_decimal_parser_keeps_odd_nm_and_rejects_rounding_or_exponents ... ok
+test invalid_borrowed_policy_refuses_render_fab_and_explicit_drc_before_copy ... ok
+test actual_compact_exact_input_atomic_apply_undo_and_cancel ... ok
+test actual_duplicate_invalid_precision_and_peer_reopen_require_reload ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+     Running tests/outlines.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/outlines-4f76dc0bd2381f5b)
+
+running 2 tests
+test desktop_dxf_import_reports_errors_and_uses_the_shared_guarded_command ... ok
+test outline_form_validates_applies_and_removes_geometry_through_shared_actions ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s
+
+     Running tests/output_job_calibration.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-81492cbe4f92970c)
+
+running 1 test
+test compact_optional_companion_save_load_run_and_live_mcp_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.59s
+
+     Running tests/output_job_population.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-685ab96d5139f6ef)
+
+running 1 test
+test compact_matched_population_dependencies_save_load_run_and_live_mcp_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.85s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-ecf5cb617fe61e65)
+
+running 2 tests
+test compact_checked_settings_save_load_run_real_input_and_live_mcp_byte_parity ... ok
+test compact_real_input_save_load_run_and_live_mcp_byte_parity ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.87s
+
+     Running tests/pad_routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_routing-8e5d1c8427107b40)
+
+running 5 tests
+test collapsed_tiny_pad_uses_six_point_circular_origin_tolerance ... ok
+test guide_click_selects_real_ids_hidden_layers_do_not_intercept_and_escape_cancels ... ok
+test pad_picking_retains_exact_off_grid_centers_and_snaps_only_interior_one_undo ... ok
+test concurrent_pad_edit_rejects_whole_route_and_focus_workspace_cancel_locally ... ok
+test arbitrary_angle_pad_refuses_attachment_and_endpoint_buttons_preserve_local_intent ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+     Running tests/pads.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pads-e201123b778d70f7)
+
+running 1 test
+test desktop_pad_form_checks_sizes_assigns_nets_and_rejects_stale_edits ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+
+     Running tests/parts.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/parts-afa8a0b0cde05624)
+
+running 3 tests
+test placement_opened_before_new_document_cannot_modify_the_new_document ... ok
+test place_edit_delete_and_undo_use_the_same_engine ... ok
+test stale_properties_require_reload_and_invalid_placement_keeps_the_form ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.24s
+
+     Running tests/pcb_branches.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_branches-047a6385b6e05361)
+
+running 2 tests
+test actual_compact_review_toggle_merge_one_undo_and_no_shared_selection ... ok
+test actual_stale_refresh_discard_and_reopen_clear_ghost_without_mutation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.59s
+
+     Running tests/pcb_import.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-6e6b96472532a17f)
+
+running 4 tests
+test unsupported_report_and_local_draft_guards_are_visible_without_cancellation ... ok
+test actual_source_change_failure_and_peer_edit_staleness_preserve_native_work ... ok
+test compact_actual_scroll_reaches_apply_and_source_error_within_viewport ... ok
+test actual_file_menu_preview_and_apply_create_unsaved_native_geometry ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s
+
+     Running tests/pcb_sync.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-8f4bf4ce82ae2af7)
+
+running 3 tests
+test stale_and_same_uuid_reopened_desktop_previews_cannot_apply ... ok
+test actual_desktop_preview_apply_and_one_undo_updates_pads_and_preserves_schematic ... ok
+test actual_component_pick_unlink_relink_and_duplicate_rejection_preserve_identity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/perf.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/perf-07bc790c7aea33a2)
+
+running 1 test
+test frame_time_100k_scene ... ignored, timing; run in release with --ignored --nocapture
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pin_pad_probe.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_probe-7836606ee7729f2a)
+
+running 4 tests
+test actual_terminal_choice_and_bidirectional_navigation_preserve_entire_session_and_component_selection ... ok
+test actual_schematic_source_keeps_local_component_selection_and_empty_shared_selection ... ok
+test hidden_copper_and_active_edit_rejections_preserve_local_preview_and_session ... ok
+test peer_edit_selection_replacement_and_same_uuid_reopen_clear_terminal_highlights ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s
+
+     Running tests/placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/placement-93e041358c763272)
+
+running 7 tests
+test pointer_move_previews_without_mutation_and_release_commits_one_group ... ok
+test switching_to_schematic_cancels_board_drag_without_changing_selection_or_design ... ok
+test canvas_keys_rotate_flip_and_property_text_or_modal_focus_suspends_shortcuts ... ok
+test copper_modal_cancels_active_preview_and_blocks_canvas_and_menu_transforms ... ok
+test mixed_copper_selection_rejects_part_placement_keys_menu_and_drag_atomically ... ok
+test actual_arrange_menu_aligns_and_distributes_selected_origins ... ok
+test escape_space_selection_change_and_concurrent_agent_edit_cancel_or_reject_whole_drag ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+
+     Running tests/ratsnest.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/ratsnest-9ada40dfe9461bfb)
+
+running 1 test
+test native_scene_guides_follow_pad_geometry_net_assignment_and_history ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+     Running tests/route_posture.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_posture-1d466c13b004288d)
+
+running 3 tests
+test actual_cardinal_choice_and_escape_cancel_without_design_events ... ok
+test actual_posture_toggle_replans_exact_stubs_locally_then_commits_one_undo ... ok
+test stale_peer_edit_rejects_generated_path_and_preserves_editable_local_waypoints ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+     Running tests/route_via.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_via-005c0911368aff52)
+
+running 3 tests
+test endpoint_changes_clear_geometry_and_cancel_never_mutates ... ok
+test guide_requires_both_visible_sides_and_concurrent_edit_rejects_all_copper ... ok
+test local_via_and_both_legs_snap_then_commit_as_one_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.29s
+
+     Running tests/routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-3538a2d552ceb3c1)
+
+running 4 tests
+test commit_clearance_error_keeps_preview_and_does_not_publish_segments ... ok
+test concurrent_agent_change_rejects_whole_route_and_retains_editable_preview ... ok
+test routing_blocks_other_editors_and_focus_document_workspace_changes_cancel_locally ... ok
+test pointer_snap_hover_backspace_escape_are_local_and_enter_commits_one_undo ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/saving.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/saving-77062d4831c7a277)
+
+running 1 test
+test save_as_dialog_writes_a_native_file_then_ctrl_s_reuses_the_path ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-9862cede1dded7ee)
+
+running 4 tests
+test reopen_same_project_resets_old_draft_using_session_stream ... ok
+test invalid_and_stale_drafts_preserve_every_session_field_until_explicit_reload ... ok
+test view_fit_and_status_follow_the_visible_schematic_camera ... ok
+test actual_forms_create_all_schematic_types_edit_and_undo_without_board_changes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.51s
+
+     Running tests/schematic_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-bde1747a39a33da4)
+
+running 3 tests
+test actual_invalid_coordinate_and_missing_library_leave_model_unchanged ... ok
+test actual_desktop_selection_path_preview_explicit_placement_creation_and_undo ... ok
+test actual_form_changes_stale_edits_and_same_project_reopen_disable_old_creation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.28s
+
+     Running tests/schematic_wires.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-247adf162c6a9dd7)
+
+running 4 tests
+test actual_crossing_does_not_join_and_grid_t_endpoint_does ... ok
+test actual_pointer_exact_rotated_mirrored_offgrid_attachment_finish_and_undo ... ok
+test actual_posture_backspace_pan_zoom_and_escape_keep_entire_model_unchanged ... ok
+test actual_stale_peer_edit_reopen_and_object_draft_guards_preserve_content ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s
+
+     Running tests/selection.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/selection-88b08a5e1954d741)
+
+running 5 tests
+test lasso_refines_bounding_box_candidates_and_detects_edge_crossings ... ok
+test pan_escape_and_select_all ... ok
+test box_direction_lasso_and_hidden_layers ... ok
+test persistent_track_via_picks_and_selection_respect_visible_layers_and_deleted_ids ... ok
+test click_modifiers_blank_click_and_agent_selection_share_the_same_state ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/sourcing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/sourcing-d696744f37bde143)
+
+running 1 test
+test compact_sourcing_is_guarded_undoable_and_matches_live_mcp_csv ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.37s
+
+     Running tests/symbol_library.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-c891ee0c07da3004)
+
+running 7 tests
+test compact_viewport_reaches_export_and_error_results_by_scrolling ... ok
+test actual_new_export_and_collision_use_detached_writer_without_session_changes ... ok
+test actual_library_file_transform_placement_and_undo_preserve_original_instances ... ok
+test actual_invalid_coordinates_peer_edit_and_reopened_context_never_place_old_template ... ok
+test invalid_local_edits_and_compact_save_collisions_preserve_inputs_and_loaded_source ... ok
+test create_edit_save_and_use_detached_definition_through_actual_controls ... ok
+test actual_definition_field_identity_survives_removal_virtualization_and_fresh_replacement ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.93s
+
+     Running tests/terminal_routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/terminal_routing-fb0400b99d6f1a14)
+
+running 5 tests
+test actual_posture_keyboard_and_button_switches_keep_exact_attachments_and_escape_cancels ... ok
+test hidden_layer_does_not_pick_terminal_and_focus_loss_cancels_without_edit ... ok
+test concurrent_edit_invalidates_draft_and_active_modal_prevents_new_picker ... ok
+test compact_persistent_footer_fits_after_scroll_and_cancel_preserves_full_session ... ok
+test actual_track_end_via_pick_exact_off_grid_local_interior_and_atomic_finish ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s
+
+     Running tests/view_export.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/view_export-2557ecebfbfed079)
+
+running 4 tests
+test catalog_actions_reject_stale_cursor_missing_sheet_and_native_destination_atomically ... ok
+test compact_viewport_scrolls_to_schematic_crop_export_and_result ... ok
+test cropped_layers_dimensions_and_decimal_padding_are_validated_in_the_form ... ok
+test actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_without_edits ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.72s
+
+     Running tests/walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround-830b4814e61a85b8)
+
+running 3 tests
+test actual_cutout_preview_cancel_outline_invalidation_and_one_commit ... ok
+test actual_static_checkbox_background_plan_cancel_guard_and_atomic_commit ... ok
+test actual_fixed_via_checked_preview_replacement_peer_cancel_and_joint_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.30s
+
+   Doc-tests viamind_doc
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_drc
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_engine
+
+running 1 test
+test crates/engine/src/lib.rs - (line 14) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+all doctests ran in 0.98s; merged doctests compilation took 0.93s
+   Doc-tests viamind_fab
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_geom
+
+running 2 tests
+test crates/geom/src/index.rs - index::SpatialIndex (line 54) ... ok
+test crates/geom/src/lib.rs - (line 9) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.71s; merged doctests compilation took 0.70s
+   Doc-tests viamind_mcp
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_render
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_router
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viamind_ui_egui
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 51.94s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.75s
+b7e9d65ca963d9c8db688ced7f37e6a1bd78452019bab9cc65595f1f66461a89  /home/charlesmowbray/.cache/viamind/native-artifacts/t0113/original-verified/viamind
+ccf4249b795d9e9517ad0c59d87e27652c4a45d78b7dd7dff7ed6ec5b5443cfa  /home/charlesmowbray/.cache/viamind/native-artifacts/t0113/original-verified/pcb-branches-inspection
