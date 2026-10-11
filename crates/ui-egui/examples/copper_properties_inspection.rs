@@ -11,7 +11,7 @@ struct Inspect {
     status: DocumentStatus,
     capture: Option<PathBuf>,
     ui_passes: usize,
-    controls: Vec<egui::Rect>,
+    controls: Vec<egui::Id>,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -30,25 +30,18 @@ impl eframe::App for Inspect {
             .memory(|m| m.area_rect(egui::Id::new(Some(std::borrow::Cow::Borrowed("Copper properties")))))
             .expect("production property window");
         let content = ui.ctx().content_rect();
-        // X11 can negotiate a different native viewport than the preparation
-        // harness. Read actual completed-pass hit rectangles instead of treating
-        // the harness's absolute control coordinates as native coordinates.
+        // Resolve the exact labeled buttons' safe egui IDs in the native pass.
+        // Prepared absolute coordinates and font/pixel-grid dimensions can differ
+        // from the negotiated native viewport and are not native bounds evidence.
         let native_buttons = if self.ui_passes >= 3 {
             assert!(content.contains_rect(window), "actual native property window fits: {window:?}; content {content:?}");
-            let rects = ui.ctx().interactive_rects_last_pass();
-            self.controls[1..]
+            self.controls
                 .iter()
-                .map(|prepared| {
-                    let matches: Vec<_> = rects
-                        .iter()
-                        .copied()
-                        .filter(|r| {
-                            window.contains_rect(*r) && (r.width() - prepared.width()).abs() < 0.1 && (r.height() - prepared.height()).abs() < 0.1
-                        })
-                        .collect();
-                    assert_eq!(matches.len(), 1, "unique native footer button size {:?}; window {window:?}; content {content:?}", prepared.size());
-                    assert!(content.contains_rect(matches[0]));
-                    matches[0]
+                .map(|id| {
+                    let response = ui.ctx().read_response(*id).expect("same actual native footer button ID");
+                    assert!(window.contains_rect(response.rect) && content.contains_rect(response.rect));
+                    assert!(response.enabled());
+                    response.rect
                 })
                 .collect::<Vec<_>>()
         } else {
@@ -81,7 +74,7 @@ impl eframe::App for Inspect {
             f.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"control_bounds":"three actual native completed-pass hit rectangles, each uniquely matched to prepared Apply/Reload/Cancel button dimensions","controls":native_buttons.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"control_bounds":"actual native Apply/Reload/Cancel read_response rectangles using exact safely captured labeled widget IDs","controls":native_buttons.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
@@ -134,11 +127,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     input(&mut h, "Property net (empty = unassigned)", "N");
     h.run_steps(6);
-    let controls = ["Apply runs scoped checks; excluded objects are not certified.", "Apply properties", "Reload properties", "Cancel properties"]
-        .into_iter()
-        .map(|l| h.get_by_label(l).rect())
-        .collect::<Vec<_>>();
-    assert!(controls.iter().all(|r| r.min.x >= 0. && r.min.y >= 0. && r.max.x <= width && r.max.y <= height));
+    let mut controls = Vec::new();
+    for label in ["Apply properties", "Reload properties", "Cancel properties"] {
+        h.get_by_label(label).focus();
+        h.run_steps(3);
+        assert!(h.get_by_label(label).is_focused());
+        let id = h.ctx.memory(|m| m.focused()).expect("labeled button focus gives its safe egui ID");
+        let response = h.ctx.read_response(id).expect("prepared footer button");
+        assert_eq!(response.rect, h.get_by_label(label).rect());
+        assert!(response.rect.min.x >= 0. && response.rect.min.y >= 0. && response.rect.max.x <= width && response.rect.max.y <= height);
+        controls.push(id);
+    }
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
     println!(
