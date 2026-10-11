@@ -4,10 +4,11 @@ use crate::{
     actions::UiAction,
     camera::{Camera, WorldPos},
 };
+use crate::{layers::LayerStack, pad_routing::PadDraft};
 use egui::{Color32, Key, PointerButton, Response, Stroke, Ui};
 use std::time::Instant;
 use viamind_doc::CopperLayer;
-use viamind_engine::{EngineHandle, RoutePolyline};
+use viamind_engine::{EngineHandle, PadEndpointId, RoutePolyline};
 use viamind_geom::{Nm, Point};
 
 #[derive(Debug)]
@@ -18,10 +19,19 @@ struct Settings {
     clearance: String,
     edge: String,
     layer: CopperLayer,
+    pad_mode: bool,
 }
 impl Default for Settings {
     fn default() -> Self {
-        Self { net: "GND".into(), width: "0.25".into(), grid: "0.25".into(), clearance: "0.2".into(), edge: "0.25".into(), layer: CopperLayer::Top }
+        Self {
+            net: "GND".into(),
+            width: "0.25".into(),
+            grid: "0.25".into(),
+            clearance: "0.2".into(),
+            edge: "0.25".into(),
+            layer: CopperLayer::Top,
+            pad_mode: false,
+        }
     }
 }
 #[derive(Debug)]
@@ -33,15 +43,16 @@ struct Draft {
 pub struct RoutingUi {
     settings: Option<Settings>,
     draft: Option<Draft>,
+    pad_draft: Option<PadDraft>,
     pub error: Option<String>,
     pub last_commit_ms: Option<f64>,
 }
 impl RoutingUi {
     pub fn editing(&self) -> bool {
-        self.settings.is_some() || self.draft.is_some()
+        self.settings.is_some() || self.draft.is_some() || self.pad_draft.is_some()
     }
     pub fn previewing(&self) -> bool {
-        self.draft.is_some()
+        self.draft.is_some() || self.pad_draft.is_some()
     }
     pub fn points(&self) -> &[Point] {
         self.draft.as_ref().map_or(&[], |d| d.input.points.as_slice())
@@ -49,9 +60,27 @@ impl RoutingUi {
     pub fn hover(&self) -> Option<Point> {
         self.draft.as_ref().and_then(|d| d.hover)
     }
+    pub fn pad_endpoints(&self) -> (Option<PadEndpointId>, Option<PadEndpointId>) {
+        self.pad_draft.as_ref().map_or((None, None), PadDraft::endpoints)
+    }
+    pub fn pad_interior(&self) -> &[Point] {
+        self.pad_draft.as_ref().map_or(&[], PadDraft::interior)
+    }
     pub fn cancel(&mut self) {
         self.settings = None;
         self.draft = None;
+        self.pad_draft = None;
+    }
+    fn finish_pad(&mut self, engine: &EngineHandle) {
+        let Some(draft) = &self.pad_draft else { return };
+        match draft.finish(engine) {
+            Ok(ms) => {
+                self.last_commit_ms = Some(ms);
+                self.pad_draft = None;
+                self.error = None;
+            }
+            Err(e) => self.error = Some(e),
+        }
     }
     fn finish(&mut self, engine: &EngineHandle) {
         let Some(draft) = &self.draft else { return };
@@ -97,6 +126,14 @@ impl RoutingUi {
                 self.finish(engine);
             }
         }
+        if let Some(draft) = &mut self.pad_draft {
+            let (finish, cancel) = draft.panel(ui, engine);
+            if cancel {
+                self.cancel();
+            } else if finish {
+                self.finish_pad(engine);
+            }
+        }
         if let Some(error) = &self.error {
             ui.colored_label(Color32::LIGHT_RED, error);
         }
@@ -104,7 +141,16 @@ impl RoutingUi {
             ui.small(format!("Last route commit check: {ms:.2} ms"));
         }
     }
-    pub(crate) fn canvas(&mut self, ui: &Ui, response: &Response, camera: &Camera, engine: &EngineHandle, enabled: bool) {
+    pub(crate) fn canvas(&mut self, ui: &Ui, response: &Response, camera: &Camera, engine: &EngineHandle, layers: &LayerStack, enabled: bool) {
+        if let Some(draft) = &mut self.pad_draft {
+            let (cancel, finish) = draft.canvas(ui, response, camera, engine, layers, enabled, &mut self.error);
+            if cancel {
+                self.cancel();
+            } else if finish {
+                self.finish_pad(engine);
+            }
+            return;
+        }
         let Some(draft) = &mut self.draft else { return };
         let lost = ui.input(|i| !i.focused || i.events.iter().any(|e| matches!(e, egui::Event::WindowFocused(false))));
         if !enabled || lost || engine.read(|p| p.id) != draft.input.expected_project {
@@ -169,6 +215,15 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_pad_route(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.pad_mode = true;
+        }
+    }
     pub fn begin_route(&mut self) {
         if self.schematic.active
             || self.files.busy()
@@ -194,15 +249,16 @@ impl ViamindApp {
         let mut start = false;
         let mut cancel = false;
         let modal=egui::Modal::new(egui::Id::new("route_settings")).show(ui.ctx(),|ui|{
-            ui.heading("Route PCB polyline");
+            ui.heading(if settings.pad_mode {"Route pad connection"} else {"Route PCB polyline"});
             egui::Grid::new("route_fields").num_columns(2).show(ui,|ui|{
-                for (label,value) in [("Route net",&mut settings.net),("Route width (mm)",&mut settings.width),("Route grid (mm)",&mut settings.grid),("Route copper clearance (mm)",&mut settings.clearance),("Route edge clearance (mm)",&mut settings.edge)] {
+                if !settings.pad_mode {let label=ui.label("Route net");ui.add(egui::TextEdit::singleline(&mut settings.net).id_salt("Route net")).labelled_by(label.id);ui.end_row();}
+                for (label,value) in [("Route width (mm)",&mut settings.width),("Route grid (mm)",&mut settings.grid),("Route copper clearance (mm)",&mut settings.clearance),("Route edge clearance (mm)",&mut settings.edge)] {
                     let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();
                 }
-                ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();
+                if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
-            ui.label("Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification.");
+            ui.label(if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. No electrical continuity verification or guide suppression."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
             ui.horizontal(|ui|{start=ui.button("Start route").clicked();cancel=ui.button("Cancel route settings").clicked();});
         });
@@ -211,6 +267,7 @@ impl ViamindApp {
             return;
         }
         if start {
+            let pad_mode = settings.pad_mode;
             let result = (|| {
                 let width = mm(&settings.width, true)?;
                 let grid = mm(&settings.grid, true)?;
@@ -238,7 +295,17 @@ impl ViamindApp {
             })();
             match result {
                 Ok(input) => {
-                    self.routing.draft = Some(Draft { input, hover: None });
+                    if pad_mode {
+                        match self.design.as_ref().unwrap().engine.route_endpoint_snapshot() {
+                            Ok(snapshot) => self.routing.pad_draft = Some(PadDraft::new(snapshot, input.width, input.grid, input.rules)),
+                            Err(e) => {
+                                self.routing.error = Some(e.to_string());
+                                return;
+                            }
+                        }
+                    } else {
+                        self.routing.draft = Some(Draft { input, hover: None });
+                    }
                     self.routing.settings = None;
                     self.routing.error = None;
                 }

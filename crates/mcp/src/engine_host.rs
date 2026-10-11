@@ -43,6 +43,7 @@ impl CommandHost for EngineHost {
             description: "Create a new unnamed project in this shared session (name defaults to Untitled). Resets history and selection; old event cursors require get_session_state resynchronization. Unsaved changes reject unless discard_dirty is true with the current expected_cursor. Stale cursors reject.".into(),
             input_schema: input_schema::<NewProject>(),
         });
+        commands.push(HostCommand { name:"query_route_endpoints".into(),description:"Read bounded immutable UUID-ordered explicit pad routing endpoints with exact quarter-turn integer centers, derived net/outer side, rendering corners and unsupported reasons. Legacy previews omitted; arbitrary rotations/unassigned nets cannot attach. offset 0, limit 1..1000 default 100, optional exact net. Max 100000 board structural objects / 2 MiB text / 512-byte labels (route net at most 256 bytes); no unrelated schematic capture. Preserve model/selection/history; source_cursor changes require restarting pages. No continuity or guide-completion claim.".into(),input_schema:input_schema::<viamind_engine::RouteEndpointQuery>() });
         commands.push(HostCommand {
             name: "run_erc".into(),
             description: "Read-only bounded native pin ERC over one exact schematic graph snapshot. Configurable symmetric allowed/warning/error pin-type matrix plus input connection/drive, missing power_output and no-connect attachment checks. Returns effective matrix, stable sheet/symbol/pin/net IDs, deterministic issues, source_cursor, complete-for-selected-checks flag and explicit full_erc=false coverage. Labels never supply power. Max10000 graph objects, 1000000 contact candidates, 250000 pin pairs and max_violations1..10000(default1000); partial policy prefixes explicitly incomplete. Graph ambiguity/limits reject. No hierarchy, buses, hidden power pins or all-ERC claim; preserves model/history/selection/dirty state.".into(),
@@ -151,6 +152,10 @@ impl CommandHost for EngineHost {
             let input: viamind_engine::PcbSyncRequest = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.preview_schematic_pcb_sync(input.direction).map_err(|e| e.to_string())?)
                 .map_err(|e| e.to_string());
+        }
+        if name == "query_route_endpoints" {
+            let input = serde_json::from_value(input).map_err(|e| format!("invalid endpoint query: {e}"))?;
+            return serde_json::to_value(self.engine.query_route_endpoints(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "run_erc" {
             let input: viamind_engine::ErcInput = serde_json::from_value(input).map_err(|e| e.to_string())?;

@@ -39,6 +39,7 @@ fn builtin_specs() {
             "import_board_outline_dxf",
             "link_schematic_symbol",
             "move_part",
+            "route_pad_polyline",
             "route_polyline",
             "set_board_outline",
             "set_part_pads",

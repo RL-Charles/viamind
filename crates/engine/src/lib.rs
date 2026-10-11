@@ -55,7 +55,9 @@ pub use schematic_connectivity::{
     SchematicConnectivityCoverage, SchematicConnectivityQuery, SchematicConnectivityResult, SchematicMemberKind, SchematicNet, SchematicNetMember,
     SchematicNetName,
 };
+pub mod route_endpoints;
 pub mod routing;
+pub use route_endpoints::{PadEndpointId, RouteEndpoint, RouteEndpointPage, RouteEndpointQuery, RouteEndpointSnapshot, RoutePadPolyline};
 pub use routing::RoutePolyline;
 pub mod placement;
 pub mod query;

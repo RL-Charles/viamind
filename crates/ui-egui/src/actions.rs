@@ -60,6 +60,7 @@ ui_actions! {
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
     RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
     DeleteTrack => (viamind_engine::DeleteTrack::NAME, input_schema::<viamind_engine::DeleteTrack>(), delete_track),
@@ -220,4 +221,7 @@ fn link_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 fn synchronize_schematic_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::SynchronizeSchematicPcb::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn route_pad_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RoutePadPolyline::NAME, input, Origin::User)?).map_err(encode_error)
 }

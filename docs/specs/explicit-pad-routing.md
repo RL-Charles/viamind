@@ -15,11 +15,11 @@ assets, or proprietary code is used. This increment extends the existing
 `query_route_endpoints` is immutable and returns one source cursor/project identity,
 UUID-ordered explicit pad rows, bounded pagination and explicit unsupported reasons.
 Rows identify part/pad UUIDs, designator/number, exact case-sensitive assigned net,
-outer copper side and representable integer-nanometre center/size. Legacy graphical
+outer copper side, representable integer-nanometre center and presentation-only rectangle corners. Legacy graphical
 preview pads are excluded. Missing/unassigned nets and arbitrary part angles are
 reported as unsupported attachment targets rather than silently inferred or rounded.
 Queries are bounded before capture by 100000 board structural objects and 2 MiB
-board text/256-byte labels; unrelated schematics/project text are not copied.
+board text/512-byte labels (route net at most 256 bytes); unrelated schematics/project text are not copied.
 
 A shared checked integer transform mirrors local X on the bottom side, applies a
 0/90/180/270-degree counterclockwise turn in model Y-down coordinates and adds part
