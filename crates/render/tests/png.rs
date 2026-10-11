@@ -42,7 +42,7 @@ fn png_decodes_deterministically_with_shared_layers_physical_holes_cutouts_and_m
     let (_, _, top) = decode(&top.png);
     assert_eq!(pixel(&top, w, 200, 200)[3], 0);
     let empty = board_png(&Project::new("Empty"), &SvgOptions { width_px: 32, height_px: 16, ..Default::default() }).unwrap();
-    assert!(decode(&empty.png).2.chunks_exact(4).all(|p| p[3] == 0));
+    assert!(decode(&empty.png).2.as_chunks::<4>().0.iter().all(|p| p[3] == 0));
     assert_eq!(output.metadata.region_nm, options.region_nm.unwrap());
 }
 #[test]
