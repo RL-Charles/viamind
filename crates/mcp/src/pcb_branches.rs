@@ -113,3 +113,57 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{sync::mpsc, time::Duration};
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn canceling_real_create_awaiter_does_not_release_its_blocked_worker_permit() {
+        let engine = EngineHandle::new(viamind_doc::Project::new("retained worker"));
+        let input = json!({"expected_project":engine.read(|p|p.id),"expected_cursor":engine.event_cursor(),"label":"canceled awaiter"});
+        let (locked_tx, locked_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let locked_engine = engine.clone();
+        let locker = std::thread::spawn(move || {
+            locked_engine.with_engine(|_| {
+                locked_tx.send(()).unwrap();
+                release_rx.recv().unwrap();
+            })
+        });
+        locked_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        let mut ctx = CallContext::new("owned#1");
+        ctx.connection = Some(1);
+        let task = tokio::spawn(run(engine.clone(), Operation::Create, input, ctx));
+        tokio::time::timeout(Duration::from_secs(5), async {
+            loop {
+                match reserve_pcb_branch_work() {
+                    Ok(permit) => drop(permit),
+                    Err(_) => break,
+                }
+                tokio::task::yield_now().await;
+            }
+        })
+        .await
+        .unwrap();
+        task.abort();
+        assert!(task.await.unwrap_err().is_cancelled());
+        assert!(reserve_pcb_branch_work().is_err(), "actual blocked create owns permit after cancellation");
+        release_tx.send(()).unwrap();
+        locker.join().unwrap();
+        tokio::time::timeout(Duration::from_secs(5), async {
+            loop {
+                if let Ok(permit) = reserve_pcb_branch_work() {
+                    drop(permit);
+                    break;
+                }
+                tokio::task::yield_now().await;
+            }
+        })
+        .await
+        .unwrap();
+        assert_eq!(engine.list_pcb_branches().len(), 1);
+        assert!(engine.read(|p| p.board.parts.is_empty()));
+    }
+}
