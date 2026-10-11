@@ -1,0 +1,39 @@
+{
+  "_note": "Prefer `elements` — `tree_markdown` will continue to work but new fields will only be added to the structured side. Use `max_elements` / `max_depth` to bound the AT-SPI walk on apps with very large trees.",
+  "app_name": "viamind-package-pcb-inspection",
+  "degraded": true,
+  "degraded_reason": "x11_property_fallback_partial: AT-SPI was unavailable and Cua Driver only recovered window metadata. Treat it as discovery evidence; it cannot prove checked state.",
+  "element_count": 1,
+  "elements": [
+    {
+      "actions": [
+        "activate"
+      ],
+      "depth": 0,
+      "element_index": 0,
+      "element_token": "s00000038:0",
+      "role": "window"
+    }
+  ],
+  "elements_complete": false,
+  "pid": 2710818,
+  "returned_element_count": 1,
+  "screenshot_error": {
+    "code": "surface_identity_unproven",
+    "reason": "surface_identity_unproven: Wayland capture cannot prove pixels belong to window 110379543440000: Hyprland target identity or toplevel export could not be verified",
+    "suggestion": "capture the full output explicitly, or retry on a compositor backend that supports identified per-window capture",
+    "window_id": 110379543440000
+  },
+  "screenshot_frame_valid": false,
+  "snapshot_id": "s00000038",
+  "total_element_count": 1,
+  "tree_markdown": "- [0] window \"\" [actions=[activate]]\n",
+  "window_bounds": {
+    "height": 1000,
+    "width": 1600,
+    "x": 2080,
+    "y": 1265
+  },
+  "window_id": 110379543440000,
+  "window_title": "placed.viamind.json — Viamind"
+}

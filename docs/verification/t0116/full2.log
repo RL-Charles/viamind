@@ -1,0 +1,24 @@
+c9f00d8899eba7e3ca0e387047a610ace0bf5909
+Sun Oct 11 20:05:06 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/apps/viamind)
+error: redundant closure
+  --> crates/ui-egui/examples/t0116_inspection.rs:46:70
+   |
+46 |                 .flat_map(|layer| g.get(*layer).into_iter().flat_map(|list| list.all_entries()))
+   |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace the closure with the method itself: `egui::layers::PaintList::all_entries`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+   = note: `-D clippy::redundant-closure-for-method-calls` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::redundant_closure_for_method_calls)]`
+
+error: could not compile `viamind-ui-egui` (example "t0116_inspection") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

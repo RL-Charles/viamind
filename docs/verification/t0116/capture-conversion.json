@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "captures": [
+    {
+      "passed": true,
+      "route": "ImageMagick original native P7 RGBA to PNG then independent PNG decode to raw RGBA; RGB compared separately against P6",
+      "ppm_sha256": "de9e685cf3810223f77817bf758d6b123b249d0c70e8b08537931a9bc5a06b5b",
+      "pam_sha256": "7958fa8ada1b91abb622fe5c31c52856004532d0671e590e556ae6f92e3782e2",
+      "png_sha256": "908153e73d42ca09da23931013589a653aaaa243ac67192bdbc93567ee25839c",
+      "pixels": [
+        1600,
+        1000
+      ],
+      "decoded_rgba_exactly_equal": true,
+      "decoded_rgb_exactly_equal": true,
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "new_png_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-preview.png"
+    },
+    {
+      "passed": true,
+      "route": "ImageMagick original native P7 RGBA to PNG then independent PNG decode to raw RGBA; RGB compared separately against P6",
+      "ppm_sha256": "2356bff2e58376fb9036172155259563d78e225999c0dfa5e74808c8cc7b90b2",
+      "pam_sha256": "d0d37f3c53751f0879a461f4d58197faa7616c771c649bcfdcccad5d5bc5ddd9",
+      "png_sha256": "234bc2b2f2d2cc34ba53112fb8f5454626bb873a081940dc100c31ee7fa5f026",
+      "pixels": [
+        1600,
+        1000
+      ],
+      "decoded_rgba_exactly_equal": true,
+      "decoded_rgb_exactly_equal": true,
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "new_png_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-created.png"
+    }
+  ],
+  "tool_version": "Version: ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org"
+}

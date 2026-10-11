@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "route": "initialized actual production headless MCP typed place_symbol_package and native save",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/production-final-combined-verified",
+  "binary_sha256": "e90c832db066484052fe632b25378471683a409034df33fdcb12bc0bf5947a92",
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/placed-fixture-verified/placed.viamind.json",
+  "fixture_sha256": "fc68136c276e01089c361013056337213a43d95f1db61fd5f73877b74324a0c6",
+  "version": 11,
+  "package_count": 1,
+  "unit_count": 5,
+  "pin_count": 14
+}

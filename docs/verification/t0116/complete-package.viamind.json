@@ -1,0 +1,454 @@
+{
+  "format": "viamind",
+  "version": 12,
+  "project": {
+    "id": "00000000-0000-0000-0000-000000001160",
+    "name": "T116 complete package owned proof",
+    "schematic": {
+      "sheets": {
+        "00000000-0000-0000-0000-000000001161": {
+          "id": "00000000-0000-0000-0000-000000001161",
+          "name": "Authored five-unit package",
+          "content": {
+            "packages": {
+              "b7d1c947-d868-47ae-96b8-18cd1d01bc3f": {
+                "id": "b7d1c947-d868-47ae-96b8-18cd1d01bc3f",
+                "template_name": "Original quad amplifiers and power",
+                "units": [
+                  {
+                    "key": "A",
+                    "name": "Amplifier A",
+                    "role": "functional",
+                    "symbol_id": "d78ad8ff-7340-4d8c-a6d7-66413cfc7a27"
+                  },
+                  {
+                    "key": "B",
+                    "name": "Amplifier B",
+                    "role": "functional",
+                    "symbol_id": "70b0bd2c-58da-41b0-a2cf-3ff06510e27f"
+                  },
+                  {
+                    "key": "C",
+                    "name": "Amplifier C",
+                    "role": "functional",
+                    "symbol_id": "0fff2b6d-ee3a-48fe-8118-6d23499a768f"
+                  },
+                  {
+                    "key": "D",
+                    "name": "Amplifier D",
+                    "role": "functional",
+                    "symbol_id": "24ac0487-296b-4cfc-96cb-4204ad269d3c"
+                  },
+                  {
+                    "key": "P",
+                    "name": "Power",
+                    "role": "power",
+                    "symbol_id": "4f20e7e4-4356-4a3a-bd52-507f142bf03e"
+                  }
+                ]
+              }
+            },
+            "symbols": {
+              "0fff2b6d-ee3a-48fe-8118-6d23499a768f": {
+                "id": "0fff2b6d-ee3a-48fe-8118-6d23499a768f",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 40000001,
+                  "y": 3
+                },
+                "rotation_quarters": 2,
+                "mirrored": false,
+                "width": 6000007,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "id": "132c78dc-5781-4ab5-9f5d-6a2fb48e0206",
+                    "number": "7",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "ed915eaf-3a82-4b6d-b21f-1cb097ab9be2",
+                    "number": "8",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "1b22a3f5-1977-4b89-ad0d-f0fd6e328532",
+                    "number": "9",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              },
+              "24ac0487-296b-4cfc-96cb-4204ad269d3c": {
+                "id": "24ac0487-296b-4cfc-96cb-4204ad269d3c",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 60000001,
+                  "y": 3
+                },
+                "rotation_quarters": 3,
+                "mirrored": true,
+                "width": 6000009,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "id": "da62f4c9-f583-4713-9bf3-1c45f5aed132",
+                    "number": "10",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "6738ccd2-3f14-4ad3-8365-ae2adf32eeec",
+                    "number": "11",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "292028fc-d169-434e-8836-c416bdb0ba95",
+                    "number": "12",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              },
+              "4f20e7e4-4356-4a3a-bd52-507f142bf03e": {
+                "id": "4f20e7e4-4356-4a3a-bd52-507f142bf03e",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 80000001,
+                  "y": 3
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 4000003,
+                "height": 6000007,
+                "pins": [
+                  {
+                    "id": "f89d0a50-e29c-4697-9e66-aa768bb6f972",
+                    "number": "13",
+                    "name": "V+",
+                    "position": {
+                      "x": 7,
+                      "y": -4000003
+                    },
+                    "electrical": "power_input"
+                  },
+                  {
+                    "id": "2e27820a-f9b3-45f2-802e-32581839fcc6",
+                    "number": "14",
+                    "name": "V-",
+                    "position": {
+                      "x": 7,
+                      "y": 4000003
+                    },
+                    "electrical": "power_input"
+                  }
+                ]
+              },
+              "70b0bd2c-58da-41b0-a2cf-3ff06510e27f": {
+                "id": "70b0bd2c-58da-41b0-a2cf-3ff06510e27f",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 20000001,
+                  "y": 3
+                },
+                "rotation_quarters": 1,
+                "mirrored": true,
+                "width": 6000005,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "id": "bfb38e1e-e437-44ab-bc9d-ed4b690e9874",
+                    "number": "4",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "9b249f29-4aae-480d-835b-d9c5d037019a",
+                    "number": "5",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "9c63c60e-b159-44da-8584-1fcf7402f209",
+                    "number": "6",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              },
+              "d78ad8ff-7340-4d8c-a6d7-66413cfc7a27": {
+                "id": "d78ad8ff-7340-4d8c-a6d7-66413cfc7a27",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 1,
+                  "y": 3
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 6000003,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "id": "d1dbb0fd-2f46-4f99-bf0d-693136492859",
+                    "number": "1",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "dbf3f6d9-c52b-433b-8967-d6f24940946a",
+                    "number": "2",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input"
+                  },
+                  {
+                    "id": "e2b55cfa-8b22-4bb5-9008-72fd01ed1811",
+                    "number": "3",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              }
+            },
+            "wires": {},
+            "junctions": {},
+            "labels": {}
+          }
+        }
+      }
+    },
+    "board": {
+      "parts": {
+        "2c4bd4f1-8460-46b6-bbb5-8e137c508cca": {
+          "schematic_package": "b7d1c947-d868-47ae-96b8-18cd1d01bc3f",
+          "pads": [
+            {
+              "id": "16a23546-0ea7-4c30-9b3c-c3d7b5b6bbf2",
+              "number": "14",
+              "position": {
+                "x": 28000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:2e27820a-f9b3-45f2-802e-32581839fcc6"
+            },
+            {
+              "id": "08ae3d00-3665-4647-8e73-3159722a2088",
+              "number": "13",
+              "position": {
+                "x": 26000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:f89d0a50-e29c-4697-9e66-aa768bb6f972"
+            },
+            {
+              "id": "e38aaaaa-8195-4bd7-a1c6-803d7149fe4f",
+              "number": "12",
+              "position": {
+                "x": 24000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:292028fc-d169-434e-8836-c416bdb0ba95"
+            },
+            {
+              "id": "b07c0397-dcae-467c-ac1a-a041d6f7495d",
+              "number": "11",
+              "position": {
+                "x": 22000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:6738ccd2-3f14-4ad3-8365-ae2adf32eeec"
+            },
+            {
+              "id": "6190af2c-95b6-4863-b44c-216104b81a4f",
+              "number": "10",
+              "position": {
+                "x": 20000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:da62f4c9-f583-4713-9bf3-1c45f5aed132"
+            },
+            {
+              "id": "e12ffc52-d47e-4337-8cc4-09e007442661",
+              "number": "9",
+              "position": {
+                "x": 18000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:1b22a3f5-1977-4b89-ad0d-f0fd6e328532"
+            },
+            {
+              "id": "9bd46644-a6e0-469d-a377-4ea40136ad59",
+              "number": "8",
+              "position": {
+                "x": 16000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:ed915eaf-3a82-4b6d-b21f-1cb097ab9be2"
+            },
+            {
+              "id": "04423108-aeaf-4958-a0dd-3306bbe200c1",
+              "number": "7",
+              "position": {
+                "x": 14000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:132c78dc-5781-4ab5-9f5d-6a2fb48e0206"
+            },
+            {
+              "id": "63696b35-d977-4361-ae1e-dec455d2140e",
+              "number": "6",
+              "position": {
+                "x": 12000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:9c63c60e-b159-44da-8584-1fcf7402f209"
+            },
+            {
+              "id": "07ce3149-97c3-4975-b009-7d20e8143b7d",
+              "number": "5",
+              "position": {
+                "x": 10000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:9b249f29-4aae-480d-835b-d9c5d037019a"
+            },
+            {
+              "id": "95fac527-8c4c-412b-920d-fe5cbdbd931e",
+              "number": "4",
+              "position": {
+                "x": 8000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:bfb38e1e-e437-44ab-bc9d-ed4b690e9874"
+            },
+            {
+              "id": "d9aa0429-7efb-4344-b5a7-c69bdd8aaf9f",
+              "number": "3",
+              "position": {
+                "x": 6000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:e2b55cfa-8b22-4bb5-9008-72fd01ed1811"
+            },
+            {
+              "id": "98f90e8c-a255-42e1-a658-c8062da17060",
+              "number": "2",
+              "position": {
+                "x": 4000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:dbf3f6d9-c52b-433b-8967-d6f24940946a"
+            },
+            {
+              "id": "1cbe277c-379e-4e2a-9a94-4d611fa24689",
+              "number": "1",
+              "position": {
+                "x": 2000000,
+                "y": 257
+              },
+              "width": 800001,
+              "height": 600003,
+              "net": "sc:00000000-0000-0000-0000-000000001161:d1dbb0fd-2f46-4f99-bf0d-693136492859"
+            }
+          ],
+          "id": "2c4bd4f1-8460-46b6-bbb5-8e137c508cca",
+          "designator": "U1",
+          "value": "Authored fourteen pins",
+          "footprint": "Authored-14pad",
+          "position": {
+            "x": 40000001,
+            "y": 30000003
+          },
+          "rotation_mdeg": 90000,
+          "side": "bottom"
+        }
+      }
+    }
+  }
+}

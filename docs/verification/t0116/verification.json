@@ -1,0 +1,349 @@
+{
+  "format": "viamind-package-pcb-aggregation-verification",
+  "version": 1,
+  "passed": true,
+  "product_source": "37f1a654ffbb0b253393c12fb6a26bd671ccf9cd",
+  "original_full_source": "4517ac040bc74bc60987704211eb404761fc5b0e",
+  "stack_parent": "61e73f220e5f92259ac2d43b48ba096da70b3e89",
+  "inspection_only_source": "afc182e172097a42d63307eb1529a4fbdb0957cb",
+  "gates": {
+    "original_workspace_passed": 828,
+    "original_workspace_failed": 0,
+    "original_workspace_ignored": 1,
+    "original_separate_parity_passed": 4,
+    "final_scoped_rust_passed": 78,
+    "final_scoped_rust_failed": 0,
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_build": true,
+    "native_inspection_build": true,
+    "actual_catalog_tools": 112,
+    "catalog_drift": true,
+    "isolated_agent_workflow_checks": 18,
+    "python_tooling_tests": 13,
+    "helper_refresh": "fmt plus strict example Clippy and example build; product source unchanged"
+  },
+  "actual_production_checks": 37,
+  "independent_actual_production_checks": 37,
+  "production_process": {
+    "pid": 2696584,
+    "port": 7946,
+    "proc_exe_sha256": "e90c832db066484052fe632b25378471683a409034df33fdcb12bc0bf5947a92",
+    "live_at_verification": true,
+    "active_native_after_independent_rerun": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0116/production/complete-package.viamind.json"
+  },
+  "native": {
+    "pid": 2767809,
+    "close_requested": true,
+    "self_closed": false,
+    "process_live_at_packaging": false,
+    "helper_clean_exit": false,
+    "capture_completed_before_exit": true,
+    "close_note": "Close requested after completed/fsynced frame60 capture; actual unsaved-changes guard intervened; inspection wrapper later reached1500-frame bound and panicked. No OS close/kill performed; completed capture facts remain separately verified",
+    "route": "production ViamindApp with local egui events and native WGPU Screenshot",
+    "captures": [
+      "docs/verification/t0116/native-preview.png",
+      "docs/verification/t0116/native-created.png"
+    ],
+    "raw_channels": "Every PNG decoded original RGBA sample independently equals native P7, and RGB equals P6; raw hashes in capture-conversion.json",
+    "local_injected_events": 35,
+    "local_resize_frames": 3,
+    "local_resize_pointer_events": 5,
+    "raw_capture_paths": [
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-preview.ppm",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-preview.pam",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-created.ppm",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/native-final/native-created.pam"
+    ],
+    "cua": "Exact metadata recovered; AT-SPI unavailable and screenshot surface_identity_unproven refusal retained; no Cua pixels claimed"
+  },
+  "limitations": [
+    "Complete explicit package pin-to-rectangular-SMD-pad bijection only",
+    "No inferred role connections, polarity, centroid or vendor zero",
+    "No physical continuity, placement clearance acceptance or manufacturer certification",
+    "Original full suite and final scoped integration are separate source identities",
+    "Initial failed helper bounded before capture; corrected inspection-only host source is separate from unchanged actual production source",
+    "Initial fixture-generator harness used nonexistent save_document and failed before native creation; corrected actual save_project fixture run is separately reported"
+  ],
+  "binaries": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/production-original-verified",
+      "sha256": "b980f560aabda1d120a5392c6e67e87ff8f9a66ad63e22fc7c95338277623278",
+      "source": "4517ac040bc74bc60987704211eb404761fc5b0e",
+      "role": "original full-gate binary; not final native proof"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/inspection-original-verified",
+      "sha256": "0e5a9066dd1659e649c22aed128d4025d3283a93f4c7681ddee36feb789c309b",
+      "source": "4517ac040bc74bc60987704211eb404761fc5b0e",
+      "role": "original full-gate inspection; never launched"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/production-final-combined-verified",
+      "sha256": "e90c832db066484052fe632b25378471683a409034df33fdcb12bc0bf5947a92",
+      "source": "37f1a654ffbb0b253393c12fb6a26bd671ccf9cd",
+      "role": "actual final production37 checks and independent37 rerun"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/inspection-final-combined-verified",
+      "sha256": "33d0a8b777b038ffcea385271b50b20be507f3f9394c4ba90895ac05786f0746",
+      "source": "37f1a654ffbb0b253393c12fb6a26bd671ccf9cd",
+      "role": "first failed bounded native helper; no completed capture"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/inspection-scroll-footer-failed-verified",
+      "sha256": "e22084e417caef4ecd52ec942e7dec0050a94dd38972b3961e1ee5a510d728f1",
+      "source": "2e7b2708e56f3304c3ebb73fdedd6cb4be8d4708",
+      "role": "second native helper captured preview and created one owner; footer assertion clipped"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/inspection-schematic-success-verified",
+      "sha256": "0ca160b5bd99bf12883e1a442503b812127a2ee6f83008feaace18c6edad30ba",
+      "source": "f5f98f380d8fbbd6dd6055a6be6bd47997919ce0",
+      "role": "successful preview/create; schematic presentation background; Close requested, unsaved guard retains preview"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/inspection-scroll-verified",
+      "sha256": "875f70ec6001d9db2837c4ff86be3d8f0aa6c7fc2d71faa8ef07cad0e2cd7d25",
+      "source": "afc182e",
+      "role": "final corrected inspection-only native PCB capture host"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/verification/t0116/agent-workflows.json",
+      "sha256": "6c25f2d982b1933a519532aa3775a4e0ec2ca785ee2552a7e29dbd56b4ff5658",
+      "bytes": 1265
+    },
+    {
+      "path": "docs/verification/t0116/capture-conversion.json",
+      "sha256": "72d4c188b0bc688c01c2f41ebfca25defd8d72bbdbbf11ce3af16d07cd29d9c0",
+      "bytes": 1681
+    },
+    {
+      "path": "docs/verification/t0116/catalog-drift.json",
+      "sha256": "6049b0fea23f3c9242b4098932aadc07f8fca6d2b5af378fda5ca80b919f35aa",
+      "bytes": 368
+    },
+    {
+      "path": "docs/verification/t0116/catalog-generate.json",
+      "sha256": "6049b0fea23f3c9242b4098932aadc07f8fca6d2b5af378fda5ca80b919f35aa",
+      "bytes": 368
+    },
+    {
+      "path": "docs/verification/t0116/combined.log",
+      "sha256": "f88bb8593fede68b3eb6cf9537c4ff488188c7e26d2efeedd5c1a7bb17c2f2a8",
+      "bytes": 16539
+    },
+    {
+      "path": "docs/verification/t0116/combined.sh",
+      "sha256": "5b79d3952c58c3a62d2d1ccaaa147beb8f9cb4f2ec29fe1dd363aff836628eca",
+      "bytes": 2979
+    },
+    {
+      "path": "docs/verification/t0116/complete-package.viamind.json",
+      "sha256": "6a1a5ee38f245084c4135f6cdce807fc4529c07f61db5675b6b507262424cd59",
+      "bytes": 15501
+    },
+    {
+      "path": "docs/verification/t0116/convert-capture.py",
+      "sha256": "6a562c2a8e2da87e10069e5289402ce6eb780dad1cb330f41913b343c2d07e61",
+      "bytes": 1682
+    },
+    {
+      "path": "docs/verification/t0116/cua-inspection-launch.json",
+      "sha256": "a01bd777a8a7298a564687f1e5b5863c3a12d5f271f1607ad697a31530075ab6",
+      "bytes": 600
+    },
+    {
+      "path": "docs/verification/t0116/cua-inspection-state.json",
+      "sha256": "e0722e9d2d68a513d3b909039ba061c4912ec80b5e3a8f79f45db86eb6702c88",
+      "bytes": 1518
+    },
+    {
+      "path": "docs/verification/t0116/fixture-generator-failed.log",
+      "sha256": "88db9d266555b78f70d4406286e4cf3d4a68b24d7ddbfd0577f562a7563f9a50",
+      "bytes": 644
+    },
+    {
+      "path": "docs/verification/t0116/foundation-failed-3d75.log",
+      "sha256": "b422a7683bb5add1e0afa4fa4fe64d5340c83949fdd6c3e351c30d80cce95789",
+      "bytes": 26953
+    },
+    {
+      "path": "docs/verification/t0116/full2.log",
+      "sha256": "193b925fb3d41e878ac5c6ad3f546a03a1008d17a6e7333a47ef2c6c81b2161b",
+      "bytes": 1883
+    },
+    {
+      "path": "docs/verification/t0116/full3.log",
+      "sha256": "8995992f215dec4d9b6ecbdcded02633a42048903a320aec03accac1732fd81a",
+      "bytes": 95926
+    },
+    {
+      "path": "docs/verification/t0116/full4.log",
+      "sha256": "530ca9eab9d566885eea8d9753232d88ee57573ae2fbf6c4a9a3eb71ef3017a2",
+      "bytes": 1956
+    },
+    {
+      "path": "docs/verification/t0116/full5.log",
+      "sha256": "f6a35bd85374154addf0ab5e0a5c03286b090908484ad06990e0749323282618",
+      "bytes": 3100
+    },
+    {
+      "path": "docs/verification/t0116/generate-placed.py",
+      "sha256": "3702af66e679fdfc93899abd40f6fd7207668fb6ee0d978f97af7b46afb565f7",
+      "bytes": 2032
+    },
+    {
+      "path": "docs/verification/t0116/independent-production-report.json",
+      "sha256": "429975baac7055d709c764c35bd7670f8d0e5be516350514908ced8cd3f15aa6",
+      "bytes": 3630
+    },
+    {
+      "path": "docs/verification/t0116/initial.viamind.json",
+      "sha256": "a1971d485eb4f646724b7b552ec427dc247dcebaa8fb48fe3e38ef03103204e0",
+      "bytes": 557
+    },
+    {
+      "path": "docs/verification/t0116/inspection-compile-failed.log",
+      "sha256": "4bd46218f04dc21f50df34e60cf75b50b844f958fa12728327fe735865d37ab5",
+      "bytes": 1424
+    },
+    {
+      "path": "docs/verification/t0116/inspection-lint-failed.log",
+      "sha256": "64e1da8bbe1293b1f788bb42b4d71093f9ffa399095843b09dd3de151469f6b8",
+      "bytes": 2573
+    },
+    {
+      "path": "docs/verification/t0116/inspection-refresh.log",
+      "sha256": "3755bb9c996c79e17cc4accf404f13994e1e26611d9d41d7bf236ee006cf73cf",
+      "bytes": 2127
+    },
+    {
+      "path": "docs/verification/t0116/inspection-refresh.sh",
+      "sha256": "a912b3f6dc1a0e995f7b42546bb03af5f42bdf7dfb1e2d2e5199f91166ba33ce",
+      "bytes": 776
+    },
+    {
+      "path": "docs/verification/t0116/inspection-schematic-success-build.log",
+      "sha256": "ad0f8e539a123e61d138ce6a9be62d1232afecd302295d2a5c5853962804c6fa",
+      "bytes": 2126
+    },
+    {
+      "path": "docs/verification/t0116/legacy-native-canonical.json",
+      "sha256": "47e5bfcd6effe58b51572f637b20d168e94f9e031bfb108e8eac5d9c9d4f67a2",
+      "bytes": 563
+    },
+    {
+      "path": "docs/verification/t0116/native-capture-and-exit.log",
+      "sha256": "864727183c9f55063a1f626ba40a505545d8fb32f6093d3b398c615d83959029",
+      "bytes": 4569
+    },
+    {
+      "path": "docs/verification/t0116/native-created.png",
+      "sha256": "234bc2b2f2d2cc34ba53112fb8f5454626bb873a081940dc100c31ee7fa5f026",
+      "bytes": 116469
+    },
+    {
+      "path": "docs/verification/t0116/native-failed-helper.log",
+      "sha256": "ad54d50b6eb8456b47f932263e42dcd92f975f5ef175f64d7f6df272ad7316f7",
+      "bytes": 2610
+    },
+    {
+      "path": "docs/verification/t0116/native-footer-failed.log",
+      "sha256": "709f6fc7c55be649df43815bf93436b6f7c23fc376985fbb76739c8151762cd5",
+      "bytes": 327
+    },
+    {
+      "path": "docs/verification/t0116/native-preview.png",
+      "sha256": "908153e73d42ca09da23931013589a653aaaa243ac67192bdbc93567ee25839c",
+      "bytes": 171289
+    },
+    {
+      "path": "docs/verification/t0116/native-report.json",
+      "sha256": "a91f0221c73fe39fd4d9a236263e001363362246e583d92d54236f2f8cbcb7ca",
+      "bytes": 3493
+    },
+    {
+      "path": "docs/verification/t0116/native-schematic-success-report.json",
+      "sha256": "64d5d89b0204073053c493042de6d9194f88fd59d4e0b299f5286aa3dc416954",
+      "bytes": 3860
+    },
+    {
+      "path": "docs/verification/t0116/native-schematic-success.log",
+      "sha256": "53834b21f42339f4a8fe25798c40105c83914f671be30a1bad264a0d4a4479fc",
+      "bytes": 5334
+    },
+    {
+      "path": "docs/verification/t0116/original-full.log",
+      "sha256": "d9449b7b2391275488148a39ad85403830cfcc80487b7f856f89c936c91ae834",
+      "bytes": 118687
+    },
+    {
+      "path": "docs/verification/t0116/original-full.sh",
+      "sha256": "e6004ef602cfa86962e92d56952a06154ecace28ae7d2eda5b90f60226716747",
+      "bytes": 1230
+    },
+    {
+      "path": "docs/verification/t0116/placed-fixture-report.json",
+      "sha256": "87715240ed9ad874a224396b600bdd9e89fc4fe46373dd83fa0eff741cdaa092",
+      "bytes": 600
+    },
+    {
+      "path": "docs/verification/t0116/placed.viamind.json",
+      "sha256": "fc68136c276e01089c361013056337213a43d95f1db61fd5f73877b74324a0c6",
+      "bytes": 9659
+    },
+    {
+      "path": "docs/verification/t0116/production-probe.py",
+      "sha256": "b6d1262a67618ff672ca7307b62a720d4327e6743c7069ec2ff7a826a97012e3",
+      "bytes": 11975
+    },
+    {
+      "path": "docs/verification/t0116/production-report.json",
+      "sha256": "c3520e8218a20c4651862edf17ecdcf9f26d502cb7b93c1a99bdc6809bce9820",
+      "bytes": 3626
+    },
+    {
+      "path": "docs/package-pcb-aggregation-verification.md",
+      "sha256": "14e2fc4da38e11bc78bcb0f776ddf03f64259fd99ceaacd2420dcd4cb8f1981e",
+      "bytes": 7764
+    },
+    {
+      "path": "docs/specs/package-pcb-aggregation.md",
+      "sha256": "8b3212866775bc8ed8671f567498da764e3ee0bc0be05ddec68d0303ef93b568",
+      "bytes": 11367
+    },
+    {
+      "path": "crates/ui-egui/examples/t0116_inspection.rs",
+      "sha256": "4319b4e41246bbb6bfd172a43a5ff49f8e43cbc8677db7a5d93e37e6a869ed7f",
+      "bytes": 12726
+    },
+    {
+      "path": "fixtures/footprints/original-smd14.viamind-footprint.json",
+      "sha256": "a70f076c133274a26f104a391e43e3f127170ece46f6832fb12d04befb1fca4d",
+      "bytes": 2462
+    },
+    {
+      "path": "fixtures/symbol-packages/original-quad.viamind-symbol-package.json",
+      "sha256": "d6acd4c3fc03506f96d51c5f73aa6ac05e3243234587b1b74c2b79c24071ab9e",
+      "bytes": 4022
+    },
+    {
+      "path": "fixtures/schematic/linked-regulator-canonical.viamind.json",
+      "sha256": "1874f6db42cf29c5eed2b30c9bf46965c5b6bd5a4995e40b3f7b93c0f2ad744f",
+      "bytes": 11181
+    },
+    {
+      "path": "docs/generated/mcp-tools.json",
+      "sha256": "13a077664230cc8b14bf7f85e84feb9eb9327b8347349f86d83c704635894295",
+      "bytes": 802443
+    },
+    {
+      "path": "docs/generated/mcp-tools.md",
+      "sha256": "4a4469f876774beae6f939d5ddd206870ad7a527335b4b4ec3d7f6388377b5f3",
+      "bytes": 750717
+    }
+  ]
+}
