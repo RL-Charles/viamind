@@ -64,17 +64,7 @@ fn valid_name(name: &str) -> bool {
 mod tests {
     use super::*;
     fn pad() -> Pad {
-        Pad {
-            id: ObjectId::new(),
-            number: "1".into(),
-            position: Point::ORIGIN,
-            width: Nm(1),
-            height: Nm(1),
-            net: None,
-            aper,
-            apertures: None,
-            tures: None,
-        }
+        Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(1), height: Nm(1), net: None, apertures: None }
     }
     #[test]
     fn bounded_sizes_names_counts_and_duplicate_identities_are_validated() {
