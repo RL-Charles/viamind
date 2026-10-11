@@ -645,3 +645,7 @@ budgets refuse. Limits:64 relevant boxes,20000 nodes,100000 edges,4000000 box te
 510 interior waypoints,1024 segments,two retained planning/preflight operations.
 No existing copper moves, shove, global optimality or physical certification.
 See [desktop use and limits](../../docs/static-cardinal-walkaround.md).
+
+### Standalone PCB geometry conversion
+
+`preview_pcb_import` reads a bounded regular source file without mutation and returns the exact SHA256, project/full-cursor guards and per-object fidelity. `import_pcb` reparses those bytes and requires `path`, `expected_project`, `expected_cursor` and `expected_source_sha256`. Dirty native work, stale context, source changes or blocked geometry reject unchanged. Success creates an unsaved native document with no active source path; use native Save As. See [supported subset, bounds and omissions](../../docs/pcb-import.md).

@@ -1,0 +1,19 @@
+{
+  "app_name": "viamind-pcb-import-inspection",
+  "pid": 859329,
+  "screenshot_file_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0083/compact.png",
+  "screenshot_height": 400,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 640,
+  "window_bounds": {
+    "height": 400,
+    "width": 640,
+    "x": 2560,
+    "y": 1565
+  },
+  "window_id": 110379539255920,
+  "window_title": "Untitled \u2014 Viamind",
+  "source_revision": "06422509241c65579a459329141e6484472c95dc",
+  "inspection_binary_sha256": "3488c1e5e75221dc3ecbaba6635f9627882572bfbbdafcd3fa933e5eb7fd4ab8",
+  "preparation": "Actual egui_kittest inputs against production ViamindApp, then fixed-size native WGPU rendering; no OS pointer injection and no MCP in wrapper."
+}

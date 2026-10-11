@@ -46,6 +46,9 @@ ui_actions! {
     SnapshotSymbolSheet => ("snapshot_symbol_sheet", input_schema::<viamind_engine::SymbolSheetQuery>(), snapshot_symbol_sheet),
     LoadSymbolTemplate => ("load_symbol_template", input_schema::<viamind_engine::LoadSymbolTemplate>(), load_symbol_template),
     ExportSymbolTemplate => ("export_symbol_template", input_schema::<viamind_engine::ExportSymbolTemplate>(), export_symbol_template),
+
+    PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
+    ImportPcb => ("import_pcb", input_schema::<viamind_engine::ImportPcb>(), import_pcb),
     DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
     SnapshotSchematicWireSheet => ("snapshot_schematic_wire_sheet", input_schema::<viamind_engine::SchematicWireSheetQuery>(), snapshot_schematic_wire_sheet),
     QueryLinkedPinPads => ("query_linked_pin_pads", input_schema::<viamind_engine::PinPadLinkQuery>(), query_linked_pin_pads),
@@ -329,4 +332,13 @@ fn load_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, En
 }
 fn export_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.export_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+
+fn preview_pcb_import(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(engine.preview_pcb_import(input)?).map_err(encode_error)
+}
+fn import_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(engine.import_pcb(input, Origin::User)?).map_err(encode_error)
 }

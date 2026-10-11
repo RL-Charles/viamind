@@ -74,7 +74,7 @@ pub struct OpenProject {
 pub struct DocumentStatus {
     /// Absolute active path, or none for an unnamed document.
     pub path: Option<PathBuf>,
-    /// Whether the current project differs from the exact saved baseline.
+    /// Whether the project differs from its saved baseline or an imported conversion still needs a native save.
     pub dirty: bool,
 }
 
@@ -94,14 +94,15 @@ pub(crate) struct DocumentState {
     pub(crate) saved: Project,
     pub(crate) path: Option<PathBuf>,
     pub(crate) dirty: bool,
+    pub(crate) unsaved_import: bool,
 }
 
 impl DocumentState {
     pub(crate) fn new(project: Project) -> Self {
-        Self { saved: project, path: None, dirty: false }
+        Self { saved: project, path: None, dirty: false, unsaved_import: false }
     }
 
     pub(crate) fn status(&self) -> DocumentStatus {
-        DocumentStatus { path: self.path.clone(), dirty: self.dirty }
+        DocumentStatus { path: self.path.clone(), dirty: self.dirty || self.unsaved_import }
     }
 }

@@ -71,6 +71,7 @@ impl Engine {
 
     pub(crate) fn mark_saved(&mut self, saved: Project, path: std::path::PathBuf) {
         self.document.saved = saved;
+        self.document.unsaved_import = false;
         self.document.path = Some(path);
         self.document.dirty = self.project != self.document.saved;
         self.notifier.wake();
@@ -87,6 +88,10 @@ impl Engine {
         self.selection = crate::SelectionSnapshot::default();
         self.session = crate::session::SessionJournal::default();
         self.notifier.send(ChangeEvent { tx: TxId(0), origin, kind: ChangeKind::Replaced, deltas: Vec::new() });
+    }
+
+    pub(crate) fn mark_imported_unsaved(&mut self) {
+        self.document.unsaved_import = true;
     }
 
     /// Current transient selection, shared by all clients.
