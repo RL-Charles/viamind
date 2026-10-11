@@ -263,7 +263,7 @@ fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_l
             continue;
         };
         let units: BTreeMap<_, _> = c.packages.values().flat_map(|g| g.units.iter().map(move |u| (u.symbol_id, (g.id, u.key.as_str())))).collect();
-        let mut push = |id, kind, position, wire, symbol_id, pin_number, electrical, name| {
+        let mut push = |id, kind, position, wire, symbol_id: Option<ObjectId>, pin_number, electrical, name| {
             let unit = symbol_id.and_then(|id| units.get(&id));
             nodes.push(Node {
                 member: SchematicNetMember {
