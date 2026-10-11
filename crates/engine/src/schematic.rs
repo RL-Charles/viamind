@@ -95,21 +95,27 @@ impl Command for EditSchematicSheet {
                             electrical: p.electrical,
                         })
                         .collect();
-                    content.symbols.insert(
+                    let after = SchematicSymbol {
                         id,
-                        SchematicSymbol {
-                            id,
-                            designator: s.designator,
-                            value: s.value,
-                            footprint: s.footprint,
-                            position: s.position,
-                            rotation_quarters: s.rotation_quarters,
-                            mirrored: s.mirrored,
-                            width: s.width,
-                            height: s.height,
-                            pins,
-                        },
-                    );
+                        designator: s.designator,
+                        value: s.value,
+                        footprint: s.footprint,
+                        position: s.position,
+                        rotation_quarters: s.rotation_quarters,
+                        mirrored: s.mirrored,
+                        width: s.width,
+                        height: s.height,
+                        pins,
+                    };
+                    if viamind_doc::symbol_package::package_for_symbol(content, id).is_some()
+                        && old.is_some_and(|before| !viamind_doc::symbol_package::unit_pose_only(before, &after))
+                    {
+                        return Err(CommandError::invalid(
+                            "symbol",
+                            "grouped unit supports pose edits only; edit a detached package definition for new placement",
+                        ));
+                    }
+                    content.symbols.insert(id, after);
                 }
                 SchematicEdit::Wire { id, start, end } => {
                     let id = existing_id(id, &content.wires, "schematic wire")?;
@@ -124,6 +130,9 @@ impl Command for EditSchematicSheet {
                     content.labels.insert(id, SchematicLabel { id, position, name, scope });
                 }
                 SchematicEdit::Delete { id } => {
+                    if viamind_doc::symbol_package::package_for_symbol(content, id).is_some() {
+                        return Err(CommandError::invalid("id", "delete the complete package with delete_symbol_package, not one unit"));
+                    }
                     let removed = content.symbols.remove(&id).is_some()
                         || content.wires.remove(&id).is_some()
                         || content.junctions.remove(&id).is_some()

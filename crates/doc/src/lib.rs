@@ -21,6 +21,7 @@ pub mod pcb_sexpr;
 pub mod project;
 pub mod schematic;
 pub mod symbol_library;
+pub mod symbol_package;
 
 pub use assembly::{AssemblyMetadata, AssemblyPlacement, MountingTechnology};
 pub use board::{Board, Part, Side};

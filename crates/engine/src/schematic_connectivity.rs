@@ -42,6 +42,10 @@ pub enum SchematicMemberKind {
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct SchematicNetMember {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unit_key: Option<String>,
     pub sheet_id: ObjectId,
     pub id: ObjectId,
     pub kind: SchematicMemberKind,
@@ -136,7 +140,9 @@ fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapsh
     for sheet in sheets.values() {
         text = text.saturating_add(sheet.name.len());
         if let Some(c) = &sheet.content {
-            count = count.saturating_add(c.object_count());
+            let (records, bytes) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
+            count = count.saturating_add(c.object_count()).saturating_add(records.saturating_sub(c.packages.len()));
+            text = text.saturating_add(bytes);
             if count > MAX_MEMBERS {
                 return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
             }
@@ -177,7 +183,7 @@ fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapsh
         };
         insert(sheet.id)?;
         if let Some(c) = &sheet.content {
-            for id in c.wires.keys().chain(c.junctions.keys()).chain(c.labels.keys()) {
+            for id in c.packages.keys().chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()) {
                 insert(*id)?;
             }
             for s in c.symbols.values() {
@@ -256,8 +262,24 @@ fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_l
             coverage.legacy_empty_sheets += 1;
             continue;
         };
+        let units: BTreeMap<_, _> = c.packages.values().flat_map(|g| g.units.iter().map(move |u| (u.symbol_id, (g.id, u.key.as_str())))).collect();
         let mut push = |id, kind, position, wire, symbol_id, pin_number, electrical, name| {
-            nodes.push(Node { member: SchematicNetMember { sheet_id: sheet.id, id, kind, position, symbol_id, pin_number, electrical }, wire, name });
+            let unit = symbol_id.and_then(|id| units.get(&id));
+            nodes.push(Node {
+                member: SchematicNetMember {
+                    package_id: unit.map(|u| u.0),
+                    unit_key: unit.map(|u| u.1.to_owned()),
+                    sheet_id: sheet.id,
+                    id,
+                    kind,
+                    position,
+                    symbol_id,
+                    pin_number,
+                    electrical,
+                },
+                wire,
+                name,
+            });
         };
         for w in c.wires.values() {
             push(w.id, SchematicMemberKind::Wire, None, Some((w.start, w.end)), None, None, None, None);

@@ -184,6 +184,11 @@ impl EngineHandle {
                 .and_then(|c| c.symbols.get(&input.symbol_id))
                 .filter(|s| s.id == input.symbol_id && !s.id.as_uuid().is_nil())
                 .ok_or_else(|| EngineError::File { message: "source symbol no longer exists".into() })?;
+            if sheet.content.as_ref().is_some_and(|c| viamind_doc::symbol_package::package_for_symbol(c, symbol.id).is_some()) {
+                return Err(EngineError::File {
+                    message: "grouped units cannot be exported as independent templates; use the original package definition".into(),
+                });
+            }
             let template = SymbolTemplate::from_symbol(&input.name, symbol).map_err(|message| EngineError::File { message })?;
             Ok(template)
         })?;

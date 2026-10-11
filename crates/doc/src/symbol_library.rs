@@ -258,14 +258,22 @@ impl StagedSymbolFile {
 /// Validate, serialize and synchronize a private sibling without publishing the destination.
 pub fn stage_new(template: &SymbolTemplate, path: &Path) -> Result<StagedSymbolFile, String> {
     check_path(path)?;
+    stage_bytes_new(&to_vec(template)?, path)
+}
+
+/// Share synchronized NEW publication with other validated bounded native symbol formats.
+pub(crate) fn stage_bytes_new(bytes: &[u8], path: &Path) -> Result<StagedSymbolFile, String> {
+    if bytes.len() > MAX_BYTES {
+        return Err("symbol file exceeds 1 MiB".into());
+    }
+    check_path(path)?;
     let parent = path.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new(".")).canonicalize().map_err(|e| e.to_string())?;
     let target = parent.join(path.file_name().ok_or("choose a symbol file name")?);
     if target.as_os_str().as_encoded_bytes().len() > 4096 {
         return Err("resolved symbol path exceeds 4096 encoded bytes".into());
     }
-    let bytes = to_vec(template)?;
     let mut temporary = tempfile::NamedTempFile::new_in(parent).map_err(|e| e.to_string())?;
-    temporary.write_all(&bytes).map_err(|e| e.to_string())?;
+    temporary.write_all(bytes).map_err(|e| e.to_string())?;
     temporary.as_file().sync_all().map_err(|e| e.to_string())?;
     Ok(StagedSymbolFile { temporary, path: target })
 }

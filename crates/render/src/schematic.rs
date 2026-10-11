@@ -99,7 +99,13 @@ pub fn schematic_view_snapshot(project: &Project, sheet_id: ObjectId) -> io::Res
     viamind_doc::schematic::validate_sheet(sheet).map_err(invalid)?;
     if project.id == sheet.id
         || sheet.content.as_ref().is_some_and(|c| {
-            c.symbols.keys().chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()).any(|id| *id == project.id)
+            c.packages
+                .keys()
+                .chain(c.symbols.keys())
+                .chain(c.wires.keys())
+                .chain(c.junctions.keys())
+                .chain(c.labels.keys())
+                .any(|id| *id == project.id)
                 || c.symbols.values().flat_map(|s| &s.pins).any(|p| p.id == project.id)
         })
     {
@@ -112,6 +118,12 @@ fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
         && (c.object_count() > 10_000 || c.pin_count() > 100_000)
     {
         return Err(invalid("selected sheet exceeds 10000 objects or 100000 pins"));
+    }
+    if let Some(c) = &sheet.content {
+        let (records, _) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
+        if c.object_count().saturating_add(records.saturating_sub(c.packages.len())) > 10_000 {
+            return Err(invalid("selected sheet exceeds 10000 objects including package membership records"));
+        }
     }
     let mut bytes = 0usize;
     let mut glyphs = 0usize;
@@ -137,6 +149,14 @@ fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
     add(project_name, false)?;
     add(&sheet.name, false)?;
     if let Some(c) = &sheet.content {
+        for group in c.packages.values() {
+            add(&group.template_name, false)?;
+            for unit in &group.units {
+                add(&unit.key, true)?;
+                add(&unit.name, true)?;
+                add(": ()", true)?;
+            }
+        }
         for s in c.symbols.values() {
             add(&s.designator, true)?;
             add(&s.value, true)?;
@@ -266,6 +286,7 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
             });
         }
     }
+    let units: std::collections::BTreeMap<_, _> = c.packages.values().flat_map(|g| g.units.iter().map(|u| (u.symbol_id, u))).collect();
     for s in c.symbols.values() {
         if selected.contains(&SchematicLayer::Symbols) {
             let (x, y) = (s.width.0 / 2, s.height.0 / 2);
@@ -287,7 +308,7 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
                 format!("reference-{}", s.id),
                 symbol,
                 (at.0, at.1 - 300_000),
-                s.designator.clone(),
+                units.get(&s.id).map_or_else(|| s.designator.clone(), |u| format!("{}:{} ({})", s.designator, u.key, u.name)),
                 true,
             )?);
             if !s.value.is_empty() {
