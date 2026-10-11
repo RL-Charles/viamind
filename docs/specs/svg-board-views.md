@@ -5,7 +5,7 @@ Behavior specified before implementation for T-0057. Public primary sources:
 - [W3C SVG 2 coordinates](https://www.w3.org/TR/SVG2/coords.html), sections 8.4–8.7: SVG begins with X right/Y down; viewBox and preserveAspectRatio map the requested region into a pixel viewport without changing model geometry.
 - [W3C SVG 2 painting](https://www.w3.org/TR/SVG2/painting.html): round stroke caps, even-odd polygon filling, and fills/strokes.
 - [W3C CSS Masking Module Level 1](https://www.w3.org/TR/css-masking-1/), sections 9.1–9.2: clipping and user-space masks can represent through holes without painting opaque fake drill centers.
-- [W3C XML 1.0](https://www.w3.org/TR/xml/), sections 2.2 and 2.4: valid Unicode characters, character/entity escaping.
+- [W3C XML 1.0](https://www.w3.org/TR/xml/), sections 2.2, 2.4 and 2.11: valid Unicode characters, character/entity escaping.
 
 ## Scope and access
 
@@ -23,7 +23,7 @@ The region is either explicit integer-nm min/max bounds or an automatic outward-
 
 ## Text and publication
 
-Include escaped project/object descriptions and stable IDs for semantic inspection. Escape XML markup delimiters in text/attributes; valid Unicode text round-trips. Replace XML-forbidden code points with U+FFFD and report that replacement in metadata; never emit scripts, event attributes, foreign objects, external resource URLs or model-derived element names. Bound individual metadata strings to 4096 UTF-8 bytes and fail oversized text explicitly.
+Include escaped project/object descriptions and stable IDs for semantic inspection. Escape XML markup delimiters in text/attributes; valid Unicode text round-trips. Encode carriage returns as character references so XML line-ending normalization preserves them. Replace XML-forbidden code points with U+FFFD and report that replacement in metadata; never emit scripts, event attributes, foreign objects, external resource URLs or model-derived element names. Bound individual metadata strings to 4096 UTF-8 bytes and fail oversized text explicitly.
 
 Optional output is a NEW file; there is no overwrite mode. Protect the active native path and existing files/directories/symlinks. Write/sync a sibling temporary file, then publish atomically without replacing a destination. Parent directory must exist. No partial final output on validation/write/collision failure; interrupted processes may leave identifiable staging files. Atomic visibility does not promise power-loss durability.
 

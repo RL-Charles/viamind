@@ -65,11 +65,11 @@ fn region_layers_deduplicate_and_empty_fit_is_declared() {
 #[test]
 fn xml_unicode_entities_controls_and_no_active_content_roundtrip_parse() {
     let mut project = sample();
-    project.name = "<script onload=\"bad\">& 'café 🧪'\u{1}".into();
+    project.name = "<script onload=\"bad\">& 'café 🧪'\r\n\t\u{1}".into();
     project.board.parts.values_mut().next().unwrap().value = "</title><image href=\"https://bad.example/\"/>".into();
     let view = board_svg(&project, &SvgOptions::default()).unwrap();
     assert!(view.metadata.replaced_invalid_xml_text);
-    assert!(view.svg.contains("&lt;script onload=&quot;bad&quot;&gt;&amp; &apos;café 🧪&apos;�"));
+    assert!(view.svg.contains("&lt;script onload=&quot;bad&quot;&gt;&amp; &apos;café 🧪&apos;&#13;\n\t�"));
     let mut reader = Reader::from_str(&view.svg);
     let mut titles = 0;
     loop {

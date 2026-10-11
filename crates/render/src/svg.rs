@@ -145,7 +145,8 @@ fn xml(text: &str, replaced: &mut bool) -> io::Result<String> {
             '>' => out.push_str("&gt;"),
             '"' => out.push_str("&quot;"),
             '\'' => out.push_str("&apos;"),
-            '\t' | '\n' | '\r' | '\u{20}'..='\u{d7ff}' | '\u{e000}'..='\u{fffd}' | '\u{10000}'..='\u{10ffff}' => out.push(c),
+            '\r' => out.push_str("&#13;"),
+            '\t' | '\n' | '\u{20}'..='\u{d7ff}' | '\u{e000}'..='\u{fffd}' | '\u{10000}'..='\u{10ffff}' => out.push(c),
             _ => {
                 out.push('\u{fffd}');
                 *replaced = true;
