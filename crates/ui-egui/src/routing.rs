@@ -25,6 +25,7 @@ struct Settings {
     via_diameter: String,
     via_drill: String,
     corner_mode: Option<CornerMode>,
+    walkaround: bool,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -40,6 +41,7 @@ impl Default for Settings {
             via_diameter: "0.6".into(),
             via_drill: "0.3".into(),
             corner_mode: None,
+            walkaround: false,
         }
     }
 }
@@ -48,6 +50,12 @@ struct Draft {
     input: RoutePolyline,
     hover: Option<Point>,
 }
+#[derive(Debug)]
+struct WalkaroundWorker {
+    token: viamind_doc::ObjectId,
+    input: viamind_engine::RoutePadWalkaround,
+    receiver: std::sync::mpsc::Receiver<Result<viamind_engine::CheckedWalkaround, String>>,
+}
 #[derive(Debug, Default)]
 pub struct RoutingUi {
     settings: Option<Settings>,
@@ -55,8 +63,33 @@ pub struct RoutingUi {
     pad_draft: Option<PadDraft>,
     pub error: Option<String>,
     pub last_commit_ms: Option<f64>,
+    walkaround_worker: Option<WalkaroundWorker>,
 }
 impl RoutingUi {
+    pub(crate) fn sync_walkaround(&mut self, ctx: &egui::Context, engine: &EngineHandle) {
+        let Some(WalkaroundWorker { token, input, receiver }) = &self.walkaround_worker else { return };
+        let result = match receiver.try_recv() {
+            Ok(result) => result,
+            Err(std::sync::mpsc::TryRecvError::Empty) => {
+                ctx.request_repaint_after(std::time::Duration::from_millis(16));
+                return;
+            }
+            Err(std::sync::mpsc::TryRecvError::Disconnected) => Err("Walkaround worker stopped".into()),
+        };
+        if let Some(draft) = &mut self.pad_draft {
+            draft.plan_pending = false;
+            if draft.token == *token && draft.walkaround_input().as_ref() == Some(input) && engine.event_cursor() == input.expected_cursor {
+                match result {
+                    Ok(plan) => {
+                        draft.checked = Some(plan);
+                        self.error = None;
+                    }
+                    Err(error) => self.error = Some(error),
+                }
+            }
+        }
+        self.walkaround_worker = None;
+    }
     pub fn editing(&self) -> bool {
         self.settings.is_some() || self.draft.is_some() || self.pad_draft.is_some()
     }
@@ -145,7 +178,31 @@ impl RoutingUi {
             }
         }
         if let Some(draft) = &mut self.pad_draft {
+            draft.plan_pending = self.walkaround_worker.is_some();
             let (finish, cancel) = draft.panel(ui, engine);
+            if draft.plan_requested {
+                draft.plan_requested = false;
+                if self.walkaround_worker.is_none()
+                    && let Some(input) = draft.walkaround_input()
+                {
+                    let (sender, receiver) = std::sync::mpsc::channel();
+                    let captured = input.clone();
+                    let engine = engine.clone();
+                    let ctx = ui.ctx().clone();
+                    let token = draft.token;
+                    match std::thread::Builder::new().name("walkaround-plan".into()).spawn(move || {
+                        let result = engine.plan_pad_walkaround(&captured).map_err(|e| e.to_string());
+                        let _ = sender.send(result);
+                        ctx.request_repaint();
+                    }) {
+                        Ok(_) => {
+                            draft.plan_pending = true;
+                            self.walkaround_worker = Some(WalkaroundWorker { token, input, receiver });
+                        }
+                        Err(error) => self.error = Some(format!("Cannot start walkaround worker: {error}")),
+                    }
+                }
+            }
             if cancel {
                 self.cancel();
             } else if finish {
@@ -233,6 +290,15 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_walkaround_route(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_pad_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.walkaround = true;
+        }
+    }
     pub fn begin_posture_route(&mut self, mode: CornerMode) {
         if self.routing.editing() {
             return;
@@ -296,12 +362,13 @@ impl ViamindApp {
                 if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
             if settings.pad_mode && !settings.via_mode {
-                ui.horizontal(|ui| {
+                ui.checkbox(&mut settings.walkaround, "Static cardinal walkaround");
+                ui.add_enabled_ui(!settings.walkaround, |ui| {
                     ui.radio_value(&mut settings.corner_mode, None, "Manual segments");
                     ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Cardinal), "Cardinal corners");
                     ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Octilinear), "45-degree corners");
                 });
-                if settings.corner_mode.is_some() {ui.label("Generated corners follow the selected posture. Exact off-grid pad attachments use short arbitrary-angle stubs, checked with the whole route.");}
+                if settings.corner_mode.is_some() && !settings.walkaround {ui.label("Generated corners follow the selected posture. Exact off-grid pad attachments use short arbitrary-angle stubs, checked with the whole route.");}
             }
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
             ui.label(if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or electrical continuity verification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
@@ -315,6 +382,7 @@ impl ViamindApp {
         if start {
             let pad_mode = settings.pad_mode;
             let corner_mode = settings.corner_mode;
+            let walkaround = settings.walkaround;
             let result = (|| {
                 let width = mm(&settings.width, true)?;
                 let grid = mm(&settings.grid, true)?;
@@ -361,6 +429,8 @@ impl ViamindApp {
                                 let mut draft = PadDraft::new(snapshot, input.width, input.grid, input.rules);
                                 if let Some((diameter, drill)) = via_sizes {
                                     draft = draft.with_via(diameter, drill);
+                                } else if walkaround {
+                                    draft = draft.with_walkaround();
                                 } else if let Some(mode) = corner_mode {
                                     draft = draft.with_posture(mode);
                                 }
@@ -380,5 +450,36 @@ impl ViamindApp {
                 Err(e) => self.routing.error = Some(e),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod walkaround_worker_tests {
+    use super::*;
+    #[test]
+    fn cancellation_retains_worker_until_completion_and_discards_old_errors() {
+        let engine = EngineHandle::new(viamind_doc::Project::new("retained worker"));
+        let id = PadEndpointId { part_id: viamind_doc::ObjectId::new(), pad_id: viamind_doc::ObjectId::new() };
+        let input = viamind_engine::RoutePadWalkaround {
+            expected_project: engine.read(|p| p.id),
+            expected_cursor: engine.event_cursor(),
+            start: id,
+            target: id,
+            grid: Nm(1),
+            width: Nm(1),
+            rules: Default::default(),
+        };
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let mut state =
+            RoutingUi { walkaround_worker: Some(WalkaroundWorker { token: viamind_doc::ObjectId::new(), input, receiver }), ..Default::default() };
+        state.cancel();
+        assert!(state.walkaround_worker.is_some());
+        assert!(!state.editing());
+        state.sync_walkaround(&egui::Context::default(), &engine);
+        assert!(state.walkaround_worker.is_some());
+        sender.send(Err("old cancelled work failed".into())).unwrap();
+        state.sync_walkaround(&egui::Context::default(), &engine);
+        assert!(state.walkaround_worker.is_none());
+        assert!(state.error.is_none());
     }
 }

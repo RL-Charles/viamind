@@ -342,6 +342,9 @@ impl ViamindApp {
         }
         self.sync_design();
         self.sync_schematic_wires(ui.ctx());
+        if let Some(design) = &self.design {
+            self.routing.sync_walkaround(ui.ctx(), &design.engine);
+        }
         self.sync_cross_probe(ui);
         self.sync_pin_pad_probe(ui);
 
