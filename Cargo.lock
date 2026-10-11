@@ -4350,6 +4350,7 @@ dependencies = [
  "viamind-engine",
  "viamind-fab",
  "viamind-mcp",
+ "viamind-render",
  "viamind-ui-egui",
 ]
 
@@ -4426,6 +4427,7 @@ dependencies = [
  "anyhow",
  "axum",
  "rmcp",
+ "schemars",
  "serde",
  "serde_json",
  "tempfile",
@@ -4436,12 +4438,16 @@ dependencies = [
  "viamind-drc",
  "viamind-engine",
  "viamind-fab",
+ "viamind-render",
 ]
 
 [[package]]
 name = "viamind-render"
 version = "0.1.0"
 dependencies = [
+ "schemars",
+ "serde",
+ "tempfile",
  "viamind-doc",
  "viamind-geom",
 ]
