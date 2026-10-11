@@ -11,21 +11,33 @@ pub struct CommandHooksUi {
     controls: Vec<(egui::Rect, egui::Rect)>,
 }
 impl CommandHooksUi {
-    pub fn control_rects(&self) -> &[(egui::Rect, egui::Rect)] { &self.controls }
+    pub fn control_rects(&self) -> &[(egui::Rect, egui::Rect)] {
+        &self.controls
+    }
 }
 impl ViamindApp {
     pub fn begin_command_hooks(&mut self) {
-        if self.design.is_some() { self.command_hooks.open = true; }
+        if self.design.is_some() {
+            self.command_hooks.open = true;
+        }
     }
     pub(crate) fn command_hooks_window(&mut self, ui: &mut egui::Ui) {
         self.command_hooks.controls.clear();
-        if !self.command_hooks.open { return; }
-        let Some(design) = &self.design else { self.command_hooks.open = false; return; };
+        if !self.command_hooks.open {
+            return;
+        }
+        let Some(design) = &self.design else {
+            self.command_hooks.open = false;
+            return;
+        };
         let status = design.engine.command_hook_status();
         if self.command_hooks.synced_generation != Some(status.generation) {
-            self.command_hooks.draft = status.config.clone(); self.command_hooks.synced_generation = Some(status.generation);
+            self.command_hooks.draft = status.config.clone();
+            self.command_hooks.synced_generation = Some(status.generation);
         }
-        let content = ui.ctx().content_rect(); let mut open = true; let mut requested = None;
+        let content = ui.ctx().content_rect();
+        let mut open = true;
+        let mut requested = None;
         egui::Window::new("Command hooks").open(&mut open).collapsible(false).resizable(false)
             .default_width(440.).max_width((content.width()-32.).max(180.)).show(ui.ctx(), |ui| {
                 ui.horizontal(|ui| {
@@ -63,12 +75,17 @@ impl ViamindApp {
                     ui.label("Trusted native Rust callbacks are registered by the host. MCP cannot submit code. Callback execution has no hard deadline.");
                 });
             });
-        self.command_hooks.open=open;
-        if let Some(config)=requested {
-            self.command_hooks.message=Some(match UiAction::ConfigureCommandHooks.run(&design.engine,serde_json::to_value(config).expect("finite validated hook editor")) {
-                Ok(_) => "Hook settings applied.".into(),Err(e)=>e.to_string(),
-            });
+        self.command_hooks.open = open;
+        if let Some(config) = requested {
+            self.command_hooks.message = Some(
+                match UiAction::ConfigureCommandHooks.run(&design.engine, serde_json::to_value(config).expect("finite validated hook editor")) {
+                    Ok(_) => "Hook settings applied.".into(),
+                    Err(e) => e.to_string(),
+                },
+            );
         }
-        if open {ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));}
+        if open {
+            ui.ctx().request_repaint_after(std::time::Duration::from_millis(250));
+        }
     }
 }

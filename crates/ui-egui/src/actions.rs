@@ -508,10 +508,13 @@ fn query_symbol_packages(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 
 fn configure_command_hooks(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
-    let config = serde_json::from_value(input).map_err(|e| EngineError::InvalidInput { command: "configure_command_hooks".into(), message: e.to_string() })?;
+    let config =
+        serde_json::from_value(input).map_err(|e| EngineError::InvalidInput { command: "configure_command_hooks".into(), message: e.to_string() })?;
     serde_json::to_value(engine.configure_command_hooks(config)?).map_err(encode_error)
 }
 fn get_command_hooks(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
-    if input != serde_json::json!({}) { return Err(EngineError::InvalidInput { command: "get_command_hooks".into(), message: "expected an empty object".into() }); }
+    if input != serde_json::json!({}) {
+        return Err(EngineError::InvalidInput { command: "get_command_hooks".into(), message: "expected an empty object".into() });
+    }
     serde_json::to_value(engine.command_hook_status()).map_err(encode_error)
 }

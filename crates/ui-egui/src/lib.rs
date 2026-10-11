@@ -12,11 +12,11 @@ pub mod assembly_export;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
+pub mod command_hooks;
 pub mod copper;
 mod copper_properties;
 pub mod cross_probe;
 pub mod drc;
-pub mod command_hooks;
 pub mod erc;
 pub mod fabrication;
 pub mod fabrication_view;
@@ -686,7 +686,10 @@ impl ViamindApp {
             }
             if self.design.is_some() {
                 ui.menu_button("Inspect", |ui| {
-                    if ui.button("Command hooks…").clicked() { self.begin_command_hooks(); ui.close(); }
+                    if ui.button("Command hooks…").clicked() {
+                        self.begin_command_hooks();
+                        ui.close();
+                    }
                     if ui.button("Electrical rule check…").clicked() {
                         self.begin_erc();
                         ui.close();
