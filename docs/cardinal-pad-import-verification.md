@@ -151,3 +151,16 @@ documentation commits or clean integration rebases. Final combined artifact-head
 CI remains a merge gate. Neither full source-format/corpus fidelity nor bottom
 footprints, arbitrary rotations, shapes, mask/paste/artwork, assembly defaults or
 manufacturing equivalence are claimed. S-079/S-083 remain broader open work.
+
+## Final integration
+
+The ticket rebased onto merged BOM-template, AppImage and cardinal-cleanup main
+`bff6851ae4a8c35a882c7228f1fd5dd6442896ec`. Seven ticket commits compare equal
+in `git range-diff`. One MCP registry context conflict was resolved by retaining
+both the merged `plan_cardinal_track_cleanup` entry and the cardinal PCB preview
+description. Every T-0094 owned file remains byte-identical to `61eb879`, apart
+from additive main changes in `EngineHost`; both cardinal preview definitions
+are also byte-identical. No parser, geometry, guard or UI behavior changed.
+Formatting and whitespace checks pass; fresh combined exact-head CI gates
+merge. Historical binary/native evidence above keeps its original source hashes.
+No duplicate local workspace or native run was performed for this integration.

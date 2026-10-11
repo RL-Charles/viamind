@@ -276,5 +276,20 @@
       "bytes": 20,
       "sha256": "07af1011d93ba97190b0f614dd99b890324a0eba5c28fc67fa28f2300aebdd9e"
     }
+  },
+  "final_integration": {
+    "base": "bff6851ae4a8c35a882c7228f1fd5dd6442896ec",
+    "previous_reviewed_head": "61eb879ed12a537b7e234620ee32ff10773f4077",
+    "equal_range_diff_commits": 7,
+    "context_only_range_diff_commits": 1,
+    "manual_resolution": "Retain additive main plan_cardinal_track_cleanup registry entry and exact T94 cardinal preview description.",
+    "all_other_owned_files_byte_identical": true,
+    "both_T94_preview_definitions_byte_identical": true,
+    "fmt": true,
+    "diffcheck": true,
+    "feature_behavior_changed": false,
+    "historical_production_and_native_provenance_unchanged": true,
+    "redundant_local_or_native_runs": false,
+    "fresh_combined_exact_head_CI_required": true
   }
 }
