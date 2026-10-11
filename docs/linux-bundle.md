@@ -47,3 +47,23 @@ the archive back, checks headless MCP discovery/edit/query/undo and clean exit,
 and publishes the complete output directory without replacing
 existing paths. GitHub's **Linux bundle** workflow retains the tarball and
 checksum as a downloadable build artifact; this does not create a public release.
+
+## Artifact source provenance
+
+`build-info.json` records the exact checked-out Git `revision` used to build the
+binary. For pull-request workflow runs, GitHub checks out a synthetic merge commit
+combining the branch with its base; that revision can differ from the PR branch
+head. Runs on `main` and manually selected refs record their actual checkout.
+Use the workflow run and its checkout revision when identifying an artifact.
+
+`source_dirty` reports tracked edits and untracked source files at packaging time.
+The workflow disables Python bytecode generation with
+`PYTHONDONTWRITEBYTECODE=1` and checks that its unit tests leave the checkout clean.
+The packaging script still reports real source dirt, including untracked files;
+it does not hide generated files through new ignore rules. For the same clean
+local test workflow, run:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/tests -p test_package_linux.py
+git status --porcelain
+```

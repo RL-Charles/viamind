@@ -21,6 +21,7 @@ concurrency:
 
 env:
   CARGO_INCREMENTAL: 0
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   package:
@@ -39,7 +40,9 @@ jobs:
         with:
           key: linux-release
       - name: Check publication and dependency closure guarantees
-        run: python3 -m unittest discover -s scripts/tests -p test_package_linux.py
+        run: |
+          python3 -m unittest discover -s scripts/tests -p test_package_linux.py
+          test -z "$(git status --porcelain)"
       - name: Build and verify bundle
         run: python3 scripts/package-linux.py "$RUNNER_TEMP/viamind-linux"
       - name: Verify archive checksum
