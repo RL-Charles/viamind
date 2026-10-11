@@ -35,3 +35,5 @@ tool that takes and returns JSON, and your edits apply live in the open Viamind 
 open, use `query_parts` for filtered, paginated part records or `get_design` for the whole design as JSON, and `undo` / \
 `redo` to step through your own changes (changes made by the human or other agents are not \
 affected).";
+
+pub mod views;

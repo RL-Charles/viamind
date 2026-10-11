@@ -40,6 +40,14 @@ fn main() -> anyhow::Result<()> {
         eprintln!("viamind: exported {} files to {}", manifest.files.len(), path.display());
         return Ok(());
     }
+    if options.export_svg {
+        let snapshot = engine.session_state();
+        let rendered = viamind_render::board_svg(&snapshot.project, &options.svg_options)?;
+        let output = options.output.as_deref().expect("CLI requires a view destination");
+        let path = viamind_render::write_svg(&rendered.svg, output, engine.document_status().path.as_deref())?;
+        eprintln!("viamind: rendered board SVG {}", path.display());
+        return Ok(());
+    }
     if let Some(kind) = options.export_csv {
         let snapshot = engine.session_state();
         let output = options.output.as_deref().expect("CLI requires an export destination");
