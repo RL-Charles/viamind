@@ -1,4 +1,5 @@
 //! Inspection-only original package workflow; actual egui input and self-closing native WGPU readback.
+#[allow(dead_code, reason = "Shared input harness also tests file loading outside this authoring-only native host")]
 #[path = "../tests/support/package_compact.rs"]
 mod prepare;
 use egui_kittest::{Harness, kittest::Queryable};
