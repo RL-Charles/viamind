@@ -45,7 +45,8 @@ impl eframe::App for Inspect {
         let native_field = if self.ui_passes >= 3 {
             self.field.map(|id| {
                 let response = ui.ctx().read_response(id).expect("actual native prepared silk width field");
-                assert!(content.contains_rect(response.rect));
+                let window = ui.ctx().memory(|m| m.area_rect(egui::Id::new("footprint-artwork-editor"))).unwrap();
+                assert!(content.contains_rect(response.rect) && window.contains_rect(response.rect));
                 response.rect
             })
         } else {
@@ -142,7 +143,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let field = if board {
         None
     } else {
+        // The field lives inside two scroll areas. Wheel over the outer courtyard
+        // first; inner scroll_to_me alone does not establish ancestor visibility.
+        h.hover_at(h.get_by_label("Courtyard min X").rect().center());
+        h.event(Event::MouseWheel {
+            unit: egui::MouseWheelUnit::Point,
+            delta: vec2(0.0, -480.0),
+            phase: egui::TouchPhase::Move,
+            modifiers: Modifiers::NONE,
+        });
+        h.run_steps(12);
         input(&mut h, "Silk 1 Stroke width", "0.150003");
+        let rect = h.get_by_label("Silk 1 Stroke width").rect();
+        let clip = h
+            .output()
+            .shapes
+            .iter()
+            .filter_map(|shape| {
+                let egui::Shape::Rect(background) = &shape.shape else { return None };
+                (background.rect.contains(rect.center())
+                    && (background.rect.width() - rect.width()).abs() <= 4.0
+                    && (background.rect.height() - rect.height()).abs() <= 4.0)
+                    .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+            })
+            .min_by(|a, b| a.area().total_cmp(&b.area()))
+            .expect("actual painted silk-width input");
+        assert!(clip.contains_rect(rect), "prepared field {rect:?} within actual effective clip {clip:?}");
         Some(h.ctx.memory(egui::Memory::focused).expect("prepared silk width focus"))
     };
     let memory = h.ctx.memory(Clone::clone);
