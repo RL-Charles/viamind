@@ -266,7 +266,7 @@ fn stale_sequences_streams_exact_expected_and_batch_reject_whole_transaction() {
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
     let mut stale = track(&e, tid);
-    stale.expected_cursor.stream_id = uuid::Uuid::new_v4();
+    stale.expected_cursor.stream_id = EngineHandle::new(Project::new("other stream")).event_cursor().stream_id;
     reject(&e, stale, "stale");
     let mut wrong = track(&e, tid);
     wrong.expected.width = Nm(1);
@@ -314,4 +314,114 @@ fn net_case_unassigned_and_document_floor_follow_replacement_without_inference()
     let mut t = track(&e, tid);
     t.net = Some("N".into());
     reject(&e, t, "document track-width");
+}
+
+#[test]
+fn same_initial_cursor_batch_edits_both_objects_as_one_undo() {
+    let (project, tid, vid) = fixture();
+    let e = EngineHandle::new(project);
+    let before = e.session_state();
+    let t = track(&e, tid);
+    let v = via(&e, vid);
+    assert_eq!(t.expected_cursor, v.expected_cursor);
+    let out = e
+        .execute_batch(
+            vec![
+                CommandCall { name: SetTrackProperties::NAME.into(), input: serde_json::to_value(t).unwrap() },
+                CommandCall { name: SetViaProperties::NAME.into(), input: serde_json::to_value(v).unwrap() },
+            ],
+            Origin::User,
+            None,
+        )
+        .unwrap();
+    assert_eq!(out.deltas.len(), 2);
+    assert_eq!(e.event_cursor().sequence, before.cursor.sequence + 1);
+    assert_eq!(e.read(|p| p.board.tracks[&tid].width), Nm(350_001));
+    assert_eq!(e.read(|p| p.board.vias[&vid].drill), Nm(400_001));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+}
+#[test]
+fn unrelated_violations_may_remain_but_incomplete_reports_refuse_every_property() {
+    for truncated in [false, true] {
+        let (mut project, tid, _) = fixture();
+        for (index, x) in [8_000_000, 12_000_000].into_iter().enumerate() {
+            let t = Track {
+                id: ObjectId::new(),
+                start: if truncated { p(x, 9_000_000) } else { p(40_000_000, 40_000_000) },
+                end: if truncated { p(x, 11_000_000) } else { p(45_000_000, 40_000_000) },
+                width: Nm(250_000),
+                layer: CopperLayer::Top,
+                net: Some(format!("FOREIGN{index}")),
+            };
+            project.board.tracks.insert(t.id, t);
+        }
+        let e = EngineHandle::new(project);
+        let mut t = track(&e, tid);
+        t.layer = CopperLayer::Top;
+        if truncated {
+            t.rules.max_violations = 1;
+            reject(&e, t, "preflight incomplete");
+        } else {
+            e.execute_typed(t, Origin::User).unwrap();
+            let report = e.read(|p| viamind_drc::run_drc(p, &zero())).unwrap();
+            assert!(!report.violations.is_empty());
+            assert!(!report.truncated);
+        }
+    }
+}
+#[test]
+fn real_candidate_text_growth_boundary_preserves_unused_large_metadata() {
+    let (mut project, tid, _) = fixture();
+    let huge = "x".repeat(3 * 1024 * 1024);
+    let part = viamind_doc::Part {
+        id: ObjectId::new(),
+        assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some(huge.clone()), ..Default::default() })),
+        schematic_symbol: None,
+        designator: "L".into(),
+        value: "x".repeat(2 * 1024 * 1024 - 4),
+        footprint: String::new(),
+        position: p(40_000_000, 5_000_000),
+        rotation_mdeg: 0,
+        side: viamind_doc::Side::Top,
+        pads: None,
+    };
+    let part_id = part.id;
+    project.board.parts.insert(part.id, part);
+    project.name = huge.clone();
+    let sheet = viamind_doc::Sheet::new(huge.clone());
+    project.schematic.sheets.insert(sheet.id, sheet);
+    let e = EngineHandle::new(project);
+    let mut t = track(&e, tid);
+    t.net = Some("NN".into());
+    e.execute_typed(t, Origin::User).unwrap();
+    assert!(e.read(|p| p.name == huge && p.board.parts[&part_id].assembly.as_ref().unwrap().manufacturer.as_ref() == Some(&huge)));
+    let mut t = track(&e, tid);
+    t.net = Some("NNN".into());
+    reject(&e, t, "snapshot text");
+}
+#[test]
+fn query_rejects_oversized_selected_text_and_policy_before_owned_copy() {
+    for policy in [false, true] {
+        let (mut project, tid, _) = fixture();
+        if policy {
+            project.board.net_rules.insert(
+                "x".repeat(257),
+                NamedNetMinima {
+                    minimum_copper_clearance: Nm(0),
+                    minimum_track_width: Nm(1),
+                    minimum_via_drill: Nm(0),
+                    minimum_annular_width: Nm(0),
+                },
+            );
+        } else {
+            project.board.tracks.get_mut(&tid).unwrap().net = Some("🙂".repeat(128));
+        }
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let status = e.document_status();
+        assert!(e.query_copper_properties(&CopperPropertyQuery { target: CopperPropertyId::Track { id: tid } }).is_err());
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.document_status(), status);
+    }
 }

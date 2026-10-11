@@ -53,10 +53,10 @@ fn builtin_specs() {
             "route_terminal_posture",
             "set_board_outline",
             "set_named_net_rules",
-            "set_track_properties",
-            "set_via_properties",
             "set_part_assembly",
             "set_part_pads",
+            "set_track_properties",
+            "set_via_properties",
             "synchronize_schematic_pcb",
             "transform_parts",
             "update_part"

@@ -199,7 +199,7 @@ fn deserialize_net<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D:
     struct Text;
     impl<'de> Visitor<'de> for Text {
         type Value = String;
-        fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.write_str("net within256UTF-8bytes")
         }
         fn visit_str<E: de::Error>(self, s: &str) -> Result<String, E> {
@@ -217,7 +217,7 @@ fn deserialize_net<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D:
     }
     impl<'de> Visitor<'de> for Optional {
         type Value = Option<String>;
-        fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.write_str("null or bounded net")
         }
         fn visit_none<E: de::Error>(self) -> Result<Self::Value, E> {

@@ -101,6 +101,8 @@ ui_actions! {
     RouteTerminalPosture => (viamind_engine::RouteTerminalPosture::NAME,input_schema::<viamind_engine::RouteTerminalPosture>(),route_terminal_posture),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
     RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
+    SetTrackProperties => (viamind_engine::SetTrackProperties::NAME, input_schema::<viamind_engine::SetTrackProperties>(), set_track_properties),
+    SetViaProperties => (viamind_engine::SetViaProperties::NAME, input_schema::<viamind_engine::SetViaProperties>(), set_via_properties),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
     DeleteTrack => (viamind_engine::DeleteTrack::NAME, input_schema::<viamind_engine::DeleteTrack>(), delete_track),
     AddVia => (viamind_engine::AddVia::NAME, input_schema::<viamind_engine::AddVia>(), add_via),
@@ -420,4 +422,11 @@ fn route_terminal_polyline(engine: &EngineHandle, input: Value) -> Result<Value,
 }
 fn route_terminal_posture(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RouteTerminalPosture::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn set_track_properties(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("set_track_properties", input, Origin::User)?).map_err(encode_error)
+}
+fn set_via_properties(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute("set_via_properties", input, Origin::User)?).map_err(encode_error)
 }

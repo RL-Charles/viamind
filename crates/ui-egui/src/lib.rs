@@ -12,6 +12,7 @@ pub mod board_scene;
 pub mod camera;
 pub mod canvas;
 pub mod copper;
+mod copper_properties;
 pub mod cross_probe;
 pub mod drc;
 pub mod erc;
@@ -690,6 +691,10 @@ impl ViamindApp {
                     }
                     if ui.button("Route polyline…").clicked() {
                         self.begin_route();
+                        ui.close();
+                    }
+                    if ui.button("Edit selected copper properties…").clicked() {
+                        self.begin_copper_properties();
                         ui.close();
                     }
                     if ui.button("Copper tracks and vias…").clicked() {
