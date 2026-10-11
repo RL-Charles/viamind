@@ -364,7 +364,7 @@ mod tests {
         footprint::{Footprint, FootprintPad, LocalPosition},
         schematic::{Coordinate, SchematicContent},
     };
-    use viamind_engine::{Origin, PlaceSymbolPackage, UnitPose};
+    use viamind_engine::{PlaceSymbolPackage, UnitPose};
     fn engine() -> EngineHandle {
         let mut p = Project::new("Complete package desktop");
         let mut sheet = Sheet::new("Package sheet");
@@ -385,18 +385,20 @@ mod tests {
                 mirrored: false,
             })
             .collect();
-        e.execute_typed(
-            PlaceSymbolPackage {
-                expected_project: e.read(|p| p.id),
-                source_cursor: e.event_cursor(),
-                expected: sheet,
-                template,
-                designator: "U1".into(),
-                placements,
-            },
-            Origin::User,
-        )
-        .unwrap();
+        UiAction::PlaceSymbolPackage
+            .run(
+                &e,
+                serde_json::to_value(PlaceSymbolPackage {
+                    expected_project: e.read(|p| p.id),
+                    source_cursor: e.event_cursor(),
+                    expected: sheet,
+                    template,
+                    designator: "U1".into(),
+                    placements,
+                })
+                .unwrap(),
+            )
+            .unwrap();
         e
     }
     fn footprint(path: &std::path::Path) {
@@ -512,9 +514,9 @@ mod tests {
         assert_eq!((part.position, part.side, part.rotation_mdeg), (Point::new(Nm(40000001), Nm(30000003)), Side::Bottom, 90000));
         assert!(part.schematic_package.is_some());
         assert_eq!(after.schematic, before.project.schematic);
-        e.undo(Origin::User).unwrap();
+        UiAction::Undo.run(&e, serde_json::json!({})).unwrap();
         assert_eq!(e.read(Clone::clone), before.project);
-        e.redo(Origin::User).unwrap();
+        UiAction::Redo.run(&e, serde_json::json!({})).unwrap();
         assert_eq!(e.read(Clone::clone), after);
         click(&mut h, "Refresh complete packages");
         wait(&mut h);
@@ -529,7 +531,7 @@ mod tests {
         let mut normalized = after.clone();
         normalized.board.parts.values_mut().next().unwrap().schematic_package = None;
         assert_eq!(unlinked, normalized);
-        e.undo(Origin::User).unwrap();
+        UiAction::Undo.run(&e, serde_json::json!({})).unwrap();
         assert_eq!(e.read(Clone::clone), after);
     }
     #[test]
@@ -553,8 +555,8 @@ mod tests {
         assert!(state.snapshot.is_none());
         assert!(state.preview.is_none());
     }
-    #[test]
-    fn actual_peer_edit_undo_equal_design_still_disables_complete_package_creation() {
+    #[tokio::test]
+    async fn actual_peer_edit_undo_equal_design_still_disables_complete_package_creation() {
         let temp = tempfile::tempdir().unwrap();
         let path = temp.path().join("explicit.json");
         footprint(&path);
@@ -571,9 +573,13 @@ mod tests {
         input(&mut h, "Native package footprint path", path.to_str().unwrap());
         click(&mut h, "Prepare complete package component");
         wait(&mut h);
-        e.execute("add_part", serde_json::json!({"designator":"PEER1","value":"peer","footprint":"F","x_mm":1,"y_mm":1}), Origin::agent("peer"))
+        let registry = viamind_mcp::engine_registry(e.clone()).unwrap();
+        let peer = viamind_mcp::CallContext::new("peer");
+        registry
+            .call("add_part", serde_json::json!({"designator":"PEER1","value":"peer","footprint":"F","x_mm":1,"y_mm":1}), peer.clone())
+            .await
             .unwrap();
-        e.undo(Origin::agent("peer")).unwrap();
+        registry.call("undo", serde_json::json!({}), peer).await.unwrap();
         assert_eq!(e.read(Clone::clone), before);
         h.run_steps(5);
         let current = e.session_state();
