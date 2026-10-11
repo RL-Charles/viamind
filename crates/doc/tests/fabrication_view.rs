@@ -33,6 +33,8 @@ fn mask_openings_profile_zero_centerlines_and_xnc_exact_hits_are_distinct() {
         vec![P::Segment { start: Point::new(Nm(0), Nm(0)), end: Point::new(Nm(1000001), Nm(2000003)), width: Nm(0) }]
     );
     assert!(parse(&profile.replace("Profile,NP", "Copper,L1,Top")).is_err());
+    assert!(parse(&profile.replace("C,0", "C,1").replace("D01", "D03")).is_err());
+    assert!(parse(&profile.replace("C,0", "R,1X2").replace("D01", "D03")).is_err());
     let xnc = "; original asymmetric drill\r\nM48\r\nMETRIC\r\nT01C0.300001000\r\n%\r\nG05\r\nT01\r\nX-1.000001Y2.000003\r\nM30\r\n";
     let drill = view::parse_xnc(xnc, &mut FabricationReadBudget::default()).unwrap();
     assert_eq!(drill.layer, L::Drill);

@@ -61,7 +61,7 @@ fn absolute(path: &Path) -> Result<PathBuf, EngineError> {
     }
     Ok(path)
 }
-fn read(path: &Path, before_open: impl FnOnce()) -> Result<Vec<u8>, EngineError> {
+fn read(path: &Path, remaining: usize, before_open: impl FnOnce()) -> Result<Vec<u8>, EngineError> {
     before_open();
     let fd =
         rustix::fs::open(path, rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::NONBLOCK | rustix::fs::OFlags::CLOEXEC, rustix::fs::Mode::empty())
@@ -71,8 +71,11 @@ fn read(path: &Path, before_open: impl FnOnce()) -> Result<Vec<u8>, EngineError>
     if !opened.is_file() || opened.len() > view::MAX_FILE_BYTES as u64 {
         return Err(invalid("fabrication source must be a regular file at most 4 MiB"));
     }
+    if opened.len() > remaining as u64 {
+        return Err(invalid("fabrication sources exceed 16 MiB aggregate"));
+    }
     let mut bytes = Vec::new();
-    file.take(view::MAX_FILE_BYTES as u64 + 1).read_to_end(&mut bytes).map_err(|e| invalid(e.to_string()))?;
+    file.take(view::MAX_FILE_BYTES.min(remaining) as u64 + 1).read_to_end(&mut bytes).map_err(|e| invalid(e.to_string()))?;
     let after = std::fs::metadata(path).map_err(|e| invalid(e.to_string()))?;
     if bytes.len() > view::MAX_FILE_BYTES
         || bytes.len() as u64 != opened.len()
@@ -115,7 +118,7 @@ impl EngineHandle {
         let mut total = 0usize;
         let mut files = Vec::new();
         for path in paths {
-            let bytes = read(&path, || {})?;
+            let bytes = read(&path, view::MAX_TOTAL_BYTES - total, || {})?;
             total = total.saturating_add(bytes.len());
             if total > view::MAX_TOTAL_BYTES {
                 return Err(invalid("fabrication sources exceed 16 MiB aggregate"));
@@ -191,7 +194,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("source.gbr");
         std::fs::write(&path, "original").unwrap();
-        let error = read(&path, || {
+        let error = read(&path, view::MAX_TOTAL_BYTES, || {
             std::fs::remove_file(&path).unwrap();
             rustix::fs::mkfifoat(rustix::fs::CWD, &path, rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR).unwrap();
         })

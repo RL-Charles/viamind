@@ -239,6 +239,9 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
             let (position, operation) = command.rsplit_once('D').ok_or_else(invalid)?;
             let at = point(position, false)?;
             let aperture = selected.ok_or_else(invalid)?;
+            if file_layer == Some(FabricationLayer::Profile) && operation == "03" {
+                return Err("profile inspection supports linear centerlines only".into());
+            }
             graphics = true;
             let primitive = match (operation, aperture) {
                 ("02", _) => {
