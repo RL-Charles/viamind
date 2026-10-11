@@ -205,3 +205,31 @@ fn bounded_board_capture_ignores_large_unrelated_schematic_and_rejects_oversized
     assert!(e.execute_typed(input, Origin::User).is_err());
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn persisted_width_floor_refuses_one_nm_below_and_equality_keeps_explicit_geometry() {
+    let e = setup();
+    let before = e.session_state();
+    e.execute_typed(
+        viamind_engine::SetNamedNetRules {
+            expected_project: before.project.id,
+            expected_cursor: before.cursor,
+            rules: vec![viamind_engine::NamedNetRuleRow {
+                net: "GND".into(),
+                minimum_copper_clearance: Nm(700_001),
+                minimum_track_width: Nm(250_001),
+            }],
+        },
+        Origin::User,
+    )
+    .unwrap();
+    let policy = e.session_state();
+    let input = route(&e);
+    assert!(e.execute_typed(input.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), policy);
+    let exact = RoutePolyline { width: Nm(250_001), ..input };
+    e.execute_typed(exact, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(250_001))));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.session_state().project, policy.project);
+}

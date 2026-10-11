@@ -174,3 +174,17 @@ impl ViamindApp {
         }
     }
 }
+
+pub(crate) fn show_document_minima(ui: &mut Ui, rules: &viamind_doc::NamedNetRules) {
+    if !rules.is_empty() {
+        ui.collapsing(format!("{} persisted exact-net minima (pair maxima apply)", rules.len()), |ui| {
+            for (net, r) in rules {
+                ui.label(format!(
+                    "{net}: copper floor {} mm; explicit track-width floor {} mm",
+                    mm(r.minimum_copper_clearance),
+                    mm(r.minimum_track_width)
+                ));
+            }
+        });
+    }
+}

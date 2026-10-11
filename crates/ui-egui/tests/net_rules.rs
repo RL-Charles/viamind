@@ -111,3 +111,20 @@ fn actual_duplicate_invalid_precision_and_peer_reopen_require_reload() {
     click(&mut h, "Reload rules");
     click(&mut h, "Cancel rules");
 }
+
+#[test]
+fn invalid_borrowed_policy_refuses_render_fab_and_explicit_drc_before_copy() {
+    let mut project = Project::new("Capture policy");
+    project
+        .board
+        .net_rules
+        .insert("unused".repeat(100000), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+    assert!(viamind_render::board_view_snapshot(&project).is_err());
+    assert!(viamind_fab::FabricationSnapshot::capture(&project).is_err());
+    let e = EngineHandle::new(project);
+    assert!(e.query_named_net_rules().is_err());
+    assert!(viamind_ui_egui::actions::UiAction::RunDrc.run(&e, serde_json::json!({})).is_err());
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let registry = viamind_mcp::engine_registry(e).unwrap();
+    assert!(runtime.block_on(registry.call("run_drc", serde_json::json!({}), Default::default())).is_err());
+}

@@ -409,6 +409,7 @@ impl ViamindApp {
                 });}
                 if settings.corner_mode.is_some() && !settings.walkaround {ui.label("Generated corners follow the selected posture. Exact off-grid pad attachments use short arbitrary-angle stubs, checked with the whole route.");}
             }
+            if let Ok(policy)=engine.query_named_net_rules() {crate::net_rules::show_document_minima(ui,&policy.document_net_rules);}
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
             ui.label(if settings.via_mode && settings.walkaround {"Choose opposite-side same-net pads and one fixed snapped via. Request a joint checked two-side plan; commit recomputes both legs and via atomically. Rectangular board/cutouts only; no automatic via relocation or shove."} else if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or physical continuity certification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
@@ -523,6 +524,7 @@ mod walkaround_worker_tests {
         assert!(state.walkaround_worker.is_some());
         sender
             .send(Ok(WalkaroundChecked::Same(viamind_engine::CheckedWalkaround {
+                document_net_rules: Default::default(),
                 project_id: engine.read(|p| p.id),
                 source_cursor: engine.event_cursor(),
                 layer: CopperLayer::Top,

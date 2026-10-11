@@ -203,6 +203,7 @@ impl ViamindApp {
                 if changed { draft.checked = None; draft.request = None; draft.message = None; }
                 if pending { ui.label("Checking captured board…"); }
                 if let Some(plan) = &draft.checked {
+                    crate::net_rules::show_document_minima(ui,&plan.document_net_rules);
                     let c = &plan.counts;
                     ui.label(format!("Checked: {} tracks to {} chains, {} redundant segments removed", c.selected_tracks, c.merged_chains, c.deleted_tracks));
                     ui.label(format!("Retained: {} anchors, {} branches, {} mismatches, {} hole chains, {} duplicates; {} diagonals, {} unassigned", c.retained_anchor_joints, c.retained_branch_joints, c.retained_mismatch_joints, c.retained_hole_chains, c.retained_duplicate_chains, c.unsupported_diagonal_tracks, c.unsupported_unassigned_tracks));
@@ -278,6 +279,7 @@ mod tests {
         });
         sender
             .send(Ok(CheckedCardinalCleanup {
+                document_net_rules: Default::default(),
                 project_id: input.expected_project,
                 source_cursor: input.expected_cursor,
                 counts: Default::default(),

@@ -8,6 +8,7 @@ use viamind_doc::{NamedNetMinima, NamedNetRules, ObjectId, Project};
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct NamedNetRuleRow {
+    #[serde(deserialize_with = "viamind_doc::net_rules::deserialize_net_rule_name")]
     pub net: String,
     pub minimum_copper_clearance: viamind_geom::Nm,
     pub minimum_track_width: viamind_geom::Nm,
@@ -18,6 +19,7 @@ pub struct SetNamedNetRules {
     pub expected_project: ObjectId,
     pub expected_cursor: EventCursor,
     /// Complete replacement, empty to clear. Duplicate exact names refuse.
+    #[serde(deserialize_with = "deserialize_rows")]
     pub rules: Vec<NamedNetRuleRow>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -80,4 +82,34 @@ impl Command for SetNamedNetRules {
         delta.apply_to(project);
         Ok(vec![delta])
     }
+}
+
+fn deserialize_rows<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Vec<NamedNetRuleRow>, D::Error> {
+    struct RowSeed {
+        allow: bool,
+    }
+    impl<'de> serde::de::DeserializeSeed<'de> for RowSeed {
+        type Value = NamedNetRuleRow;
+        fn deserialize<D: serde::Deserializer<'de>>(self, deserializer: D) -> Result<Self::Value, D::Error> {
+            if !self.allow {
+                return Err(serde::de::Error::custom("named-net rule count exceeds 128"));
+            }
+            NamedNetRuleRow::deserialize(deserializer)
+        }
+    }
+    struct RowsVisitor;
+    impl<'de> serde::de::Visitor<'de> for RowsVisitor {
+        type Value = Vec<NamedNetRuleRow>;
+        fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("at most 128 exact named-net minimum rows")
+        }
+        fn visit_seq<A: serde::de::SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
+            let mut rows = Vec::new();
+            while let Some(row) = seq.next_element_seed(RowSeed { allow: rows.len() < viamind_doc::net_rules::MAX_NAMED_NET_RULES })? {
+                rows.push(row);
+            }
+            Ok(rows)
+        }
+    }
+    deserializer.deserialize_seq(RowsVisitor)
 }

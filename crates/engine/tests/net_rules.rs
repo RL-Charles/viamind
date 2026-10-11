@@ -79,3 +79,17 @@ fn policy_log_version_guards_chain_and_same_project_reopen() {
     assert!(e.execute_typed(current, Origin::User).is_err());
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn raw_request_row_count_and_name_bounds_refuse_before_row_materialization() {
+    let e = EngineHandle::new(Project::new("Bounded request"));
+    let input = edit(&e, 1);
+    let value = serde_json::to_value(input).unwrap();
+    let row = r#"{"net":"N","minimum_copper_clearance":0,"minimum_track_width":1}"#;
+    // The 129th row is deliberately not a row at all: count refusal must win before parsing it.
+    let rows = format!("[{},null]", vec![row; 128].join(","));
+    let raw = format!(r#"{{"expected_project":{},"expected_cursor":{},"rules":{}}}"#, value["expected_project"], value["expected_cursor"], rows);
+    assert!(serde_json::from_str::<SetNamedNetRules>(&raw).unwrap_err().to_string().contains("count exceeds 128"));
+    let bad_name = raw.replacen("\"net\":\"N\"", &format!("\"net\":\"{}\"", "x".repeat(257)), 1);
+    assert!(serde_json::from_str::<SetNamedNetRules>(&bad_name).unwrap_err().to_string().contains("256"));
+}

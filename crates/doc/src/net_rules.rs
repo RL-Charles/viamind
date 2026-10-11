@@ -70,25 +70,39 @@ pub fn named_track_width(rules: &NamedNetRules, net: Option<&str>) -> Nm {
     net.and_then(|net| rules.get(net)).map_or(Nm(0), |rule| rule.minimum_track_width)
 }
 
+/// Validate a borrowed decoded label before allocating its owned rule name.
+pub fn deserialize_net_rule_name<'de, D: Deserializer<'de>>(deserializer: D) -> Result<String, D::Error> {
+    de::DeserializeSeed::deserialize(NameSeed { allow: true, text_remaining: MAX_NAMED_NET_RULE_TEXT }, deserializer)
+}
+struct NameSeed {
+    allow: bool,
+    text_remaining: usize,
+}
+impl<'de> de::DeserializeSeed<'de> for NameSeed {
+    type Value = String;
+    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<String, D::Error> {
+        struct NameVisitor(NameSeed);
+        impl Visitor<'_> for NameVisitor {
+            type Value = String;
+            fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                f.write_str("a bounded exact net name")
+            }
+            fn visit_str<E: de::Error>(self, value: &str) -> Result<String, E> {
+                if !self.0.allow {
+                    return Err(E::custom("named-net rule count exceeds 128"));
+                }
+                validate_net_rule_name(value).map_err(E::custom)?;
+                if value.len() > self.0.text_remaining {
+                    return Err(E::custom("named-net rule names exceed 32768 aggregate UTF-8 bytes"));
+                }
+                Ok(value.to_owned())
+            }
+        }
+        deserializer.deserialize_str(NameVisitor(self))
+    }
+}
 /// Parse original JSON map tokens: duplicate keys must never silently overwrite.
 pub fn deserialize_named_net_rules<'de, D: Deserializer<'de>>(deserializer: D) -> Result<NamedNetRules, D::Error> {
-    struct RuleName(String);
-    impl<'de> Deserialize<'de> for RuleName {
-        fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-            struct NameVisitor;
-            impl Visitor<'_> for NameVisitor {
-                type Value = RuleName;
-                fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                    f.write_str("a bounded exact net name")
-                }
-                fn visit_str<E: de::Error>(self, value: &str) -> Result<Self::Value, E> {
-                    validate_net_rule_name(value).map_err(E::custom)?;
-                    Ok(RuleName(value.to_owned()))
-                }
-            }
-            deserializer.deserialize_str(NameVisitor)
-        }
-    }
     struct RulesVisitor;
     impl<'de> Visitor<'de> for RulesVisitor {
         type Value = NamedNetRules;
@@ -97,19 +111,14 @@ pub fn deserialize_named_net_rules<'de, D: Deserializer<'de>>(deserializer: D) -
         }
         fn visit_map<M: MapAccess<'de>>(self, mut map: M) -> Result<Self::Value, M::Error> {
             let mut rules = NamedNetRules::new();
-            let mut bytes = 0_usize;
-            while let Some(RuleName(name)) = map.next_key::<RuleName>()? {
-                if rules.len() == MAX_NAMED_NET_RULES {
-                    return Err(de::Error::custom("named-net rule count exceeds 128"));
-                }
-                validate_net_rule_name(&name).map_err(de::Error::custom)?;
+            let mut bytes = 0;
+            while let Some(name) =
+                map.next_key_seed(NameSeed { allow: rules.len() < MAX_NAMED_NET_RULES, text_remaining: MAX_NAMED_NET_RULE_TEXT - bytes })?
+            {
                 if rules.contains_key(&name) {
                     return Err(de::Error::custom("duplicate exact named-net rule key"));
                 }
-                bytes = bytes.saturating_add(name.len());
-                if bytes > MAX_NAMED_NET_RULE_TEXT {
-                    return Err(de::Error::custom("named-net rule names exceed 32768 aggregate UTF-8 bytes"));
-                }
+                bytes += name.len();
                 let minima: NamedNetMinima = map.next_value()?;
                 minima.validate().map_err(de::Error::custom)?;
                 rules.insert(name, minima);
