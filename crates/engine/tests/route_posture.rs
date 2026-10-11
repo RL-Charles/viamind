@@ -139,4 +139,21 @@ fn exact_named_width_floor_preserves_odd_nm_posture_geometry_without_widening() 
     assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(300001))));
     e.undo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
+    let manual = viamind_engine::RoutePadPolyline {
+        expected_project: before.project.id,
+        expected_cursor: e.event_cursor(),
+        start: ids[0],
+        target: ids[1],
+        interior: vec![],
+        grid: Nm(250_000),
+        width: Nm(300_000),
+        rules: Default::default(),
+    };
+    let current = e.session_state();
+    assert!(e.execute_typed(manual.clone(), Origin::User).is_err());
+    assert_eq!(e.session_state(), current);
+    e.execute_typed(viamind_engine::RoutePadPolyline { width: Nm(300_001), ..manual }, Origin::User).unwrap();
+    assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(300_001))));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
 }

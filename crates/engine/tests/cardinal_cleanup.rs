@@ -341,3 +341,29 @@ fn aggregate_hole_candidate_budget_refuses_before_joint_drc_without_partial_clea
     assert!(error.to_string().contains("hole candidate limit1000000"), "{error}");
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn named_width_floor_applies_to_complete_cleanup_candidate_and_report_sources() {
+    let _guard = TEST.lock().unwrap();
+    for minimum in [250_001, 250_002] {
+        let mut project = fixture();
+        track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
+        track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
+        project.board.net_rules.insert("N".into(), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(minimum) });
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let cmd = request(&e);
+        if minimum > 250_001 {
+            reject(&e, cmd);
+        } else {
+            let plan = e.plan_cardinal_track_cleanup(&cmd).unwrap();
+            assert_eq!(plan.document_net_rules, before.project.board.net_rules);
+            assert_eq!(plan.counts.deleted_tracks, 1);
+            assert_eq!(e.session_state(), before);
+            e.execute_typed(cmd, Origin::User).unwrap();
+            assert!(e.read(|p| p.board.tracks.values().all(|t| t.width == Nm(250_001))));
+            e.undo(Origin::User).unwrap();
+            assert_eq!(e.read(Clone::clone), before.project);
+        }
+    }
+}

@@ -92,6 +92,10 @@ fn actual_duplicate_invalid_precision_and_peer_reopen_require_reload() {
     assert_eq!(e.session_state(), before);
     assert!(h.state().net_rules.message().unwrap().contains("duplicate"));
     click(&mut h, "Remove rule 2");
+    click(&mut h, "Add exact net rule");
+    let retained = h.get_by_label("Net 2").accesskit_node().id();
+    click(&mut h, "Remove rule 1");
+    assert_eq!(h.get_by_label("Net 1").accesskit_node().id(), retained, "removing another row retains the actual field identity");
     e.execute("add_part", serde_json::json!({"designator":"R1","value":"peer","footprint":"x","x_mm":1,"y_mm":1}), Origin::agent("peer")).unwrap();
     h.run_steps(3);
     let peer = e.session_state();

@@ -23,12 +23,15 @@ impl eframe::App for Inspection {
             ui.input(|i| i.events.iter().find_map(|e| if let egui::Event::Screenshot { image, .. } = e { Some(image.clone()) } else { None }));
         if let Some(image) = screenshot {
             assert!(image.pixels.iter().all(|p| p.a() == 255));
-            let mut file = std::fs::File::options().create_new(true).write(true).open(&self.capture).expect("exclusive new capture path");
+            let mut file = std::io::BufWriter::new(
+                std::fs::File::options().create_new(true).write(true).open(&self.capture).expect("exclusive new capture path"),
+            );
             write!(file, "P6\n{} {}\n255\n", image.size[0], image.size[1]).unwrap();
             for pixel in &image.pixels {
                 file.write_all(&[pixel.r(), pixel.g(), pixel.b()]).unwrap();
             }
-            file.sync_all().unwrap();
+            file.flush().unwrap();
+            file.get_ref().sync_all().unwrap();
             println!(
                 "{}",
                 serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","path":self.capture,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"prepared_actual_egui_control_bounds_fit_native_viewport":true,"self_close_after_fsync":true,"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})

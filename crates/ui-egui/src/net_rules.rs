@@ -6,6 +6,7 @@ use viamind_engine::{EventCursor, NamedNetRuleRow, SetNamedNetRules};
 use viamind_geom::Nm;
 
 struct Row {
+    widget: ObjectId,
     net: String,
     clearance: String,
     width: String,
@@ -91,7 +92,12 @@ impl ViamindApp {
                     rows: snapshot
                         .document_net_rules
                         .into_iter()
-                        .map(|(net, r)| Row { net, clearance: mm(r.minimum_copper_clearance), width: mm(r.minimum_track_width) })
+                        .map(|(net, r)| Row {
+                            widget: ObjectId::new(),
+                            net,
+                            clearance: mm(r.minimum_copper_clearance),
+                            width: mm(r.minimum_track_width),
+                        })
                         .collect(),
                     message: None,
                 });
@@ -121,14 +127,14 @@ impl ViamindApp {
                 ui.label("No preferred sizes, automatic widening, patterns or net assignment. Existing copper may violate newly saved minima; run scoped DRC.");
                 ui.label(format!("{} of 128 rules; empty restores legacy document policy",draft.rows.len()));
                 for (i,row) in draft.rows.iter_mut().enumerate() {
-                    ui.push_id(i,|ui| {
+                    ui.push_id(row.widget,|ui| {
                         ui.separator();
-                        ui.horizontal(|ui| {let label=ui.label(format!("Net {}",i+1));ui.add(egui::TextEdit::singleline(&mut row.net).char_limit(128).desired_width(150.)).labelled_by(label.id);if ui.button(format!("Remove rule {}",i+1)).clicked(){remove=Some(i);} });
-                        ui.horizontal(|ui| {let label=ui.label(format!("Clearance {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.clearance).char_limit(32).desired_width(100.)).labelled_by(label.id);});
-                        ui.horizontal(|ui| {let label=ui.label(format!("Track width {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.width).char_limit(32).desired_width(100.)).labelled_by(label.id);});
+                        ui.horizontal(|ui| {let label=ui.label(format!("Net {}",i+1));ui.add(egui::TextEdit::singleline(&mut row.net).id(egui::Id::new((row.widget,"net"))).char_limit(128).desired_width(150.)).labelled_by(label.id);if ui.button(format!("Remove rule {}",i+1)).clicked(){remove=Some(i);} });
+                        ui.horizontal(|ui| {let label=ui.label(format!("Clearance {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.clearance).id(egui::Id::new((row.widget,"clearance"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
+                        ui.horizontal(|ui| {let label=ui.label(format!("Track width {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.width).id(egui::Id::new((row.widget,"width"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
                     });
                 }
-                if ui.add_enabled(draft.rows.len()<128,egui::Button::new("Add exact net rule")).clicked() {draft.rows.push(Row {net:format!("N{}",draft.rows.len()+1),clearance:"0.2".into(),width:"0.25".into()});}
+                if ui.add_enabled(draft.rows.len()<128,egui::Button::new("Add exact net rule")).clicked() {draft.rows.push(Row {widget:ObjectId::new(),net:format!("N{}",draft.rows.len()+1),clearance:"0.2".into(),width:"0.25".into()});}
                 if stale {ui.colored_label(Color32::YELLOW,"Document or selection changed. Reload rules before applying; local rows remain uncommitted.");}
                 if let Some(message)=&draft.message {ui.colored_label(Color32::LIGHT_RED,message);}
             });
