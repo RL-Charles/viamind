@@ -1,0 +1,30 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/apps/viamind)
+error: redundant closure
+   --> crates/ui-egui/src/schematic/sidebar_tests.rs:133:36
+    |
+133 |     let original_id = h.ctx.memory(|m| m.focused()).expect("focused second pin coordinate");
+    |                                    ^^^^^^^^^^^^^^^ help: replace the closure with the method itself: `egui::Memory::focused`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+    = note: `-D clippy::redundant-closure-for-method-calls` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::redundant_closure_for_method_calls)]`
+
+error: redundant closure
+   --> crates/ui-egui/src/schematic/sidebar_tests.rs:150:36
+    |
+150 |     let retained_id = h.ctx.memory(|m| m.focused()).expect("focused retained pin coordinate");
+    |                                    ^^^^^^^^^^^^^^^ help: replace the closure with the method itself: `egui::Memory::focused`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+
+error: could not compile `viamind-ui-egui` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

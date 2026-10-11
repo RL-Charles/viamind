@@ -1,0 +1,33 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0124/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.52s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 4 tests
+compact sidebar canvas before draft [[388.0 31.0] - [632.0 348.0]]; with draft [[463.0 31.0] - [632.0 348.0]]
+test schematic::sidebar_tests::compact_sidebar_actual_wheel_reveals_footer_without_zooming_canvas ... ok
+
+thread 'schematic::sidebar_tests::compact_sidebar_retained_pin_field_identity_survives_other_row_removal' (3018675) panicked at crates/ui-egui/src/schematic/sidebar_tests.rs:143:5:
+assertion `left == right` failed: retained row text state must not acquire the removed row's identity
+  left: Id::new(4855486730091361895)
+ right: Id::new(50308585825103212)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test schematic::sidebar_tests::compact_sidebar_retained_pin_field_identity_survives_other_row_removal ... FAILED
+test schematic::sidebar_tests::compact_sidebar_baseline_draft_actions_fit_effective_clip ... ok
+test schematic::sidebar_tests::compact_sidebar_baseline_reveals_supported_entries_without_session_changes ... ok
+
+failures:
+
+failures:
+    schematic::sidebar_tests::compact_sidebar_retained_pin_field_identity_survives_other_row_removal
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 97 filtered out; finished in 0.59s
+
+error: test failed, to rerun pass `-p viamind-ui-egui --lib`
