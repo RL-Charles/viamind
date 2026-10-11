@@ -805,3 +805,28 @@ whole-command envelope. No inferred aliases, PCB synchronization or hierarchy.
 Desktop Annotate symbols exposes the same Prepare/Apply/Cancel workflow.
 See [behavior spec](../../docs/specs/package-aware-annotation.md) and
 [verification](../../docs/package-aware-annotation-verification.md).
+
+## Explicit footprint artwork and Legend exports
+
+`set_footprint_artwork` replaces only a component's local artwork using its exact
+`expected` Part, `expected_project` and full initial `expected_cursor`. Supply
+integer-Nm `silkscreen` start/end/positive width rows (at most 256), and optionally
+one rectangular `courtyard` with min/max/positive width. `artwork: null` restores
+the legacy synthetic body; an explicit empty object suppresses that body without
+inventing manufacturing geometry. One undo restores the complete original Part.
+
+Detached library version 1 omits artwork. Version 2 requires a non-null artwork
+object, including explicit empty. Native projects/event logs use feature 13 when
+artwork is present. `save_footprint_definition`, `export_footprint` and guarded
+`import_footprint` retain artwork; matching pad numbers retain pad IDs and nets.
+Import/export require the full cursor when explicit artwork is involved.
+
+`render_board_view`/PNG options additionally accept `top_silkscreen`,
+`bottom_silkscreen`, `top_courtyard`, and `bottom_courtyard`; existing default
+layers stay unchanged. `export_fabrication` defaults `include_silkscreen` to
+false. Explicit true adds paired positive Gerber Legend Top/Bot files of stored
+straight strokes. Saved output-job version 4 requires that true flag and retains
+the version 1–3 calibrated/populated companion relationships. Courtyards remain
+excluded from fabrication; no text, silk clipping, courtyard clearance checking
+or manufacturing certification is inferred. See the
+[public contract](../../docs/specs/footprint-artwork.md).
