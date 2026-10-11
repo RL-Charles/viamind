@@ -1,7 +1,7 @@
 # Desktop BOM and placement CSV
 
-Open **File → Export assembly CSV…** in a native design. Choose **BOM** or
-**Placement**, then enter an explicit `.csv` output path in an existing directory.
+Open **File → Export assembly CSV…** in a native design. Choose **BOM**, ordinary
+**Placement**, a sourcing/template BOM or [**Calibrated placement**](calibrated-assembly-placement.md), then enter an explicit `.csv` output path in an existing directory.
 **Export CSV to NEW file** preserves existing files by default.
 
 To replace a prior CSV, explicitly enable **Allow replacing this CSV output** and
@@ -26,8 +26,9 @@ before retrying.
 The scrollable window supports compact desktops. Assembly retains its bounded
 header-only snapshot and the shared two-snapshot manufacturing admission limit;
 busy requests report an error and can be retried after another export finishes.
-See [limits](manufacturing-export-limits.md). No supplier identifiers, assembly
-centroid/population inference or manufacturer preset is introduced.
+See [limits](manufacturing-export-limits.md). Sourcing identifiers and calibrated
+placement data are explicit user input; no centroid/population inference or
+manufacturer acceptance is claimed.
 
 Agents use the same `export_assembly_csv` request/schema and bounded writer.
 CLI `--export-csv bom|placement` remains available. Rendered SVG/PNG and fabrication

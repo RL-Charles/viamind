@@ -1,0 +1,10 @@
+[package]
+name = "viamind-calibration-inspection"
+version = "0.0.0"
+edition = "2024"
+[dependencies]
+viamind-ui-egui = { path = "@REPO@/crates/ui-egui" }
+viamind-engine = { path = "@REPO@/crates/engine" }
+eframe = { version = "0.36", default-features = false, features = ["wgpu", "wayland", "x11"] }
+egui = "0.36"
+serde_json = "1"
