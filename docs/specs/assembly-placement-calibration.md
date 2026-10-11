@@ -1,6 +1,6 @@
 # Explicit assembly placement calibration
 
-Ticket: T-0100 · Story: S-074 · Status: proposed for independent review
+Ticket: T-0100 · Story: S-074 · Status: independently approved before implementation; implemented, final CI/review pending
 
 ## Public sources and scope
 

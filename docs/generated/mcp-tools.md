@@ -724,9 +724,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -1404,9 +1456,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                             "null"
                           ]
                         },
+                        "mounting": {
+                          "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                          "enum": [
+                            "surface_mount",
+                            "through_hole",
+                            "hybrid",
+                            null
+                          ],
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "mpn": {
                           "type": [
                             "string",
+                            "null"
+                          ]
+                        },
+                        "placement": {
+                          "additionalProperties": false,
+                          "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                          "properties": {
+                            "centroid_local": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "x": {
+                                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "zero_axis_mdeg": {
+                              "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "centroid_local",
+                            "zero_axis_mdeg"
+                          ],
+                          "type": [
+                            "object",
                             "null"
                           ]
                         },
@@ -3943,7 +4047,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Export assembly CSV to a local path. bom/placement are all-component inventories ignoring population; sourcing_bom includes explicit sourcing and population for all parts. Placement uses component origins in global mm, Y down, CCW top view, stored bottom transform; no verified centroids. catalog_bom and assembly_bom include populated components only, with strict reference/required-field validation and at most200 references per row. Catalog requires explicit LCSC/JLCPCB supplier and C-digits SKU; assembly requires explicit manufacturer MPN. No lookup, stock or manufacturer acceptance is verified. Refuses existing files unless overwrite=true, protects captured/current active native files. Optional expected_cursor guards capture; returns exported_cursor and included component_count. Limits:100000 source components,4096 bytes/header,2 MiB aggregate text,32 MiB output,2 retained snapshots/process. Does not change design/history/dirty state.",
+  "description": "Export assembly CSV to a local path. bom/placement are all-component inventories ignoring population; sourcing_bom includes explicit sourcing and population for all parts. Placement uses component origins in global mm, Y down, CCW top view, stored bottom transform; no verified centroids. catalog_bom and assembly_bom include populated components only, with strict reference/required-field validation and at most200 references per row. Catalog requires explicit LCSC/JLCPCB supplier and C-digits SKU; assembly requires explicit manufacturer MPN. assembly_placement includes populated components only and requires explicit mounting plus local centroid/zero_axis_mdeg calibration. It emits global-origin mm, X right/Y up, positive CCW common top-view marker rotation: top=r+marker, bottom=r+180-marker modulo360; not a universal vendor zero. No lookup, stock or manufacturer acceptance is verified. Refuses existing files unless overwrite=true, protects captured/current active native files. Optional expected_cursor guards capture; returns exported_cursor and included component_count. Limits:100000 source components,4096 bytes/header,2 MiB aggregate text,32 MiB output,2 retained snapshots/process. Does not change design/history/dirty state.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -3974,7 +4078,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "placement",
           "sourcing_bom",
           "catalog_bom",
-          "assembly_bom"
+          "assembly_bom",
+          "assembly_placement"
         ],
         "type": "string"
       },
@@ -4073,9 +4178,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -4562,9 +4719,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -4892,9 +5101,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -9883,7 +10144,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Set explicit board-component manufacturer, MPN, supplier, supplier SKU and population in one undoable transaction. Null clears; all-default metadata normalizes to absent. Fields are 1–512 UTF-8 bytes, no controls/edge whitespace; project limit 2 MiB sourcing text/100000 metadata-bearing parts. Optional expected full Part and expected_project reject stale drafts. No identifier inference or lookup. Only sourcing_bom exports population; existing BOM/placement/job inventories remain unchanged.",
+  "description": "Set explicit board-component sourcing, population, optional mounting (surface_mount/through_hole/hybrid) and placement calibration in one undoable transaction. Placement has required centroid_local integer nm within ±10000mm and zero_axis_mdeg 0..359999 (local +X=0, -Y=90deg marker, not universal vendor zero). Null clears all; all-default metadata normalizes absent. Sourcing fields 1–512 UTF-8 bytes, no controls/edge whitespace; project limit 2MiB text/100000 metadata-bearing parts. Optional expected full Part and expected_project reject stale drafts. No inference/lookup. Calibrated placement and template BOMs apply population; existing BOM/placement/job inventory bytes remain unchanged.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -9898,9 +10159,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "null"
             ]
           },
+          "mounting": {
+            "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+            "enum": [
+              "surface_mount",
+              "through_hole",
+              "hybrid",
+              null
+            ],
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "mpn": {
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "placement": {
+            "additionalProperties": false,
+            "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+            "properties": {
+              "centroid_local": {
+                "additionalProperties": false,
+                "properties": {
+                  "x": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "y": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "type": "object"
+              },
+              "zero_axis_mdeg": {
+                "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "centroid_local",
+              "zero_axis_mdeg"
+            ],
+            "type": [
+              "object",
               "null"
             ]
           },
@@ -9936,9 +10249,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -10159,9 +10524,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },
@@ -10625,9 +11042,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                             "null"
                           ]
                         },
+                        "mounting": {
+                          "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                          "enum": [
+                            "surface_mount",
+                            "through_hole",
+                            "hybrid",
+                            null
+                          ],
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "mpn": {
                           "type": [
                             "string",
+                            "null"
+                          ]
+                        },
+                        "placement": {
+                          "additionalProperties": false,
+                          "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                          "properties": {
+                            "centroid_local": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "x": {
+                                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "zero_axis_mdeg": {
+                              "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "centroid_local",
+                            "zero_axis_mdeg"
+                          ],
+                          "type": [
+                            "object",
                             "null"
                           ]
                         },
@@ -11360,9 +11829,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                     "null"
                   ]
                 },
+                "mounting": {
+                  "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                  "enum": [
+                    "surface_mount",
+                    "through_hole",
+                    "hybrid",
+                    null
+                  ],
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
                 "mpn": {
                   "type": [
                     "string",
+                    "null"
+                  ]
+                },
+                "placement": {
+                  "additionalProperties": false,
+                  "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                  "properties": {
+                    "centroid_local": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "zero_axis_mdeg": {
+                      "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "centroid_local",
+                    "zero_axis_mdeg"
+                  ],
+                  "type": [
+                    "object",
                     "null"
                   ]
                 },
@@ -11722,9 +12243,61 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "mpn": {
                 "type": [
                   "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
                   "null"
                 ]
               },

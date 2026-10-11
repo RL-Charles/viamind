@@ -1,0 +1,12 @@
+{
+  "reason": "Smoke harness incorrectly tested a different process native path with a CLI opened on another source. Explicit overwrite was authorized for that CLI destination; corrected test targets its own --open path.",
+  "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/production-project.json",
+  "overwritten_csv_sha256": "b2eb3539bb7270bc4db4f630da91482261e38ad3ebe04de484f155b2213bbc1c",
+  "restored_fixture_sha256": "d39095a29c4a0539c4ff90bd06a64832e721f1a5c4d1b489b3db59ed5c60a711",
+  "full_session_unchanged": true,
+  "document_status_unchanged": true,
+  "cursor": {
+    "sequence": 0,
+    "stream_id": "2339aa65-c511-4221-a741-ca79a5893dd8"
+  }
+}

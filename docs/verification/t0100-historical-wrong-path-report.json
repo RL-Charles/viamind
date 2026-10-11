@@ -1,0 +1,25 @@
+{
+  "passed": false,
+  "checks": [
+    "two initialized native HTTP clients observe identical full session",
+    "actual export catalogue admits explicit calibrated placement",
+    "shared setter schema describes strict optional mounting and calibration",
+    "borrowed query returns explicit metadata unchanged",
+    "no-display production calibrated CLI succeeds",
+    "independent CSV/vector reader verifies non-origin top and reflected bottom centroids/markers",
+    "independent parser preserves Unicode comma and quotes",
+    "native HTTP output is exact CLI bytes with included count and complete cursor",
+    "two agent exports are byte identical",
+    "NEW collision preserves complete output",
+    "explicit overwrite retains expected bytes",
+    "native source is protected with explicit overwrite"
+  ],
+  "endpoint": "http://127.0.0.1:7926/mcp",
+  "binary_sha256": "7d4791fde97ff2954f83a7ffaf4c66ef8440f62e15b6c22cde1bfca23479557b",
+  "previous_binary_sha256": "3695983063d742030706b2796fe13d6cc800b746a0bdaaaca68abfad4825739a",
+  "fixture_sha256": "d39095a29c4a0539c4ff90bd06a64832e721f1a5c4d1b489b3db59ed5c60a711",
+  "initial_cursor": {
+    "sequence": 0,
+    "stream_id": "2339aa65-c511-4221-a741-ca79a5893dd8"
+  }
+}
