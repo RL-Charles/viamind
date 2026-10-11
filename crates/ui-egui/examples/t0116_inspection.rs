@@ -76,8 +76,8 @@ impl eframe::App for Inspection {
                 _ => None,
             };
         }
-        let ready_preview =
-            self.visible.iter().any(|s| s == "One U1 · 5 units · 14 pads") && self.visible.iter().any(|s| s == "Create one package PCB component");
+        let ready_preview = self.visible.iter().any(|s| s == "One U1 · 5 units · 14 pads")
+            && self.visible.iter().any(|s| s == "Origin (40000000, 40000000) nm · Bottom · 90°");
         if self.phase == 6 && ready_preview && self.capture.is_none() && !self.preview_done {
             assert!(self.visible.iter().any(|s| s == "Origin (40000000, 40000000) nm · Bottom · 90°"));
             self.capture = Some("native-preview.ppm");
@@ -139,6 +139,17 @@ impl eframe::App for Inspection {
         }
         if self.frames < 30 {
             return;
+        }
+        if self.phase == 7 && self.target.is_none() && self.frames.is_multiple_of(10) {
+            if let Some(rect) = ctx.memory(|m| m.area_rect(egui::Id::new(Some("Complete package to one PCB component")))) {
+                input.events.push(egui::Event::PointerMoved(rect.left_top() + egui::vec2(25., 100.)));
+                input.events.push(egui::Event::MouseWheel {
+                    unit: egui::MouseWheelUnit::Point,
+                    delta: egui::vec2(0., -200.),
+                    modifiers: egui::Modifiers::NONE,
+                });
+                self.events += 2;
+            }
         }
         if let Some(pos) = self.target {
             input.events.push(egui::Event::PointerMoved(pos));
