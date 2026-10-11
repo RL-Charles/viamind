@@ -150,3 +150,13 @@ manufacturing DRC. [Workflow](cardinal-track-cleanup.md) and
 Final artifact-head CI gates the combined branch before merge. Historical
 production and inspection sources/hashes above remain unchanged by later
 documentation commits or clean integration rebases.
+
+## Final integration
+
+The complete ticket rebased cleanly onto merged BOM-template and Linux AppImage
+main `0d958743c4f85c0a7165de869a43b9ffa21e4b36`. All fifteen ticket commits
+compare equal in `git range-diff`; no source conflict or manual resolution was
+needed. Format and whitespace checks pass. This integration preserves all
+historical production and corrected inspection provenance above; fresh combined
+artifact-head CI gates merge. No unrelated local full/native verification was
+repeated for this unchanged rebase.

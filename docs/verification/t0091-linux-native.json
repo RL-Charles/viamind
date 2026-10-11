@@ -262,5 +262,15 @@
     "excluded_attempt": "b64 inspection retained no image because exact-target Cua refused. 3bc capture binary built but never launched; fef is the only final screenshot host.",
     "excluded_from_final_visual": "Root review found unavailable arrow glyph in Checked label; text-only ASCII correction and fresh capture supersede this image."
   },
-  "artifact_integration": "Historical653 full Linux and23 production HTTP checks remain tied to b64 and exact ab9fad binary. Label-only efb follows focused fmt, strict UI all-target lint, actual UI3 and inspection build/capture; final combined artifact CI gates current application."
+  "artifact_integration": "Historical653 full Linux and23 production HTTP checks remain tied to b64 and exact ab9fad binary. Label-only efb follows focused fmt, strict UI all-target lint, actual UI3 and inspection build/capture; final combined artifact CI gates current application.",
+  "final_integration": {
+    "base": "0d958743c4f85c0a7165de869a43b9ffa21e4b36",
+    "pre_documentation_head": "0aae2a9280836d3ccbf5e3b5e5023b2bed53d0db",
+    "all_15_ticket_commits_range_diff_equal": true,
+    "conflicts": false,
+    "fmt": "pass",
+    "diff_check": "pass",
+    "historical_source_and_binary_provenance_unchanged": true,
+    "fresh_combined_ci_required": true
+  }
 }
