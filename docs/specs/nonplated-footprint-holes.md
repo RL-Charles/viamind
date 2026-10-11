@@ -96,6 +96,10 @@ commands and compatibility policies below are Viamind choices.
 13. Every DRC, routing, walkaround, via, cleanup and continuity purpose snapshot retains
     physical holes even when it omits unrelated artwork/apertures. Charge them before
     copying. No electrical analysis shell may silently remove a physical drill.
+    Resolve holes independently of pad admission: `pads:None` excludes unknown copper
+    but does not exclude a Part's explicit mechanical drills. Supported holes on a
+    legacy-preview Part still constrain both layers; unsupported pose is disclosed
+    or refuses under the consumer's completeness policy.
 14. DRC applies existing hole-to-hole, hole-to-copper and board-edge clearances to NPTH
     against all vias, holes, pads and tracks on every layer, independent of net/side.
     NPTH has no owned copper to exempt. Stable reference includes Part/hole UUID/key.
@@ -178,3 +182,25 @@ commands and compatibility policies below are Viamind choices.
   refusal and no-staging atomic failures. One shared output snapshot/permit/cursor.
 - Four Linux gates, actual generated catalog/workflow, independent review, exact-head
   CI and retained artifact hashes. No human Done transition is performed by an agent.
+
+## Consumer audit required at implementation handoff
+
+This inventory is read-only against the initial base. T120 may change signatures;
+reconcile against its final frozen source before editing Rust. Presence in this table
+records required work, not a completed implementation or verification claim.
+
+| Boundary | Existing source | Required NPTH audit |
+| --- | --- | --- |
+| Persistent shape/copies/transform | `crates/doc/src/board.rs` | Every Part constructor; both copy helpers retain holes; shared checked transform; no dependence on pad presence |
+| Detached reuse/persistence | `crates/doc/src/footprint*`, `crates/engine/src/footprint_definition.rs` | Strict library4/presence, stable keys and IDs, borrowed limits, old definitions clear policy |
+| Native/log identity | `crates/doc/src/file*`, `crates/engine/src/log.rs`, `delta.rs` | Native15 maximum; base/both delta sides; whole-identity cap before validator/index |
+| Ordinary and schematic-linked edits | `commands.rs`, `schematic_component.rs`, `package_component.rs`, `assembly.rs` in `crates/engine/src` | Preserve all unrelated fields, existing hole IDs and pose validation; new Part gets Legacy |
+| Private branch byte accounting | `crates/engine/src/pcb_branches/budget.rs` | Structural row/key precharge and exact borrowed serializer field order/omission; no new branch allowlist command |
+| DRC/autovalidation | `crates/drc/src/lib.rs`, `crates/engine/src/auto_drc.rs`, `command_hooks.rs` | Independent drill shapes/references on pads-None Parts; both-layer physical spacing and edge checks; coverage text/pair limits |
+| Guarded routing/copper edits | `routing.rs`, `route_via.rs`, `route_terminals.rs`, `copper_properties.rs` in `crates/engine/src` | Every captured shell/preflight and final joint DRC retains drills; unsupported geometry cannot slip through |
+| Walkaround/cleanup | `walkaround.rs`, `via_walkaround.rs`, `cardinal_cleanup.rs` in `crates/engine/src` | Conservative obstacle boxes and existing work budgets include all component drills |
+| Electrical continuity | `crates/engine/src/connectivity*`, `unrouted.rs` | Subtractive obstacles never create terminals or layer edges; unsupported intersections yield explicit unknown |
+| Native/static geometry | `crates/ui-egui/src`, `crates/render/src/svg.rs` | Layer visibility, fit/ghosts/emission limits; shared transform once; no invented copper or mask/paste |
+| Fabrication capture/output | `crates/fab/src/snapshot.rs`, `fabrication.rs`, `output_job.rs` | Bounded physical holes independent of pads; separate99-tool XNC; old plated bytes and strict job6 companions |
+| Independent inspection | `crates/doc/src/fabrication_view.rs`, `crates/fab/src/release_inspection/` | Read-only bounded drill parser/overlay, attributes/common coordinates, strict file/count/version matrix |
+| Agent/desktop authoring | `crates/mcp/src`, `crates/ui-egui/src` | Shared setter, strict required-nullable raw schema, compact stable field identity, admission/retained worker/actual two-client parity |
