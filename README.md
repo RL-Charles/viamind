@@ -241,3 +241,11 @@ Selected native schematic sheets also support display-free SVG/PNG export and MC
 ### Linked schematic and PCB updates
 
 Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). New component creation and routed-net migration remain open.
+
+### Linked component cross-probing
+
+Explicitly linked schematic symbols and PCB components expose local counterpart
+highlights through the **Linked component** sidebar. **Show counterpart** switches
+editors and centers a fresh, guarded target without propagating shared selection.
+Agents can read the same UUID mapping and exact positions through
+`query_linked_components`. See [usage and limits](docs/component-cross-probing.md).

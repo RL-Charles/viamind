@@ -36,7 +36,13 @@ impl CrossProbeUi {
         if self.current.as_ref().is_some_and(|c| !c.schematic_source) {
             self.result
                 .as_ref()
-                .map(|r| r.components.iter().filter(|row| row.status == ComponentLinkStatus::Linked).filter_map(|row| row.symbol_id).collect())
+                .map(|r| {
+                    r.components
+                        .iter()
+                        .filter(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable)
+                        .filter_map(|row| row.symbol_id)
+                        .collect()
+                })
                 .unwrap_or_default()
         } else {
             Vec::new()
@@ -46,7 +52,13 @@ impl CrossProbeUi {
         if self.current.as_ref().is_some_and(|c| c.schematic_source) {
             self.result
                 .as_ref()
-                .map(|r| r.components.iter().filter(|row| row.status == ComponentLinkStatus::Linked).filter_map(|row| row.part_id).collect())
+                .map(|r| {
+                    r.components
+                        .iter()
+                        .filter(|row| row.status == ComponentLinkStatus::Linked && row.board_navigable)
+                        .filter_map(|row| row.part_id)
+                        .collect()
+                })
                 .unwrap_or_default()
         } else {
             Vec::new()
@@ -349,5 +361,20 @@ mod tests {
         assert!(app.navigate_counterpart(&row, false).unwrap_err().contains("changed"));
         assert_eq!(engine.session_state(), before);
         assert!(!app.schematic.active);
+    }
+    #[test]
+    fn unsupported_positions_never_become_navigation_highlights() {
+        let mut report = result();
+        for row in &mut report.components {
+            row.board_navigable = false;
+            row.schematic_navigable = false;
+        }
+        let context = context(&report);
+        let symbol = report.components[0].symbol_id.unwrap();
+        let mut ui = CrossProbeUi { current: Some(context), result: Some(report), ..Default::default() };
+        assert!(ui.highlighted_symbols().is_empty());
+        assert!(!ui.symbol_highlighted(symbol));
+        ui.current.as_mut().unwrap().schematic_source = true;
+        assert!(ui.highlighted_parts().is_empty());
     }
 }
