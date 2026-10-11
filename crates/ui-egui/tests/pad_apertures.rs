@@ -115,3 +115,58 @@ fn actual_compact_signed_margin_is_explicit_and_stale_apply_preserves_draft_unti
     let a = now.project.board.parts[before.project.board.parts.keys().next().unwrap()].pads.as_ref().unwrap().0[0].apertures.as_ref().unwrap();
     assert!(a.mask.is_none() && a.paste.is_none());
 }
+
+#[test]
+fn actual_compact_detached_policy_fields_publish_library3_without_applying_to_design() {
+    let engine = EngineHandle::new(viamind_doc::Project::new("Keep detached"));
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_footprint_definition();
+    let mut h = Harness::builder().with_size(egui::vec2(640., 400.)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(6);
+    input(&mut h, "Footprint definition name", "Exact apertures");
+    click(&mut h, "Add blank rectangular pad");
+    for (label, value) in [
+        ("Pad 1 number", "1"),
+        ("Pad 1 X (mm)", "-0.500003"),
+        ("Pad 1 Y (mm)", "0.250001"),
+        ("Pad 1 width (mm)", "1.200003"),
+        ("Pad 1 height (mm)", "0.800001"),
+    ] {
+        input(&mut h, label, value);
+    }
+    click(&mut h, "Edit definition pad 1 openings");
+    click(&mut h, "Explicit pad openings");
+    click(&mut h, "Mask rectangle");
+    click(&mut h, "Paste rectangle");
+    for (label, value) in [("Mask width", "1.300005"), ("Mask height", "0.900003"), ("Paste width", "1.100001"), ("Paste height", "0.700003")] {
+        input(&mut h, label, value);
+    }
+    let expected = h.state().footprint_definition.definition().unwrap();
+    let policy = expected.pads[0].apertures.as_ref().unwrap();
+    assert_eq!((policy.mask.unwrap().width.0, policy.paste.unwrap().height.0), (1_300_005, 700_003));
+    let id = h.get_by_label("Paste height").accesskit_node().id();
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("explicit.json");
+    input(&mut h, "NEW footprint definition path", path.to_str().unwrap());
+    click(&mut h, "Save NEW footprint definition");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while h.state().footprint_definition.busy() && std::time::Instant::now() < deadline {
+        h.run_steps(2);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    h.run_steps(5);
+    assert!(!h.state().footprint_definition.busy());
+    assert_eq!(viamind_doc::footprint::load(&path).unwrap(), expected);
+    assert_eq!(serde_json::from_slice::<serde_json::Value>(&std::fs::read(&path).unwrap()).unwrap()["version"], 3);
+    reveal(&mut h, "Paste height");
+    assert_eq!(h.get_by_label("Paste height").accesskit_node().id(), id);
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
+    click(&mut h, "Close footprint definition");
+    h.state_mut().begin_footprint_definition();
+    h.run_steps(5);
+    assert_eq!(h.state().footprint_definition.definition().unwrap(), expected);
+    assert_eq!(engine.session_state(), before);
+}

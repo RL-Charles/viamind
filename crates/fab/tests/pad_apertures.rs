@@ -164,9 +164,9 @@ fn independent_job5_observed_openings_refuse_semantic_corruption_even_when_lengt
     let mut job = OutputJob::new("Independent opening observations".into(), 0.0);
     job.version = 5;
     job.include_paste = Some(true);
-    let snapshot = OutputJobSnapshot::capture(&p, job).unwrap();
     let tmp = tempfile::tempdir().unwrap();
     for n in 0..5 {
+        let snapshot = OutputJobSnapshot::capture(&p, job.clone()).unwrap();
         let (path, manifest) = snapshot
             .write(ReleaseCursor { stream_id: viamind_doc::ObjectId::new(), sequence: 0 }, &tmp.path().join(format!("case-{n}")), None)
             .unwrap();
