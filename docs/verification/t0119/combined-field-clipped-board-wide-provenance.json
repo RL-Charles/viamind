@@ -1,0 +1,64 @@
+{
+  "source": "d09dfe016f2852191a97ee9d670cadd885a49d9d",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/footprint-artwork-inspection",
+  "binary_sha256": "2a8b2b7d01f7e0082cc2e869258338cdf8340d00efa383e2142dac2dc18b8bc9",
+  "launched_utc": "2026-10-11T22:06:26.047345+00:00",
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/launch-board-wide",
+    "pid": 3019468,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind-footprint-artwork-inspection",
+        "bounds": {
+          "height": 1667,
+          "width": 2667,
+          "x": 1920,
+          "y": 1152
+        },
+        "height": 1667,
+        "is_on_screen": true,
+        "pid": 3019468,
+        "title": "Untitled \u2014 Viamind",
+        "width": 2667,
+        "window_id": 110379509304160,
+        "x": 1920,
+        "y": 1152,
+        "z_index": null
+      }
+    ]
+  },
+  "native": {
+    "alpha_max": 255,
+    "alpha_min": 242,
+    "capture": "eframe native WGPU Screenshot event",
+    "content_rect": [
+      0.0,
+      0.0,
+      1600.1875,
+      1000.1875
+    ],
+    "control_bounds": "actual native Apply artwork/Reload artwork/Cancel read_response rectangles using exact safely captured labeled widget IDs",
+    "controls": [],
+    "document_status_unchanged": true,
+    "full_session_unchanged": true,
+    "native_viewport_transparent": false,
+    "nonopaque_alpha_pixels": 6890,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p6",
+    "pid": 3019468,
+    "pixels": [
+      2667,
+      1667
+    ],
+    "prepared_silk_width_bounds": null,
+    "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+    "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p7",
+    "rgba_representation": "original egui Screenshot Color32 channels",
+    "self_close_after_capture": true,
+    "ui_passes": 12
+  },
+  "process_after_capture": "absent; self-closed",
+  "scope": "Inspection-only actual egui preparation and native WGPU Screenshot, current native footer responses by safe widget IDs. Logical focus retained; no OS input, compositor capture, opacity or cadence claim."
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "source": "d09dfe016f2852191a97ee9d670cadd885a49d9d",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/viamind",
+  "sha256": "1798841869bd1e2b1b25c82b0ae88815942e67505b52f3c05b045d83ddeeba1d",
+  "pid": 3025560,
+  "url": "http://127.0.0.1:7956/mcp",
+  "original_combined_driver_checks": 34,
+  "independent_checks": [
+    "retained combined production exact final saved session",
+    "two fresh clients agree complete state and status",
+    "native13 exact stored project and mounted artwork",
+    "actual artwork-only view returns four stored lines and two courtyards",
+    "independent release reader retains13files and exact full cursor",
+    "all observations preserve full session/document/AutoDRC/native bytes"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "source": "d09dfe016f2852191a97ee9d670cadd885a49d9d",
+  "binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/viamind",
+      "sha256": "1798841869bd1e2b1b25c82b0ae88815942e67505b52f3c05b045d83ddeeba1d"
+    },
+    "footprint-artwork-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/footprint-artwork-inspection",
+      "sha256": "2a8b2b7d01f7e0082cc2e869258338cdf8340d00efa383e2142dac2dc18b8bc9"
+    }
+  }
+}

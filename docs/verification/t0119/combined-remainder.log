@@ -1,0 +1,147 @@
+d09dfe016f2852191a97ee9d670cadd885a49d9d
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.37s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-3b6e414642a80095)
+
+running 3 tests
+test borrowed_artwork_capture_refusal_preserves_source_and_creates_no_stage ... ok
+test independent_legend_reader_all_cardinal_mirrors_arbitrary_rounding_and_old_files ... ok
+test job_four_exact_companion_matrix_captured_art_and_strict_release_consistency ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-67b5f0fac0c446b3)
+
+running 6 tests
+test strict_checked_descriptor_requires_every_numeric_baseline_and_preserves_generic_bytes ... ok
+test checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_board ... ok
+test release_is_coherent_byte_identical_and_never_clobbers ... ok
+test strict_descriptor_and_bounded_regular_file_loading ... ok
+test release_failure_cleans_staging_and_rejects_board_budget_before_copy ... ok
+test job_component_budget_precedes_board_capture ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.99s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_fab-0d4e9464ff0aed3a)
+
+running 9 tests
+test release_inspection::csv::tests::fixed_decimals_reject_exponents_nonfinite_and_overflow ... ok
+test release_inspection::csv::tests::quoted_unicode_crlf_and_multiline_fields_are_preserved ... ok
+test release_inspection::tests::manifest_map_rejects_duplicates_before_collapsing ... ok
+test release_inspection::csv::tests::row_and_field_limits_reject_before_unbounded_collection ... ok
+test release_inspection::reader::tests::canceled_receiver_does_not_release_real_owned_reader_permit ... ok
+test release_inspection::reader::tests::inspector_caps_refuse_large_exportable_tables_and_empty_population_is_valid ... ok
+test release_inspection::reader::tests::supported_layouts_roundtrip_and_unchecked_content_is_honestly_excluded ... ok
+test release_inspection::reader::tests::strict_layout_lengths_and_matched_csv_errors_reject_without_partial_result ... ok
+test release_inspection::reader::tests::symlink_fifo_and_observed_directory_or_file_replacement_refuse ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.37s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.20s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-5cc872bbaa2d85e1)
+
+running 1 test
+test explicit_layer_output_exact_quarter_bottom_and_legacy_defaults ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 30.22s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-8a2e6f7815bbbf33)
+
+running 3 tests
+test explicit_courtyard_layers_follow_live_edits_and_undo_without_changing_legacy_defaults ... ok
+test actual_compact_exact_author_apply_one_undo_and_local_cancel ... ok
+test actual_stable_row_identity_and_stale_peer_refusal ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-d7cb86108d110db6)
+
+running 3 tests
+test actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_and_reopen ... ok
+test actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retained ... ok
+test actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.43s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.60s
+     Running tests/fabrication.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication-fc717255ae16b3a5)
+
+running 2 tests
+test actual_cli_legend_opt_in_and_explicit_artwork_view_layers ... ok
+test headless_cli_exports_real_package_and_refuses_overwrite_or_invalid_invocation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/release_inspection.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/release_inspection-4dc67320cfae627a)
+
+running 1 test
+test detached_inspector_is_display_free_json_and_rejects_other_modes_without_writes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 29.78s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.52s
+{"viamind": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/viamind", "sha256": "1798841869bd1e2b1b25c82b0ae88815942e67505b52f3c05b045d83ddeeba1d"}, "footprint-artwork-inspection": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/footprint-artwork-inspection", "sha256": "2a8b2b7d01f7e0082cc2e869258338cdf8340d00efa383e2142dac2dc18b8bc9"}}
+Verified 114 full-application tools (2025-03-26)
+Verified 114 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit (test_appimage.AppImageTests.test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit) ... ok
+test_archive_paths_links_duplicates_and_expansion_are_bounded (test_appimage.AppImageTests.test_archive_paths_links_duplicates_and_expansion_are_bounded) ... ok
+test_atomic_publish_preserves_racing_destination (test_appimage.AppImageTests.test_atomic_publish_preserves_racing_destination) ... ok
+test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution (test_appimage.AppImageTests.test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution) ... ok
+test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture (test_appimage.AppImageTests.test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture) ... ok
+test_relink_refuses_destination_created_after_early_check (test_appimage.AppImageTests.test_relink_refuses_destination_created_after_early_check) ... ok
+test_runtime_inventory_digest_and_failed_package_cleanup (test_appimage.AppImageTests.test_runtime_inventory_digest_and_failed_package_cleanup) ... ok
+test_wrong_architecture_refuses_before_inputs_or_publication (test_appimage.AppImageTests.test_wrong_architecture_refuses_before_inputs_or_publication) ... ok
+test_buffered_record_and_expensive_decode_respect_deadline (test_mcp_reference.ReferenceTests.test_buffered_record_and_expensive_decode_respect_deadline) ... ok
+test_check_regular_same_fd_limits_fifo_and_symlink (test_mcp_reference.ReferenceTests.test_check_regular_same_fd_limits_fifo_and_symlink) ... ok
+test_deterministic_complete_markdown_escaping_and_injective_anchors (test_mcp_reference.ReferenceTests.test_deterministic_complete_markdown_escaping_and_injective_anchors) ... ok
+test_duplicate_and_repeated_cursor_and_skeleton_reject (test_mcp_reference.ReferenceTests.test_duplicate_and_repeated_cursor_and_skeleton_reject) ... ok
+test_new_publication_existing_paths_symlink_race_preserve (test_mcp_reference.ReferenceTests.test_new_publication_existing_paths_symlink_race_preserve) ... ok
+test_notifications_drain_and_normal_finish (test_mcp_reference.ReferenceTests.test_notifications_drain_and_normal_finish) ... ok
+test_object_input_schema_required (test_mcp_reference.ReferenceTests.test_object_input_schema_required) ... ok
+test_page_tool_cursor_total_byte_budgets_and_failed_exit (test_mcp_reference.ReferenceTests.test_page_tool_cursor_total_byte_budgets_and_failed_exit) ... ok
+test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit (test_mcp_reference.ReferenceTests.test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit) ... ok
+test_strict_json_duplicate_depth_nonfinite_utf8 (test_mcp_reference.ReferenceTests.test_strict_json_duplicate_depth_nonfinite_utf8) ... ok
+test_timeout_and_unterminated_stdout_and_stderr_bounded (test_mcp_reference.ReferenceTests.test_timeout_and_unterminated_stdout_and_stderr_bounded) ... ok
+test_tool_error_status_requires_actual_boolean (test_mcp_reference.ReferenceTests.test_tool_error_status_requires_actual_boolean) ... ok
+test_wrong_identity_protocol_error_and_invalid_json_reject (test_mcp_reference.ReferenceTests.test_wrong_identity_protocol_error_and_invalid_json_reject) ... ok
+test_atomic_publication_preserves_every_existing_destination (test_package_linux.LinuxBundleTests.test_atomic_publication_preserves_every_existing_destination) ... ok
+test_dependency_closure_keeps_shared_normal_and_build_dependencies (test_package_linux.LinuxBundleTests.test_dependency_closure_keeps_shared_normal_and_build_dependencies) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.544s
+
+OK

@@ -1,0 +1,34 @@
+{
+  "footprint_artwork": {
+    "include_silkscreen": true,
+    "explicit_components": 2,
+    "top_silkscreen_segments": 2,
+    "bottom_silkscreen_segments": 2,
+    "courtyard_count": 2
+  },
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "units": "mm (Gerber 5.6, 1 nm; XNC explicit decimals)",
+  "coordinate_system": "Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored",
+  "mask_expansion_nm": 0,
+  "smd_pad_count": 3,
+  "track_count": 2,
+  "through_via_count": 2,
+  "cutout_count": 1,
+  "files": [
+    "bottom-copper.gbr",
+    "bottom-mask.gbr",
+    "bottom-silkscreen.gbr",
+    "plated-through.xnc",
+    "profile.gbr",
+    "top-copper.gbr",
+    "top-mask.gbr",
+    "top-silkscreen.gbr",
+    "manifest.json"
+  ],
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+    "Stored silkscreen straight strokes only; no synthetic bodies, text, clipping, silk-to-mask or courtyard clearance checks. Courtyards are excluded."
+  ]
+}

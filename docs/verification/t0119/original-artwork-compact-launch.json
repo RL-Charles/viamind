@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/launch-artwork-compact",
+  "pid": 2963056,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-footprint-artwork-inspection",
+      "bounds": {
+        "height": 667,
+        "width": 1067,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 667,
+      "is_on_screen": true,
+      "pid": 2963056,
+      "title": "Untitled \u2014 Viamind",
+      "width": 1067,
+      "window_id": 110379507585168,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}

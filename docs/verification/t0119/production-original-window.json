@@ -1,0 +1,12 @@
+{
+  "observed_utc": "2026-10-11T21:54:32.230207+00:00",
+  "pid": 2960857,
+  "endpoint": "http://127.0.0.1:7954/mcp",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+  "retained_sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e",
+  "live_exe_sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e",
+  "cua_returncode": 0,
+  "cua_stdout": "{\n  \"windows\": [\n    {\n      \"app_name\": \"viamind\",\n      \"bounds\": {\n        \"height\": 131,\n        \"width\": 229,\n        \"x\": 1932,\n        \"y\": 1339\n      },\n      \"height\": 131,\n      \"is_on_screen\": true,\n      \"pid\": 2960857,\n      \"title\": \"authored.viamind.json \u2014 Viamind\",\n      \"width\": 229,\n      \"window_id\": 110379550989520,\n      \"x\": 1932,\n      \"y\": 1339,\n      \"z_index\": null\n    }\n  ]\n}\n",
+  "cua_stderr": "",
+  "scope": "Owned actual application; current exact-PID Cua window discovery only, no OS input or accessibility state claim."
+}

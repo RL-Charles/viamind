@@ -1,0 +1,5 @@
+{
+  "scope": "Checker-only failure; expected hidden tool was correctly a protocol-level unknown tool refusal, not a CallToolResult. Corrected helper asserts protocol refusal plus subsequent healthy unchanged observations. No product source changed.",
+  "source": "d09dfe016f2852191a97ee9d670cadd885a49d9d",
+  "error": "ValueError: MCP protocol error during tools/call"
+}

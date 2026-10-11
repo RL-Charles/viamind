@@ -102,6 +102,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [save\_symbol\_template](#tool-736176655f73796d626f6c5f74656d706c617465)
 - [set\_agent\_presence](#tool-7365745f6167656e745f70726573656e6365)
 - [set\_board\_outline](#tool-7365745f626f6172645f6f75746c696e65)
+- [set\_footprint\_artwork](#tool-7365745f666f6f747072696e745f617274776f726b)
 - [set\_named\_net\_rules](#tool-7365745f6e616d65645f6e65745f72756c6573)
 - [set\_part\_assembly](#tool-7365745f706172745f617373656d626c79)
 - [set\_part\_pads](#tool-7365745f706172745f70616473)
@@ -814,7 +815,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Apply reusable rectangular SMD local geometry and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.",
+  "description": "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -822,6 +823,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "A component placed on the board.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -1062,6 +1194,31 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         ],
         "type": "object"
       },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": [
+          "object",
+          "null"
+        ]
+      },
       "expected_project": {
         "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
         "format": "uuid",
@@ -1071,6 +1228,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "additionalProperties": false,
         "description": "Named geometry. Always validate data constructed in memory before use.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "name": {
             "type": "string"
           },
@@ -1660,6 +1948,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "description": "A component placed on the board.",
                   "properties": {
+                    "artwork": {
+                      "additionalProperties": false,
+                      "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+                      "properties": {
+                        "courtyard": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "max": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "min": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "width": {
+                              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "min",
+                            "max",
+                            "width"
+                          ],
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        },
+                        "silkscreen": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "start": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "width": {
+                                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end",
+                              "width"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "silkscreen"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
                     "assembly": {
                       "additionalProperties": false,
                       "description": "Optional explicitly entered sourcing and population instructions.",
@@ -2465,6 +2884,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Named geometry. Always validate data constructed in memory before use.",
             "properties": {
+              "artwork": {
+                "additionalProperties": false,
+                "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+                "properties": {
+                  "courtyard": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "max": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "min": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "width": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "min",
+                      "max",
+                      "width"
+                    ],
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "silkscreen": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "end": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "start": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end",
+                        "width"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "silkscreen"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -2796,6 +3346,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "description": "A component placed on the board.",
                   "properties": {
+                    "artwork": {
+                      "additionalProperties": false,
+                      "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+                      "properties": {
+                        "courtyard": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "max": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "min": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "width": {
+                              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "min",
+                            "max",
+                            "width"
+                          ],
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        },
+                        "silkscreen": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "start": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "width": {
+                                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end",
+                              "width"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "silkscreen"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
                     "assembly": {
                       "additionalProperties": false,
                       "description": "Optional explicitly entered sourcing and population instructions.",
@@ -3601,6 +4282,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Named geometry. Always validate data constructed in memory before use.",
             "properties": {
+              "artwork": {
+                "additionalProperties": false,
+                "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+                "properties": {
+                  "courtyard": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "max": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "min": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "width": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "min",
+                      "max",
+                      "width"
+                    ],
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "silkscreen": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "end": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "start": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end",
+                        "width"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "silkscreen"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -6154,7 +6966,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Export an immutable snapshot to a NEW directory: two outer Gerber X2 copper layers, mask openings, explicit polygon profile/cutouts and XNC Excellon-subset through-via drill. All files metric, common model origin, X right/Y up, top view, bottom files not mirrored. Requires explicit pads and outline; no legacy preview inference, inner copper/pours, routing or fabrication certification. Existing destinations always reject. mask_expansion_mm defaults to 0 mm (0–10); all vias untented. Optional expected_cursor guards snapshot. Returns exported_cursor and manifest; preserves design/history/dirty state. Board-only snapshot; at most200000 primitives,4096 bytes/string,2 MiB aggregate text,128 MiB output. Shared two-snapshot process admission rejects busy requests.",
+  "description": "Export an immutable snapshot to a NEW directory: two outer Gerber X2 copper layers, mask openings, explicit polygon profile/cutouts and XNC Excellon-subset through-via drill. All files metric, common model origin, X right/Y up, top view, bottom files not mirrored. Requires explicit pads and outline; no legacy preview inference, inner copper/pours, routing or fabrication certification. Existing destinations always reject. mask_expansion_mm defaults to 0 mm (0–10); all vias untented. include_silkscreen defaults false; true adds positive Legend Top/Bot files of stored straight strokes, no synthetic bodies, text, clipping or courtyard checks. Optional expected_cursor guards snapshot. Returns exported_cursor and manifest; preserves design/history/dirty state. Board-only snapshot; at most200000 primitives,4096 bytes/string,2 MiB aggregate text,128 MiB output. Shared two-snapshot process admission rejects busy requests.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -6178,6 +6990,10 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "object",
           "null"
         ]
+      },
+      "include_silkscreen": {
+        "default": false,
+        "type": "boolean"
       },
       "mask_expansion_mm": {
         "default": 0,
@@ -6205,7 +7021,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Export committed explicit rectangular SMD geometry and footprint name to a new native library file. Exact project/part guards; no UUIDs, nets or component placement are exported. Refuses existing paths and protects active native project. Read-only design/history operation; parent directory must exist.",
+  "description": "Export committed explicit rectangular SMD pads, footprint name and optional stored silk/courtyard to a new native version1/2 library. Exact project/part guards; expected_cursor is required for explicit artwork. No UUIDs, nets or component placement are exported. Refuses existing paths and protects active native project. Read-only design/history operation; parent directory must exist.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -6214,6 +7030,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "A component placed on the board.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -6453,6 +7400,31 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "side"
         ],
         "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": [
+          "object",
+          "null"
+        ]
       },
       "expected_project": {
         "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
@@ -6825,7 +7797,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Load a bounded native viamind-footprint version1 JSON library from a local file and apply with exact project/part guards. Rectangular SMD local Nm geometry only. Matching numbers retain pad IDs/nets; component placement is unchanged. One undoable edit. Does not read KiCad files.",
+  "description": "Load a bounded native viamind-footprint version1/2 library and apply rectangular pads plus optional stored silk/courtyard with exact project/part guards. Full expected_cursor is required when source or target has explicit artwork. Matching numbers retain pad IDs/nets; placement and assembly metadata are unchanged. One undoable edit. Does not read KiCad files.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -6834,6 +7806,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "A component placed on the board.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -7074,6 +8177,31 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         ],
         "type": "object"
       },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": [
+          "object",
+          "null"
+        ]
+      },
       "expected_project": {
         "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
         "format": "uuid",
@@ -7216,7 +8344,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read-only bounded consistency inspection of an explicit saved Viamind release directory (versions1–3). Strict fixed layout/JSON and observed regular-file lengths; calibrated row/count checks and version3 matched populated fields/component identity digest. Descriptor-anchored no-follow/nonblock Linux reads; one retained reader. Inspector caps may refuse otherwise valid larger exports. Reports historical exported cursor, not current board equivalence. No authenticated file content, geometry/DRC recomputation, atomic cross-file snapshot, unlisted-file inspection or manufacturer acceptance. No document/file payload mutation.",
+  "description": "Read-only bounded consistency inspection of an explicit saved Viamind release directory (versions1–4). Version4 adds paired Legend files and bounded artwork-summary consistency. Strict fixed layout/JSON and observed regular-file lengths; calibrated row/count checks and version3 matched populated fields/component identity digest. Descriptor-anchored no-follow/nonblock Linux reads; one retained reader. Inspector caps may refuse otherwise valid larger exports. Reports historical exported cursor, not current board equivalence. No authenticated file content, geometry/DRC recomputation, atomic cross-file snapshot, unlisted-file inspection or manufacturer acceptance. No document/file payload mutation.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -7390,6 +8518,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "description": "A component placed on the board.",
                   "properties": {
+                    "artwork": {
+                      "additionalProperties": false,
+                      "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+                      "properties": {
+                        "courtyard": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "max": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "min": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "width": {
+                              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "min",
+                            "max",
+                            "width"
+                          ],
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        },
+                        "silkscreen": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "start": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "width": {
+                                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end",
+                              "width"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "silkscreen"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
                     "assembly": {
                       "additionalProperties": false,
                       "description": "Optional explicitly entered sourcing and population instructions.",
@@ -8248,6 +9507,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected_part": {
         "description": "A component placed on the board.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -10752,6 +12142,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Named geometry. Always validate data constructed in memory before use.",
             "properties": {
+              "artwork": {
+                "additionalProperties": false,
+                "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+                "properties": {
+                  "courtyard": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "max": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "min": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "width": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "min",
+                      "max",
+                      "width"
+                    ],
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "silkscreen": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "end": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "start": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end",
+                        "width"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "silkscreen"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -11001,6 +12522,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Named geometry. Always validate data constructed in memory before use.",
             "properties": {
+              "artwork": {
+                "additionalProperties": false,
+                "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+                "properties": {
+                  "courtyard": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "max": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "min": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "width": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "min",
+                      "max",
+                      "width"
+                    ],
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "silkscreen": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "end": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "start": {
+                          "description": "A position on the board, in nanometres.",
+                          "properties": {
+                            "x": {
+                              "description": "Horizontal coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            },
+                            "y": {
+                              "description": "Vertical coordinate.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y"
+                          ],
+                          "type": "object"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "end",
+                        "width"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "silkscreen"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -11858,7 +13510,11 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "enum": [
                 "bottom_copper",
                 "top_copper",
-                "outline"
+                "outline",
+                "bottom_silkscreen",
+                "top_silkscreen",
+                "bottom_courtyard",
+                "top_courtyard"
               ],
               "type": "string"
             },
@@ -11934,7 +13590,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Render an immutable PCB snapshot as self-contained SVG (image/svg+xml). options selects outer copper/outline layers, explicit region_nm or auto-fit, padding_nm and viewport pixels. Explicit pads/tracks/vias/polygon cutouts only; legacy previews omitted and reported, no schematic/PNG/fabrication certification. Optional expected_cursor guards snapshot. Optional path publishes a NEW file with native/collision protection. Returns SVG, metadata and source_cursor without changing document/history/dirty state.",
+  "description": "Render an immutable PCB snapshot as self-contained SVG (image/svg+xml). options selects outer copper/outline or explicit mounted-side silkscreen/courtyard layers, explicit region_nm or auto-fit, padding_nm and viewport pixels. Pads/tracks/vias/polygon cutouts and stored straight artwork only; no synthetic bodies, text, silk clipping or courtyard checks; legacy previews omitted and reported, no schematic/PNG/fabrication certification. Optional expected_cursor guards snapshot. Optional path publishes a NEW file with native/collision protection. Returns SVG, metadata and source_cursor without changing document/history/dirty state.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -11994,7 +13650,11 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "enum": [
                 "bottom_copper",
                 "top_copper",
-                "outline"
+                "outline",
+                "bottom_silkscreen",
+                "top_silkscreen",
+                "bottom_courtyard",
+                "top_courtyard"
               ],
               "type": "string"
             },
@@ -14379,7 +16039,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Version1 generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Explicit version2/include_calibrated_placement:true adds one populated-only generic calibrated centroid/marker companion (12/13 files), requiring explicit mounting/calibration; old generic inventories still contain all components. Version3 additionally requires include_populated_bom:true and writes one generic per-component populated BOM matching the calibrated component subset (13/14 files); explicit optional sourcing only, missing identifiers stay blank. Reports bounded matched count/identity SHA256; existing file map is byte lengths. No universal vendor zero. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/inferred identifiers or procurement. Versions1/2 exclude sourcing strings. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Version1 generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Explicit version2/include_calibrated_placement:true adds one populated-only generic calibrated centroid/marker companion (12/13 files), requiring explicit mounting/calibration; old generic inventories still contain all components. Version3 additionally requires include_populated_bom:true and writes one generic per-component populated BOM matching the calibrated component subset (13/14 files); explicit optional sourcing only, missing identifiers stay blank. Version4 requires include_silkscreen:true and adds paired positive Legend Top/Bot files (13–16 files depending on companions/profile); only stored straight strokes, no synthetic body, text, clipping or courtyard checks. Reports bounded matched count/identity SHA256; existing file map is byte lengths. No universal vendor zero. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/inferred identifiers or procurement. Versions1/2 exclude sourcing strings. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -14429,7 +16089,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Validate and publish one detached native rectangular SMD footprint definition to a NEW file. Explicit local integer Nm centers/dimensions and unique pad numbers, at most1024 pads, no IDs/nets/placement or inferred manufacturing data. Refuses existing paths and protects the latest active native project under its lifecycle guard. No design/history/selection/dirty change; apply separately using guarded import_footprint.",
+  "description": "Validate and publish one detached native footprint definition to a NEW file: at most1024 explicit rectangular SMD pads, optional at most256 straight silk strokes and one rectangular courtyard in local integer Nm. Version1 omits artwork; version2 requires a non-null artwork object, including explicit empty suppression. No IDs/nets/placement or inferred manufacturing data. Refuses existing paths and protects the latest active native project under its lifecycle guard. No design/history/selection/dirty change; apply separately using guarded import_footprint.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -14438,6 +16098,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "additionalProperties": false,
         "description": "Named geometry. Always validate data constructed in memory before use.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "name": {
             "type": "string"
           },
@@ -14540,6 +16331,11 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "required": [
                         "include_populated_bom"
                       ]
+                    },
+                    {
+                      "required": [
+                        "include_silkscreen"
+                      ]
                     }
                   ]
                 },
@@ -14551,8 +16347,17 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               },
               {
                 "not": {
-                  "required": [
-                    "include_populated_bom"
+                  "anyOf": [
+                    {
+                      "required": [
+                        "include_populated_bom"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "include_silkscreen"
+                      ]
+                    }
                   ]
                 },
                 "properties": {
@@ -14565,6 +16370,11 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 ]
               },
               {
+                "not": {
+                  "required": [
+                    "include_silkscreen"
+                  ]
+                },
                 "properties": {
                   "version": {
                     "const": 3
@@ -14574,6 +16384,26 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "include_calibrated_placement",
                   "include_populated_bom"
                 ]
+              },
+              {
+                "if": {
+                  "required": [
+                    "include_populated_bom"
+                  ]
+                },
+                "properties": {
+                  "version": {
+                    "const": 4
+                  }
+                },
+                "required": [
+                  "include_silkscreen"
+                ],
+                "then": {
+                  "required": [
+                    "include_calibrated_placement"
+                  ]
+                }
               }
             ]
           }
@@ -14662,6 +16492,9 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "include_populated_bom": {
             "const": true
           },
+          "include_silkscreen": {
+            "const": true
+          },
           "mask_expansion_mm": {
             "default": 0,
             "maximum": 10,
@@ -14683,7 +16516,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "enum": [
               1,
               2,
-              3
+              3,
+              4
             ]
           }
         },
@@ -15281,6 +17115,562 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-7365745f666f6f747072696e745f617274776f726b"></a>
+
+## set\_footprint\_artwork
+
+```json
+{
+  "description": "Replace mounted-side footprint silkscreen line geometry and optional rectangular courtyard using integer local Nm. Full initial cursor, project and exact Part guards; one undoable Part edit, no-op emits nothing. At most256 segments, positive strokes and stroked extents within +/-10000mm. Explicit empty artwork suppresses legacy synthetic body; null restores it. Pads/nets/pose/links remain unchanged. Native feature13; no silk clipping or courtyard/clearance certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "artwork": {
+        "additionalProperties": false,
+        "description": "Presence is meaningful: an empty object intentionally suppresses legacy artwork.",
+        "properties": {
+          "courtyard": {
+            "additionalProperties": false,
+            "properties": {
+              "max": {
+                "description": "A position on the board, in nanometres.",
+                "properties": {
+                  "x": {
+                    "description": "Horizontal coordinate.",
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "y": {
+                    "description": "Vertical coordinate.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "type": "object"
+              },
+              "min": {
+                "description": "A position on the board, in nanometres.",
+                "properties": {
+                  "x": {
+                    "description": "Horizontal coordinate.",
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "y": {
+                    "description": "Vertical coordinate.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "type": "object"
+              },
+              "width": {
+                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "min",
+              "max",
+              "width"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "silkscreen": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "end": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "start": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "width": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "start",
+                "end",
+                "width"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "silkscreen"
+        ],
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "expected": {
+        "description": "A component placed on the board.",
+        "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "assembly": {
+            "additionalProperties": false,
+            "description": "Optional explicitly entered sourcing and population instructions.",
+            "properties": {
+              "manufacturer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "mpn": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "populate": {
+                "default": true,
+                "type": "boolean"
+              },
+              "supplier": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "supplier_sku": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "designator": {
+            "description": "Reference designator, e.g. `\"R1\"`.",
+            "type": "string"
+          },
+          "footprint": {
+            "description": "Footprint name, e.g. `\"R_0603\"`.",
+            "type": "string"
+          },
+          "id": {
+            "description": "Stable id of the part.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "pads": {
+            "description": "Explicit electrical pads; None retains the legacy graphical preview.",
+            "items": {
+              "additionalProperties": false,
+              "description": "A rectangular SMD pad. Net names are case-sensitive; None means unassigned.",
+              "properties": {
+                "height": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "net": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "number": {
+                  "type": "string"
+                },
+                "position": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "width": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "number",
+                "position",
+                "width",
+                "height"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "position": {
+            "description": "Position of the part origin on the board, in nanometres.",
+            "properties": {
+              "x": {
+                "description": "Horizontal coordinate.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "y": {
+                "description": "Vertical coordinate.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "rotation_mdeg": {
+            "description": "Rotation counter-clockwise in millidegrees, normalised to `0..360_000`.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "schematic_package": {
+            "description": "Explicit complete multi-unit package identity; mutually exclusive with a single symbol link.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "schematic_symbol": {
+            "description": "Stable schematic symbol identity; missing symbols remain explicit unresolved links.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "side": {
+            "description": "Which side of the board the part sits on.",
+            "oneOf": [
+              {
+                "const": "top",
+                "description": "Component (top) side.",
+                "type": "string"
+              },
+              {
+                "const": "bottom",
+                "description": "Solder (bottom) side.",
+                "type": "string"
+              }
+            ]
+          },
+          "value": {
+            "description": "Value, e.g. `\"10k\"`.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "designator",
+          "value",
+          "footprint",
+          "position",
+          "rotation_mdeg",
+          "side"
+        ],
+        "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "expected"
+    ],
+    "title": "SetFootprintArtwork",
+    "type": "object"
+  },
+  "name": "set_footprint_artwork"
+}
+```
+
 <a id="tool-7365745f6e616d65645f6e65745f72756c6573"></a>
 
 ## set\_named\_net\_rules
@@ -15482,6 +17872,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "A component placed on the board.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -15765,6 +18286,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "Exact snapshot required to prevent overwriting a concurrent edit.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",
@@ -16730,6 +19382,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "description": "A component placed on the board.",
                   "properties": {
+                    "artwork": {
+                      "additionalProperties": false,
+                      "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+                      "properties": {
+                        "courtyard": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "max": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "min": {
+                              "description": "A position on the board, in nanometres.",
+                              "properties": {
+                                "x": {
+                                  "description": "Horizontal coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "y": {
+                                  "description": "Vertical coordinate.",
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "type": "object"
+                            },
+                            "width": {
+                              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                              "format": "int64",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "min",
+                            "max",
+                            "width"
+                          ],
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        },
+                        "silkscreen": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "start": {
+                                "description": "A position on the board, in nanometres.",
+                                "properties": {
+                                  "x": {
+                                    "description": "Horizontal coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "Vertical coordinate.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "width": {
+                                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end",
+                              "width"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "silkscreen"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
                     "assembly": {
                       "additionalProperties": false,
                       "description": "Optional explicitly entered sourcing and population instructions.",
@@ -17580,6 +20363,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "items": {
           "description": "A component placed on the board.",
           "properties": {
+            "artwork": {
+              "additionalProperties": false,
+              "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+              "properties": {
+                "courtyard": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "max": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "min": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max",
+                    "width"
+                  ],
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "silkscreen": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "end": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "start": {
+                        "description": "A position on the board, in nanometres.",
+                        "properties": {
+                          "x": {
+                            "description": "Horizontal coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "Vertical coordinate.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "width": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end",
+                      "width"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "silkscreen"
+              ],
+              "type": [
+                "object",
+                "null"
+              ]
+            },
             "assembly": {
               "additionalProperties": false,
               "description": "Optional explicitly entered sourcing and population instructions.",
@@ -18002,6 +20916,137 @@ Every JSON block preserves the complete discovered tool definition. Request unit
       "expected": {
         "description": "Exact previously read model part; mismatch rejects without changing anything.\nCoordinates in this snapshot are integer nanometres.",
         "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
           "assembly": {
             "additionalProperties": false,
             "description": "Optional explicitly entered sourcing and population instructions.",

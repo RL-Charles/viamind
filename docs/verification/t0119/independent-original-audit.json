@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+  "original_report_checks": 34,
+  "independent_actual_checks": [
+    "owned retained production exact final saved session",
+    "two initialized peers agree full state and status",
+    "actual design equals feature13 native bytes",
+    "actual explicit-only artwork render retains both sides",
+    "actual independent release reader verifies13 files exact cursor",
+    "all independent observations preserve full state and status"
+  ],
+  "binaries_rehashed": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+      "sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e"
+    },
+    "footprint-artwork-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/footprint-artwork-inspection",
+      "sha256": "ab29326417dee8620f067786ebeda02f615ecc856b3959c89ba5a7cc06efe9c3"
+    }
+  },
+  "captures": [
+    {
+      "name": "artwork-wide",
+      "p7_sha256": "166e8512235070213230e45525c1a84162a925a1abcfa1a27e4b12cf854194ae",
+      "all_png_p6_rgb_equal": true,
+      "png_mode": "RGB",
+      "self_closed": true,
+      "alpha_range": [
+        247,
+        255
+      ]
+    },
+    {
+      "name": "artwork-compact",
+      "p7_sha256": "7ec6f4a6be996573a945ee38188a04f1da55c6dc4bd774eaa1b0c11b793f08a2",
+      "all_png_p6_rgb_equal": true,
+      "png_mode": "RGB",
+      "self_closed": true,
+      "alpha_range": [
+        247,
+        255
+      ]
+    },
+    {
+      "name": "board-wide",
+      "p7_sha256": "21d96df1c4080da6a6f8d96e13ab669773b80120d749adac9a30839dc811a0a3",
+      "all_png_p6_rgb_equal": true,
+      "png_mode": "RGB",
+      "self_closed": true,
+      "alpha_range": [
+        242,
+        255
+      ]
+    }
+  ],
+  "listener_ownership": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7954      0.0.0.0:*    users:((\"viamind\",pid=2960857,fd=6))\n"
+}

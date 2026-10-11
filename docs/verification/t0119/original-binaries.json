@@ -1,0 +1,14 @@
+{
+  "source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+  "binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+      "sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e"
+    },
+    "footprint-artwork-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/footprint-artwork-inspection",
+      "sha256": "ab29326417dee8620f067786ebeda02f615ecc856b3959c89ba5a7cc06efe9c3"
+    }
+  },
+  "gates": "fmtcheck strictworkspacealltargetclippy fullworkspace tests/build plus inspection build"
+}

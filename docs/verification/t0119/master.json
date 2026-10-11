@@ -1,0 +1,658 @@
+{
+  "format": "viamind-footprint-artwork-verification",
+  "version": 1,
+  "approved_spec": "37fc6fdac976cf90189af89ecfeed28fc13891d9",
+  "original_source": "004960d9729a1fe9a19da6ed5fb35b39c9f581a6",
+  "combined_product_source": "d09dfe016f2852191a97ee9d670cadd885a49d9d",
+  "final_inspection_source": "9f53d65ddf5bff11c96a7fdd8cba2e19a451789f",
+  "stack_parent": "1e113aa17e158510b844a4a23d1e8cace4ae1b6f",
+  "linux_original": {
+    "passed": 923,
+    "failed": 0,
+    "ignored": 1,
+    "fmt": true,
+    "strict_all_target_clippy": true,
+    "workspace_build": true,
+    "inspection_build": true
+  },
+  "combined": {
+    "fmt": true,
+    "strict_all_target_clippy": true,
+    "focused_rust_passed": 34,
+    "focused_rust_failed": 0,
+    "workspace_build": true,
+    "tool_count": 114,
+    "exact_catalog": true,
+    "workflow_checks": 18,
+    "python_tests": 23,
+    "production_http_checks": 34,
+    "initialized_mode_checks": 12
+  },
+  "artifacts": [
+    {
+      "path": "docs/verification/t0119/production-probe.py",
+      "storage": "repository",
+      "sha256": "8714db9e8a2cb129a297b7f74f1a8af982266e7e0846b1a3650bb04a2e9a3b4c"
+    },
+    {
+      "path": "docs/verification/t0119/capture-native.py",
+      "storage": "repository",
+      "sha256": "d1943500802fac64096f8ef94f4b4279736995005498cffa5850d6142935a4cd"
+    },
+    {
+      "path": "docs/verification/t0119/encode-native-ppm.py",
+      "storage": "repository",
+      "sha256": "4cb83179220df676cb9ca041eebc8f41e72388a0dc2f1820df6bdbacddbb762b"
+    },
+    {
+      "path": "docs/verification/t0119/combined-mode-proof.py",
+      "storage": "repository",
+      "sha256": "fface7f14172e95b18db5128a8a5b419b4af5613fdaab5942b5f71ebb9859ce6"
+    },
+    {
+      "path": "docs/verification/t0119/verify-artifacts.py",
+      "storage": "repository",
+      "sha256": "affb10f070753ffb0612a869c5a89518fbb9349a12ee5deed5b75cdf6476b5bc"
+    },
+    {
+      "path": "docs/verification/t0119/full.sh",
+      "storage": "repository",
+      "sha256": "866aaf03edcd04beae7e1430cfb6ea2e6e7cfb0eec5f0463e4e6f2b85baf031d"
+    },
+    {
+      "path": "docs/verification/t0119/combined.sh",
+      "storage": "repository",
+      "sha256": "d175ec888deba191e0a0c6801c71d7e26da906e14e26d9a775a4403095da1ca0"
+    },
+    {
+      "path": "docs/verification/t0119/combined2.sh",
+      "storage": "repository",
+      "sha256": "5c9029b557f0c303c3485871e5eecc1d9d4edc941f8ff9fe872232758f3b79f4"
+    },
+    {
+      "path": "docs/verification/t0119/inspection-final.sh",
+      "storage": "repository",
+      "sha256": "0baaf11556136f8e89a1592cdde40a8f3936c80c373906bcd2c53c90b8a24b71"
+    },
+    {
+      "path": "docs/verification/t0119/linux-first-failed.log",
+      "storage": "repository",
+      "sha256": "e5e209a02d036a8b9629446825b77b4e8ecd61707341b97d43b856e22625f5c6"
+    },
+    {
+      "path": "docs/verification/t0119/linux-original.log",
+      "storage": "repository",
+      "sha256": "0c4c52440a3b68fce1fb434bc61c9d3fcf56aadb84f8f1eb7826e4a044e67733"
+    },
+    {
+      "path": "docs/verification/t0119/combined-first-target-error.log",
+      "storage": "repository",
+      "sha256": "6c85548b74aa3cb4276a9d9d33b31d3aa2a1c49d4e2c1d2f7b74d49b8060effd"
+    },
+    {
+      "path": "docs/verification/t0119/combined-remainder.log",
+      "storage": "repository",
+      "sha256": "cea5bb276063848c8babdafcbd098573d1dc3cc9dd7a27c8c56654636edd4b4a"
+    },
+    {
+      "path": "docs/verification/t0119/inspection-final.log",
+      "storage": "repository",
+      "sha256": "6879b3dcc5d3fa8d53f0333ddf2d246cd8040b55c26354187e3d949e857ca590"
+    },
+    {
+      "path": "docs/verification/t0119/original-linux-verification.json",
+      "storage": "repository",
+      "sha256": "49edf295cf4c7229852d9e625fd1d17e892efe98fedf52f38e2c145433cf09bd"
+    },
+    {
+      "path": "docs/verification/t0119/production-original-window.json",
+      "storage": "repository",
+      "sha256": "24f8eb49fbea22d946c70d0407806312fb97899d7d0e276ff5b30dfec414da14"
+    },
+    {
+      "path": "docs/verification/t0119/production-combined-window.json",
+      "storage": "repository",
+      "sha256": "bc817a2e4585068c419f6594590415f9a93a75211549c17086a597db357a5ef2"
+    },
+    {
+      "path": "docs/verification/t0119/production-original.json",
+      "storage": "repository",
+      "sha256": "0acf413fa832b6c9dfb04fac1498be2e527b5af60b0ac20e384b4a4fa8e0f958"
+    },
+    {
+      "path": "docs/verification/t0119/production-combined.json",
+      "storage": "repository",
+      "sha256": "c59f7cce212befdfef905911e62571661773e38445dce9a2cdd33f98bbedae45"
+    },
+    {
+      "path": "docs/verification/t0119/combined-modes.json",
+      "storage": "repository",
+      "sha256": "4b09721425e4b752f2656adf6e9291de2b9222b6f82f7bcb212186c0903ac3d6"
+    },
+    {
+      "path": "docs/verification/t0119/combined-mode-checker-failure.json",
+      "storage": "repository",
+      "sha256": "b3edb0922f3478aa8e5b55d28a8240a4d731f8061cb152d205928b6423a31565"
+    },
+    {
+      "path": "docs/verification/t0119/original-binaries.json",
+      "storage": "repository",
+      "sha256": "a4c4724469b708b302ee253545bb514442c0cfa7ee037e2368ca27e4df8d41b4"
+    },
+    {
+      "path": "docs/verification/t0119/combined-binaries.json",
+      "storage": "repository",
+      "sha256": "a9e5b9a60ef7c5d3c1797b8e2e3bd53c76d9b635452a7cfc3f5eaf8a674b8db6"
+    },
+    {
+      "path": "docs/verification/t0119/final-inspection-binary.json",
+      "storage": "repository",
+      "sha256": "12ff23747a88737847ecea8033c11f8a41df6c3e0be3c79a9f922f36459c5e42"
+    },
+    {
+      "path": "docs/verification/t0119/initial.viamind.json",
+      "storage": "repository",
+      "sha256": "04b463bb55e4b8a43495b36c606ec041dcf3e5d9dfa429c7a5e0ee1ed3591875"
+    },
+    {
+      "path": "docs/verification/t0119/authored-original.viamind.json",
+      "storage": "repository",
+      "sha256": "045ba41d9d912ba18a4287b9b97d6475ba0f7ef1594c7cbe7b04d0a7b54a4f53"
+    },
+    {
+      "path": "docs/verification/t0119/authored-combined.viamind.json",
+      "storage": "repository",
+      "sha256": "045ba41d9d912ba18a4287b9b97d6475ba0f7ef1594c7cbe7b04d0a7b54a4f53"
+    },
+    {
+      "path": "docs/verification/t0119/explicit.footprint.json",
+      "storage": "repository",
+      "sha256": "eda36762ad77a6b42b92376fad8fcf51ce2520bb602d1c4fad32d36eab4f0a22"
+    },
+    {
+      "path": "docs/verification/t0119/legend.job.json",
+      "storage": "repository",
+      "sha256": "e6f038b2dc8aaf4eae363c31a25378fa22d3bfe38eeb968d8972a31ea01cfda0"
+    },
+    {
+      "path": "docs/verification/t0119/catalog-verification.json",
+      "storage": "repository",
+      "sha256": "62d1303ab1cab83e904e49b6b61e6e32614e8d001a1730e895f14896a0a897ac"
+    },
+    {
+      "path": "docs/verification/t0119/workflow-verification.json",
+      "storage": "repository",
+      "sha256": "11bb5b67b4fed712745361c6a34595389b2dd13bc4700a8eb72425c61a11334b"
+    },
+    {
+      "path": "docs/verification/t0119/independent-original-audit.json",
+      "storage": "repository",
+      "sha256": "79742a76a7c343a1b2997ee304d671bb4973ffc06aaf4346258c37d366f483e7"
+    },
+    {
+      "path": "docs/verification/t0119/independent-combined-http.json",
+      "storage": "repository",
+      "sha256": "c81b7649c18f144c04e627355a2bc4f7f8b7a065fe5259723374fb8a5dd4ab76"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/assembly/bom.csv",
+      "storage": "repository",
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/assembly/placement.csv",
+      "storage": "repository",
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/bottom-copper.gbr",
+      "storage": "repository",
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/bottom-mask.gbr",
+      "storage": "repository",
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/bottom-silkscreen.gbr",
+      "storage": "repository",
+      "sha256": "df38b8cda5704aa446872a27fc0c75566b441580818327b88ae93aba1ace86c9"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/manifest.json",
+      "storage": "repository",
+      "sha256": "04e489678db6cf421bd4c310275008e23b1c727665e7c5d2fe741e7aef49a876"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/plated-through.xnc",
+      "storage": "repository",
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/profile.gbr",
+      "storage": "repository",
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/top-copper.gbr",
+      "storage": "repository",
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/top-mask.gbr",
+      "storage": "repository",
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/fabrication/top-silkscreen.gbr",
+      "storage": "repository",
+      "sha256": "a4ff55d9a31a1e141584cc61af93dad3243a563a2fdd96ed89d9d41fa1e59787"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/job.json",
+      "storage": "repository",
+      "sha256": "e6f038b2dc8aaf4eae363c31a25378fa22d3bfe38eeb968d8972a31ea01cfda0"
+    },
+    {
+      "path": "docs/verification/t0119/production-release/release-manifest.json",
+      "storage": "repository",
+      "sha256": "59bd2d718307c2c76eff8a341375f8386461f51bb25c50fe7c7720e153ad13f4"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-wide.png",
+      "storage": "repository",
+      "sha256": "700d3772752a20210b951a56433df71771c79b197f4ed4d2854170a3f5c4d060"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "f67202f33393e60754373935f7b77ec9cc38c93987e047ccc3369a7c996c6156"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "8bface3edb0376e77e0446805874a89ab44d0ed6bfabd76c519dae0049e5e7e4"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-wide-launch.json",
+      "storage": "repository",
+      "sha256": "dbb4e0fdc803c6f8eac952286ef5ec3b89a52eacda3738cba30d66f900fe6da3"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-wide.p7",
+      "storage": "retained",
+      "sha256": "166e8512235070213230e45525c1a84162a925a1abcfa1a27e4b12cf854194ae"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-wide.p6",
+      "storage": "retained",
+      "sha256": "4f974e7f9baa939bc982ccc47b3e6f4f013b1ac48f17ea00980a402ee8fac771"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-compact.png",
+      "storage": "repository",
+      "sha256": "3aa09254bd978efdd6f1feaed2862e38f2ecf22bfa427d1c10fcb313e8195b16"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-compact-provenance.json",
+      "storage": "repository",
+      "sha256": "000a4baa6e11e5c6edad7c97ceb9a8d01681a1f22c434fd679f6fd0c1129725c"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-compact-runtime.log",
+      "storage": "repository",
+      "sha256": "22ba3d7727e27d08c5fd8441980521e671d82da2af4a85d818044e82df79df54"
+    },
+    {
+      "path": "docs/verification/t0119/original-artwork-compact-launch.json",
+      "storage": "repository",
+      "sha256": "8cd68fd2c49fe295652f0d246cd2e3c094669583345105d9b64caa5f6d427a04"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-compact.p7",
+      "storage": "retained",
+      "sha256": "7ec6f4a6be996573a945ee38188a04f1da55c6dc4bd774eaa1b0c11b793f08a2"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-compact.p6",
+      "storage": "retained",
+      "sha256": "a37e72b881e3736676324e660fca046905d04aae1c91071c6e1c1434feb11637"
+    },
+    {
+      "path": "docs/verification/t0119/original-board-wide.png",
+      "storage": "repository",
+      "sha256": "ecad9836c74b7be4b58c9c47060ad93704220786ce99a62a6beadc62bfed3762"
+    },
+    {
+      "path": "docs/verification/t0119/original-board-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "2e2f83834b3685df14d8f9f67655af781e9107cdd53ab9f78d779d51dcf09a3e"
+    },
+    {
+      "path": "docs/verification/t0119/original-board-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "129bff4265ec60125ebd0947398d255b05b342fb7ffd68a193f3433c76ff0bd4"
+    },
+    {
+      "path": "docs/verification/t0119/original-board-wide-launch.json",
+      "storage": "repository",
+      "sha256": "10c0426add6a5864fe9d52d7bff305cf51b47570ec967753edcff5a758e4ada5"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/board-wide.p7",
+      "storage": "retained",
+      "sha256": "21d96df1c4080da6a6f8d96e13ab669773b80120d749adac9a30839dc811a0a3"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/board-wide.p6",
+      "storage": "retained",
+      "sha256": "062dd46fb48ca8ad98e5174a29bed5c3938e5c589e7b532137cf1b57c6b80d40"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-rgb-verification.json",
+      "storage": "repository",
+      "sha256": "a3b3f04689f3d70831f089cbc16a0e70ae44bfb9632a8b6d31853289275ae20f"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-wide.png",
+      "storage": "repository",
+      "sha256": "10d3521159118ce65cf550f94aaca4d8ffc3664f7d92ef1da5f354a1192683f4"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "e1a11df0c3d180507711b4a12ee2ff86f4597f1e3dbc8e20f6e1070072fe0c5e"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "2823a0d7848eb828234badfca065fbd20ca7488f54c79a134f7b5e5bb8d65d6c"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-wide-launch.json",
+      "storage": "repository",
+      "sha256": "f30b6de89fe95f4251b02d91a26976c3e85004803347a28ad45217f12d955549"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p7",
+      "storage": "retained",
+      "sha256": "7b7cebf438b3037cf8588388400ed4e3059d80ee628dc33f051b7330a569416e"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p6",
+      "storage": "retained",
+      "sha256": "7ad11959593632145c6cd035513e129b99183d87bb7e630512c40af8a0034471"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-compact.png",
+      "storage": "repository",
+      "sha256": "a6919d0c2bd365d331d3e839b1ec5518187703eb881db06642233ec82d60694b"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-compact-provenance.json",
+      "storage": "repository",
+      "sha256": "fdf3c787ff9cd868d8bb21cacf8754eb0ef18c06e30d440fabd4df45f88d6130"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-compact-runtime.log",
+      "storage": "repository",
+      "sha256": "01503324045bba1214b6e0d8e7ac760efd589058b63325012b29fffc28414104"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-artwork-compact-launch.json",
+      "storage": "repository",
+      "sha256": "6f7f61d4acae54823c135923eb14d8471108d8b163255fc5413c1aa42ff74819"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p7",
+      "storage": "retained",
+      "sha256": "e4c37b8256fad4f4667c7b550afb2850481a1ccafd8ab033cb37601929f19caf"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p6",
+      "storage": "retained",
+      "sha256": "95b46322559f53c42276ed1616fa8cf7e26a2038d42bca6541e9223b0f3596be"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-board-wide.png",
+      "storage": "repository",
+      "sha256": "a6050b2e590c76145a9828058deff0e26800212dc5b7806622d89fca4d82b384"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-board-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "38b2eac62da6bbc44c328fb8b972bf444ce4236dc6482eaa39ac144a0cfe901f"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-board-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "336deddb5b1137a9bf13a68e161a6303420d5271d4a228868df46d105f400bdc"
+    },
+    {
+      "path": "docs/verification/t0119/combined-field-clipped-board-wide-launch.json",
+      "storage": "repository",
+      "sha256": "09f5e85e05c0ef5ca22225f66cfc144dd336a347f34d057fb8b1ccc597188ff0"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p7",
+      "storage": "retained",
+      "sha256": "d4b749455587757b1d5e051af7bc2ecc73e962165922144869ff0654911b9058"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p6",
+      "storage": "retained",
+      "sha256": "a147d9a546888b953a5ad9586df954b64c57e1c17c0ec8637f942165126c70d1"
+    },
+    {
+      "path": "docs/verification/t0119/final-rgb-verification.json",
+      "storage": "repository",
+      "sha256": "f4a08ceb28b58c2c4a789dba0c83c3f69359adf276fdc457cc0f4a8437e32138"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-wide.png",
+      "storage": "repository",
+      "sha256": "baf6e3f671f95788ef2dbf46d5c098999a32004b1ecbeaf5ef7f5d4883462887"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "9f0b76a699b4701786d87091d487c5999e65e6e804155b3c1f57e62537a39579"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "11d6a17dcce01857d4869574cc4c7ef39ab41846ab78896522f3e0de29abcb59"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-wide-launch.json",
+      "storage": "repository",
+      "sha256": "7ddd82d235b9c37c0bd2ddd02f4e3ca997021bdd8ec8ca40ad27dc4bd63d0f05"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-wide.p7",
+      "storage": "retained",
+      "sha256": "515b8bc9b194eeeb6c52301682b578fb474dc6f0b3b6336edaabd98bc099f1fb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-wide.p6",
+      "storage": "retained",
+      "sha256": "5aee9f2747581e45f464c45dd43ab4e3718bea9971ed80dba8cacfe1e14b3fbb"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-compact.png",
+      "storage": "repository",
+      "sha256": "f0e18ecade287bb350b886d36d52a5e4842b7b6774ea7c315c51cf2e60be9359"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-compact-provenance.json",
+      "storage": "repository",
+      "sha256": "4a576bc7abcb3fc33592706e65020f58733b2618965b7c51e70a1c2e38fa49eb"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-compact-runtime.log",
+      "storage": "repository",
+      "sha256": "08d3e1e312e515e4d0225b8fdfa75cc494ba8135f0e91decc9bcbcb0806c03da"
+    },
+    {
+      "path": "docs/verification/t0119/final-artwork-compact-launch.json",
+      "storage": "repository",
+      "sha256": "e33a8a24a8d70ac990291c55f2bab24bae7b12929e5482525721c195578866eb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-compact.p7",
+      "storage": "retained",
+      "sha256": "25fcabcced20a2071e7a18c3fd9772cd5a7607f31e58915bf8db3b86d3550305"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-compact.p6",
+      "storage": "retained",
+      "sha256": "0c21c016ae564ac431168b16cd0a5bbdd3d3faed5929271ef74c191f53de36a4"
+    },
+    {
+      "path": "docs/verification/t0119/final-board-wide.png",
+      "storage": "repository",
+      "sha256": "2750bdf0105ca6a71b937fbfb97103efe997a4be0b3c349eb2ac7ccc15d93c2f"
+    },
+    {
+      "path": "docs/verification/t0119/final-board-wide-provenance.json",
+      "storage": "repository",
+      "sha256": "c80de5bc7e8dc18c2d5b4b1309cb8b8755f50d71da1c32c39473ab44e3efa56f"
+    },
+    {
+      "path": "docs/verification/t0119/final-board-wide-runtime.log",
+      "storage": "repository",
+      "sha256": "51d3a45ce1a597be2c5a144bc868e4d2cd3aeeee0c532b12e0ded4c3da110f27"
+    },
+    {
+      "path": "docs/verification/t0119/final-board-wide-launch.json",
+      "storage": "repository",
+      "sha256": "056405a060f165a34d5f55f7f043dd461001715c64fd5db5f130922ec71573cf"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/board-wide.p7",
+      "storage": "retained",
+      "sha256": "b343b320c1509df96de22aacb801c508f4f9ea6caa7349939086b9c58431ab7f"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/board-wide.p6",
+      "storage": "retained",
+      "sha256": "9209164f2eba58d8a638fffeaa44388a7818d89cda42ca86e0883613b2116369"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/viamind",
+      "storage": "retained",
+      "sha256": "e2fa0a09e3951713a74b34e836f7e12e18888eca2aa4f4aee124c6fc7bfffa0e"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/full-verified/footprint-artwork-inspection",
+      "storage": "retained",
+      "sha256": "ab29326417dee8620f067786ebeda02f615ecc856b3959c89ba5a7cc06efe9c3"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/viamind",
+      "storage": "retained",
+      "sha256": "1798841869bd1e2b1b25c82b0ae88815942e67505b52f3c05b045d83ddeeba1d"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/combined-verified/footprint-artwork-inspection",
+      "storage": "retained",
+      "sha256": "2a8b2b7d01f7e0082cc2e869258338cdf8340d00efa383e2142dac2dc18b8bc9"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/inspection-final-verified/footprint-artwork-inspection",
+      "storage": "retained",
+      "sha256": "e94c208cd536d8169709e7af4b4984e40e89813fd745c8a21950142f50257013"
+    },
+    {
+      "path": "docs/generated/mcp-tools.json",
+      "storage": "repository",
+      "sha256": "ea7e04e135ad3cfaf965d3b3917eb71ff9016d1b991881f9e0c75c70e6acc659"
+    },
+    {
+      "path": "docs/generated/mcp-tools.md",
+      "storage": "repository",
+      "sha256": "22eedb4c6d28fed3f7e83f3d1c6263d82a8c6d89e0d8194f4bf0d0f8924e2f90"
+    },
+    {
+      "path": "docs/specs/footprint-artwork.md",
+      "storage": "repository",
+      "sha256": "8da2cf3ae5e802432d768a90cbcfba0cb193000ebc0209e81b89895f3044ce66"
+    }
+  ],
+  "captures": [
+    {
+      "name": "original-artwork-wide",
+      "png": "docs/verification/t0119/original-artwork-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-wide.p6",
+      "provenance": "docs/verification/t0119/original-artwork-wide-provenance.json",
+      "scope": "original"
+    },
+    {
+      "name": "original-artwork-compact",
+      "png": "docs/verification/t0119/original-artwork-compact.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-compact.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/artwork-compact.p6",
+      "provenance": "docs/verification/t0119/original-artwork-compact-provenance.json",
+      "scope": "original"
+    },
+    {
+      "name": "original-board-wide",
+      "png": "docs/verification/t0119/original-board-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/board-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-original/board-wide.p6",
+      "provenance": "docs/verification/t0119/original-board-wide-provenance.json",
+      "scope": "original"
+    },
+    {
+      "name": "combined-field-clipped-artwork-wide",
+      "png": "docs/verification/t0119/combined-field-clipped-artwork-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-wide.p6",
+      "provenance": "docs/verification/t0119/combined-field-clipped-artwork-wide-provenance.json",
+      "scope": "combined-field-clipped"
+    },
+    {
+      "name": "combined-field-clipped-artwork-compact",
+      "png": "docs/verification/t0119/combined-field-clipped-artwork-compact.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/artwork-compact.p6",
+      "provenance": "docs/verification/t0119/combined-field-clipped-artwork-compact-provenance.json",
+      "scope": "combined-field-clipped"
+    },
+    {
+      "name": "combined-field-clipped-board-wide",
+      "png": "docs/verification/t0119/combined-field-clipped-board-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-combined/board-wide.p6",
+      "provenance": "docs/verification/t0119/combined-field-clipped-board-wide-provenance.json",
+      "scope": "combined-field-clipped"
+    },
+    {
+      "name": "final-artwork-wide",
+      "png": "docs/verification/t0119/final-artwork-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-wide.p6",
+      "provenance": "docs/verification/t0119/final-artwork-wide-provenance.json",
+      "scope": "final"
+    },
+    {
+      "name": "final-artwork-compact",
+      "png": "docs/verification/t0119/final-artwork-compact.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-compact.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/artwork-compact.p6",
+      "provenance": "docs/verification/t0119/final-artwork-compact-provenance.json",
+      "scope": "final"
+    },
+    {
+      "name": "final-board-wide",
+      "png": "docs/verification/t0119/final-board-wide.png",
+      "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/board-wide.p7",
+      "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0119/native-final/board-wide.p6",
+      "provenance": "docs/verification/t0119/final-board-wide-provenance.json",
+      "scope": "final"
+    }
+  ],
+  "scope": "Original and combined production HTTP each34 checks. Inspection-only native WGPU, logical input/focus preparation, no OS-input/opacity/cadence claim. Original RGBA retained; PNG alpha omitted with identical RGB. combined-field-clipped captures are historical excluded silk-field-visibility evidence, retained honestly. Final capture asserts ancestor effective clip before preparation and native modal containment. Parent exact-head CI/independent review still gates merge."
+}

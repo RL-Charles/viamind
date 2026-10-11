@@ -1,0 +1,55 @@
+{
+  "format": "viamind-footprint",
+  "version": 2,
+  "footprint": {
+    "artwork": {
+      "silkscreen": [
+        {
+          "start": {
+            "x": -3000003,
+            "y": -2000005
+          },
+          "end": {
+            "x": 3000007,
+            "y": -2000005
+          },
+          "width": 150003
+        },
+        {
+          "start": {
+            "x": 3000007,
+            "y": -2000005
+          },
+          "end": {
+            "x": 3000007,
+            "y": 2000011
+          },
+          "width": 150003
+        }
+      ],
+      "courtyard": {
+        "min": {
+          "x": -4000003,
+          "y": -3000005
+        },
+        "max": {
+          "x": 4000007,
+          "y": 3000011
+        },
+        "width": 100001
+      }
+    },
+    "name": "EXPLICIT_FIXTURE",
+    "pads": [
+      {
+        "number": "1",
+        "position": {
+          "x": 1250000,
+          "y": -750000
+        },
+        "width": 1300000,
+        "height": 600000
+      }
+    ]
+  }
+}
