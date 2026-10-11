@@ -20,6 +20,11 @@ fn main() -> anyhow::Result<()> {
         }
         cli::Invocation::Run(options) => *options,
     };
+    if let Some(path) = options.inspect_output_release {
+        let result = viamind_fab::inspect_output_release(&viamind_fab::InspectOutputRelease { path })?;
+        println!("{}", serde_json::to_string_pretty(&result)?);
+        return Ok(());
+    }
     if options.demo {
         return viamind_ui_egui::run().map_err(|e| anyhow::anyhow!("{e}"));
     }

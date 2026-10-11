@@ -5,6 +5,7 @@
 
 use crate::fabrication::export_fabrication;
 use crate::output_jobs::{load as load_output_job, run as run_output_job, save as save_output_job};
+use crate::release_inspection::inspect as inspect_output_release;
 use serde_json::{Value, json};
 use viamind_engine::{
     AddPart, Command, DeletePart, EngineError, EngineHandle, EventCursor, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin,
@@ -75,6 +76,7 @@ ui_actions! {
     RenderSchematicSvg => ("render_schematic_view", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_svg),
     RenderSchematicPng => ("render_schematic_png", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_png),
     ExportAssemblyCsv => ("export_assembly_csv", viamind_fab::assembly_schema(), export_assembly_csv),
+    InspectOutputRelease => ("inspect_output_release",viamind_fab::release_inspection_schema(),inspect_output_release),
     LoadOutputJob => ("load_output_job", viamind_fab::output_job_schema("load"), load_output_job),
     SaveOutputJob => ("save_output_job", viamind_fab::output_job_schema("save"), save_output_job),
     RunOutputJob => ("run_output_job", viamind_fab::output_job_schema("run"), run_output_job),

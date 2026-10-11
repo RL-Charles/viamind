@@ -10,6 +10,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+serde_json.workspace = true
 viamind-ui-egui.workspace = true
 viamind-mcp.workspace = true
 viamind-engine.workspace = true
@@ -22,6 +23,5 @@ anyhow.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 [dev-dependencies]
-serde_json.workspace = true
 tempfile.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "process", "io-util", "time"] }

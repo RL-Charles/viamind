@@ -35,6 +35,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [import\_footprint](#tool-696d706f72745f666f6f747072696e74)
 - [import\_pcb](#tool-696d706f72745f706362)
 - [inspect\_fabrication\_files](#tool-696e73706563745f6661627269636174696f6e5f66696c6573)
+- [inspect\_output\_release](#tool-696e73706563745f6f75747075745f72656c65617365)
 - [link\_schematic\_symbol](#tool-6c696e6b5f736368656d617469635f73796d626f6c)
 - [load\_footprint\_definition](#tool-6c6f61645f666f6f747072696e745f646566696e6974696f6e)
 - [load\_output\_job](#tool-6c6f61645f6f75747075745f6a6f62)
@@ -5148,6 +5149,31 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "inspect_fabrication_files"
+}
+```
+
+<a id="tool-696e73706563745f6f75747075745f72656c65617365"></a>
+
+## inspect\_output\_release
+
+```json
+{
+  "description": "Read-only bounded consistency inspection of an explicit saved Viamind release directory (versions1–3). Strict fixed layout/JSON and observed regular-file lengths; calibrated row/count checks and version3 matched populated fields/component identity digest. Descriptor-anchored no-follow/nonblock Linux reads; one retained reader. Inspector caps may refuse otherwise valid larger exports. Reports historical exported cursor, not current board equivalence. No authenticated file content, geometry/DRC recomputation, atomic cross-file snapshot, unlisted-file inspection or manufacturer acceptance. No document/file payload mutation.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "path": {
+        "maxLength": 4096,
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "required": [
+      "path"
+    ],
+    "type": "object"
+  },
+  "name": "inspect_output_release"
 }
 ```
 

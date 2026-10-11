@@ -1,0 +1,895 @@
+a0e841f0b832635fe8ee5ed44cd7781d2aef3149
+Sun Oct 11 18:01:55 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 40.42s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 58.37s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_ui_egui-f290fe03bbc405d5)
+
+running 2 tests
+test release_inspection::tests::spawn_failure_duplicate_hidden_and_disconnect_are_recoverable ... ok
+test release_inspection::tests::pending_controls_disable_and_real_success_is_retained_while_hidden ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 81 filtered out; finished in 0.35s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0112/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7m 12s
+     Running unittests src/main.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind-389c803c73924da1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/assembly.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/assembly-f937220425e69332)
+
+running 3 tests
+test calibrated_placement_cli_is_display_free_exact_and_refuses_incomplete_native_replacement ... ok
+test cli_populated_bom_templates_match_shared_writer_and_preserve_native ... ok
+test cli_exports_lossless_tables_without_display_and_requires_explicit_replacement ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/fabrication.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/fabrication-e71c8cfb3e093966)
+
+running 1 test
+test headless_cli_exports_real_package_and_refuses_overwrite_or_invalid_invocation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/headless.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/headless-93423da65bfb397f)
+
+running 5 tests
+test invalid_native_input_is_reported_and_never_overwritten ... ok
+test output_write_failure_returns_nonzero_after_an_empty_design_session ... ok
+test headless_agent_can_create_save_and_reopen_in_one_connection ... ok
+test usage_and_invalid_options_return_without_initializing_a_display ... ok
+test full_engine_edits_without_display_and_saves_on_client_eof ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/output_job_calibration.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/output_job_calibration-a6a522fc2fdb4812)
+
+running 1 test
+test headless_cli_optional_companion_matches_standalone_and_default_payloads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/output_job_population.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/output_job_population-b7b7c04de79f921d)
+
+running 1 test
+test headless_cli_matched_population_preserves_calibration_and_refuses_invalid_versions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/output_jobs.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/output_jobs-07fa1376345b31ce)
+
+running 2 tests
+test checked_headless_job_reports_same_snapshot_and_failure_publishes_nothing ... ok
+test real_headless_saved_job_release_and_separate_mode_validation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/png_views.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/png_views-4210d309f87dcf6d)
+
+running 1 test
+test cli_png_renders_without_display_and_preserves_collisions_native_and_invalid_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.13s
+
+     Running tests/read_only.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/read_only-3644878d20fce0bc)
+
+running 2 tests
+test contradictory_read_only_invocations_reject_before_open_output_or_endpoint ... ok
+test actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/release_inspection.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/release_inspection-4e1aa2f18060bb2b)
+
+running 1 test
+test detached_inspector_is_display_free_json_and_rejects_other_modes_without_writes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/schematic_views.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_views-11cc5da1a6c49912)
+
+running 1 test
+test selected_sheet_svg_png_work_without_display_and_protect_outputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.85s
+
+     Running tests/views.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/views-de889ab76ac2fac3)
+
+running 1 test
+test cli_renders_selected_region_without_display_and_preserves_collisions_native_and_invalid_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_doc-24ae1786f1bbf840)
+
+running 22 tests
+test board::tests::lookups ... ok
+test board::tests::exact_integer_transforms_match_rendering_quadrants_and_check_overflow ... ok
+test board::tests::every_object_has_a_distinct_id ... ok
+test board::tests::serde_round_trip_keeps_ids_and_order ... ok
+test id::tests::display_parse_and_serde_agree ... ok
+test id::tests::schema_is_a_uuid_string ... ok
+test board::tests::serde_shape ... ok
+test pad::tests::bounded_sizes_names_counts_and_duplicate_identities_are_validated ... ok
+test footprint_sexpr::tests::tested_headers_optional_source_ids_unassigned_markers_and_zero_origin ... ok
+test footprint_sexpr::tests::exact_original_detached_geometry_and_full_source_report_are_deterministic ... ok
+test id::tests::new_ids_are_unique_v4 ... ok
+test symbol_library::regular_file_tests::loading_a_fifo_without_a_writer_rejects_instead_of_waiting ... ok
+test footprint_sexpr::omitted_metadata_tests::recognized_ignored_fields_and_art_cannot_hide_unknown_semantic_lists ... ok
+test footprint::io_tests::raced_fifo_native_library_open_never_waits_for_a_writer ... ok
+test footprint_sexpr::tests::unsupported_geometry_nets_placement_and_unknown_semantics_never_export_partial_library ... ok
+test footprint_sexpr::tests::malformed_ids_names_fields_and_exact_decimal_inputs_are_rejected_or_blocked ... ok
+test pcb_sexpr::ignored_pin_metadata_tests::scalar_pin_metadata_never_hides_semantic_children_or_duplicate_fields ... ok
+test footprint::io_tests::staged_publication_refuses_native_paths_conflicts_and_symlinks_without_changing_bytes ... ok
+test symbol_library::publication_tests::destination_created_after_stage_and_symlink_alias_are_never_replaced ... ok
+test footprint_sexpr::tests::unknown_long_tokens_retain_exact_provenance_without_diagnostic_amplification ... ok
+test symbol_library::publication_tests::private_staging_exact_publication_drop_and_conflicts_preserve_destinations ... ok
+test footprint_sexpr::tests::all_source_and_parser_work_limits_precede_unbounded_native_collection ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/assembly_metadata.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/assembly_metadata-583b6bc3652297d6)
+
+running 3 tests
+test optional_calibration_is_strict_bounded_and_absent_bytes_stay_identical ... ok
+test mixed_named_net_policy_and_calibration_use_maximum_feature_version ... ok
+test source_fields_and_global_limits_use_utf8_bytes_and_borrowed_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/atomic_save.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/atomic_save-9a24b876f85f59de)
+
+running 2 tests
+test simultaneous_no_clobber_saves_have_exactly_one_complete_winner ... ok
+test unique_temporaries_preserve_unrelated_files_and_cleanup_after_failure ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/cardinal_pad_import.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/cardinal_pad_import-1fd7dbafec3354f9)
+
+running 2 tests
+test both_public_parsers_preserve_signed_cardinal_odd_nm_geometry_and_exhaustive_reports ... ok
+test malformed_noncardinal_fractional_and_out_of_bounds_angles_block_the_whole_result ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/copper.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/copper-ca38debfc52d7ecc)
+
+running 3 tests
+test native_copper_round_trip_identity_geometry_and_legacy_bytes ... ok
+test malformed_native_geometry_keys_layers_nets_and_global_ids_reject ... ok
+test native_copper_count_is_bounded_before_geometry_scan ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/dxf.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/dxf-606c12c1072362d9)
+
+running 5 tests
+test asymmetric_coordinates_preserve_dxf_visual_orientation_and_parent_layer_selection ... ok
+test import_classifies_polylines_and_assembles_unordered_lines ... ok
+test layer_filter_and_board_topology_never_silently_drop_selected_geometry ... ok
+test units_require_header_or_an_explicit_override_and_round_to_nm ... ok
+test malformed_curved_3d_open_and_ambiguous_drawings_fail_with_context ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/fabrication_view.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/fabrication_view-b6290dbcdeef53c6)
+
+running 4 tests
+test original_odd_signed_coordinates_rectangles_and_linear_strokes_preserve_native_frame ... ok
+test mask_openings_profile_zero_centerlines_and_xnc_exact_hits_are_distinct ... ok
+test malformed_unsupported_and_ambiguous_graphics_never_return_a_partial_picture ... ok
+test aggregate_budget_is_shared_across_files_and_exact_boundary_does_not_truncate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/footprint.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint-73680a2869b9595b)
+
+running 2 tests
+test strict_integer_geometry_roundtrips_without_design_fields ... ok
+test bounded_io_preserves_existing_paths_and_native_project_aliases ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/format_determinism.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/format_determinism-313dee05d5fb6e4c)
+
+running 1 test
+test insertion_order_does_not_change_the_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/net_rules.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/net_rules-a50ab12fceb4bafe)
+
+running 5 tests
+test native_original_tokens_reject_duplicate_rules_and_preserve_header_precedence ... ok
+test native_empty_bytes_omit_policy_and_nonempty_require_version_eight ... ok
+test zero_via_fields_preserve_exact_v8_record_bytes_and_nonzero_requires_ten ... ok
+test borrowed_and_native_bounds_reject_names_rows_and_scalars ... ok
+test via_ten_and_assembly_nine_compose_and_clear_without_losing_older_features ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/outlines.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/outlines-2102f04ce4dffd59)
+
+running 2 tests
+test rejects_invalid_rings_and_cutout_topology_in_either_winding ... ok
+test native_outlines_round_trip_and_legacy_documents_keep_exact_bytes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pcb_sexpr.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/pcb_sexpr-cad46f247f927cb9)
+
+running 8 tests
+test original_asymmetric_exact_nm_geometry_nets_ids_and_complete_fidelity ... ok
+test exact_line_loops_connect_but_open_duplicate_and_crossed_boundaries_block ... ok
+test canonical_layer_table_rejects_ambiguous_arity_ids_types_and_order ... ok
+test tested_header_and_identity_alias_grammars_are_supported ... ok
+test unsupported_copper_transforms_semantics_and_outline_never_look_complete ... ok
+test long_unknown_tokens_do_not_amplify_each_descendant_diagnostic ... ok
+test malformed_identity_net_fields_precision_and_resources_reject ... ok
+test parser_node_token_aggregate_and_physical_work_limits_are_explicit ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/save_load.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/save_load-6a7062283dfd8b20)
+
+running 4 tests
+test golden_file ... ok
+test rejects_bad_files_with_clear_errors ... ok
+test save_load_and_resave_on_disk ... ok
+test round_trip ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.22s
+
+     Running tests/schematic.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic-e0dd2b56c68f22fb)
+
+running 3 tests
+test exact_cardinal_and_mirror_pin_transforms_roundtrip_native_v5 ... ok
+test malformed_geometry_keys_global_ids_and_unknown_fields_reject ... ok
+test bounded_counts_and_transformed_world_range_are_enforced ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/schematic_links.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_links-ad082281489f7b3e)
+
+running 2 tests
+test native_links_survive_reference_changes_and_require_schema_six ... ok
+test duplicate_nil_and_wrong_kind_links_reject_but_missing_symbols_remain_unresolved ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/symbol_library.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_library-6e53836fd674c47a)
+
+running 5 tests
+test exact_mirrored_quarter_turn_and_odd_body_bounds_have_fresh_identities ... ok
+test detached_roundtrip_preserves_definitions_and_excludes_every_instance_field ... ok
+test utf8_field_and_aggregate_budgets_are_checked_before_source_copy ... ok
+test strict_envelopes_and_definition_limits_reject_design_fields_and_malformed_templates ... ok
+test bounded_regular_file_loading_and_atomic_new_publication_preserve_existing_paths ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_drc-95aaf71b8d6b5106)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/batch.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/batch-74e3d2c616775153)
+
+running 8 tests
+test copper_touching_zero_rules_and_half_nm_edges_are_evaluated_without_rounding_geometry ... ok
+test copper_checks_real_rotated_rectangles_not_aabb_and_respects_layer_net_semantics ... ok
+test edge_clearance_checks_cutout_boundaries_and_exact_threshold ... ok
+test substrate_checks_detect_enclosed_cutouts_concave_notches_tangency_and_rotated_tips ... ok
+test coverage_limits_native_roundtrip_and_ordering_are_honest_and_deterministic ... ok
+test legacy_heavy_coverage_keeps_total_and_bounds_actionable_details ... ok
+test sparse_pad_broadphase_avoids_quadratic_pair_distance_evaluations ... ok
+test dense_exempt_copper_pairs_still_obey_the_work_budget_and_report_incomplete ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.39s
+
+     Running tests/copper.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/copper-c563b03da7c67fb0)
+
+running 9 tests
+test minimum_drill_annular_width_and_half_nm_thresholds_are_exact ... ok
+test diagonal_capsules_and_rotated_pad_use_geometry_instead_of_bounds ... ok
+test capsule_round_caps_exact_gap_layers_nets_and_unassigned_policy ... ok
+test annular_copper_excludes_drill_interiors_but_physical_hole_checks_remain ... ok
+test mixed_native_roundtrip_limits_and_invalid_new_rules_are_read_only ... ok
+test offset_annuli_and_inside_drill_board_edge_clearance_have_exact_geometric_gaps ... ok
+test round_caps_and_actual_annuli_check_substrate_not_centres_or_outer_disks ... ok
+test through_vias_share_both_layers_and_same_net_holes_still_need_spacing ... ok
+test sparse_mixed_ten_thousand_objects_skip_quadratic_pair_checks ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running tests/net_rules.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/net_rules-1b1b4d606f127a0b)
+
+running 5 tests
+test exact_width_floor_equality_unassigned_and_case_sensitive_names ... ok
+test empty_policy_preserves_report_bytes_and_old_report_deserialization ... ok
+test far_pairs_are_discovered_but_unrelated_large_rules_do_not_pollute_pair_minima ... ok
+test exact_via_drill_and_half_nm_annulus_use_matching_maxima_without_resizing ... ok
+test zero_via_fields_keep_legacy_report_policy_bytes_and_half_nm_decisions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4765a7d19bb35aac)
+
+running 64 tests
+test cardinal_cleanup::tests::third_retained_operation_refuses_and_dropped_admission_recovers ... ok
+test checked_output_job::tests::report_append_budget_is_charged_before_allocation ... ok
+test checked_output_job::tests::exact_geometry_report_exclusions_and_requested_rules_are_explicit ... ok
+test checked_output_job::tests::unsupported_outline_violations_and_incomplete_counts_cannot_authorize_release ... ok
+test command::tests::apply_then_invert_restores_exactly ... ok
+test command::tests::errors_leave_project_unchanged_and_read_well ... ok
+test command::tests::spec_has_object_schema_from_the_type ... ok
+test commands::tests::positions_are_validated ... ok
+test commands::tests::rotation_is_normalised ... ok
+test delta::tests::coalesce_keeps_first_before_and_last_after ... ok
+test delta::tests::record_then_invert_restores ... ok
+test delta::tests::serde_shape ... ok
+test checked_output_job::tests::rule_labels_charge_direct_checked_snapshot_budget_before_report_copy ... ok
+test auto_drc::tests::blocked_worker_does_not_block_edits_coalesces_and_rejects_old_result ... ok
+test agent_presence::tests::shared_clone_own_clear_lifecycle_bounds_and_wakers_leave_session_untouched ... ok
+test agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization ... ok
+test engine::tests::failed_transaction_rolls_back ... ok
+test auto_drc::tests::last_handle_drop_stops_worker_without_retaining_engine ... ok
+test agent_presence::tests::explicit_sheet_identity_capacity_switch_deleted_objects_and_sheet_pruning ... ok
+test agent_presence::tests::lease_clock_is_sampled_after_both_locks_for_query_and_admission ... ok
+test auto_drc::tests::config_and_project_replacement_supersede_running_snapshot ... ok
+test auto_drc::tests::bounded_snapshot_skips_without_all_clear_and_can_recover ... ok
+test auto_drc::tests::worker_snapshot_excludes_invalid_unused_sourcing ... ok
+test fabrication_view::tests::raced_fifo_read_never_waits_for_a_writer ... ok
+test auto_drc::tests::disable_and_invalid_config_are_atomic_and_read_only_selection_does_not_rerun ... ok
+test engine::tests::tx_ids_increase ... ok
+test engine::tests::new_edit_clears_redo_but_no_op_does_not ... ok
+test agent_presence::tests::exact_deadline_capacity_renewal_and_failed_update_preserve_prior_lease ... ok
+test auto_drc::tests::disabled_running_generation_cannot_publish_and_checker_failure_can_recover ... ok
+test erc::tests::matrix_is_complete_symmetric_deliberate_and_overrides_are_unordered ... ok
+test engine::tests::batch_commits_as_one_transaction ... ok
+test net_rules::tests::borrowed_policy_rows_and_text_charge_shared_capture_before_copy ... ok
+test fabrication_view::tests::reader_admission_is_nonwaiting_and_releases_on_error_and_drop ... ok
+test pcb_import::tests::raced_fifo_open_returns_without_waiting_for_a_writer ... ok
+test registry::tests::dispatches_json_by_name ... ok
+test registry::tests::duplicate_names_panic - should panic ... ok
+test registry::tests::lists_specs_in_name_order ... ok
+test registry::tests::reports_unknown_commands_and_bad_input ... ok
+test handle::save_tests::concurrent_edit_during_open_rejects_the_loaded_document ... ok
+test footprint_conversion::tests::current_native_path_is_checked_after_staging_and_peer_edits_remain_available ... ok
+test footprint_definition::tests::latest_native_path_and_racing_destination_are_preserved_after_staging ... ok
+test engine::tests::grouped_commands_undo_as_one_step ... ok
+test pcb_import::tests::peer_change_during_import_load_rejects_without_replacement ... ok
+test handle::save_tests::saved_callbacks_run_after_both_engine_and_save_locks_are_released ... ok
+test handle::save_tests::native_publication_waits_for_in_flight_save_and_keeps_commands_available ... ok
+test schematic_connectivity::tests::diagonal_integer_contacts_and_one_nm_near_misses_at_extremes ... ok
+test erc::tests::invalid_graph_rejects_instead_of_a_clean_erc_report ... ok
+test handle::save_tests::edits_during_file_io_remain_dirty_and_are_not_in_the_saved_snapshot ... ok
+test erc::tests::crossing_requires_junction_and_dangling_wire_does_not_drive_input ... ok
+test via_walkaround::tests::bounded_geometry_capture_omits_unused_invalid_sourcing ... ok
+test walkaround::tests::admission_refuses_third_retained_operation_and_releases_on_drop ... ok
+test schematic_connectivity::tests::spatial_budget_rejects_dense_candidates_without_partial_results ... ok
+test schematic_connectivity::tests::label_crossing_rejects_without_partial_result_and_junction_resolves ... ok
+test erc::tests::explicit_power_label_never_supplies_power_and_no_connect_attachment_is_checked ... ok
+test schematic_connectivity::tests::crossing_needs_junction_but_t_and_overlap_connect ... ok
+test symbol_library::publication_tests::both_writers_preserve_a_racing_destination_and_full_dirty_session ... ok
+test schematic_connectivity::tests::local_global_power_scope_literal_case_alias_priority_and_isolated_members ... ok
+test erc::tests::truncation_is_an_honest_prefix_and_exact_threshold_can_be_complete ... ok
+test symbol_library::publication_tests::ordinary_peer_edits_during_staging_remain_live_and_export_retains_capture_cursor ... ok
+test symbol_library::publication_tests::both_symbol_writers_protect_latest_peer_saved_and_opened_native_path ... ok
+test schematic_connectivity::tests::pagination_bounds_legacy_coverage_and_invalid_content_are_honest ... ok
+test erc::tests::isolated_inputs_short_outputs_missing_power_and_passive_signal_policy ... ok
+test schematic_connectivity::tests::pin_interior_requires_junction_and_mirror_quarter_transform_is_exact ... ok
+test schematic_connectivity::tests::sparse_thousand_wire_board_independent_query_uses_broadphase ... ok
+
+test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/annotation.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/annotation-c1b1d2b1d96fd68f)
+
+running 5 tests
+test board_only_edits_do_not_invalidate_annotation_or_enter_its_undo ... ok
+test deterministic_explicit_sheet_position_ties_and_one_undo_preserve_every_other_field ... ok
+test keep_existing_reserves_gaps_case_and_numeric_aliases_and_exhaustion_are_atomic ... ok
+test stale_sheets_invalid_formats_orders_and_budgets_leave_whole_session_unchanged ... ok
+test valid_large_text_and_symbol_snapshots_are_bounded_before_copy_and_project_ids_cannot_collide ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/assembly.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/assembly-7bd963c396739ffa)
+
+running 6 tests
+test invalid_calibration_and_missing_mounting_never_mutate_or_clone_into_queries ... ok
+test invalid_stale_unknown_and_default_records_are_atomic ... ok
+test guarded_sourcing_roundtrips_native_log_and_history_and_preserves_other_edits ... ok
+test calibration_is_guarded_versioned_undoable_and_every_historical_record_requires_nine ... ok
+test model_budget_and_invalid_returned_query_fail_before_copy_or_native_publication ... ok
+test grouped_repeated_part_events_replay_and_oversized_before_records_never_write ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s
+
+     Running tests/auto_drc.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/auto_drc-63277ef8463a6344)
+
+running 3 tests
+test via_policy_edit_and_undo_refresh_exact_automatic_sources_and_geometry ... ok
+test named_policy_edit_and_undo_refresh_captured_automatic_checker_sources ... ok
+test moderate_board_worker_timing_and_undo_redo_refresh_are_measured ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/cardinal_cleanup.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/cardinal_cleanup-3e9e65d4ff79a263)
+
+running 10 tests
+test affected_joint_drc_failure_unsupported_transforms_and_merge_budget_reject_whole_operation ... ok
+test branches_width_net_diagonal_and_unselected_neighbors_are_retained_without_events ... ok
+test exact_mirrored_pad_anchors_and_all_net_hole_contact_preserve_guides ... ok
+test exact_signed_chains_survivor_ids_full_session_immutability_and_atomic_undo ... ok
+test unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_copy ... ok
+test aggregate_hole_candidate_budget_refuses_before_joint_drc_without_partial_cleanup ... ok
+test guarded_queries_typed_dynamic_batches_and_same_uuid_reopen_are_atomic ... ok
+test named_width_floor_applies_to_complete_cleanup_candidate_and_report_sources ... ok
+test successful_cleanup_preserves_existing_guide_endpoints_and_duplicate_full_track_retains_chain ... ok
+test incomplete_joint_report_refuses_even_with_only_unrelated_existing_violations ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.90s
+
+     Running tests/component_links.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/component_links-cf101da5d775df50)
+
+running 3 tests
+test stable_mapping_pages_filters_and_reference_renames_preserve_exact_session ... ok
+test unresolved_unlinked_and_extreme_coordinates_are_explicit_without_float_conversion ... ok
+test invalid_queries_identities_text_and_object_bounds_reject_without_mutation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/connectivity.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/connectivity-0c7907e3271a5576)
+
+running 3 tests
+test mirrored_arbitrary_rotation_uses_the_shared_query_render_transform ... ok
+test exact_tree_membership_pages_transforms_and_read_only_state ... ok
+test large_nets_are_deterministic_connected_linear_size_even_for_coincident_pads ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/copper.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/copper-160a3bce1f0be2b5)
+
+running 3 tests
+test copper_create_delete_undo_redo_replay_and_guarded_failures ... ok
+test failed_batch_and_agent_undo_preserve_other_copper ... ok
+test malformed_log_copper_identity_or_native_collision_is_rejected ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/copper_connectivity.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/copper_connectivity-807050add11df1a7)
+
+running 7 tests
+test chains_merge_islands_and_leave_a_deterministic_residual_forest ... ok
+test drilled_away_shapes_and_foreign_midsegment_holes_never_hide_guides ... ok
+test one_nanometer_gap_wrong_side_net_and_interior_crossings_never_prove_a_join ... ok
+test through_via_bridges_exact_sides_only_with_annulus_reaching_incident_tracks ... ok
+test mirrored_quarter_turn_exact_off_grid_routes_disappear_and_undo_restores_guides ... ok
+test count_and_text_budgets_disable_all_suppression_without_mutation ... ok
+test dense_hole_candidates_and_invalid_via_geometry_disable_all_proofs_explicitly ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+     Running tests/dxf.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/dxf-5d8c36d7963f70d2)
+
+running 1 test
+test import_is_guarded_atomic_undoable_and_replayable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/events.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/events-2baa307e0ce3d017)
+
+running 5 tests
+test one_typed_diff_per_transaction ... ok
+test dropped_subscribers_are_removed ... ok
+test on_change_runs_after_each_change_outside_the_lock ... ok
+test event_json_shape ... ok
+test ui_and_mcp_consume_the_same_stream ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/fabrication_view.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/fabrication_view-0dd62a82d4c73e11)
+
+running 2 tests
+test invalid_files_paths_and_request_limits_reject_without_partial_result ... ok
+test read_only_exact_file_content_hash_and_stale_input_guards_preserve_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/footprint.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint-eb9366d49a721613)
+
+running 1 test
+test reuse_preserves_matching_pad_ids_nets_and_placement_with_one_undo ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/footprint_conversion.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_conversion-ba6a74fe0d7b8981)
+
+running 2 tests
+test detached_conversion_preserves_dirty_session_and_reuse_preserves_numbered_identity_and_nets ... ok
+test changed_blocked_sources_conflicts_native_aliases_and_bounded_io_preserve_all_bytes_and_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-954c3082a70c5076)
+
+running 2 tests
+test detached_files_preserve_dirty_session_and_separate_reuse_retains_link_assembly_ids_nets ... ok
+test invalid_bounds_precision_free_integer_geometry_and_existing_files_reject_without_mutation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/history.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/history-388aa3cd2221258c)
+
+running 3 tests
+test user_undoes_an_agent_edit ... ok
+test handles_are_shared_across_threads ... ok
+test ten_thousand_step_history ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+     Running tests/lifecycle.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/lifecycle-7b8e79e60dc72b7d)
+
+running 2 tests
+test unsafe_stale_and_failed_replacements_preserve_everything ... ok
+test new_and_open_reset_documents_but_preserve_shared_clients_and_listeners ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/net_rules.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/net_rules-eaeddee93827b449)
+
+running 6 tests
+test grouped_rule_edits_share_initial_cursor_coalesce_and_undo_as_one_map ... ok
+test raw_request_row_count_and_name_bounds_refuse_before_row_materialization ... ok
+test typed_dynamic_policy_has_one_undo_redo_noop_and_stale_atomic_refusal ... ok
+test duplicate_and_batch_stale_policy_reject_the_entire_edit ... ok
+test policy_log_version_guards_chain_and_same_project_reopen ... ok
+test via_floor_policy_delta_before_after_and_base_require_log_ten_and_one_undo ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/outlines.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/outlines-938ad3e05dd5ec05)
+
+running 1 test
+test outline_changes_are_atomic_undoable_and_replayable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/own_undo.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/own_undo-9b34167e1d0c720d)
+
+running 4 tests
+test redo_own_waits_for_earlier_undone_changes ... ok
+test agent_undo_leaves_user_changes_alone ... ok
+test conflicting_undo_is_refused_and_changes_nothing ... ok
+test mixed_undo_keeps_history_consistent ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/pads.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/pads-49d3735fcb89013d)
+
+running 2 tests
+test pad_identities_history_versioning_and_atomic_guards ... ok
+test editing_a_pad_blocks_selective_undo_of_its_part_creation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/part_commands.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/part_commands-b418838f171cd9cd)
+
+running 5 tests
+test errors_are_actionable_and_change_nothing ... ok
+test add_move_delete_over_json ... ok
+test builtin_specs ... ok
+test apply_invert_round_trip ... ok
+test json_and_typed_agree ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.85s
+
+     Running tests/pcb_import.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/pcb_import-6743015a2cecdda8)
+
+running 4 tests
+test stale_source_project_cursor_dirty_and_unsupported_imports_preserve_everything ... ok
+test externally_replaced_active_native_source_and_canonical_alias_reject_without_mutation ... ok
+test preview_is_read_only_import_is_unsaved_and_native_roundtrip_retains_exact_geometry ... ok
+test nonregular_long_path_invalid_utf8_and_large_sources_reject_read_only ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/pcb_sync.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/pcb_sync-eeae1b09a2e92254)
+
+running 9 tests
+test stale_symbol_duplicate_link_and_missing_explicit_target_preserve_session ... ok
+test synchronization_rejects_oversized_sourcing_in_expected_guard_before_copying ... ok
+test back_annotation_changes_only_linked_symbol_properties_and_links_survive_renumbering ... ok
+test identical_local_labels_on_two_sheets_remain_separate_while_power_labels_join ... ok
+test synchronization_rejects_stale_project_stream_and_batch_without_partial_publication ... ok
+test link_is_guarded_shared_undoable_and_versioned_even_if_final_state_unlinked ... ok
+test routed_net_reassignment_rejects_and_existing_unchanged_routes_are_preserved ... ok
+test forward_preview_preserves_geometry_and_assigns_independently_expected_regulator_nets_atomically ... ok
+test ambiguous_mappings_footprints_missing_links_budgets_and_reference_collisions_reject ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/pin_pad_links.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/pin_pad_links-804839bcb22177d9)
+
+running 4 tests
+test deterministic_pages_exact_pairing_and_read_only_session_survive_reference_and_net_changes ... ok
+test mismatch_legacy_unlinked_and_empty_coverage_never_offer_partial_navigation ... ok
+test exact_odd_nanometre_mirrored_quarter_turn_geometry_and_honest_unsupported_centers ... ok
+test malformed_identities_numbers_queries_and_unrelated_structure_limits_reject_unchanged ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/placement.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/placement-3f1d809c7b5fa2a9)
+
+running 3 tests
+test origin_distribution_and_alignment_keep_other_axis_and_have_noop_history ... ok
+test stale_member_missing_targets_invalid_bounds_and_duplicates_change_nothing ... ok
+test grouped_moves_preserve_exact_model_geometry_and_undo_as_one_transaction ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/queries.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/queries-53ec2d2a8eaafea9)
+
+running 4 tests
+test filters_return_known_records_and_combine_with_and ... ok
+test default_page_is_bounded_on_large_designs ... ok
+test cursor_pages_have_no_duplicates_or_omissions_and_keep_total ... ok
+test invalid_input_is_actionable_and_queries_preserve_all_state ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/replay.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/replay-1b960b0208e2ba2a)
+
+running 3 tests
+test rejects_foreign_logs ... ok
+test streaming_append_matches_the_engine_log ... ok
+test replaying_the_log_rebuilds_a_byte_identical_project ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.33s
+
+     Running tests/route_endpoints.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/route_endpoints-7febc2322b3259df)
+
+running 5 tests
+test foreign_copper_and_incomplete_preflight_reject_all_pad_segments ... ok
+test exact_off_grid_bottom_endpoints_shared_typed_dynamic_and_single_undo ... ok
+test stale_stream_sequence_and_batch_fail_without_partial_routes ... ok
+test discovery_is_immutable_sorted_filtered_paginated_and_bounded ... ok
+test incompatible_missing_arbitrary_and_invalid_interior_reject_atomically ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/route_posture.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/route_posture-9cd667c68a090464)
+
+running 4 tests
+test exact_named_width_floor_preserves_odd_nm_posture_geometry_without_widening ... ok
+test malformed_waypoints_and_stale_proposal_leave_entire_session_unchanged ... ok
+test generated_bend_and_endpoint_stub_both_receive_shared_scoped_preflight ... ok
+test typed_dynamic_postures_keep_exact_stubs_and_one_undo_with_derived_net_side ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/route_terminals.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/route_terminals-e3d13f89dec57465)
+
+running 11 tests
+test malformed_identity_and_point_budgets_refuse_before_secondary_vectors ... ok
+test discovery_face_pagination_filters_overflow_unsupported_and_no_mutation ... ok
+test exact_track_to_via_typed_dynamic_identity_preservation_and_one_undo ... ok
+test pads_and_existing_vias_attach_on_both_explicit_faces ... ok
+test stale_stream_sequence_and_grouped_command_reject_whole_transaction ... ok
+test borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state ... ok
+test unused_assembly_and_unrelated_schematic_text_never_enter_terminal_capture_or_route ... ok
+test complete_shared_checks_reject_foreign_copper_holes_outline_and_document_width ... ok
+test independently_expected_all_postures_preserve_negative_off_grid_stubs ... ok
+test wrong_layer_net_unassigned_missing_coincident_and_invalid_geometry_are_atomic ... ok
+test discovery_terminal_row_boundary_precedes_filter_allocation ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.77s
+
+     Running tests/route_via.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/route_via-a3b6b29e2af9c981)
+
+running 6 tests
+test persisted_named_width_floor_checks_both_explicit_via_legs_jointly ... ok
+test malformed_grid_dimensions_zero_length_and_via_rules_reject_all_copper ... ok
+test exact_opposite_side_legs_and_via_commit_together_typed_dynamic_and_single_undo ... ok
+test joint_preflight_checks_foreign_copper_both_sides_and_physical_via_holes ... ok
+test explicit_via_dimensions_refuse_named_drill_and_half_nm_annulus_then_commit_equal ... ok
+test incompatible_missing_arbitrary_pads_and_stale_group_reject_atomically ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/routing.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/routing-2b345e6253b0700b)
+
+running 6 tests
+test batch_uses_one_captured_cursor_and_rejects_stale_batches_atomically ... ok
+test persisted_width_floor_refuses_one_nm_below_and_equality_keeps_explicit_geometry ... ok
+test typed_and_dynamic_routes_preserve_exact_points_ids_and_one_undo_redo ... ok
+test invalid_points_and_stale_stream_sequence_reject_without_state_history_events ... ok
+test preflight_rejects_foreign_copper_and_cutouts_but_preserves_existing_unrelated_violations ... ok
+test bounded_board_capture_ignores_large_unrelated_schematic_and_rejects_oversized_board_text ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/saving.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/saving-cf576108ec5ac73d)
+
+running 2 tests
+test failed_saves_leave_files_metadata_and_redo_unchanged ... ok
+test saved_baseline_and_active_path_are_shared_and_undo_restores_clean_state ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/schematic.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic-6141fe83efe863ce)
+
+running 3 tests
+test selective_undo_distinguishes_sheets_and_detects_same_sheet_conflict ... ok
+test sheet_atomic_guards_pin_identity_paging_and_history_roundtrip ... ok
+test log_base_rejects_sheet_identity_key_mismatch ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/schematic_component.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_component-fd8dde189521fe54)
+
+running 5 tests
+test stale_exact_project_sequence_reopen_and_failed_batch_do_not_create_parts ... ok
+test duplicate_reference_link_and_assignment_mismatch_are_explicit ... ok
+test typed_dynamic_creation_exact_independent_regulator_groups_persistence_and_one_undo ... ok
+test malformed_geometry_mapping_bounds_and_identity_preserve_entire_session ... ok
+test result_object_budget_is_checked_before_commit_and_preview ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.75s
+
+     Running tests/schematic_wires.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/schematic_wires-4cc71ac080cec379)
+
+running 5 tests
+test crossing_stays_separate_and_t_endpoint_joins_without_implicit_junctions ... ok
+test exact_atomic_typed_dynamic_undo_native_log_and_immutable_snapshot ... ok
+test invalid_stale_forged_reopen_and_batch_leave_whole_session_unchanged ... ok
+test result_and_snapshot_budgets_reject_before_copy_or_commit ... ok
+test unrelated_global_validator_work_is_bounded_before_identity_set_allocation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/selection.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/selection-92613a7d7c075014)
+
+running 3 tests
+test deleted_and_undone_parts_leave_selection_and_redo_does_not_restore_it ... ok
+test mixed_part_track_via_selection_is_atomic_transient_and_pruned_on_deletion ... ok
+test selection_is_shared_atomic_and_preserves_document_history ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/session.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/session-b3d12725f531f49f)
+
+running 5 tests
+test reads_noops_errors_and_selection_preserve_history_and_redo ... ok
+test independent_waiters_wake_for_design_and_selection_without_holding_the_lock ... ok
+test snapshot_replay_orders_design_selection_and_pruning_with_origins ... ok
+test bounded_history_pages_and_cursor_errors_allow_resynchronization ... ok
+test absent_cursor_starts_at_tail_and_timeout_returns_unchanged_cursor ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/symbol_library.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_library-97154424602a0a98)
+
+running 5 tests
+test typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable_undo ... ok
+test source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content ... ok
+test selected_and_global_preflight_bound_unrelated_data_before_inherited_validation ... ok
+test malformed_ambiguous_stale_and_reopened_proposals_leave_entire_sessions_unchanged ... ok
+test proposed_fresh_symbol_and_pin_are_included_in_global_identity_budget ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+     Running tests/update_part.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/update_part-c3ead8c9e4c24ea3)
+
+running 3 tests
+test properties_apply_as_one_exact_undoable_saved_change ... ok
+test invalid_conflicting_and_stale_edits_leave_model_history_and_events_unchanged ... ok
+test omitted_coordinates_keep_exact_model_values_and_placement_rejects_a_different_project ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/via_walkaround.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/via_walkaround-38268211bd427bee)
+
+running 6 tests
+test both_side_paths_ignore_unrelated_invalid_sourcing_without_mutation ... ok
+test independently_expected_layer_paths_joint_commit_and_one_undo ... ok
+test real_peer_edit_and_reopened_stream_reject_typed_dynamic_and_grouped_requests ... ok
+test individual_paths_do_not_publish_when_joint_via_or_input_fails ... ok
+test both_sides_charge_each_cutout_against_one_aggregate_cap ... ok
+test via_minima_refuse_before_both_leg_search_and_equal_plan_commits_without_resize ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/walkaround.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/walkaround-5b297a3701739f56)
+
+running 4 tests
+test immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage ... ok
+test named_pair_clearance_inflates_only_matching_obstacles_and_width_floor_refuses ... ok
+test failures_are_unchanged_with_complete_preflight_and_bounded_unrelated_content ... ok
+test plans_and_checked_candidate_geometry_exclude_unused_sourcing ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+     Running tests/walkaround_cutouts.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/walkaround_cutouts-8d227a338de2f7eb)
+
+running 3 tests
+test exact_cutout_detours_ignore_winding_net_side_and_copper_clearance ... ok
+test real_outline_edits_and_reopen_invalidate_checked_cutout_intents ... ok
+test cutout_refusals_and_combined_obstacle_budget_preserve_complete_session ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_fab-7573c3bcf83232ee)
+
+running 15 tests
+test assembly_templates::tests::escaped_bytes_are_charged_before_row_append ... ok
+test assembly_placement::tests::calibrated_header_limit_is_charged_before_append ... ok
+test release_inspection::csv::tests::fixed_decimals_reject_exponents_nonfinite_and_overflow ... ok
+test output_job::tests::byte_limits_reject_before_append ... ok
+test release_inspection::csv::tests::quoted_unicode_crlf_and_multiline_fields_are_preserved ... ok
+test release_inspection::tests::manifest_map_rejects_duplicates_before_collapsing ... ok
+test output_job::publication_tests::calibrated_capture_budget_precedes_reference_keys_and_only_fixed_metadata_survives ... ok
+test output_job::publication_tests::one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded ... FAILED
+test output_job::publication_tests::raced_destination_and_injected_post_stage_failure_leave_no_partial_release ... FAILED
+test release_inspection::reader::tests::canceled_receiver_does_not_release_real_owned_reader_permit ... ok
+test release_inspection::csv::tests::row_and_field_limits_reject_before_unbounded_collection ... ok
+test release_inspection::reader::tests::inspector_caps_refuse_large_exportable_tables_and_empty_population_is_valid ... ok
+test release_inspection::reader::tests::strict_layout_lengths_and_matched_csv_errors_reject_without_partial_result ... ok
+test release_inspection::reader::tests::supported_layouts_roundtrip_and_unchecked_content_is_honestly_excluded ... ok
+test release_inspection::reader::tests::symlink_fifo_and_observed_directory_or_file_replacement_refuse ... ok
+
+failures:
+
+---- output_job::publication_tests::one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded stdout ----
+
+thread 'output_job::publication_tests::one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded' (2198246) panicked at crates/fab/src/output_job.rs:515:58:
+called `Result::unwrap()` on an `Err` value: Custom { kind: WouldBlock, error: "manufacturing export busy: at most two snapshots per process; retry after an export finishes" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- output_job::publication_tests::raced_destination_and_injected_post_stage_failure_leave_no_partial_release stdout ----
+
+thread 'output_job::publication_tests::raced_destination_and_injected_post_stage_failure_leave_no_partial_release' (2198247) panicked at crates/fab/src/output_job.rs:454:36:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+
+
+failures:
+    output_job::publication_tests::one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded
+    output_job::publication_tests::raced_destination_and_injected_post_stage_failure_leave_no_partial_release
+
+test result: FAILED. 13 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s
+
+error: test failed, to rerun pass `-p viamind-fab --lib`

@@ -8,6 +8,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
        viamind --headless [--open PATH] [--save-as PATH | --agent-read-only]
        viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom|assembly_placement --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
+       viamind --inspect-output-release DIRECTORY
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
        viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
@@ -21,6 +22,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
   --no-mcp         Open the desktop without the HTTP MCP endpoint
   --export-csv KIND Export BOM, component-origin or explicit calibrated placement CSV and exit
   --run-output-job JOB Run saved manufacturing settings into a NEW release directory
+  --inspect-output-release DIRECTORY Read-only bounded saved-release consistency JSON
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
   --output PATH    Export destination (SVG/PNG need a NEW file; fabrication a NEW directory)
@@ -63,6 +65,7 @@ pub struct Options {
     pub overwrite: bool,
     pub export_gerber: bool,
     pub run_output_job: Option<PathBuf>,
+    pub inspect_output_release: Option<PathBuf>,
     pub mask_expansion_mm: Option<f64>,
 }
 
@@ -172,12 +175,14 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                         .ok_or("--export-csv requires bom, placement, sourcing_bom, catalog_bom, assembly_bom or assembly_placement")?,
                 );
             }
-            Some("--open" | "--save-as" | "--output" | "--run-output-job") => {
+            Some("--open" | "--save-as" | "--output" | "--run-output-job" | "--inspect-output-release") => {
                 let path = args
                     .next()
                     .filter(|path| !path.is_empty() && !path.to_string_lossy().starts_with("--"))
                     .ok_or_else(|| format!("{} requires a path", arg.to_string_lossy()))?;
-                if arg == "--run-output-job" {
+                if arg == "--inspect-output-release" {
+                    options.inspect_output_release = Some(path.into());
+                } else if arg == "--run-output-job" {
                     options.run_output_job = Some(path.into());
                 } else if arg == "--open" {
                     options.open = Some(path.into());
@@ -189,6 +194,12 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
+    }
+    if options.inspect_output_release.is_some() {
+        if seen.len() != 1 {
+            return Err("--inspect-output-release is a separate read-only invocation; pass only its directory".into());
+        }
+        return Ok(Invocation::Run(Box::new(options)));
     }
     if options.agent_read_only
         && (options.no_mcp

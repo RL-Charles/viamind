@@ -196,3 +196,28 @@ No centroid, polarity, stock, vendor zero or submission acceptance is inferred.
 See [production/native verification](matched-populated-output-job-verification.md)
 for independent CSV/digest parsing, prior version 1/2 byte comparisons and reproducible
 shared CLI/MCP/desktop proof.
+
+## Inspect an existing release
+
+Use **File → Inspect saved release…**, MCP `inspect_output_release` with
+`{"path":"/absolute/existing/release"}`, or the display-free CLI:
+
+```sh
+viamind --inspect-output-release /absolute/existing/release
+```
+
+This read-only Linux inspector accepts bounded fixed-layout releases from versions
+1–3 and reports historical project/cursor facts independently of the current board.
+It checks strict settings/manifest consistency, regular-file lengths and observed
+path stability. When present, it validates calibrated rows; version 3 additionally
+compares populated BOM membership/shared fields and the component-set digest.
+Startup read-only MCP admits this observation. The desktop reads in a retained
+background worker with disabled pending controls and scrollable results.
+
+It does not authenticate file content, recompute geometry/DRC or establish manufacturer
+acceptance. Same-length changes to unchecked files can pass. Unlisted entries are not
+inspected, independent reads are not an atomic cross-file snapshot, and files can change
+after return. Per-file inspector caps (32 MiB per CSV, 64 KiB settings/manifests,
+16 MiB validation) can refuse otherwise valid larger exports. See the
+[bounded contract](specs/saved-release-inspection.md) and
+[production/native verification](saved-release-inspection-verification.md).

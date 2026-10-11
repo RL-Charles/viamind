@@ -1,0 +1,4 @@
+Designator,Quantity,Value,Footprint,Mounting,Manufacturer,MPN,Supplier,Supplier SKU,Component ID
+Z_BOTTOM,1,Synthetic asymmetric geometry,EXPLICIT_FIXTURE,surface_mount,Explicit bottom maker,BOTTOM-USER-PN,,,00000000-0000-0000-0000-000000000002
+A_TOP,1,"µ, ""parts""
+line",EXPLICIT_FIXTURE,through_hole,"Explicit, ""maker"" λ",USER-PN-42,Explicit supplier,LOCAL-42,00000000-0000-0000-0000-000000000005

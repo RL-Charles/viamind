@@ -1,0 +1,18 @@
+test_buffered_record_and_expensive_decode_respect_deadline (test_mcp_reference.ReferenceTests.test_buffered_record_and_expensive_decode_respect_deadline) ... ok
+test_check_regular_same_fd_limits_fifo_and_symlink (test_mcp_reference.ReferenceTests.test_check_regular_same_fd_limits_fifo_and_symlink) ... ok
+test_deterministic_complete_markdown_escaping_and_injective_anchors (test_mcp_reference.ReferenceTests.test_deterministic_complete_markdown_escaping_and_injective_anchors) ... ok
+test_duplicate_and_repeated_cursor_and_skeleton_reject (test_mcp_reference.ReferenceTests.test_duplicate_and_repeated_cursor_and_skeleton_reject) ... ok
+test_new_publication_existing_paths_symlink_race_preserve (test_mcp_reference.ReferenceTests.test_new_publication_existing_paths_symlink_race_preserve) ... ok
+test_notifications_drain_and_normal_finish (test_mcp_reference.ReferenceTests.test_notifications_drain_and_normal_finish) ... ok
+test_object_input_schema_required (test_mcp_reference.ReferenceTests.test_object_input_schema_required) ... ok
+test_page_tool_cursor_total_byte_budgets_and_failed_exit (test_mcp_reference.ReferenceTests.test_page_tool_cursor_total_byte_budgets_and_failed_exit) ... ok
+test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit (test_mcp_reference.ReferenceTests.test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit) ... ok
+test_strict_json_duplicate_depth_nonfinite_utf8 (test_mcp_reference.ReferenceTests.test_strict_json_duplicate_depth_nonfinite_utf8) ... ok
+test_timeout_and_unterminated_stdout_and_stderr_bounded (test_mcp_reference.ReferenceTests.test_timeout_and_unterminated_stdout_and_stderr_bounded) ... ok
+test_tool_error_status_requires_actual_boolean (test_mcp_reference.ReferenceTests.test_tool_error_status_requires_actual_boolean) ... ok
+test_wrong_identity_protocol_error_and_invalid_json_reject (test_mcp_reference.ReferenceTests.test_wrong_identity_protocol_error_and_invalid_json_reject) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.064s
+
+OK
