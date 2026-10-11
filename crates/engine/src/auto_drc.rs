@@ -576,6 +576,40 @@ mod tests {
         assert_eq!(ready.config, config);
         assert_ne!(ready.source_cursor.unwrap().stream_id, old_stream);
         assert_eq!(ready.report.unwrap().coverage.excluded_part_count, 0);
+        let events = all_events(&handle);
+        assert_eq!(events.iter().filter(|event| event.phase == AutoDrcPhase::Ready).map(|event| event.generation).collect::<Vec<_>>(), vec![3]);
+        assert!(events.iter().filter_map(|event| event.source_cursor).all(|cursor| cursor.stream_id != old_stream));
+    }
+    #[test]
+    fn selection_during_blocked_check_keeps_original_capture_cursor() {
+        let (handle, entered, release) = blocked();
+        add(&handle, "R1");
+        let capture = handle.session_state();
+        handle.configure_auto_drc(enabled()).unwrap();
+        entered.recv_timeout(Duration::from_secs(10)).unwrap();
+        handle
+            .set_selection(SetSelection { ids: capture.project.board.parts.keys().copied().collect(), mode: Default::default() }, Origin::User)
+            .unwrap();
+        let selected = handle.session_state();
+        assert_ne!(selected.cursor, capture.cursor);
+        release.send(()).unwrap();
+        let ready = wait_status(&handle, |status| status.phase == AutoDrcPhase::Ready);
+        assert_eq!(ready.source_cursor, Some(capture.cursor));
+        assert_eq!(ready.generation, 1);
+        assert_eq!(handle.session_state(), selected);
+        let events = all_events(&handle);
+        assert_eq!(events.len(), 3);
+        assert_eq!(events[2].source_cursor, Some(capture.cursor));
+    }
+    fn all_events(handle: &EngineHandle) -> Vec<crate::AutoDrcEvent> {
+        handle
+            .watch_auto_drc_events(crate::WatchAutoDrcEvents {
+                after: Some(crate::AutoDrcEventCursor { stream_id: handle.auto_drc_event_state().cursor.stream_id, sequence: 0 }),
+                limit: 128,
+                ..Default::default()
+            })
+            .unwrap()
+            .events
     }
     #[test]
     fn disable_and_invalid_config_are_atomic_and_read_only_selection_does_not_rerun() {
@@ -620,6 +654,10 @@ mod tests {
         let skipped = wait_status(&handle, |s| s.phase == AutoDrcPhase::Skipped);
         assert!(skipped.report.is_none());
         assert!(skipped.message.unwrap().contains("exceeds 1 structural objects"));
+        let skipped_event = all_events(&handle).pop().unwrap();
+        assert_eq!(skipped_event.phase, AutoDrcPhase::Skipped);
+        assert!(skipped_event.report.is_none());
+        assert!(skipped_event.message.unwrap().contains("exceeds 1 structural objects"));
         handle.configure_auto_drc(enabled()).unwrap();
         assert_eq!(wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready).report.unwrap().coverage.excluded_part_count, 2);
         let mut project = Project::new("huge unrelated schematic name");
@@ -656,6 +694,10 @@ mod tests {
         let failed = wait_status(&handle, |s| s.phase == AutoDrcPhase::Failed);
         assert!(failed.report.is_none());
         assert!(failed.message.unwrap().contains("panicked"));
+        let failure = all_events(&handle).pop().unwrap();
+        assert_eq!(failure.phase, AutoDrcPhase::Failed);
+        assert!(failure.report.is_none());
+        assert!(failure.message.unwrap().contains("panicked"));
         handle.configure_auto_drc(enabled()).unwrap();
         assert_eq!(wait_status(&handle, |s| s.phase == AutoDrcPhase::Ready).generation, 2);
     }
