@@ -29,3 +29,5 @@ The unchanged T102 inspection example was built from the **new product source**;
 Repeat `scripts/verify-symbol-publication-native.py --binary RETAINED_APP --report NEW_REPORT` for isolated stdio. Add `--url` only for an explicitly owned scratch engine: the verifier opens a temporary project and makes deliberate peer edits. `verify-symbol-definition-native.py` repeats the bounded detached writer cases. All output paths must be NEW. `docs/verification/t0107/verify-artifacts.py` verifies23 durable hashes and the complete native PNG RGB image.
 
 Final combined CI and independent final review remain merge gates. Multi-unit symbols and the inherited compact nested pin-layout clipping remain separate work.
+
+Historical product/native ancestry is retained by annotated tag`verification/t0107/native-source` at`29d351bf0b83ab7cf6487094edc800dfab3abedc`; GitHub resolves the exact product source. Later stacked integration evidence is recorded separately without relabeling this proof.

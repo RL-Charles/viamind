@@ -253,5 +253,10 @@
       "bytes": 1687,
       "sha256": "54e43ab8ea5c1d5085d8cf3e0b86be3d44a84a41e60597e6cf6c0b6b0200cc55"
     }
+  },
+  "source_retention": {
+    "annotated_tag": "verification/t0107/native-source",
+    "tag_target": "29d351bf0b83ab7cf6487094edc800dfab3abedc",
+    "product_source_github_resolvable": true
   }
 }
