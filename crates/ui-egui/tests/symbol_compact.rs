@@ -41,9 +41,19 @@ fn painted_clip(h: &Harness<'_, ViamindApp>, rect: Rect) -> Rect {
 fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) -> Rect {
     // This sends the genuine accessibility ScrollIntoView action. Check actual
     // ancestor-clipped painting afterward rather than trusting allocated nodes.
+    eprintln!("REVEAL {label}");
+    if label.starts_with("Pin ") || label.starts_with("Remove pin ") {
+        // Reveal the parent first; virtual child scroll actions cannot reveal
+        // an ancestor region while it is entirely below the window clip.
+        h.query_by_label_contains("/ 1024 ordered pins").unwrap().scroll_to_me();
+        h.run_steps(8);
+        let at = h.query_by_label_contains("/ 1024 ordered pins").unwrap().rect().center();
+        wheel(h, at, -160.0);
+    }
     h.get_by_label(label).scroll_to_me();
     h.run_steps(8);
     let rect = h.get_by_label(label).rect();
+    eprintln!("RECT {label} {rect:?}");
     let clip = painted_clip(h, rect);
     assert!(clip.contains_rect(rect), "{label}: widget {rect:?}, effective paint clip {clip:?}");
     rect
