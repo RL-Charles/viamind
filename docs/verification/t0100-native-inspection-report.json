@@ -1,0 +1,37 @@
+{
+  "all_export_controls_visible": true,
+  "calibrated_description_visible": true,
+  "capture": "eframe native WGPU Screenshot event",
+  "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/inspection-verified",
+  "full_session_unchanged": true,
+  "local_format_pointer_events": 2,
+  "local_inspector_scroll_events": 1,
+  "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/native-calibrated.ppm",
+  "pid": 1732280,
+  "pixels": [
+    1600,
+    1000
+  ],
+  "source_cursor": {
+    "sequence": 1,
+    "stream_id": "a7661c05-7c5c-4d98-a46a-70be0b2bfacd"
+  },
+  "visible_export_labels": [
+    "Export assembly CSV",
+    "Component tables from an immutable board snapshot.",
+    "BOM",
+    "Placement",
+    "Sourcing BOM",
+    "Catalog BOM",
+    "Assembly BOM",
+    "Calibrated placement",
+    "Populated components only; requires explicit mounting, local centroid and orientation marker. Global origin, X right/Y up, CCW common top view. Bottom reflects the local marker (r+180\u2212marker); this generic convention is not a universal vendor zero.",
+    "Included references: 1\u201364 ASCII letters/digits/underscores, starting with a letter; case collisions are rejected. A separate placement file must use this same populated subset.",
+    "CSV output file",
+    "",
+    "Allow replacing this CSV output",
+    "Default: a NEW file is required. The active native project is always protected.",
+    "At most 100000 source components, 2 MiB aggregate text and 32 MiB CSV. Identifiers and calibration are explicit user input; no stock lookup or manufacturer verification.",
+    "Export CSV to NEW file"
+  ]
+}

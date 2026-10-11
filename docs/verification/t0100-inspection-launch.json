@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/launch-inspection",
+  "pid": 1732280,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-calibration-inspection",
+      "bounds": {
+        "height": 1000,
+        "width": 1600,
+        "x": 2080,
+        "y": 1265
+      },
+      "height": 1000,
+      "is_on_screen": true,
+      "pid": 1732280,
+      "title": "calibration.viamind.json — Viamind",
+      "width": 1600,
+      "window_id": 110379494668880,
+      "x": 2080,
+      "y": 1265,
+      "z_index": null
+    }
+  ]
+}

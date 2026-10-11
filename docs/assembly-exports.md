@@ -53,10 +53,11 @@ decimal places. `Top` and `Bottom` share this global frame: bottom coordinates a
 stored rotations are preserved, without a second reflection. No board bounding
 box or pad centroid is substituted for the component origin.
 
-These are generic Viamind interchange files. Manufacturer presets need sourcing
-metadata, assembly centroids, population exclusions and mounting technology that
-are not yet in the model. Manufacturer upload acceptance and fabrication outputs
-remain separate work. See [the behavioral specification](specs/assembly-csv.md).
+These two formats are generic component inventories. Explicit sourcing BOMs and
+[calibrated assembly placement](calibrated-assembly-placement.md) are separate
+choices in the same catalogue; the latter requires user-entered mounting and local
+centroid/orientation data and applies population. Manufacturer upload acceptance
+remains unverified. See [the original behavioral specification](specs/assembly-csv.md).
 
 The CLI interoperability test uses Python 3's standard-library CSV parser as an
 independent reader; Python 3 is needed to run the complete Linux test suite.

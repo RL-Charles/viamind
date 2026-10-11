@@ -1,6 +1,6 @@
 # Component sourcing and population
 
-Select one PCB component. Its Assembly sourcing section accepts optional
+Select one PCB component. Its Assembly metadata section accepts optional
 manufacturer, manufacturer part number, supplier and supplier stock number.
 These are your entries; Viamind does not look up or verify identifiers, stock or prices.
 Fields permit 1–512 UTF-8 bytes, with no control characters or surrounding whitespace.
@@ -8,8 +8,9 @@ Leave a field empty to mark it unspecified. A project permits 2 MiB of sourcing 
 and 100000 components with assembly metadata.
 
 **Populate component** means mount that component. Unchecking it keeps the footprint,
-copper and connectivity and records an instruction not to mount it. Apply sourcing
-is one undoable change; Clear sourcing removes all entries and restores Populate.
+copper and connectivity and records an instruction not to mount it. Apply assembly metadata
+is one undoable change; Clear assembly metadata removes sourcing, mounting and
+calibration entries and restores Populate.
 Apply protects the original component and document against intervening edits; use
 Reload to inspect another agent's changes before applying again. Metadata belongs
 to the PCB component and is preserved by schematic synchronization without becoming
@@ -41,8 +42,10 @@ inventories and do not apply population or sourcing fields.** Their existing byt
 are unchanged. The sourcing BOM is a generic interchange table, not a manufacturer
 preset. Component-origin placement does not establish manufacturer centroids.
 
-Native files use schema 7 only while assembly metadata is present; clearing the last
-record restores the prior minimum schema. Older projects remain readable and keep
+Sourcing-only metadata requires native schema 7; optional explicit mounting or
+[placement calibration](calibrated-assembly-placement.md) requires schema 9.
+Mixed features use the maximum required schema; clearing the last record restores
+the remaining features’ minimum schema. Older projects remain readable and keep
 their canonical shape. Sourcing does not change Gerber/XNC or board view geometry.
 Assembly variants, alternatives, procurement, substitutions and vendor acceptance
 remain outside this increment.

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "route": "ImageMagick P6 RGB to PNG then independent PNG decode to raw RGB",
+  "ppm_sha256": "a69e5daa72e4b93547b4f5b996ef38fa0f0603a9b8c6dcbceb651893c3443800",
+  "png_sha256": "3adf50ff84c5d5605072d063de38b053f2789b07ff05d0b94aa50a992103d15e",
+  "pixels": [
+    1600,
+    1000
+  ],
+  "decoded_rgb_exactly_equal": true,
+  "new_png_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/native-calibrated.png",
+  "tool_version": "Version: ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org"
+}

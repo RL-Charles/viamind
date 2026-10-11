@@ -39,7 +39,7 @@ fn compact_sourcing_is_guarded_undoable_and_matches_live_mcp_csv() {
     input(&mut h, "Supplier", "Example supplier");
     input(&mut h, "Supplier stock number", "USER-SKU");
     click(&mut h, "Populate component");
-    click(&mut h, "Apply sourcing");
+    click(&mut h, "Apply assembly metadata");
     let after = engine.read(Clone::clone);
     let m = after.board.part(&id).unwrap().assembly.as_ref().unwrap();
     assert_eq!(m.manufacturer.as_deref(), Some("µ, \"User input\""));
@@ -53,15 +53,15 @@ fn compact_sourcing_is_guarded_undoable_and_matches_live_mcp_csv() {
     input(&mut h, "Manufacturer part number", "STALE-DRAFT");
     engine.execute("update_part", json!({"id":id,"value":"peer edit"}), Origin::agent("peer")).unwrap();
     h.run_steps(5);
-    click(&mut h, "Apply sourcing");
+    click(&mut h, "Apply assembly metadata");
     assert_eq!(engine.read(|p| p.board.part(&id).unwrap().assembly.as_ref().unwrap().mpn.clone()).as_deref(), Some("USER-MPN"));
     click(&mut h, "Reload");
     input(&mut h, "Manufacturer part number", "invalid trailing ");
     let state = engine.session_state();
-    click(&mut h, "Apply sourcing");
+    click(&mut h, "Apply assembly metadata");
     assert_eq!(engine.session_state(), state);
     click(&mut h, "Reload");
-    click(&mut h, "Clear sourcing");
+    click(&mut h, "Clear assembly metadata");
     assert!(engine.read(|p| p.board.part(&id).unwrap().assembly.is_none()));
     engine.undo(Origin::User).unwrap();
     h.run_steps(5);

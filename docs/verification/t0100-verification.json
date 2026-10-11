@@ -1,0 +1,80 @@
+{
+  "format": "viamind-calibrated-assembly-placement-verification",
+  "version": 1,
+  "passed": true,
+  "scope": "Explicit populated generic mounting/centroid/marker export; no vendor-zero/centroid inference or manufacturing acceptance. Final CI is a separate merge gate.",
+  "original_production": {
+    "source": "c33f0e8def8ce2c8df75db6d7febbc4e8bc6273b",
+    "base": "b845cb7c297e90de0cb3809f4fba38c878cee631",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/production-verified",
+    "binary_sha256": "7d4791fde97ff2954f83a7ffaf4c66ef8440f62e15b6c22cde1bfca23479557b",
+    "pid": 1678620,
+    "endpoint": "http://127.0.0.1:7926/mcp",
+    "report": "t0100-production-report.json",
+    "checks_passed": 30,
+    "full_workspace_tests_passed": 708,
+    "ignored": 1,
+    "failed": 0,
+    "full_gate_log": "t0100-original-full.log"
+  },
+  "final_integration": {
+    "source": "6bfe004e7a5596aff0d21f0df743fe5676f94eda",
+    "base": "b9b09fc8f432e100436ab12b9b8749ec3c02d58f",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/production-final-combined-verified",
+    "binary_sha256": "dd0f4da5ee49c9abe06aed071b33a38e8cfe2e989c3ddb6d1cb70eff67a9045e",
+    "focused_tests_passed": 22,
+    "strict_all_target_workspace_clippy": "PASS",
+    "workspace_build": "PASS",
+    "fmt": "PASS",
+    "reference_tools": 85,
+    "canonical_reference_exact_check": "PASS",
+    "isolated_agent_workflow_checks": 18,
+    "log": "t0100-final-combined.log",
+    "full_suite_not_repeated_for_unrelated_rebase": true
+  },
+  "inspection": {
+    "source": "6bfe004e7a5596aff0d21f0df743fe5676f94eda",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/inspection-verified",
+    "binary_sha256": "558fe0e4bddca762cd97df8be55a6719e7479ee5d2c4770437ab77ae13653bc9",
+    "harness_source": "t0100-native-inspection.rs",
+    "manifest_template": "t0100-native-Cargo.toml.in",
+    "mcp_server": false,
+    "pid": 1732280,
+    "self_closed_after_new_capture_fsync": true,
+    "native_production_widget_host": "ViamindApp; fixed1600x1000 inspection-only viewport",
+    "report": "t0100-native-inspection-report.json",
+    "image": "t0100-native-calibrated.png",
+    "capture_route": "Actual native WGPU Screenshot event; local egui2 pointer events and1 scroll; no OS/Cua input or cadence claim",
+    "full_session_unchanged_after_explicit_initial_selection": true
+  },
+  "historical_failed_harness_attempts": {
+    "wrong_path": "t0100-historical-wrong-path-report.json",
+    "restoration": "t0100-harness-restoration.json",
+    "uninitialized_stdio": "t0100-historical-uninitialized-stdio-report.json",
+    "counted_as_success": false
+  },
+  "artifact_sha256": {
+    "t0100-calibration-smoke.py": "245461d835c842fd3ba980959b80f800f753517a62e81938790c3e43514d8945",
+    "t0100-capture-conversion.json": "278c23b3003741ca95d5b532ac229cbdaf1d3b8999f394232510f3824846be73",
+    "t0100-final-catalog.json": "ed3dd8fe21450fbd8c475e292938b1f96c929e246cf6edf6abb8f49a1e567ef0",
+    "t0100-final-combined.log": "8472cc11b14e91afa48f3762616cc8a6c91b8755b5f5d0b40722f78077ff0101",
+    "t0100-final-workflow.json": "3f4dc69469e2ed9d27a32d546f26364c5156d51c807c8230f9f2afabab23e64d",
+    "t0100-harness-restoration.json": "f340665a5bdefbd7da501cd15ae7967dc60b55deca53f99bf32e1be73e2f70ef",
+    "t0100-historical-uninitialized-stdio-report.json": "3a9f65e836bde09bdab6e162814932d8670068502abe61d86d8001bdc87bfcf9",
+    "t0100-historical-wrong-path-report.json": "32bb97b824cdac9ffd413dfba5eea1e5d480d0aa6b406d4eea23b57c6664664c",
+    "t0100-inspection-launch.json": "4813f302e7ed4d92550ce7192fd438e5b312b5618277cfa7b28a27d0d312e4f2",
+    "t0100-native-Cargo.toml.in": "65e49560fda768f1f4062860c52fcc196d0c32a324dc04e192421d3044fc0a71",
+    "t0100-native-calibrated.png": "3adf50ff84c5d5605072d063de38b053f2789b07ff05d0b94aa50a992103d15e",
+    "t0100-native-inspection-report.json": "056bd34b1bed0787a3b61cef060dd4fa72eda68d4dbbd50a7e1cedd329672a16",
+    "t0100-native-inspection.rs": "e467ff424c718403a9fee5bed96e1c108b3103c292c6055db426ed0c841fbd8d",
+    "t0100-original-full.log": "97b71748d7b472c0d46019ade1fc1b073a7e784331f555c8cfa07d84f0af93ee",
+    "t0100-pre-read-only-catalog.json": "81a528fed7e1bff3ce3a29c0906a1cc9bcaa7065652078cdd734cf494ee5dd69",
+    "t0100-pre-read-only-workflow.json": "fc1b215b0ba6170ae0ec81ba53c23d1a0f7346fbb15c9f3523c1d42bcf12fd15",
+    "t0100-production-launch.json": "ad09564f7209892a8c0ee51a7d128de9069790ce23bb1ce3f7b18ef9ed3a370b",
+    "t0100-production-report.json": "d7ccf94ba9c151f7fc3572c18146cf3482c060e75ce5d98b075253da47bbebea"
+  },
+  "fixture": {
+    "path": "fixtures/assembly/calibration.viamind.json",
+    "sha256": "d39095a29c4a0539c4ff90bd06a64832e721f1a5c4d1b489b3db59ed5c60a711"
+  }
+}

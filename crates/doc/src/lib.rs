@@ -22,7 +22,7 @@ pub mod project;
 pub mod schematic;
 pub mod symbol_library;
 
-pub use assembly::AssemblyMetadata;
+pub use assembly::{AssemblyMetadata, AssemblyPlacement, MountingTechnology};
 pub use board::{Board, Part, Side};
 pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};

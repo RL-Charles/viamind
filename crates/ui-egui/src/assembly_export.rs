@@ -148,15 +148,16 @@ impl ViamindApp {
                     AssemblyCsv::Placement => "All-component inventory; population is not applied. Origins in global mm: X right, Y down, CCW top view. Bottom keeps the stored transform.",
                     AssemblyCsv::CatalogBom => "Populated components only. Requires value, footprint, explicit LCSC/JLCPCB supplier and C-digits SKU. Catalog BOM template; no lookup or acceptance verification.",
                     AssemblyCsv::AssemblyBom => "Populated components only. Requires footprint and explicit manufacturer part number. Assembly BOM template; mounting type/instructions stay empty. No acceptance verification.",
+                    AssemblyCsv::AssemblyPlacement => "Populated components only; requires explicit mounting, local centroid and orientation marker. Global origin, X right/Y up, CCW common top view. Bottom reflects the local marker (r+180−marker); this generic convention is not a universal vendor zero.",
                 });
-                if matches!(self.assembly_export.kind, AssemblyCsv::CatalogBom | AssemblyCsv::AssemblyBom) {
+                if matches!(self.assembly_export.kind, AssemblyCsv::CatalogBom | AssemblyCsv::AssemblyBom | AssemblyCsv::AssemblyPlacement) {
                     ui.label("Included references: 1–64 ASCII letters/digits/underscores, starting with a letter; case collisions are rejected. A separate placement file must use this same populated subset.");
                 }
                 let label = ui.label("CSV output file");
                 ui.add(egui::TextEdit::singleline(&mut self.assembly_export.path).desired_width(520.0).char_limit(4096)).labelled_by(label.id);
                 ui.checkbox(&mut self.assembly_export.overwrite, "Allow replacing this CSV output");
                 ui.label("Default: a NEW file is required. The active native project is always protected.");
-                ui.label("At most 100000 source components, 2 MiB aggregate text and 32 MiB CSV. Identifiers are explicit user input; no stock lookup or verified assembly centroids.");
+                ui.label("At most 100000 source components, 2 MiB aggregate text and 32 MiB CSV. Identifiers and calibration are explicit user input; no stock lookup or manufacturer verification.");
                 start = ui.button(if self.assembly_export.overwrite { "Export CSV (replace allowed)" } else { "Export CSV to NEW file" }).clicked();
             });
             if busy {

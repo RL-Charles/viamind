@@ -6,7 +6,7 @@ pub const HELP: &str = "Viamind — agent-driven PCB design
 
 Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
        viamind --headless [--open PATH] [--save-as PATH | --agent-read-only]
-       viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom --open PATH --output PATH [--overwrite]
+       viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom|assembly_placement --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
@@ -19,7 +19,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only]
   --open PATH      Load an existing native .viamind.json project
   --save-as PATH   Save the final headless design after the client closes stdin
   --no-mcp         Open the desktop without the HTTP MCP endpoint
-  --export-csv KIND Export BOM, sourcing BOM or component-origin placement CSV and exit
+  --export-csv KIND Export BOM, component-origin or explicit calibrated placement CSV and exit
   --run-output-job JOB Run saved manufacturing settings into a NEW release directory
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
@@ -169,7 +169,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                         .as_deref()
                         .and_then(|arg| arg.to_str())
                         .and_then(viamind_fab::AssemblyCsv::from_name)
-                        .ok_or("--export-csv requires bom, placement, sourcing_bom, catalog_bom or assembly_bom")?,
+                        .ok_or("--export-csv requires bom, placement, sourcing_bom, catalog_bom, assembly_bom or assembly_placement")?,
                 );
             }
             Some("--open" | "--save-as" | "--output" | "--run-output-job") => {
