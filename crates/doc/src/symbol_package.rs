@@ -1,7 +1,7 @@
 //! Explicit same-sheet packages and detached rectangular multi-unit definitions.
 use crate::{
     ObjectId,
-    schematic::SchematicContent,
+    schematic::{Coordinate, SchematicContent, SchematicSymbol},
     symbol_library::{SymbolTemplate, TemplatePin},
 };
 use schemars::JsonSchema;
@@ -179,6 +179,7 @@ impl SchematicPackage {
             }
             let symbol = content.symbols.get(&unit.symbol_id).ok_or("package member symbol missing from its sheet")?;
             symbol.validate()?;
+            validate_body_pose(symbol.width, symbol.height, symbol.position, symbol.rotation_quarters, symbol.mirrored)?;
             if symbol.pins.is_empty() {
                 return Err("package units require at least one explicit pin".into());
             }
@@ -343,6 +344,53 @@ impl SymbolPackageTemplate {
             pins: unit.pins.clone(),
         }
     }
+
+    /// Validate every exact transformed endpoint/corner before copying geometry
+    /// or generating any instance identities. Call `validate` on the definition first.
+    pub fn validate_unit_pose(unit: &UnitTemplate, position: Coordinate, quarters: u8, mirrored: bool) -> Result<(), String> {
+        validate_body_pose(unit.width, unit.height, position, quarters, mirrored)?;
+        let transform = SchematicSymbol {
+            id: ObjectId::from_uuid(uuid::Uuid::nil()),
+            designator: String::new(),
+            value: String::new(),
+            footprint: None,
+            position,
+            rotation_quarters: quarters,
+            mirrored,
+            width: unit.width,
+            height: unit.height,
+            pins: vec![],
+        };
+        for pin in &unit.pins {
+            transform.pin_position(pin.position)?;
+        }
+        Ok(())
+    }
+}
+
+fn validate_body_pose(width: Nm, height: Nm, position: Coordinate, quarters: u8, mirrored: bool) -> Result<(), String> {
+    position.validate()?;
+    if quarters > 3 {
+        return Err("rotation_quarters must be within 0..3".into());
+    }
+    if [width.0, height.0].iter().any(|n| *n <= 0 || *n > 10_000_000_000) {
+        return Err("unit body dimensions must be positive and at most 10000 mm".into());
+    }
+    for dx in [-width.0, width.0] {
+        for dy in [-height.0, height.0] {
+            let (mut x, mut y) = (i128::from(dx), i128::from(dy));
+            if mirrored {
+                x = -x;
+            }
+            for _ in 0..quarters {
+                (x, y) = (y, -x);
+            }
+            if [x + 2 * i128::from(position.x.0), y + 2 * i128::from(position.y.0)].iter().any(|n| n.abs() > 20_000_000_000) {
+                return Err("placed package unit body must remain within ±10000 mm (exact doubled-Nm corners)".into());
+            }
+        }
+    }
+    Ok(())
 }
 pub fn from_slice(bytes: &[u8]) -> Result<SymbolPackageTemplate, String> {
     if bytes.len() > MAX_BYTES {
