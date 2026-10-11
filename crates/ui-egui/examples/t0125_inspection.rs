@@ -47,6 +47,7 @@ impl eframe::App for Inspection {
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(self.engine.document_status(), self.status);
         let layers = ui.ctx().memory(|m| m.areas().visible_layer_ids());
+        let content_rect = ui.ctx().content_rect();
         let painted: Vec<_> = ui.ctx().graphics(|g| {
             layers
                 .iter()
@@ -54,7 +55,7 @@ impl eframe::App for Inspection {
                 .filter_map(|entry| {
                     let egui::Shape::Text(text) = &entry.shape else { return None };
                     let rect = text.galley.rect.translate(text.pos.to_vec2());
-                    entry.clip_rect.intersect(ui.ctx().content_rect()).contains_rect(rect).then(|| (text.galley.text().to_owned(), rect))
+                    entry.clip_rect.intersect(content_rect).contains_rect(rect).then(|| (text.galley.text().to_owned(), rect))
                 })
                 .collect()
         });

@@ -35,6 +35,8 @@ def verify(r,s,label):
     check(label+' independently declared three exact cardinal bends and retained IDs',lines==[(ids(n),o,s,e) for n,o,s,e in expected])
     check(label+' complete native original-member proof and honest scope',r['native_graph_partition_preserved'] is True and r['added_wire_count']==3 and r['original_graph_members']==12 and 0<r['exact_candidate_visits']<=1000000 and 'no ERC/DRC' in r['scope'])
 def partition(graph,original=None):
+    assert graph.get('next_offset') is None, 'independent fixture graph must be complete'
+    assert sum(len(net['members']) for net in graph['nets'])==graph['coverage']['members'], 'all graph members must be reported'
     groups=[];anchors=set()
     for net in graph['nets']:
         members=sorted((m['sheet_id'],m['id'],m['kind']) for m in net['members'] if original is None or m['id'] in original)
