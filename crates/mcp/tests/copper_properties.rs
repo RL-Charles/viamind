@@ -51,7 +51,9 @@ async fn two_clients_and_read_only_observer_share_guarded_stable_property_comman
     let after = e.session_state();
     assert_eq!(after.project.board.vias[&v.id].position, v.position);
     assert_eq!(after.project.board.vias[&v.id].diameter.0, 900003);
-    registry.call("undo", json!({}), b).await.unwrap();
+    assert!(registry.call("undo", json!({}), b).await.is_err());
+    assert_eq!(e.session_state(), after);
+    registry.call("undo", json!({}), a.clone()).await.unwrap();
     assert_eq!(e.read(Clone::clone), now.project);
     let query = json!({"target":{"kind":"via","id":v.id,"position":{"x":1,"y":1}}});
     let before = e.session_state();
