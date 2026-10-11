@@ -67,10 +67,10 @@ fn typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable
         assert_eq!(EventLog::read_jsonl(&log[..]).unwrap().replay(), after.project);
         e.execute("add_part", json!({"designator":"R_PEER","value":"keep","footprint":"F","x_mm":1,"y_mm":1}), Origin::agent("peer")).unwrap();
         let peer = e.read(|p| p.board.clone());
-        e.undo(Origin::agent("library-creator")).unwrap();
+        e.undo_own(Origin::agent("library-creator")).unwrap();
         assert_eq!(e.read(|p| p.schematic.clone()), before.project.schematic);
         assert_eq!(e.read(|p| p.board.clone()), peer);
-        e.redo(Origin::agent("library-creator")).unwrap();
+        e.redo_own(Origin::agent("library-creator")).unwrap();
         assert_eq!(e.read(|p| p.schematic.clone()), after.project.schematic);
         assert_eq!(e.read(|p| p.board.clone()), peer);
     }
