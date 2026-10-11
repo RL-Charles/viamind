@@ -41,8 +41,11 @@ commands and compatibility policies below are Viamind choices.
 5. Borrowed preflight counts hole rows and key bytes before allocating indexes,
    decoding a secondary row, cloning Parts or creating UUIDs. Hole rows join each
    consumer's existing aggregate object budget; aggregate hole-key text is capped
-   at 2 MiB and aggregate holes at 100000 even where the old native validator has
-   no global object cap. Per-consumer stricter budgets remain. Count max+1 takes
+   at 2 MiB and aggregate holes at 100000. When any Some holes container is present,
+   also preflight at most 100000 combined global identity-bearing project objects
+   before calling the existing native validator or building its identity set. Legacy
+   projects without this feature keep the old native limits. Per-consumer stricter
+   budgets remain. Count max+1 takes
    precedence over a poison/null final row. Check global identities before indexes.
 6. Shared document geometry resolves local circles to world centers/diameters.
    Existing component bottom mirror, rotation and translation apply exactly once.
