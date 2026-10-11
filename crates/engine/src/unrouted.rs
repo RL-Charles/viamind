@@ -105,10 +105,16 @@ pub struct UnroutedNetResult {
 struct Permit;
 impl Permit {
     fn reserve() -> Result<Self, CommandError> {
-        ACTIVE
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |n| (n < 2).then_some(n + 1))
-            .map(|_| Self)
-            .map_err(|_| error("busy: two unrouted-net workers are unfinished"))
+        let mut current = ACTIVE.load(Ordering::Acquire);
+        loop {
+            if current >= 2 {
+                return Err(error("busy: two unrouted-net workers are unfinished"));
+            }
+            match ACTIVE.compare_exchange_weak(current, current + 1, Ordering::AcqRel, Ordering::Acquire) {
+                Ok(_) => return Ok(Self),
+                Err(observed) => current = observed,
+            }
+        }
     }
 }
 impl Drop for Permit {
