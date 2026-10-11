@@ -781,6 +781,7 @@ mod tests {
         let mut other = Sheet::new("Unselected");
         let mut content = SchematicContent::default();
         add_symbol(&mut content, p(100, 100));
+        content.symbols.values_mut().next().unwrap().designator = "U2".into();
         wire(&mut content, p(100, 100), p(120, 100));
         let id = ObjectId::new();
         content.labels.insert(id, SchematicLabel { id, position: p(120, 100), name: "GLOBAL".into(), scope: LabelScope::Global });
