@@ -7,6 +7,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::angle::Angle;
+use crate::arc::Arc;
 use crate::point::{Point, Vector};
 use crate::polygon::{Polygon, ring_contains, ring_edges};
 use crate::rect::Rect;
@@ -172,6 +174,40 @@ impl Shape {
     /// Whether the two shapes touch or overlap.
     pub fn intersects(&self, other: &Shape) -> bool {
         self.distance(other) == 0.0
+    }
+
+    /// The outline as a counter-clockwise polygon, with round ends flattened.
+    ///
+    /// Curved edges become chords whose vertices lie on the true outline and
+    /// which stay within `tolerance` of it (plus a nanometre of rounding).
+    pub fn to_polygon(&self, tolerance: Nm) -> Polygon {
+        let open = |mut pts: Vec<Point>| {
+            pts.pop();
+            pts
+        };
+        match self {
+            Shape::Circle(c) => Polygon::new(open(Arc::new(c.center, c.radius, Angle::ZERO, Angle::FULL).flatten(tolerance))),
+            Shape::Capsule(c) => {
+                let (a, b) = (c.segment.a, c.segment.b);
+                let r = Nm(c.width.0 / 2);
+                if a == b {
+                    return Shape::Circle(Circle::new(a, r)).to_polygon(tolerance);
+                }
+                let v = b - a;
+                let dir = Angle::from_radians((v.y.0 as f64).atan2(v.x.0 as f64));
+                let mut pts = Arc::new(b, r, dir - Angle::QUARTER, Angle::HALF).flatten(tolerance);
+                pts.extend(Arc::new(a, r, dir + Angle::QUARTER, Angle::HALF).flatten(tolerance));
+                Polygon::new(pts)
+            }
+            Shape::Rect(r) => Polygon::from_rect(r),
+            Shape::Polygon(p) => {
+                if p.signed_area_x2() < 0 {
+                    Polygon::new(p.points.iter().rev().copied().collect())
+                } else {
+                    p.clone()
+                }
+            }
+        }
     }
 
     /// The shape moved by `v`.
