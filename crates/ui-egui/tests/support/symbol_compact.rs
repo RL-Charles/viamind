@@ -1,9 +1,6 @@
 //! Compact input must hit painted controls, not merely virtualized accessibility nodes.
 use egui::{Rect, vec2};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::ViamindApp;
 
