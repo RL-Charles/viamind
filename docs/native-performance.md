@@ -7,6 +7,10 @@ synthetic objects:
 cargo run --release -p viamind-ui-egui --example native_benchmark -- /tmp/viamind-native-report.json
 ```
 
+Append `--reference` to measure the egui mesh tile path with exactly the same
+scene, phases and acceptance thresholds as the native GPU tile path. Reports
+identify the selected `canvas_renderer`.
+
 Use a new output filename. The example refuses debug builds and existing files,
 automatically pans/zooms through three phases, and closes when its JSON report is
 complete. It operates on a synthetic scene independently of open design sessions.
@@ -54,3 +58,86 @@ Local evidence is retained in `~/.local/state/viamind/recovery/`:
 `native-100k-fixed-window.png`. The first report,
 `native-100k-38c40eb-run1.json`, is also retained: its 19 × 522 canvas was too
 narrow to represent the intended full-board viewport.
+
+## Persistent native GPU tile buffers (T50)
+
+The production CPU stage profile (`cargo run --release -p viamind-ui-egui
+--example cpu_profile`) separates UI construction from egui mesh assembly. At
+1320 × 954 points, panning a 100k scene averaged 1.805 ms UI construction and
+11.802 ms tessellation/mesh assembly, producing 704,834 vertices and 2,274,186
+indices: approximately 23.19 MB copied into the renderer each frame. The profile
+excludes GPU upload/render/present and panning left 99,089 objects visible. It is
+a diagnostic, not a replacement for the native benchmark.
+
+The initial stage profile and isolated results below precede the merged T45
+round track caps; they are retained as historical evidence. Final comparisons
+use `--reference` on the same integrated binary.
+
+Native launch now explicitly configures a persistent GPU tile path. Existing
+egui-tessellated vertices, indices and geometric font-atlas regions are uploaded
+once per tile generation. A single batched upload supplies camera uniforms;
+layer order, tile culling and the 9% zoom bucket remain the same. Headless tests
+and unconfigured apps retain the egui mesh reference path. `cache.disable_gpu()`
+selects that reference for native screenshot comparisons.
+
+The first isolated persistent-buffer run on the same Linux/Vulkan device and
+1320 × 954 canvas produced:
+
+| Phase | Sustained fps | p95 interval | Mean previous-frame CPU |
+| --- | ---: | ---: | ---: |
+| Fit pan | 60.000 | 16.946 ms | 3.835 ms |
+| Fit pan and zoom | 46.055 | 17.168 ms | 8.524 ms |
+| Zoomed 8× pan | 60.002 | 16.892 ms | 1.380 ms |
+
+**The strict full-board 60fps acceptance remains open.** Fit pan narrowly exceeds
+the 16.9 ms p95 threshold; fit pan-and-zoom still stalls while replacing many GPU
+tile buffers at zoom bucket boundaries. Consolidating those allocations is a
+follow-up optimization. No thresholds, visible objects or phase counts changed.
+Parallel development checks and idle design previews remained running; other
+benchmark windows had completed before this isolated run.
+
+`gpu_parity NEW_REPORT.json` renders four native canvas comparisons against the
+egui mesh reference: fit, pan, layer hide/reorder/opacity and zoom inside a bucket.
+Across 1,068,480 pixels per comparison, maximum channel difference was 2/255,
+zero pixels differed by more than two channel values, and mean channel difference
+was below 0.0007. This includes the same antialiasing and prerasterized discs.
+Run it with `cargo run --release -p viamind-ui-egui --example gpu_parity --
+/tmp/new-parity-report.json`. The fixed-size synthetic window closes itself.
+
+Machine-readable evidence is in [performance/](performance/). Failed exploratory
+runs (per-tile uniform uploads and overlapping benchmark windows) remain in the
+local recovery directory; they are not used to claim acceptance.
+
+### Final integrated same-binary comparison
+
+At source `4e60cfb1ce919485159437a3b62a430f4e20bf03` (based on merged
+copper/placement main `b01f96b`), the same saved release binary rendered both
+paths sequentially at 1320 × 954 points, with the same 1,260 native frames and
+phase object counts. Load average observed between runs was 13.23: Viamind debug
+gates, unrelated hypervisor compilation/test workloads and open native previews
+were active. These are desktop observations, not controlled hardware limits.
+
+| Phase | Reference fps | GPU tiles fps | Reference mean CPU | GPU tiles mean CPU |
+| --- | ---: | ---: | ---: | ---: |
+| Fit pan | 13.317 | 22.930 | 36.184 ms | 5.577 ms |
+| Fit pan and zoom | 12.821 | 16.836 | 40.515 ms | 14.724 ms |
+| Zoomed 8× pan | 32.925 | 30.727 | 4.057 ms | 1.983 ms |
+
+All strict cadence checks fail under these conditions. Reduced previous-frame
+CPU and full-board cadence improvement support the cache optimization; the
+small visible-set cadence variation demonstrates why CPU timings alone do not
+prove native 60fps. The original acceptance remains open.
+
+Integrated native screenshot parity includes a through-via hole, rotated copper
+quad and connection guide overlay alongside the 5,000 synthetic items. All four
+cases pass: maximum difference 2/255, no pixels exceed two channel values, and
+mean channel difference is below 0.000265 across 1,068,480 pixels per case.
+Reference/GPU reports, parity, CPU profile and source/binary metadata are retained
+in [performance/](performance/). The final CPU diagnostic averaged 2.210 ms UI
+and 17.486 ms egui mesh assembly under this heavier load, with unchanged geometry
+volume of 23.19 MB/frame in the reference path.
+
+Native verification uses default single-sample wgpu, no depth attachment,
+1 pixel/point and default linear atlas filtering/dithering. Alternate custom
+sample/depth/filter policies and DPI are unverified in this increment. The public
+API keeps the egui mesh reference available for those integrations.

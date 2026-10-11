@@ -1,0 +1,1 @@
+{"canvas_points":[1320.0,954.0],"drawn":99089,"indices":2274186,"mean_tessellation_ms":11.802114074999999,"mean_ui_ms":1.804550899999999,"measurement":"CPU UI+egui tessellation only; excludes GPU upload/paint/present","mesh_upload_bytes_per_frame":23193424,"objects":100000,"sample_frames":120,"vertices":704834}
