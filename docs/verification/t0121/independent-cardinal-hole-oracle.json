@@ -1,0 +1,148 @@
+{
+  "status": "Independent future-verification oracle preparation only; no NPTH model or consumer is implemented or verified",
+  "contract": "verification/t0121/pre-code-spec / 04282f7b82fffef21d2201635af5c42846f86b8e",
+  "method": "Python integer coordinate arithmetic independent of production resolver; bottom local X mirror, y-down quarter-turn then origin; odd diameter preserved in doubled coordinates",
+  "utc": "2026-10-11T23:12:33.480048+00:00",
+  "input": {
+    "local_center_nm": {
+      "x": 1000003,
+      "y": -2000007
+    },
+    "part_origin_nm": {
+      "x": 10000011,
+      "y": -20000013
+    },
+    "diameter_nm": 3000001
+  },
+  "cases": [
+    {
+      "side": "top",
+      "rotation_mdeg": 0,
+      "center_nm": {
+        "x": 11000014,
+        "y": -22000020
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 19000027,
+        "max_x": 25000029,
+        "min_y": -47000041,
+        "max_y": -41000039
+      }
+    },
+    {
+      "side": "top",
+      "rotation_mdeg": 90000,
+      "center_nm": {
+        "x": 8000004,
+        "y": -21000016
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 13000007,
+        "max_x": 19000009,
+        "min_y": -45000033,
+        "max_y": -39000031
+      }
+    },
+    {
+      "side": "top",
+      "rotation_mdeg": 180000,
+      "center_nm": {
+        "x": 9000008,
+        "y": -18000006
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 15000015,
+        "max_x": 21000017,
+        "min_y": -39000013,
+        "max_y": -33000011
+      }
+    },
+    {
+      "side": "top",
+      "rotation_mdeg": 270000,
+      "center_nm": {
+        "x": 12000018,
+        "y": -19000010
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 21000035,
+        "max_x": 27000037,
+        "min_y": -41000021,
+        "max_y": -35000019
+      }
+    },
+    {
+      "side": "bottom",
+      "rotation_mdeg": 0,
+      "center_nm": {
+        "x": 9000008,
+        "y": -22000020
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 15000015,
+        "max_x": 21000017,
+        "min_y": -47000041,
+        "max_y": -41000039
+      }
+    },
+    {
+      "side": "bottom",
+      "rotation_mdeg": 90000,
+      "center_nm": {
+        "x": 8000004,
+        "y": -19000010
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 13000007,
+        "max_x": 19000009,
+        "min_y": -41000021,
+        "max_y": -35000019
+      }
+    },
+    {
+      "side": "bottom",
+      "rotation_mdeg": 180000,
+      "center_nm": {
+        "x": 11000014,
+        "y": -18000006
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 19000027,
+        "max_x": 25000029,
+        "min_y": -39000013,
+        "max_y": -33000011
+      }
+    },
+    {
+      "side": "bottom",
+      "rotation_mdeg": 270000,
+      "center_nm": {
+        "x": 12000018,
+        "y": -21000016
+      },
+      "diameter_nm": 3000001,
+      "doubled_bounds_nm": {
+        "min_x": 21000035,
+        "max_x": 27000037,
+        "min_y": -45000033,
+        "max_y": -39000031
+      }
+    }
+  ],
+  "local_extent_boundary": {
+    "diameter_nm": 3000001,
+    "max_admitted_positive_center_nm": 9998499999,
+    "first_refused_positive_center_nm": 9998500000,
+    "admitted_doubled_max_nm": 19999999999,
+    "refused_doubled_max_nm": 20000000001,
+    "limit_doubled_nm": 20000000000
+  },
+  "scope": "Exact cardinal geometry and local doubled-extent boundary only; no arbitrary-angle, runtime, DRC, routing or fabrication claim"
+}

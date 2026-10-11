@@ -1,0 +1,24 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/render)
+error[E0063]: missing field `apertures` in initializer of `viamind_doc::Pad`
+   --> crates/engine/src/unrouted.rs:610:13
+    |
+610 | ...   Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(width), height: Nm(height), net: Some(name....
+    |       ^^^ missing `apertures`
+
+error[E0063]: missing field `holes` in initializer of `viamind_doc::Part`
+   --> crates/engine/src/unrouted.rs:611:20
+    |
+611 |         let part = Part {
+    |                    ^^^^ missing `holes`
+
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/ui-egui)
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `viamind-engine` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

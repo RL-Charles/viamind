@@ -1,0 +1,83 @@
+{
+  "status": "Read-only implementation planning; no Rust changes or runtime consumer claim; approved NPTH contract04282f7; final T120 consumer handoff still required",
+  "sources": [
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/doc/src/board.rs",
+      "sha256": "63c6fe550ed7d9729d61b7fc689c4e9082ba5e2a072169ed4b6f1a2053ce17f9",
+      "bytes": 12592,
+      "required_change": "Both physical copy helpers must retain holes even when aperture/artwork are omitted."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/copper_connectivity.rs",
+      "sha256": "115a9b16296856836786099cc369e2ce3d900a09a41ecb66c46d9068c1e3045a",
+      "bytes": 9365,
+      "required_change": "CopperProof current physical hole index contains vias only; NPTH must enter separate identity-safe hole references and never get owned-via exemption."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/unrouted.rs",
+      "sha256": "58aef451e4299bd4da0d2793b795f3b32d7974eeb72664facc82daa65259f82a",
+      "bytes": 42952,
+      "required_change": "Capture currently continues early for padsNone; drill capture must occur independently; shape-less NPTH prevents complete result; physical circles never become graph nodes or terminals."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/route_terminals.rs",
+      "sha256": "ee11ea174a731a5376f6b21f14bb4e8f39c7dd4f2c1789ba2d929c7bcad3e272",
+      "bytes": 16493,
+      "required_change": "Shared row preflight must charge hole rows before any physical routing snapshot."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/walkaround.rs",
+      "sha256": "fd4252b8de63b8aad2e5b5449519675f2fad80d3b5d046a4ed08f858b1c7d789",
+      "bytes": 14320,
+      "required_change": "Component hole obstacles must be captured before route-side pad admission and on both sides; unsupported transformed hole refuses."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/via_walkaround.rs",
+      "sha256": "32a3d9dbf9eb10fec3661eab05ddcdb4b70872dfb713583cf4afe21ca181fe87",
+      "bytes": 8787,
+      "required_change": "Purpose snapshot retains holes and joint DRC must account both layers."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0121",
+      "head": "04282f7b82fffef21d2201635af5c42846f86b8e",
+      "path": "crates/engine/src/cardinal_cleanup.rs",
+      "sha256": "d2e4d0fdad599364d4d6534054676eb5e155c4040a2675143c2b13bc18c39a4b",
+      "bytes": 16246,
+      "required_change": "Conservative cleanup cannot erase physical drills in its analysis copy."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0125",
+      "head": "0f61dfdd54ce8dfed4fa040a35fbb15419bd7ea9",
+      "path": "crates/engine/src/schematic_budget.rs",
+      "sha256": "ca6eebb91e41748d5046274368c0589d990b1883116f50ac5a6045cfd23a4074",
+      "bytes": 7570,
+      "required_change": "Future NPTH integration must include holes in combined global identities before native schematic validation."
+    },
+    {
+      "checkout": "/home/charlesmowbray/Development/viamind-t-0125",
+      "head": "0f61dfdd54ce8dfed4fa040a35fbb15419bd7ea9",
+      "path": "crates/engine/src/schematic_drag.rs",
+      "sha256": "c215c6ec25fb0adcf47b4ca6734139e84654bc225e25fe4d7351dab839c43fa4",
+      "bytes": 40706,
+      "required_change": "Future NPTH integration must include PartHole IDs and rows in temporary/fresh wire identity collision set and global_rows count."
+    }
+  ],
+  "important_boundaries": [
+    "Do not infer no mechanical drills from padsNone.",
+    "NPTH has no net, copper annulus, owned copper or same-net drill exemption.",
+    "Future connected schematic moves must avoid global UUID collisions with physical hole identities, though they never move those holes.",
+    "No broad native validation before aggregate count admission when any Some hole container is present."
+  ]
+}

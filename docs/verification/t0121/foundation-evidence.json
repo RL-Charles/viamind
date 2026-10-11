@@ -1,0 +1,75 @@
+{
+  "phase": "Model/geometry/persistence foundation only; no hole-enabled application support claim",
+  "source": "b08bee5b793d361cc04ba7c047cc106b854c902e",
+  "base": "950f6160cd251072a04a0bf47bc25d24313434fc",
+  "pre_code_approval": {
+    "public_original_commit": "d106299b83e6cbb056d1fbaea922dfd8f3da91fe",
+    "rebased_exact_spec": "d7250f3c",
+    "tag": "verification/t0121/foundation-pre-code-spec",
+    "reviewer": "connectivity_ratsnest",
+    "result": "APPROVED before Rust"
+  },
+  "verification": {
+    "original_gate": {
+      "session": 89095,
+      "exit": 101,
+      "result": "strict all-target compile stopped before tests at own holes and inherited apertures test helper omissions; retained"
+    },
+    "remaining_gate": {
+      "session": 23749,
+      "exit": 0,
+      "fmt": "PASS",
+      "strict_workspace_all_target_clippy": "PASS",
+      "document_tests": 24,
+      "engine_tests": 7,
+      "new_hole_tests": 9,
+      "total": 31,
+      "failed": 0
+    }
+  },
+  "independent_source_review": {
+    "reviewer": "outline_dxf",
+    "source": "b9621579",
+    "result": "provisional PASS; later constructor-only correction b08bee5; no consumer/full-gate claim"
+  },
+  "remaining": "Final T120 consumer interface handoff, new commands/UI, every physical/electrical/render/fabrication consumer, runtime MCP/native verification, full Linux gates, independent final review and exact-head CI",
+  "preparation_artifacts": "Three earlier oracle/audit JSONs retain their original preparation-only status; their existence is not a consumer verification result",
+  "artifacts": [
+    {
+      "path": "docs/verification/t0121/foundation-focused1.sh",
+      "bytes": 889,
+      "sha256": "3ec12bafb85f8c062426901464ab7b0606bd534ab831ad220456ce19cb1005aa"
+    },
+    {
+      "path": "docs/verification/t0121/foundation-focused1.log",
+      "bytes": 1578,
+      "sha256": "132b712aafe39b0c46e796ba01ed81d15ffe76d00ee9e8605137fdf07bc2f6c5"
+    },
+    {
+      "path": "docs/verification/t0121/foundation-remaining2.sh",
+      "bytes": 889,
+      "sha256": "dfd3f8aadd559b209e83224e30ac83dba05b0c888b46d923b26ed0f12462ac26"
+    },
+    {
+      "path": "docs/verification/t0121/foundation-remaining2.log",
+      "bytes": 6669,
+      "sha256": "2055c72651243f845393df06fcd95e1e09fe994ddcf8a8ba06aedadb8e05b072"
+    },
+    {
+      "path": "docs/verification/t0121/independent-cardinal-hole-oracle.json",
+      "bytes": 3624,
+      "sha256": "cf123cec924a450f0d573bd7cd433d6188995c78ac903bd39cb4b3ece3bc7744"
+    },
+    {
+      "path": "docs/verification/t0121/read-only-physical-consumer-audit.json",
+      "bytes": 4541,
+      "sha256": "89aee328ba64d18b2031b1186082ceef30f52ad18a723fbc1a172eb95b7eb1a5"
+    },
+    {
+      "path": "docs/verification/t0121/independent-npth-fabrication-oracle.json",
+      "bytes": 8921,
+      "sha256": "88ce6c3523c2c5d927cf2013ecd374f20410a4ac909af85057401ed894eaa6dd"
+    }
+  ],
+  "recorded_utc": "2026-10-11T23:49:25.498885+00:00"
+}
