@@ -109,6 +109,38 @@ fn actual_compact_scroll_reaches_conversion_and_changed_source_error_without_tou
     assert_eq!(engine.session_state(), before);
 }
 #[test]
+fn actual_report_scroll_reaches_exact_cardinal_normalization_without_session_changes() {
+    let _serial = SERIAL.lock().unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let source = directory.path().join("cardinal.kicad_mod");
+    std::fs::write(&source, SOURCE).unwrap();
+    let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
+    let before = engine.session_state();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_footprint_conversion();
+    let mut h = Harness::builder().with_size(vec2(1400.0, 1000.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(3);
+    input(&mut h, "Footprint source file", source.to_str().unwrap());
+    click(&mut h, "Preview footprint conversion");
+    wait(&mut h);
+    click(&mut h, "Footprint per-list fidelity report");
+    let label = "source angle 90 degrees, canonical 90 degrees";
+    for _ in 0..150 {
+        if h.query_by_label_contains(label).is_some() {
+            break;
+        }
+        h.query_all_by_label_contains(" @byte").next().unwrap().hover();
+        h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, -100.0), modifiers: Modifiers::NONE });
+        h.run_steps(8);
+    }
+    h.get_by_label_contains(label).scroll_to_me();
+    h.run_steps(8);
+    let rect = h.get_by_label_contains(label).rect();
+    assert!(rect.min.y >= 0.0 && rect.max.y <= 1000.0, "{rect:?}");
+    assert!(h.query_by_label_contains("center unchanged; width and height swapped exactly").is_some());
+    assert_eq!(engine.session_state(), before);
+}
+#[test]
 fn actual_context_and_path_changes_discard_preview_and_unsupported_source_never_enables_conversion() {
     let _serial = SERIAL.lock().unwrap();
     let directory = tempfile::tempdir().unwrap();

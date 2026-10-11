@@ -62,6 +62,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else if mode != "compact" {
         click(&mut h, "Footprint per-list fidelity report");
     }
+    if mode == "normalization" {
+        let label = "source angle 90 degrees, canonical 90 degrees";
+        for _ in 0..150 {
+            if h.query_by_label_contains(label).is_some() {
+                break;
+            }
+            h.query_all_by_label_contains(" @byte").next().ok_or("visible report row required")?.hover();
+            h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: egui::vec2(0.0, -100.0), modifiers: egui::Modifiers::NONE });
+            h.run_steps(8);
+        }
+        h.get_by_label_contains(label).scroll_to_me();
+        h.run_steps(8);
+        let rect = h.get_by_label_contains(label).rect();
+        assert!(rect.min.y >= 0.0 && rect.max.y <= height, "normalization row must be visible");
+    }
     if mode == "compact" {
         h.get_by_label("Create new native footprint file").scroll_to_me();
         h.run_steps(8);
