@@ -133,6 +133,8 @@ class StdioClient:
         try:
             offset = 0
             while offset < len(raw):
+                if time.monotonic() >= min(deadline, self.deadline):
+                    raise ValueError("MCP deadline exceeded")
                 try:
                     offset += os.write(self.process.stdin.fileno(), raw[offset:])
                 except BlockingIOError:
@@ -141,6 +143,8 @@ class StdioClient:
             self.selector.unregister(self.process.stdin)
 
     def _record(self, deadline):
+        if time.monotonic() >= min(deadline, self.deadline):
+            raise ValueError("MCP deadline exceeded")
         while b"\n" not in self.buffer:
             if not any(key.data == "stdout" for key in self.selector.get_map().values()):
                 raise ValueError("MCP stdout closed before response")
@@ -148,6 +152,8 @@ class StdioClient:
         raw, _, rest = self.buffer.partition(b"\n")
         self.buffer = bytearray(rest)
         message = strict_json(raw)
+        if time.monotonic() >= min(deadline, self.deadline):
+            raise ValueError("MCP deadline exceeded")
         if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
             raise ValueError("invalid JSON-RPC envelope")
         return message
@@ -205,7 +211,8 @@ class StdioClient:
                 name = tool.get("name")
                 if (not isinstance(name, str) or not name or len(name) > 128
                         or any(ord(char) < 32 or ord(char) == 127 for char in name)
-                        or name in tools or not isinstance(tool.get("inputSchema"), dict)):
+                        or name in tools or not isinstance(tool.get("inputSchema"), dict)
+                        or tool["inputSchema"].get("type") != "object"):
                     raise ValueError("invalid or duplicate tool definition")
                 tools[name] = tool
                 if len(tools) > 512:
@@ -224,7 +231,10 @@ class StdioClient:
 
     def call(self, name, arguments=None, expect_error=False):
         result = self.rpc("tools/call", {"name": name, "arguments": arguments or {}})
-        if bool(result.get("isError")) != expect_error:
+        status = result.get("isError", False)
+        if type(status) is not bool:
+            raise ValueError("MCP isError must be boolean")
+        if status != expect_error:
             raise ValueError(f"unexpected tool status: {name}")
         if expect_error:
             return result

@@ -43,7 +43,9 @@ for line in sys.stdin:
           'annotations':{'readOnlyHint':True},'futureMetadata':{'enabled':True}} for name in names]
   if mode=='skeleton': tools=tools[:1]
   if mode=='duplicate': tools+=tools[:1]
-  if mode=='toomany': tools += [{'name':str(i),'inputSchema':{}} for i in range(513)]
+  if mode=='toomany': tools += [{'name':str(i),'inputSchema':{'type':'object'}} for i in range(513)]
+  if mode=='arrayschema':
+   for tool in tools: tool['inputSchema']['type']='array'
   if mode=='repeat': result={'tools':tools if 'cursor' not in request['params'] else [],'nextCursor':''}
   elif mode=='pagelimit': result={'tools':[],'nextCursor':str(ident)}
   elif mode=='cursorlimit': result={'tools':tools,'nextCursor':'x'*4097}
@@ -128,6 +130,37 @@ class ReferenceTests(unittest.TestCase):
             client.discover()
             client.finish()
             self.assertEqual(client.notifications, 2)
+
+    def test_buffered_record_and_expensive_decode_respect_deadline(self):
+        with self.client() as client:
+            record = b'{"jsonrpc":"2.0","id":1,"result":{}}\n'
+            client.buffer.extend(record)
+            with self.assertRaisesRegex(ValueError, "deadline"):
+                client._record(time.monotonic() - 1)
+            self.assertEqual(client.buffer, record)
+            original = ref.strict_json
+
+            def decode(raw):
+                result = original(raw)
+                client.deadline = time.monotonic() - 1
+                return result
+
+            with patch.object(ref, "strict_json", decode), self.assertRaisesRegex(ValueError, "deadline"):
+                client._record(time.monotonic() + 1)
+
+    def test_object_input_schema_required(self):
+        with self.client("arrayschema") as client:
+            client.initialize()
+            with self.assertRaisesRegex(ValueError, "tool definition"):
+                client.discover()
+
+    def test_tool_error_status_requires_actual_boolean(self):
+        with self.client() as client:
+            for status in ["false", "true", 0, 1, None, {}]:
+                with patch.object(client, "rpc", return_value={"isError": status}), self.assertRaisesRegex(ValueError, "boolean"):
+                    client.call("update_part", expect_error=True)
+            with patch.object(client, "rpc", return_value={"isError": True}):
+                self.assertEqual(client.call("update_part", expect_error=True), {"isError": True})
 
     def test_strict_json_duplicate_depth_nonfinite_utf8(self):
         for raw in [b'{"a":1,"a":2}', b'NaN', b'Infinity', b'1e999', b'"\xff"', b'['*65+b'0'+b']'*65]:
