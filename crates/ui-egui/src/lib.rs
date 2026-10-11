@@ -6,15 +6,18 @@
 
 pub mod camera;
 pub mod canvas;
+pub mod layer_panel;
+pub mod layers;
 pub mod mesh_cache;
 pub mod scene;
 
 use std::time::Instant;
 
-use egui::{Color32, Ui};
+use egui::Ui;
 
 use crate::canvas::Canvas;
-use crate::scene::{Layer, Scene};
+use crate::layers::LayerStack;
+use crate::scene::Scene;
 
 /// Scene sizes offered in the View menu.
 pub const SCENE_SIZES: [usize; 3] = [1_000, 10_000, 100_000];
@@ -47,6 +50,8 @@ pub struct FrameStats {
 /// The Viamind application state.
 pub struct ViamindApp {
     pub scene: Scene,
+    /// How the canvas draws the scene's layers; edited in the layer panel.
+    pub layers: LayerStack,
     pub canvas: Canvas,
     pub stats: FrameStats,
     last_frame_time: Option<f64>,
@@ -61,7 +66,13 @@ impl Default for ViamindApp {
 impl ViamindApp {
     /// An app showing [`Scene::synthetic`] with `n` objects.
     pub fn with_scene_size(n: usize) -> Self {
-        Self { scene: Scene::synthetic(n), canvas: Canvas::default(), stats: FrameStats::default(), last_frame_time: None }
+        Self {
+            scene: Scene::synthetic(n),
+            layers: LayerStack::pcb_default(4),
+            canvas: Canvas::default(),
+            stats: FrameStats::default(),
+            last_frame_time: None,
+        }
     }
 
     /// Replaces the scene with `n` synthetic objects and zooms to fit it.
@@ -82,8 +93,8 @@ impl ViamindApp {
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
-        egui::Panel::left("layers").default_size(180.0).show(ui, layer_panel);
-        egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| self.canvas.show(ui, &self.scene));
+        egui::Panel::left("layers").default_size(250.0).show(ui, |ui| layer_panel::show(ui, &mut self.layers));
+        egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| self.canvas.show(ui, &self.scene, &self.layers));
 
         self.stats.ui_ms = start.elapsed().as_secs_f32() * 1000.0;
     }
@@ -136,27 +147,13 @@ impl ViamindApp {
             ui.separator();
             ui.monospace(format!("{}/{} drawn", self.canvas.drawn, self.scene.items.len()));
             ui.separator();
+            let active = self.layers.get(self.layers.active()).map_or("-", |l| l.name.as_str());
+            ui.monospace(format!("layer {active}"));
+            ui.separator();
             let cpu = self.stats.cpu_ms.map_or_else(|| "-".to_owned(), |ms| format!("{ms:.1}"));
             ui.monospace(format!("frame cpu {cpu} ms  ui {:.1} ms  {:.0} fps", self.stats.ui_ms, self.stats.fps));
         });
     }
-}
-
-/// Placeholder layer list (layer visibility and colours arrive with T-0021).
-fn layer_panel(ui: &mut Ui) {
-    ui.heading("Layers");
-    ui.separator();
-    for layer in Layer::ALL.into_iter().rev() {
-        ui.horizontal(|ui| {
-            let (rect, _) = ui.allocate_exact_size(egui::vec2(12.0, 12.0), egui::Sense::hover());
-            ui.painter().rect_filled(rect, 2.0, canvas::layer_color(layer).to_opaque());
-            ui.label(layer.name());
-        });
-    }
-    ui.add_space(8.0);
-    ui.colored_label(Color32::GRAY, "Pan: middle-drag or space+drag");
-    ui.colored_label(Color32::GRAY, "Zoom: scroll wheel");
-    ui.colored_label(Color32::GRAY, "Fit: Home");
 }
 
 impl eframe::App for ViamindApp {

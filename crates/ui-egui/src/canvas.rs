@@ -3,8 +3,9 @@
 use egui::{Color32, CornerRadius, Key, PointerButton, Rect, Sense, Shape, Stroke, Ui, Vec2, pos2};
 
 use crate::camera::{Camera, WorldPos, WorldRect};
+use crate::layers::LayerStack;
 use crate::mesh_cache::MeshCache;
-use crate::scene::{Item, Layer, Prim, Scene};
+use crate::scene::{Item, Prim, Scene};
 
 /// Screen points between the scene bounds and the canvas edge after zoom to fit.
 const FIT_MARGIN: f32 = 24.0;
@@ -15,16 +16,6 @@ const MIN_GRID_SPACING: f64 = 12.0;
 
 const CANVAS_BG: Color32 = Color32::from_rgb(14, 16, 20);
 const BOARD_FILL: Color32 = Color32::from_rgb(28, 36, 32);
-const BOARD_EDGE: Color32 = Color32::from_rgb(200, 190, 90);
-
-/// Fill colour for items on `layer`.
-pub fn layer_color(layer: Layer) -> Color32 {
-    match layer {
-        Layer::BottomCopper => Color32::from_rgba_unmultiplied(70, 110, 220, 200),
-        Layer::TopCopper => Color32::from_rgba_unmultiplied(220, 60, 50, 210),
-        Layer::Via => Color32::from_rgb(210, 190, 110),
-    }
-}
 
 /// Canvas state that lives across frames.
 #[derive(Debug)]
@@ -68,8 +59,8 @@ impl Canvas {
         self.cache.invalidate();
     }
 
-    /// Fills the remaining space of `ui` with the canvas.
-    pub fn show(&mut self, ui: &mut Ui, scene: &Scene) {
+    /// Fills the remaining space of `ui` with the canvas, drawing `scene` with `layers`.
+    pub fn show(&mut self, ui: &mut Ui, scene: &Scene, layers: &LayerStack) {
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
         self.viewport = viewport;
@@ -101,10 +92,10 @@ impl Canvas {
             ui.set_cursor_icon(if response.dragged() { egui::CursorIcon::Grabbing } else { egui::CursorIcon::Grab });
         }
 
-        self.paint(&painter, viewport, scene);
+        self.paint(&painter, viewport, scene, layers);
     }
 
-    fn paint(&mut self, painter: &egui::Painter, viewport: Rect, scene: &Scene) {
+    fn paint(&mut self, painter: &egui::Painter, viewport: Rect, scene: &Scene, layers: &LayerStack) {
         let cam = self.camera;
         let to_screen = |p: WorldPos| cam.world_to_screen(p, viewport);
         let screen_rect = |r: WorldRect| Rect::from_min_max(to_screen(r.min), to_screen(r.max));
@@ -113,28 +104,31 @@ impl Canvas {
         let board = screen_rect(scene.board);
         painter.rect_filled(board, CornerRadius::ZERO, BOARD_FILL);
         paint_grid(painter, &cam, viewport);
-        painter.rect_stroke(board, CornerRadius::ZERO, Stroke::new(1.0, BOARD_EDGE), egui::StrokeKind::Middle);
 
         if self.cached {
-            self.drawn = self.cache.paint(painter, scene, &cam, viewport);
+            self.drawn = self.cache.paint(painter, scene, layers, &cam, viewport);
             return;
         }
 
-        // Cull to the visible area (slightly grown so strokes at the edge are not clipped).
+        // Layer by layer in draw order, culled to the visible area (slightly grown so strokes at
+        // the edge are not clipped).
         let visible = cam.visible_world_rect(viewport).expand(2.0 / cam.zoom);
         let mut shapes = std::mem::take(&mut self.shapes);
         shapes.clear();
-        shapes.extend(scene.items.iter().filter(|i| i.bounds.intersects(&visible)).map(|item| item_shape(item, &cam, viewport)));
+        for layer in layers.draw_order().filter(|l| l.visible) {
+            let color = layer.paint_color();
+            let on_screen = scene.items.iter().filter(|i| i.layer == layer.id && i.bounds.intersects(&visible));
+            shapes.extend(on_screen.map(|item| item_shape(item, color, &cam, viewport)));
+        }
         self.drawn = shapes.len();
         painter.extend(shapes.drain(..));
         self.shapes = shapes;
     }
 }
 
-/// The egui shape for `item` seen through `cam` in `viewport`.
-pub(crate) fn item_shape(item: &Item, cam: &Camera, viewport: Rect) -> Shape {
+/// The egui shape for `item`, filled with `color`, seen through `cam` in `viewport`.
+pub(crate) fn item_shape(item: &Item, color: Color32, cam: &Camera, viewport: Rect) -> Shape {
     let to_screen = |p: WorldPos| cam.world_to_screen(p, viewport);
-    let color = layer_color(item.layer);
     let zoom = cam.zoom as f32;
     match item.prim {
         Prim::Rect(r) => Shape::rect_filled(Rect::from_min_max(to_screen(r.min), to_screen(r.max)), CornerRadius::ZERO, color),

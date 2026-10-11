@@ -9,22 +9,25 @@
 //! Later frames only map the cached vertex positions to the current camera (one multiply-add per
 //! vertex) and hand the meshes to egui as [`Shape::Mesh`], which egui appends without
 //! re-tessellating. A tile is rebuilt when the scene changes, when tessellation inputs change
-//! (pixels per point, options, font atlas size), or when the zoom has moved more than
-//! [`ZOOM_BUCKET`] from the zoom it was built at. Between rebuilds the geometry is exact; only the
-//! one-pixel anti-aliasing fringe scales with the zoom ratio (at most 9 %).
+//! (pixels per point, options, font atlas size), when its layer's colour or opacity changes, or
+//! when the zoom has moved more than [`ZOOM_BUCKET`] from the zoom it was built at. Between
+//! rebuilds the geometry is exact; only the one-pixel anti-aliasing fringe scales with the zoom
+//! ratio (at most 9 %). Hiding, showing and reordering layers needs no rebuild.
 //!
-//! Tiles are emitted layer by layer, so the layer paint order is the same as uncached drawing.
+//! Tiles are emitted layer by layer in the [`LayerStack`] draw order, as uncached drawing does.
 //! Within a layer every item has the same colour, and blending one colour over itself gives the
 //! same result in either order, so the different item order inside a layer does not show.
 
+use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
 use egui::epaint::{ClippedShape, Mesh, Primitive, TessellationOptions};
-use egui::{Painter, Pos2, Rect, Shape};
+use egui::{Color32, Painter, Pos2, Rect, Shape};
 
 use crate::camera::{Camera, WorldPos, WorldRect};
 use crate::canvas::item_shape;
-use crate::scene::{Layer, Scene};
+use crate::layers::{LayerId, LayerStack};
+use crate::scene::Scene;
 
 /// A cached tile is rebuilt when the zoom differs from its build zoom by more than this factor
 /// (2^(1/8), about 9 %). Inside the bucket, panning and zooming just transform the cached mesh.
@@ -66,6 +69,14 @@ struct Tile {
     built: Option<Built>,
 }
 
+/// The tiles of one layer.
+struct LayerTiles {
+    layer: LayerId,
+    /// The fill colour the built meshes have; they are rebuilt when the layer's colour differs.
+    color: Option<Color32>,
+    tiles: Vec<Tile>,
+}
+
 /// Counters from the last [`MeshCache::paint`], for tests and the status bar.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct CacheStats {
@@ -88,7 +99,9 @@ pub struct MeshCache {
     revision: u64,
     built_revision: u64,
     tess_key: Option<TessKey>,
-    tiles: Vec<Tile>,
+    layers: Vec<LayerTiles>,
+    /// Index into `layers` by layer id.
+    index: HashMap<LayerId, usize>,
     pub stats: CacheStats,
 }
 
@@ -104,11 +117,13 @@ impl MeshCache {
         self.revision += 1;
     }
 
-    /// Paints the scene items visible in `viewport` and returns how many items are visible.
-    pub fn paint(&mut self, painter: &Painter, scene: &Scene, cam: &Camera, viewport: Rect) -> usize {
+    /// Paints the scene items on visible layers in `viewport`, in the stack's draw order, and
+    /// returns how many items were painted.
+    pub fn paint(&mut self, painter: &Painter, scene: &Scene, layers: &LayerStack, cam: &Camera, viewport: Rect) -> usize {
         let scene_key = (scene.items.as_ptr() as usize, scene.items.len());
         if self.scene_key != Some(scene_key) || self.built_revision != self.revision {
-            self.tiles = make_tiles(scene);
+            self.layers = make_tiles(scene);
+            self.index = self.layers.iter().enumerate().map(|(i, l)| (l.layer, i)).collect();
             self.scene_key = Some(scene_key);
             self.built_revision = self.revision;
         }
@@ -120,9 +135,7 @@ impl MeshCache {
             atlas_size: ctx.fonts(|f: &egui::epaint::FontsView<'_>| -> [usize; 2] { f.font_image_size() }),
         };
         if self.tess_key != Some(tess_key) {
-            for tile in &mut self.tiles {
-                tile.built = None;
-            }
+            self.layers.iter_mut().for_each(LayerTiles::clear);
             self.tess_key = Some(tess_key);
         }
 
@@ -131,38 +144,48 @@ impl MeshCache {
             let ratio = cam.zoom / b.zoom;
             !(1.0 / ZOOM_BUCKET..=ZOOM_BUCKET).contains(&ratio)
         };
-        self.stats.tiles_built = 0;
-        for tile in &mut self.tiles {
-            if tile.bounds.intersects(&visible) && tile.built.as_ref().is_none_or(stale) {
-                tile.built = Some(build_tile(tile, scene, cam, viewport, ctx, tess_key.pixels_per_point));
-                self.stats.tiles_built += 1;
-            }
-        }
-
         // Current mapping: screen = origin + world * zoom.
         let c = viewport.center();
         let origin = [f64::from(c.x) - cam.center.x * cam.zoom, f64::from(c.y) - cam.center.y * cam.zoom];
+
         let mut drawn = 0;
-        let mut stats = CacheStats { tiles: self.tiles.len(), ..self.stats };
-        stats.tiles_drawn = 0;
-        stats.vertices = 0;
-        for tile in &mut self.tiles {
-            if !tile.bounds.intersects(&visible) {
-                continue;
+        let mut stats = CacheStats { tiles: self.layers.iter().map(|l| l.tiles.len()).sum(), ..CacheStats::default() };
+        for layer in layers.draw_order().filter(|l| l.visible) {
+            let Some(group) = self.index.get(&layer.id).map(|&i| &mut self.layers[i]) else { continue };
+            let color = layer.paint_color();
+            if group.color != Some(color) {
+                group.clear();
+                group.color = Some(color);
             }
-            let Some(built) = tile.built.as_mut() else { continue };
-            built.apply(cam.zoom, origin);
-            stats.tiles_drawn += 1;
-            stats.vertices += built.mesh.vertices.len();
-            drawn += if contains(&visible, &tile.bounds) {
-                tile.items.len()
-            } else {
-                tile.items.iter().filter(|&&i| scene.items[i as usize].bounds.intersects(&visible)).count()
-            };
-            painter.add(Shape::Mesh(Arc::clone(&built.mesh)));
+            for tile in group.tiles.iter_mut().filter(|t| t.bounds.intersects(&visible)) {
+                if tile.built.as_ref().is_none_or(stale) {
+                    tile.built = Some(build_tile(tile, color, scene, cam, viewport, ctx, tess_key.pixels_per_point));
+                    stats.tiles_built += 1;
+                }
+                let Some(built) = tile.built.as_mut() else { continue };
+                built.apply(cam.zoom, origin);
+                stats.tiles_drawn += 1;
+                stats.vertices += built.mesh.vertices.len();
+                drawn += if contains(&visible, &tile.bounds) {
+                    tile.items.len()
+                } else {
+                    tile.items.iter().filter(|&&i| scene.items[i as usize].bounds.intersects(&visible)).count()
+                };
+                painter.add(Shape::Mesh(Arc::clone(&built.mesh)));
+            }
         }
         self.stats = stats;
         drawn
+    }
+}
+
+impl LayerTiles {
+    /// Drops the built meshes.
+    fn clear(&mut self) {
+        self.color = None;
+        for tile in &mut self.tiles {
+            tile.built = None;
+        }
     }
 }
 
@@ -191,30 +214,34 @@ fn contains(outer: &WorldRect, inner: &WorldRect) -> bool {
     outer.min.x <= inner.min.x && outer.min.y <= inner.min.y && inner.max.x <= outer.max.x && inner.max.y <= outer.max.y
 }
 
-/// Groups the scene items into tiles: layer-major in paint order, then grid cell.
-fn make_tiles(scene: &Scene) -> Vec<Tile> {
+/// Groups the scene items into tiles, per layer (in id order) and grid cell.
+fn make_tiles(scene: &Scene) -> Vec<LayerTiles> {
     let bounds = scene.bounds();
     let n = scene.items.len().max(1) as f64;
     let cell = (bounds.width() * bounds.height() * ITEMS_PER_CELL / n).sqrt().max(MIN_CELL_MM);
     let cols = (bounds.width() / cell).ceil().max(1.0) as usize;
     let rows = (bounds.height() / cell).ceil().max(1.0) as usize;
-    let cells = cols * rows;
 
-    let mut slots: Vec<Vec<u32>> = vec![Vec::new(); Layer::ALL.len() * cells];
+    let mut cells: BTreeMap<LayerId, Vec<Vec<u32>>> = BTreeMap::new();
     for (i, item) in scene.items.iter().enumerate() {
-        let layer = Layer::ALL.iter().position(|l| *l == item.layer).unwrap_or(0);
         let c = item.bounds.center();
         let col = (((c.x - bounds.min.x) / cell) as usize).min(cols - 1);
         let row = (((c.y - bounds.min.y) / cell) as usize).min(rows - 1);
-        slots[layer * cells + row * cols + col].push(i as u32);
+        cells.entry(item.layer).or_insert_with(|| vec![Vec::new(); cols * rows])[row * cols + col].push(i as u32);
     }
-    slots
+    cells
         .into_iter()
-        .filter(|items| !items.is_empty())
-        .map(|items| {
-            let first = scene.items[items[0] as usize].bounds;
-            let bounds = items.iter().fold(first, |acc, &i| union(&acc, &scene.items[i as usize].bounds));
-            Tile { bounds, items, built: None }
+        .map(|(layer, cells)| {
+            let tiles = cells
+                .into_iter()
+                .filter(|items| !items.is_empty())
+                .map(|items| {
+                    let first = scene.items[items[0] as usize].bounds;
+                    let bounds = items.iter().fold(first, |acc, &i| union(&acc, &scene.items[i as usize].bounds));
+                    Tile { bounds, items, built: None }
+                })
+                .collect();
+            LayerTiles { layer, color: None, tiles }
         })
         .collect()
 }
@@ -223,13 +250,13 @@ fn union(a: &WorldRect, b: &WorldRect) -> WorldRect {
     WorldRect::new(WorldPos::new(a.min.x.min(b.min.x), a.min.y.min(b.min.y)), WorldPos::new(a.max.x.max(b.max.x), a.max.y.max(b.max.y)))
 }
 
-/// Tessellates `tile` for the current camera.
-fn build_tile(tile: &Tile, scene: &Scene, cam: &Camera, viewport: Rect, ctx: &egui::Context, pixels_per_point: f32) -> Built {
+/// Tessellates `tile`, filled with `color`, for the current camera.
+fn build_tile(tile: &Tile, color: Color32, scene: &Scene, cam: &Camera, viewport: Rect, ctx: &egui::Context, pixels_per_point: f32) -> Built {
     // No clipping: items outside the viewport come into view when the camera pans.
     let shapes = tile
         .items
         .iter()
-        .map(|&i| ClippedShape { clip_rect: Rect::EVERYTHING, shape: item_shape(&scene.items[i as usize], cam, viewport) })
+        .map(|&i| ClippedShape { clip_rect: Rect::EVERYTHING, shape: item_shape(&scene.items[i as usize], color, cam, viewport) })
         .collect();
     let mut mesh = Mesh::default();
     for primitive in ctx.tessellate(shapes, pixels_per_point) {
@@ -247,31 +274,27 @@ fn build_tile(tile: &Tile, scene: &Scene, cam: &Camera, viewport: Rect, ctx: &eg
 mod tests {
     use super::*;
 
-    fn layer_rank(scene: &Scene, tile: &Tile) -> usize {
-        let layer = scene.items[tile.items[0] as usize].layer;
-        Layer::ALL.iter().position(|l| *l == layer).unwrap()
-    }
-
     #[test]
-    fn tiles_cover_every_item_once_in_layer_order() {
+    fn tiles_cover_every_item_once_per_layer() {
         let scene = Scene::synthetic(20_000);
-        let tiles = make_tiles(&scene);
-        assert!(tiles.len() > Layer::ALL.len());
+        let layers = make_tiles(&scene);
+        assert_eq!(layers.len(), LayerStack::pcb_default(4).len());
+        assert!(layers.windows(2).all(|w| w[0].layer < w[1].layer));
         let mut seen = vec![false; scene.items.len()];
-        for tile in &tiles {
-            let rank = layer_rank(&scene, tile);
-            for &i in &tile.items {
-                let item = &scene.items[i as usize];
-                assert_eq!(Layer::ALL.iter().position(|l| *l == item.layer), Some(rank), "one layer per tile");
-                assert!(contains(&tile.bounds, &item.bounds));
-                assert!(!seen[i as usize]);
-                seen[i as usize] = true;
+        for group in &layers {
+            for tile in &group.tiles {
+                for &i in &tile.items {
+                    let item = &scene.items[i as usize];
+                    assert_eq!(item.layer, group.layer, "one layer per tile");
+                    assert!(contains(&tile.bounds, &item.bounds));
+                    assert!(!seen[i as usize]);
+                    seen[i as usize] = true;
+                }
+                assert!(tile.items.windows(2).all(|w| w[0] < w[1]), "scene order inside a tile");
             }
-            assert!(tile.items.windows(2).all(|w| w[0] < w[1]), "scene order inside a tile");
         }
         assert!(seen.iter().all(|s| *s));
-        let ranks: Vec<usize> = tiles.iter().map(|t| layer_rank(&scene, t)).collect();
-        assert!(ranks.windows(2).all(|w| w[0] <= w[1]), "tiles are in paint order");
+        assert!(layers.iter().find(|l| l.layer == LayerId::F_CU).is_some_and(|l| l.tiles.len() > 1));
     }
 
     #[test]

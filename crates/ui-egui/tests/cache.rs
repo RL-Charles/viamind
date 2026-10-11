@@ -1,14 +1,14 @@
 //! The tessellation cache draws the same triangles as painting every shape each frame.
 //!
-//! Triangles are compared as multisets: the cache paints tiles layer by layer (checked in the
-//! `mesh_cache` unit tests), and inside a layer all items share one colour, so their order does not
-//! change the blended result.
+//! Triangles are compared as multisets, plus the order in which layer colours appear: inside a
+//! layer all items share one colour, so their order does not change the blended result.
 
 use std::collections::HashMap;
 
 use egui::epaint::{Primitive, Vertex};
-use egui::{Event, Modifiers, PointerButton, Pos2, RawInput, Rect, pos2, vec2};
+use egui::{Color32, Event, Modifiers, PointerButton, Pos2, RawInput, Rect, pos2, vec2};
 use viamind_ui_egui::ViamindApp;
+use viamind_ui_egui::layers::{LayerId, LayerStack};
 
 const SCREEN: Rect = Rect { min: Pos2::ZERO, max: Pos2 { x: 1280.0, y: 800.0 } };
 
@@ -172,4 +172,54 @@ fn zoom_rebuilds_only_outside_the_bucket() {
     run.frame(vec![]);
     assert_eq!(run.app.canvas.drawn, 1_000);
     assert_ne!(run.app.canvas.cache.stats.tiles, tiles);
+}
+
+/// The layers in the order their colours first appear in `tris` (painting order). Triangles
+/// with no fully covered vertex (anti-aliasing fringes, thin lines) are skipped.
+fn layer_order(tris: &[[Vertex; 3]], layers: &LayerStack) -> Vec<LayerId> {
+    let colors: HashMap<Color32, LayerId> = layers.layers().iter().map(|l| (l.paint_color(), l.id)).collect();
+    let mut order: Vec<LayerId> = Vec::new();
+    for tri in tris {
+        if let Some(id) = tri.iter().find_map(|v| colors.get(&v.color))
+            && order.last() != Some(id)
+        {
+            order.push(*id);
+        }
+    }
+    order
+}
+
+#[test]
+fn layer_edits_match_uncached_and_rebuild_only_on_colour() {
+    let mut cached = Run::new(5_000, true);
+    let mut uncached = Run::new(5_000, false);
+
+    // Hide, reorder and lift the active layer: no rebuild.
+    for run in [&mut cached, &mut uncached] {
+        run.app.layers.set_visible(LayerId::IN1_CU, false);
+        run.app.layers.move_layer(LayerId::B_CU, true);
+        run.app.layers.set_active(LayerId::B_MASK);
+        run.app.layers.active_on_top = true;
+    }
+    let (a, b) = (cached.frame(vec![]), uncached.frame(vec![]));
+    assert_eq!(cached.app.canvas.cache.stats.tiles_built, 0);
+    assert!(cached.app.canvas.drawn < 5_000);
+    assert_eq!(cached.app.canvas.drawn, uncached.app.canvas.drawn);
+    assert_same(&a, &b, 0.0, cached.app.canvas.viewport);
+    let expected: Vec<LayerId> = cached.app.layers.draw_order().filter(|l| l.visible).map(|l| l.id).collect();
+    assert_eq!(layer_order(&a, &cached.app.layers), expected);
+    assert_eq!(layer_order(&b, &uncached.app.layers), expected);
+    assert_eq!(expected.first(), Some(&LayerId::B_SILKS));
+    assert_eq!(expected.last(), Some(&LayerId::B_MASK));
+
+    // Recolour one layer and fade another: only their tiles are rebuilt.
+    for run in [&mut cached, &mut uncached] {
+        run.app.layers.get_mut(LayerId::F_CU).unwrap().color = Color32::from_rgb(20, 200, 90);
+        run.app.layers.get_mut(LayerId::VIAS).unwrap().opacity = 0.4;
+    }
+    let (a, b) = (cached.frame(vec![]), uncached.frame(vec![]));
+    let stats = cached.app.canvas.cache.stats;
+    assert!(stats.tiles_built > 0 && stats.tiles_built < stats.tiles_drawn, "{stats:?}");
+    assert_same(&a, &b, 0.0, cached.app.canvas.viewport);
+    assert_eq!(layer_order(&a, &cached.app.layers), expected);
 }
