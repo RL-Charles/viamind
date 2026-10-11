@@ -1,9 +1,6 @@
 //! Actual desktop pointer, keyboard and menu inputs drive one shared guarded placement command.
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, vec2};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 use viamind_doc::{ObjectId, Project, Side};
 use viamind_engine::{EngineHandle, Origin, SelectionMode, SetSelection};
@@ -164,5 +161,7 @@ fn copper_modal_cancels_active_preview_and_blocks_canvas_and_menu_transforms() {
     key(&mut h, Key::R);
     key(&mut h, Key::F);
     assert_eq!(e.session_state(), before);
-    assert!(h.get_by_label("Edit").accesskit_node().is_disabled(), "copper modal blocks placement menu access");
+    menu(&mut h, "Edit");
+    assert!(h.query_by_label("Rotate selected 90° (R)").is_none(), "copper modal blocks placement menu access");
+    assert_eq!(e.session_state(), before);
 }
