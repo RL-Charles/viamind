@@ -219,7 +219,7 @@ fn via_minima_refuse_before_both_leg_search_and_equal_plan_commits_without_resiz
     let _guard = TEST.lock().unwrap();
     let (mut project, ids) = fixture();
     project.board.net_rules.insert(
-        "SIGNAL".into(),
+        "N".into(),
         serde_json::from_value(
             serde_json::json!({"minimum_copper_clearance":0,"minimum_track_width":1,"minimum_via_drill":300001,"minimum_annular_width":150001}),
         )
