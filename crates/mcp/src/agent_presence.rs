@@ -1,4 +1,4 @@
-//! Trusted transport identities own ephemeral PCB attention markers.
+//! Trusted transport identities own ephemeral PCB or schematic attention markers.
 use serde_json::Value;
 use viamind_engine::{ClearAgentPresence, EngineHandle, SetAgentPresence, input_schema};
 
@@ -6,7 +6,7 @@ use crate::{RegistryError, ToolError, ToolRegistry};
 
 fn preflight(input: &Value) -> Result<(), ToolError> {
     if input.get("selection").and_then(Value::as_array).is_some_and(|ids| ids.len() > 64) {
-        return Err(ToolError::Failed("presence selection requires at most 64 board IDs before typed decoding".into()));
+        return Err(ToolError::Failed("presence selection requires at most 64 selected surface IDs before typed decoding".into()));
     }
     if input.get("working_on").and_then(Value::as_str).is_some_and(|text| text.len() > 256 || text.chars().count() > 80) {
         return Err(ToolError::Failed("working_on exceeds 80 characters/256 UTF-8 bytes before typed decoding".into()));

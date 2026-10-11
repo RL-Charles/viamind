@@ -1,4 +1,4 @@
-//! Noninteractive PCB attention above copper, clipped to the canvas.
+//! Noninteractive PCB and sheet-scoped schematic attention clipped to their canvases.
 use egui::{Color32, FontId, Rect, Shape, Stroke, StrokeKind, Ui, Vec2};
 
 use crate::{ViamindApp, camera::WorldPos};
@@ -91,10 +91,8 @@ impl ViamindApp {
                         let mut points = crate::schematic::body_corners(symbol).into_iter().map(&screen);
                         let first = points.next().expect("four body corners");
                         Some(points.fold(Rect::from_min_max(first, first), |rect, p| rect.union(Rect::from_min_max(p, p))))
-                    } else if let Some(wire) = content.wires.get(id) {
-                        Some(Rect::from_two_pos(screen(wire.start), screen(wire.end)))
                     } else {
-                        None
+                        content.wires.get(id).map(|wire| Rect::from_two_pos(screen(wire.start), screen(wire.end)))
                     };
                     if let Some(bounds) = bounds {
                         if bounds.expand(4.0).intersects(canvas) {
