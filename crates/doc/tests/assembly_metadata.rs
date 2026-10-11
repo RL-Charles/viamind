@@ -61,7 +61,10 @@ fn mixed_named_net_policy_and_calibration_use_maximum_feature_version() {
     use viamind_geom::Nm;
     let mut project = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
     let id = *project.board.parts.keys().next().unwrap();
-    project.board.net_rules.insert("GND".into(), NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(250_000) });
+    project.board.net_rules.insert(
+        "GND".into(),
+        NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(250_000), minimum_via_drill: Nm(0), minimum_annular_width: Nm(0) },
+    );
     assert_eq!(file::minimum_version(&project), 8);
     project.board.parts.get_mut(&id).unwrap().assembly =
         Some(Box::new(AssemblyMetadata { mpn: Some("explicit".into()), mounting: Some(MountingTechnology::Hybrid), ..Default::default() }));

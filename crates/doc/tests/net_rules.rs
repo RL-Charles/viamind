@@ -78,3 +78,34 @@ fn zero_via_fields_preserve_exact_v8_record_bytes_and_nonzero_requires_ten() {
         assert!(file::from_str(&file::to_string(&p)).is_err());
     }
 }
+
+#[test]
+fn via_ten_and_assembly_nine_compose_and_clear_without_losing_older_features() {
+    let mut project = file::from_str(include_str!("../../../fixtures/assembly/calibration.viamind.json")).unwrap();
+    assert_eq!(file::minimum_version(&project), 9);
+    project.board.net_rules.insert("GND".into(), minima());
+    let calibrated_v9 = file::to_string(&project);
+    assert_eq!(file::minimum_version(&project), 9);
+    for (drill, annulus) in [(300001, 0), (0, 150001), (300001, 150001)] {
+        let rule = project.board.net_rules.get_mut("GND").unwrap();
+        rule.minimum_via_drill = Nm(drill);
+        rule.minimum_annular_width = Nm(annulus);
+        let v10 = file::to_string(&project);
+        assert_eq!(file::minimum_version(&project), 10);
+        assert_eq!(file::from_str(&v10).unwrap(), project);
+        assert!(file::from_str(&v10.replace("\"version\": 10", "\"version\": 9")).is_err());
+    }
+    project.board.net_rules.insert("GND".into(), minima());
+    assert_eq!(file::to_string(&project), calibrated_v9, "clearing via floors restores exact assembly9 and old policy bytes");
+    for part in project.board.parts.values_mut() {
+        part.assembly = None;
+    }
+    assert_eq!(file::minimum_version(&project), 8);
+    let v8 = file::to_string(&project);
+    assert!(!v8.contains("minimum_via_drill"));
+    assert!(!v8.contains("minimum_annular_width"));
+    assert_eq!(file::from_str(&v8).unwrap(), project);
+    project.board.net_rules.clear();
+    assert_eq!(file::minimum_version(&project), 4);
+    assert_eq!(file::from_str(&file::to_string(&project)).unwrap(), project);
+}
