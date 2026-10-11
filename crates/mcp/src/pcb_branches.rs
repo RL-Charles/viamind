@@ -151,7 +151,7 @@ mod tests {
             locked_engine.with_engine(|_| {
                 locked_tx.send(()).unwrap();
                 release_rx.recv().unwrap();
-            })
+            });
         });
         locked_rx.recv_timeout(Duration::from_secs(5)).unwrap();
         let mut ctx = CallContext::new("owned#1");
