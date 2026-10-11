@@ -156,18 +156,26 @@ mod tests {
         locked_rx.recv_timeout(Duration::from_secs(5)).unwrap();
         let mut ctx = CallContext::new("owned#1");
         ctx.connection = Some(1);
-        let task = tokio::spawn(run(engine.clone(), Operation::Create, input, ctx));
-        tokio::time::timeout(Duration::from_secs(5), async {
-            loop {
-                match reserve_pcb_branch_work() {
-                    Ok(permit) => drop(permit),
-                    Err(_) => break,
+        let (pending_tx, pending_rx) = tokio::sync::oneshot::channel();
+        let task_engine = engine.clone();
+        let task = tokio::spawn(async move {
+            let mut future = Box::pin(run(task_engine, Operation::Create, input, ctx));
+            let mut pending_tx = Some(pending_tx);
+            std::future::poll_fn(move |cx| {
+                let result = future.as_mut().poll(cx);
+                if result.is_pending()
+                    && let Some(sender) = pending_tx.take()
+                {
+                    let _ = sender.send(());
                 }
-                tokio::task::yield_now().await;
-            }
-        })
-        .await
-        .unwrap();
+                result
+            })
+            .await
+        });
+        // The real run future has reached its blocking-worker await, after admission.
+        // Probing try-reserve beforehand could steal the permit and make run refuse.
+        tokio::time::timeout(Duration::from_secs(5), pending_rx).await.unwrap().unwrap();
+        assert!(reserve_pcb_branch_work().is_err());
         task.abort();
         assert!(task.await.unwrap_err().is_cancelled());
         assert!(reserve_pcb_branch_work().is_err(), "actual blocked create owns permit after cancellation");
