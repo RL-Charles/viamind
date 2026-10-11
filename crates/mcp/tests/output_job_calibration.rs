@@ -72,7 +72,7 @@ async fn companion_shared_job_keeps_exact_capture_rules_publication_and_read_onl
     assert!(a.call("run_output_job", json!({"job_path":job_path,"path":temp.path().join("a")}), Default::default()).await.is_err());
     assert_eq!(std::fs::read(temp.path().join("a/release-manifest.json")).unwrap(), collision);
     assert!(a.call("run_output_job", json!({"job_path":job_path,"path":native}), Default::default()).await.is_err());
-    let snapshot = engine.read(|p| OutputJobSnapshot::capture(p, job)).unwrap();
+    let snapshot = engine.read(|p| OutputJobSnapshot::capture(p, job.clone())).unwrap();
     engine.execute("set_named_net_rules",json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"rules":[{"net":"GND","minimum_copper_clearance":0,"minimum_track_width":250001}]}),Origin::agent("peer")).unwrap();
     let second = engine.read(viamind_fab::FabricationSnapshot::capture).unwrap();
     let stale = temp.path().join("stale");
@@ -102,5 +102,34 @@ async fn companion_shared_job_keeps_exact_capture_rules_publication_and_read_onl
     assert_eq!(report["report"]["document_net_rules"], json!(before.project.board.net_rules));
     engine.undo(Origin::User).unwrap();
     assert_eq!(engine.read(Clone::clone), before.project);
+    assert_eq!(std::fs::read(&native).unwrap(), native_bytes);
+    // A canceled async awaiter cannot release the slot or change a running job's owned capture.
+    let retained = engine.read(|p| OutputJobSnapshot::capture(p, job)).unwrap();
+    let current = engine.session_state();
+    let cursor = current.cursor;
+    let published = temp.path().join("canceled-awaiter");
+    let output = published.clone();
+    let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let (done_tx, done_rx) = std::sync::mpsc::channel();
+    let task = tokio::spawn(async move {
+        tokio::task::spawn_blocking(move || {
+            ready_tx.send(()).unwrap();
+            release_rx.recv().unwrap();
+            let result = retained.write_with_validation(cursor, &output, None, viamind_engine::checked_output_job_report);
+            done_tx.send(result.is_ok()).unwrap();
+        })
+        .await
+    });
+    ready_rx.recv_timeout(std::time::Duration::from_secs(5)).unwrap();
+    task.abort();
+    assert!(task.await.unwrap_err().is_cancelled());
+    let other = engine.read(viamind_fab::FabricationSnapshot::capture).unwrap();
+    assert_eq!(engine.read(viamind_fab::AssemblySnapshot::capture).err().unwrap().kind(), std::io::ErrorKind::WouldBlock);
+    drop(other);
+    release_tx.send(()).unwrap();
+    assert!(done_rx.recv_timeout(std::time::Duration::from_secs(10)).unwrap());
+    assert!(published.join("assembly/calibrated-placement.csv").exists());
+    assert_eq!(engine.session_state(), current);
     assert_eq!(std::fs::read(native).unwrap(), native_bytes);
 }
