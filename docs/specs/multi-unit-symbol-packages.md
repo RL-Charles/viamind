@@ -191,7 +191,7 @@ selection or claims electrical/PCB equivalence.
 ## Desktop workflow and actual proof
 
 Add a separate retained multi-unit library/editor form accessible from the
-Schematic menu. Shared name/value/footprint, unit list/selector, per-unit
+Libraries menu and Schematic workspace. Shared name/value/footprint, unit list/selector, per-unit
 dimensions and ordered pin fields are local until explicit NEW save or
 placement. Stable IDs combine editor UUID, unit-row UUID, pin-row UUID and
 constant field key; switching units or deleting an earlier row preserves the

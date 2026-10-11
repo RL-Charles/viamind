@@ -52,6 +52,15 @@ pub(crate) fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) -> Rect {
         let at = h.query_by_label_contains("/ 1024 ordered pins").unwrap().rect().center();
         wheel(h, at, -160.0);
     }
+    if (label.starts_with("Pin ") || label.starts_with("Remove pin ")) && h.query_by_label(label).is_none() {
+        let at = h.query_by_label_contains("/ 1024 ordered pins").unwrap().rect().center() + vec2(0., 60.);
+        for _ in 0..12 {
+            if h.query_by_label(label).is_some() {
+                break;
+            }
+            wheel(h, at, -120.);
+        }
+    }
     h.get_by_label(label).scroll_to_me();
     h.run_steps(8);
     let rect = h.get_by_label(label).rect();
@@ -98,4 +107,60 @@ pub(crate) fn original(h: &mut Harness<'_, ViamindApp>) {
     click(h, "Package unit to edit");
     h.get_by_label("P (Power)").click();
     h.run_steps(5);
+}
+
+/// Author every unit and every pin through actual exposed widgets, without file loading.
+pub(crate) fn authored(h: &mut Harness<'_, ViamindApp>) {
+    input(h, "Package definition name", "Original quad amplifiers and power");
+    input(h, "Package default value", "Authored fourteen pins");
+    input(h, "Package footprint (optional)", "Authored-14pad");
+    for _ in 0..3 {
+        click(h, "Add package unit");
+    }
+    // The initial local editor has explicit A/B units and adds C/D/E in order.
+    for i in 0..5 {
+        let key = char::from(b'A' + u8::try_from(i).unwrap());
+        click(h, "Package unit to edit");
+        h.get_by_label(&format!("{key} (Unit {key})")).click();
+        h.run_steps(5);
+        let power = i == 4;
+        if power {
+            input(h, "Unit key", "P");
+        }
+        input(h, "Unit display name", &if power { "Power".to_string() } else { format!("Amplifier {key}") });
+        click(h, if power { "Power unit" } else { "Functional unit" });
+        input(h, "Definition width (mm)", &if power { "4.000003".to_string() } else { format!("6.{:06}", 3 + 2 * i) });
+        input(h, "Definition height (mm)", if power { "6.000007" } else { "4.000007" });
+        for _ in 0..if power { 1 } else { 2 } {
+            click(h, "Add definition pin");
+        }
+        for j in 0..if power { 2 } else { 3 } {
+            let row = j + 1;
+            input(h, &format!("Pin {row} number"), &(if power { 13 + j } else { i * 3 + row }).to_string());
+            input(h, &format!("Pin {row} name"), if power { ["V+", "V-"][j] } else { ["IN+", "IN-", "OUT"][j] });
+            input(
+                h,
+                &format!("Pin {row} X (mm)"),
+                if power {
+                    "0.000007"
+                } else if j == 2 {
+                    "3.000003"
+                } else {
+                    "-3.000003"
+                },
+            );
+            input(h, &format!("Pin {row} Y (mm)"), if power { ["-4.000003", "4.000003"][j] } else { ["-1.000007", "0", "1.000007"][j] });
+            click(h, &format!("Pin {row} electrical type"));
+            click(
+                h,
+                if power {
+                    "PowerInput"
+                } else if j == 2 {
+                    "Output"
+                } else {
+                    "Input"
+                },
+            );
+        }
+    }
 }

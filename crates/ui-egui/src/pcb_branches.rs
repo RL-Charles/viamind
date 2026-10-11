@@ -124,7 +124,7 @@ fn details(deltas: &[Delta]) -> Vec<String> {
                 };
                 format!(
                     "Part {id}\nOld: {}\nNew: {}",
-                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    before.as_ref().map_or_else(|| "absent".into(), summary),
                     after.as_ref().map_or_else(|| "absent".into(), summary)
                 )
             }
@@ -143,7 +143,7 @@ fn details(deltas: &[Delta]) -> Vec<String> {
                 };
                 format!(
                     "Track {id}\nOld: {}\nNew: {}",
-                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    before.as_ref().map_or_else(|| "absent".into(), summary),
                     after.as_ref().map_or_else(|| "absent".into(), summary)
                 )
             }
@@ -160,7 +160,7 @@ fn details(deltas: &[Delta]) -> Vec<String> {
                 };
                 format!(
                     "Via {id}\nOld: {}\nNew: {}",
-                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    before.as_ref().map_or_else(|| "absent".into(), summary),
                     after.as_ref().map_or_else(|| "absent".into(), summary)
                 )
             }
