@@ -11,3 +11,11 @@ workspace = true
 
 [dependencies]
 viamind-doc.workspace = true
+viamind-geom.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

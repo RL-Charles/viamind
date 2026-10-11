@@ -3410,7 +3410,13 @@ dependencies = [
 name = "viamind-engine"
 version = "0.1.0"
 dependencies = [
+ "proptest",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
  "viamind-doc",
+ "viamind-geom",
 ]
 
 [[package]]
