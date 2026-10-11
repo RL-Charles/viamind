@@ -53,17 +53,20 @@ set -eu
 kit=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 out=${1:?provide a NEW output runtime path}
 test ! -e "$out" && test ! -L "$out"
+stage=$(mktemp -d "${out}.relink.XXXXXX")
+trap 'rm -rf -- "$stage"' EXIT HUP INT TERM
 ld -static -pie --no-dynamic-linker --gc-sections -T "$kit/data_sections.ld" \
-    -o "$out" "$kit/crt/rcrt1.o" "$kit/crt/crti.o" "$kit/crt/crtbeginS.o" \
+    -o "$stage/runtime" "$kit/crt/rcrt1.o" "$kit/crt/crti.o" "$kit/crt/crtbeginS.o" \
     "$kit/runtime.o" -L"$kit/lib" -lsquashfuse -lsquashfuse_ll -lzstd -lz \
     -lfuse3 -lmimalloc -lgcc -lgcc_eh -lc -lgcc -lgcc_eh \
     "$kit/crt/crtendS.o" "$kit/crt/crtn.o"
-python3 - "$out" <<'PY'
-import pathlib,sys
+python3 - "$stage/runtime" "$out" <<'PY'
+import os,pathlib,sys
 p=pathlib.Path(sys.argv[1])
 with p.open('r+b') as f:
-    f.seek(8);f.write(b'AI\x02')
+    f.seek(8);f.write(b'AI\x02');f.flush();os.fsync(f.fileno())
 p.chmod(0o755)
+os.link(p, sys.argv[2])  # Atomic NEW-only publication, including racing symlinks.
 PY
 EOF
 chmod 755 /result/relink/relink.sh

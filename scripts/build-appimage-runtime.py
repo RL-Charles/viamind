@@ -22,6 +22,7 @@ def build(output, cache, offline=False):
         raise ValueError("runtime output already exists; choose a new directory")
     configuration = pins()
     sources = [cached_input(x, cache, offline) for x in configuration["runtime_sources"]]
+    support_sources = [cached_input(x, cache, offline) for x in configuration["support_sources"]]
     with tempfile.TemporaryDirectory(dir=output.parent, prefix=".runtime-build-") as scratch:
         scratch = Path(scratch)
         context = scratch / "context"
@@ -57,9 +58,40 @@ def build(output, cache, offline=False):
         for expected in ["musl-1.2.5", "zlib-1.3.2", "zstd-1.5.6", "mimalloc2-2.1.7"]:
             if not re.search(r"^" + re.escape(expected) + r"-r\d+$", installed, re.MULTILINE):
                 raise ValueError("runtime dependency differs from included source: " + expected)
+        # Preserve the Alpine recipes/patches for the actual static library/CRT
+        # revisions, plus GCC source and its Runtime Library Exception notices.
+        for source in support_sources:
+            shutil.copyfile(source, result / "sources" / source.name)
+        packages = {}
+        for record in (result / "installed-package-metadata.txt").read_text().split("\n\n"):
+            fields = dict(line.split(":", 1) for line in record.splitlines() if ":" in line)
+            if fields.get("P") in {"gcc", "musl", "zlib-static", "zstd-static", "mimalloc2"}:
+                packages[fields["o"]] = fields["V"]
+        recipes = {"gcc": "main/gcc", "musl": "main/musl", "zlib": "main/zlib", "zstd": "main/zstd", "mimalloc2": "community/mimalloc2"}
+        with tarfile.open(support_sources[0]) as archive:
+            for member in archive:
+                name = PurePosixPath(member.name)
+                relative = PurePosixPath(*name.parts[1:])
+                if any(relative.is_relative_to(folder) for folder in recipes.values()):
+                    if not member.isfile():
+                        if member.isdir():
+                            continue
+                        raise ValueError("unexpected linked Alpine source recipe")
+                    if member.size > 8 * 1024 * 1024 or ".." in relative.parts or name.is_absolute():
+                        raise ValueError("unsafe Alpine recipe member")
+                    target = result / "alpine-recipes" / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with archive.extractfile(member) as stream:
+                        target.write_bytes(stream.read(member.size))
+        for origin, folder in recipes.items():
+            text = (result / "alpine-recipes" / folder / "APKBUILD").read_text()
+            version = re.search(r"^pkgver=(.*)$", text, re.MULTILINE).group(1)
+            revision = re.search(r"^pkgrel=(.*)$", text, re.MULTILINE).group(1)
+            if packages.get(origin) != version + "-r" + revision:
+                raise ValueError("Alpine source recipe differs from installed static objects: " + origin)
         notices = result / "licenses"
         notices.mkdir()
-        for source in sources:
+        for source in sources + support_sources:
             copied = 0
             # Read only legal text from pinned source archives. Never extract their
             # unrelated test symlinks (the zstd archive contains two such links).
@@ -93,6 +125,8 @@ def build(output, cache, offline=False):
             "Replace relink/lib/libfuse3.a with a compatible rebuilt libfuse to modify that library.\n"
             "Do not modify the application or source files to relink. The runtime is independent of Viamind.\n"
             "The Dockerfile/build-runtime.sh and inputs.json document the original isolated build.\n"
+            "alpine-recipes retains matching package build recipes and patches from the pinned aports snapshot.\n"
+            "GCC source and notices cover the libgcc/CRT objects included for relinking.\n"
             "Resolved package revisions are recorded, not a claim of reproducible mutable repository state.\n")
         # Verify from only the distributable directory, outside the build context.
         runtime = result / "runtime-x86_64"

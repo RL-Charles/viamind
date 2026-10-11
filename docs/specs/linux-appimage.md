@@ -68,7 +68,10 @@ mutable package repositories. Do not edit the host's package or system settings.
 Retain and distribute the exact runtime source, patches, dependency source/license
 texts and build instructions. Include a relink kit containing the runtime object,
 the exact necessary static library/CRT objects and explicit link instructions,
-allowing replacement of the statically linked LGPL libfuse. Verify that relinking
+allowing replacement of the statically linked LGPL libfuse. Retain a pinned
+Alpine aports snapshot with matching actual static-package revisions and their
+patches/build recipes, plus GCC source and Runtime Library Exception notices for
+the libgcc/CRT objects. Relink outputs also use atomic NEW-only publication. Verify that relinking
 from the distributed companion alone produces a functional runtime before publishing;
 the verification cannot depend on files left in the original build tree. Preserve
 the MIT, BSD, LGPL and other actual component notices, including mimalloc. Runtime
