@@ -275,7 +275,7 @@ impl ViamindApp {
         if self.schematic_wires.draft.is_none() {
             return false;
         }
-        let keyboard = response.hovered() && !ui.ctx().wants_keyboard_input();
+        let keyboard = response.hovered() && !ui.ctx().egui_wants_keyboard_input();
         if keyboard && ui.input(|i| i.key_pressed(Key::Escape)) {
             self.schematic_wires.cancel();
             return true;
