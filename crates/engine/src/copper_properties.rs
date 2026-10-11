@@ -36,7 +36,7 @@ pub struct CopperPropertySnapshot {
 }
 fn net_budget(net: &Option<String>) -> Result<(), CommandError> {
     if net.as_ref().is_some_and(|s| s.len() > 256) {
-        return Err(CommandError::invalid("net", "property net must fit256UTF-8bytes"));
+        return Err(CommandError::invalid("net", "property net must fit 256 UTF-8 bytes"));
     }
     Ok(())
 }
@@ -79,10 +79,12 @@ pub struct SetTrackProperties {
     pub expected_cursor: EventCursor,
     pub id: ObjectId,
     #[serde(deserialize_with = "deserialize_track")]
+    #[schemars(schema_with = "expected_track_schema")]
     pub expected: Track,
     pub width: Nm,
     pub layer: CopperLayer,
     #[serde(deserialize_with = "deserialize_net")]
+    #[schemars(schema_with = "explicit_net_schema")]
     pub net: Option<String>,
     #[serde(default)]
     pub rules: viamind_drc::DrcInput,
@@ -94,17 +96,19 @@ pub struct SetViaProperties {
     pub expected_cursor: EventCursor,
     pub id: ObjectId,
     #[serde(deserialize_with = "deserialize_via")]
+    #[schemars(schema_with = "expected_via_schema")]
     pub expected: Via,
     pub diameter: Nm,
     pub drill: Nm,
     #[serde(deserialize_with = "deserialize_net")]
+    #[schemars(schema_with = "explicit_net_schema")]
     pub net: Option<String>,
     #[serde(default)]
     pub rules: viamind_drc::DrcInput,
 }
 impl Command for SetTrackProperties {
     const NAME: &'static str = "set_track_properties";
-    const DESCRIPTION: &'static str = "Change one existing track's explicit integer-Nm width, top/bottom layer and optional exact net while retaining ID/start/end. Requires expected_project, full initial expected_cursor and exact expected original Track. Net labels are null or trimmed/control-free,128characters/256UTF-8bytes. Exact document track-width minimum applies; clearance uses max(request baseline,document minima). Explicit outline and bounded complete shared candidate DRC required; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, implicit sizing, repair or shove.";
+    const DESCRIPTION: &'static str = "Change one existing track's explicit integer-Nm width, top/bottom layer and optional exact net while retaining ID/start/end. Requires expected_project, full initial expected_cursor and exact expected original Track. Net labels are null or trimmed/control-free,128 characters / 256 UTF-8 bytes. Exact document track-width minimum applies; clearance uses max(request baseline,document minima). Explicit outline and bounded complete shared candidate DRC required; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, implicit sizing, repair or shove.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.expected_cursor)
     }
@@ -138,7 +142,7 @@ impl Command for SetTrackProperties {
 }
 impl Command for SetViaProperties {
     const NAME: &'static str = "set_via_properties";
-    const DESCRIPTION: &'static str = "Change one existing through via's explicit integer-Nm copper diameter, drill diameter and optional exact net while retaining ID/position/through span. Requires expected_project, full initial expected_cursor and exact expected original Via. Net labels null or trimmed/control-free,128characters/256UTF-8bytes. Drill and exact doubled-annulus floors max request baselines with document minima; no resizing. Explicit outline and bounded complete shared candidate DRC required, including hole spacing and foreign copper/edge checks; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, new via, implicit sizing, repair or shove.";
+    const DESCRIPTION: &'static str = "Change one existing through via's explicit integer-Nm copper diameter, drill diameter and optional exact net while retaining ID/position/through span. Requires expected_project, full initial expected_cursor and exact expected original Via. Net labels null or trimmed/control-free,128 characters / 256 UTF-8 bytes. Drill and exact doubled-annulus floors max request baselines with document minima; no resizing. Explicit outline and bounded complete shared candidate DRC required, including hole spacing and foreign copper/edge checks; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, new via, implicit sizing, repair or shove.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.expected_cursor)
     }
@@ -194,23 +198,44 @@ fn preflight(project: &Project, delta: &Delta, id: ObjectId, growth: usize, rule
     }
     Ok(())
 }
+// A required nullable field differs from an omittable Option in MCP schemas.
+fn explicit_net_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({"type":["string","null"],"maxLength":128,"description":"Required explicit net: null means unassigned; assigned labels fit128 characters / 256 UTF-8 bytes and are trimmed/control-free/nonempty."})
+}
+fn expected_track_schema(g: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    explicit_original_schema::<Track>(g)
+}
+fn expected_via_schema(g: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    explicit_original_schema::<Via>(g)
+}
+fn explicit_original_schema<T: JsonSchema>(g: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    let mut schema = T::json_schema(g);
+    let object = schema.as_object_mut().expect("Track/Via original schema is an object");
+    object.get_mut("required").and_then(serde_json::Value::as_array_mut).expect("original required fields").push(serde_json::json!("net"));
+    object
+        .get_mut("properties")
+        .and_then(serde_json::Value::as_object_mut)
+        .expect("original properties")
+        .insert("net".into(), explicit_net_schema(g).to_value());
+    schema
+}
 fn deserialize_net<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
     struct Optional;
     struct Text;
     impl<'de> Visitor<'de> for Text {
         type Value = String;
         fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            f.write_str("net within256UTF-8bytes")
+            f.write_str("net within 256 UTF-8 bytes")
         }
         fn visit_str<E: de::Error>(self, s: &str) -> Result<String, E> {
             if s.len() > 256 {
-                return Err(E::custom("net exceeds256UTF-8bytes"));
+                return Err(E::custom("net exceeds 256 UTF-8 bytes"));
             }
             Ok(s.to_owned())
         }
         fn visit_string<E: de::Error>(self, s: String) -> Result<String, E> {
             if s.len() > 256 {
-                return Err(E::custom("net exceeds256UTF-8bytes"));
+                return Err(E::custom("net exceeds 256 UTF-8 bytes"));
             }
             Ok(s)
         }

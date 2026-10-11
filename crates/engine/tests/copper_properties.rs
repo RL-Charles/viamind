@@ -425,3 +425,36 @@ fn query_rejects_oversized_selected_text_and_policy_before_owned_copy() {
         assert_eq!(e.document_status(), status);
     }
 }
+
+#[test]
+fn advertised_nullable_net_is_required_exactly_like_command_deserialization() {
+    let (project, tid, vid) = fixture();
+    let e = EngineHandle::new(project);
+    for (name, input) in [
+        (SetTrackProperties::NAME, serde_json::to_value(track(&e, tid)).unwrap()),
+        (SetViaProperties::NAME, serde_json::to_value(via(&e, vid)).unwrap()),
+    ] {
+        let schema = viamind_engine::CommandRegistry::builtin().spec(name).unwrap().input_schema;
+        assert!(schema["required"].as_array().unwrap().contains(&json!("net")));
+        assert_eq!(schema["properties"]["net"]["type"], json!(["string", "null"]));
+        assert!(schema["properties"]["expected"]["required"].as_array().unwrap().contains(&json!("net")));
+        assert_eq!(schema["properties"]["expected"]["properties"]["net"]["type"], json!(["string", "null"]));
+        for original in [false, true] {
+            let mut missing = input.clone();
+            if original {
+                missing["expected"].as_object_mut().unwrap().remove("net");
+            } else {
+                missing.as_object_mut().unwrap().remove("net");
+            }
+            let before = e.session_state();
+            assert!(e.execute(name, missing, Origin::User).is_err());
+            assert_eq!(e.session_state(), before);
+        }
+        let mut explicit = input;
+        explicit["net"] = serde_json::Value::Null;
+        let before = e.read(Clone::clone);
+        e.execute(name, explicit, Origin::User).unwrap();
+        e.undo(Origin::User).unwrap();
+        assert_eq!(e.read(Clone::clone), before);
+    }
+}
