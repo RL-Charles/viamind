@@ -4,7 +4,7 @@
 
 - [RFC4180 section2](https://www.rfc-editor.org/rfc/rfc4180): CSV records, quoting and escaped quotes. Existing generic Viamind BOM grouping/origin placement behavior remains specified in assembly-csv.md.
 - [Rust thread Builder::spawn](https://doc.rust-lang.org/std/thread/struct.Builder.html#method.spawn): fallible named worker creation. Report failure and retain a usable form.
-- [egui0.36.2 Window::vscroll](https://docs.rs/egui/0.36.2/egui/struct.Window.html#method.vscroll) and [Context::request_repaint](https://docs.rs/egui/0.36.2/egui/struct.Context.html#method.request_repaint): scrollable compact controls and background completion repaint.
+- [egui0.36.2 Window::vscroll](https://docs.rs/egui/0.36.2/egui/containers/struct.Window.html#method.vscroll) and [Context::request_repaint](https://docs.rs/egui/0.36.2/egui/struct.Context.html#method.request_repaint): scrollable compact controls and background completion repaint.
 
 ## Behavior
 
