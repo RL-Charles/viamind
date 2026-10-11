@@ -1,0 +1,296 @@
+# Viamind regression corpus: openly licensed KiCad projects, pinned by commit.
+# Design files are never committed here; scripts/fetch-corpus.sh fetches them
+# into corpus/cache/<name>/. See corpus/README.md for the field reference.
+#
+# Facts below were checked against GitHub and the fetched files on 2026-10-10:
+# licence = the repo's GitHub licence field or its LICENSE file (SPDX id);
+# kicad_version = major version that last saved the .kicad_pcb;
+# copper_layers / sheets = counted from the board and the schematic hierarchy.
+
+schema = 1
+
+# --- 2-layer --------------------------------------------------------------
+
+[[project]]
+name = "corne-cherry"
+repo = "https://github.com/foostan/crkbd"
+commit = "63366fb7f51cf2a796462fdd90527e99dd126055"
+license = "CC-BY-4.0"
+projects = ["pcbs/corne-cherry/hotswap/corne-cherry.kicad_pro"]
+kicad_version = 7
+copper_layers = 2
+sheets = 3
+note = "Split keyboard; left/right sub-sheets live outside the project dir (../../common), large key matrix"
+
+[[project]]
+name = "nrfmicro"
+repo = "https://github.com/joric/nrfmicro"
+commit = "5ac390d9d133e781a46a9c9fe43880f4826422e0"
+license = "Unlicense"
+projects = ["hardware/nrfmicro.kicad_pro"]
+kicad_version = 6
+copper_layers = 2
+sheets = 1
+note = "Tiny nRF52840 Pro Micro-format board; smallest entry, KiCad 6 file format baseline"
+
+[[project]]
+name = "voron-v0-display-rp2040"
+repo = "https://github.com/VoronDesign/Voron-Hardware"
+commit = "5e5fca5761380576a8bb77f7301cdee90afa0e6e"
+license = "GPL-3.0"
+license_note = "LICENSE.md is the GPLv3 text with no -only/-or-later statement"
+projects = ["V0_Display_RP2040/KiCad/V0_Display_RP2040.kicad_pro"]
+kicad_version = 7
+copper_layers = 2
+sheets = 1
+note = "Small RP2040 display board with USB; flat schematic, monorepo of many boards"
+
+# --- 4-layer --------------------------------------------------------------
+
+[[project]]
+name = "antmicro-m2-oculink-adapter"
+repo = "https://github.com/antmicro/m2-oculink-adapter"
+commit = "067f60727046cd0c0db1d39c51c9396f89f48b65"
+license = "Apache-2.0"
+projects = ["antmicro-m2-oculink-adapter-hw.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 1
+note = "PCIe x4 + refclk diff pairs (85 ohm net class) from M.2 edge to OCuLink; card-edge connector"
+
+[[project]]
+name = "antmicro-poe-usb-c-pd-converter"
+repo = "https://github.com/antmicro/poe-usb-c-pd-converter"
+commit = "f9fdd79ce0428b7c195dcbecbb56e55076da3324"
+license = "Apache-2.0"
+projects = ["antmicro-poe-to-usbc-pd-adapter.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 5
+note = "Hierarchical (5 sheets); Ethernet MDI and USB diff pairs with impedance net classes; PoE power stage"
+
+[[project]]
+name = "antmicro-signal-integrity-test-board"
+repo = "https://github.com/antmicro/signal-integrity-test-board"
+commit = "de0b5922c372481bb146cbd1d0a9f3b7e97c124a"
+license = "Apache-2.0"
+projects = ["si-simulation-test-board.kicad_pro"]
+kicad_version = 6
+copper_layers = 4
+sheets = 1
+note = "Controlled-impedance test structures (single-ended and diff) for SI simulation; few nets, dense geometry"
+
+[[project]]
+name = "antmicro-hdmi-edid-debug-board"
+repo = "https://github.com/antmicro/hdmi-edid-debug-board"
+commit = "615be304c1d2a9ef7a1195692e9f67fb8a41cab3"
+license = "Apache-2.0"
+projects = ["hdmi-edid-debug-board.kicad_pro"]
+kicad_version = 8
+copper_layers = 4
+sheets = 1
+note = "HDMI TMDS (100 ohm) and USB (90 ohm) diff-pair net classes; KiCad 8 format"
+
+[[project]]
+name = "antmicro-pmod-i3c-sensor-board"
+repo = "https://github.com/antmicro/pmod-i3c-sensor-board"
+commit = "5ee5d34ff918422fe7af59f7ffdc9d4bdabf18a7"
+license = "Apache-2.0"
+projects = ["pmod-i3c-sensor-board.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 1
+note = "Small PMOD sensor board; flat schematic, simple 4-layer stackup"
+
+[[project]]
+name = "gsg-hackrf-one"
+repo = "https://github.com/greatscottgadgets/hackrf"
+commit = "468c5d93b66032c892c95bbf9ff15ff1b803e84f"
+license = "GPL-2.0"
+license_note = "COPYING is the GPLv2 text with no -only/-or-later statement"
+projects = ["hardware/hackrf-one/hackrf-one.kicad_pro"]
+kicad_version = 6
+copper_layers = 4
+sheets = 4
+note = "SDR with RF and baseband analog differential nets; hierarchical (4 sheets); title-block text variables"
+
+[[project]]
+name = "libresolar-bms-c1"
+repo = "https://github.com/LibreSolar/bms-c1"
+commit = "0ca09706f49906bdc73f6ccf99635de349d47474"
+license = "CERN-OHL-W-2.0"
+projects = ["kicad/bms-c1.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 5
+note = "Battery management system; high-current/HV net classes, wide power pours, hierarchical (5 sheets)"
+
+[[project]]
+name = "olimex-esp32-poe"
+repo = "https://github.com/OLIMEX/ESP32-POE"
+commit = "deb38a377d50eadb04ddc7118a17a5ae58b1ee53"
+license = "Apache-2.0"
+license_note = "README: hardware Apache-2.0, software GPL-3.0, docs CC-BY-SA-3.0"
+projects = ["HARDWARE/ESP32-PoE-hardware-revision-M2/ESP32-PoE_Rev_M2.kicad_pro"]
+kicad_version = 7
+copper_layers = 4
+sheets = 1
+note = "Commercial ESP32 board with Ethernet + PoE; flat dense schematic, 90 ohm net class"
+
+[[project]]
+name = "tinytapeout-demo"
+repo = "https://github.com/TinyTapeout/tt-demo-pcb"
+commit = "bbf3dd1f771d5aed249b07ddf130b3ddc8261d60"
+license = "Apache-2.0"
+projects = ["tinytapeout-demo.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 2
+note = "RP2350 + ASIC carrier; ten custom net classes incl. USB diff, 2-level hierarchy"
+
+[[project]]
+name = "upduino-v3"
+repo = "https://github.com/tinyvision-ai-inc/UPduino-v3.0"
+commit = "e2b944b45849d28b6c6c953b7a9a5667797935a0"
+license = "MIT"
+projects = ["Board/v3.01/UPduino_v3.01.kicad_pro"]
+kicad_version = 8
+copper_layers = 4
+sheets = 1
+note = "iCE40 UP5K FPGA (QFN) breadboard module; flat schematic, KiCad 8 format"
+
+[[project]]
+name = "bus-pirate-5"
+repo = "https://github.com/DangerousPrototypes/BusPirate5-hardware"
+commit = "acb9cd667ce608e7eb560a663938787343b424c4"
+license = "MIT"
+projects = ["bus_pirate_pcb/5-REV10A/REV10a.kicad_pro"]
+kicad_version = 7
+copper_layers = 4
+sheets = 6
+note = "RP2040 debug tool; hierarchical (6 sheets), USB diff pair, custom power/signal net classes"
+
+[[project]]
+name = "machdyne-kolsch"
+repo = "https://github.com/machdyne/kolsch"
+commit = "b163187f1871adf0214f20eefdd27779fd43fd5f"
+license = "CERN-OHL-P-2.0"
+projects = ["pcb/v2/kolsch.kicad_pro"]
+kicad_version = 8
+copper_layers = 4
+sheets = 1
+note = "GateMate CCGM1A1 FPGA (BGA-324, 0.8 mm) fanned out on only 4 layers; RP2040, USB diff pairs"
+
+[[project]]
+name = "winterbloom-castor-pollux"
+repo = "https://github.com/wntrblm/Castor_and_Pollux"
+commit = "652b28c950ed04ca41f0d8aa98d9b1be2f310f76"
+license = "CERN-OHL-P-2.0"
+license_note = "LICENSE.md: hardware/mainboard is CERN-OHL-P-2.0; other parts of the repo differ"
+projects = ["hardware/mainboard/mainboard.kicad_pro"]
+kicad_version = 9
+copper_layers = 4
+sheets = 8
+note = "Eurorack synth module; hierarchical (8 files, 8 instances), mixed-signal audio/CV net classes"
+
+[[project]]
+name = "electroniccats-catsniffer"
+repo = "https://github.com/ElectronicCats/CatSniffer"
+commit = "6da5050fefde59138fc11d9e2ecf7c0de36f3a22"
+license = "CERN-OHL-1.2"
+projects = ["hardware/CatSniffer.kicad_pro"]
+kicad_version = 8
+copper_layers = 4
+sheets = 1
+note = "Multi-band RF sniffer (sub-GHz + 2.4 GHz); RF differential nets and matching networks"
+
+[[project]]
+name = "duet3-mainboard-6hc"
+repo = "https://github.com/Duet3D/Duet3-Mainboard-6HC"
+commit = "e19bf75ebb6a777963d69182e72e1b582f9c334d"
+license = "CERN-OHL-W-2.0"
+license_note = "LICENSE: CERN-OHL-W v2 or later plus Duet3D attribution terms"
+projects = ["Duet3_Mainboard_6HC_v1.02/CAD/Duet3_MB_6HC.kicad_pro"]
+kicad_version = 6
+copper_layers = 4
+sheets = 8
+note = "3D-printer mainboard with stepper drivers + Ethernet; ~1.7k vias, 600+ nets, hierarchical (8 sheets)"
+
+# --- 6+ layer, BGA, high-speed --------------------------------------------
+
+[[project]]
+name = "gsg-cynthion"
+repo = "https://github.com/greatscottgadgets/cynthion-hardware"
+commit = "13aa71c2fb0be3837cd2ec580ee5d2c25fc1c678"
+license = "CERN-OHL-P-2.0"
+projects = ["cynthion.kicad_pro"]
+kicad_version = 7
+copper_layers = 6
+sheets = 17
+note = "ECP5 caBGA-256 + HyperRAM BGA; three USB PHY ports (repeated sheet instances), deep hierarchy"
+
+[[project]]
+name = "glasgow-revd1"
+repo = "https://github.com/GlasgowEmbedded/glasgow"
+commit = "d79c1690b66d3aef6b3b5cb3ab341c798d04fe30"
+license = "0BSD"
+projects = ["hardware/boards/glasgow/revD1/glasgow.kicad_pro"]
+kicad_version = 10
+copper_layers = 6
+sheets = 8
+note = "Newest file format in the corpus (KiCad 10); iCE40 BGA-256 0.8 mm, repeated I/O bank sheets"
+
+[[project]]
+name = "antmicro-jetson-nano-baseboard"
+repo = "https://github.com/antmicro/jetson-nano-baseboard"
+commit = "d8d0b2d71ab4cc4bcdb204a09f78be40d4c8cda3"
+license = "Apache-2.0"
+projects = ["jetson-nano-baseboard.kicad_pro"]
+kicad_version = 9
+copper_layers = 8
+sheets = 8
+note = "SO-DIMM SoM carrier; MIPI CSI/PCIe/USB3 diff pairs with 85/90/100 ohm net classes"
+
+[[project]]
+name = "antmicro-lpddr4-test-board"
+repo = "https://github.com/antmicro/lpddr4-test-board"
+commit = "5c8b5d3c27d6f3e802dc2d9022a1b1e87b725e5b"
+license = "Apache-2.0"
+projects = ["lpddr4-test-board.kicad_pro"]
+kicad_version = 9
+copper_layers = 8
+sheets = 9
+note = "Kintex-7 BGA-484 + LPDDR4; blind/micro vias (HDI), DQ/DQS impedance classes, HDMI and Ethernet pairs"
+
+[[project]]
+name = "antmicro-kintex-410t-devboard"
+repo = "https://github.com/antmicro/kintex-410t-devboard"
+commit = "aeacd840ec3d5b4d93b789ccd99c30c50da11d71"
+license = "Apache-2.0"
+projects = ["k410t-devboard.kicad_pro"]
+kicad_version = 9
+copper_layers = 10
+sheets = 19
+note = "Kintex-7 FFG900 BGA + DRAM FBGA-78; 1.4k nets, 2.7k vias, 19-sheet hierarchy; largest board file (~85 MB)"
+
+[[project]]
+name = "antmicro-sodimm-ddr5-tester"
+repo = "https://github.com/antmicro/sodimm-ddr5-tester"
+commit = "05b265a75b87d63862323082bfdcb62949d22647"
+license = "Apache-2.0"
+projects = ["sodimm-ddr5-tester.kicad_pro"]
+kicad_version = 9
+copper_layers = 12
+sheets = 17
+note = "FPGA BGA-676 driving a DDR5 SO-DIMM; DQS/CK diff pairs, PCIe 85 ohm class, 12-layer stackup"
+
+[[project]]
+name = "antmicro-polarfire-som"
+repo = "https://github.com/antmicro/polarfire-som"
+commit = "1c787f6b8bb91cfc65c87a11866b2d13cb3f11a0"
+license = "Apache-2.0"
+projects = ["polarfire-som.kicad_pro"]
+kicad_version = 9
+copper_layers = 14
+sheets = 18
+note = "PolarFire SoC BGA-484 + LPDDR4 + eMMC BGAs; most layers in the corpus (14)"
