@@ -240,3 +240,64 @@ fn axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_determini
     assert!(e.preview_schematic_annotation(AnnotationOptions { sheet_order: vec![id(2)], ..reset(1) }).is_err());
     assert_eq!(e.session_state(), state);
 }
+#[test]
+fn annotation_ignores_huge_unused_board_assembly_and_rejects_malformed_package_ownership() {
+    let mut p = fixture();
+    let part = viamind_doc::Part {
+        id: id(900),
+        assembly: Some(Box::new(viamind_doc::assembly::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
+        schematic_symbol: None,
+        pads: None,
+        designator: "BOARD1".into(),
+        value: "unchanged".into(),
+        footprint: "explicit".into(),
+        position: viamind_geom::Point::new(Nm(1), Nm(3)),
+        rotation_mdeg: 0,
+        side: viamind_doc::Side::Top,
+    };
+    p.board.parts.insert(part.id, part);
+    let e = EngineHandle::new(p.clone());
+    let preview = e.preview_schematic_annotation(reset(1)).unwrap();
+    e.execute_typed(preview.command, Origin::User).unwrap();
+    assert_eq!(e.read(|p| p.board.clone()), p.board);
+    e.undo_own(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), p);
+    for variant in 0..5 {
+        let mut p = fixture();
+        let c = p.schematic.sheets.get_mut(&id(1)).unwrap().content.as_mut().unwrap();
+        match variant {
+            0 => c.packages.get_mut(&id(600)).unwrap().id = id(999),
+            1 => c.packages.get_mut(&id(600)).unwrap().units[0].symbol_id = id(999),
+            2 => c.packages.get_mut(&id(600)).unwrap().units[0].key = "A".into(),
+            3 => c.packages.get_mut(&id(600)).unwrap().template_name = "x".repeat(256 * 1024 + 1),
+            _ => p.id = id(600),
+        }
+        let e = EngineHandle::new(p);
+        let before = e.session_state();
+        assert!(e.preview_schematic_annotation(reset(1)).is_err(), "variant{variant}");
+        assert_eq!(e.session_state(), before);
+    }
+}
+#[test]
+fn complete_explicit_sheet_order_changes_owner_order_without_splitting_packages() {
+    let mut p = fixture();
+    let c = p.schematic.sheets.get_mut(&id(1)).unwrap().content.as_mut().unwrap();
+    let group = c.packages.remove(&id(700)).unwrap();
+    let mut second = SchematicContent::default();
+    for unit in &group.units {
+        let symbol = c.symbols.remove(&unit.symbol_id).unwrap();
+        second.symbols.insert(symbol.id, symbol);
+    }
+    second.packages.insert(group.id, group);
+    let mut sheet = Sheet::new("Second complete package");
+    sheet.id = id(2);
+    sheet.content = Some(second);
+    p.schematic.sheets.insert(sheet.id, sheet);
+    let e = EngineHandle::new(p);
+    let preview = e.preview_schematic_annotation(AnnotationOptions { sheet_order: vec![id(2), id(1)], ..reset(5) }).unwrap();
+    assert_eq!(preview.sheet_order, vec![id(2), id(1)]);
+    assert!(preview.changes[..5].iter().all(|c| c.package_id == Some(id(700)) && c.after == "U5"));
+    assert!(preview.changes[5..10].iter().all(|c| c.package_id == Some(id(600)) && c.after == "U6"));
+    assert_eq!(preview.changes[10].after, "U7");
+    assert_eq!(preview.changes[11].after, "U8");
+}
