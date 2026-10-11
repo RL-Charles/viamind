@@ -7,6 +7,7 @@
 //! writing to these fields directly from UI or agent code.
 
 pub mod board;
+pub mod dxf;
 pub mod file;
 pub mod id;
 pub mod outline;

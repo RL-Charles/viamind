@@ -102,6 +102,7 @@ impl CommandRegistry {
             .with::<DeletePart>()
             .with::<UpdatePart>()
             .with::<SetBoardOutline>()
+            .with::<crate::ImportBoardOutlineDxf>()
             .with::<crate::SetPartPads>()
     }
 

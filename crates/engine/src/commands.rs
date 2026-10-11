@@ -306,3 +306,31 @@ mod tests {
         assert!(position_mm("x_mm", 0.0, "y_mm", -10_000.5).is_err());
     }
 }
+
+/// Import an ASCII DXF outline as a guarded, ordinary undoable outline change.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ImportBoardOutlineDxf {
+    #[schemars(length(max = 8_388_608))]
+    pub text: String,
+    #[serde(default)]
+    pub units: viamind_doc::dxf::DxfUnits,
+    pub layer: Option<String>,
+    pub expected: ExpectedOutline,
+}
+impl Command for ImportBoardOutlineDxf {
+    const NAME: &'static str = "import_board_outline_dxf";
+    const DESCRIPTION: &'static str = "Import ASCII DXF straight closed LWPOLYLINE/POLYLINE and joined LINE loops as outer boundary/cutouts. Required expected guards exact project_id/outline (nm). Units header (default) requires INSUNITS, mm or inches explicitly overrides it. Optional exact layer filter. Rejects curves/bulges, 3D, open/branching/intersecting geometry, disjoint boards. Max 8 MiB, 2048 vertices/64 cutouts. One undoable change; errors preserve the document.";
+    fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
+        if self.expected.project_id != project.id || self.expected.outline != project.board.outline {
+            return Err(CommandError::conflict("board outline or document changed; reload the outline before importing"));
+        }
+        let outline = viamind_doc::dxf::import_outline_dxf(&self.text, self.units, self.layer.as_deref())
+            .map_err(|e| CommandError::invalid("text", e.to_string()))?;
+        if project.board.outline.as_ref() == Some(&outline) {
+            return Ok(Vec::new());
+        }
+        let before = project.board.outline.replace(outline.clone());
+        Ok(vec![Delta::BoardOutline { id: project.id, before, after: Some(outline) }])
+    }
+}
