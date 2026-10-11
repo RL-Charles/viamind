@@ -23,6 +23,7 @@ fn via(x: f64, y: f64, diameter: f64, drill: f64, net: Option<&str>) -> Via {
 }
 fn part() -> Part {
     Part {
+        schematic_symbol: None,
         id: ObjectId::new(),
         designator: "P1".into(),
         value: "test".into(),

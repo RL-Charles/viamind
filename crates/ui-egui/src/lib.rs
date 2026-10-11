@@ -22,6 +22,7 @@ pub mod mesh_cache;
 pub mod outlines;
 pub mod pads;
 pub mod parts;
+pub mod pcb_sync;
 pub mod placement;
 pub mod routing;
 pub mod scene;
@@ -123,6 +124,7 @@ pub struct FrameStats {
 pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
     pub annotation: annotation::AnnotationUi,
+    pub pcb_sync: pcb_sync::PcbSyncUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -164,6 +166,7 @@ impl ViamindApp {
         Self {
             schematic: schematic::SchematicUi::default(),
             annotation: annotation::AnnotationUi::default(),
+            pcb_sync: pcb_sync::PcbSyncUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -195,6 +198,7 @@ impl ViamindApp {
         Self {
             schematic,
             annotation: annotation::AnnotationUi::default(),
+            pcb_sync: pcb_sync::PcbSyncUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -333,6 +337,7 @@ impl ViamindApp {
                     }
                 });
             });
+        self.pcb_sync_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
@@ -511,6 +516,9 @@ impl ViamindApp {
                         ui.close();
                     }
                 });
+            }
+            if self.design.is_some() && ui.button("Synchronize…").clicked() {
+                self.begin_pcb_sync();
             }
             if self.design.is_some() && !self.schematic.active {
                 ui.menu_button("Board", |ui| {

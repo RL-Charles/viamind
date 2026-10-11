@@ -210,6 +210,7 @@ mod tests {
 
     fn part(designator: &str) -> Part {
         Part {
+            schematic_symbol: None,
             pads: None,
             id: ObjectId::new(),
             designator: designator.into(),

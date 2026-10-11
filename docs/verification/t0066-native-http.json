@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "production link preview and sync discovery with object schemas",
+    "immutable deterministic thirteen-change preview",
+    "stale command preserves complete native session",
+    "independent expected VIN 3V3 and GND groups",
+    "forward changes preserve all geometry copper and schematic data",
+    "one transaction event",
+    "peer cannot undo overlapping synchronization",
+    "one native undo restores all pad nets and properties",
+    "native redo restores complete update",
+    "native schema6 preserves stable links and assigned nets",
+    "same UUID reopened stream rejects old command unchanged",
+    "back annotation uses stable link after reference rename",
+    "back changes preserve pins topology positions and copper",
+    "single native back undo restores whole schematic",
+    "explicit unlink affects only association",
+    "native unlink undo restores stable association"
+  ],
+  "binary_sha256": "f8acec68bd9604be715fe64308dde87b61d9d62bba9dc3aa058d41069ea39ba5",
+  "transport": "http://127.0.0.1:7893/mcp",
+  "preview_ms": 6.0588909982470796,
+  "apply_ms": 4.876507002336439,
+  "saved_path": "/tmp/viamind-t0066-native-4jaz98v1/final.viamind.json"
+}

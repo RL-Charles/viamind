@@ -196,6 +196,7 @@ mod tests {
 
     pub(super) fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
         Part {
+            schematic_symbol: None,
             pads: None,
             id: ObjectId::new(),
             designator: "R1".into(),

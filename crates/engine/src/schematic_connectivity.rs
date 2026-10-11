@@ -114,74 +114,81 @@ impl EngineHandle {
         self.schematic_graph(&SchematicConnectivityQuery { offset: 0, limit: MAX_MEMBERS })
     }
     fn schematic_graph(&self, query: &SchematicConnectivityQuery) -> Result<SchematicConnectivityResult, CommandError> {
-        let snapshot = self.with_engine(|engine| {
-            let project = engine.project();
-            let sheets = &project.schematic.sheets;
-            if sheets.len() > 1000 {
-                return Err(invalid("query supports at most 1000 sheets"));
-            }
-            let mut count = sheets.len();
-            let mut text = 0usize;
-            // Count before validation/cloning: legacy content may exceed native bounds.
-            for sheet in sheets.values() {
-                text = text.saturating_add(sheet.name.len());
-                if let Some(c) = &sheet.content {
-                    count = count.saturating_add(c.object_count());
-                    if count > MAX_MEMBERS {
-                        return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
-                    }
-                    for symbol in c.symbols.values() {
-                        count = count.saturating_add(symbol.pins.len());
-                        if count > MAX_MEMBERS {
-                            return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
-                        }
-                        text = text
-                            .saturating_add(symbol.designator.len())
-                            .saturating_add(symbol.value.len())
-                            .saturating_add(symbol.footprint.as_ref().map_or(0, String::len));
-                        for pin in &symbol.pins {
-                            text = text.saturating_add(pin.number.len()).saturating_add(pin.name.len());
-                        }
-                    }
-                    for label in c.labels.values() {
-                        text = text.saturating_add(label.name.len());
-                    }
-                }
-                if count > MAX_MEMBERS || text > MAX_TEXT_BYTES {
-                    return Err(invalid(
-                        "query supports at most 10000 sheets/symbols/pins/wires/junctions/labels and 2 MiB schematic text; reduce the schematic",
-                    ));
-                }
-            }
-            if project.id.as_uuid().is_nil() {
-                return Err(invalid("nil project identity"));
-            }
-            let mut ids = BTreeSet::from([project.id]);
-            for (key, sheet) in sheets {
-                if *key != sheet.id {
-                    return Err(invalid(format!("sheet key does not match identity {}", sheet.id)));
-                }
-                validate_sheet(sheet).map_err(|e| invalid(format!("sheet {}: {e}", sheet.id)))?;
-                let mut insert = |id: ObjectId| {
-                    if id.as_uuid().is_nil() || !ids.insert(id) { Err(invalid(format!("nil or duplicate schematic identity {id}"))) } else { Ok(()) }
-                };
-                insert(sheet.id)?;
-                if let Some(c) = &sheet.content {
-                    for id in c.wires.keys().chain(c.junctions.keys()).chain(c.labels.keys()) {
-                        insert(*id)?;
-                    }
-                    for s in c.symbols.values() {
-                        insert(s.id)?;
-                        for pin in &s.pins {
-                            insert(pin.id)?;
-                        }
-                    }
-                }
-            }
-            Ok(Snapshot { project_id: project.id, source_cursor: engine.event_cursor(), sheets: sheets.values().cloned().collect() })
-        })?;
+        let snapshot = self.with_engine(|engine| capture(engine.project(), engine.event_cursor()))?;
         calculate(snapshot, query, MAX_CANDIDATES)
     }
+}
+/// Calculate a whole bounded graph from already captured project data.
+pub(crate) fn project_schematic_connectivity(
+    project: &viamind_doc::Project,
+    cursor: EventCursor,
+) -> Result<SchematicConnectivityResult, CommandError> {
+    calculate(capture(project, cursor)?, &SchematicConnectivityQuery { offset: 0, limit: MAX_MEMBERS }, MAX_CANDIDATES)
+}
+fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapshot, CommandError> {
+    let sheets = &project.schematic.sheets;
+    if sheets.len() > 1000 {
+        return Err(invalid("query supports at most 1000 sheets"));
+    }
+    let mut count = sheets.len();
+    let mut text = 0usize;
+    // Count before validation/cloning: legacy content may exceed native bounds.
+    for sheet in sheets.values() {
+        text = text.saturating_add(sheet.name.len());
+        if let Some(c) = &sheet.content {
+            count = count.saturating_add(c.object_count());
+            if count > MAX_MEMBERS {
+                return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
+            }
+            for symbol in c.symbols.values() {
+                count = count.saturating_add(symbol.pins.len());
+                if count > MAX_MEMBERS {
+                    return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
+                }
+                text = text
+                    .saturating_add(symbol.designator.len())
+                    .saturating_add(symbol.value.len())
+                    .saturating_add(symbol.footprint.as_ref().map_or(0, String::len));
+                for pin in &symbol.pins {
+                    text = text.saturating_add(pin.number.len()).saturating_add(pin.name.len());
+                }
+            }
+            for label in c.labels.values() {
+                text = text.saturating_add(label.name.len());
+            }
+        }
+        if count > MAX_MEMBERS || text > MAX_TEXT_BYTES {
+            return Err(invalid(
+                "query supports at most 10000 sheets/symbols/pins/wires/junctions/labels and 2 MiB schematic text; reduce the schematic",
+            ));
+        }
+    }
+    if project.id.as_uuid().is_nil() {
+        return Err(invalid("nil project identity"));
+    }
+    let mut ids = BTreeSet::from([project.id]);
+    for (key, sheet) in sheets {
+        if *key != sheet.id {
+            return Err(invalid(format!("sheet key does not match identity {}", sheet.id)));
+        }
+        validate_sheet(sheet).map_err(|e| invalid(format!("sheet {}: {e}", sheet.id)))?;
+        let mut insert = |id: ObjectId| {
+            if id.as_uuid().is_nil() || !ids.insert(id) { Err(invalid(format!("nil or duplicate schematic identity {id}"))) } else { Ok(()) }
+        };
+        insert(sheet.id)?;
+        if let Some(c) = &sheet.content {
+            for id in c.wires.keys().chain(c.junctions.keys()).chain(c.labels.keys()) {
+                insert(*id)?;
+            }
+            for s in c.symbols.values() {
+                insert(s.id)?;
+                for pin in &s.pins {
+                    insert(pin.id)?;
+                }
+            }
+        }
+    }
+    Ok(Snapshot { project_id: project.id, source_cursor: cursor, sheets: sheets.values().cloned().collect() })
 }
 struct Union {
     parent: Vec<usize>,

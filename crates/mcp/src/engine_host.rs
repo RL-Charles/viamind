@@ -49,6 +49,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<viamind_engine::ErcInput>(),
         });
         commands.push(HostCommand {
+            name: "preview_schematic_pcb_sync".into(),
+            description: "Read-only bounded forward/back synchronization preview for explicitly UUID-linked existing PCB parts and schematic symbols. Returns exact guarded command, deterministic property/pad-net changes, physical net identities with schematic labels and unlinked exclusions. Forward requires explicit bijective numbered pads and matching footprint assignment; routed-net changes reject. Back updates references/values/footprint assignment without topology edits. Captures at most 10000 objects, 4 MiB text, 8 MiB serialized guard; exact graph limits also apply. No creation/deletion/inferred links. Does not change session/history/selection/dirty state.".into(),
+            input_schema: input_schema::<viamind_engine::PcbSyncRequest>(),
+        });
+        commands.push(HostCommand {
             name: "query_schematic_connectivity".into(),
             description: "Read exact native schematic connected components from a bounded captured snapshot. Wire endpoint/T contacts and explicit junctions connect; interior crossings remain separate. Transformed pin endpoints, literal case-sensitive local/global/power labels; ambiguous crossing labels reject with IDs. Deterministic net/member IDs, aliases and coverage; offset0, limit1..100 default100. Restart pages when source_cursor changes. Max10000 objects including sheets/symbols/pins, 2MiB schematic text and 1000000 spatial candidates. No board annotation, ERC, buses, hierarchy or hidden power-pin inference. Read-only design/history/selection.".into(),
             input_schema: input_schema::<viamind_engine::SchematicConnectivityQuery>(),
@@ -142,6 +147,11 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "preview_schematic_pcb_sync" {
+            let input: viamind_engine::PcbSyncRequest = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.preview_schematic_pcb_sync(input.direction).map_err(|e| e.to_string())?)
+                .map_err(|e| e.to_string());
+        }
         if name == "run_erc" {
             let input: viamind_engine::ErcInput = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.run_erc(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());

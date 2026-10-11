@@ -9,7 +9,7 @@ use crate::board::Board;
 use crate::id::ObjectId;
 
 /// A whole design: its schematic and its board.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Project {
     /// Stable id of the project.
     pub id: ObjectId,
@@ -29,7 +29,7 @@ impl Project {
 }
 
 /// The schematic side of a project: a set of sheets.
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Schematic {
     /// Sheets by id, in id order.
     pub sheets: BTreeMap<ObjectId, Sheet>,

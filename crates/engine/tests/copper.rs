@@ -68,8 +68,8 @@ fn copper_create_delete_undo_redo_replay_and_guarded_failures() {
     assert_eq!(replay.replay(), full);
     assert_eq!(file::from_str(&file::to_string(&full)).unwrap(), full);
     let text = String::from_utf8(bytes).unwrap();
-    assert!(text.contains("\"version\":5"));
-    assert!(EventLog::read_jsonl(text.replace("\"version\":5", "\"version\":3").as_bytes()).is_err());
+    assert!(text.contains("\"version\":6"));
+    assert!(EventLog::read_jsonl(text.replace("\"version\":6", "\"version\":3").as_bytes()).is_err());
 }
 #[test]
 fn failed_batch_and_agent_undo_preserve_other_copper() {

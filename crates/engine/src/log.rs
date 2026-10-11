@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 5 to preserve schematic geometry in appended snapshots.
-pub const LOG_VERSION: u32 = 5;
+/// New logs use version 6 to preserve schematic links in appended part snapshots.
+pub const LOG_VERSION: u32 = 6;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -132,6 +132,9 @@ impl EventLog {
             }
             for delta in &event.deltas {
                 let valid_id = match delta {
+                    crate::Delta::Part { id, before, after } => {
+                        before.iter().chain(after).all(|part| part.id == *id && (header.version >= 6 || part.schematic_symbol.is_none()))
+                    }
                     crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Sheet { id, before, after } => before.iter().chain(after).all(|sheet| {
