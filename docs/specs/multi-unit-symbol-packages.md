@@ -73,9 +73,12 @@ manufacturer data or production footprint default is introduced.
 
 Borrowed admission checks unit/pin counts before visiting a malformed excess
 row, then per-field/aggregate text and 1..4096 encoded path bytes before typed
-secondary allocations. Unknown fields, duplicate keys, invalid enum/type,
+secondary allocations. Unknown fields, invalid enum/type,
 missing/empty units, duplicate unit keys or package pin numbers refuse. The
 original bounded transport/file buffer is outside the secondary-copy claim.
+Raw detached-file JSON also rejects duplicate known object keys; an already
+parsed MCP/engine `Value` cannot represent duplicate keys, so no new guarantee
+about duplicates discarded by the original transport decoder is claimed.
 Tests use 33rd-null-unit and 1025th-null-pin oracles to distinguish count errors
 from deserialization of excess malformed rows. The JSON parser's ordinary
 recursion refusal remains active; no arbitrary nested extension object exists.
@@ -161,6 +164,8 @@ selection or claims electrical/PCB equivalence.
   pose only. Changing reference/value/footprint/body/pins or deleting one unit
   must refuse with an actionable package-operation message. Ordinary symbols,
   wires/labels/junctions and complete-sheet deletion retain behavior.
+  The existing selected-symbol form identifies grouped units and disables the
+  unsupported fields/delete action; the dedicated package form offers deletion.
 - Existing single-unit source capture/export and PCB link/component creation
   reject a selected grouped unit explicitly. No unit becomes an independent
   package on export or a partial PCB component. Native validation also rejects
