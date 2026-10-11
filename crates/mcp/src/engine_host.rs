@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin, PartQuery, SetSelection, WatchEvents, input_schema};
+use viamind_engine::{EngineHandle, Origin, PartQuery, SaveProject, SetSelection, WatchEvents, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -37,6 +37,16 @@ impl CommandHost for EngineHost {
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
             .collect();
         commands.push(HostCommand {
+            name: "get_document_status".into(),
+            description: "Read the shared active native file path (null if unnamed) and dirty state. Dirty means the design differs from its saved baseline; selection does not count.".into(),
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        });
+        commands.push(HostCommand {
+            name: "save_project".into(),
+            description: "Save an atomic native project snapshot on this machine. Omit path to replace the active file; for a new path, existing files are preserved unless overwrite is true. Returns absolute path, dirty (newer edits may remain unsaved) and saved_cursor. Updates shared file status; preserves undo/redo and emits no design transaction. Parent directory must exist.".into(),
+            input_schema: input_schema::<SaveProject>(),
+        });
+        commands.push(HostCommand {
             name: "get_session_state".into(),
             description: "Read an atomic project, selection and event cursor snapshot. Initialize or resynchronize your local view here, then call watch_events after this cursor to receive every subsequent change.".into(),
             input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
@@ -65,6 +75,17 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "get_document_status" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_document_status takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.document_status()).map_err(|error| error.to_string());
+        }
+        if name == "save_project" {
+            let input: SaveProject = serde_json::from_value(input).map_err(|error| format!("invalid save_project input: {error}"))?;
+            let result = self.engine.save_project(input).map_err(|error| error.to_string())?;
+            return serde_json::to_value(result).map_err(|error| error.to_string());
+        }
         if name == "get_session_state" {
             if !input.as_object().is_some_and(serde_json::Map::is_empty) {
                 return Err("get_session_state takes an empty object".into());

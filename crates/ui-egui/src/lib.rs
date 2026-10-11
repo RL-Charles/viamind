@@ -8,6 +8,7 @@ pub mod actions;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
+pub mod files;
 pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
@@ -105,6 +106,7 @@ pub struct ViamindApp {
     pub selection: selection::Selection,
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
+    pub files: files::FileUi,
     last_frame_time: Option<f64>,
 }
 
@@ -124,6 +126,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: None,
+            files: files::FileUi::default(),
             last_frame_time: None,
         }
     }
@@ -141,6 +144,7 @@ impl ViamindApp {
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
+            files: files::FileUi::default(),
             last_frame_time: None,
         }
     }
@@ -213,7 +217,8 @@ impl ViamindApp {
     pub fn show(&mut self, ui: &mut Ui, cpu_ms: Option<f32>) {
         let start = Instant::now();
         self.update_stats(ui, cpu_ms);
-        if self.design.is_some() {
+        self.file_shortcuts(ui);
+        if self.design.is_some() && !self.files.save_as && !ui.ctx().egui_wants_keyboard_input() {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
                 self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
@@ -233,6 +238,13 @@ impl ViamindApp {
             }
             self.paint_labels(ui);
         });
+        self.file_dialogs(ui);
+        if let Some(design) = &self.design {
+            let status = design.engine.document_status();
+            let name =
+                status.path.as_ref().and_then(|path| path.file_name()).map_or_else(|| "Untitled".into(), |name| name.to_string_lossy().into_owned());
+            ui.send_viewport_cmd(egui::ViewportCommand::Title(format!("{}{} — Viamind", if status.dirty { "*" } else { "" }, name)));
+        }
 
         self.stats.ui_ms = start.elapsed().as_secs_f32() * 1000.0;
     }
@@ -277,6 +289,17 @@ impl ViamindApp {
     fn menu_bar(&mut self, ui: &mut Ui) {
         egui::MenuBar::new().ui(ui, |ui| {
             ui.menu_button("File", |ui| {
+                if self.design.is_some() {
+                    if ui.add(egui::Button::new("Save").shortcut_text(ui.ctx().format_shortcut(&files::SAVE))).clicked() {
+                        self.save_design();
+                        ui.close();
+                    }
+                    if ui.add(egui::Button::new("Save As…").shortcut_text(ui.ctx().format_shortcut(&files::SAVE_AS))).clicked() {
+                        self.begin_save_as();
+                        ui.close();
+                    }
+                    ui.separator();
+                }
                 if ui.button("Quit").clicked() {
                     ui.send_viewport_cmd(egui::ViewportCommand::Close);
                 }
@@ -353,6 +376,21 @@ impl ViamindApp {
             let cpu = self.stats.cpu_ms.map_or_else(|| "-".to_owned(), |ms| format!("{ms:.1}"));
             ui.monospace(format!("frame cpu {cpu} ms  ui {:.1} ms  {:.0} fps", self.stats.ui_ms, self.stats.fps));
             if let Some(design) = &self.design {
+                let status = design.engine.document_status();
+                ui.separator();
+                ui.label(if status.dirty {
+                    "Unsaved changes"
+                } else if status.path.is_none() {
+                    "Not saved"
+                } else {
+                    "Saved"
+                });
+                if let Some(path) = &status.path {
+                    ui.label(path.display().to_string());
+                }
+                if let Some(message) = &self.files.message {
+                    ui.label(message);
+                }
                 ui.separator();
                 let parts = design.engine.read(|p| p.board.parts.len());
                 ui.monospace(format!("{parts} parts · {} selected", design.engine.selection().ids.len()));

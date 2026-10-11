@@ -41,7 +41,9 @@ fn check_source(path: &Path) {
             check_source(&path);
         } else if path.extension().is_some_and(|ext| ext == "rs") && path.file_name().unwrap() != "actions.rs" {
             let source: String = fs::read_to_string(&path).unwrap().chars().filter(|c| !c.is_whitespace()).collect();
-            for method in ["execute", "execute_typed", "execute_batch", "transaction", "undo", "redo", "undo_own", "redo_own", "set_selection"] {
+            for method in
+                ["execute", "execute_typed", "execute_batch", "transaction", "undo", "redo", "undo_own", "redo_own", "set_selection", "save_project"]
+            {
                 assert!(
                     !source.contains(&format!(".{method}(")) && !source.contains(&format!(".{method}::<")),
                     "{} bypasses the UI action catalog with {method}; add an action in actions.rs so MCP parity can check it",

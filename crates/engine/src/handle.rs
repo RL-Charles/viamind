@@ -1,5 +1,6 @@
 //! Thread-safe shared access to one [`Engine`].
 
+use std::path::Path;
 use std::sync::mpsc::Receiver;
 use std::sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError};
 use std::time::{Duration, Instant};
@@ -23,6 +24,7 @@ use crate::transaction::{CommandCall, ExecResult, Origin, TxId, TxInfo};
 pub struct EngineHandle {
     engine: Arc<Mutex<Engine>>,
     session_changed: Arc<Condvar>,
+    saves: Arc<Mutex<()>>,
 }
 
 impl EngineHandle {
@@ -38,7 +40,65 @@ impl EngineHandle {
 
     /// Wraps an existing engine.
     pub fn from_engine(engine: Engine) -> EngineHandle {
-        EngineHandle { engine: Arc::new(Mutex::new(engine)), session_changed: Arc::new(Condvar::new()) }
+        EngineHandle { engine: Arc::new(Mutex::new(engine)), session_changed: Arc::new(Condvar::new()), saves: Arc::new(Mutex::new(())) }
+    }
+
+    /// Loads an existing native project and records its active absolute path.
+    pub fn load(path: impl AsRef<Path>) -> Result<Self, viamind_doc::file::FileError> {
+        let path = path.as_ref();
+        let project = viamind_doc::file::load(path)?;
+        let absolute = std::path::absolute(path).map_err(|source| viamind_doc::file::FileError::Io { path: path.to_owned(), source })?;
+        let engine = Self::new(project.clone());
+        engine.mutate(|engine| engine.mark_saved(project, absolute));
+        Ok(engine)
+    }
+
+    /// Current native path and dirty state, shared by UI and MCP.
+    pub fn document_status(&self) -> crate::DocumentStatus {
+        self.lock().document_status()
+    }
+
+    /// Atomically saves a captured snapshot without blocking document edits during I/O.
+    pub fn save_project(&self, input: crate::SaveProject) -> Result<crate::SaveResult, EngineError> {
+        self.save_project_with(
+            input,
+            |project, path, overwrite| {
+                if overwrite { viamind_doc::file::save(project, path) } else { viamind_doc::file::save_new(project, path) }
+            },
+        )
+    }
+
+    fn save_project_with(
+        &self,
+        input: crate::SaveProject,
+        write: impl FnOnce(&Project, &Path, bool) -> Result<(), viamind_doc::file::FileError>,
+    ) -> Result<crate::SaveResult, EngineError> {
+        let invalid = |message: String| EngineError::InvalidInput { command: "save_project".into(), message };
+        let save = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
+        let overwrite = input.path.is_none() || input.overwrite;
+        let (snapshot, path) = {
+            let engine = self.lock();
+            let path =
+                input.path.or_else(|| engine.document_status().path).ok_or_else(|| invalid("no active file; supply path to save_project".into()))?;
+            if path.as_os_str().is_empty() {
+                return Err(invalid("path must not be empty".into()));
+            }
+            (engine.session_state(), path)
+        };
+        let file_error = |message| EngineError::File { message };
+        let path = std::path::absolute(path).map_err(|error| file_error(error.to_string()))?;
+        write(&snapshot.project, &path, overwrite).map_err(|error| file_error(error.to_string()))?;
+        let (dirty, wakers) = {
+            let mut engine = self.lock();
+            engine.mark_saved(snapshot.project, path.clone());
+            (engine.document_status().dirty, engine.take_due_wakers())
+        };
+        // Reentrant repaint callbacks may save again: release both locks first.
+        drop(save);
+        for waker in wakers {
+            waker();
+        }
+        Ok(crate::SaveResult { path, dirty, saved_cursor: snapshot.cursor })
     }
 
     /// Locks the engine. A panic inside a command poisons the mutex; the engine
@@ -213,5 +273,55 @@ impl EngineHandle {
     /// from a [`subscribe`](EngineHandle::subscribe) receiver.
     pub fn on_change(&self, f: impl Fn() + Send + Sync + 'static) {
         self.lock().on_change(f);
+    }
+}
+
+#[cfg(test)]
+mod save_tests {
+    use std::sync::atomic::{AtomicBool, Ordering};
+
+    use super::*;
+
+    #[test]
+    fn edits_during_file_io_remain_dirty_and_are_not_in_the_saved_snapshot() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("concurrent.viamind.json");
+        let engine = EngineHandle::new(Project::new("snapshot"));
+        let before = engine.session_state();
+        let result = engine
+            .save_project_with(crate::SaveProject { path: Some(path.clone()), overwrite: false }, |project, path, _| {
+                // A real command can run while the captured snapshot is being written.
+                engine
+                    .execute(
+                        "add_part",
+                        serde_json::json!({ "designator": "R1", "value": "", "footprint": "F", "x_mm": 0, "y_mm": 0 }),
+                        Origin::agent("concurrent"),
+                    )
+                    .unwrap();
+                viamind_doc::file::save_new(project, path)
+            })
+            .unwrap();
+        assert!(result.dirty);
+        assert_eq!(result.saved_cursor, before.cursor);
+        assert_eq!(viamind_doc::file::load(path).unwrap(), before.project);
+        assert_eq!(engine.read(|project| project.board.parts.len()), 1);
+        assert!(engine.document_status().dirty);
+    }
+
+    #[test]
+    fn saved_callbacks_run_after_both_engine_and_save_locks_are_released() {
+        let directory = tempfile::tempdir().unwrap();
+        let engine = EngineHandle::new(Project::new("reentrant save"));
+        let called = Arc::new(AtomicBool::new(false));
+        let flag = called.clone();
+        let callback = engine.clone();
+        engine.on_change(move || {
+            if !flag.swap(true, Ordering::SeqCst) {
+                assert!(!callback.document_status().dirty);
+                callback.save_project(Default::default()).unwrap();
+            }
+        });
+        engine.save_project(crate::SaveProject { path: Some(directory.path().join("callback.viamind.json")), overwrite: false }).unwrap();
+        assert!(called.load(Ordering::SeqCst));
     }
 }

@@ -29,6 +29,7 @@
 pub mod command;
 pub mod commands;
 pub mod delta;
+pub mod document;
 pub mod engine;
 pub mod event;
 pub mod handle;
@@ -42,6 +43,7 @@ pub mod transaction;
 pub use command::{Command, CommandError, CommandSpec, input_schema};
 pub use commands::{AddPart, DeletePart, MovePart};
 pub use delta::{Delta, apply_all, coalesce, invert};
+pub use document::{DocumentStatus, SaveProject, SaveResult};
 pub use engine::{Engine, Tx};
 pub use event::{ChangeEvent, ChangeKind, Waker};
 pub use handle::EngineHandle;

@@ -9,6 +9,7 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -103,16 +104,22 @@ fn check_keys<T>(object: &'static str, map: &BTreeMap<ObjectId, T>, id: impl Fn(
 /// Writes `project` to `path`. The text goes to a temporary file next to `path`
 /// first and is then renamed over it, so a crash never leaves a half-written project.
 pub fn save(project: &Project, path: impl AsRef<Path>) -> Result<(), FileError> {
-    let path = path.as_ref();
-    let mut tmp = path.as_os_str().to_owned();
-    tmp.push(".tmp");
-    let tmp = PathBuf::from(tmp);
+    save_with_overwrite(project, path.as_ref(), true)
+}
+
+/// Writes a new native file atomically, preserving an existing destination.
+pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileError> {
+    save_with_overwrite(project, path.as_ref(), false)
+}
+
+fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
     let io_err = |source| FileError::Io { path: path.to_owned(), source };
-    fs::write(&tmp, to_string(project)).map_err(io_err)?;
-    fs::rename(&tmp, path).map_err(|source| {
-        let _ = fs::remove_file(&tmp);
-        io_err(source)
-    })
+    let parent = path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or_else(|| Path::new("."));
+    let mut tmp = tempfile::NamedTempFile::new_in(parent).map_err(io_err)?;
+    tmp.write_all(to_string(project).as_bytes()).map_err(io_err)?;
+    tmp.as_file().sync_all().map_err(io_err)?;
+    let result = if overwrite { tmp.persist(path) } else { tmp.persist_noclobber(path) };
+    result.map(drop).map_err(|error| io_err(error.error))
 }
 
 /// Reads the project file at `path`.

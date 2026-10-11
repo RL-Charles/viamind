@@ -4,7 +4,7 @@
 //! parity gate. View preferences (camera, layers, tool choice, test scene) are local UI state.
 
 use serde_json::{Value, json};
-use viamind_engine::{AddPart, Command, EngineError, EngineHandle, Origin, SetSelection, input_schema};
+use viamind_engine::{AddPart, Command, EngineError, EngineHandle, Origin, SaveProject, SetSelection, input_schema};
 
 macro_rules! ui_actions {
     ($( $variant:ident => ($tool:expr, $schema:expr, $handler:ident) ),+ $(,)?) => {
@@ -41,6 +41,7 @@ ui_actions! {
     Undo => ("undo", no_args(), undo),
     Redo => ("redo", no_args(), redo),
     SetSelection => ("set_selection", input_schema::<SetSelection>(), set_selection),
+    SaveProject => ("save_project", input_schema::<SaveProject>(), save_project),
 }
 
 fn encode_error(error: serde_json::Error) -> EngineError {
@@ -65,4 +66,10 @@ fn set_selection(engine: &EngineHandle, input: Value) -> Result<Value, EngineErr
         serde_json::from_value(input).map_err(|error| EngineError::InvalidInput { command: "set_selection".into(), message: error.to_string() })?;
     let result = engine.set_selection(input, Origin::User)?;
     serde_json::to_value(result).map_err(encode_error)
+}
+
+fn save_project(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input =
+        serde_json::from_value(input).map_err(|error| EngineError::InvalidInput { command: "save_project".into(), message: error.to_string() })?;
+    serde_json::to_value(engine.save_project(input)?).map_err(encode_error)
 }

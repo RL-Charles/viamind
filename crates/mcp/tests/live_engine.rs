@@ -233,3 +233,42 @@ async fn observers_wait_and_resume_events_after_http_reconnect() {
     writer.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn agents_share_save_path_dirty_state_and_preserve_unapproved_files() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("agent board.viamind.json");
+    let engine = EngineHandle::new(Project::new("save HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = connect(server.url(), "save-a").await;
+    let b = connect(server.url(), "save-b").await;
+    let tools = a.list_all_tools().await.unwrap();
+    let schema = serde_json::to_value(&tools.iter().find(|tool| tool.name == "save_project").unwrap().input_schema).unwrap();
+    assert_eq!(schema, viamind_engine::input_schema::<viamind_engine::SaveProject>());
+    assert_eq!(call(&a, "save_project", json!({})).await.is_error, Some(true));
+    call(&a, "add_part", resistor("R1", 10.0)).await;
+    assert_eq!(call(&b, "get_document_status", json!({})).await.structured_content.unwrap()["dirty"], true);
+    let saved = call(&a, "save_project", json!({ "path": path })).await;
+    assert_eq!(saved.is_error, Some(false), "{saved:?}");
+    let status = call(&b, "get_document_status", json!({})).await.structured_content.unwrap();
+    assert_eq!(status["path"], json!(path));
+    assert_eq!(status["dirty"], false);
+    let original = std::fs::read(&path).unwrap();
+    call(&b, "add_part", resistor("R2", 20.0)).await;
+    assert_eq!(call(&a, "save_project", json!({ "path": path })).await.is_error, Some(true));
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(engine.document_status().dirty);
+    assert_eq!(call(&b, "save_project", json!({})).await.is_error, Some(false));
+    assert_eq!(viamind_doc::file::load(&path).unwrap(), engine.read(Clone::clone));
+    assert!(!engine.document_status().dirty);
+    // Saving does not become an undoable action or alter another agent's ownership.
+    assert_eq!(call(&b, "undo", json!({})).await.is_error, Some(false));
+    assert!(engine.document_status().dirty);
+    assert_eq!(call(&b, "redo", json!({})).await.is_error, Some(false));
+    assert!(!engine.document_status().dirty);
+    assert_eq!(call(&a, "save_project", json!({ "unknown": true })).await.is_error, Some(true));
+    assert_eq!(call(&a, "get_document_status", json!({ "unknown": true })).await.is_error, Some(true));
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}
