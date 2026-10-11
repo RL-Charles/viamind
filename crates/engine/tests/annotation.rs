@@ -169,3 +169,31 @@ fn board_only_edits_do_not_invalidate_annotation_or_enter_its_undo() {
     assert_eq!(e.read(|p| p.board.clone()), board);
     assert_eq!(refs(&e.read(Clone::clone)), refs(&project()));
 }
+#[test]
+fn valid_large_text_and_symbol_snapshots_are_bounded_before_copy_and_project_ids_cannot_collide() {
+    for (count, value_size, message) in [(270, 1024, "256"), (2001, 0, "2000")] {
+        let mut p = project();
+        let c = p.schematic.sheets.get_mut(&id(1)).unwrap().content.as_mut().unwrap();
+        for n in 0..count {
+            let mut s = symbol(10000 + n, &format!("Q{}", n + 1), 0, 0);
+            s.pins.clear();
+            s.value = "x".repeat(value_size);
+            c.symbols.insert(s.id, s);
+        }
+        viamind_doc::schematic::validate_project(&p, None).unwrap();
+        let e = EngineHandle::new(p);
+        let state = e.session_state();
+        assert!(e.preview_schematic_annotation(options()).unwrap_err().to_string().contains(message));
+        assert_eq!(e.session_state(), state);
+    }
+    let mut p = project();
+    p.id = id(11);
+    let e = EngineHandle::new(p);
+    let state = e.session_state();
+    assert!(e.preview_schematic_annotation(options()).unwrap_err().to_string().contains("identity"));
+    assert_eq!(e.session_state(), state);
+    let e = EngineHandle::new(project());
+    let state = e.session_state();
+    assert!(e.preview_schematic_annotation(AnnotationOptions { sheet_order: vec![id(1); 101], ..options() }).is_err());
+    assert_eq!(e.session_state(), state);
+}

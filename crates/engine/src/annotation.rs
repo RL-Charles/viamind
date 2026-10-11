@@ -65,7 +65,7 @@ fn invalid(message: impl Into<String>) -> CommandError {
 }
 fn budget(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
     if sheets.len() > 100 {
-        return Err(invalid("annotation supports at most100 sheets"));
+        return Err(invalid("annotation supports at most 100 sheets"));
     }
     let (mut objects, mut symbols, mut text) = (sheets.len(), 0usize, 0usize);
     for sheet in sheets.values() {
@@ -74,7 +74,7 @@ fn budget(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
             objects = objects.saturating_add(c.object_count()).saturating_add(c.pin_count());
             symbols = symbols.saturating_add(c.symbols.len());
             if objects > 10_000 || symbols > 2000 {
-                return Err(invalid("annotation supports at most2000 symbols and10000 schematic objects/pins"));
+                return Err(invalid("annotation supports at most 2000 symbols and 10000 schematic objects/pins"));
             }
             for s in c.symbols.values() {
                 text =
@@ -88,17 +88,17 @@ fn budget(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
             }
         }
         if objects > 10_000 || symbols > 2000 || text > 256 * 1024 {
-            return Err(invalid("annotation supports at most2000 symbols,10000 schematic objects/pins and256KiB schematic text"));
+            return Err(invalid("annotation supports at most 2000 symbols,10000 schematic objects/pins and 256 KiB schematic text"));
         }
     }
     Ok(symbols)
 }
-fn validate(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
+fn validate(sheets: &BTreeMap<ObjectId, Sheet>, project: ObjectId) -> Result<usize, CommandError> {
     let symbols = budget(sheets)?;
     if serde_json::to_vec(sheets).map_err(|e| invalid(e.to_string()))?.len() > 2 * 1024 * 1024 {
-        return Err(invalid("annotation sheet guard exceeds2MiB serialized limit"));
+        return Err(invalid("annotation sheet guard exceeds 2 MiB serialized limit"));
     }
-    let mut ids = BTreeSet::new();
+    let mut ids = BTreeSet::from([project]);
     for (id, sheet) in sheets {
         if *id != sheet.id {
             return Err(invalid("sheet map key differs from identity"));
@@ -125,7 +125,7 @@ fn validate(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, CommandError> {
 fn reference(text: &str) -> Result<(String, Option<u32>), CommandError> {
     let prefix_len = text.bytes().take_while(u8::is_ascii_alphabetic).count();
     if !(1..=16).contains(&prefix_len) {
-        return Err(invalid(format!("unsupported reference {text:?}; use1..16 ASCII letters followed by a number or?")));
+        return Err(invalid(format!("unsupported reference {text:?}; use 1..16 ASCII letters followed by a number or?")));
     }
     let prefix = text[..prefix_len].to_ascii_uppercase();
     let suffix = &text[prefix_len..];
@@ -138,7 +138,7 @@ fn reference(text: &str) -> Result<(String, Option<u32>), CommandError> {
         return Err(invalid(format!("unsupported reference {text:?}; use a positive decimal number or?")));
     };
     if !(1..=MAX_NUMBER).contains(&number) {
-        return Err(invalid(format!("reference number must be1..999999999: {text:?}")));
+        return Err(invalid(format!("reference number must be 1..999999999: {text:?}")));
     }
     Ok((prefix, Some(number)))
 }
@@ -148,10 +148,13 @@ struct Plan {
     changes: Vec<AnnotationChange>,
     symbols: usize,
 }
-fn plan(sheets: &BTreeMap<ObjectId, Sheet>, options: &AnnotationOptions) -> Result<Plan, CommandError> {
-    let symbols = validate(sheets)?;
+fn plan(sheets: &BTreeMap<ObjectId, Sheet>, options: &AnnotationOptions, project: ObjectId) -> Result<Plan, CommandError> {
+    let symbols = validate(sheets, project)?;
+    if options.sheet_order.len() > 100 {
+        return Err(invalid("sheet_order supports at most 100 sheets"));
+    }
     if !(1..=MAX_NUMBER).contains(&options.start) {
-        return Err(invalid("start must be1..999999999"));
+        return Err(invalid("start must be 1..999999999"));
     }
     let order = if options.sheet_order.is_empty() { sheets.keys().copied().collect() } else { options.sheet_order.clone() };
     if order.len() != sheets.len() || order.iter().copied().collect::<BTreeSet<_>>() != sheets.keys().copied().collect() {
@@ -229,7 +232,7 @@ fn plan(sheets: &BTreeMap<ObjectId, Sheet>, options: &AnnotationOptions) -> Resu
 }
 impl Command for AnnotateSchematic {
     const NAME: &'static str = "annotate_schematic";
-    const DESCRIPTION: &'static str = "Atomically assign native flat single-unit symbol reference designators using the exact project UUID and complete expected sheet map from preview_schematic_annotation. Optional complete sheet order (default UUID), X/Y position order, inclusive start1..999999999, keep_existing or reset_all. ASCII-letter prefixes1..16; positive numeric/?/empty suffix. Keep existing numeric aliases must be unique ignoring prefix case/leading zeros. Bounded100 sheets/2000 symbols/10000 members/256KiB text/2MiB guard. Preserves UUIDs, pins, geometry and board; one sheet-scoped undo transaction. Stale sheets reject. No PCB synchronization/hierarchy/multi-unit annotation.";
+    const DESCRIPTION: &'static str = "Atomically assign native flat single-unit symbol reference designators using the exact project UUID and complete expected sheet map from preview_schematic_annotation. Optional complete sheet order (default UUID), X/Y position order, inclusive start 1..999999999, keep_existing or reset_all. ASCII-letter prefixes 1..16; positive numeric/?/empty suffix. Keep existing numeric aliases must be unique ignoring prefix case/leading zeros. Bounded 100 sheets/2000 symbols/10000 members/256KiB text/2MiB guard. Preserves UUIDs, pins, geometry and board; one sheet-scoped undo transaction. Stale sheets reject. No PCB synchronization/hierarchy/multi-unit annotation.";
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
         budget(&self.expected_sheets)?;
         if self.expected_project.as_uuid().is_nil() {
@@ -238,7 +241,7 @@ impl Command for AnnotateSchematic {
         if project.id != self.expected_project || project.schematic.sheets != self.expected_sheets {
             return Err(CommandError::conflict("schematic changed; prepare annotation again"));
         }
-        let planned = plan(&self.expected_sheets, &self.options)?;
+        let planned = plan(&self.expected_sheets, &self.options, project.id)?;
         let mut deltas = Vec::new();
         for (id, after) in planned.sheets {
             if self.expected_sheets.get(&id) != Some(&after) {
@@ -258,7 +261,7 @@ impl EngineHandle {
         if project.as_uuid().is_nil() {
             return Err(invalid("nil project identity"));
         }
-        let planned = plan(&sheets, &options)?;
+        let planned = plan(&sheets, &options, project)?;
         Ok(AnnotationPreview {
             source_cursor: cursor,
             command: AnnotateSchematic { expected_project: project, expected_sheets: sheets, options },

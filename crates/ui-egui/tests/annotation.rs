@@ -56,7 +56,7 @@ fn stale_preview_invalid_options_and_same_project_reopen_preserve_session() {
     let state = e.session_state();
     click(&mut h, "Prepare annotation");
     assert_eq!(e.session_state(), state);
-    assert!(h.query_by_label("Starting number must be1..999999999").is_some());
+    assert!(h.query_by_label("Starting number must be 1..999999999").is_some());
     input(&mut h, "5");
     click(&mut h, "Prepare annotation");
     let p = e.read(Clone::clone);

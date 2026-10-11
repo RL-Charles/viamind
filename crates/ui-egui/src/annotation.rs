@@ -48,7 +48,7 @@ impl ViamindApp {
                             Err(e) => self.annotation.message = Some(e.to_string()),
                         }
                     }
-                    _ => self.annotation.message = Some("Starting number must be1..999999999".into()),
+                    _ => self.annotation.message = Some("Starting number must be 1..999999999".into()),
                 }
             }
             if let Some(preview) = &self.annotation.preview {
