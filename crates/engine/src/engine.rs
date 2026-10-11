@@ -413,6 +413,7 @@ mod tests {
 
     fn add(designator: &str) -> AddPart {
         AddPart {
+            expected_project: None,
             designator: designator.into(),
             value: "1k".into(),
             footprint: "R_0603".into(),

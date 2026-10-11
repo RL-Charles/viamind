@@ -9,7 +9,16 @@ use viamind_doc::Project;
 use viamind_engine::{AddPart, ChangeEvent, ChangeKind, CommandCall, Engine, EngineHandle, MovePart, Origin, apply_all};
 
 fn add(designator: &str) -> AddPart {
-    AddPart { designator: designator.into(), value: "1k".into(), footprint: "R_0603".into(), x_mm: 1.0, y_mm: 2.0, rotation_deg: None, side: None }
+    AddPart {
+        expected_project: None,
+        designator: designator.into(),
+        value: "1k".into(),
+        footprint: "R_0603".into(),
+        x_mm: 1.0,
+        y_mm: 2.0,
+        rotation_deg: None,
+        side: None,
+    }
 }
 
 fn drain(receiver: &Receiver<ChangeEvent>) -> Vec<ChangeEvent> {

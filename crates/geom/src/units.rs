@@ -9,6 +9,7 @@
 use std::iter::Sum;
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Nanometres per micrometre.
@@ -25,7 +26,7 @@ pub const NM_PER_INCH: i64 = 25_400_000;
 /// The `i64` range covers about ±9.2 million km, far beyond any board, while a
 /// nanometre is well below any manufacturing tolerance. Serialises as a bare
 /// integer.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
 #[serde(transparent)]
 pub struct Nm(pub i64);
 

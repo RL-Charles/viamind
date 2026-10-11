@@ -4,7 +4,16 @@ use viamind_doc::{ObjectId, Project};
 use viamind_engine::{AddPart, ChangeKind, DeletePart, EngineError, EngineHandle, MovePart, Origin};
 
 fn add(designator: &str) -> AddPart {
-    AddPart { designator: designator.into(), value: "1k".into(), footprint: "R_0603".into(), x_mm: 0.0, y_mm: 0.0, rotation_deg: None, side: None }
+    AddPart {
+        expected_project: None,
+        designator: designator.into(),
+        value: "1k".into(),
+        footprint: "R_0603".into(),
+        x_mm: 0.0,
+        y_mm: 0.0,
+        rotation_deg: None,
+        side: None,
+    }
 }
 
 fn has(engine: &EngineHandle, id: ObjectId) -> bool {

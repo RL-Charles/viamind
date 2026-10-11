@@ -108,6 +108,17 @@ an existing active path. `get_document_status {}` returns absolute `path` (or nu
 dirty state. Edits made while a save is in progress remain dirty. Both HTTP and stdio
 support these tools. See [the saving contract](../../docs/specs/project-saving.md).
 
+## Part properties
+
+`update_part` accepts a part `id` and optional designator, value, footprint, x_mm,
+y_mm, rotation_deg and side fields. Omitted fields remain unchanged. Supply
+`expected` as the exact model part from `query_parts` or `get_design` to reject
+stale edits. The expected snapshot uses integer nanometre coordinates, while new
+coordinate fields are in millimetres. Validation is atomic and the entire edit
+undoes as one transaction. `add_part` also accepts `expected_project` to guard a
+placement draft against switching to a different document.
+See [the editing contract](../../docs/specs/part-editing.md).
+
 ## New and Open
 
 `new_project {"name":"Power board"}` creates an unnamed project; name defaults to

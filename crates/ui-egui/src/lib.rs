@@ -12,6 +12,7 @@ pub mod files;
 pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
+pub mod parts;
 pub mod scene;
 pub mod selection;
 
@@ -107,6 +108,7 @@ pub struct ViamindApp {
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
     pub files: files::FileUi,
+    pub parts: parts::PartUi,
     last_frame_time: Option<f64>,
 }
 
@@ -127,6 +129,7 @@ impl ViamindApp {
             selection: selection::Selection::default(),
             design: None,
             files: files::FileUi::default(),
+            parts: parts::PartUi::default(),
             last_frame_time: None,
         }
     }
@@ -145,6 +148,7 @@ impl ViamindApp {
             selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
             files: files::FileUi::default(),
+            parts: parts::PartUi::default(),
             last_frame_time: None,
         }
     }
@@ -222,7 +226,7 @@ impl ViamindApp {
         let start = Instant::now();
         self.update_stats(ui, cpu_ms);
         self.file_shortcuts(ui);
-        if self.design.is_some() && !self.files.busy() && !ui.ctx().egui_wants_keyboard_input() {
+        if self.design.is_some() && !self.files.busy() && !self.parts.placing() && !ui.ctx().egui_wants_keyboard_input() {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
                 self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
@@ -233,7 +237,15 @@ impl ViamindApp {
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
-        egui::Panel::left("layers").default_size(250.0).show(ui, |ui| layer_panel::show(ui, &mut self.layers));
+        egui::Panel::left("layers").default_size(280.0).show(ui, |ui| {
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                layer_panel::show(ui, &mut self.layers);
+                if self.design.is_some() {
+                    ui.separator();
+                    self.part_properties(ui);
+                }
+            });
+        });
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             let response = self.canvas.show(ui, &self.scene, &self.layers);
             if let Some(design) = &self.design {
@@ -243,6 +255,7 @@ impl ViamindApp {
             self.paint_labels(ui);
         });
         self.file_dialogs(ui);
+        self.placement_dialog(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -349,6 +362,10 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    if ui.button("Place part…").clicked() {
+                        self.begin_place_part();
+                        ui.close();
+                    }
                     if ui.button("Place test resistor").clicked() {
                         self.place_test_resistor();
                         ui.close();

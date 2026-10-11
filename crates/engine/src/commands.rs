@@ -18,6 +18,9 @@ pub const MAX_COORD_MM: f64 = 10_000.0;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AddPart {
+    /// Optional project identity guard for a placement draft opened before switching documents.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expected_project: Option<ObjectId>,
     /// Reference designator, e.g. "R1". Must be non-empty and unique on the board.
     pub designator: String,
     /// Component value, e.g. "10k" or "100nF". May be empty.
@@ -42,6 +45,9 @@ impl Command for AddPart {
         result (`created`) and in the `after` snapshot of the part delta. Fails if the designator is already used.";
 
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
+        if self.expected_project.is_some_and(|id| id != project.id) {
+            return Err(CommandError::conflict("document changed; open a new placement form"));
+        }
         let designator = self.designator.trim();
         if designator.is_empty() {
             return Err(CommandError::invalid("designator", "must not be empty, e.g. \"R1\""));
@@ -98,6 +104,75 @@ impl Command for MovePart {
         let mut moved = part.clone();
         moved.position = position;
         Ok(vec![Delta::record_part(project, self.id, Some(moved))])
+    }
+}
+
+/// Updates selected properties atomically, optionally guarded by an exact part snapshot.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct UpdatePart {
+    /// Stable part ID to edit.
+    pub id: ObjectId,
+    /// New unique reference designator; omitted keeps the current value.
+    pub designator: Option<String>,
+    /// New component value; empty is allowed.
+    pub value: Option<String>,
+    /// New nonempty footprint name.
+    pub footprint: Option<String>,
+    /// New absolute X in millimetres.
+    pub x_mm: Option<f64>,
+    /// New absolute Y in millimetres.
+    pub y_mm: Option<f64>,
+    /// New counter-clockwise degrees, normalized with millidegree resolution.
+    pub rotation_deg: Option<f64>,
+    /// New board side.
+    pub side: Option<Side>,
+    /// Exact previously read model part; mismatch rejects without changing anything.
+    /// Coordinates in this snapshot are integer nanometres.
+    pub expected: Option<Part>,
+}
+
+impl Command for UpdatePart {
+    const NAME: &'static str = "update_part";
+    const DESCRIPTION: &'static str = "Update part properties in one undoable transaction. Omitted fields keep their values. Supply expected as the exact part from get_design/query_parts to reject stale edits. Coordinates are mm, rotation degrees; expected.position is integer nanometres. Duplicate references and invalid fields reject atomically.";
+
+    fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
+        let before = project.board.part(&self.id).ok_or_else(|| CommandError::not_found("part", self.id))?;
+        if self.expected.as_ref().is_some_and(|expected| expected != before) {
+            return Err(CommandError::conflict("part changed since it was read; reload its properties and review the edit"));
+        }
+        let mut after = before.clone();
+        if let Some(designator) = self.designator {
+            let designator = designator.trim();
+            if designator.is_empty() {
+                return Err(CommandError::invalid("designator", "must not be empty"));
+            }
+            if project.board.parts.values().any(|p| p.id != self.id && p.designator == designator) {
+                return Err(CommandError::conflict(format!("designator `{designator}` is already used; choose another designator")));
+            }
+            after.designator = designator.into();
+        }
+        if let Some(value) = self.value {
+            after.value = value.trim().into();
+        }
+        if let Some(footprint) = self.footprint {
+            if footprint.trim().is_empty() {
+                return Err(CommandError::invalid("footprint", "must not be empty"));
+            }
+            after.footprint = footprint.trim().into();
+        }
+        if let Some(x) = self.x_mm {
+            after.position.x = position_mm("x_mm", x, "y_mm", 0.0)?.x;
+        }
+        if let Some(y) = self.y_mm {
+            after.position.y = position_mm("x_mm", 0.0, "y_mm", y)?.y;
+        }
+        after.rotation_mdeg = self.rotation_deg.map(rotation_mdeg).transpose()?.unwrap_or(before.rotation_mdeg);
+        after.side = self.side.unwrap_or(before.side);
+        if &after == before {
+            return Ok(Vec::new());
+        }
+        Ok(vec![Delta::record_part(project, self.id, Some(after))])
     }
 }
 

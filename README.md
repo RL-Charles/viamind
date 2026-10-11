@@ -38,6 +38,11 @@ closing offer Save, Discard, or Cancel for unsaved changes. Agents use `new_proj
 and `open_project`; discarding unsaved work requires `discard_dirty: true` with the
 current `expected_cursor` from `get_session_state`. Document replacement resets
 history and selection, and observers resynchronize with a new session snapshot.
+Use **Edit → Place part** to enter a designator, value, footprint name, position,
+rotation and side. Selecting one part shows editable properties in the sidebar;
+**Apply properties** commits one undoable edit. **Reload** refreshes an older draft
+when an agent has changed that part. Agents use `update_part` with an optional
+`expected` part snapshot to guard against stale edits.
 Undo anything with Ctrl+Z or the Edit menu; agents undo their own changes with the `undo` tool.
 `viamind --demo` opens the synthetic 10k-object test scene, and `VIAMIND_MCP_PORT` changes the port.
 

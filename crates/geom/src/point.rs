@@ -2,12 +2,13 @@
 
 use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::units::Nm;
 
 /// A position on the board, in nanometres.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema)]
 pub struct Point {
     /// Horizontal coordinate.
     pub x: Nm,
