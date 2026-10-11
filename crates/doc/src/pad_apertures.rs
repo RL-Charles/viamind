@@ -27,7 +27,7 @@ impl ApertureRect {
     }
     /// Explicit calculator only. No stored defaults or implicit resize relationship.
     pub fn equal_margin(copper_width: Nm, copper_height: Nm, margin: Nm) -> Result<Self, String> {
-        let dimension = |copper: Nm| {
+        let dimension = |copper: Nm| -> Result<Nm, String> {
             let n = i128::from(copper.0) + 2 * i128::from(margin.0);
             if copper.0 <= 0 || copper.0 > MAX_LOCAL_NM || !(1..=i128::from(MAX_LOCAL_NM)).contains(&n) {
                 Err("equal margin would collapse or exceed the supported aperture dimensions".into())
