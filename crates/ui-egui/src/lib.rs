@@ -16,6 +16,7 @@ pub mod copper;
 mod copper_properties;
 pub mod cross_probe;
 pub mod drc;
+pub mod command_hooks;
 pub mod erc;
 pub mod fabrication;
 pub mod fabrication_view;
@@ -156,6 +157,7 @@ pub struct FrameStats {
 pub struct ViamindApp {
     pub pcb_branches: pcb_branches::PcbBranchesUi,
     pub agent_modes: agent_modes::AgentModesUi,
+    pub command_hooks: command_hooks::CommandHooksUi,
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
     pub symbol_library: symbol_library::SymbolLibraryUi,
@@ -217,6 +219,7 @@ impl ViamindApp {
         Self {
             pcb_branches: pcb_branches::PcbBranchesUi::default(),
             agent_modes: agent_modes::AgentModesUi::default(),
+            command_hooks: command_hooks::CommandHooksUi::default(),
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
@@ -276,6 +279,7 @@ impl ViamindApp {
         Self {
             pcb_branches: pcb_branches::PcbBranchesUi::default(),
             agent_modes: agent_modes::AgentModesUi::default(),
+            command_hooks: command_hooks::CommandHooksUi::default(),
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
@@ -498,6 +502,7 @@ impl ViamindApp {
         self.copper_dialog(ui);
         self.route_dialog(ui);
         self.drc_window(ui);
+        self.command_hooks_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);
         self.fabrication_inspection_window(ui);
@@ -681,6 +686,7 @@ impl ViamindApp {
             }
             if self.design.is_some() {
                 ui.menu_button("Inspect", |ui| {
+                    if ui.button("Command hooks…").clicked() { self.begin_command_hooks(); ui.close(); }
                     if ui.button("Electrical rule check…").clicked() {
                         self.begin_erc();
                         ui.close();

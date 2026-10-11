@@ -43,6 +43,11 @@ pub use auto_drc_events::{
     AUTO_DRC_EVENT_CAPACITY, AutoDrcEvent, AutoDrcEventBatch, AutoDrcEventCursor, AutoDrcEventError, AutoDrcEventState, AutoDrcReportSummary,
     WatchAutoDrcEvents,
 };
+pub mod command_hooks;
+pub use command_hooks::{
+    CommandHookConfig, CommandHookStatus, DeltaCounts, HookDiagnostic, HookPhase, PostCommand, PostCommandDispatch, PostCommandHook, PreCommand,
+    PreCommandHook,
+};
 pub mod command;
 pub mod commands;
 pub mod connectivity;

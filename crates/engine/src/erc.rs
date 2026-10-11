@@ -180,6 +180,7 @@ impl ErcInput {
 }
 impl EngineHandle {
     pub fn run_erc(&self, input: &ErcInput) -> Result<ErcReport, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let matrix = input.matrix()?;
         let graph = self.all_schematic_connectivity()?;
         let effective_matrix = input.effective_matrix()?;

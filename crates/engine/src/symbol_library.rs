@@ -129,6 +129,7 @@ impl Command for PlaceSymbolTemplate {
 impl EngineHandle {
     /// Stage outside locks; publish under the current native-file lifecycle guard.
     pub fn save_symbol_template(&self, input: SaveSymbolTemplate) -> Result<SymbolTemplateSaveResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.save_symbol_before_publish(input, || {})
     }
     fn save_symbol_before_publish(&self, input: SaveSymbolTemplate, before_publish: impl FnOnce()) -> Result<SymbolTemplateSaveResult, EngineError> {
@@ -138,6 +139,7 @@ impl EngineHandle {
         Ok(SymbolTemplateSaveResult { path, name: input.template.name, pin_count: input.template.pins.len() })
     }
     pub fn snapshot_symbol_sheet(&self, input: &SymbolSheetQuery) -> Result<SymbolSheetSnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|engine| {
             let project = engine.project();
             if project.id.as_uuid().is_nil() {
@@ -153,10 +155,12 @@ impl EngineHandle {
     }
     /// File I/O is outside the engine lock. Callers use a background/blocking worker.
     pub fn load_symbol_template(&self, input: LoadSymbolTemplate) -> Result<SymbolTemplate, EngineError> {
+        crate::command_hooks::check_read()?;
         viamind_doc::symbol_library::load(&input.path).map_err(|message| EngineError::File { message })
     }
     /// Capture only one bounded symbol definition; never clone a project or sheet.
     pub fn export_symbol_template(&self, input: ExportSymbolTemplate) -> Result<SymbolTemplateExportResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.export_symbol_before_publish(input, || {})
     }
     fn export_symbol_before_publish(

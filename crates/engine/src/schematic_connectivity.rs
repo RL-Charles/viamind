@@ -108,6 +108,7 @@ pub(crate) struct Snapshot {
 impl EngineHandle {
     /// Capture bounded schematic data only; graph calculation releases the engine lock.
     pub fn query_schematic_connectivity(&self, query: &SchematicConnectivityQuery) -> Result<SchematicConnectivityResult, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         if !(1..=100).contains(&query.limit) {
             return Err(CommandError::invalid("limit", "must be within 1..100"));
         }

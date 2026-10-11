@@ -273,6 +273,7 @@ impl SchematicQuery {
 }
 impl crate::EngineHandle {
     pub fn query_schematic(&self, input: &SchematicQuery) -> Result<SchematicQueryResult, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.read(|project| input.run(project))
     }
 }

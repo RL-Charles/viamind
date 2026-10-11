@@ -36,6 +36,7 @@ pub fn validate_definition(footprint: &Footprint) -> Result<(), String> {
 impl EngineHandle {
     /// Same-fd regular-file loading is bounded and outside the design mutex.
     pub fn load_footprint_definition(&self, input: LoadFootprintDefinition) -> Result<Footprint, EngineError> {
+        crate::command_hooks::check_read()?;
         let footprint = viamind_doc::footprint::load(&input.path).map_err(|message| EngineError::File { message })?;
         validate_definition(&footprint).map_err(|message| EngineError::File { message })?;
         Ok(footprint)
@@ -43,6 +44,7 @@ impl EngineHandle {
 
     /// Stage outside locks; publish under the latest active-native-file lifecycle guard.
     pub fn save_footprint_definition(&self, input: SaveFootprintDefinition) -> Result<FootprintDefinitionSaved, EngineError> {
+        crate::command_hooks::check_write()?;
         self.save_definition_before_publish(input, || {})
     }
 

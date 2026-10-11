@@ -57,30 +57,59 @@ impl EngineHandle {
         }
     }
 
+    pub fn command_hook_status(&self) -> crate::CommandHookStatus {
+        self.lock().command_hook_status()
+    }
+
+    pub fn configure_command_hooks(&self, config: crate::CommandHookConfig) -> Result<crate::CommandHookStatus, EngineError> {
+        crate::command_hooks::check_write()?;
+        self.mutate(|engine| engine.configure_command_hooks(config))
+    }
+
+    pub fn register_pre_command_hook(&self, id: String, hook: crate::PreCommandHook) -> Result<(), EngineError> {
+        crate::command_hooks::check_write()?;
+        self.mutate(|engine| engine.register_pre_command_hook(id, hook))
+    }
+
+    pub fn register_post_command_hook(&self, id: String, hook: crate::PostCommandHook) -> Result<(), EngineError> {
+        crate::command_hooks::check_write()?;
+        self.mutate(|engine| engine.register_post_command_hook(id, hook))
+    }
+
+    pub fn remove_command_hook(&self, id: &str) -> Result<bool, EngineError> {
+        crate::command_hooks::check_write()?;
+        self.mutate(|engine| engine.remove_command_hook(id))
+    }
+
     /// Trusted transient agent admission shared with desktop and MCP endpoints.
     pub fn agent_policy(&self) -> Arc<crate::agent_policy::AgentPolicy> {
+        crate::command_hooks::read_allowed();
         Arc::clone(&self.agent_policy)
     }
 
     /// Configure transient shared automatic DRC without modifying design/history.
     pub fn configure_auto_drc(&self, config: crate::AutoDrcConfig) -> Result<crate::AutoDrcStatus, EngineError> {
+        crate::command_hooks::check_write()?;
         let _engine = self.lock();
         self.automatic_drc.configure(config)
     }
 
     /// Read the current bounded automatic DRC status. No project copy is needed.
     pub fn auto_drc_status(&self) -> crate::AutoDrcStatus {
+        crate::command_hooks::read_allowed();
         self.automatic_drc.status()
     }
 
     /// Atomic current automatic DRC status and its independent observation cursor.
     pub fn auto_drc_event_state(&self) -> crate::AutoDrcEventState {
+        crate::command_hooks::read_allowed();
         self.automatic_drc.event_state()
     }
 
     /// Read bounded automatic DRC summaries, releasing the state mutex while waiting.
     /// This never takes the document or native file lock; use a blocking worker from async code.
     pub fn watch_auto_drc_events(&self, input: crate::WatchAutoDrcEvents) -> Result<crate::AutoDrcEventBatch, crate::AutoDrcEventError> {
+        crate::command_hooks::check_write().map_err(|_| crate::AutoDrcEventError::InvalidInput("waiting inside command hooks is unavailable"))?;
         self.automatic_drc.watch_events(input)
     }
 
@@ -106,6 +135,8 @@ impl EngineHandle {
     /// publication. The document mutex is released before the closure, so ordinary
     /// commands remain available. The closure must not reenter native file operations.
     pub fn with_native_file_guard<R>(&self, publish: impl FnOnce(Option<&Path>) -> R) -> R {
+        crate::command_hooks::write_allowed();
+        let _hook_scope = crate::command_hooks::NativeHookScope::enter();
         let _files = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
         let native = self.lock().document_status().path;
         publish(native.as_deref())
@@ -113,6 +144,7 @@ impl EngineHandle {
 
     /// Atomically saves a captured snapshot without blocking document edits during I/O.
     pub fn save_project(&self, input: crate::SaveProject) -> Result<crate::SaveResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.save_project_with(
             input,
             |project, path, overwrite| {
@@ -126,7 +158,9 @@ impl EngineHandle {
         input: crate::SaveProject,
         write: impl FnOnce(&Project, &Path, bool) -> Result<(), viamind_doc::file::FileError>,
     ) -> Result<crate::SaveResult, EngineError> {
+        crate::command_hooks::check_write()?;
         let invalid = |message: String| EngineError::InvalidInput { command: "save_project".into(), message };
+        let _hook_scope = crate::command_hooks::NativeHookScope::enter();
         let save = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
         let overwrite = input.path.is_none() || input.overwrite;
         let (snapshot, path) = {
@@ -158,6 +192,7 @@ impl EngineHandle {
 
     /// Creates an unnamed document without replacing the shared handle or its listeners.
     pub fn new_project(&self, input: crate::NewProject, origin: Origin) -> Result<crate::SessionSnapshot, EngineError> {
+        crate::command_hooks::check_write()?;
         if input.name.trim().is_empty() {
             return Err(EngineError::InvalidInput { command: "new_project".into(), message: "name must not be blank".into() });
         }
@@ -171,6 +206,7 @@ impl EngineHandle {
 
     /// Validates a native file before replacing the document; concurrent edits reject the replacement.
     pub fn open_project(&self, input: crate::OpenProject, origin: Origin) -> Result<crate::SessionSnapshot, EngineError> {
+        crate::command_hooks::check_write()?;
         if input.path.as_os_str().is_empty() {
             return Err(EngineError::InvalidInput { command: "open_project".into(), message: "path must not be empty".into() });
         }
@@ -188,6 +224,7 @@ impl EngineHandle {
 
     /// Read-only lifecycle guard used before closing the desktop window.
     pub fn check_document_guard(&self, guard: &crate::ReplaceGuard) -> Result<(), EngineError> {
+        crate::command_hooks::check_read()?;
         Self::check_replace(&self.lock(), guard, "close_project")
     }
 
@@ -238,6 +275,8 @@ impl EngineHandle {
         imported: bool,
         load: impl FnOnce() -> Result<(Project, Option<std::path::PathBuf>), EngineError>,
     ) -> Result<crate::SessionSnapshot, EngineError> {
+        crate::command_hooks::check_write()?;
+        let _hook_scope = crate::command_hooks::NativeHookScope::enter();
         let files = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
         let before = {
             let engine = self.lock();
@@ -272,13 +311,15 @@ impl EngineHandle {
     /// Locks the engine. A panic inside a command poisons the mutex; the engine
     /// is still usable afterwards, so the poison is ignored.
     fn lock(&self) -> MutexGuard<'_, Engine> {
+        crate::command_hooks::read_allowed();
         self.engine.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// Runs a mutating operation under the lock, then runs any due `on_change`
     /// callbacks after the lock is released (so they may call back into the handle).
     pub(crate) fn mutate<R>(&self, f: impl FnOnce(&mut Engine) -> R) -> R {
-        let (result, wakers, changed) = {
+        crate::command_hooks::write_allowed();
+        let (result, wakers, changed, hooks) = {
             let mut engine = self.lock();
             let before = engine.event_cursor();
             let design_before = engine.design_stamp();
@@ -287,10 +328,13 @@ impl EngineHandle {
                 self.automatic_drc.design_changed();
             }
             let changed = engine.event_cursor() != before;
-            (result, engine.take_due_wakers(), changed)
+            (result, engine.take_due_wakers(), changed, engine.take_pending_command_hooks())
         };
         if changed {
             self.session_changed.notify_all();
+        }
+        for hook in hooks {
+            crate::command_hooks::dispatch_or_defer(hook);
         }
         for waker in wakers {
             waker();
@@ -321,6 +365,7 @@ impl EngineHandle {
     /// Read session changes, waiting at most 30 seconds when no records are available.
     /// The lock is released while waiting; use a blocking worker from async code.
     pub fn watch_events(&self, input: crate::WatchEvents) -> Result<crate::EventBatch, crate::SessionError> {
+        crate::command_hooks::check_write().map_err(|_| crate::SessionError::InvalidInput("waiting inside command hooks is unavailable"))?;
         input.validate()?;
         let deadline = Instant::now() + Duration::from_millis(input.timeout_ms);
         let mut engine = self.lock();
@@ -338,21 +383,25 @@ impl EngineHandle {
 
     /// Updates transient selection and wakes listeners outside the engine lock.
     pub fn set_selection(&self, input: crate::SetSelection, origin: Origin) -> Result<crate::SelectionSnapshot, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.set_selection(input, origin))
     }
 
     /// Runs the command called `name` with JSON `input` as one transaction.
     pub fn execute(&self, name: &str, input: Value, origin: Origin) -> Result<ExecResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.execute(name, input, origin))
     }
 
     /// Runs a typed command as one transaction.
     pub fn execute_typed<C: Command>(&self, command: C, origin: Origin) -> Result<ExecResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.execute_typed(command, origin))
     }
 
     /// Runs `calls` as one all-or-nothing transaction (see [`Engine::execute_batch`]).
     pub fn execute_batch(&self, calls: Vec<CommandCall>, origin: Origin, label: Option<&str>) -> Result<ExecResult, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.execute_batch(calls, origin, label))
     }
 
@@ -364,27 +413,32 @@ impl EngineHandle {
         label: &str,
         f: impl FnOnce(&mut Tx<'_>) -> Result<R, EngineError>,
     ) -> Result<(R, ExecResult), EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.transaction(origin, label, f))
     }
 
     /// Undoes the most recent transaction, whoever made it.
     pub fn undo(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.undo(origin))
     }
 
     /// Redoes the most recently undone transaction.
     pub fn redo(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.redo(origin))
     }
 
     /// Undoes `origin`'s most recent transaction, leaving later changes by others
     /// in place (see [`Engine::undo_own`]). This is the agent-facing undo.
     pub fn undo_own(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.undo_own(origin))
     }
 
     /// Redoes the transaction `origin` most recently undid (see [`Engine::redo_own`]).
     pub fn redo_own(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        crate::command_hooks::check_write()?;
         self.mutate(|engine| engine.redo_own(origin))
     }
 
@@ -426,16 +480,19 @@ impl EngineHandle {
 
     /// Queries board parts under a single read lock, without emitting events or changing history.
     pub fn query_parts(&self, query: &crate::PartQuery) -> Result<crate::PartQueryResult, crate::CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.read(|project| query.run(project))
     }
 
     /// Read a consistent named-net summary without changing design, selection or history.
     pub fn query_nets(&self, query: &crate::NetQuery) -> Result<crate::NetQueryResult, crate::CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.read(|project| query.run(project))
     }
 
     /// Read a consistent named-net membership and outstanding guide page.
     pub fn query_connectivity(&self, query: &crate::ConnectivityQuery) -> Result<crate::ConnectivityResult, crate::CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.read(|project| query.run(project))
     }
 
@@ -452,6 +509,7 @@ impl EngineHandle {
     /// code, pair it with [`on_change`](EngineHandle::on_change) (e.g. to wake a
     /// `tokio::sync::Notify`) and drain it with `try_recv`.
     pub fn subscribe(&self) -> Receiver<ChangeEvent> {
+        crate::command_hooks::write_allowed();
         self.lock().subscribe()
     }
 
@@ -459,6 +517,7 @@ impl EngineHandle {
     /// as a cheap waker, e.g. egui's `ctx.request_repaint()`; read the details
     /// from a [`subscribe`](EngineHandle::subscribe) receiver.
     pub fn on_change(&self, f: impl Fn() + Send + Sync + 'static) {
+        crate::command_hooks::write_allowed();
         self.lock().on_change(f);
     }
 }

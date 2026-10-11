@@ -106,6 +106,7 @@ pub(crate) fn digest(bytes: &[u8]) -> String {
 impl EngineHandle {
     /// Conversion outside the engine lock; preview never changes document/history/path/selection.
     pub fn preview_pcb_import(&self, input: PreviewPcbImport) -> Result<PcbImportPreview, EngineError> {
+        crate::command_hooks::check_read()?;
         let (expected_project, expected_cursor) = self.with_engine(|e| (e.project().id, e.event_cursor()));
         let (path, bytes) = read_source(&input.path)?;
         let source_sha256 = digest(&bytes);
@@ -114,6 +115,7 @@ impl EngineHandle {
     }
     /// Replace only a clean exact session from the same exact preview bytes; never write source.
     pub fn import_pcb(&self, input: ImportPcb, origin: Origin) -> Result<PcbImportResult, EngineError> {
+        crate::command_hooks::check_write()?;
         if input.expected_source_sha256.len() != 64 || !input.expected_source_sha256.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
         {
             return Err(invalid("expected_source_sha256 must be the exact lowercase preview digest"));

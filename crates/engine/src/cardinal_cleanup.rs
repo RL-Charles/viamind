@@ -98,6 +98,7 @@ impl Command for CleanupCardinalTracks {
 }
 impl EngineHandle {
     pub fn plan_cardinal_track_cleanup(&self, input: &CleanupCardinalTracks) -> Result<CheckedCardinalCleanup, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let _permit = Permit::acquire()?;
         let project = self.with_engine(|e| {
             if e.event_cursor() != input.expected_cursor || e.project().id != input.expected_project {

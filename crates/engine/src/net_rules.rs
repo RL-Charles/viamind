@@ -42,6 +42,7 @@ pub struct NamedNetRuleSnapshot {
 }
 impl EngineHandle {
     pub fn query_named_net_rules(&self) -> Result<NamedNetRuleSnapshot, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         self.with_engine(|e| {
             viamind_doc::named_net_rule_budget(&e.project().board.net_rules).map_err(|e| CommandError::invalid("rules", e))?;
             Ok(NamedNetRuleSnapshot {

@@ -184,6 +184,7 @@ fn make_part(placement: &PackageComponentPlacement, plan: &Plan) -> Result<Part,
 }
 impl EngineHandle {
     pub fn preview_package_pcb_component(&self, input: PackageComponentRequest) -> Result<PackageComponentPreview, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         crate::schematic_component::validate_footprint_pose(
             &input.placement.footprint,
             input.placement.position,

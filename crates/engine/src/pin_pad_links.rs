@@ -167,6 +167,7 @@ fn preflight(project: &Project) -> Result<(), CommandError> {
 }
 impl EngineHandle {
     pub fn query_linked_pin_pads(&self, query: &PinPadLinkQuery) -> Result<PinPadLinkResult, CommandError> {
+        crate::command_hooks::check_read().map_err(|e| crate::CommandError::Invalid { field: "command_hooks".into(), message: e.to_string() })?;
         let limit = query.limit.unwrap_or(100);
         if !(1..=100).contains(&limit) {
             return Err(invalid("limit must be 1..100"));
