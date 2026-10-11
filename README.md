@@ -278,6 +278,7 @@ PCB static cardinal walkaround: [checked pad-to-pad planning and conservative li
 Reusable native schematic symbols: [detached symbol library files and guarded fresh placement](docs/native-symbol-libraries.md).
 Saved manufacturing settings: [desktop, CLI and MCP output jobs](docs/saved-output-jobs.md) create a coherent NEW release with generic assembly tables and supported outer-layer fabrication files.
 
+Native symbol definition editing: [create reusable symbols](docs/native-symbol-definition-editor.md).
 
 ## Standalone PCB geometry import
 
