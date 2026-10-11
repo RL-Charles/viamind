@@ -87,7 +87,7 @@ fn sheet_atomic_guards_pin_identity_paging_and_history_roundtrip() {
     assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), updated.project);
     assert_eq!(file::from_str(&file::to_string(&updated.project)).unwrap(), updated.project);
     let text = String::from_utf8(bytes).unwrap();
-    assert!(EventLog::read_jsonl(text.replace("\"version\":7", "\"version\":4").as_bytes()).is_err());
+    assert!(EventLog::read_jsonl(text.replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":4").as_bytes()).is_err());
     let mut lines: Vec<Value> = text.lines().map(|s| serde_json::from_str(s).unwrap()).collect();
     lines[1]["deltas"][0]["after"]["content"]["symbols"][s.id.to_string()]["rotation_quarters"] = json!(4);
     let corrupt = lines.iter().map(Value::to_string).collect::<Vec<_>>().join("\n");

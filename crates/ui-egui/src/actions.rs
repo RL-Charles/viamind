@@ -42,6 +42,8 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    QueryNamedNetRules => ("query_named_net_rules", no_args(), query_named_net_rules),
+    SetNamedNetRules => (viamind_engine::SetNamedNetRules::NAME, input_schema::<viamind_engine::SetNamedNetRules>(), set_named_net_rules),
     PlaceSymbolTemplate => (viamind_engine::PlaceSymbolTemplate::NAME, input_schema::<viamind_engine::PlaceSymbolTemplate>(), place_symbol_template),
     SnapshotSymbolSheet => ("snapshot_symbol_sheet", input_schema::<viamind_engine::SymbolSheetQuery>(), snapshot_symbol_sheet),
     LoadSymbolTemplate => ("load_symbol_template", input_schema::<viamind_engine::LoadSymbolTemplate>(), load_symbol_template),
@@ -210,7 +212,10 @@ fn run_drc(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let invalid = |message: String| EngineError::InvalidInput { command: "run_drc".into(), message };
     let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
     input.validate().map_err(|e| invalid(e.to_string()))?;
-    let snapshot = engine.session_state();
+    let snapshot = engine.with_engine(|e| {
+        viamind_doc::named_net_rule_budget(&e.project().board.net_rules).map_err(|e| invalid(e.into()))?;
+        Ok::<_, EngineError>(e.session_state())
+    })?;
     let report = viamind_drc::run_drc(&snapshot.project, &input).map_err(|e| invalid(e.to_string()))?;
     Ok(json!({"source_cursor":snapshot.cursor,"report":report}))
 }
@@ -389,4 +394,12 @@ fn preview_footprint_conversion(engine: &EngineHandle, input: Value) -> Result<V
 }
 fn convert_footprint_file(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.convert_footprint_file(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+
+fn query_named_net_rules(engine: &EngineHandle, _input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.query_named_net_rules().map_err(|error| EngineError::Command { command: "query_named_net_rules".into(), error })?)
+        .map_err(encode_error)
+}
+fn set_named_net_rules(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetNamedNetRules::NAME, input, Origin::User)?).map_err(encode_error)
 }

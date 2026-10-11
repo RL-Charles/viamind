@@ -70,6 +70,8 @@ pub struct CardinalTrackReplacement {
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct CheckedCardinalCleanup {
+    #[serde(skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub document_net_rules: viamind_doc::NamedNetRules,
     pub project_id: ObjectId,
     pub source_cursor: EventCursor,
     pub counts: CleanupCounts,
@@ -323,6 +325,7 @@ fn prepare(project: &Project, input: &CleanupCardinalTracks) -> Result<(CheckedC
     }
     Ok((
         CheckedCardinalCleanup {
+            document_net_rules: project.board.net_rules.clone(),
             project_id: project.id,
             source_cursor: input.expected_cursor,
             counts,

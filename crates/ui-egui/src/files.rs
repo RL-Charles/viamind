@@ -58,6 +58,7 @@ impl ViamindApp {
     pub fn begin_save_as(&mut self) {
         self.routing.cancel();
         self.track_cleanup.cancel();
+        self.net_rules.cancel();
         let Some(design) = &self.design else { return };
         self.files.path = design.engine.document_status().path.map_or_else(|| "Untitled.viamind.json".into(), |path| path.display().to_string());
         self.files.overwrite = false;
@@ -70,6 +71,7 @@ impl ViamindApp {
     pub fn begin_document(&mut self, new: bool) {
         self.routing.cancel();
         self.track_cleanup.cancel();
+        self.net_rules.cancel();
         if self.design.is_none()
             || self.files.busy()
             || self.copper.editing()
@@ -98,6 +100,7 @@ impl ViamindApp {
         self.copper.cancel();
         self.routing.cancel();
         self.track_cleanup.cancel();
+        self.net_rules.cancel();
         self.request_destination(Destination::Quit, ctx);
     }
 

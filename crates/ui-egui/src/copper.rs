@@ -35,6 +35,7 @@ impl ViamindApp {
     pub fn begin_copper(&mut self) {
         if self.routing.editing()
             || self.track_cleanup.editing()
+            || self.net_rules.editing()
             || self.files.busy()
             || self.parts.placing()
             || self.pads.editing()

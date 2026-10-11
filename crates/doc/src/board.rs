@@ -11,6 +11,9 @@ use crate::id::ObjectId;
 /// The physical board: placed parts (more object kinds follow).
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Board {
+    /// Enforced exact named-net minima; empty maps preserve legacy serialized bytes.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "crate::net_rules::deserialize_named_net_rules")]
+    pub net_rules: crate::NamedNetRules,
     /// Independent routed straight copper objects.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub tracks: BTreeMap<ObjectId, crate::Track>,
@@ -26,9 +29,10 @@ pub struct Board {
 
 impl Board {
     /// Copy board geometry and existing headers without copying sourcing strings.
-    /// Callers must validate their geometry/text budgets before invoking this helper.
+    /// Callers must validate geometry/text budgets and borrowed named-net rules before invoking this helper.
     pub fn clone_without_assembly(&self) -> Self {
         Self {
+            net_rules: self.net_rules.clone(),
             tracks: self.tracks.clone(),
             vias: self.vias.clone(),
             outline: self.outline.clone(),

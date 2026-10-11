@@ -108,6 +108,7 @@ impl ViamindApp {
             || self.schematic_wires.active()
             || self.schematic_object_draft_active()
             || self.track_cleanup.editing()
+            || self.net_rules.editing()
         {
             return;
         }

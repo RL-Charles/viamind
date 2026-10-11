@@ -75,6 +75,10 @@ impl RoutePolyline {
                 return Err(CommandError::invalid("points", "each vertex must lie exactly on the requested grid"));
             }
         }
+        viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| CommandError::invalid("rules", e))?;
+        if self.width < viamind_doc::named_track_width(&project.board.net_rules, Some(&self.net)) {
+            return Err(CommandError::invalid("width", "below the exact named-net document minimum; choose an explicit compliant width"));
+        }
         self.rules.validate().map_err(|e| CommandError::invalid("rules", e.to_string()))?;
         let mut tracks = Vec::with_capacity(self.points.len() - 1);
         for pair in self.points.windows(2) {

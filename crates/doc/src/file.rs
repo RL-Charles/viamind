@@ -13,7 +13,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::value::RawValue;
 
 use crate::id::ObjectId;
 use crate::project::Project;
@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 7;
+pub const VERSION: u32 = 8;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -51,6 +51,8 @@ pub enum FileError {
     /// Electrical pad schema or identity invariant failed.
     #[error("invalid electrical pads: {0}")]
     Pads(String),
+    #[error("invalid named-net minima: {0}")]
+    NetRules(String),
     #[error("invalid assembly metadata: {0}")]
     Assembly(String),
     /// Project features were placed in an older envelope.
@@ -81,10 +83,11 @@ struct EnvelopeOut<'a> {
 }
 
 #[derive(Deserialize)]
-struct EnvelopeIn {
+struct EnvelopeIn<'a> {
     format: String,
     version: u32,
-    project: Value,
+    #[serde(borrow)]
+    project: &'a RawValue,
 }
 
 /// Serialises `project` as the text of a project file.
@@ -104,10 +107,11 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     if envelope.version > VERSION {
         return Err(FileError::UnsupportedVersion(envelope.version));
     }
-    let project: Project = serde_json::from_value(envelope.project)?;
+    let project: Project = serde_json::from_str(envelope.project.get())?;
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
     }
+    validate_net_rules(&project)?;
     validate_assembly(&project)?;
     validate_pads(&project)?;
     validate_copper(&project)?;
@@ -139,6 +143,7 @@ pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileErr
 }
 
 fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
+    validate_net_rules(project)?;
     validate_assembly(project)?;
     let io_err = |source| FileError::Io { path: path.to_owned(), source };
     let parent = path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or_else(|| Path::new("."));
@@ -158,7 +163,9 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    if project.board.parts.values().any(|p| p.assembly.is_some()) {
+    if !project.board.net_rules.is_empty() {
+        8
+    } else if project.board.parts.values().any(|p| p.assembly.is_some()) {
         7
     } else if project.board.parts.values().any(|p| p.schematic_symbol.is_some()) {
         6
@@ -230,4 +237,9 @@ pub fn validate_copper(project: &Project) -> Result<(), FileError> {
 /// Validate borrowed sourcing metadata before native writes or model copies.
 pub fn validate_assembly(project: &Project) -> Result<(), FileError> {
     crate::assembly::validate_metadata(project.board.parts.values().filter_map(|p| p.assembly.as_deref())).map_err(|e| FileError::Assembly(e.into()))
+}
+
+/// Borrowed policy validation shared by native save and typed in-memory consumers.
+pub fn validate_net_rules(project: &Project) -> Result<(), FileError> {
+    crate::named_net_rule_budget(&project.board.net_rules).map(|_| ()).map_err(|e| FileError::NetRules(e.into()))
 }

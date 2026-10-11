@@ -49,6 +49,7 @@ impl FabricationSnapshot {
     /// Validate allocation budgets before cloning. Busy admission never waits.
     pub fn capture(project: &Project) -> io::Result<Self> {
         let permit = Permit::acquire()?;
+        let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
         let mut count =
             project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(5));
         let check = |count| {
@@ -58,8 +59,12 @@ impl FabricationSnapshot {
                 Ok(())
             }
         };
+        count = count.saturating_add(policy.rows);
         check(count)?;
         let mut text = TextBudget::new();
+        for name in project.board.net_rules.keys() {
+            text.add(name)?;
+        }
         text.add(&project.name)?;
         for part in project.board.parts.values() {
             count = count.saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()).saturating_mul(2));

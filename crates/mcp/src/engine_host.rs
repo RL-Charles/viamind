@@ -39,6 +39,11 @@ impl CommandHost for EngineHost {
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
             .collect();
         commands.push(HostCommand {
+            name: "query_named_net_rules".into(),
+            description: "Read-only bounded exact document named-net minimum clearance/track-width policy and full source cursor. Empty map preserves existing request baselines. No mutation; use set_named_net_rules for guarded undoable replacement.".into(),
+            input_schema: json!({"type":"object", "properties":{}, "additionalProperties":false}),
+        });
+        commands.push(HostCommand {
             name: "inspect_fabrication_files".into(),
             description: "Read-only strict bounded Gerber/XNC geometry inspection. Requires exact expected_project/full expected_cursor and one to six explicit paths. Supports native-export metric5.6 circular/rectangular flashes, linear circular strokes, aperture rotation, mask openings/profile and metric drill hits. Unknown semantics reject atomically. Max4MiB/file,16MiB total,100000 commands,10000 primitives; one nonwaiting reader retained inside blocking work. Returns native downward-Y geometry, exact file SHA256, captured cursor and file attributes. SameCoordinates UUID mismatch rejects; drill common origin unverified. Files are read independently, not an atomic package snapshot or fabrication/equivalence certification. No design/history/selection/file mutation.".into(),
             input_schema: input_schema::<viamind_engine::InspectFabricationFiles>(),
@@ -217,6 +222,12 @@ impl CommandHost for EngineHost {
             return serde_json::to_value(self.engine.preview_schematic_pcb_sync(input.direction).map_err(|e| e.to_string())?)
                 .map_err(|e| e.to_string());
         }
+        if name == "query_named_net_rules" {
+            if input != json!({}) {
+                return Err("query_named_net_rules expects an empty object".into());
+            }
+            return serde_json::to_value(self.engine.query_named_net_rules().map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
         if name == "plan_cardinal_track_cleanup" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid cleanup input: {e}"))?;
             return serde_json::to_value(self.engine.plan_cardinal_track_cleanup(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
@@ -310,7 +321,10 @@ impl CommandHost for EngineHost {
         if name == "run_drc" {
             let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| format!("invalid run_drc input: {e}"))?;
             input.validate().map_err(|e| e.to_string())?;
-            let snapshot = self.engine.session_state();
+            let snapshot = self.engine.with_engine(|e| {
+                viamind_doc::named_net_rule_budget(&e.project().board.net_rules).map_err(str::to_owned)?;
+                Ok::<_, String>(e.session_state())
+            })?;
             let report = viamind_drc::run_drc(&snapshot.project, &input).map_err(|e| e.to_string())?;
             return Ok(json!({"source_cursor":snapshot.cursor,"report":report}));
         }

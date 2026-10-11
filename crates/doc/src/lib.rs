@@ -14,6 +14,7 @@ pub mod file;
 pub mod footprint;
 pub mod footprint_sexpr;
 pub mod id;
+pub mod net_rules;
 pub mod outline;
 pub mod pad;
 pub mod pcb_sexpr;
@@ -30,3 +31,7 @@ pub use project::{Project, Schematic, Sheet};
 
 pub mod copper;
 pub use copper::{CopperLayer, MAX_COPPER_OBJECTS, Track, Via};
+
+pub use net_rules::{
+    NamedNetMinima, NamedNetRules, NetRuleBudget, maximum_named_clearance, named_copper_clearance, named_net_rule_budget, named_track_width,
+};

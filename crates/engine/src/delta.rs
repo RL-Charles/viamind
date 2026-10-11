@@ -19,6 +19,14 @@ use viamind_doc::{BoardOutline, ObjectId, Part, Project, Sheet};
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Delta {
+    /// Exact named-net minima replacement. Both records are bounded and validated.
+    NamedNetRules {
+        id: ObjectId,
+        #[serde(deserialize_with = "viamind_doc::net_rules::deserialize_named_net_rules")]
+        before: viamind_doc::NamedNetRules,
+        #[serde(deserialize_with = "viamind_doc::net_rules::deserialize_named_net_rules")]
+        after: viamind_doc::NamedNetRules,
+    },
     /// Independent straight copper segment.
     Track { id: ObjectId, before: Option<viamind_doc::Track>, after: Option<viamind_doc::Track> },
     /// Circular through via.
@@ -49,15 +57,19 @@ impl Delta {
     /// Id of the object this delta changes.
     pub fn id(&self) -> ObjectId {
         match self {
-            Delta::Part { id, .. } | Delta::Sheet { id, .. } | Delta::BoardOutline { id, .. } | Delta::Track { id, .. } | Delta::Via { id, .. } => {
-                *id
-            }
+            Delta::NamedNetRules { id, .. }
+            | Delta::Part { id, .. }
+            | Delta::Sheet { id, .. }
+            | Delta::BoardOutline { id, .. }
+            | Delta::Track { id, .. }
+            | Delta::Via { id, .. } => *id,
         }
     }
 
     /// Whether the object was created (it did not exist before).
     pub fn is_create(&self) -> bool {
         match self {
+            Delta::NamedNetRules { .. } => false,
             Delta::Track { before, after, .. } => before.is_none() && after.is_some(),
             Delta::Via { before, after, .. } => before.is_none() && after.is_some(),
             Delta::BoardOutline { before, after, .. } => before.is_none() && after.is_some(),
@@ -69,6 +81,7 @@ impl Delta {
     /// Whether the object was deleted (it does not exist after).
     pub fn is_delete(&self) -> bool {
         match self {
+            Delta::NamedNetRules { .. } => false,
             Delta::Track { before, after, .. } => before.is_some() && after.is_none(),
             Delta::Via { before, after, .. } => before.is_some() && after.is_none(),
             Delta::BoardOutline { before, after, .. } => before.is_some() && after.is_none(),
@@ -80,6 +93,7 @@ impl Delta {
     /// Whether before and after are identical, i.e. nothing changed.
     pub fn is_noop(&self) -> bool {
         match self {
+            Delta::NamedNetRules { before, after, .. } => before == after,
             Delta::Track { before, after, .. } => before == after,
             Delta::Via { before, after, .. } => before == after,
             Delta::BoardOutline { before, after, .. } => before == after,
@@ -91,6 +105,7 @@ impl Delta {
     /// The opposite change: before and after swapped.
     pub fn inverted(&self) -> Delta {
         match self.clone() {
+            Delta::NamedNetRules { id, before, after } => Delta::NamedNetRules { id, before: after, after: before },
             Delta::Track { id, before, after } => Delta::Track { id, before: after, after: before },
             Delta::Via { id, before, after } => Delta::Via { id, before: after, after: before },
             Delta::BoardOutline { id, before, after } => Delta::BoardOutline { id, before: after, after: before },
@@ -104,6 +119,7 @@ impl Delta {
     /// use [`Delta::record_part`] and friends instead.
     pub fn apply_to(&self, project: &mut Project) {
         match self {
+            Delta::NamedNetRules { after, .. } => project.board.net_rules = after.clone(),
             Delta::Track { id, after, .. } => write(&mut project.board.tracks, *id, after.clone()),
             Delta::Via { id, after, .. } => write(&mut project.board.vias, *id, after.clone()),
             Delta::BoardOutline { after, .. } => project.board.outline = after.clone(),
@@ -180,6 +196,7 @@ pub fn coalesce(deltas: Vec<Delta>) -> Vec<Delta> {
 impl Delta {
     fn kind_index(&self) -> u8 {
         match self {
+            Delta::NamedNetRules { .. } => 5,
             Delta::Part { .. } => 0,
             Delta::Sheet { .. } => 1,
             Delta::BoardOutline { .. } => 2,
@@ -191,6 +208,7 @@ impl Delta {
     /// Takes `later`'s `after` state; both must be for the same object.
     fn absorb(&mut self, later: Delta) {
         match (self, later) {
+            (Delta::NamedNetRules { after, .. }, Delta::NamedNetRules { after: a, .. }) => *after = a,
             (Delta::Track { after, .. }, Delta::Track { after: a, .. }) => *after = a,
             (Delta::Via { after, .. }, Delta::Via { after: a, .. }) => *after = a,
             (Delta::Part { after, .. }, Delta::Part { after: later, .. }) => *after = later,

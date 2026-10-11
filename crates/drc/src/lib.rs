@@ -148,6 +148,7 @@ fn side_mask(side: Side) -> u8 {
 #[serde(rename_all = "snake_case")]
 pub enum ViolationKind {
     CopperClearance,
+    MinimumTrackWidth,
     OutsideSubstrate,
     BoardEdgeClearance,
     MinimumViaDrill,
@@ -196,6 +197,12 @@ pub struct Coverage {
 pub struct DrcReport {
     pub project_id: ObjectId,
     pub rules: Rules,
+    #[serde(
+        default,
+        skip_serializing_if = "std::collections::BTreeMap::is_empty",
+        deserialize_with = "viamind_doc::net_rules::deserialize_named_net_rules"
+    )]
+    pub document_net_rules: viamind_doc::NamedNetRules,
     pub violations: Vec<Violation>,
     pub coverage: Coverage,
     pub truncated: bool,
@@ -272,12 +279,14 @@ impl DrcReport {
 }
 /// Evaluate a captured immutable project. No model, selection, history or file state changes.
 pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcError> {
+    viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| DrcError(e.into()))?;
     let rules = input.validate()?;
     if let Some(outline) = &project.board.outline {
         outline.validate().map_err(|e| DrcError(e.to_string()))?;
     }
     let mut report = DrcReport {
         project_id: project.id,
+        document_net_rules: project.board.net_rules.clone(),
         rules,
         violations: Vec::new(),
         truncated: false,
@@ -369,6 +378,20 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             hole: None,
             bbox: shape.bbox(),
         });
+        let minimum = viamind_doc::named_track_width(&report.document_net_rules, track.net.as_deref());
+        if track.width < minimum && !report.truncated {
+            report.add(
+                Violation {
+                    kind: ViolationKind::MinimumTrackWidth,
+                    objects: vec![CopperReference::Track { track_id: track.id, side, net: track.net.clone() }],
+                    boundary: None,
+                    measured_clearance: track.width,
+                    required_clearance: minimum,
+                    message: "track width is below the exact named-net document minimum".into(),
+                },
+                input.max_violations,
+            );
+        }
         report.coverage.checked_tracks += 1;
         report.coverage.unassigned_tracks += usize::from(track.net.is_none());
     }
@@ -441,7 +464,9 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
         }
     }
     let index = SpatialIndex::bulk_load(copper.iter().enumerate().map(|(i, pad)| (i, pad.bbox)));
-    let search_clearance = report.rules.copper_clearance.max(report.rules.hole_clearance).max(report.rules.hole_to_copper_clearance);
+    let search_clearance = viamind_doc::maximum_named_clearance(&report.document_net_rules, report.rules.copper_clearance)
+        .max(report.rules.hole_clearance)
+        .max(report.rules.hole_to_copper_clearance);
     'objects: for (i, pad) in copper.iter().enumerate() {
         if report.truncated {
             break;
@@ -463,7 +488,12 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
                 checks.push((
                     ViolationKind::CopperClearance,
                     pad.shape.distance(other.shape),
-                    report.rules.copper_clearance,
+                    viamind_doc::named_copper_clearance(
+                        &report.document_net_rules,
+                        report.rules.copper_clearance,
+                        pad.reference.net().as_deref(),
+                        other.reference.net().as_deref(),
+                    ),
                     "different-net or unassigned copper touches/overlaps or is below clearance",
                 ));
                 for (hole, shape) in [(pad.hole, other.shape), (other.hole, pad.shape)] {
