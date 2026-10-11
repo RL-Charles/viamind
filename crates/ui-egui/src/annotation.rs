@@ -19,7 +19,7 @@ impl ViamindApp {
     pub(crate) fn annotation_panel(&mut self, ui: &mut Ui) {
         let Some(design) = &self.design else { return };
         let engine = design.engine.clone();
-        let cursor = engine.with_engine(|e| e.event_cursor());
+        let cursor = engine.with_engine(viamind_engine::Engine::event_cursor);
         if self.annotation.stream != Some(cursor.stream_id) {
             self.annotation = AnnotationUi { stream: Some(cursor.stream_id), ..Default::default() };
         }
