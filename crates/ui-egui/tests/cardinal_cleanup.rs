@@ -100,3 +100,27 @@ fn actual_net_source_cancel_peer_invalidation_and_modal_guards() {
     assert!(!h.state().track_cleanup.editing());
     assert_eq!(e.session_state(), after_peer);
 }
+
+#[test]
+fn compact_actual_preview_apply_cancel_bounds_and_legacy_coverage_are_visible() {
+    let (e, _) = setup();
+    e.execute("add_part", serde_json::json!({"designator":"R1","value":"1k","footprint":"R","x_mm":25,"y_mm":15}), Origin::User).unwrap();
+    let mut app = ViamindApp::with_design(e.clone(), None);
+    app.begin_track_cleanup();
+    let mut h = Harness::builder().with_size(vec2(640., 400.)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    h.run_steps(5);
+    h.get_by_label("Named net").click();
+    h.run_steps(3);
+    h.get_by_label("Preview cleanup").click();
+    h.run_steps(2);
+    wait(&mut h);
+    assert_eq!(h.state().track_cleanup.checked().unwrap().coverage.excluded_part_count, 1);
+    for label in ["Preview cleanup", "Apply cleanup", "Cancel cleanup"] {
+        let r = h.get_by_label(label).rect();
+        assert!(r.min.x >= 0. && r.min.y >= 0. && r.max.x <= 640. && r.max.y <= 400., "{label} outside compact viewport: {r:?}");
+    }
+    h.get_by_label("Apply cleanup").click();
+    h.run_steps(3);
+    assert_eq!(e.read(|p| p.board.tracks.len()), 1);
+    assert!(!h.state().track_cleanup.editing());
+}

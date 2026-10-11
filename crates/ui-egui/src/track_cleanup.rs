@@ -169,8 +169,10 @@ impl ViamindApp {
         let mut cancel = false;
         let pending = self.track_cleanup.pending.is_some();
         let mut changed = false;
-        egui::Window::new("Clean cardinal track joints").open(&mut open).default_width(440.0).resizable(true).show(ui.ctx(), |ui| {
-            egui::ScrollArea::vertical().max_height(650.0).show(ui, |ui| {
+        let content = ui.ctx().content_rect();
+        egui::Window::new("Clean cardinal track joints").open(&mut open).default_width(440.0)
+            .max_width((content.width()-24.0).max(240.0)).max_height((content.height()-24.0).max(160.0)).resizable(true).show(ui.ctx(), |ui| {
+            egui::ScrollArea::vertical().max_height((content.height()-120.0).clamp(80.0,650.0)).show(ui, |ui| {
                 ui.label("Equivalent horizontal/vertical straight joints only. Green: proposed survivor; yellow rings: removed joints.");
                 ui.label("Select tracks on the board before opening, or choose an exact net below. Branches, pads, vias and drill-hole contacts stay in place.");
                 ui.horizontal(|ui| {
@@ -178,7 +180,7 @@ impl ViamindApp {
                     changed |= ui.radio_value(&mut draft.by_net, true, "Named net").changed();
                 });
                 if draft.by_net {
-                    ui.horizontal(|ui| { ui.label("Exact net"); changed |= ui.text_edit_singleline(&mut draft.net).changed(); });
+                    ui.horizontal(|ui| { let label=ui.label("Exact net"); changed |= ui.text_edit_singleline(&mut draft.net).labelled_by(label.id).changed(); });
                     ui.horizontal(|ui| {
                         changed |= ui.radio_value(&mut draft.layer, None, "Both sides").changed();
                         changed |= ui.radio_value(&mut draft.layer, Some(CopperLayer::Top), "Top only").changed();
@@ -204,14 +206,20 @@ impl ViamindApp {
                     ui.label(format!("Checked: {} tracks → {} chains, {} redundant segments removed", c.selected_tracks, c.merged_chains, c.deleted_tracks));
                     ui.label(format!("Retained: {} anchors, {} branches, {} mismatches, {} hole chains, {} duplicates; {} diagonals, {} unassigned", c.retained_anchor_joints, c.retained_branch_joints, c.retained_mismatch_joints, c.retained_hole_chains, c.retained_duplicate_chains, c.unsupported_diagonal_tracks, c.unsupported_unassigned_tracks));
                     ui.label("Complete scoped joint DRC; existing unrelated violations and checker exclusions may remain. Apply recomputes with the full cursor guard.");
+                    ui.label(format!("Actual coverage: {} pads, {} tracks, {} vias; {} excluded parts; {} existing unrelated violations", plan.coverage.checked_pads, plan.coverage.checked_tracks, plan.coverage.checked_vias, plan.coverage.excluded_part_count, plan.existing_unrelated_violations));
+                    ui.collapsing("Checks and excluded parts", |ui| {
+                        for check in &plan.coverage.checks_not_performed { ui.label(check); }
+                        for part in &plan.coverage.excluded_parts { ui.label(format!("{}: {}",part.designator,part.reason)); }
+                        if plan.coverage.excluded_details_truncated { ui.label("Further excluded-part details omitted by the checker; the total above includes them."); }
+                    });
                 }
                 if let Some(message) = &draft.message { ui.colored_label(Color32::LIGHT_RED, message); }
-                ui.horizontal(|ui| {
+            });
+                ui.horizontal_wrapped(|ui| {
                     preview = ui.add_enabled(!pending && (draft.by_net || (!ids.is_empty() && ids.len() <= 2048)), egui::Button::new("Preview cleanup")).clicked();
                     apply = ui.add_enabled(!pending && draft.checked.as_ref().is_some_and(|p| p.counts.deleted_tracks > 0) && draft.request.as_ref().is_some_and(|r| r.expected_cursor == cursor), egui::Button::new("Apply cleanup")).clicked();
                     cancel = ui.button("Cancel cleanup").clicked();
                 });
-            });
         });
         cancel |= !open || ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Escape));
         if cancel {
@@ -273,6 +281,8 @@ mod tests {
                 source_cursor: input.expected_cursor,
                 counts: Default::default(),
                 replacements: vec![],
+                coverage: engine.read(|p| viamind_drc::run_drc(p, &Default::default()).unwrap().coverage),
+                existing_unrelated_violations: 0,
                 complete_scoped_preflight: true,
             }))
             .unwrap();

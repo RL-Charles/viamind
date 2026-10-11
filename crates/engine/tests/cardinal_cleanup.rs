@@ -210,6 +210,10 @@ fn guarded_queries_typed_dynamic_batches_and_same_uuid_reopen_are_atomic() {
     let before = e.session_state();
     assert!(e.execute(CleanupCardinalTracks::NAME, serde_json::to_value(stale.clone()).unwrap(), Origin::User).is_err());
     let good = request(&e);
+    let checked = e.plan_cardinal_track_cleanup(&good).unwrap();
+    assert_eq!(checked.coverage.excluded_part_count, 1);
+    assert_eq!(checked.coverage.excluded_parts[0].designator, "R1");
+    assert!(!checked.coverage.checks_not_performed.is_empty());
     assert!(
         e.execute_batch(
             vec![

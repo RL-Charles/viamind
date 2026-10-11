@@ -74,6 +74,9 @@ pub struct CheckedCardinalCleanup {
     pub source_cursor: EventCursor,
     pub counts: CleanupCounts,
     pub replacements: Vec<CardinalTrackReplacement>,
+    /// Actual bounded checker coverage, including exclusions and unperformed checks.
+    pub coverage: viamind_drc::Coverage,
+    pub existing_unrelated_violations: usize,
     pub complete_scoped_preflight: bool,
 }
 impl Command for CleanupCardinalTracks {
@@ -324,6 +327,8 @@ fn prepare(project: &Project, input: &CleanupCardinalTracks) -> Result<(CheckedC
             source_cursor: input.expected_cursor,
             counts,
             replacements,
+            coverage: report.coverage,
+            existing_unrelated_violations: report.violations.len(),
             complete_scoped_preflight: true,
         },
         deltas,
