@@ -4652,6 +4652,7 @@ dependencies = [
  "rustix 1.1.5",
  "serde",
  "serde_json",
+ "sha2",
  "tempfile",
  "viamind-doc",
  "viamind-geom",
