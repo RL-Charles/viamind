@@ -174,13 +174,17 @@ fn package_membership_is_charged_before_selected_snapshot_and_graph_copies() {
 }
 
 #[test]
-fn flat_annotation_and_whole_pcb_sync_refuse_grouped_projects_without_mutation() {
+fn package_annotation_preview_is_supported_while_whole_pcb_sync_remains_explicitly_unsupported() {
     let mut p = Project::new("Explicit integration gap");
     let sheet = package_sheet();
     p.schematic.sheets.insert(sheet.id, sheet);
     let e = EngineHandle::new(p);
     let before = e.session_state();
-    assert!(e.preview_schematic_annotation(Default::default()).unwrap_err().to_string().contains("multi-unit package"));
+    let preview = e.preview_schematic_annotation(Default::default()).unwrap();
+    assert_eq!(preview.packages, 1);
+    assert_eq!(preview.symbols, 2);
+    assert!(preview.changes.is_empty());
+    assert_eq!(preview.command.expected_cursor, Some(before.cursor));
     assert!(e.preview_schematic_pcb_sync(viamind_engine::PcbSyncDirection::Forward).unwrap_err().to_string().contains("multi-unit package"));
     assert_eq!(e.session_state(), before);
 }

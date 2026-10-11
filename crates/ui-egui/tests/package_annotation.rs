@@ -1,5 +1,8 @@
 use egui::{Event, Key, Modifiers, Rect, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use serde_json::json;
 use viamind_engine::{EngineHandle, Origin};
 use viamind_ui_egui::ViamindApp;
