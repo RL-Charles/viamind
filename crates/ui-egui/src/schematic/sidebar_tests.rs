@@ -217,6 +217,17 @@ fn compact_sidebar_all_text_fields_are_clipped_reachable_and_cancel_remains_loca
     assert_eq!(engine.document_status(), status);
 }
 
+fn click_value(h: &mut Harness<'_, ViamindApp>, value: &str) {
+    h.get_by_value(value).scroll_to_me();
+    h.run_steps(10);
+    let rect = h.get_by_value(value).rect();
+    h.hover_at(rect.center());
+    h.run_steps(2);
+    assert_button_clip(h, value, h.get_by_value(value).rect());
+    h.get_by_value(value).click();
+    h.run_steps(5);
+}
+
 #[test]
 fn compact_sidebar_electrical_popup_ownership_survives_preceding_row_removal_without_reuse() {
     let (app, engine) = app();
@@ -226,17 +237,17 @@ fn compact_sidebar_electrical_popup_ownership_survives_preceding_row_removal_wit
     h.run_steps(5);
     click(&mut h, "Add symbol");
     click(&mut h, "Add pin");
-    let removed_id = h.get_all_by_label("Passive").next().unwrap().accesskit_node().id();
-    h.get_all_by_label("Passive").nth(1).unwrap().scroll_to_me();
+    let removed_id = h.get_all_by_value("Passive").next().unwrap().accesskit_node().id();
+    h.get_all_by_value("Passive").nth(1).unwrap().scroll_to_me();
     h.run_steps(10);
-    let second = h.get_all_by_label("Passive").nth(1).unwrap();
+    let second = h.get_all_by_value("Passive").nth(1).unwrap();
     let retained_id = second.accesskit_node().id();
     assert_ne!(retained_id, removed_id);
     let rect = second.rect();
     h.hover_at(rect.center());
     h.run_steps(2);
-    assert_button_clip(&h, "second pin electrical", h.get_all_by_label("Passive").nth(1).unwrap().rect());
-    h.get_all_by_label("Passive").nth(1).unwrap().click();
+    assert_button_clip(&h, "second pin electrical", h.get_all_by_value("Passive").nth(1).unwrap().rect());
+    h.get_all_by_value("Passive").nth(1).unwrap().click();
     h.run_steps(5);
     click(&mut h, "Output");
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[1].electrical, PinType::Output);
@@ -248,15 +259,15 @@ fn compact_sidebar_electrical_popup_ownership_survives_preceding_row_removal_wit
     assert_button_clip(&h, "first Remove pin", h.get_all_by_label("Remove pin").next().unwrap().rect());
     h.get_all_by_label("Remove pin").next().unwrap().click();
     h.run_steps(5);
-    assert_eq!(h.get_by_label("Output").accesskit_node().id(), retained_id);
-    click(&mut h, "Output");
+    assert_eq!(h.get_by_value("Output").accesskit_node().id(), retained_id);
+    click_value(&mut h, "Output");
     click(&mut h, "PowerInput");
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[0].electrical, PinType::PowerInput);
     click(&mut h, "Add pin");
-    let fresh_id = h.get_by_label("Passive").accesskit_node().id();
+    let fresh_id = h.get_by_value("Passive").accesskit_node().id();
     assert_ne!(fresh_id, removed_id);
     assert_ne!(fresh_id, retained_id);
-    click(&mut h, "Passive");
+    click_value(&mut h, "Passive");
     click(&mut h, "Input");
     let pins = &h.state().schematic.draft.as_ref().unwrap().pins;
     assert_eq!(pins[0].electrical, PinType::PowerInput);
