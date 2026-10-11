@@ -58,6 +58,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [query\_nets](#tool-71756572795f6e657473)
 - [query\_parts](#tool-71756572795f7061727473)
 - [query\_route\_endpoints](#tool-71756572795f726f7574655f656e64706f696e7473)
+- [query\_route\_terminals](#tool-71756572795f726f7574655f7465726d696e616c73)
 - [query\_schematic](#tool-71756572795f736368656d61746963)
 - [query\_schematic\_connectivity](#tool-71756572795f736368656d617469635f636f6e6e6563746976697479)
 - [redo](#tool-7265646f)
@@ -71,6 +72,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [route\_pad\_via\_walkaround](#tool-726f7574655f7061645f7669615f77616c6b61726f756e64)
 - [route\_pad\_walkaround](#tool-726f7574655f7061645f77616c6b61726f756e64)
 - [route\_polyline](#tool-726f7574655f706f6c796c696e65)
+- [route\_terminal\_polyline](#tool-726f7574655f7465726d696e616c5f706f6c796c696e65)
+- [route\_terminal\_posture](#tool-726f7574655f7465726d696e616c5f706f7374757265)
 - [run\_drc](#tool-72756e5f647263)
 - [run\_erc](#tool-72756e5f657263)
 - [run\_output\_job](#tool-72756e5f6f75747075745f6a6f62)
@@ -7497,6 +7500,55 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-71756572795f726f7574655f7465726d696e616c73"></a>
+
+## query\_route\_terminals
+
+```json
+{
+  "description": "Read immutable stable explicit pad, existing track start/end and through-via center terminal identities. Via has one row per outer layer; exact stored Nm centers, derived net/layer, bounded labels and unsupported reasons. Optional exact net/layer filter; offset0, limit1..1000 default100; deterministic identity/layer ordering and full source cursor. Reject over100000 terminal rows before filtering/allocation; existing board structural/text/document-policy bounds apply. No schematic/assembly capture, mutation or continuity claim.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "layer": {
+        "description": "Supported copper surfaces; inner layer routing is not represented yet.",
+        "enum": [
+          "top",
+          "bottom",
+          null
+        ],
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "limit": {
+        "default": 100,
+        "format": "uint",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "net": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "offset": {
+        "default": 0,
+        "format": "uint",
+        "minimum": 0,
+        "type": "integer"
+      }
+    },
+    "title": "RouteTerminalQuery",
+    "type": "object"
+  },
+  "name": "query_route_terminals"
+}
+```
+
 <a id="tool-71756572795f736368656d61746963"></a>
 
 ## query\_schematic
@@ -9340,6 +9392,647 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "route_polyline"
+}
+```
+
+<a id="tool-726f7574655f7465726d696e616c5f706f6c796c696e65"></a>
+
+## route\_terminal\_polyline
+
+```json
+{
+  "description": "Atomically route exact persisted pad, track start/end or existing through-via center identities on one explicit outer layer, deriving exact same assigned net. Positive explicit width/grid Nm; up to1023 grid-aligned interior points; exact off-grid terminal attachment. Full initial cursor/project guards, bounded board-only capture and complete shared scoped joint DRC; one undo. No midsegment split, new via, inferred size, obstacle avoidance/shove or physical continuity certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "grid": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      },
+      "interior": {
+        "default": [],
+        "items": {
+          "description": "A position on the board, in nanometres.",
+          "properties": {
+            "x": {
+              "description": "Horizontal coordinate.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "y": {
+              "description": "Vertical coordinate.",
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "maxItems": 1023,
+        "type": "array"
+      },
+      "layer": {
+        "description": "Supported copper surfaces; inner layer routing is not represented yet.",
+        "enum": [
+          "top",
+          "bottom"
+        ],
+        "type": "string"
+      },
+      "rules": {
+        "additionalProperties": false,
+        "default": {
+          "copper_clearance_mm": 0.2,
+          "edge_clearance_mm": 0.25,
+          "hole_clearance_mm": 0.25,
+          "hole_to_copper_clearance_mm": 0.2,
+          "max_violations": 1000,
+          "minimum_annular_width_mm": 0.1,
+          "minimum_via_drill_mm": 0.2
+        },
+        "properties": {
+          "copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "edge_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_to_copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "max_violations": {
+            "default": 1000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minimum_annular_width_mm": {
+            "default": 0.1,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "minimum_via_drill_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "start": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "pad",
+                "type": "string"
+              },
+              "pad_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "part_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "part_id",
+              "pad_id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "enum": [
+                  "start",
+                  "end"
+                ],
+                "type": "string"
+              },
+              "kind": {
+                "const": "track_end",
+                "type": "string"
+              },
+              "track_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "track_id",
+              "end"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "via",
+                "type": "string"
+              },
+              "via_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "via_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "target": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "pad",
+                "type": "string"
+              },
+              "pad_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "part_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "part_id",
+              "pad_id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "enum": [
+                  "start",
+                  "end"
+                ],
+                "type": "string"
+              },
+              "kind": {
+                "const": "track_end",
+                "type": "string"
+              },
+              "track_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "track_id",
+              "end"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "via",
+                "type": "string"
+              },
+              "via_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "via_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "width": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "start",
+      "target",
+      "layer",
+      "grid",
+      "width"
+    ],
+    "title": "RouteTerminalPolyline",
+    "type": "object"
+  },
+  "name": "route_terminal_polyline"
+}
+```
+
+<a id="tool-726f7574655f7465726d696e616c5f706f7374757265"></a>
+
+## route\_terminal\_posture
+
+```json
+{
+  "description": "Atomically route persisted pad, track endpoint or existing through-via center IDs using shared cardinal/octilinear posture math, explicit outer layer/width/grid and derived same assigned net. Up to510 grid-aligned waypoints, at most1024 segments; preserve exact off-grid terminals with explicit short nearest-grid stubs included in joint scoped DRC. Full project/initial cursor guards; one undo. No sizing inference, new via, midsegment splitting, obstacle avoidance/shove or physical certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "grid": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      },
+      "layer": {
+        "description": "Supported copper surfaces; inner layer routing is not represented yet.",
+        "enum": [
+          "top",
+          "bottom"
+        ],
+        "type": "string"
+      },
+      "mode": {
+        "enum": [
+          "cardinal",
+          "octilinear"
+        ],
+        "type": "string"
+      },
+      "posture": {
+        "default": "primary",
+        "description": "Primary means horizontal-first (cardinal) or straight-first (octilinear).\nAlternate means vertical-first (cardinal) or diagonal-first (octilinear).",
+        "enum": [
+          "primary",
+          "alternate"
+        ],
+        "type": "string"
+      },
+      "rules": {
+        "additionalProperties": false,
+        "default": {
+          "copper_clearance_mm": 0.2,
+          "edge_clearance_mm": 0.25,
+          "hole_clearance_mm": 0.25,
+          "hole_to_copper_clearance_mm": 0.2,
+          "max_violations": 1000,
+          "minimum_annular_width_mm": 0.1,
+          "minimum_via_drill_mm": 0.2
+        },
+        "properties": {
+          "copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "edge_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_to_copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "max_violations": {
+            "default": 1000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minimum_annular_width_mm": {
+            "default": 0.1,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "minimum_via_drill_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "start": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "pad",
+                "type": "string"
+              },
+              "pad_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "part_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "part_id",
+              "pad_id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "enum": [
+                  "start",
+                  "end"
+                ],
+                "type": "string"
+              },
+              "kind": {
+                "const": "track_end",
+                "type": "string"
+              },
+              "track_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "track_id",
+              "end"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "via",
+                "type": "string"
+              },
+              "via_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "via_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "target": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "pad",
+                "type": "string"
+              },
+              "pad_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "part_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "part_id",
+              "pad_id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "enum": [
+                  "start",
+                  "end"
+                ],
+                "type": "string"
+              },
+              "kind": {
+                "const": "track_end",
+                "type": "string"
+              },
+              "track_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "track_id",
+              "end"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "via",
+                "type": "string"
+              },
+              "via_id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "via_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "waypoints": {
+        "default": [],
+        "items": {
+          "description": "A position on the board, in nanometres.",
+          "properties": {
+            "x": {
+              "description": "Horizontal coordinate.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "y": {
+              "description": "Vertical coordinate.",
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "maxItems": 510,
+        "type": "array"
+      },
+      "width": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "start",
+      "target",
+      "layer",
+      "grid",
+      "width",
+      "mode"
+    ],
+    "title": "RouteTerminalPosture",
+    "type": "object"
+  },
+  "name": "route_terminal_posture"
 }
 ```
 
