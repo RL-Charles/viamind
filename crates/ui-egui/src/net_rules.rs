@@ -108,9 +108,9 @@ impl ViamindApp {
             self.net_rules.cancel();
             return;
         };
+        let Some(draft) = &mut self.net_rules.draft else { return };
         let engine = design.engine.clone();
         let current = engine.event_cursor();
-        let Some(draft) = &mut self.net_rules.draft else { return };
         let stale = current != draft.cursor;
         let (mut open, mut apply, mut cancel, mut reload) = (true, false, false, false);
         let mut remove = None;

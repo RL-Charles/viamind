@@ -170,10 +170,10 @@ impl EventLog {
                     let after = after.as_ref().and_then(|p| p.assembly.as_deref());
                     budget.replace(before, after).map_err(|_| LogError::BadHeader)?;
                 }
-                if let crate::Delta::NamedNetRules { before, .. } = delta {
-                    if *before != current.board.net_rules {
-                        return Err(LogError::BadHeader);
-                    }
+                if let crate::Delta::NamedNetRules { before, .. } = delta
+                    && *before != current.board.net_rules
+                {
+                    return Err(LogError::BadHeader);
                 }
                 delta.apply_to(&mut current);
             }

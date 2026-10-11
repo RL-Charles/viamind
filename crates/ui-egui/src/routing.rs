@@ -387,8 +387,8 @@ impl ViamindApp {
         self.routing.settings = Some(Settings::default());
     }
     pub(crate) fn route_dialog(&mut self, ui: &mut Ui) {
-        let policy = self.design.as_ref().and_then(|d| d.engine.query_named_net_rules().ok());
         let Some(settings) = &mut self.routing.settings else { return };
+        let policy = self.design.as_ref().and_then(|d| d.engine.query_named_net_rules().ok());
         let mut start = false;
         let mut cancel = false;
         let modal=egui::Modal::new(egui::Id::new("route_settings")).show(ui.ctx(),|ui|{
