@@ -18,6 +18,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
             net: Some("SIGNAL".into()),
         };
         let part = Part {
+            assembly: None,
             id: ObjectId::new(),
             schematic_symbol: None,
             designator: format!("J{x}"),

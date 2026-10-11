@@ -25,6 +25,16 @@ pub struct Board {
 }
 
 impl Board {
+    /// Copy board geometry and existing headers without copying sourcing strings.
+    /// Callers must validate their geometry/text budgets before invoking this helper.
+    pub fn clone_without_assembly(&self) -> Self {
+        Self {
+            tracks: self.tracks.clone(),
+            vias: self.vias.clone(),
+            outline: self.outline.clone(),
+            parts: self.parts.iter().map(|(id, part)| (*id, part.clone_without_assembly())).collect(),
+        }
+    }
     /// The part with `id`, if any.
     pub fn part(&self, id: &ObjectId) -> Option<&Part> {
         self.parts.get(id)
@@ -39,6 +49,9 @@ impl Board {
 /// A component placed on the board.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
+    /// Optional explicitly entered sourcing and population instructions.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub assembly: Option<Box<crate::AssemblyMetadata>>,
     /// Stable schematic symbol identity; missing symbols remain explicit unresolved links.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub schematic_symbol: Option<ObjectId>,
@@ -62,6 +75,21 @@ pub struct Part {
 }
 
 impl Part {
+    /// Purpose-specific copy that never clones unused sourcing strings.
+    pub fn clone_without_assembly(&self) -> Self {
+        Self {
+            assembly: None,
+            schematic_symbol: self.schematic_symbol,
+            pads: self.pads.clone(),
+            id: self.id,
+            designator: self.designator.clone(),
+            value: self.value.clone(),
+            footprint: self.footprint.clone(),
+            position: self.position,
+            rotation_mdeg: self.rotation_mdeg,
+            side: self.side,
+        }
+    }
     /// Transform a footprint-local integer point exactly for quarter-turn rotations.
     /// Mirror bottom-side local X, rotate counterclockwise in y-down coordinates, then translate.
     /// Wider intermediates allow valid final coordinates even when mirroring alone overflows i64.
@@ -120,6 +148,7 @@ mod tests {
         project.schematic.sheets.insert(sheet.id, sheet);
         for (i, side) in [Side::Top, Side::Bottom].into_iter().enumerate() {
             let part = Part {
+                assembly: None,
                 schematic_symbol: None,
                 pads: None,
                 id: ObjectId::new(),

@@ -23,6 +23,7 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
             net: Some(if number == 3 { "OTHER" } else { "GND" }.into()),
         };
         let part = Part {
+            assembly: None,
             schematic_symbol: None,
             id: ObjectId::new(),
             designator: format!("J{number}"),

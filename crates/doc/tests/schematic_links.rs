@@ -5,6 +5,7 @@ fn fixture() -> (Project, ObjectId) {
     let mut project = file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
     let symbol = *project.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().symbols.keys().next().unwrap();
     let part = Part {
+        assembly: None,
         schematic_symbol: Some(symbol),
         pads: None,
         id: ObjectId::new(),

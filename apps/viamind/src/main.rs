@@ -91,7 +91,7 @@ fn main() -> anyhow::Result<()> {
     }
     if let Some(kind) = options.export_csv {
         let (snapshot, native) =
-            engine.with_engine(|e| viamind_fab::AssemblySnapshot::capture(e.project()).map(|s| (s, e.document_status().path)))?;
+            engine.with_engine(|e| viamind_fab::AssemblySnapshot::capture_for(e.project(), kind).map(|s| (s, e.document_status().path)))?;
         let output = options.output.as_deref().expect("CLI requires an export destination");
         let prepared = snapshot
             .prepare(kind, output, options.overwrite, native.as_deref())

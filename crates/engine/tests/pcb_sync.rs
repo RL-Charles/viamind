@@ -47,7 +47,7 @@ fn link_is_guarded_shared_undoable_and_versioned_even_if_final_state_unlinked() 
         let mut bytes = Vec::new();
         e.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
         assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), before.project);
-        let downgraded = String::from_utf8(bytes).unwrap().replace("\"version\":6", "\"version\":5");
+        let downgraded = String::from_utf8(bytes).unwrap().replace("\"version\":7", "\"version\":5");
         assert!(EventLog::read_jsonl(downgraded.as_bytes()).is_err(), "historic linked snapshots require version6 even after unlink");
     }
 }
@@ -99,6 +99,11 @@ fn linked_project() -> Project {
             })
             .collect();
         let part = Part {
+            assembly: Some(Box::new(viamind_doc::AssemblyMetadata {
+                mpn: Some("Explicit user input retained through synchronization".into()),
+                populate: false,
+                ..Default::default()
+            })),
             id: ObjectId::new(),
             schematic_symbol: Some(symbol.id),
             pads: Some(Pads::try_from(pads).unwrap()),
@@ -271,6 +276,7 @@ fn ambiguous_mappings_footprints_missing_links_budgets_and_reference_collisions_
         },
         |p: &mut Project| p.board.parts.values_mut().next().unwrap().schematic_symbol = Some(ObjectId::new()),
         |p: &mut Project| p.name = "x".repeat(4097),
+        |p: &mut Project| p.board.parts.values_mut().next().unwrap().assembly.as_mut().unwrap().mpn = Some("x".repeat(4 * 1024 * 1024)),
         |p: &mut Project| {
             let mut extra = p.board.parts.values().next().unwrap().clone();
             extra.id = ObjectId::new();
@@ -287,6 +293,15 @@ fn ambiguous_mappings_footprints_missing_links_budgets_and_reference_collisions_
         assert!(e.preview_schematic_pcb_sync(PcbSyncDirection::Forward).is_err());
         assert_eq!(e.session_state(), checkpoint);
     }
+}
+#[test]
+fn synchronization_rejects_oversized_sourcing_in_expected_guard_before_copying() {
+    let e = EngineHandle::new(linked_project());
+    let mut command = e.preview_schematic_pcb_sync(PcbSyncDirection::Forward).unwrap().command;
+    command.expected.board.parts.values_mut().next().unwrap().assembly.as_mut().unwrap().mpn = Some("x".repeat(4 * 1024 * 1024));
+    let before = e.session_state();
+    assert!(e.execute_typed(command, Origin::User).unwrap_err().to_string().contains("512 UTF-8 bytes"));
+    assert_eq!(e.session_state(), before);
 }
 #[test]
 fn routed_net_reassignment_rejects_and_existing_unchanged_routes_are_preserved() {

@@ -87,7 +87,12 @@ impl FabricationSnapshot {
             }
         }
         Ok(Self {
-            project: Project { id: project.id, name: project.name.clone(), board: project.board.clone(), schematic: Default::default() },
+            project: Project {
+                id: project.id,
+                name: project.name.clone(),
+                board: project.board.clone_without_assembly(),
+                schematic: Default::default(),
+            },
             _permit: permit,
         })
     }

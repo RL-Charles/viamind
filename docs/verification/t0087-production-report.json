@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "checks": [
+    "typed sourcing setter and query/export tools discovered",
+    "distinct agent sessions",
+    "query returns exact explicit metadata",
+    "bom actual production no-display CLI succeeds",
+    "bom native HTTP bytes equal production CLI",
+    "bom NEW collision preserves bytes",
+    "bom explicit overwrite preserves exact format",
+    "bom previous verified bytes unchanged despite sourcing/DNP",
+    "placement actual production no-display CLI succeeds",
+    "placement native HTTP bytes equal production CLI",
+    "placement NEW collision preserves bytes",
+    "placement explicit overwrite preserves exact format",
+    "placement previous verified bytes unchanged despite sourcing/DNP",
+    "sourcing_bom actual production no-display CLI succeeds",
+    "sourcing_bom native HTTP bytes equal production CLI",
+    "sourcing_bom NEW collision preserves bytes",
+    "sourcing_bom explicit overwrite preserves exact format",
+    "independent CSV parser sees exact Unicode punctuation and identifiers",
+    "population groups are explicit and neither component is omitted",
+    "old BOM remains all-component inventory",
+    "seven fabrication bytes exclude sourcing/population",
+    "board SVG bytes exclude sourcing/population",
+    "current saved-job profile ten output/config bytes unchanged",
+    "invalid fields/missing required clear/project guard preserve full session",
+    "explicit overwrite always protects active native",
+    "second agent observes exact metadata and one event",
+    "stale full Part and full cursor reject atomically without output",
+    "undo restores exact initial project and clean native status",
+    "redo restores edited metadata",
+    "native save uses schema7 and exact metadata",
+    "native reopen restores metadata exactly",
+    "reopened active native protected",
+    "clearing last metadata falls back to schema4 without assembly keys",
+    "original active project and source bytes restored",
+    "ordinary exports leave no staged CSV/output-job artifacts"
+  ],
+  "endpoint": "http://127.0.0.1:7913/mcp",
+  "production_binary_sha256": "6e2e97d875ac98348d41f6b8f1384a6b7da12f1658b97ee6c7d7c40fc2b362c1",
+  "outputs": {
+    "bom": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53",
+    "placement": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a",
+    "sourcing_bom": "6bd73d2c708269e3263ea5270e333ca48685f75aea52cf6b468a05fb5edc5e05"
+  },
+  "initial_cursor": {
+    "sequence": 1,
+    "stream_id": "2fe1e823-a3ae-48c0-ae26-516eccf77296"
+  },
+  "active_native_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0087/production-project.json",
+  "final_cursor": {
+    "sequence": 1,
+    "stream_id": "60da250b-ea34-45aa-90e0-27ddcb70e3ed"
+  }
+}

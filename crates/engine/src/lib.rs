@@ -26,6 +26,8 @@
 //! assert!(engine.read(|p| p.board.parts.is_empty()));
 //! ```
 
+pub mod assembly;
+pub use assembly::SetPartAssembly;
 pub mod annotation;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
 pub mod auto_drc;

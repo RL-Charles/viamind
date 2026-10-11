@@ -180,6 +180,7 @@ fn bounded_board_capture_ignores_large_unrelated_schematic_and_rejects_oversized
     assert_eq!(e.read(|p| p.name.len()), 3 * 1024 * 1024);
     let mut board = e.read(|p| p.board.clone());
     let part = viamind_doc::Part {
+        assembly: None,
         schematic_symbol: None,
         id: viamind_doc::ObjectId::new(),
         designator: "R1".into(),

@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 6 to preserve schematic links in appended part snapshots.
-pub const LOG_VERSION: u32 = 6;
+/// New logs use version 7 to preserve explicit assembly metadata in appended part snapshots.
+pub const LOG_VERSION: u32 = 7;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -115,15 +115,20 @@ impl EventLog {
         if header.format != LOG_FORMAT
             || header.version > LOG_VERSION
             || (header.version < viamind_doc::file::minimum_version(&header.base))
+            || viamind_doc::file::validate_assembly(&header.base).is_err()
             || viamind_doc::file::validate_pads(&header.base).is_err()
             || viamind_doc::file::validate_copper(&header.base).is_err()
             || viamind_doc::schematic::validate_project(&header.base, None).is_err()
         {
             return Err(LogError::BadHeader);
         }
+        let mut budget =
+            MetadataBudget::new(header.base.board.parts.values().filter_map(|p| p.assembly.as_deref())).map_err(|_| LogError::BadHeader)?;
+        let mut current = header.base.clone();
         let mut log = EventLog::new(header.base);
         for (index, line) in lines {
             let event: ChangeEvent = serde_json::from_str(&line?).map_err(|source| LogError::Parse { line: index + 1, source })?;
+            validate_event_assembly(&event).map_err(|_| LogError::BadHeader)?;
             if header.version < 3 && event.deltas.iter().any(|d| matches!(d, crate::Delta::Part { before, after, .. } if before.as_ref().is_some_and(|p| p.pads.is_some()) || after.as_ref().is_some_and(|p| p.pads.is_some()))) {
                 return Err(LogError::BadHeader);
             }
@@ -132,9 +137,12 @@ impl EventLog {
             }
             for delta in &event.deltas {
                 let valid_id = match delta {
-                    crate::Delta::Part { id, before, after } => {
-                        before.iter().chain(after).all(|part| part.id == *id && (header.version >= 6 || part.schematic_symbol.is_none()))
-                    }
+                    crate::Delta::Part { id, before, after } => before.iter().chain(after).all(|part| {
+                        part.id == *id
+                            && (header.version >= 6 || part.schematic_symbol.is_none())
+                            && (header.version >= 7 || part.assembly.is_none())
+                            && part.assembly.as_ref().is_none_or(|m| m.validate().is_ok())
+                    }),
                     crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Sheet { id, before, after } => before.iter().chain(after).all(|sheet| {
@@ -145,6 +153,17 @@ impl EventLog {
                 if !valid_id {
                     return Err(LogError::BadHeader);
                 }
+            }
+            for delta in &event.deltas {
+                if let crate::Delta::Part { id, before, after } = delta {
+                    let before = before.as_ref().and_then(|p| p.assembly.as_deref());
+                    if current.board.part(id).and_then(|p| p.assembly.as_deref()) != before {
+                        return Err(LogError::BadHeader);
+                    }
+                    let after = after.as_ref().and_then(|p| p.assembly.as_deref());
+                    budget.replace(before, after).map_err(|_| LogError::BadHeader)?;
+                }
+                delta.apply_to(&mut current);
             }
             log.append(event);
         }
@@ -160,12 +179,79 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
+    viamind_doc::file::validate_assembly(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: LOG_VERSION, base })?;
     out.write_all(b"\n")
 }
 
 /// Appends one event as a single line.
 pub fn write_entry(mut out: impl Write, event: &ChangeEvent) -> io::Result<()> {
+    validate_event_assembly(event).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
     serde_json::to_writer(&mut out, event)?;
     out.write_all(b"\n")
+}
+
+/// Reconstruct the touched portion's initial sourcing state without cloning strings.
+/// The first before record supplies each ID; later records update it sequentially.
+fn validate_event_assembly(event: &ChangeEvent) -> Result<(), &'static str> {
+    let mut state = std::collections::BTreeMap::new();
+    for delta in &event.deltas {
+        if let crate::Delta::Part { id, before, after } = delta {
+            for p in before.iter().chain(after) {
+                if let Some(m) = &p.assembly {
+                    m.validate()?;
+                }
+            }
+            state.entry(*id).or_insert_with(|| before.as_ref().and_then(|p| p.assembly.as_deref()));
+        }
+    }
+    let mut budget = MetadataBudget::new(state.values().filter_map(|m| *m))?;
+    for delta in &event.deltas {
+        if let crate::Delta::Part { id, before, after } = delta {
+            if state.get(id).copied().flatten() != before.as_ref().and_then(|p| p.assembly.as_deref()) {
+                return Err("inconsistent assembly metadata in sequential event snapshots");
+            }
+            let before = before.as_ref().and_then(|p| p.assembly.as_deref());
+            let after = after.as_ref().and_then(|p| p.assembly.as_deref());
+            budget.replace(before, after)?;
+            state.insert(*id, after);
+        }
+    }
+    Ok(())
+}
+
+/// Each sequential transition checks only its borrowed records, not the entire board.
+#[derive(Clone, Copy, Default)]
+struct MetadataBudget {
+    components: usize,
+    text: usize,
+}
+impl MetadataBudget {
+    fn new<'a>(records: impl IntoIterator<Item = &'a viamind_doc::AssemblyMetadata>) -> Result<Self, &'static str> {
+        let mut budget = Self::default();
+        for record in records {
+            budget.replace(None, Some(record))?;
+        }
+        Ok(budget)
+    }
+    fn replace(&mut self, before: Option<&viamind_doc::AssemblyMetadata>, after: Option<&viamind_doc::AssemblyMetadata>) -> Result<(), &'static str> {
+        let mut candidate = *self;
+        if let Some(before) = before {
+            candidate.components = candidate.components.checked_sub(1).ok_or("inconsistent assembly component budget")?;
+            candidate.text = candidate.text.checked_sub(before.strings().map(str::len).sum()).ok_or("inconsistent assembly text budget")?;
+        }
+        if let Some(after) = after {
+            after.validate()?;
+            candidate.components = candidate.components.saturating_add(1);
+            candidate.text = candidate.text.saturating_add(after.strings().map(str::len).sum());
+        }
+        if candidate.components > viamind_doc::assembly::MAX_SOURCING_COMPONENTS {
+            return Err("at most 100000 components may carry sourcing metadata");
+        }
+        if candidate.text > viamind_doc::assembly::MAX_SOURCING_TEXT {
+            return Err("sourcing metadata exceeds 2 MiB aggregate UTF-8 text");
+        }
+        *self = candidate;
+        Ok(())
+    }
 }
