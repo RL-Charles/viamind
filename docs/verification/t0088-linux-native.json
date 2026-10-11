@@ -1,0 +1,104 @@
+{
+  "source_commit": "85a33c04b991a8c4cc7dcb0f8c5bca7ddc09f6e6",
+  "source_base": "0fb27a1",
+  "date": "2026-10-11",
+  "platform": "Linux x86_64 Wayland/Hyprland",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "workspace_tests": {
+    "passed": 590,
+    "failed": 0,
+    "ignored": 1
+  },
+  "full_gate_log_sha256": "e1399ae6506547b8ca0dcb86704b7afc46c2f4152da917491047cadd4ce7a184",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --offline --locked --workspace --all-targets -- -D warnings",
+    "cargo test --offline --locked --workspace",
+    "cargo build --offline --locked --workspace",
+    "cargo build --offline --locked -p viamind-ui-egui --example t0088_inspection"
+  ],
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "preflight": "Touch all workspace Rust source mtimes under entire-sequence mutex, preserving third-party cache; copy unique stripped binaries before releasing mutex.",
+  "environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp"
+  },
+  "profile": "unoptimized debug with stripped debug info",
+  "production": {
+    "binary_sha256": "051d6364fb908ef4465b003a3b57a9b3cbded16ef26dfc58e69cf618295bc1e0",
+    "pid": 944501,
+    "mcp_port": 7914,
+    "window_id": 110379538152704,
+    "window_bounds": {
+      "height": 58,
+      "width": 46,
+      "x": 1996,
+      "y": 1267
+    },
+    "http_checks": 27,
+    "passed": true,
+    "first_plan_ms": 2.400573001068551,
+    "first_commit_ms": 3.3994929981417954,
+    "warm_commit_ms": [
+      3.8216120010474697,
+      12.669815005210694,
+      6.871651996334549,
+      6.063214001187589,
+      11.689680002746172
+    ],
+    "warm_mean_ms": 8.223194601305295,
+    "nearby_host_load": "13.02/16.26/15.89; concurrent builds active",
+    "fixture_sha256": "31bdd5f3e8b440680682b8cdf3341d637cc276126ce9593c289d8bf68a876090"
+  },
+  "initial_full_run": "Fmt/strict lint passed; new MCP test assumed UUID-sorted endpoints would put top first. Explicit layer lookup fixed test, preserving exact assertions and product behavior. Required full rerun passed all590 tests.",
+  "initial_inspection": {
+    "binary_sha256": "ed263b05c5d912eaeceb9d1c0c4b81bf3187175cdfc0dd91a374bb3e828df4de",
+    "pid": 945077,
+    "result": "Readable joint checked orange/blue detours, fixed via/cutout; Finish below fold, so superseded by inspection-only scroll-memory capture.",
+    "source_commit": "85a33c04b991a8c4cc7dcb0f8c5bca7ddc09f6e6"
+  },
+  "inspection_source_commit": "b1cf0e72e9cb9ba0048dfef578edef2f94758a15",
+  "inspection_only_change": "Fixed1600x1200 host asserts actual Plan/Finish/Cancel bounds before launch; logical focus retained only by inspection host. Production binary/source unchanged.",
+  "excluded_scroll_memory_inspection": {
+    "source_commit": "acd5157e1effc83c050166a5662cfe97c8c61b9a",
+    "binary_sha256": "658241d1de4de320918649af560142897d947422f16bed444b9f48546387973a",
+    "pid": 966454,
+    "result": "Inspection lint/build passed but native sidebar root IDs differed; Finish remained below fold. Excluded from final capture evidence."
+  },
+  "inspection": {
+    "source_commit": "b1cf0e72e9cb9ba0048dfef578edef2f94758a15",
+    "binary_sha256": "bd9da95d933e543ebc73f6a045073c4d10f800e1d5113186d866e332e1a4973c",
+    "pid": 1004514,
+    "window_id": 110379503545200,
+    "window_bounds": {
+      "height": 1200,
+      "width": 1600,
+      "x": 2080,
+      "y": 1165
+    },
+    "capture_pixels": [
+      1568,
+      1176
+    ],
+    "capture_sha256": "9856d0898ba7867c62178617faa327e93ff52b6ee5fc89baf7236cb8c112b9ed",
+    "capture_path": "docs/verification/t0088-checked-preview.png",
+    "fmt": "pass",
+    "strict_example_clippy": "pass",
+    "example_build": "pass",
+    "build_log_sha256": "8d178c8bc0925d2feddc7c840565bb32740c5ab668eff8587fbe1255ccbe4bb0",
+    "actual_plan_finish_cancel_bounds_asserted_before_launch": true,
+    "production_egui_controls_and_pointer_events": true,
+    "per_native_frame_complete_session_unchanged_assertion": true,
+    "logical_focus_retention_is_inspection_only": true,
+    "operating_system_input_claim": false,
+    "checked_segments": 10,
+    "obstacle_boxes": 4,
+    "graph_nodes": 112,
+    "grid_nm": 250000,
+    "width_nm": 250000,
+    "geometry_runtime_log": "docs/verification/t0088-inspection-runtime.log"
+  }
+}
