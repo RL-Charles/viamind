@@ -34,7 +34,7 @@ def check_runtime(runtime):
     if runtime.is_symlink() or not runtime.is_dir():
         raise ValueError("runtime must be a regular directory")
     manifest_path = runtime / "manifest.json"
-    if manifest_path.is_symlink() or manifest_path.stat().st_size > 1024 * 1024:
+    if manifest_path.is_symlink() or not manifest_path.is_file() or manifest_path.stat().st_size > 1024 * 1024:
         raise ValueError("runtime manifest type/size mismatch")
     manifest = json.loads(manifest_path.read_text())
     if manifest["configuration"] != pins() or not manifest["relink_from_companion_only"]:

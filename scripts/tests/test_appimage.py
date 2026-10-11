@@ -77,7 +77,9 @@ class AppImageTests(unittest.TestCase):
                 member = tarfile.TarInfo("large")
                 member.size = 4
                 target.addfile(member, io.BytesIO(b"four"))
-                target.addfile(member, io.BytesIO(b"four"))
+                alias = tarfile.TarInfo("./large")
+                alias.size = 4
+                target.addfile(alias, io.BytesIO(b"four"))
             for cap, count in [(3, 10), (100, 1), (100, 10)]:
                 with self.assertRaises(ValueError):
                     support.extract_regular(archive, root / f"cap{cap}-{count}", max_bytes=cap, max_members=count)
@@ -138,6 +140,11 @@ class AppImageTests(unittest.TestCase):
             self.assertFalse((root / "output").exists())
             self.assertFalse(list(root.glob(".appimage-build-*")))
             self.assertEqual((runtime / "runtime-x86_64").read_bytes(), b"runtime")
+            (runtime / "manifest.json").unlink()
+            os.mkfifo(runtime / "manifest.json")
+            with patch.object(Path, "read_text", side_effect=AssertionError("must refuse FIFO before reading")):
+                with self.assertRaisesRegex(ValueError, "type/size"):
+                    package.check_runtime(runtime)
 
     def test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture(self):
         with tempfile.TemporaryDirectory() as temporary:
