@@ -321,12 +321,7 @@ mod tests {
             pending: Some(Pending { stream: captured.stream_id, receiver }),
             ..Default::default()
         };
-        e.execute(
-            "add_part",
-            serde_json::json!({"designator":"R1","value":"concurrent","footprint":"other","x_mm":1,"y_mm":1}),
-            viamind_engine::Origin::agent("other"),
-        )
-        .unwrap();
+        UiAction::PlacePart.run(&e, serde_json::json!({"designator":"R1","value":"concurrent","footprint":"other","x_mm":1,"y_mm":1})).unwrap();
         sender.try_send(Ok(Completed::Symbols(project, captured))).unwrap();
         state.poll(Some(e.event_cursor().stream_id));
         assert_eq!(state.snapshot.as_ref().unwrap().1, captured);
