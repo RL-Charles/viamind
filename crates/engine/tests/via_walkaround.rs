@@ -23,6 +23,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
         let part = Part {
             id: ObjectId::new(),
             schematic_symbol: None,
+            assembly: None,
             designator: format!("J{x}"),
             value: String::new(),
             footprint: String::new(),
@@ -61,6 +62,28 @@ fn reject(e: &EngineHandle, cmd: RoutePadViaWalkaround) {
     assert!(e.plan_pad_via_walkaround(&cmd).is_err());
     assert!(e.execute_typed(cmd, Origin::User).is_err());
     assert_eq!(e.session_state(), before);
+}
+#[test]
+fn both_side_paths_ignore_unrelated_invalid_sourcing_without_mutation() {
+    let _guard = TEST.lock().unwrap();
+    let (mut project, ids) = fixture();
+    let plain = EngineHandle::new(project.clone());
+    let expected = plain.plan_pad_via_walkaround(&input(&plain, ids)).unwrap();
+    for part in project.board.parts.values_mut() {
+        part.assembly =
+            Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("\n".repeat(3 * 1024 * 1024)), populate: false, ..Default::default() }));
+    }
+    let e = EngineHandle::new(project);
+    let cursor = e.event_cursor();
+    let plan = e.plan_pad_via_walkaround(&input(&e, ids)).unwrap();
+    assert_eq!(plan.before.path.points, expected.before.path.points);
+    assert_eq!(plan.after.path.points, expected.after.path.points);
+    assert_eq!(plan.work, expected.work);
+    assert_eq!(e.event_cursor(), cursor);
+    assert!(e.read(|p| p.board.parts.values().all(|part| {
+        let metadata = part.assembly.as_ref().unwrap();
+        !metadata.populate && metadata.mpn.as_ref().unwrap().len() == 3 * 1024 * 1024
+    })));
 }
 #[test]
 fn independently_expected_layer_paths_joint_commit_and_one_undo() {
