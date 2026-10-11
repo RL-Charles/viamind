@@ -266,10 +266,64 @@ pub(crate) fn at_zero(n: &Node, items: &mut [FidelityItem]) -> Result<Point> {
         return Err(bad("at requires X Y and optional zero rotation"));
     }
     if c.args.get(2).is_some_and(|a| decimal_nm(a).map_or(true, |v| v.0 != 0)) {
-        return Err(bad("only zero-angle footprint/pad placement is supported"));
+        return Err(bad("only zero-angle containing footprint placement is supported"));
     }
     mark(items, c, Disposition::Imported, "Exact zero-angle containing-object coordinates.");
     Ok(Point::new(decimal_nm(&c.args[0])?, decimal_nm(&c.args[1])?))
+}
+/// Parse exact cardinal degrees without interpreting them as lengths or using floats.
+fn cardinal_degrees(token: &str) -> Result<i32> {
+    let error = || bad("pad angle must be an exact multiple of 90 degrees within -360..360; use a bounded integer decimal without exponent");
+    if token.len() > MAX_STRING {
+        return Err(error());
+    }
+    let (negative, unsigned) = token.strip_prefix('-').map_or((false, token), |s| (true, s));
+    let mut parts = unsigned.split('.');
+    let whole = parts.next().unwrap_or_default();
+    let fraction = parts.next();
+    if whole.is_empty()
+        || !whole.bytes().all(|b| b.is_ascii_digit())
+        || fraction.is_some_and(|f| f.is_empty() || !f.bytes().all(|b| b == b'0'))
+        || parts.next().is_some()
+    {
+        return Err(error());
+    }
+    let whole = whole.parse::<i32>().map_err(|_| error())?;
+    if whole > 360 || whole % 90 != 0 {
+        return Err(error());
+    }
+    Ok(if negative { -whole } else { whole })
+}
+/// Represent cardinal rectangular copper exactly in the native axis-aligned pad model.
+/// The containing footprint remains front/zero-angle; no combined transform is inferred.
+pub(crate) fn cardinal_pad_geometry(n: &Node, items: &mut [FidelityItem]) -> Result<(Point, Nm, Nm)> {
+    let at = child(n, "at")?.ok_or_else(|| bad("missing pad at"))?;
+    if !at.children.is_empty() || !(2..=3).contains(&at.args.len()) {
+        return Err(bad("pad at requires X Y and optional exact cardinal angle within -360..360 degrees"));
+    }
+    let source_angle = at.args.get(2).map_or(Ok(0), |a| cardinal_degrees(a))?;
+    let canonical = source_angle.rem_euclid(360);
+    let swapped = matches!(canonical, 90 | 270);
+    let position = Point::new(decimal_nm(&at.args[0])?, decimal_nm(&at.args[1])?);
+    let size = field(n, "size", 2, items)?;
+    let (width, height) = (decimal_nm(&size[0])?, decimal_nm(&size[1])?);
+    let dimensions = if swapped { "width and height swapped exactly" } else { "width and height preserved exactly" };
+    mark(
+        items,
+        at,
+        Disposition::Imported,
+        &format!(
+            "Exact rectangular copper normalization: source angle {source_angle} degrees, canonical {canonical} degrees; center unchanged; {dimensions}. Native pad has no angle field."
+        ),
+    );
+    let size_node = child(n, "size")?.expect("validated size field");
+    mark(
+        items,
+        size_node,
+        Disposition::Imported,
+        &format!("Exact rectangle dimensions for canonical {canonical} degrees: {dimensions}; no rounding."),
+    );
+    Ok((position, if swapped { height } else { width }, if swapped { width } else { height }))
 }
 fn identity(n: &Node, items: &mut [FidelityItem]) -> Result<ObjectId> {
     let a = child(n, "uuid")?;
@@ -365,9 +419,8 @@ fn pad(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]) -> R
         if l.args.len() == 1 { Disposition::Imported } else { Disposition::Omitted },
         "Front copper imported; mask/paste layers are not represented by the native pad model.",
     );
-    let size = field(n, "size", 2, items)?;
-    let (width, height) = (decimal_nm(&size[0])?, decimal_nm(&size[1])?);
-    Ok(Pad { id: identity(n, items)?, number: name(&n.args[0])?, position: at_zero(n, items)?, width, height, net: net(n, table, items)? })
+    let (position, width, height) = cardinal_pad_geometry(n, items)?;
+    Ok(Pad { id: identity(n, items)?, number: name(&n.args[0])?, position, width, height, net: net(n, table, items)? })
 }
 fn footprint(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]) -> Result<Part> {
     if n.args.len() != 1 {

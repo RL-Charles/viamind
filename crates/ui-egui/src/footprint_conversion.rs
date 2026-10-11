@@ -178,7 +178,7 @@ impl ViamindApp {
         let mut changed = false;
         egui::Window::new("Convert footprint S-expression").open(&mut open).default_width(760.0)
             .max_width((ui.ctx().content_rect().width() - 24.0).max(240.0)).vscroll(true).show(ui.ctx(), |ui| {
-                ui.label("Standalone .kicad_mod to detached native footprint library. Front zero-angle rectangular SMD pads only.");
+                ui.label("Standalone .kicad_mod to detached native footprint library. Front zero-angle footprints with cardinal rectangular SMD pads only (-360..360 degrees).");
                 ui.label("Source UUIDs, cosmetic/model data and mask/paste membership are omitted. Meaningful source nets and unsupported geometry block conversion. Full fidelity: false.");
                 let label = ui.label("Footprint source file");
                 changed |= ui.add(egui::TextEdit::singleline(&mut self.footprint_conversion.source).desired_width(ui.available_width()).char_limit(4096)).labelled_by(label.id).changed();

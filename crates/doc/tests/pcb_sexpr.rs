@@ -57,7 +57,7 @@ fn unsupported_copper_transforms_semantics_and_outline_never_look_complete() {
     for (from, to) in [
         ("smd rect", "smd roundrect"),
         ("(at 4.000007 5.000011)", "(at 4.000007 5.000011 90)"),
-        ("(at -0.500003 0.250001)", "(at -0.500003 0.250001 90)"),
+        ("(at -0.500003 0.250001)", "(at -0.500003 0.250001 45)"),
         ("(size 0.6)", "(size 0.6) (remove_unused_layers)"),
         ("(net 1 \"VIN\")", "(net 1 \"WRONG\")"),
         ("(width 0.2)", "(width 0.2) (clearance 0.5)"),

@@ -1,0 +1,253 @@
+{
+  "readback": "actual native WGPU Screenshot, no OS input",
+  "processes": [
+    {
+      "name": "production",
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/launch-production.sh",
+        "pid": 1274306,
+        "running": true,
+        "windows": []
+      },
+      "pid": 1274306,
+      "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/production-verified",
+      "exe_sha256": "ec8a39ef2c0c0b427bc38a6948759d2a0fb5fe274e166fa812c74e0b0cc48427",
+      "argv": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/production-verified"
+      ],
+      "cwd": "/home/charlesmowbray",
+      "process_stat": "1274306 (production-veri) S 4189 4189 4189 0 -1 4194304 10436 0 0 0 128 19 0 0 20 0 15 0 7107092 1465360384 34169 18446744073709551615 104518430000416 104518504188480 140734256491072 0 0 0 0 4096 1088 0 0 0 17 6 0 0 0 0 0 104518507485600 104518507498056 104518980366336 140734256500765 140734256500844 140734256500844 140734256508841 0"
+    },
+    {
+      "name": "normalization",
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/launch-normalization.sh",
+        "pid": 1275942,
+        "running": true,
+        "windows": []
+      },
+      "pid": 1275942,
+      "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+      "exe_sha256": "dba26286920d631dad7106677a75e1a3dc96493009e1c11c16203ecf53550b06",
+      "argv": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+        "/home/charlesmowbray/Development/viamind-t-0094/fixtures/import/original-cardinal-pads.kicad_mod",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-new-footprint.json",
+        "normalization",
+        "1600",
+        "1000",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-native.ppm"
+      ],
+      "cwd": "/home/charlesmowbray",
+      "process_stat": "1275942 (inspection-veri) R 4189 4189 4189 0 -1 4194304 12043 0 0 0 3719 105 0 0 20 0 12 0 7111250 1306394624 30016 18446744073709551615 102270622800592 102270687880848 140729871152832 0 0 0 0 4096 1088 0 0 0 17 10 0 0 0 0 0 102270690711896 102270690722048 102270990934016 140729871163146 140729871163522 140729871163522 140729871171497 0",
+      "capture": {
+        "capture": "eframe native WGPU framebuffer Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          1600.0,
+          1000.0
+        ],
+        "control_bounds": [
+          [
+            41.0,
+            347.0,
+            764.9375,
+            362.0
+          ]
+        ],
+        "full_session_unchanged": true,
+        "native_frames": 11,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-native.ppm",
+        "pid": 1275942,
+        "pixels": [
+          1600,
+          1000
+        ]
+      },
+      "counter_note": "Historical native_frames counts eframe UI callbacks/passes, not rendered frames.",
+      "ppm": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-native.ppm",
+        "sha256": "84f28574950dcbdde44d574c8b1cf2b4fc5b0f945f151a2f4489b841379ab564",
+        "bytes": 4800017
+      },
+      "png": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/normalization-native.png",
+        "sha256": "885a148d73ed1192ee1f9d877850d47cc4bb4bb019afba1a7e6d092384741f26",
+        "bytes": 110538
+      }
+    },
+    {
+      "name": "compact",
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/launch-compact.sh",
+        "pid": 1277005,
+        "running": true,
+        "windows": []
+      },
+      "pid": 1277005,
+      "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+      "exe_sha256": "dba26286920d631dad7106677a75e1a3dc96493009e1c11c16203ecf53550b06",
+      "argv": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+        "/home/charlesmowbray/Development/viamind-t-0094/fixtures/import/original-cardinal-pads.kicad_mod",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-new-footprint.json",
+        "compact",
+        "640",
+        "400",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-native.ppm"
+      ],
+      "cwd": "/home/charlesmowbray",
+      "process_stat": "1277005 (inspection-veri) R 4189 4189 4189 0 -1 4194304 9621 0 0 0 3379 116 0 0 20 0 12 0 7113641 1307783168 30355 18446744073709551615 107203292961488 107203358041744 140731434709808 0 0 0 0 4096 1088 0 0 0 17 9 0 0 0 0 0 107203360872792 107203360882944 107204384129024 140731434716958 140731434717314 140731434717314 140731434725289 0",
+      "capture": {
+        "capture": "eframe native WGPU framebuffer Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          640.0,
+          400.0
+        ],
+        "control_bounds": [
+          [
+            7.0,
+            283.0,
+            197.03125,
+            301.0
+          ]
+        ],
+        "full_session_unchanged": true,
+        "native_frames": 11,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-native.ppm",
+        "pid": 1277005,
+        "pixels": [
+          640,
+          400
+        ]
+      },
+      "counter_note": "Historical native_frames counts eframe UI callbacks/passes, not rendered frames.",
+      "ppm": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-native.ppm",
+        "sha256": "281f1231c543224a49cb0e148853997154d3ce6c9697e1bbdf472f3c19b54f9e",
+        "bytes": 768015
+      },
+      "png": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/compact-native.png",
+        "sha256": "da49a656b4891eb7adbee286ccb7c7c2b6c3acc42dd9df773d8fb5ca44a6cced",
+        "bytes": 50064
+      }
+    },
+    {
+      "name": "completed",
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/launch-completed.sh",
+        "pid": 1282419,
+        "running": true,
+        "windows": []
+      },
+      "pid": 1282419,
+      "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+      "exe_sha256": "dba26286920d631dad7106677a75e1a3dc96493009e1c11c16203ecf53550b06",
+      "argv": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/inspection-verified",
+        "/home/charlesmowbray/Development/viamind-t-0094/fixtures/import/original-cardinal-pads.kicad_mod",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-new-footprint.json",
+        "completed",
+        "1600",
+        "1000",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-native.ppm"
+      ],
+      "cwd": "/home/charlesmowbray",
+      "process_stat": "1282419 (inspection-veri) S 4189 4189 4189 0 -1 4194304 12013 0 0 0 1100 42 0 0 20 0 12 0 7128371 1306234880 29999 18446744073709551615 106056635480784 106056700561040 140731011789840 0 0 0 0 4096 1088 0 0 0 17 11 0 0 0 0 0 106056703392088 106056703402240 106057691246592 140731011792662 140731011793026 140731011793026 140731011801001 0",
+      "capture": {
+        "capture": "eframe native WGPU framebuffer Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          1600.0,
+          1000.0
+        ],
+        "control_bounds": [],
+        "full_session_unchanged": true,
+        "native_frames": 11,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-native.ppm",
+        "pid": 1282419,
+        "pixels": [
+          1600,
+          1000
+        ]
+      },
+      "counter_note": "Historical native_frames counts eframe UI callbacks/passes, not rendered frames.",
+      "ppm": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-native.ppm",
+        "sha256": "51dfc6cf5c8981e2af678dc4f4be57f51c6eb6258ec0266c087e0aeb26b18a12",
+        "bytes": 4800017
+      },
+      "png": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/completed-native.png",
+        "sha256": "735bdfe547316b0d8a6adb041a23caaefd327dab0ebc35324e9232f8329203a9",
+        "bytes": 111319
+      }
+    },
+    {
+      "name": "board",
+      "launch": {
+        "active": false,
+        "bundle_id": null,
+        "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/launch-board.sh",
+        "pid": 1282500,
+        "running": true,
+        "windows": []
+      },
+      "pid": 1282500,
+      "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/pcb-inspection-verified",
+      "exe_sha256": "6d93380c1c7e7cbb07805ab5787a3ecc5e453d3afc557c90e93077da98ecf66e",
+      "argv": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/pcb-inspection-verified",
+        "/home/charlesmowbray/Development/viamind-t-0094/fixtures/import/original-cardinal-pads.kicad_pcb",
+        "imported",
+        "1600",
+        "1000",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/board-native.ppm"
+      ],
+      "cwd": "/home/charlesmowbray",
+      "process_stat": "1282500 (pcb-inspection-) S 4189 4189 4189 0 -1 4194304 12097 0 0 0 1061 45 0 0 20 0 12 0 7128516 1307865088 30684 18446744073709551615 111151993925952 111152058997104 140729173970576 0 0 0 0 4096 1088 0 0 0 17 6 0 0 0 0 0 111152061827424 111152061837568 111153103437824 140729173974891 140729173975166 140729173975166 140729173983141 0",
+      "capture": {
+        "capture": "eframe native WGPU framebuffer Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          1600.0,
+          1000.0
+        ],
+        "control_bounds": [],
+        "full_session_unchanged": true,
+        "native_frames": 11,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/board-native.ppm",
+        "pid": 1282500,
+        "pixels": [
+          1600,
+          1000
+        ]
+      },
+      "counter_note": "Historical native_frames counts eframe UI callbacks/passes, not rendered frames.",
+      "ppm": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/board-native.ppm",
+        "sha256": "a483324529deb4a02e2e3090471bc240288bff26a3ce262e85cb20a204632298",
+        "bytes": 4800017
+      },
+      "png": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0094/board-native.png",
+        "sha256": "6740c5200060b4ced09bbf52e15bed97e08e289d6a1107568ef7bc14d7db2bcc",
+        "bytes": 78691
+      }
+    }
+  ]
+}

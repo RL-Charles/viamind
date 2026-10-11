@@ -4,7 +4,7 @@ use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 use viamind_engine::EngineHandle;
 use viamind_ui_egui::{ViamindApp, actions::UiAction};
-const SOURCE: &str = include_str!("../../../fixtures/import/original-rect-smd.kicad_mod");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_mod");
 static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
     h.get_by_label(label).scroll_to_me();
@@ -62,6 +62,10 @@ fn actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged()
     click(&mut h, "Preview footprint conversion");
     wait(&mut h);
     assert!(h.state().footprint_conversion.preview().unwrap().can_convert);
+    let preview = h.state().footprint_conversion.preview().unwrap();
+    let pad = &preview.footprint.as_ref().unwrap().pads[0];
+    assert_eq!((pad.width.0, pad.height.0), (1_200_003, 800_001));
+    assert!(preview.report.items.iter().any(|i| i.reason.contains("source angle 90 degrees, canonical 90 degrees")));
     assert!(h.query_all_by_label_contains("2 rectangular pads").next().is_some());
     click(&mut h, "Create new native footprint file");
     wait(&mut h);
@@ -102,6 +106,47 @@ fn actual_compact_scroll_reaches_conversion_and_changed_source_error_without_tou
     let rect = h.query_all_by_label_contains("source bytes changed").next().unwrap().rect();
     assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
     assert!(!output.exists());
+    assert_eq!(engine.session_state(), before);
+}
+#[test]
+fn actual_report_scroll_reaches_exact_cardinal_normalization_without_session_changes() {
+    let _serial = SERIAL.lock().unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let source = directory.path().join("cardinal.kicad_mod");
+    std::fs::write(&source, SOURCE).unwrap();
+    let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
+    let before = engine.session_state();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_footprint_conversion();
+    let mut h = Harness::builder().with_size(vec2(1400.0, 1000.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(3);
+    input(&mut h, "Footprint source file", source.to_str().unwrap());
+    click(&mut h, "Preview footprint conversion");
+    wait(&mut h);
+    click(&mut h, "Footprint per-list fidelity report");
+    let label = "source angle 90 degrees, canonical 90 degrees";
+    let header = h.get_by_label("Footprint per-list fidelity report").rect();
+    let inside_report = egui::pos2(header.center().x, header.max.y + 120.0);
+    assert!(inside_report.y < 1000.0);
+    for _ in 0..150 {
+        if h.query_by_label_contains(label).is_some() {
+            break;
+        }
+        // Anchor input inside the report rather than on its clipped virtual rows.
+        h.event(Event::PointerMoved(inside_report));
+        h.event(Event::MouseWheel {
+            unit: egui::MouseWheelUnit::Point,
+            delta: vec2(0.0, -100.0),
+            phase: egui::TouchPhase::Move,
+            modifiers: Modifiers::NONE,
+        });
+        h.run_steps(8);
+    }
+    h.get_by_label_contains(label).scroll_to_me();
+    h.run_steps(8);
+    let rect = h.get_by_label_contains(label).rect();
+    assert!(rect.min.y >= 0.0 && rect.max.y <= 1000.0, "{rect:?}");
+    assert!(h.query_by_label_contains("center unchanged; width and height swapped exactly").is_some());
     assert_eq!(engine.session_state(), before);
 }
 #[test]

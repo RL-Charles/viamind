@@ -21,7 +21,10 @@ remain unchanged. Converted source UUIDs are report provenance only.
 ## Supported subset and omissions
 
 One explicit front `F.Cu` footprint with 1–1024 uniquely numbered `smd rect`
-pads, zero pad angle and exact local decimal millimetres. Local coordinates
+pads, exact cardinal pad angles within -360..360 degrees and exact local decimal millimetres.
+The containing footprint stays front zero-angle. 90/270-degree pads retain their
+center and swap exact native width/height; 0/180 retain both dimensions. The per-list
+report discloses normalization; the native pad has no angle field. Local coordinates
 and rectangle sizes become integer nanometres without rounding. Tested date
 headers are `20221018`, `20240108` and `20241229`; this is not universal version
 7–9 library compatibility.
@@ -30,7 +33,7 @@ Optional UUIDs must be valid, nonnil and unique. Native output has no source
 UUIDs, nets, placement, mask/paste memberships, properties, graphics or model
 references. Known noncopper art and metadata are explicitly omitted. External
 models are never loaded. An absent net or `(net 0 "")` is detached; meaningful
-net assignments block conversion. Rotated/back/drilled/other-shape pads,
+net assignments block conversion. Noncardinal/back/drilled/other-shape pads,
 copper art, board linkage, electrical overrides and unknown semantic objects
 also block the entire conversion. No partial library is published.
 
@@ -51,3 +54,8 @@ methods. Conversion takes `path`, the exact lowercase `expected_source_sha256`
 returned by Preview, and `destination`. It rereads and reparses source bytes
 before atomic new-file publication. Existing `import_footprint` is the separate
 explicit application command.
+
+[Cardinal normalization behavior](specs/cardinal-pad-import.md) defines the bounded
+angle grammar and exact geometry policy.
+[Cardinal conversion verification](cardinal-pad-import-verification.md) records
+the original odd-Nm fixtures, actual MCP checks and readable compact/native captures.

@@ -2,8 +2,8 @@
 use crate::{
     footprint::{Footprint, FootprintPad, LocalPosition},
     pcb_sexpr::{
-        Disposition, FidelityItem, FidelityReport, ImportError, ImportedCounts, Node, allowed, at_zero, atoms, canonical_layer, child, decimal_nm,
-        field, mark, name, omit_scalars, parse_tree, subtree, validate_ids,
+        Disposition, FidelityItem, FidelityReport, ImportError, ImportedCounts, Node, allowed, at_zero, atoms, canonical_layer,
+        cardinal_pad_geometry, child, mark, name, omit_scalars, parse_tree, subtree, validate_ids,
     },
 };
 use std::collections::BTreeSet;
@@ -61,14 +61,8 @@ fn pad(n: &Node, items: &mut [FidelityItem]) -> Result<FootprintPad> {
         if layers.args.len() == 1 { Disposition::Imported } else { Disposition::Omitted },
         "Front rectangular copper retained; source mask/paste memberships are omitted and native output defaults may differ.",
     );
-    let position = at_zero(n, items)?;
-    let size = field(n, "size", 2, items)?;
-    let pad = FootprintPad {
-        number: name(&n.args[0])?,
-        position: LocalPosition { x: position.x, y: position.y },
-        width: decimal_nm(&size[0])?,
-        height: decimal_nm(&size[1])?,
-    };
+    let (position, width, height) = cardinal_pad_geometry(n, items)?;
+    let pad = FootprintPad { number: name(&n.args[0])?, position: LocalPosition { x: position.x, y: position.y }, width, height };
     if pad.width.0 <= 0 || pad.height.0 <= 0 {
         return Err(bad("Rectangular pad dimensions must be greater than zero."));
     }
@@ -336,7 +330,7 @@ mod tests {
         for (from, to) in [
             ("smd rect", "smd roundrect"),
             ("smd rect", "thru_hole rect"),
-            ("(at -0.500003 0.250001)", "(at -0.500003 0.250001 90)"),
+            ("(at -0.500003 0.250001)", "(at -0.500003 0.250001 45)"),
             ("(size 0.8 1.2)", "(size 0.8 1.2) (drill 0.4)"),
             ("(size 0.8 1.2)", "(size 0.8 1.2) (clearance 0.3)"),
             ("(layer \"F.Cu\")", "(layer \"B.Cu\")"),

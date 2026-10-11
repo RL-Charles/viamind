@@ -8,7 +8,7 @@ use serde_json::{Value, json};
 use viamind_engine::EngineHandle;
 use viamind_mcp::{engine_registry, serve_http};
 type Client = RunningService<RoleClient, ClientConfig>;
-const SOURCE: &str = include_str!("../../../fixtures/import/original-rect-smd.kicad_mod");
+const SOURCE: &str = include_str!("../../../fixtures/import/original-cardinal-pads.kicad_mod");
 async fn call(client: &Client, name: &'static str, input: Value) -> CallToolResult {
     client.call_tool(CallToolRequestParams::new(name).with_arguments(input.as_object().unwrap().clone())).await.unwrap()
 }
@@ -69,6 +69,14 @@ async fn actual_two_clients_convert_without_project_changes_and_reuse_only_by_ex
     assert_eq!(engine.document_status(), status);
     let footprint = viamind_doc::footprint::load(&output).unwrap();
     assert_eq!(footprint.pads.len(), 2);
+    assert_eq!((footprint.pads[0].width.0, footprint.pads[0].height.0), (1_200_003, 800_001));
+    assert!(
+        preview["report"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|i| i["reason"].as_str().unwrap().contains("source angle 90 degrees, canonical 90 degrees"))
+    );
     let old = before.project.board.part(&serde_json::from_value(id.clone()).unwrap()).unwrap();
     assert_eq!(call(&a, "import_footprint", json!({"expected_project":before.project.id,"expected":old,"path":output})).await.is_error, Some(false));
     let applied = engine.read(|p| p.board.part(&old.id).unwrap().clone());

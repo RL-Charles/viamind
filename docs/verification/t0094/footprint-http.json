@@ -1,0 +1,358 @@
+{
+  "passed": true,
+  "checks": [
+    "detached preview and conversion tools discovered",
+    "fixture begins with dirty native work and shared selection",
+    "two-client repeat preview deterministic with full session unchanged",
+    "exact odd-Nm detached geometry and explicit incomplete fidelity",
+    "cardinal angles preserve exact center and disclose both exact dimension swaps",
+    "source UUIDs report-only and no output IDs or nets",
+    "unsupported angle 45 blocks publication and preserves full session",
+    "unsupported angle 450 blocks publication and preserves full session",
+    "unsupported angle 90.000000001 blocks publication and preserves full session",
+    "invalid schema and digest reject without output or session mutation",
+    "unsupported pads block whole conversion with actionable per-list reason",
+    "meaningful source nets never silently become detached",
+    "changed exact source bytes reject before new-file publication",
+    "source native existing and symlink destinations preserve all bytes",
+    "new native library strict round-trip matches exact preview",
+    "dirty work active path cursor history and shared selection remain unchanged",
+    "repeated publication cannot clobber native library",
+    "explicit subsequent application retains numbered pad identity net and placement",
+    "explicit application is undoable independently of detached conversion",
+    "source and saved native bytes remain unchanged through reuse"
+  ],
+  "binary_sha256": "ec8a39ef2c0c0b427bc38a6948759d2a0fb5fe274e166fa812c74e0b0cc48427",
+  "transport": "http://127.0.0.1:7920/mcp",
+  "fixture_sha256": "62446d4b15bc0d1f4770ea6c44298c55dd10ac383cd36e4706c901010ab05fb4",
+  "cardinal_checks": true,
+  "fidelity_report": {
+    "blocked_lists": 0,
+    "format_version": "20241229",
+    "full_fidelity": false,
+    "imported": {
+      "outline_vertices": 0,
+      "pads": 2,
+      "parts": 0,
+      "tracks": 0,
+      "vias": 0
+    },
+    "items": [
+      {
+        "byte_offset": 0,
+        "disposition": "imported",
+        "path": "root",
+        "reason": "Exact supported detached local pad geometry; no project, connectivity or manufacturing fidelity claim.",
+        "source_id": null,
+        "token": "footprint"
+      },
+      {
+        "byte_offset": 29,
+        "disposition": "omitted",
+        "path": "root/0",
+        "reason": "Source format date retained in report; native library uses its own envelope version.",
+        "source_id": null,
+        "token": "version"
+      },
+      {
+        "byte_offset": 50,
+        "disposition": "omitted",
+        "path": "root/1",
+        "reason": "Recognized generator/edit/search/model metadata is not retained; no external model/library reads occur.",
+        "source_id": null,
+        "token": "generator"
+      },
+      {
+        "byte_offset": 88,
+        "disposition": "omitted",
+        "path": "root/2",
+        "reason": "Source front template layer is not stored; native application retains the target component side.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 105,
+        "disposition": "omitted",
+        "path": "root/3",
+        "reason": "Source SMD classification implied by supported native rectangles; other attributes are not inferred.",
+        "source_id": null,
+        "token": "attr"
+      },
+      {
+        "byte_offset": 118,
+        "disposition": "omitted",
+        "path": "root/4",
+        "reason": "Recognized generator/edit/search/model metadata is not retained; no external model/library reads occur.",
+        "source_id": null,
+        "token": "descr"
+      },
+      {
+        "byte_offset": 173,
+        "disposition": "omitted",
+        "path": "root/5",
+        "reason": "Source property metadata is not retained or interpreted as native identity, connectivity or sourcing.",
+        "source_id": null,
+        "token": "property"
+      },
+      {
+        "byte_offset": 243,
+        "disposition": "omitted",
+        "path": "root/6",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "fp_text"
+      },
+      {
+        "byte_offset": 270,
+        "disposition": "omitted",
+        "path": "root/6/0",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 280,
+        "disposition": "omitted",
+        "path": "root/6/1",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 302,
+        "disposition": "omitted",
+        "path": "root/6/2",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "effects"
+      },
+      {
+        "byte_offset": 311,
+        "disposition": "omitted",
+        "path": "root/6/2/0",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "font"
+      },
+      {
+        "byte_offset": 317,
+        "disposition": "omitted",
+        "path": "root/6/2/0/0",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 328,
+        "disposition": "omitted",
+        "path": "root/6/2/0/1",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "thickness"
+      },
+      {
+        "byte_offset": 350,
+        "disposition": "omitted",
+        "path": "root/7",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": "60000000-0000-4000-8000-000000000001",
+        "token": "fp_line"
+      },
+      {
+        "byte_offset": 359,
+        "disposition": "omitted",
+        "path": "root/7/0",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "start"
+      },
+      {
+        "byte_offset": 373,
+        "disposition": "omitted",
+        "path": "root/7/1",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "end"
+      },
+      {
+        "byte_offset": 384,
+        "disposition": "omitted",
+        "path": "root/7/2",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "stroke"
+      },
+      {
+        "byte_offset": 392,
+        "disposition": "omitted",
+        "path": "root/7/2/0",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "width"
+      },
+      {
+        "byte_offset": 405,
+        "disposition": "omitted",
+        "path": "root/7/2/1",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "type"
+      },
+      {
+        "byte_offset": 425,
+        "disposition": "omitted",
+        "path": "root/7/3",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 443,
+        "disposition": "omitted",
+        "path": "root/7/4",
+        "reason": "Noncopper text/graphic art and its attributes are not represented by the detached native pad library.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 492,
+        "disposition": "imported",
+        "path": "root/8",
+        "reason": "Exact detached numbered rectangular SMD pad; native identity/net assigned only during later explicit application.",
+        "source_id": "70000000-0000-4000-8000-000000000001",
+        "token": "pad"
+      },
+      {
+        "byte_offset": 510,
+        "disposition": "imported",
+        "path": "root/8/0",
+        "reason": "Exact rectangular copper normalization: source angle 90 degrees, canonical 90 degrees; center unchanged; width and height swapped exactly. Native pad has no angle field.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 537,
+        "disposition": "imported",
+        "path": "root/8/1",
+        "reason": "Exact rectangle dimensions for canonical 90 degrees: width and height swapped exactly; no rounding.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 566,
+        "disposition": "omitted",
+        "path": "root/8/2",
+        "reason": "Front rectangular copper retained; source mask/paste memberships are omitted and native output defaults may differ.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 601,
+        "disposition": "omitted",
+        "path": "root/8/3",
+        "reason": "Explicit unassigned net marker omitted; native library has no net assignments.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 616,
+        "disposition": "omitted",
+        "path": "root/8/4",
+        "reason": "Source UUID is report provenance only; detached native definitions carry no object identities.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 665,
+        "disposition": "imported",
+        "path": "root/9",
+        "reason": "Exact detached numbered rectangular SMD pad; native identity/net assigned only during later explicit application.",
+        "source_id": null,
+        "token": "pad"
+      },
+      {
+        "byte_offset": 683,
+        "disposition": "imported",
+        "path": "root/9/0",
+        "reason": "Exact rectangular copper normalization: source angle -270 degrees, canonical 90 degrees; center unchanged; width and height swapped exactly. Native pad has no angle field.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 712,
+        "disposition": "imported",
+        "path": "root/9/1",
+        "reason": "Exact rectangle dimensions for canonical 90 degrees: width and height swapped exactly; no rounding.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 741,
+        "disposition": "omitted",
+        "path": "root/9/2",
+        "reason": "Front rectangular copper retained; source mask/paste memberships are omitted and native output defaults may differ.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 779,
+        "disposition": "omitted",
+        "path": "root/10",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "model"
+      },
+      {
+        "byte_offset": 811,
+        "disposition": "omitted",
+        "path": "root/10/0",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "offset"
+      },
+      {
+        "byte_offset": 819,
+        "disposition": "omitted",
+        "path": "root/10/0/0",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "xyz"
+      },
+      {
+        "byte_offset": 836,
+        "disposition": "omitted",
+        "path": "root/10/1",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "scale"
+      },
+      {
+        "byte_offset": 843,
+        "disposition": "omitted",
+        "path": "root/10/1/0",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "xyz"
+      },
+      {
+        "byte_offset": 856,
+        "disposition": "omitted",
+        "path": "root/10/2",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "rotate"
+      },
+      {
+        "byte_offset": 864,
+        "disposition": "omitted",
+        "path": "root/10/2/0",
+        "reason": "Model metadata omitted; external file is never read or resolved.",
+        "source_id": null,
+        "token": "xyz"
+      }
+    ],
+    "omitted_lists": 32
+  },
+  "native_library_path": "/home/charlesmowbray/.cache/viamind/tmp/viamind-t0089-native-tcyc9tyt/converted.viamind-footprint.json",
+  "native_library_sha256": "29d8d56ce887215006332071ca50d6b3adc9997a2d1609641b42663574ef07c0"
+}

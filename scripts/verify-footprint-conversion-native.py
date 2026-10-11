@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--binary', required=True)
 parser.add_argument('--fixture', default=str(Path(__file__).resolve().parent.parent/'fixtures/import/original-rect-smd.kicad_mod'))
 parser.add_argument('--report', required=True)
+parser.add_argument('--cardinal', action='store_true', help='Check the original asymmetric cardinal-pad fixture and strict angle rejection')
 parser.add_argument('--url', help='Owned actual production desktop MCP URL; never target another session')
 args = parser.parse_args()
 binary = Path(args.binary).resolve()
@@ -28,7 +29,7 @@ process = None
 clients = []
 sequence = 0
 checks = []
-report = {'passed':False,'checks':checks,'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'transport':args.url or 'production headless stdio','fixture_sha256':hashlib.sha256(source_bytes).hexdigest()}
+report = {'passed':False,'checks':checks,'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'transport':args.url or 'production headless stdio','fixture_sha256':hashlib.sha256(source_bytes).hexdigest(),'cardinal_checks':args.cardinal}
 if not args.url:
     env = os.environ.copy()
     env.pop('DISPLAY',None)
@@ -103,10 +104,23 @@ try:
     preview=call('preview_footprint_conversion',{'path':str(source)})
     check('two-client repeat preview deterministic with full session unchanged',call('preview_footprint_conversion',{'path':str(source)},peer=bool(args.url))==preview and call('get_session_state')==before and call('get_document_status')==status)
     fp=preview['footprint']
-    check('exact odd-Nm detached geometry and explicit incomplete fidelity',preview['can_convert'] and fp['name']=='OriginalRect2' and len(fp['pads'])==2 and fp['pads'][0]['position']=={'x':-500003,'y':250001} and fp['pads'][1]['position']=={'x':750007,'y':-125003} and fp['pads'][1]['width']==1000001 and fp['pads'][1]['height']==600003 and not preview['report']['full_fidelity'] and preview['report']['blocked_lists']==0 and preview['report']['omitted_lists']>0)
+    expected_second_size=(600003,1000001) if args.cardinal else (1000001,600003)
+    check('exact odd-Nm detached geometry and explicit incomplete fidelity',preview['can_convert'] and fp['name']=='OriginalRect2' and len(fp['pads'])==2 and fp['pads'][0]['position']=={'x':-500003,'y':250001} and fp['pads'][1]['position']=={'x':750007,'y':-125003} and (fp['pads'][1]['width'],fp['pads'][1]['height'])==expected_second_size and not preview['report']['full_fidelity'] and preview['report']['blocked_lists']==0 and preview['report']['omitted_lists']>0)
+    if args.cardinal:
+        reasons=[item['reason'] for item in preview['report']['items']]
+        check('cardinal angles preserve exact center and disclose both exact dimension swaps', (fp['pads'][0]['width'],fp['pads'][0]['height'])==(1200003,800001) and any('source angle 90 degrees, canonical 90 degrees' in r and 'swapped exactly' in r for r in reasons) and any('source angle -270 degrees, canonical 90 degrees' in r and 'swapped exactly' in r for r in reasons))
     check('source UUIDs report-only and no output IDs or nets',all(i['disposition']=='omitted' for i in preview['report']['items'] if i['token']=='uuid') and any(i['source_id'] for i in preview['report']['items']) and all(set(p)=={'number','position','width','height'} for p in fp['pads']))
     call('preview_footprint_conversion',{'path':str(source),'extra':True},error=True)
     output=directory/'converted.viamind-footprint.json'
+    if args.cardinal:
+        for angle in (b'45',b'450',b'90.000000001'):
+            changed=source_bytes.replace(b'(at -0.500003 0.250001 90)',b'(at -0.500003 0.250001 '+angle+b')')
+            assert changed!=source_bytes
+            source.write_bytes(changed)
+            invalid=call('preview_footprint_conversion',{'path':str(source)})
+            call('convert_footprint_file',conversion(invalid,output),error=True)
+            check('unsupported angle '+angle.decode()+' blocks publication and preserves full session',not invalid['can_convert'] and invalid['footprint'] is None and any('exact multiple of 90' in i['reason'] for i in invalid['report']['items']) and not output.exists() and call('get_session_state')==before and call('get_document_status')==status)
+        source.write_bytes(source_bytes)
     call('convert_footprint_file',dict(conversion(preview,output),expected_source_sha256='0'*64),error=True)
     check('invalid schema and digest reject without output or session mutation',not output.exists() and call('get_session_state')==before)
     source.write_bytes(source_bytes.replace(b'smd rect',b'smd circle'))

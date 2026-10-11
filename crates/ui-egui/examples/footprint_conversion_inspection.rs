@@ -3,15 +3,20 @@
 use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::{EngineHandle, SessionSnapshot};
 use viamind_ui_egui::{ViamindApp, actions::UiAction};
+#[path = "support/native_capture.rs"]
+mod native_capture;
 struct Inspect {
     app: ViamindApp,
     engine: EngineHandle,
     before: SessionSnapshot,
+    capture: native_capture::NativeCapture,
+    control_bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
         assert_eq!(self.engine.session_state(), self.before, "inspection preserves complete native session");
+        self.capture.poll(ui.ctx(), &self.control_bounds);
     }
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
@@ -35,6 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mode = std::env::args().nth(3).unwrap_or_else(|| "preview".into());
     let width = std::env::args().nth(4).map_or(Ok(1600.0), |s| s.parse::<f32>())?;
     let height = std::env::args().nth(5).map_or(Ok(1000.0), |s| s.parse::<f32>())?;
+    let capture = std::env::args_os().nth(6).map(std::path::PathBuf::from);
     let engine = EngineHandle::new(viamind_doc::Project::new("Detached conversion inspection"));
     UiAction::PlacePart
         .run(&engine, serde_json::json!({"designator":"KEEP1","value":"dirty native work preserved","footprint":"Original","x_mm":0,"y_mm":0}))?;
@@ -62,12 +68,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else if mode != "compact" {
         click(&mut h, "Footprint per-list fidelity report");
     }
+    if mode == "normalization" {
+        let label = "source angle 90 degrees, canonical 90 degrees";
+        let header = h.get_by_label("Footprint per-list fidelity report").rect();
+        let inside_report = egui::pos2(header.center().x, header.max.y + 120.0);
+        assert!(inside_report.y < height, "report viewport must fit inspection window");
+        for _ in 0..150 {
+            if h.query_by_label_contains(label).is_some() {
+                break;
+            }
+            // Keep the pointer inside the report viewport; virtual rows can be clipped.
+            h.event(egui::Event::PointerMoved(inside_report));
+            h.event(egui::Event::MouseWheel {
+                unit: egui::MouseWheelUnit::Point,
+                delta: egui::vec2(0.0, -100.0),
+                phase: egui::TouchPhase::Move,
+                modifiers: egui::Modifiers::NONE,
+            });
+            h.run_steps(8);
+        }
+        h.get_by_label_contains(label).scroll_to_me();
+        h.run_steps(8);
+        let rect = h.get_by_label_contains(label).rect();
+        assert!(rect.min.y >= 0.0 && rect.max.y <= height, "normalization row must be visible");
+    }
     if mode == "compact" {
         h.get_by_label("Create new native footprint file").scroll_to_me();
         h.run_steps(8);
         let rect = h.get_by_label("Create new native footprint file").rect();
         assert!(rect.min.x >= 0.0 && rect.min.y >= 0.0 && rect.max.x <= width && rect.max.y <= height);
     }
+    let control_bounds = match mode.as_str() {
+        "compact" => vec![h.get_by_label("Create new native footprint file").rect()],
+        "normalization" => vec![h.get_by_label_contains("source angle 90 degrees, canonical 90 degrees").rect()],
+        _ => Vec::new(),
+    };
     let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
@@ -87,7 +122,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before }))
+            Ok(Box::new(Inspect { app, engine, before, capture: native_capture::NativeCapture::new(capture), control_bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;

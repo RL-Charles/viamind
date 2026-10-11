@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--binary', required=True)
 parser.add_argument('--fixture', default=str(Path(__file__).resolve().parent.parent/'fixtures/import/original-two-layer.kicad_pcb'))
 parser.add_argument('--report', required=True)
+parser.add_argument('--cardinal', action='store_true', help='Check the original asymmetric cardinal-pad fixture and strict angle rejection')
 parser.add_argument('--url', help='Owned actual production desktop MCP URL; never target another session')
 args = parser.parse_args()
 binary = Path(args.binary).resolve()
@@ -28,7 +29,7 @@ process = None
 clients = []
 sequence = 0
 checks = []
-report = {'passed':False,'checks':checks,'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'transport':args.url or 'production headless stdio','fixture_sha256':hashlib.sha256(source_bytes).hexdigest()}
+report = {'passed':False,'checks':checks,'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'transport':args.url or 'production headless stdio','fixture_sha256':hashlib.sha256(source_bytes).hexdigest(),'cardinal_checks':args.cardinal}
 if not args.url:
     env = os.environ.copy()
     env.pop('DISPLAY',None)
@@ -100,6 +101,14 @@ try:
     call('preview_pcb_import',{'path':str(source),'extra':True},error=True)
     call('import_pcb',dict(apply(preview),expected_project='00000000-0000-4000-8000-000000000001'),error=True)
     check('invalid input and wrong project reject unchanged',call('get_session_state')==before and call('get_document_status')==status)
+    if args.cardinal:
+        for angle in (b'45',b'450',b'90.000000001'):
+            changed=source_bytes.replace(b'(at -0.500003 0.250001 90)',b'(at -0.500003 0.250001 '+angle+b')')
+            assert changed!=source_bytes
+            source.write_bytes(changed)
+            invalid=call('preview_pcb_import',{'path':str(source)})
+            call('import_pcb',apply(invalid),error=True)
+            check('unsupported angle '+angle.decode()+' blocks whole PCB replacement and preserves full session',not invalid['can_import'] and any('exact multiple of 90' in i['reason'] for i in invalid['report']['items']) and call('get_session_state')==before and call('get_document_status')==status)
     source.write_bytes(source_bytes.replace(b'smd rect',b'smd roundrect'))
     blocked=call('preview_pcb_import',{'path':str(source)})
     call('import_pcb',apply(blocked),error=True)
@@ -130,6 +139,10 @@ try:
     pads=part['pads']
     pad=next(p for p in pads if p['number']=='1')
     check('native exact odd-Nm geometry and original IDs/nets preserved',part['position']=={'x':4000007,'y':5000011} and pad['position']=={'x':-500003,'y':250001} and pad['net']=='VIN' and len(project['board']['tracks'])==2 and len(project['board']['vias'])==1 and len(project['board']['outline']['cutouts'])==1)
+    if args.cardinal:
+        second=next(p for p in pads if p['number']=='2')
+        reasons=[item['reason'] for item in items]
+        check('native cardinal rectangle sizes and signed normalization fidelity are exact',(pad['width'],pad['height'])==(1200003,800001) and (second['width'],second['height'])==(800001,1200003) and second['net']=='GND' and any('source angle 90 degrees, canonical 90 degrees' in r and 'swapped exactly' in r for r in reasons) and any('source angle -180 degrees, canonical 180 degrees' in r and 'preserved exactly' in r for r in reasons))
     drc_before=call('get_session_state')
     drc=call('run_drc',{})['report']
     coverage=drc['coverage']
