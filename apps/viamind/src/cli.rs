@@ -202,6 +202,9 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
     }
+    if options.include_silkscreen && !options.export_gerber {
+        return Err("--include-silkscreen requires --export-gerber".into());
+    }
     if options.inspect_output_release.is_some() {
         if seen.len() != 1 {
             return Err("--inspect-output-release is a separate read-only invocation; pass only its directory".into());
@@ -259,9 +262,6 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
     }
     if options.sheet.is_some() || seen.contains(&OsString::from("--schematic-layers")) {
         return Err("--sheet and --schematic-layers require schematic export".into());
-    }
-    if options.include_silkscreen && !options.export_gerber {
-        return Err("--include-silkscreen requires --export-gerber".into());
     }
     if options.export_gerber {
         if options.open.is_none()

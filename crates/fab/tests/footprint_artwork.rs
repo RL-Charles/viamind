@@ -128,7 +128,7 @@ fn job_four_exact_companion_matrix_captured_art_and_strict_release_consistency()
         assert_eq!(inspected.exported_cursor, cursor);
         let file = path.join("release-manifest.json");
         let mut value: serde_json::Value = serde_json::from_slice(&fs::read(&file).unwrap()).unwrap();
-        value["footprint_artwork"]["top_silkscreen_segments"] = json!(199999);
+        value["footprint_artwork"]["top_silkscreen_segments"] = json!(2);
         fs::write(&file, serde_json::to_vec(&value).unwrap()).unwrap();
         assert!(inspect_output_release(&InspectOutputRelease { path }).is_err(), "summary mismatch must refuse");
         for version in 1..=3 {
