@@ -92,7 +92,7 @@ fn independent_odd_geometry_endpoints_and_disjoint_owned_labels_all_poses() {
             for (i, label) in labels.iter().enumerate() {
                 assert!(!overlap(body, label.envelope));
                 for other in &labels[i + 1..] {
-                    assert!(!overlap(label.envelope, other.envelope), "{:?} {:?}", label, other);
+                    assert!(!overlap(label.envelope, other.envelope), "{label:?} {other:?}");
                 }
             }
             assert_eq!(serde_json::to_value(&labels).unwrap(), serde_json::to_value(schematic_label_layout(&before).unwrap()).unwrap());
@@ -195,4 +195,36 @@ fn generated_ellipsis_suffixes_are_charged_before_display_strings() {
     }
     sh.content = Some(c);
     assert!(schematic_label_layout(&sh).unwrap_err().to_string().contains("display exceeds32768"));
+}
+
+#[test]
+fn selected_symbol_and_pin_layers_isolate_text_leaders_and_full_source_glyph_admission() {
+    let mut s = symbol();
+    s.pins[0].name = "漢".into();
+    let sh = sheet(s);
+    let mut p = Project::new("Selected layers");
+    p.schematic.sheets.insert(sh.id, sh.clone());
+    let snap = schematic_view_snapshot(&p, sh.id).unwrap();
+    let symbols = schematic_svg(&snap, &SchematicViewOptions { layers: vec![SchematicLayer::Symbols], ..Default::default() }).unwrap();
+    assert!(symbols.svg.contains("reference-") && symbols.svg.contains("value-"));
+    assert!(!symbols.svg.contains("pin-text-") && !symbols.svg.contains("pin-leader-") && !symbols.svg.contains("pin-ring-"));
+    assert!(symbols.metadata.symbol_labels.iter().all(|l| l.role != LabelRole::Pin));
+    assert!(
+        schematic_svg(&snap, &SchematicViewOptions { layers: vec![SchematicLayer::Pins], ..Default::default() })
+            .unwrap_err()
+            .to_string()
+            .contains("U+6F22")
+    );
+    let mut s = symbol();
+    s.value = "漢".into();
+    let sh = sheet(s);
+    p.schematic.sheets.clear();
+    p.schematic.sheets.insert(sh.id, sh.clone());
+    let snap = schematic_view_snapshot(&p, sh.id).unwrap();
+    let pins = schematic_svg(&snap, &SchematicViewOptions { layers: vec![SchematicLayer::Pins], ..Default::default() }).unwrap();
+    assert!(pins.svg.contains("pin-text-") && pins.svg.contains("pin-leader-"));
+    assert!(!pins.svg.contains("reference-") && !pins.svg.contains("value-") && !pins.svg.contains("symbol-body-"));
+    assert!(pins.metadata.symbol_labels.iter().all(|l| l.role == LabelRole::Pin));
+    let empty = schematic_svg(&snap, &SchematicViewOptions { layers: vec![], ..Default::default() }).unwrap_err().to_string();
+    assert!(empty.contains("layers requires") && !empty.contains("U+6F22"));
 }
