@@ -1,0 +1,53 @@
+name: Linux bundle
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - scripts/package-linux.py
+      - scripts/tests/test_package_linux.py
+      - docs/linux-bundle.md
+      - packaging/licenses/**
+      - .github/workflows/linux-bundle.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-bundle-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  package:
+    name: optimized Linux bundle
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Install Linux build libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config libxkbcommon-dev libwayland-dev libx11-dev libxcursor-dev \
+            libxrandr-dev libxi-dev libgl1-mesa-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2.9.2
+        with:
+          key: linux-release
+      - name: Check publication and dependency closure guarantees
+        run: python3 -m unittest discover -s scripts/tests -p test_package_linux.py
+      - name: Build and verify bundle
+        run: python3 scripts/package-linux.py "$RUNNER_TEMP/viamind-linux"
+      - name: Verify archive checksum
+        working-directory: ${{ runner.temp }}/viamind-linux
+        run: sha256sum -c SHA256SUMS
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: viamind-linux-x86_64
+          path: ${{ runner.temp }}/viamind-linux/*
+          if-no-files-found: error
+          retention-days: 14

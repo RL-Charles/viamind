@@ -13,6 +13,7 @@ release where possible, and keep the asset's licence file next to it in the repo
 | Asset | Author | Source URL | Licence | Files |
 | --- | --- | --- | --- | --- |
 | craft-fonts (adopted when used; not bundled yet) | ArtCraft Team and the craft-fonts contributors; per-font authors in upstream `ATTRIBUTION.md` | <https://github.com/storytold/craft-fonts> | Fonts: OFL-1.1; code: MIT OR Apache-2.0 | None yet |
+| egui default fonts (embedded through epaint_default_fonts 0.36.2) | Source Foundry/Bitstream and DejaVu contributors (Hack); Google Noto contributors; Ubuntu font contributors; John Slegers (emoji icons) | [Pinned upstream font set](https://github.com/emilk/egui/tree/49682f8baa058bf49e011035cfbd6e825f88a5ef/crates/epaint_default_fonts/fonts) | Hack: MIT and Bitstream Vera; Noto: OFL-1.1; Ubuntu: Ubuntu-font-1.0; emoji icons: MIT | Hack-Regular.ttf, NotoEmoji-Regular.ttf, Ubuntu-Light.ttf, emoji-icon-font.ttf embedded in executable; [license texts](packaging/licenses/emilk-egui-49682f8baa05/fonts) |
 
 ## Icons
 
