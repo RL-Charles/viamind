@@ -25,14 +25,15 @@ impl ViamindApp {
             self.annotation = AnnotationUi { stream: Some(stream), ..Default::default() };
         }
         ui.collapsing("Annotate symbols", |ui| {
-            ui.label("Flat schematic references. Sheet order follows the sheet list (UUID order). Pins and PCB stay unchanged.");
+            ui.label("One reference per symbol or explicit package. Sheet order follows the sheet list (UUID order). Pins and PCB stay unchanged.");
             let before = self.annotation.options.clone();
             ui.radio_value(&mut self.annotation.options.mode, AnnotationMode::KeepExisting, "Keep existing numbers");
             ui.radio_value(&mut self.annotation.options.mode, AnnotationMode::ResetAll, "Renumber all symbols");
             ui.radio_value(&mut self.annotation.options.order, AnnotationOrder::XThenY, "Sort symbols by X then Y");
             ui.radio_value(&mut self.annotation.options.order, AnnotationOrder::YThenX, "Sort symbols by Y then X");
             let label = ui.label("Annotation starting number");
-            let changed = ui.text_edit_singleline(&mut self.annotation.start).labelled_by(label.id).changed();
+            let changed =
+                ui.add(egui::TextEdit::singleline(&mut self.annotation.start).id_source("annotation-start")).labelled_by(label.id).changed();
             if changed || before != self.annotation.options {
                 self.annotation.preview = None;
                 self.annotation.message = None;
@@ -52,13 +53,40 @@ impl ViamindApp {
                 }
             }
             if let Some(preview) = &self.annotation.preview {
-                ui.label(format!("{} symbols, {} proposed reference changes", preview.symbols, preview.changes.len()));
+                if preview.packages == 0 {
+                    ui.label(format!("{} symbols, {} proposed reference changes", preview.symbols, preview.changes.len()));
+                } else {
+                    ui.label(format!(
+                        "{} symbols/units, {} packages, {} proposed member reference changes",
+                        preview.symbols,
+                        preview.packages,
+                        preview.changes.len()
+                    ));
+                }
                 ui.collapsing("Proposed annotation changes", |ui| {
-                    for change in &preview.changes {
-                        ui.monospace(format!("{} → {} · sheet {} · symbol {}", change.before, change.after, change.sheet_id, change.symbol_id));
-                    }
+                    egui::ScrollArea::vertical().id_salt("annotation-changes").max_height(120.0).show_rows(
+                        ui,
+                        18.0,
+                        preview.changes.len(),
+                        |ui, rows| {
+                            for change in &preview.changes[rows] {
+                                let owner = change
+                                    .package_id
+                                    .zip(change.unit_key.as_deref())
+                                    .map_or_else(String::new, |(id, key)| format!(" - package {id} unit {key}"));
+                                ui.monospace(format!(
+                                    "{} to {} - sheet {} - symbol {}{owner}",
+                                    change.before, change.after, change.sheet_id, change.symbol_id
+                                ));
+                            }
+                        },
+                    );
                 });
-                if ui.add_enabled(!preview.changes.is_empty() && !self.files.busy(), egui::Button::new("Apply annotation")).clicked() {
+                let stale = engine.with_engine(|e| e.event_cursor()) != preview.source_cursor;
+                if stale {
+                    ui.label("Schematic session changed; prepare annotation again to reload.");
+                }
+                if ui.add_enabled(!preview.changes.is_empty() && !stale && !self.files.busy(), egui::Button::new("Apply annotation")).clicked() {
                     let command = serde_json::to_value(&preview.command).expect("annotation input is serializable");
                     match UiAction::AnnotateSchematic.run(&engine, command) {
                         Ok(_) => {
@@ -68,6 +96,10 @@ impl ViamindApp {
                         Err(e) => self.annotation.message = Some(format!("{e}; prepare annotation again to reload.")),
                     }
                 }
+            }
+            if self.annotation.preview.is_some() && ui.button("Cancel annotation preview").clicked() {
+                self.annotation.preview = None;
+                self.annotation.message = None;
             }
             if let Some(message) = &self.annotation.message {
                 ui.label(message);

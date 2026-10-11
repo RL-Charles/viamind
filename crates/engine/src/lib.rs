@@ -29,6 +29,7 @@
 pub mod assembly;
 pub use assembly::SetPartAssembly;
 pub mod annotation;
+mod annotation_bounds;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
 pub mod auto_drc;
 mod auto_drc_events;
