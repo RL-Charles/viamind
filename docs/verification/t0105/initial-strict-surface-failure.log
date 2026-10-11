@@ -1,0 +1,32 @@
+Sun Oct 11 16:22:13 UTC 2026
+8de328f84c26a421e092333bb42181d271cce023
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.28s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 5 tests
+test agent_presence::tests::lease_clock_is_sampled_after_both_locks_for_query_and_admission ... ok
+test agent_presence::tests::exact_deadline_capacity_renewal_and_failed_update_preserve_prior_lease ... ok
+test agent_presence::tests::shared_clone_own_clear_lifecycle_bounds_and_wakers_leave_session_untouched ... ok
+test agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization ... FAILED
+test agent_presence::tests::explicit_sheet_identity_capacity_switch_deleted_objects_and_sheet_pruning ... ok
+
+failures:
+
+---- agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization stdout ----
+
+thread 'agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization' (1848276) panicked at crates/engine/src/agent_presence.rs:297:13:
+{"cursor":{"x":1,"y":-3},"expected_project":"5101c58d-c976-4992-8002-52cb63c30b1a","expected_stream":"e32a22a0-05ff-4421-b9ce-7baff24b32e2","selection":[],"surface":{"kind":"pcb","sheet":"83f0f2cb-b31e-46bb-b1cd-25601640fe9c"},"working_on":"Checking route"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    agent_presence::tests::strict_surface_forms_preserve_legacy_pcb_serialization
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 56 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p viamind-engine --lib`

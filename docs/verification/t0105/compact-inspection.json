@@ -1,0 +1,61 @@
+{
+  "agents": {
+    "agents": [
+      {
+        "connection": 1001,
+        "cursor": {
+          "x": 10000000,
+          "y": 10000000
+        },
+        "display_name": "ERC agent",
+        "palette_index": 1,
+        "remaining_lease_ms": 29175,
+        "selection": [
+          "00000000-0000-0000-0000-000000000067"
+        ],
+        "surface": {
+          "kind": "schematic",
+          "sheet": "00000000-0000-0000-0000-000000000066"
+        },
+        "working_on": "Checking pin compatibility"
+      },
+      {
+        "connection": 1002,
+        "cursor": {
+          "x": 20000000,
+          "y": 7000000
+        },
+        "display_name": "Wiring agent",
+        "palette_index": 2,
+        "remaining_lease_ms": 29175,
+        "selection": [
+          "00000000-0000-0000-0000-00000000006a",
+          "00000000-0000-0000-0000-00000000006c",
+          "00000000-0000-0000-0000-00000000006d"
+        ],
+        "surface": {
+          "kind": "schematic",
+          "sheet": "00000000-0000-0000-0000-000000000066"
+        },
+        "working_on": "Routing schematic wire"
+      }
+    ],
+    "project_id": "00000000-0000-0000-0000-000000000065",
+    "source_cursor": {
+      "sequence": 0,
+      "stream_id": "00a63bdc-17c2-4080-8bc0-e6eae7603c9c"
+    }
+  },
+  "capture": "actual eframe native WGPU Screenshot event",
+  "full_session_unchanged": true,
+  "inspection_only": true,
+  "native_bytes_unchanged": true,
+  "pid": 1919161,
+  "pixels": [
+    640,
+    400
+  ],
+  "seed_scope": "Two bounded direct trusted engine presence updates before native launch. Actual MCP ownership/stdio and human edit tests have separate evidence. No OS input or frame-cadence claim.",
+  "self_closes_after_fsynced_proof": true,
+  "ui_passes": 11
+}

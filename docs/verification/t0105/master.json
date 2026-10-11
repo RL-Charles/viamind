@@ -1,0 +1,160 @@
+{
+  "ticket": "T-0105",
+  "passed": true,
+  "full_source": "f349f3ac7be4b0c8343260b2f7c0e3a9bb4426ff",
+  "base": "3c525714c4d810ec7fde055192c33611cee2fec5",
+  "production": {
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0105/production-verified",
+    "sha256": "aab2e9a93d616bf4f01f1e11070f0dbc14c0e70f8978dfc2731f67849f23d153",
+    "pid": 1916991,
+    "endpoint": "http://127.0.0.1:7936/mcp",
+    "actual_checks": 55,
+    "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0105/mixed-presence.viamind.json",
+    "native_sha256": "4d4f0d9065f1e960d73458133b05055d51be105d4bcae6d4ca6de612f0ab25ad"
+  },
+  "inspection": {
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0105/inspection-verified",
+    "sha256": "e995b7c408c4df822c8efad8016154afb4e1f69e9ef319ca37e9f088a7c8e45a",
+    "captures": [
+      {
+        "name": "compact",
+        "pixels": [
+          640,
+          400
+        ],
+        "pid": 1919161,
+        "self_closed": true,
+        "png": "compact.png",
+        "rgb_sha256": "dfd61096b6f65fdf52c8cae09c99cd92b328eb13878e84c2df589a07876b6d48",
+        "ppm_sha256": "88a2a211be97770ef8077659f9de5b17440fde0954683b5584ffb779733c07a2",
+        "report": "compact-inspection.json"
+      },
+      {
+        "name": "wide",
+        "pixels": [
+          1600,
+          1000
+        ],
+        "pid": 1919843,
+        "self_closed": true,
+        "png": "wide.png",
+        "rgb_sha256": "5daf29fa919d9f69d3afdc46eff648f0b71646319672f5866022669cdb6e382e",
+        "ppm_sha256": "29af2a28df958d43f53120a14c5d5d12ed749c40f127747ae5cd58c02d3dd354",
+        "report": "wide-inspection.json"
+      }
+    ],
+    "scope": "Two direct trusted engine seeds before native launch; actual initialized transport and local egui human-input tests have separate provenance. No OS-input/cadence claim."
+  },
+  "gates": {
+    "workspace_passed": 744,
+    "failed": 0,
+    "ignored": 1,
+    "fmt": true,
+    "strict_alltarget_workspace_clippy": true,
+    "workspace_and_example_build": true,
+    "actual_tools": 88,
+    "isolated_workflow_checks": 18,
+    "tooling_tests": 13
+  },
+  "integration": {
+    "source": "6710a3ea0e1a54058da60884a1f46c72c52e3073",
+    "base": "adf2d9f",
+    "range_diff": "all eight feature commits equal after zero-conflict rebase; final combined gate/CI pending"
+  },
+  "limitations": [
+    "Cua production snapshot is degraded metadata only; readable pixel proof is the actual native WGPU inspection host.",
+    "Compact existing schematic geometry/text can be clipped by its canvas; both attention labels remain readable and canvas-clipped.",
+    "Historical initial engine strict-surface regression and UI test API/lint failures are excluded from success; final744 gate includes corrected product and tests.",
+    "Broader automatic intent/camera following/agent branches remain separate story work."
+  ],
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "bafdf5693a098bfa0e039514f0dffe959de16531d6a498e571a99147306582e9"
+    },
+    "catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "a8578857e43977b840761e78ff06b795ed666f8ca29aa6602af363cd7638610f"
+    },
+    "catalog-drift.json": {
+      "bytes": 367,
+      "sha256": "a8578857e43977b840761e78ff06b795ed666f8ca29aa6602af363cd7638610f"
+    },
+    "compact-inspection.json": {
+      "bytes": 1742,
+      "sha256": "ff03cf06503d6add3b7ed7a9c831df0358af1f58f5f627e0a2a05c77f141278d"
+    },
+    "compact-launch.json": {
+      "bytes": 608,
+      "sha256": "d02016f2365fedf60ac521bb9b1099d2aa44ea0f757cde5f3c569278c232fe43"
+    },
+    "compact-runtime.log": {
+      "bytes": 1259,
+      "sha256": "aea72977686a2834cf93e8d3e018adf17d700b387cad6cbb958d42ced692491d"
+    },
+    "compact.png": {
+      "bytes": 41471,
+      "sha256": "49febcce719c2be99f0f591f21f3b024527aadb7114792e034ca82d6c298433c"
+    },
+    "focused-ui.log": {
+      "bytes": 3311,
+      "sha256": "f286cbab1f21ed16cb3465c05fbd0fe932e51cd8f48ae4b4f14e224add2859ce"
+    },
+    "full-source.json": {
+      "bytes": 37462,
+      "sha256": "5219191ffe9c7a09f5337259c1713aaddbcf51385aa98aca1712ae6f23bf7079"
+    },
+    "initial-strict-surface-failure.log": {
+      "bytes": 2217,
+      "sha256": "4ff61eff8528904205f86d6ff9f7e7d8817ac281897b73b450ab50f4a1e52ebd"
+    },
+    "linux-full.log": {
+      "bytes": 119521,
+      "sha256": "504fabcce1a8e184275188a94bc446254905fac37a5820e4edeafb9d881a9c30"
+    },
+    "linux-full.sh": {
+      "bytes": 1747,
+      "sha256": "801ca60d1174160d801c136f68377c4787ad4ecfcbdb807a9d3b62b751e8fda3"
+    },
+    "mixed-presence.viamind.json": {
+      "bytes": 7196,
+      "sha256": "4d4f0d9065f1e960d73458133b05055d51be105d4bcae6d4ca6de612f0ab25ad"
+    },
+    "production-launch.json": {
+      "bytes": 585,
+      "sha256": "ecd448c320bf6b4f6929b2ae42480ed623b73b0669381420a90c73cc7a21d5a2"
+    },
+    "production-probe.py": {
+      "bytes": 11298,
+      "sha256": "bcf4f169203b4f1c3995411e1ac852f50b6437c400b5339591c9c207912b1dc1"
+    },
+    "production-proof.json": {
+      "bytes": 3108,
+      "sha256": "6693a98eadd1e66859cc4f44af397c46fae80c39668214f4734c0470cca19f31"
+    },
+    "production-state.json": {
+      "bytes": 1051,
+      "sha256": "f112f6ae94b08f73291a18b89e61f8ffcfa5a5e8efb55a13ebb09a1f11ac6648"
+    },
+    "tooling-tests.log": {
+      "bytes": 112,
+      "sha256": "56d2fd65bdb5818c201de5305d49745e9c10e1e4f2d635cb48201a548a44bd16"
+    },
+    "wide-inspection.json": {
+      "bytes": 1744,
+      "sha256": "b114fc9c6dc64f54ec0ae2ab1f53a6c9e44d94d01d39c599b3330c463d168fc3"
+    },
+    "wide-launch.json": {
+      "bytes": 609,
+      "sha256": "3e5f8c1832c13ee27a9c058a9add487b43b2504fe71259eae7a788b6cf423d56"
+    },
+    "wide-runtime.log": {
+      "bytes": 1261,
+      "sha256": "d5282c732730deb754c40cef35099f2b4b7d8d56c3d25310229c9c2deedbd9b8"
+    },
+    "wide.png": {
+      "bytes": 68133,
+      "sha256": "6517bf53032ccff4f76725cf12cbb0df2031701283b9187e014eb16a1f5eaa59"
+    }
+  }
+}
