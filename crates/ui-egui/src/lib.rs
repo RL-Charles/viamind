@@ -34,6 +34,7 @@ pub mod schematic;
 pub mod schematic_component;
 pub mod schematic_wires;
 pub mod selection;
+pub mod symbol_library;
 pub mod view_export;
 
 use std::sync::mpsc::Receiver;
@@ -131,6 +132,7 @@ pub struct FrameStats {
 pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
+    pub symbol_library: symbol_library::SymbolLibraryUi,
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
     pub cross_probe: cross_probe::CrossProbeUi,
@@ -179,6 +181,7 @@ impl ViamindApp {
         Self {
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
+            symbol_library: symbol_library::SymbolLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -217,6 +220,7 @@ impl ViamindApp {
         Self {
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
+            symbol_library: symbol_library::SymbolLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -371,6 +375,7 @@ impl ViamindApp {
             });
         self.pcb_sync_window(ui);
         self.schematic_component_window(ui);
+        self.symbol_library_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);

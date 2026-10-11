@@ -105,6 +105,11 @@ pub use route_via::RoutePadViaPolyline;
 
 pub mod route_posture;
 pub use route_posture::RoutePadPosture;
-
 pub mod walkaround;
 pub use walkaround::{CheckedWalkaround, RoutePadWalkaround};
+mod schematic_budget;
+
+pub mod symbol_library;
+pub use symbol_library::{
+    ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot, SymbolTemplateExportResult,
+};

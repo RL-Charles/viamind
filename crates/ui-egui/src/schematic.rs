@@ -476,6 +476,9 @@ impl ViamindApp {
             self.schematic.sheet_guard = None;
         }
         ui.heading("Schematic capture");
+        if ui.button("Native symbol library…").clicked() {
+            self.begin_symbol_library();
+        }
         if ui.button("Electrical rule check…").clicked() {
             self.begin_erc();
         }
