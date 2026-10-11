@@ -1,7 +1,9 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, NewProject, OpenProject, Origin, PartQuery, SaveProject, SetSelection, WatchEvents, input_schema};
+use viamind_engine::{
+    ConnectivityQuery, EngineHandle, NetQuery, NewProject, OpenProject, Origin, PartQuery, SaveProject, SetSelection, WatchEvents, input_schema,
+};
 
 use crate::{
     agent::AgentId,
@@ -72,6 +74,16 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<PartQuery>(),
         });
         commands.push(HostCommand {
+            name: "query_nets".into(),
+            description: "Read named-net summaries in exact case-sensitive name order from explicit pads only. Read-only; terminal and conservative guide counts exclude legacy preview pads. limit defaults to 100 (max1000), after is the last net name. Repeat pages only while the design is unchanged.".into(),
+            input_schema: input_schema::<NetQuery>(),
+        });
+        commands.push(HostCommand {
+            name: "query_connectivity".into(),
+            description: "Read exact named-net terminal membership and unrouted connection guides. Explicit pads only; N terminals produce N-1 guides; no copper continuity analysis, so touching same-net pads may overestimate unrouted work. Coordinates are transformed pad centres in mm. Exact dense_prim for <=256 terminals, approximate coordinate_chain for larger nets. Guides are not copper or DRC. Arrays share offset and limit (default100,max1000); repeat pages only while unchanged.".into(),
+            input_schema: input_schema::<ConnectivityQuery>(),
+        });
+        commands.push(HostCommand {
             name: "set_selection".into(),
             description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
             input_schema: input_schema::<SetSelection>(),
@@ -120,6 +132,16 @@ impl CommandHost for EngineHost {
         if name == "query_parts" {
             let query: PartQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_parts input: {e}"))?;
             let result = self.engine.query_parts(&query).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "query_nets" {
+            let query: NetQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_nets input: {e}"))?;
+            let result = self.engine.query_nets(&query).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "query_connectivity" {
+            let query: ConnectivityQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_connectivity input: {e}"))?;
+            let result = self.engine.query_connectivity(&query).map_err(|e| e.to_string())?;
             return serde_json::to_value(result).map_err(|e| e.to_string());
         }
         if name == "get_selection" {

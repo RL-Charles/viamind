@@ -100,7 +100,10 @@ Selected parts expose **Edit electrical pads…** for persistent rectangular SMD
 pads, local dimensions and named net assignments. Apply and Reload protect drafts
 against concurrent agent changes. These pads rotate and mirror with their parent
 part; absent explicit pads retain the built-in graphical preview. Explicit pads
-use native schema version 3. Routing, other pad shapes and schematic net transfer
+use native schema version 3. Cyan connection guides follow explicit net-assigned
+pads through placement and undo; `query_nets` and `query_connectivity` expose the
+same connectivity to agents. Guides estimate routing work without copper
+continuity analysis and are not copper or a DRC result. Routing, other pad shapes and schematic net transfer
 remain roadmap work.
 
 ## Export assembly tables

@@ -223,3 +223,17 @@ fn layer_edits_match_uncached_and_rebuild_only_on_colour() {
     assert_same(&a, &b, 0.0, cached.app.canvas.viewport);
     assert_eq!(layer_order(&a, &cached.app.layers), expected);
 }
+
+#[test]
+fn transient_guides_paint_identically_in_cached_and_immediate_paths() {
+    let mut cached = Run::new(100, true);
+    let mut uncached = Run::new(100, false);
+    for run in [&mut cached, &mut uncached] {
+        run.app.scene.ratsnest = vec![[viamind_ui_egui::camera::WorldPos::new(5.0, 5.0), viamind_ui_egui::camera::WorldPos::new(15.0, 20.0)]];
+    }
+    let a = cached.frame(vec![]);
+    let b = uncached.frame(vec![]);
+    assert_same(&a, &b, 0.0, cached.app.canvas.viewport);
+    let cyan = Color32::from_rgb(80, 210, 220);
+    assert!(a.iter().any(|triangle| triangle.iter().any(|vertex| vertex.color == cyan)));
+}

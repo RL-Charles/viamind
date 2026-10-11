@@ -130,6 +130,7 @@ impl Canvas {
 
         if self.cached {
             self.drawn = self.cache.paint(painter, scene, layers, &cam, viewport);
+            paint_ratsnest(painter, scene, &cam, viewport);
             return;
         }
 
@@ -146,6 +147,23 @@ impl Canvas {
         self.drawn = shapes.len();
         painter.extend(shapes.drain(..));
         self.shapes = shapes;
+        paint_ratsnest(painter, scene, &cam, viewport);
+    }
+}
+
+fn paint_ratsnest(painter: &egui::Painter, scene: &Scene, cam: &Camera, viewport: Rect) {
+    let visible = cam.visible_world_rect(viewport);
+    for &[a, b] in &scene.ratsnest {
+        let bounds = crate::camera::WorldRect::new(
+            crate::camera::WorldPos::new(a.x.min(b.x), a.y.min(b.y)),
+            crate::camera::WorldPos::new(a.x.max(b.x), a.y.max(b.y)),
+        );
+        if bounds.intersects(&visible) {
+            painter.line_segment(
+                [cam.world_to_screen(a, viewport), cam.world_to_screen(b, viewport)],
+                Stroke::new(1.0, Color32::from_rgb(80, 210, 220)),
+            );
+        }
     }
 }
 

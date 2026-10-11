@@ -28,6 +28,7 @@
 
 pub mod command;
 pub mod commands;
+pub mod connectivity;
 pub mod delta;
 pub mod document;
 pub mod engine;
@@ -43,6 +44,7 @@ pub mod transaction;
 
 pub use command::{Command, CommandError, CommandSpec, input_schema};
 pub use commands::{AddPart, DeletePart, ExpectedOutline, ImportBoardOutlineDxf, MovePart, OutlineMm, OutlinePoint, SetBoardOutline, UpdatePart};
+pub use connectivity::{ConnectionGuide, ConnectivityQuery, ConnectivityResult, NetQuery, NetQueryResult, NetSummary, Terminal, connection_guides};
 pub use delta::{Delta, apply_all, coalesce, invert};
 pub use document::{DocumentStatus, NewProject, OpenProject, ReplaceGuard, SaveProject, SaveResult};
 pub use engine::{Engine, Tx};

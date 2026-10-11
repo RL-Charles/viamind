@@ -52,6 +52,17 @@ pub struct Part {
     pub side: Side,
 }
 
+impl Part {
+    /// Transform a footprint-local millimetre point at a render or query boundary.
+    /// Mirrors local X for bottom-side parts, then rotates counterclockwise in y-down coordinates.
+    /// This does not modify or store floating-point geometry in the design model.
+    pub fn local_to_world_mm(&self, x_mm: f64, y_mm: f64) -> (f64, f64) {
+        let x = if self.side == Side::Bottom { -x_mm } else { x_mm };
+        let (s, c) = (f64::from(self.rotation_mdeg) / 1000.0).to_radians().sin_cos();
+        (self.position.x.to_mm() + x * c + y_mm * s, self.position.y.to_mm() - x * s + y_mm * c)
+    }
+}
+
 /// Board side a part is mounted on. Serialises as `"top"` or `"bottom"`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]

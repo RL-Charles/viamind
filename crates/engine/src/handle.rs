@@ -326,6 +326,16 @@ impl EngineHandle {
         self.read(|project| query.run(project))
     }
 
+    /// Read a consistent named-net summary without changing design, selection or history.
+    pub fn query_nets(&self, query: &crate::NetQuery) -> Result<crate::NetQueryResult, crate::CommandError> {
+        self.read(|project| query.run(project))
+    }
+
+    /// Read a consistent named-net membership and outstanding guide page.
+    pub fn query_connectivity(&self, query: &crate::ConnectivityQuery) -> Result<crate::ConnectivityResult, crate::CommandError> {
+        self.read(|project| query.run(project))
+    }
+
     /// Runs `f` with the locked engine, e.g. to inspect the undo history.
     pub fn with_engine<R>(&self, f: impl FnOnce(&Engine) -> R) -> R {
         f(&self.lock())
