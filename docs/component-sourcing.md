@@ -13,7 +13,7 @@ is one undoable change; Clear sourcing removes all entries and restores Populate
 Apply protects the original component and document against intervening edits; use
 Reload to inspect another agent's changes before applying again. Metadata belongs
 to the PCB component and is preserved by schematic synchronization without becoming
-a schematic DNP flag.
+a schematic DNP flag. Newly created or imported PCB components start with unspecified sourcing and Populate enabled.
 
 ## Export
 

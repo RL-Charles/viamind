@@ -18,7 +18,7 @@ Usage: viamind [--open PATH] [--no-mcp]
   --open PATH      Load an existing native .viamind.json project
   --save-as PATH   Save the final headless design after the client closes stdin
   --no-mcp         Open the desktop without the HTTP MCP endpoint
-  --export-csv KIND Export generic BOM or component-origin placement CSV and exit
+  --export-csv KIND Export BOM, sourcing BOM or component-origin placement CSV and exit
   --run-output-job JOB Run saved manufacturing settings into a NEW release directory
   --export-gerber   Export scoped outer Gerber X2 and through-via XNC drill and exit
   --mask-expansion-mm N  Mask expansion for fabrication export (0–10 mm, default 0)
