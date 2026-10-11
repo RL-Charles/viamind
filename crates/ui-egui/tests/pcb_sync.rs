@@ -71,3 +71,34 @@ fn stale_and_same_uuid_reopened_desktop_previews_cannot_apply() {
     h.run_steps(5);
     assert!(h.query_by_label("Apply synchronization").is_none());
 }
+#[test]
+fn actual_component_pick_unlink_relink_and_duplicate_rejection_preserve_identity() {
+    let e = engine();
+    let before = e.read(Clone::clone);
+    let mut h = harness(&e);
+    click(&mut h, "Component links");
+    settle(&mut h, "PCB component to link");
+    click(&mut h, "Choose PCB component");
+    click(&mut h, "PCB1 · 000003e8");
+    click(&mut h, "Unlink PCB component");
+    settle(&mut h, "Current symbol link: unlinked");
+    let unlinked = e.read(Clone::clone);
+    assert_eq!(unlinked.board.parts.values().filter(|p| p.schematic_symbol.is_none()).count(), 1);
+    click(&mut h, "Choose schematic symbol");
+    click(&mut h, "C1 · Power regulator");
+    let checkpoint = e.session_state();
+    click(&mut h, "Link selected components");
+    assert_eq!(e.session_state(), checkpoint);
+    assert!(h.query_by_label_contains("already linked to another board part").is_some());
+    click(&mut h, "C1");
+    click(&mut h, "U1 · Power regulator");
+    click(&mut h, "Link selected components");
+    settle(&mut h, "Current symbol link: 00000000-0000-0000-0000-000000000067");
+    assert_eq!(e.read(Clone::clone), before, "relink restores exact initial model without inferring references");
+    h.state_mut().undo_design();
+    h.run_steps(5);
+    assert_eq!(e.read(Clone::clone), unlinked);
+    h.state_mut().redo_design();
+    h.run_steps(5);
+    assert_eq!(e.read(Clone::clone), before);
+}
