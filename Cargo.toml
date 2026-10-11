@@ -38,7 +38,9 @@ too_many_arguments = "allow"
 type_complexity = "allow"
 
 [workspace.dependencies]
-resvg = { version = "=0.48.1", default-features = false }
+resvg = { version = "=0.48.1", default-features = false, features = ["text"] }
+epaint_default_fonts = "=0.36.2"
+skrifa = { version = "0.44", default-features = false, features = ["std"] }
 base64 = "0.22"
 png = "0.18"
 quick-xml = "0.41"
