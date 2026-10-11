@@ -47,6 +47,7 @@ pub struct OutputJobUi {
     mask: String,
     checked: bool,
     calibrated: bool,
+    populated_bom: bool,
     checks: [String; 7],
     job_path: String,
     release_path: String,
@@ -65,6 +66,10 @@ impl OutputJobUi {
         if self.calibrated {
             job.version = 2;
             job.include_calibrated_placement = Some(true);
+        }
+        if self.populated_bom {
+            job.version = 3;
+            job.include_populated_bom = Some(true);
         }
         if self.checked {
             let parse =
@@ -97,6 +102,7 @@ impl OutputJobUi {
                                     self.mask = job.mask_expansion_mm.to_string();
                                     self.checked = job.checks.is_some();
                                     self.calibrated = job.include_calibrated_placement == Some(true);
+                                    self.populated_bom = job.include_populated_bom == Some(true);
                                     if let Some(checks) = &job.checks {
                                         self.checks = [
                                             checks.copper_clearance_mm.to_string(),
@@ -218,6 +224,13 @@ impl ViamindApp {
                     ui.radio_value(&mut self.output_jobs.checked, true, "Checked outer 2-layer");
                 });
                 ui.checkbox(&mut self.output_jobs.calibrated, "Include calibrated placement companion (version 2)");
+                if !self.output_jobs.calibrated { self.output_jobs.populated_bom = false; }
+                ui.add_enabled_ui(self.output_jobs.calibrated, |ui| {
+                    ui.checkbox(&mut self.output_jobs.populated_bom, "Include matched populated BOM (version 3)");
+                });
+                if self.output_jobs.populated_bom {
+                    ui.label("Adds a per-component generic BOM matching the calibrated populated subset, with exact optional sourcing identifiers. Missing identifiers stay blank; no procurement or vendor acceptance.");
+                }
                 if self.output_jobs.calibrated {
                     ui.label("Adds a populated-only generic centroid/marker CSV; explicit mounting and calibration are required. Existing BOM/origin placement still inventory all components. No universal vendor zero or manufacturer acceptance.");
                 }
@@ -272,6 +285,12 @@ impl ViamindApp {
                     ));
                     if let Some(count) = result["manifest"]["calibrated_placement"]["component_count"].as_u64() {
                         ui.label(format!("Calibrated companion: {count} populated components; generic inventories include all components."));
+                    }
+                    if let Some(count) = result["manifest"]["populated_assembly"]["component_count"].as_u64() {
+                        ui.label(format!("Matched populated BOM/placement: {count} components; older inventories still include all components."));
+                        if let Some(digest) = result["manifest"]["populated_assembly"]["component_ids_sha256"].as_str() {
+                            ui.label(format!("Included component identity SHA256: {digest}"));
+                        }
                     }
                     if result["exported_cursor"] != json!(cursor) {
                         ui.label("The design has changed since this exported snapshot.");
@@ -350,6 +369,7 @@ mod tests {
             "Generic outer 2-layer",
             "Checked outer 2-layer",
             "Include calibrated placement companion (version 2)",
+            "Include matched populated BOM (version 3)",
         ]) {
             assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
         }
