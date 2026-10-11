@@ -36,6 +36,8 @@ pub struct Canvas {
     pub cache: MeshCache,
     /// Reused across frames so uncached painting of 100k items does not reallocate.
     shapes: Vec<Shape>,
+    /// Keep the scene fitted through native layout changes until manual navigation.
+    auto_fit: bool,
 }
 
 impl Default for Canvas {
@@ -49,6 +51,7 @@ impl Default for Canvas {
             cached: true,
             cache: MeshCache::default(),
             shapes: Vec::new(),
+            auto_fit: true,
         }
     }
 }
@@ -63,10 +66,15 @@ impl Canvas {
     pub fn show(&mut self, ui: &mut Ui, scene: &Scene, layers: &LayerStack) -> egui::Response {
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
+        let resized = viewport.size() != self.viewport.size();
         self.viewport = viewport;
 
-        // Zoom to fit: on request, at start-up, and on the Home key.
+        // Native startup can report a small viewport before the window settles. Keep fit
+        // tracking size changes until navigation chooses a camera; Home re-enables it.
         if self.fit_pending || ui.input(|i| i.key_pressed(Key::Home)) {
+            self.auto_fit = true;
+        }
+        if self.fit_pending || (self.auto_fit && resized) || ui.input(|i| i.key_pressed(Key::Home)) {
             self.camera.zoom_to_fit(scene.bounds(), viewport, FIT_MARGIN);
             self.fit_pending = false;
         }
@@ -74,6 +82,7 @@ impl Canvas {
         // Pan: middle-drag, or space + primary drag.
         let space_held = ui.input(|i| i.key_down(Key::Space));
         if response.dragged_by(PointerButton::Middle) || (space_held && response.dragged_by(PointerButton::Primary)) {
+            self.auto_fit = false;
             self.camera.pan_by_screen(response.drag_delta());
         }
 
@@ -82,6 +91,7 @@ impl Canvas {
             let (scroll, pinch) = ui.input(|i| (i.smooth_scroll_delta, i.zoom_delta()));
             let factor = f64::from(pinch) * (f64::from(scroll.y) * SCROLL_ZOOM_SPEED).exp();
             if factor != 1.0 {
+                self.auto_fit = false;
                 self.camera.zoom_about(pointer, viewport, factor);
             }
         }

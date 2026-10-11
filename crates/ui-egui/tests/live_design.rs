@@ -65,3 +65,61 @@ fn edit_menu_places_a_resistor_as_the_user() {
     assert!(designators.contains(&"R1".into()) && designators.contains(&"R2".into()));
     assert_eq!(copper_items(h.state()), 4);
 }
+
+#[test]
+fn loaded_project_fits_after_startup_resize_and_preserves_manual_navigation() {
+    let engine = EngineHandle::new(Project::new("loaded board"));
+    engine.execute("add_part", json!({ "designator": "R1", "value": "10k", "footprint": "R_0603", "x_mm": 30, "y_mm": 30 }), Origin::User).unwrap();
+    let mut h = Harness::builder()
+        .with_size(vec2(640.0, 120.0))
+        .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), ViamindApp::with_design(engine.clone(), None));
+    h.run_steps(2);
+    let tiny_fit = h.state().canvas.camera;
+    h.set_size(vec2(1280.0, 800.0));
+    h.run_steps(2);
+    let full_fit = h.state().canvas.camera;
+    assert!(full_fit.zoom > tiny_fit.zoom * 10.0, "startup resize left camera at {tiny_fit:?}: {full_fit:?}");
+    let app = h.state();
+    let outline = app.scene.board;
+    let low = app.canvas.camera.world_to_screen(outline.min, app.canvas.viewport);
+    let high = app.canvas.camera.world_to_screen(outline.max, app.canvas.viewport);
+    assert!(app.canvas.viewport.contains(low) && app.canvas.viewport.contains(high));
+    assert!((high.y - low.y) > app.canvas.viewport.height() * 0.8, "board should fill usable height");
+
+    // A user pan ends automatic refitting, including on later native resizes.
+    let start = h.state().canvas.viewport.center();
+    h.event(Event::PointerMoved(start));
+    h.event(Event::PointerButton { pos: start, button: egui::PointerButton::Middle, pressed: true, modifiers: Modifiers::NONE });
+    h.run_steps(1);
+    let end = start + vec2(60.0, 30.0);
+    h.event(Event::PointerMoved(end));
+    h.run_steps(1);
+    h.event(Event::PointerButton { pos: end, button: egui::PointerButton::Middle, pressed: false, modifiers: Modifiers::NONE });
+    h.run_steps(1);
+    let panned = h.state().canvas.camera;
+    assert_ne!(panned.center, full_fit.center);
+    h.set_size(vec2(1600.0, 1000.0));
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.camera, panned);
+
+    // Home restores fit and tracks another resize; scroll ends it again.
+    h.key_press(Key::Home);
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.camera.center, outline.center());
+    h.set_size(vec2(1280.0, 800.0));
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.camera, full_fit);
+    h.event(Event::PointerMoved(h.state().canvas.viewport.center()));
+    h.event(Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: vec2(0.0, 200.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: Modifiers::NONE,
+    });
+    h.run_steps(30);
+    let zoomed = h.state().canvas.camera;
+    assert!(zoomed.zoom > full_fit.zoom);
+    h.set_size(vec2(1600.0, 1000.0));
+    h.run_steps(2);
+    assert_eq!(h.state().canvas.camera, zoomed);
+}
