@@ -3,7 +3,7 @@
 T-0084 source `026518e3d358034d44d94c987f150e4daa2a720d`, based on main `83c5dd6`,
 passed Linux fmt, strict workspace/all-target clippy, **523 workspace tests**
 (with one existing ignored test), and workspace build. The subsequent clean
-static-routing integration onto `bf8d455` preserved all additive actions/hooks;
+static-routing and symbol-library integration onto `0634333` preserved all additive actions/hooks;
 its only conflict was the README append, resolved by preserving both links.
 Final combined CI is recorded on the PR before merge.
 
