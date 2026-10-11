@@ -9,7 +9,7 @@ static ACTIVE: AtomicUsize = AtomicUsize::new(0);
 pub(crate) struct Permit;
 impl Permit {
     pub(crate) fn acquire() -> io::Result<Self> {
-        ACTIVE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |active| (active < 2).then_some(active + 1)).map(|_| Self).map_err(|_| {
+        ACTIVE.try_update(Ordering::AcqRel, Ordering::Acquire, |active| (active < 2).then_some(active + 1)).map(|_| Self).map_err(|_| {
             io::Error::new(io::ErrorKind::WouldBlock, "manufacturing export busy: at most two snapshots per process; retry after an export finishes")
         })
     }
