@@ -10,9 +10,11 @@ pub mod board;
 pub mod file;
 pub mod id;
 pub mod outline;
+pub mod pad;
 pub mod project;
 
 pub use board::{Board, Part, Side};
 pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};
+pub use pad::{Pad, Pads};
 pub use project::{Project, Schematic, Sheet};

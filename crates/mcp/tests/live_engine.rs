@@ -371,3 +371,28 @@ async fn board_outline_changes_are_shared_and_guarded_over_http() {
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn agents_share_persistent_pads_and_reject_stale_net_assignment() {
+    let engine = EngineHandle::new(Project::new("Electrical MCP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = connect(server.url(), "pad-editor").await;
+    let b = connect(server.url(), "pad-observer").await;
+    assert_eq!(call(&a, "add_part", resistor("R1", 10.0)).await.is_error, Some(false));
+    let part = engine.read(|p| p.board.parts.values().next().unwrap().clone());
+    let pad = json!({"number":"1","x_mm":-0.8,"y_mm":0,"width_mm":0.9,"height_mm":0.95,"net":"GND"});
+    let input = json!({"id":part.id,"expected":part,"pads":[pad]});
+    assert_eq!(call(&a, "set_part_pads", input.clone()).await.is_error, Some(false));
+    let design = call(&b, "get_design", json!({})).await.structured_content.unwrap();
+    assert_eq!(design["board"]["parts"][part.id.to_string()]["pads"][0]["net"], "GND");
+    let after = engine.read(Clone::clone);
+    assert_eq!(call(&b, "set_part_pads", input).await.is_error, Some(true));
+    assert_eq!(engine.read(Clone::clone), after);
+    assert_eq!(call(&a, "undo", json!({})).await.is_error, Some(false));
+    assert!(engine.read(|p| p.board.part(&part.id).unwrap().pads.is_none()));
+    assert_eq!(call(&a, "redo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), after);
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}

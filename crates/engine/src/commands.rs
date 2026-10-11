@@ -66,6 +66,7 @@ impl Command for AddPart {
         let rotation_mdeg = rotation_mdeg(self.rotation_deg.unwrap_or(0.0))?;
 
         let part = Part {
+            pads: None,
             id: ObjectId::new(),
             designator: designator.to_owned(),
             value: self.value.trim().to_owned(),

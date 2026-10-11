@@ -20,8 +20,8 @@ use crate::project::Project;
 
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
-/// Highest supported version; outline-free projects retain version 1 bytes.
-pub const VERSION: u32 = 2;
+/// Highest supported version; legacy projects retain their original schema bytes.
+pub const VERSION: u32 = 3;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -48,6 +48,9 @@ pub enum FileError {
     /// Geometry is present in an envelope that predates its schema.
     #[error("board outline requires native project version 2 or newer")]
     OutlineVersion,
+    /// Electrical pad schema or identity invariant failed.
+    #[error("invalid electrical pads: {0}")]
+    Pads(String),
     /// A map key does not match the id of the object stored under it.
     #[error("{object} stored under key {key} has id {id}; the key must equal the object's id")]
     KeyMismatch {
@@ -76,7 +79,7 @@ struct EnvelopeIn {
 
 /// Serialises `project` as the text of a project file.
 pub fn to_string(project: &Project) -> String {
-    let envelope = EnvelopeOut { format: FORMAT, version: if project.board.outline.is_some() { 2 } else { 1 }, project };
+    let envelope = EnvelopeOut { format: FORMAT, version: minimum_version(project), project };
     let mut text = serde_json::to_string_pretty(&envelope).expect("the model always serialises: string keys, no floats");
     text.push('\n');
     text
@@ -94,6 +97,10 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     let project: Project = serde_json::from_value(envelope.project)?;
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
+    }
+    validate_pads(&project)?;
+    if envelope.version < minimum_version(&project) {
+        return Err(FileError::Pads("explicit pads require version 3".into()));
     }
     check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
     check_keys("part", &project.board.parts, |part| part.id)?;
@@ -133,4 +140,32 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
     let path = path.as_ref();
     let text = fs::read_to_string(path).map_err(|source| FileError::Io { path: path.to_owned(), source })?;
     from_str(&text)
+}
+
+/// Minimum native schema that preserves all project features.
+pub fn minimum_version(project: &Project) -> u32 {
+    if project.board.parts.values().any(|p| p.pads.is_some()) {
+        3
+    } else if project.board.outline.is_some() {
+        2
+    } else {
+        1
+    }
+}
+/// Validate globally unique pad identities, including collisions with other objects.
+pub fn validate_pads(project: &Project) -> Result<(), FileError> {
+    let mut ids = std::collections::BTreeSet::from([project.id]);
+    ids.extend(project.schematic.sheets.keys().copied());
+    ids.extend(project.board.parts.keys().copied());
+    for part in project.board.parts.values() {
+        if let Some(pads) = &part.pads {
+            crate::Pads::try_from(pads.0.clone()).map_err(FileError::Pads)?;
+            for pad in &pads.0 {
+                if !ids.insert(pad.id) {
+                    return Err(FileError::Pads(format!("duplicate object identity {}", pad.id)));
+                }
+            }
+        }
+    }
+    Ok(())
 }

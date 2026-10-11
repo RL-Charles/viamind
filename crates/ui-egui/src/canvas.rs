@@ -154,6 +154,7 @@ pub(crate) fn item_shape(item: &Item, color: Color32, cam: &Camera, viewport: Re
     let to_screen = |p: WorldPos| cam.world_to_screen(p, viewport);
     let zoom = cam.zoom as f32;
     match item.prim {
+        Prim::Quad(points) => Shape::convex_polygon(points.into_iter().map(to_screen).collect(), color, Stroke::NONE),
         Prim::Rect(r) => Shape::rect_filled(Rect::from_min_max(to_screen(r.min), to_screen(r.max)), CornerRadius::ZERO, color),
         Prim::Circle { center, radius } => Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
         Prim::Segment { a, b, width } => Shape::line_segment([to_screen(a), to_screen(b)], Stroke::new(width as f32 * zoom, color)),

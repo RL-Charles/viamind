@@ -190,6 +190,7 @@ mod tests {
 
     fn part(designator: &str) -> Part {
         Part {
+            pads: None,
             id: ObjectId::new(),
             designator: designator.into(),
             value: "1k".into(),

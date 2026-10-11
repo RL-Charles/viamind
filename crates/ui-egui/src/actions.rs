@@ -5,8 +5,8 @@
 
 use serde_json::{Value, json};
 use viamind_engine::{
-    AddPart, Command, DeletePart, EngineError, EngineHandle, MovePart, NewProject, OpenProject, Origin, SaveProject, SetBoardOutline, SetSelection,
-    UpdatePart, input_schema,
+    AddPart, Command, DeletePart, EngineError, EngineHandle, MovePart, NewProject, OpenProject, Origin, SaveProject, SetBoardOutline, SetPartPads,
+    SetSelection, UpdatePart, input_schema,
 };
 
 macro_rules! ui_actions {
@@ -42,6 +42,7 @@ fn no_args() -> Value {
 ui_actions! {
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
+    SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     SetBoardOutline => (SetBoardOutline::NAME, input_schema::<SetBoardOutline>(), set_board_outline),
     UpdatePart => (UpdatePart::NAME, input_schema::<UpdatePart>(), update_part),
     DeletePart => (DeletePart::NAME, input_schema::<DeletePart>(), delete_part),
@@ -106,4 +107,8 @@ fn move_part(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> 
 
 fn set_board_outline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(SetBoardOutline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn set_part_pads(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(SetPartPads::NAME, input, Origin::User)?).map_err(encode_error)
 }

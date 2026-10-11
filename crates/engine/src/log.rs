@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// Highest supported log version; outline-bearing bases require version 2.
-pub const LOG_VERSION: u32 = 2;
+/// New logs use version 3 to preserve electrical pads in appended snapshots.
+pub const LOG_VERSION: u32 = 3;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -112,12 +112,19 @@ impl EventLog {
         let mut lines = input.lines().enumerate().filter(|(_, line)| line.as_ref().map_or(true, |l| !l.trim().is_empty()));
         let (index, header) = lines.next().ok_or(LogError::BadHeader)?;
         let header: Header<Project> = serde_json::from_str(&header?).map_err(|source| LogError::Parse { line: index + 1, source })?;
-        if header.format != LOG_FORMAT || header.version > LOG_VERSION || (header.base.board.outline.is_some() && header.version < 2) {
+        if header.format != LOG_FORMAT
+            || header.version > LOG_VERSION
+            || (header.version < viamind_doc::file::minimum_version(&header.base))
+            || viamind_doc::file::validate_pads(&header.base).is_err()
+        {
             return Err(LogError::BadHeader);
         }
         let mut log = EventLog::new(header.base);
         for (index, line) in lines {
-            let event = serde_json::from_str(&line?).map_err(|source| LogError::Parse { line: index + 1, source })?;
+            let event: ChangeEvent = serde_json::from_str(&line?).map_err(|source| LogError::Parse { line: index + 1, source })?;
+            if header.version < 3 && event.deltas.iter().any(|d| matches!(d, crate::Delta::Part { before, after, .. } if before.as_ref().is_some_and(|p| p.pads.is_some()) || after.as_ref().is_some_and(|p| p.pads.is_some()))) {
+                return Err(LogError::BadHeader);
+            }
             log.append(event);
         }
         Ok(log)
@@ -126,7 +133,7 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
-    serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: if base.board.outline.is_some() { 2 } else { 1 }, base })?;
+    serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: LOG_VERSION, base })?;
     out.write_all(b"\n")
 }
 

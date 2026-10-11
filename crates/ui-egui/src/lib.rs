@@ -13,6 +13,7 @@ pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
 pub mod outlines;
+pub mod pads;
 pub mod parts;
 pub mod scene;
 pub mod selection;
@@ -111,6 +112,7 @@ pub struct ViamindApp {
     pub files: files::FileUi,
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
+    pub pads: pads::PadsUi,
     last_frame_time: Option<f64>,
 }
 
@@ -133,6 +135,7 @@ impl ViamindApp {
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
+            pads: pads::PadsUi::default(),
             last_frame_time: None,
         }
     }
@@ -153,6 +156,7 @@ impl ViamindApp {
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
+            pads: pads::PadsUi::default(),
             last_frame_time: None,
         }
     }
@@ -230,7 +234,13 @@ impl ViamindApp {
         let start = Instant::now();
         self.update_stats(ui, cpu_ms);
         self.file_shortcuts(ui);
-        if self.design.is_some() && !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !ui.ctx().egui_wants_keyboard_input() {
+        if self.design.is_some()
+            && !self.files.busy()
+            && !self.parts.placing()
+            && !self.outlines.editing()
+            && !self.pads.editing()
+            && !ui.ctx().egui_wants_keyboard_input()
+        {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
                 self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
@@ -260,6 +270,7 @@ impl ViamindApp {
         });
         self.file_dialogs(ui);
         self.placement_dialog(ui);
+        self.pads_dialog(ui);
         self.outline_dialog(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();

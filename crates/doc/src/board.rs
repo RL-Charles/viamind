@@ -33,6 +33,9 @@ impl Board {
 /// A component placed on the board.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
+    /// Explicit electrical pads; None retains the legacy graphical preview.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pads: Option<crate::Pads>,
     /// Stable id of the part.
     pub id: ObjectId,
     /// Reference designator, e.g. `"R1"`.
@@ -73,6 +76,7 @@ mod tests {
         project.schematic.sheets.insert(sheet.id, sheet);
         for (i, side) in [Side::Top, Side::Bottom].into_iter().enumerate() {
             let part = Part {
+                pads: None,
                 id: ObjectId::new(),
                 designator: format!("R{}", i + 1),
                 value: "10k".into(),

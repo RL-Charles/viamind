@@ -19,6 +19,7 @@ fn fixture() -> EngineHandle {
         project.board.parts.insert(
             id,
             Part {
+                pads: None,
                 id,
                 designator: designator.into(),
                 value: value.into(),
@@ -119,6 +120,7 @@ fn default_page_is_bounded_on_large_designs() {
         project.board.parts.insert(
             id,
             Part {
+                pads: None,
                 id,
                 designator: format!("R{number}"),
                 value: "1k".into(),

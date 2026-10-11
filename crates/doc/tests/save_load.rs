@@ -17,6 +17,7 @@ fn golden_file() {
     let mut project = Project { id: id(1), name: "golden".into(), ..Project::new("") };
     project.schematic.sheets.insert(id(2), Sheet { id: id(2), name: "Main".into() });
     let part = Part {
+        pads: None,
         id: id(3),
         designator: "R1".into(),
         value: "10k".into(),
@@ -84,6 +85,7 @@ fn save_load_and_resave_on_disk() {
     let mut project = Project::new("disk");
     for i in 0..50 {
         let part = Part {
+            pads: None,
             id: ObjectId::new(),
             designator: format!("C{i}"),
             value: "100nF".into(),
@@ -112,7 +114,7 @@ fn rejects_bad_files_with_clear_errors() {
     assert!(matches!(err, FileError::WrongFormat(ref f) if f == "other"), "{err}");
 
     let err = file::from_str(&good.replace("\"version\": 1", "\"version\": 99")).unwrap_err();
-    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 2)");
+    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 3)");
 
     let err = file::from_str(&good[..good.len() - 4]).unwrap_err();
     assert!(err.to_string().contains("line"), "parse errors carry a position: {err}");
@@ -131,6 +133,7 @@ fn rejects_bad_files_with_clear_errors() {
 fn arb_part() -> impl Strategy<Value = Part> {
     (any::<u128>(), "[A-Z]{1,3}[0-9]{1,4}", "\\PC{0,12}", "[A-Za-z0-9_.-]{1,20}", any::<i64>(), any::<i64>(), 0..360_000i32, any::<bool>()).prop_map(
         |(n, designator, value, footprint, x, y, rotation_mdeg, bottom)| Part {
+            pads: None,
             id: id(n),
             designator,
             value,
