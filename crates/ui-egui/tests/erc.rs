@@ -201,7 +201,12 @@ fn virtualized_results_reach_final_diagnostic_after_large_scroll() {
     finish(&mut h);
     assert!(h.query_all_by_label(&caption).next().is_none());
     h.event(egui::Event::PointerMoved(egui::pos2(300.0, 300.0)));
-    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, -100000.0), modifiers: Default::default() });
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: vec2(0.0, -100000.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: Default::default(),
+    });
     h.run_steps(30);
     assert!(h.query_all_by_label(&caption).next().is_some(), "Final diagnostic must remain reachable at the end of the virtual list");
 }
