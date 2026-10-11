@@ -1,0 +1,34 @@
+{
+  "production_source_revision": "763431f7d1a4e40c4ad912fbcbdc748f4879a753",
+  "production_base_revision": "8d77b23",
+  "production_binary_sha256": "c1de0e34c72baa6cdf3cbcad6aa7bc6f1e26f19faf26be124f871aeae3ed713f",
+  "workspace_tests_passed": 557,
+  "workspace_tests_failed": 0,
+  "workspace_tests_existing_ignored": 1,
+  "gates": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline"
+  ],
+  "gate_log_sha256": "c1020a16eb3c96ed3f1ced36ab8b14d98dad404b3b390c0d9495ba2b749faf95",
+  "production_stdio_checks": 32,
+  "actual_production_http_two_client_checks": 33,
+  "production_pid": 838345,
+  "production_port": 7912,
+  "production_window_id": 110379537501600,
+  "inspection_source_revision": "56ddcc0f220118a7a279acb756a96f5356f2754f",
+  "inspection_binary_sha256": "c8a4afe01e271e5f99eabd72304a51c4523c94d4d7e08532141c567d52cf85e8",
+  "inspection_gates": [
+    "fmt",
+    "strict workspace all-target Clippy",
+    "inspection example build"
+  ],
+  "integration": "Clean rebase onto main51e5c87. Feature modules unchanged from verified production source; only inspection host changed. Fresh final combined CI required.",
+  "cache_safety": "Full gate and inspection build/copies under shared flock; source mtimes refreshed; incremental disabled; two jobs.",
+  "cache_cleanup": {
+    "removed_count": 345,
+    "removed_gib": 64.16,
+    "scope": "Unused older single-link executable cache entries; running processes and retained artifacts excluded; mutex held."
+  }
+}

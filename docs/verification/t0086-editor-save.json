@@ -1,0 +1,18 @@
+{
+  "source_revision": "56ddcc0f220118a7a279acb756a96f5356f2754f",
+  "binary_sha256": "c8a4afe01e271e5f99eabd72304a51c4523c94d4d7e08532141c567d52cf85e8",
+  "pid": 870709,
+  "window_id": 110379540500544,
+  "snapshot_id": "s00000020",
+  "window_bounds": {
+    "width": 1600,
+    "height": 1000
+  },
+  "screenshot_dimensions": [
+    1568,
+    980
+  ],
+  "capture": "t0086-editor-save.png",
+  "preparation": "Actual egui_kittest inputs against production ViamindApp; prepared egui memory transferred to fixed-size native WGPU host; full engine session asserted unchanged every frame. MCP disabled.",
+  "accessibility": "AT-SPI unavailable; X11 metadata fallback supplies process provenance only. No OS pointer input claimed."
+}
