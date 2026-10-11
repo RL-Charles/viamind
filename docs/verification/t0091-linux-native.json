@@ -1,0 +1,173 @@
+{
+  "source_commit": "b64d5e6a4ae2ac4feca35d1e3a8df57b82672b9c",
+  "source_base": "cc1813f2c734eb808d702002da4bcc2c93bf6bf3",
+  "date": "2026-10-11",
+  "platform": "Linux x86_64 Wayland/Hyprland",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "workspace_tests": {
+    "passed": 653,
+    "failed": 0,
+    "ignored": 1
+  },
+  "full_gate_log_sha256": "399b37c9d9d69abc1d2e333473c6138f0f208c28dedd6dab8e53c4d506203e1a",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --offline --locked -- -D warnings",
+    "cargo test --workspace --offline --locked",
+    "cargo build --workspace --offline --locked",
+    "cargo build -p viamind-ui-egui --example t0091_inspection --offline --locked"
+  ],
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "preflight": "Touch all workspace Rust source mtimes under the entire-sequence mutex; preserve third-party cache and copy unique stripped binaries before releasing the mutex.",
+  "profile": "unoptimized debug with stripped debug info",
+  "environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp"
+  },
+  "production": {
+    "binary_sha256": "ab9fad43ace5de47dfd943c0a68170940a9c62d96ab180c60ae1140d2558be85",
+    "pid": 1195566,
+    "mcp_port": 7918,
+    "native_mapped": true,
+    "window_id": 110379549193424,
+    "compositor_metadata_size": [
+      1,
+      -5
+    ],
+    "http_checks": 23,
+    "passed": true,
+    "first_plan_ms": 5.551921000005677,
+    "first_commit_ms": 8.572999009629712,
+    "warm_commit_ms": [
+      5.875738002941944,
+      6.021765002515167,
+      6.345784990116954,
+      6.217189991730265,
+      6.209389001014642
+    ],
+    "warm_mean_ms": 6.1339733976637945,
+    "nearby_host_load": "38.57/39.16/38.79; concurrent workspace builds active",
+    "fixture_sha256": "4280743e040131ab9e19ab4d127def3da9a3c397a996a21023c6ac91959aa6be"
+  },
+  "initial_inspection": {
+    "source_commit": "b64d5e6a4ae2ac4feca35d1e3a8df57b82672b9c",
+    "binary_sha256": "d1ae2f94f7013bc73921c4a387aad6ac2dc064bc219ff176009bde3d7dbc199a",
+    "pid": 1196798,
+    "window_id": 110379549223040,
+    "compositor_metadata_size": [
+      1600,
+      1000
+    ],
+    "runtime_assertions": "Checked two-chain immutable production controls, full session equality and Preview/Apply/Cancel bounds passed; no visual capture due Cua refusal."
+  },
+  "capture_limitation": "Shared Cua daemon and private direct Wayland runtime list zero windows: Hyprland window enumeration unavailable: out of range integral type conversion attempted. Exact independently grounded fixed target get_window_state also refuses stale via enumeration. Read-only Hyprland own-PID metadata records mapped windows; no tool/compositor configuration or operating-system input changed. Negative tiny tiled height is a likely cause, not a proven tool source diagnosis.",
+  "initial_test_fixes": "Parallel fixtures competed with intentional two-operation admission: serialize integration cases, retain independent admission cap test. MCP test used absent geom dev dependency: author exact serde fixture. Actual pointer sequence needs established one-frame press/release cadence: retain independent viewport/index/first-click assertions. Coverage review added actual checker summary and legacy/640x400 proof. No limits or assertions weakened.",
+  "limits": [
+    "Only equivalent assigned-net cardinal straight joints; no diagonal/bend optimization, overlap/retrace removal or shove.",
+    "Complete scoped joint DRC only; legacy previews and unperformed checks disclosed, unrelated existing violations remain.",
+    "No physical copper certification; strict native100k60fps criterion stays open.",
+    "Latency samples cover this small authored fixture under concurrent load, not a worst-case or responsiveness guarantee."
+  ],
+  "final_inspection": {
+    "source_commit": "fef4ccff74870d0a1df938bc43038e7e29a3a9d6",
+    "changes_since_production": "Only crates/ui-egui/examples/t0091_inspection.rs; no application or engine changes.",
+    "fmt": "pass",
+    "strict_example_clippy": "pass",
+    "example_build": "pass",
+    "binary_sha256": "0bedf5b6beab1e028c5ac8f3a338444687c07ff179a31aeb22744ecdbcb06263",
+    "pid": 1280627,
+    "own_compositor_metadata": [
+      {
+        "address": "0x6463be067ad0",
+        "pid": 1280627,
+        "mapped": true,
+        "class": "viamind-cardinal-cleanup-inspection",
+        "title": "Untitled \u2014 Viamind",
+        "at": [
+          2080,
+          1265
+        ],
+        "size": [
+          1600,
+          1000
+        ]
+      }
+    ],
+    "capture": {
+      "capture": "eframe native WGPU framebuffer Screenshot event",
+      "content_rect": [
+        0.0,
+        0.0,
+        1600.0,
+        1000.0
+      ],
+      "full_session_unchanged": true,
+      "native_ui_passes": 11,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0091-native-preview.ppm",
+      "pixels": [
+        1600,
+        1000
+      ],
+      "prepared_control_bounds_fit_native_viewport": true
+    },
+    "control_bounds": {
+      "Apply cleanup": {
+        "max": [
+          222.90625,
+          364.0
+        ],
+        "min": [
+          133.5625,
+          346.0
+        ]
+      },
+      "Cancel cleanup": {
+        "max": [
+          325.625,
+          364.0
+        ],
+        "min": [
+          230.90625,
+          346.0
+        ]
+      },
+      "Preview cleanup": {
+        "max": [
+          125.5625,
+          364.0
+        ],
+        "min": [
+          23.0,
+          346.0
+        ]
+      }
+    },
+    "capture_encoding": {
+      "encoding": "lossless RGB P6 to PNG; no image transformations",
+      "pixels": [
+        1600,
+        1000
+      ],
+      "source_sha256": "3011cea997a3ed288e028a2dcaa3062c287038fb76d705a0c69087d8262b665e",
+      "png_sha256": "cafa5cd496bfeba6efbe61352bdf66f22668c913dc8ebe7d95905ad1dbd920ea",
+      "exact_rgb_readback": true
+    },
+    "proof": "Actual production ViamindApp, engine and checked preview prepared through egui input; native eframe WGPU Screenshot readback. Full session equality, checked two-chain plan and prepared control viewport fit asserted on every native UI callback. Counter counts UI passes, not presented frames. No OS input/Cua screenshot claim.",
+    "excluded_attempt": "b64 inspection retained no image because exact-target Cua refused. 3bc capture binary built but never launched; fef is the only final screenshot host."
+  },
+  "artifacts": {
+    "t0091-linux-full.log": "399b37c9d9d69abc1d2e333473c6138f0f208c28dedd6dab8e53c4d506203e1a",
+    "t0091-production-http.json": "c95ce6188f1dea0cac0fa54ede8be323c09b0e30a8df2a97fb6a8f9fd7fec7e7",
+    "t0091-cleanup.viamind.json": "4280743e040131ab9e19ab4d127def3da9a3c397a996a21023c6ac91959aa6be",
+    "t0091-inspection-build.log": "0f531ba8f61a82b7a267be430bbb5a02f8fc6afe53953dbd355d5914005c4e90",
+    "t0091-inspection-native.log": "28bb08b856d1395e5fdad3de3f386b5deaebc589e1277cc61e9629da9a266ddd",
+    "t0091-native-preview.png": "cafa5cd496bfeba6efbe61352bdf66f22668c913dc8ebe7d95905ad1dbd920ea",
+    "t0091-framebuffer-to-png.py": "a11f5f8589d95eb174a7724b6c5d5f059036647015e53c7614bfb6847c11cc01",
+    "t0091-png-encoding.json": "de0a02fb3a4e29bd4175f8051156978deb64653ca2c71f2a96dea1a193080895",
+    "t0091-native-capture-limitation.json": "dff2cea414eab223cc23e10bc6d4389768edd9dc8e114c60549673b3c8b6f7c3",
+    "t0091-final-window.json": "a371219570f7892af8a3ae9b4d0e596c378f74745304585a6e183293b8d2ecc4"
+  }
+}

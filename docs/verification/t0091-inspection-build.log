@@ -1,0 +1,22 @@
+fef4ccff74870d0a1df938bc43038e7e29a3a9d6
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/doc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/router)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/drc)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/render)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/fab)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 22.53s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0091/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 07s
+0bedf5b6beab1e028c5ac8f3a338444687c07ff179a31aeb22744ecdbcb06263  /home/charlesmowbray/.cache/viamind/native-artifacts/t0091-inspection-framebuffer-final-native

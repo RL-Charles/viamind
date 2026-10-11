@@ -55,3 +55,6 @@ DRC. Preview runs in a retained desktop worker and stale results cannot revive a
 cancelled or replaced draft.
 
 The exact behavioral specification is [here](specs/cardinal-track-cleanup.md).
+
+[Verification and native provenance](cardinal-track-cleanup-verification.md)
+records Linux gates, actual HTTP checks, compact input proof and readable native preview.
