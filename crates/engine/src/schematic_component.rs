@@ -159,6 +159,7 @@ fn make_part(placement: &SchematicComponentPlacement, designator: String, value:
         })
         .collect::<Vec<_>>();
     Ok(Part {
+        holes: None,
         artwork: placement.footprint.artwork.clone(),
         assembly: None,
         id: ObjectId::new(),

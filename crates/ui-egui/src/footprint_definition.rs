@@ -82,6 +82,7 @@ impl FootprintDefinitionUi {
             .collect::<Result<Vec<_>, String>>()?;
         let artwork = self.artwork.definition()?;
         let footprint = Footprint {
+            holes: None,
             artwork,
             name: self.name.clone(),
             pads: self
@@ -407,6 +408,7 @@ mod tests {
     use super::*;
     fn original() -> Footprint {
         Footprint {
+            holes: None,
             artwork: None,
             name: "Original".into(),
             pads: vec![FootprintPad {

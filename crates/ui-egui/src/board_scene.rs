@@ -229,6 +229,7 @@ mod tests {
 
     pub(super) fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
         Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,

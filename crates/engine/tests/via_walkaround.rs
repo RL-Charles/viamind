@@ -22,6 +22,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
             apertures: None,
         };
         let part = Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             schematic_symbol: None,

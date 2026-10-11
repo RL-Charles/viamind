@@ -12,6 +12,7 @@ fn sample() -> Project {
     let mut project = Project::new("assembly");
     for (designator, x, rotation, side) in [("R2", i64::MIN, -1, Side::Bottom), ("R1", 1, 360_001, Side::Top)] {
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,

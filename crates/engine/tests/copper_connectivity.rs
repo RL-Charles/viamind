@@ -16,6 +16,7 @@ fn part(project: &mut Project, x: i64, y: i64, side: Side) -> PadEndpointId {
         apertures: None,
     };
     let part = Part {
+        holes: None,
         artwork: None,
         assembly: None,
         id: ObjectId::new(),

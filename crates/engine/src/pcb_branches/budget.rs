@@ -170,6 +170,7 @@ mod tests {
     fn borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text() {
         let mut p = Project::new("quotes\" newline\n unicodeλ");
         let part = Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             assembly: None,

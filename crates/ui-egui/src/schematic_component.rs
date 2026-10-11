@@ -263,7 +263,7 @@ impl ViamindApp {
                             position: Point::new(Nm(x), Nm(y)),
                             side: self.schematic_component.side,
                             rotation_mdeg: self.schematic_component.rotation,
-                            footprint: viamind_doc::footprint::Footprint { artwork: None, name: String::new(), pads: vec![] },
+                            footprint: viamind_doc::footprint::Footprint { holes: None, artwork: None, name: String::new(), pads: vec![] },
                         },
                     };
                     self.schematic_component.start(engine.clone(), Some(input));

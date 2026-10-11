@@ -300,6 +300,7 @@ mod tests {
     fn borrowed_replacement_growth_is_reserved_before_clone_at_exact_text_boundary() {
         let mut p = Project::new("text boundary");
         let part = viamind_doc::Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             assembly: None,
