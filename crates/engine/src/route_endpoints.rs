@@ -79,7 +79,7 @@ pub(crate) fn resolve(project: &Project, id: PadEndpointId) -> Result<(Point, Co
         .ok_or_else(|| CommandError::conflict("route endpoint explicit pad no longer exists"))?;
     resolve_pad(part, pad)
 }
-fn resolve_pad<'a>(part: &Part, pad: &'a Pad) -> Result<(Point, CopperLayer, &'a str), CommandError> {
+pub(crate) fn resolve_pad<'a>(part: &Part, pad: &'a Pad) -> Result<(Point, CopperLayer, &'a str), CommandError> {
     let net = pad.net.as_deref().filter(|n| !n.is_empty()).ok_or_else(|| CommandError::invalid("endpoint", "pad must have an assigned net"))?;
     if net.len() > 256 {
         return Err(CommandError::invalid("endpoint", "pad net exceeds 256 bytes"));

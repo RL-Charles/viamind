@@ -114,6 +114,8 @@ impl CommandRegistry {
             .with::<crate::RoutePolyline>()
             .with::<crate::RoutePadPolyline>()
             .with::<crate::RoutePadPosture>()
+            .with::<crate::RouteTerminalPolyline>()
+            .with::<crate::RouteTerminalPosture>()
             .with::<crate::RoutePadWalkaround>()
             .with::<crate::RoutePadViaWalkaround>()
             .with::<crate::CleanupCardinalTracks>()

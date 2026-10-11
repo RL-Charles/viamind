@@ -70,6 +70,11 @@ pub use schematic_connectivity::{
     SchematicNetName,
 };
 pub mod route_endpoints;
+pub mod route_terminals;
+pub use route_terminals::{
+    RouteTerminal, RouteTerminalId, RouteTerminalPage, RouteTerminalPolyline, RouteTerminalPosture, RouteTerminalQuery, RouteTerminalSnapshot,
+    TrackEnd,
+};
 pub mod routing;
 pub use route_endpoints::{PadEndpointId, RouteEndpoint, RouteEndpointPage, RouteEndpointQuery, RouteEndpointSnapshot, RoutePadPolyline};
 pub use routing::RoutePolyline;
