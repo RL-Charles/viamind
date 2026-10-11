@@ -29,7 +29,7 @@ async fn calibrated_shared_setter_two_clients_full_guards_and_publication_are_at
     assert!(observer.get("set_part_assembly").is_none());
     assert!(observer.get("export_assembly_csv").is_none());
     let observed = observer.call("query_parts", json!({}), Default::default()).await.unwrap();
-    assert_eq!(observed["parts"][0]["assembly"], metadata);
+    assert_eq!(observed["parts"][0]["assembly"], json!(state.project.board.parts[&id].assembly));
     let forbidden = temp.path().join("observer.csv");
     assert!(
         observer
