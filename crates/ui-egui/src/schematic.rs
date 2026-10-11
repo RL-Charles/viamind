@@ -314,7 +314,8 @@ impl ViamindApp {
             return Err("Finish or cancel the wire drawing preview before navigating".into());
         }
         let sheet_id = target.sheet_id.ok_or("Containing sheet is missing.")?;
-        if self.schematic.draft.as_ref().is_some_and(|draft| draft.expected.id != sheet_id || draft.id != target.symbol_id) {
+        let symbol_id = target.symbol_id.or_else(|| target.package_units.iter().min_by(|a, b| a.key.cmp(&b.key)).map(|u| u.symbol_id));
+        if self.schematic.draft.as_ref().is_some_and(|draft| draft.expected.id != sheet_id || draft.id != symbol_id) {
             return Err("Finish or cancel the schematic object draft before navigating to another symbol.".into());
         }
         let sheet_name = self
@@ -362,7 +363,11 @@ impl ViamindApp {
                 return Err("Document changed; inspect terminals again".to_owned());
             }
             let sheet = e.project().schematic.sheets.get(&sheet_id).ok_or("Containing sheet is missing")?;
-            let symbol = sheet.content.as_ref().and_then(|c| component.symbol_id.and_then(|id| c.symbols.get(&id))).ok_or("Symbol is missing")?;
+            let symbol = sheet
+                .content
+                .as_ref()
+                .and_then(|c| terminal.symbol_id.or(component.symbol_id).and_then(|id| c.symbols.get(&id)))
+                .ok_or("Symbol is missing")?;
             let pin = symbol.pins.iter().find(|p| Some(p.id) == terminal.pin_id).ok_or("Pin is missing")?;
             let at = symbol.pin_position(pin.position)?;
             if terminal.schematic_position != Some(viamind_geom::Point::new(at.x, at.y)) {

@@ -1,0 +1,37 @@
+6dcc18d961de1ec56f26136ca301b2a64f8f437d
+Sun Oct 11 20:29:26 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/apps/viamind)
+error[E0433]: cannot find type `UiAction` in this scope
+   --> crates/ui-egui/src/cross_probe.rs:357:9
+    |
+357 |         UiAction::PlaceSymbolPackage
+    |         ^^^^^^^^ use of undeclared type `UiAction`
+    |
+help: consider importing this enum through its public re-export
+    |
+327 +     use crate::UiAction;
+    |
+
+error[E0433]: cannot find type `UiAction` in this scope
+   --> crates/ui-egui/src/cross_probe.rs:388:9
+    |
+388 |         UiAction::CreatePackagePcbComponent.run(&engine, serde_json::to_value(preview.command).unwrap()).unwrap();
+    |         ^^^^^^^^ use of undeclared type `UiAction`
+    |
+help: consider importing this enum through its public re-export
+    |
+327 +     use crate::UiAction;
+    |
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `viamind-ui-egui` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

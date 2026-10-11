@@ -1,0 +1,38 @@
+c0bb807cbe1fcfdff5da3a07a1469e57a906eaa8
+Sun Oct 11 20:54:43 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/doc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/router)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/drc)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/render)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/ui-egui)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0116/crates/mcp)
+error: redundant closure
+  --> crates/ui-egui/examples/t0116_inspection.rs:26:57
+   |
+26 |         let rgba: Vec<_> = image.pixels.iter().flat_map(|p| p.to_array()).collect();
+   |                                                         ^^^^^^^^^^^^^^^^ help: replace the closure with the method itself: `egui::Color32::to_array`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+   = note: `-D clippy::redundant-closure-for-method-calls` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::redundant_closure_for_method_calls)]`
+
+error: redundant closure
+  --> crates/ui-egui/examples/t0116_inspection.rs:27:49
+   |
+27 |         let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
+   |                                                 ^^^^^^^^^ help: replace the closure with the method itself: `egui::Color32::a`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+
+error: redundant closure
+  --> crates/ui-egui/examples/t0116_inspection.rs:28:49
+   |
+28 |         let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+   |                                                 ^^^^^^^^^ help: replace the closure with the method itself: `egui::Color32::a`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+
+error: could not compile `viamind-ui-egui` (example "t0116_inspection") due to 3 previous errors

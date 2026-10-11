@@ -182,6 +182,7 @@ fn bounded_board_capture_ignores_large_unrelated_schematic_and_rejects_oversized
     let part = viamind_doc::Part {
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         id: viamind_doc::ObjectId::new(),
         designator: "R1".into(),
         value: "x".repeat(3 * 1024 * 1024),

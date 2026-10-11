@@ -156,6 +156,7 @@ mod tests {
         let part = viamind_doc::Part {
             id: ObjectId::new(),
             schematic_symbol: None,
+            schematic_package: None,
             designator: "J1".into(),
             value: String::new(),
             footprint: String::new(),

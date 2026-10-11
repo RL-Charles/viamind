@@ -43,41 +43,46 @@ pub struct SchematicComponentPreview {
     pub pads: Vec<ComponentPadNet>,
 }
 
-fn plan(
-    project: &Project,
-    placement: &SchematicComponentPlacement,
-    cursor: EventCursor,
-) -> Result<(String, String, Vec<ComponentPadNet>), CommandError> {
-    crate::pcb_sync::validate_sync_project(project)?;
-    placement.footprint.validate().map_err(|e| CommandError::invalid("footprint", e))?;
-    if ![0, 90_000, 180_000, 270_000].contains(&placement.rotation_mdeg) {
+pub(crate) fn validate_footprint_pose(footprint: &Footprint, position: Point, side: Side, rotation_mdeg: i32) -> Result<(), CommandError> {
+    if footprint.pads.len() > 1024 || footprint.name.len() > 4096 || footprint.pads.iter().any(|p| p.number.len() > 4096) {
+        return Err(CommandError::invalid("footprint", "at most1024 pads and4096 UTF-8 bytes per name/number before copies"));
+    }
+    footprint.validate().map_err(|e| CommandError::invalid("footprint", e))?;
+    if ![0, 90_000, 180_000, 270_000].contains(&rotation_mdeg) {
         return Err(CommandError::invalid("rotation_mdeg", "choose 0, 90000, 180000 or 270000"));
     }
-    if [placement.position.x.0, placement.position.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000) {
+    if [position.x.0, position.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000) {
         return Err(CommandError::invalid("position", "origin must stay within ±10000 mm"));
     }
     // Doubled integer coordinates retain half-nanometre corners of odd pad dimensions.
-    for pad in &placement.footprint.pads {
+    for pad in &footprint.pads {
         for dx in [-i128::from(pad.width.0), i128::from(pad.width.0)] {
             for dy in [-i128::from(pad.height.0), i128::from(pad.height.0)] {
                 let x = 2 * i128::from(pad.position.x.0) + dx;
                 let y = 2 * i128::from(pad.position.y.0) + dy;
-                let x = if placement.side == Side::Bottom { -x } else { x };
-                let (x, y) = match placement.rotation_mdeg {
+                let x = if side == Side::Bottom { -x } else { x };
+                let (x, y) = match rotation_mdeg {
                     0 => (x, y),
                     90_000 => (y, -x),
                     180_000 => (-x, -y),
                     270_000 => (-y, x),
                     _ => unreachable!("validated quarter turn"),
                 };
-                if (x + 2 * i128::from(placement.position.x.0)).abs() > 20_000_000_000
-                    || (y + 2 * i128::from(placement.position.y.0)).abs() > 20_000_000_000
-                {
+                if (x + 2 * i128::from(position.x.0)).abs() > 20_000_000_000 || (y + 2 * i128::from(position.y.0)).abs() > 20_000_000_000 {
                     return Err(CommandError::invalid("position", "transformed pad corners must stay within ±10000 mm"));
                 }
             }
         }
     }
+    Ok(())
+}
+fn plan(
+    project: &Project,
+    placement: &SchematicComponentPlacement,
+    cursor: EventCursor,
+) -> Result<(String, String, Vec<ComponentPadNet>), CommandError> {
+    crate::pcb_sync::validate_sync_project(project)?;
+    validate_footprint_pose(&placement.footprint, placement.position, placement.side, placement.rotation_mdeg)?;
     let (sheet_id, symbol) = project
         .schematic
         .sheets
@@ -155,6 +160,7 @@ fn make_part(placement: &SchematicComponentPlacement, designator: String, value:
         assembly: None,
         id: ObjectId::new(),
         schematic_symbol: Some(placement.symbol_id),
+        schematic_package: None,
         designator,
         value,
         footprint: placement.footprint.name.clone(),

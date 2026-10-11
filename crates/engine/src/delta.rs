@@ -230,6 +230,7 @@ mod tests {
         Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             pads: None,
             id: ObjectId::new(),
             designator: designator.into(),

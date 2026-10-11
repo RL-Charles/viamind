@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0116/generate-placed.py", line 20, in <module>
+    client.call('save_document',{'path':str(native)})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/Development/viamind-t-0116/scripts/mcp_reference.py", line 233, in call
+    result = self.rpc("tools/call", {"name": name, "arguments": arguments or {}})
+  File "/home/charlesmowbray/Development/viamind-t-0116/scripts/mcp_reference.py", line 187, in rpc
+    raise ValueError(f"MCP protocol error during {method}")
+ValueError: MCP protocol error during tools/call

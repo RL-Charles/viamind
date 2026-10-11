@@ -40,7 +40,7 @@ impl CrossProbeUi {
                     r.components
                         .iter()
                         .filter(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable)
-                        .filter_map(|row| row.symbol_id)
+                        .flat_map(|row| row.symbol_id.into_iter().chain(row.package_units.iter().filter(|u| u.navigable).map(|u| u.symbol_id)))
                         .collect()
                 })
                 .unwrap_or_default()
@@ -88,7 +88,11 @@ impl CrossProbeUi {
     pub(crate) fn symbol_highlighted(&self, id: ObjectId) -> bool {
         self.current.as_ref().is_some_and(|c| !c.schematic_source)
             && self.result.as_ref().is_some_and(|r| {
-                r.components.iter().any(|row| row.status == ComponentLinkStatus::Linked && row.schematic_navigable && row.symbol_id == Some(id))
+                r.components.iter().any(|row| {
+                    row.status == ComponentLinkStatus::Linked
+                        && row.schematic_navigable
+                        && (row.symbol_id == Some(id) || row.package_units.iter().any(|u| u.symbol_id == id && u.navigable))
+                })
             })
     }
 }
@@ -193,7 +197,18 @@ impl ViamindApp {
                         );
                         ui.add(egui::Label::new(&caption).truncate())
                             .on_hover_text(format!("{caption}\nSymbol {:?}\nPCB {:?}", row.symbol_id, row.part_id));
-                        if let Some(id) = if schematic_source { row.symbol_id } else { row.part_id }
+                        let inspection_id = if schematic_source {
+                            row.symbol_id.or_else(|| {
+                                // Retain the actual selected unit UUID: terminal inspection
+                                // verifies it against the local source-selection guard.
+                                self.cross_probe.current.as_ref().and_then(|context| {
+                                    row.package_units.iter().find(|unit| context.ids.contains(&unit.symbol_id)).map(|unit| unit.symbol_id)
+                                })
+                            })
+                        } else {
+                            row.part_id
+                        };
+                        if let Some(id) = inspection_id
                             && ui.button("Inspect pins and pads").clicked()
                         {
                             inspect = Some(id);
@@ -213,6 +228,7 @@ impl ViamindApp {
                         } else {
                             ui.label(match row.status {
                                 ComponentLinkStatus::UnresolvedSymbol => "Linked symbol is missing; resolve or unlink explicitly.",
+                                ComponentLinkStatus::UnresolvedPackage => "Linked package is missing; resolve or unlink explicitly.",
                                 _ => "Component is unlinked; establish a stable link through synchronization.",
                             });
                         }
@@ -266,7 +282,9 @@ impl ViamindApp {
         let target = current
             .components
             .iter()
-            .find(|r| r.part_id == row.part_id && r.symbol_id == row.symbol_id && r.status == ComponentLinkStatus::Linked)
+            .find(|r| {
+                r.part_id == row.part_id && r.symbol_id == row.symbol_id && r.package_id == row.package_id && r.status == ComponentLinkStatus::Linked
+            })
             .ok_or("Component link changed; select the source again.")?;
         if schematic_source {
             if !target.board_navigable {
@@ -307,6 +325,116 @@ impl ViamindApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::UiAction;
+    use egui_kittest::{Harness, kittest::Queryable};
+    use std::collections::BTreeSet;
+    #[test]
+    fn every_package_unit_and_physical_owner_can_inspect_actual_complete_terminals_without_mutating_selection() {
+        use viamind_doc::{
+            Project, Sheet,
+            schematic::{Coordinate, SchematicContent},
+        };
+        use viamind_engine::{EngineHandle, PackageComponentPlacement, PackageComponentRequest, PlaceSymbolPackage, UnitPose};
+        use viamind_geom::{Nm, Point};
+        let mut project = Project::new("Complete package counterpart input");
+        let mut sheet = Sheet::new("Units");
+        sheet.content = Some(SchematicContent::default());
+        project.schematic.sheets.insert(sheet.id, sheet.clone());
+        let engine = EngineHandle::new(project);
+        let template =
+            viamind_doc::symbol_package::from_slice(include_bytes!("../../../fixtures/symbol-packages/original-quad.viamind-symbol-package.json"))
+                .unwrap();
+        let placements = template
+            .units
+            .iter()
+            .enumerate()
+            .map(|(i, u)| UnitPose {
+                key: u.key.clone(),
+                position: Coordinate { x: Nm(i as i64 * 20_000_000), y: Nm(0) },
+                rotation_quarters: 0,
+                mirrored: false,
+            })
+            .collect();
+        UiAction::PlaceSymbolPackage
+            .run(
+                &engine,
+                serde_json::to_value(PlaceSymbolPackage {
+                    expected_project: engine.read(|p| p.id),
+                    source_cursor: engine.event_cursor(),
+                    expected: sheet,
+                    template,
+                    designator: "U1".into(),
+                    placements,
+                })
+                .unwrap(),
+            )
+            .unwrap();
+        let package = engine.read(|p| *p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().packages.keys().next().unwrap());
+        let preview = engine
+            .preview_package_pcb_component(PackageComponentRequest {
+                expected_project: engine.read(|p| p.id),
+                source_cursor: engine.event_cursor(),
+                placement: PackageComponentPlacement {
+                    package_id: package,
+                    footprint: viamind_doc::footprint::from_slice(include_bytes!(
+                        "../../../fixtures/footprints/original-smd14.viamind-footprint.json"
+                    ))
+                    .unwrap(),
+                    position: Point::new(Nm(40_000_001), Nm(30_000_003)),
+                    side: Side::Bottom,
+                    rotation_mdeg: 90_000,
+                },
+            })
+            .unwrap();
+        UiAction::CreatePackagePcbComponent.run(&engine, serde_json::to_value(preview.command).unwrap()).unwrap();
+        let report = engine.query_linked_components(&ComponentLinkQuery::default()).unwrap();
+        let row = &report.components[0];
+        let part = row.part_id.unwrap();
+        let expected_symbols: BTreeSet<_> = row.package_units.iter().map(|unit| unit.symbol_id).collect();
+        let before = engine.session_state();
+        for (source, schematic_source) in std::iter::once((part, false)).chain(expected_symbols.iter().map(|id| (*id, true))) {
+            let mut app = ViamindApp::with_design(engine.clone(), None);
+            app.cross_probe.current = Some(Context { project: report.project_id, cursor: report.source_cursor, schematic_source, ids: vec![source] });
+            app.cross_probe.result =
+                Some(engine.query_linked_components(&ComponentLinkQuery { object_ids: vec![source], ..Default::default() }).unwrap());
+            if schematic_source {
+                assert_eq!(app.cross_probe.highlighted_parts(), vec![part]);
+            } else {
+                assert_eq!(app.cross_probe.highlighted_symbols().into_iter().collect::<BTreeSet<_>>(), expected_symbols);
+            }
+            let mut harness = Harness::builder().with_size(egui::vec2(1000., 800.)).build_ui_state(
+                |ui, app: &mut ViamindApp| {
+                    app.sync_pin_pad_probe(ui);
+                    app.cross_probe_panel(ui);
+                },
+                app,
+            );
+            harness.run_steps(3);
+            harness.get_by_label("Inspect pins and pads").click();
+            harness.run_steps(3);
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+            while harness.query_by_label("Coverage: Linked · 14 terminal numbers").is_none() {
+                assert!(std::time::Instant::now() < deadline, "terminal query timeout for {source}");
+                std::thread::sleep(std::time::Duration::from_millis(5));
+                harness.run_steps(3);
+            }
+            let terminal = engine
+                .query_linked_pin_pads(&viamind_engine::PinPadLinkQuery { component_id: source, offset: 0, limit: None })
+                .unwrap()
+                .terminals
+                .remove(0);
+            let label = format!(
+                "Unit {} · {} {} · pin present / pad present",
+                terminal.unit_key.as_deref().unwrap(),
+                terminal.number,
+                terminal.pin_name.as_deref().unwrap()
+            );
+            harness.get_by_label(&label).click();
+            harness.run_steps(3);
+            assert_eq!(harness.state().pin_pad_probe.selected_terminal(), Some((terminal.pin_id.unwrap(), terminal.pad_id.unwrap())));
+            assert_eq!(engine.session_state(), before, "counterpart and terminal inspection cannot change shared selection/history/model");
+        }
+    }
     fn result() -> ComponentLinkResult {
         let e = viamind_engine::EngineHandle::new(
             viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap(),

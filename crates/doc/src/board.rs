@@ -59,6 +59,9 @@ pub struct Part {
     /// Stable schematic symbol identity; missing symbols remain explicit unresolved links.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub schematic_symbol: Option<ObjectId>,
+    /// Explicit complete multi-unit package identity; mutually exclusive with a single symbol link.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub schematic_package: Option<ObjectId>,
     /// Explicit electrical pads; None retains the legacy graphical preview.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pads: Option<crate::Pads>,
@@ -79,11 +82,22 @@ pub struct Part {
 }
 
 impl Part {
+    /// Validate the fixed scalar link slots before copying or replaying a part.
+    pub fn validate_schematic_links(&self) -> Result<(), &'static str> {
+        if self.schematic_symbol.is_some() && self.schematic_package.is_some() {
+            return Err("a PCB component may link to one symbol or one complete package, never both");
+        }
+        if self.schematic_symbol.into_iter().chain(self.schematic_package).any(|id| id.as_uuid().is_nil()) {
+            return Err("schematic component links require nonnil stable identities");
+        }
+        Ok(())
+    }
     /// Purpose-specific copy that never clones unused sourcing strings.
     pub fn clone_without_assembly(&self) -> Self {
         Self {
             assembly: None,
             schematic_symbol: self.schematic_symbol,
+            schematic_package: self.schematic_package,
             pads: self.pads.clone(),
             id: self.id,
             designator: self.designator.clone(),
@@ -154,6 +168,7 @@ mod tests {
             let part = Part {
                 assembly: None,
                 schematic_symbol: None,
+                schematic_package: None,
                 pads: None,
                 id: ObjectId::new(),
                 designator: format!("R{}", i + 1),

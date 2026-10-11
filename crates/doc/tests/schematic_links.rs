@@ -7,6 +7,7 @@ fn fixture() -> (Project, ObjectId) {
     let part = Part {
         assembly: None,
         schematic_symbol: Some(symbol),
+        schematic_package: None,
         pads: None,
         id: ObjectId::new(),
         designator: "PCB1".into(),

@@ -159,6 +159,7 @@ impl AssemblySnapshot {
                 side: p.side,
                 pads: None,
                 schematic_symbol: None,
+                schematic_package: None,
             })
             .collect();
         Ok(Self { parts, captured_kind: kind, _permit: permit })

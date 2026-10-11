@@ -25,11 +25,25 @@ pub enum ComponentLinkStatus {
     UnlinkedPart,
     UnlinkedSymbol,
     UnresolvedSymbol,
+    UnresolvedPackage,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct LinkedPackageUnit {
+    pub key: String,
+    pub name: String,
+    pub role: viamind_doc::symbol_package::UnitRole,
+    pub symbol_id: ObjectId,
+    pub position: Point,
+    pub navigable: bool,
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct LinkedComponent {
     pub part_id: Option<ObjectId>,
     pub symbol_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_id: Option<ObjectId>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub package_units: Vec<LinkedPackageUnit>,
     pub sheet_id: Option<ObjectId>,
     pub part_reference: Option<String>,
     pub symbol_reference: Option<String>,
@@ -105,10 +119,13 @@ pub(crate) fn mapping(
         if value.len() > 4096 || text > 2 * 1024 * 1024 { Err(invalid("references exceed 4096 bytes per string or 2 MiB aggregate")) } else { Ok(()) }
     };
     let mut symbols = BTreeMap::new();
+    let mut packages = BTreeMap::new();
     for (key, sheet) in &project.schematic.sheets {
         identity(*key, sheet.id)?;
         if let Some(content) = &sheet.content {
+            viamind_doc::symbol_package::validate_membership(content).map_err(invalid)?;
             for (key, group) in &content.packages {
+                packages.insert(group.id, (sheet.id, content, group));
                 identity(*key, group.id)?;
                 reference(&group.template_name)?;
                 for unit in &group.units {
@@ -125,10 +142,12 @@ pub(crate) fn mapping(
         }
     }
     let mut linked = BTreeSet::new();
+    let mut linked_packages = BTreeSet::new();
     for (key, part) in &project.board.parts {
         if part.schematic_symbol.is_some_and(|id| grouped.contains(&id)) {
             return Err(invalid("individual package-unit PCB links are unsupported; package aggregation is required"));
         }
+        part.validate_schematic_links().map_err(invalid)?;
         identity(*key, part.id)?;
         reference(&part.designator)?;
         if let Some(symbol) = part.schematic_symbol
@@ -137,10 +156,31 @@ pub(crate) fn mapping(
             return Err(invalid(format!("nil or multiply linked symbol {symbol}; repair explicit links")));
         }
     }
-    let mut known = BTreeSet::new();
+    for part in project.board.parts.values() {
+        if let Some(id) = part.schematic_package {
+            if !linked_packages.insert(id) {
+                return Err(invalid("package is linked to multiple physical components"));
+            }
+            if let Some((_, _, group)) = packages.get(&id) {
+                linked.extend(group.units.iter().map(|u| u.symbol_id));
+            } else if ids.contains(&id) {
+                return Err(invalid("component package link names a nonpackage identity"));
+            }
+        }
+    }
+    if !linked_packages.is_empty() {
+        // Validate new scalar associations against every existing object kind,
+        // including pins/pads/wires, before copying any returned rows. This
+        // borrowed validator has a separate bounded global identity scan.
+        viamind_doc::schematic::validate_project(project, None).map_err(invalid)?;
+    }
+    let mut known: BTreeSet<_> = packages.keys().copied().collect();
     let mut rows = BTreeMap::new();
     for part in project.board.parts.values() {
         known.insert(part.id);
+        if let Some(id) = part.schematic_package.and_then(|id| packages.get(&id).map(|_| id)) {
+            known.insert(id);
+        }
         let symbol = part.schematic_symbol.and_then(|id| symbols.get(&id));
         if let Some(id) = part.schematic_symbol
             && symbol.is_none()
@@ -148,23 +188,50 @@ pub(crate) fn mapping(
         {
             return Err(invalid(format!("part {} links to nonsymbol identity {id}", part.id)));
         }
-        let position = symbol.map(|(_, s)| Point::new(s.position.x, s.position.y));
+        let package = part.schematic_package.and_then(|id| packages.get(&id));
+        let package_units: Vec<_> = package
+            .into_iter()
+            .flat_map(|(_, content, group)| {
+                group.units.iter().map(|u| {
+                    let at = content.symbols[&u.symbol_id].position;
+                    let position = Point::new(at.x, at.y);
+                    LinkedPackageUnit {
+                        key: u.key.clone(),
+                        name: u.name.clone(),
+                        role: u.role,
+                        symbol_id: u.symbol_id,
+                        position,
+                        navigable: navigable(position),
+                    }
+                })
+            })
+            .collect();
+        // Navigation uses a declared unit anchor; it never changes physical ownership.
+        let anchor = package_units.iter().min_by(|a, b| a.key.cmp(&b.key));
+        let position = anchor.map(|u| u.position).or_else(|| symbol.map(|(_, s)| Point::new(s.position.x, s.position.y)));
+        let package_shared = package.map(|(_, c, g)| &c.symbols[&g.units[0].symbol_id]);
         rows.insert(
             part.id,
             LinkedComponent {
                 part_id: Some(part.id),
                 symbol_id: part.schematic_symbol,
-                sheet_id: symbol.map(|(sheet, _)| *sheet),
+                package_id: part.schematic_package,
+                package_units,
+                sheet_id: package.map(|(sheet, _, _)| *sheet).or_else(|| symbol.map(|(sheet, _)| *sheet)),
                 part_reference: Some(part.designator.clone()),
-                symbol_reference: symbol.map(|(_, s)| s.designator.clone()),
+                symbol_reference: package_shared.map(|s| s.designator.clone()).or_else(|| symbol.map(|(_, s)| s.designator.clone())),
                 board_position: Some(part.position),
                 schematic_position: position,
                 board_navigable: navigable(part.position),
                 schematic_navigable: position.is_some_and(navigable),
-                status: match (part.schematic_symbol, symbol) {
-                    (None, _) => ComponentLinkStatus::UnlinkedPart,
-                    (Some(_), None) => ComponentLinkStatus::UnresolvedSymbol,
-                    (Some(_), Some(_)) => ComponentLinkStatus::Linked,
+                status: if part.schematic_package.is_some() {
+                    if package.is_some() { ComponentLinkStatus::Linked } else { ComponentLinkStatus::UnresolvedPackage }
+                } else {
+                    match (part.schematic_symbol, symbol) {
+                        (None, _) => ComponentLinkStatus::UnlinkedPart,
+                        (Some(_), None) => ComponentLinkStatus::UnresolvedSymbol,
+                        (Some(_), Some(_)) => ComponentLinkStatus::Linked,
+                    }
                 },
             },
         );
@@ -178,6 +245,8 @@ pub(crate) fn mapping(
                 LinkedComponent {
                     part_id: None,
                     symbol_id: Some(id),
+                    package_id: None,
+                    package_units: vec![],
                     sheet_id: Some(sheet),
                     part_reference: None,
                     symbol_reference: Some(symbol.designator.clone()),
@@ -197,6 +266,8 @@ pub(crate) fn mapping(
             requested.is_empty()
                 || row.part_id.is_some_and(|id| requested.contains(&id))
                 || (row.status != ComponentLinkStatus::UnresolvedSymbol && row.symbol_id.is_some_and(|id| requested.contains(&id)))
+                || (row.status != ComponentLinkStatus::UnresolvedPackage && row.package_id.is_some_and(|id| requested.contains(&id)))
+                || row.package_units.iter().any(|u| requested.contains(&u.symbol_id))
         })
         .collect();
     let total = rows.len();

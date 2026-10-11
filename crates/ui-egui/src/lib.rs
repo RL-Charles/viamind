@@ -29,6 +29,7 @@ pub mod mesh_cache;
 pub mod net_rules;
 pub mod outlines;
 pub mod output_jobs;
+pub mod package_component;
 mod package_definition;
 pub mod package_library;
 mod pad_routing;
@@ -162,6 +163,7 @@ pub struct ViamindApp {
     pub cross_probe: cross_probe::CrossProbeUi,
     pub pin_pad_probe: pin_pad_probe::PinPadProbeUi,
     pub schematic_component: schematic_component::SchematicComponentUi,
+    pub package_component: package_component::PackageComponentUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -221,6 +223,7 @@ impl ViamindApp {
             cross_probe: cross_probe::CrossProbeUi::default(),
             pin_pad_probe: pin_pad_probe::PinPadProbeUi::default(),
             schematic_component: schematic_component::SchematicComponentUi::default(),
+            package_component: package_component::PackageComponentUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -275,6 +278,7 @@ impl ViamindApp {
             cross_probe: cross_probe::CrossProbeUi::default(),
             pin_pad_probe: pin_pad_probe::PinPadProbeUi::default(),
             schematic_component: schematic_component::SchematicComponentUi::default(),
+            package_component: package_component::PackageComponentUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -438,6 +442,7 @@ impl ViamindApp {
             });
         self.pcb_sync_window(ui);
         self.schematic_component_window(ui);
+        self.package_component_window(ui);
         self.symbol_library_window(ui);
         self.package_library_window(ui);
         self.track_cleanup_window(ui);

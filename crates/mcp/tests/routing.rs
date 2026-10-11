@@ -82,6 +82,7 @@ async fn immutable_pad_discovery_resolves_exact_identity_and_derives_net_side_wi
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             id: ObjectId::new(),
             designator: format!("J{i}"),
             value: String::new(),
@@ -141,6 +142,7 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             id: ObjectId::new(),
             designator: format!("J{i}"),
             value: String::new(),
@@ -231,6 +233,7 @@ async fn exact_posture_routes_share_planner_and_two_agent_cursor_guards() {
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             id: ObjectId::new(),
             designator: format!("J{i}"),
             value: String::new(),
@@ -298,6 +301,7 @@ async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_
             let part = Part {
                 assembly: None,
                 schematic_symbol: None,
+                schematic_package: None,
                 id: ObjectId::new(),
                 designator: format!("J{x}"),
                 value: String::new(),

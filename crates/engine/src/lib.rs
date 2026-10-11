@@ -27,7 +27,11 @@
 //! ```
 
 pub mod assembly;
+pub mod package_component;
 pub use assembly::SetPartAssembly;
+pub use package_component::{
+    CreatePackagePcbComponent, LinkSchematicPackage, PackageComponentPin, PackageComponentPlacement, PackageComponentPreview, PackageComponentRequest,
+};
 pub mod annotation;
 mod annotation_bounds;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
@@ -56,7 +60,7 @@ pub mod footprint;
 pub mod handle;
 pub mod log;
 pub mod pads;
-pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent};
+pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent, LinkedPackageUnit};
 mod pcb_sync;
 mod schematic_component;
 pub use pcb_sync::{

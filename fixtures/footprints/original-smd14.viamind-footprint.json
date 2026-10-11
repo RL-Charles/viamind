@@ -1,0 +1,135 @@
+{
+  "format": "viamind-footprint",
+  "version": 1,
+  "footprint": {
+    "name": "Authored-14pad",
+    "pads": [
+      {
+        "number": "14",
+        "position": {
+          "x": 28000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "13",
+        "position": {
+          "x": 26000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "12",
+        "position": {
+          "x": 24000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "11",
+        "position": {
+          "x": 22000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "10",
+        "position": {
+          "x": 20000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "9",
+        "position": {
+          "x": 18000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "8",
+        "position": {
+          "x": 16000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "7",
+        "position": {
+          "x": 14000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "6",
+        "position": {
+          "x": 12000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "5",
+        "position": {
+          "x": 10000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "4",
+        "position": {
+          "x": 8000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "3",
+        "position": {
+          "x": 6000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "2",
+        "position": {
+          "x": 4000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      },
+      {
+        "number": "1",
+        "position": {
+          "x": 2000000,
+          "y": 257
+        },
+        "width": 800001,
+        "height": 600003
+      }
+    ]
+  }
+}

@@ -21,6 +21,7 @@ fn fixture() -> (Project, [RouteTerminalId; 3]) {
         id: ObjectId::new(),
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         designator: "J1".into(),
         value: String::new(),
         footprint: String::new(),

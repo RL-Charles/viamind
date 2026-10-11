@@ -1,0 +1,6 @@
+
+thread 'main' (2744588) panicked at crates/ui-egui/examples/t0116_inspection.rs:105:13:
+assertion failed: self.visible.iter().any(|s|
+        s ==
+            "Created one linked physical component. Undo removes it; run DRC to inspect placement.")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

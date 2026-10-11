@@ -21,6 +21,7 @@ fn fixture() -> EngineHandle {
             Part {
                 assembly: None,
                 schematic_symbol: None,
+                schematic_package: None,
                 pads: None,
                 id,
                 designator: designator.into(),
@@ -124,6 +125,7 @@ fn default_page_is_bounded_on_large_designs() {
             Part {
                 assembly: None,
                 schematic_symbol: None,
+                schematic_package: None,
                 pads: None,
                 id,
                 designator: format!("R{number}"),

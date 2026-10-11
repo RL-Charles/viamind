@@ -133,6 +133,8 @@ impl CommandRegistry {
             .with::<crate::LinkSchematicSymbol>()
             .with::<crate::SynchronizeSchematicPcb>()
             .with::<crate::CreateSchematicPcbComponent>()
+            .with::<crate::CreatePackagePcbComponent>()
+            .with::<crate::LinkSchematicPackage>()
     }
 
     /// Adds command type `C`.

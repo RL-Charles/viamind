@@ -25,6 +25,7 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             id: ObjectId::new(),
             designator: format!("J{number}"),
             value: String::new(),

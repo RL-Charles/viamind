@@ -247,6 +247,7 @@ fn annotation_ignores_huge_unused_board_assembly_and_rejects_malformed_package_o
         id: id(900),
         assembly: Some(Box::new(viamind_doc::assembly::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
         schematic_symbol: None,
+        schematic_package: None,
         pads: None,
         designator: "BOARD1".into(),
         value: "unchanged".into(),

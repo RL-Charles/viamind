@@ -20,6 +20,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
         let part = Part {
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             id: ObjectId::new(),
             designator: format!("J{x}"),
             value: String::new(),
@@ -138,6 +139,7 @@ fn discovery_is_immutable_sorted_filtered_paginated_and_bounded() {
     let legacy = Part {
         assembly: None,
         schematic_symbol: None,
+        schematic_package: None,
         id: ObjectId::new(),
         designator: "LEGACY".into(),
         value: String::new(),

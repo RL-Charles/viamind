@@ -67,6 +67,7 @@ impl CommandHost for EngineHost {
                 | "query_linked_components"
                 | "run_erc"
                 | "preview_schematic_pcb_component"
+                | "preview_package_pcb_component"
                 | "preview_schematic_pcb_sync"
                 | "query_schematic_connectivity"
                 | "preview_schematic_annotation"
@@ -127,12 +128,12 @@ impl CommandHost for EngineHost {
         commands.push(HostCommand { name: "query_route_terminals".into(), description: "Read immutable stable explicit pad, existing track start/end and through-via center terminal identities. Via has one row per outer layer; exact stored Nm centers, derived net/layer, bounded labels and unsupported reasons. Optional exact net/layer filter; offset0, limit1..1000 default100; deterministic identity/layer ordering and full source cursor. Reject over100000 terminal rows before filtering/allocation; existing board structural/text/document-policy bounds apply. No schematic/assembly capture, mutation or continuity claim.".into(), input_schema: input_schema::<viamind_engine::RouteTerminalQuery>() });
         commands.push(HostCommand {
             name: "query_linked_pin_pads".into(),
-            description: "Read-only stable component pin/explicit SMD pad mapping by exact unique terminal numbers. One component_id (part or symbol UUID), offset0, limit1..100 default100. Whole-component number bijection required for navigation; unlinked, legacy preview, mismatched and empty coverage explicit. Exact mirrored quarter-turn integer centers only; unsupported geometry has reasons. Max10000 combined sheets/symbols/parts/pins/pads,4096bytes/string,2MiB inspected text. Source_cursor pages; no electrical continuity, inferred links or session/selection/history changes.".into(),
+            description: "Read-only stable component pin/explicit SMD pad mapping by exact unique terminal numbers. One component_id (part, symbol, complete package or member-unit UUID), offset0, limit1..100 default100. Whole-component number bijection required for navigation; unlinked, legacy preview, mismatched and empty coverage explicit. Exact mirrored quarter-turn integer centers only; unsupported geometry has reasons. Max10000 combined sheets/symbols/parts/pins/pads,4096bytes/string,2MiB inspected text. Source_cursor pages; no electrical continuity, inferred links or session/selection/history changes.".into(),
             input_schema: input_schema::<viamind_engine::PinPadLinkQuery>(),
         });
         commands.push(HostCommand {
             name: "query_linked_components".into(),
-            description: "Read-only stable UUID schematic-symbol/PCB-part mapping. Deterministic source-cursor pages, explicit unlinked/unresolved rows, unknown requested IDs and exact integer positions with bounded navigation flags. Optional object_ids up to100 unique IDs; offset0, limit1..100 default100. At most10000 combined sheets/symbols/parts,4096bytes per reference,2MiB aggregate. No reference inference, model/history/selection/dirty changes or pin/net cross-probing. Restart pages after cursor changes.".into(),
+            description: "Read-only stable UUID schematic-symbol/complete-package/PCB-part mapping. Package/member IDs return one physical owner row with every ordered unit and explicit role; roles never imply electrical links. Deterministic source-cursor pages, explicit unlinked/unresolved rows, unknown requested IDs and exact integer positions with bounded navigation flags. Optional object_ids up to100 unique IDs; offset0, limit1..100 default100. At most10000 combined sheets/symbols/parts,4096bytes per reference,2MiB aggregate. No reference inference, model/history/selection/dirty changes or pin/net cross-probing. Restart pages after cursor changes.".into(),
             input_schema: input_schema::<viamind_engine::ComponentLinkQuery>(),
         });
         commands.push(HostCommand {
@@ -141,13 +142,18 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<viamind_engine::ErcInput>(),
         });
         commands.push(HostCommand {
+            name: "preview_package_pcb_component".into(),
+            description: "Read-only bounded preview creating one physical PCB Part from one complete explicit multi-unit package UUID. Requires current expected_project/full source_cursor and explicit rectangular SMD footprint/Nm origin/side/cardinal rotation. Complete unique all-unit pin/pad bijection and actual pin UUID graph nets; returns guarded create_package_pcb_component command plus unit/pin provenance. No role/reference inference, partial packages or clearance certification. Preserves full session; at most10000 sync objects,4MiB text,8MiB guard.".into(),
+            input_schema: input_schema::<viamind_engine::PackageComponentRequest>(),
+        });
+        commands.push(HostCommand {
             name: "preview_schematic_pcb_component".into(),
             description: "Read-only bounded preview for explicit creation of one linked PCB component from an unlinked schematic symbol and a validated native rectangular SMD footprint. Requires current expected_project/source_cursor plus placement with integer Nm position, side and quarter-turn rotation. Returns exact guarded create_schematic_pcb_component command, symbol properties and numbered stable graph net assignments. Rejects duplicate reference/link, mismatched assignment, pin/pad ambiguity, transformed corner bounds and result budgets. Preserves session and all existing geometry; no clearance/fabrication certification.".into(),
             input_schema: input_schema::<viamind_engine::SchematicComponentRequest>(),
         });
         commands.push(HostCommand {
             name: "preview_schematic_pcb_sync".into(),
-            description: "Read-only bounded forward/back synchronization preview for explicitly UUID-linked existing PCB parts and schematic symbols. Returns exact guarded command, deterministic property/pad-net changes, physical net identities with schematic labels and unlinked exclusions. Forward requires explicit bijective numbered pads and matching footprint assignment; routed-net changes reject. Back updates references/values/footprint assignment without topology edits. Captures at most 10000 objects, 4 MiB text, 8 MiB serialized guard; exact graph limits also apply. No creation/deletion/inferred links. Does not change session/history/selection/dirty state.".into(),
+            description: "Read-only bounded forward/back synchronization preview for explicitly UUID-linked existing PCB parts and schematic symbols or complete packages. Complete package back updates apply to every unit, and forward nets use each actual pin UUID. Returns exact guarded command, deterministic property/pad-net changes, physical net identities with schematic labels and unlinked exclusions. Forward requires explicit bijective numbered pads and matching footprint assignment; routed-net changes reject. Back updates references/values/footprint assignment without topology edits. Captures at most 10000 objects, 4 MiB text, 8 MiB serialized guard; exact graph limits also apply. No creation/deletion/inferred links. Does not change session/history/selection/dirty state.".into(),
             input_schema: input_schema::<viamind_engine::PcbSyncRequest>(),
         });
         commands.push(HostCommand {
@@ -292,6 +298,10 @@ impl CommandHost for EngineHost {
         if name == "preview_schematic_pcb_component" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.preview_schematic_pcb_component(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "preview_package_pcb_component" {
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.preview_package_pcb_component(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "snapshot_schematic_wire_sheet" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid wire snapshot: {e}"))?;

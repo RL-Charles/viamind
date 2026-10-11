@@ -106,6 +106,7 @@ fn linked_project() -> Project {
             })),
             id: ObjectId::new(),
             schematic_symbol: Some(symbol.id),
+            schematic_package: None,
             pads: Some(Pads::try_from(pads).unwrap()),
             designator: format!("PCB{}", i + 1),
             value: "old board value".into(),

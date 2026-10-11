@@ -23,6 +23,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
         let part = Part {
             id: ObjectId::new(),
             schematic_symbol: None,
+            schematic_package: None,
             assembly: None,
             designator: format!("J{x}"),
             value: String::new(),

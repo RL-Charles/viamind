@@ -19,6 +19,7 @@ fn part(project: &mut Project, x: i64, y: i64, side: Side) -> PadEndpointId {
         side,
         pads: Some(Pads::try_from(vec![pad.clone()]).unwrap()),
         schematic_symbol: None,
+        schematic_package: None,
     };
     let id = PadEndpointId { part_id: part.id, pad_id: pad.id };
     project.board.parts.insert(part.id, part);

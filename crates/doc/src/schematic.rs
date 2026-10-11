@@ -280,6 +280,7 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
     let mut pins = 0usize;
     let mut symbols = BTreeSet::new();
     let mut grouped = BTreeSet::new();
+    let mut packages = BTreeSet::new();
     for sheet in sheets {
         if sheet.content.is_some() {
             insert(&mut ids, sheet.id)?;
@@ -295,6 +296,7 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
                 return Err("project exceeds 100000 schematic objects or pins".into());
             }
             keyed(&mut ids, &content.packages, |v| v.id)?;
+            packages.extend(content.packages.keys().copied());
             keyed(&mut ids, &content.symbols, |v| v.id)?;
             keyed(&mut ids, &content.wires, |v| v.id)?;
             keyed(&mut ids, &content.junctions, |v| v.id)?;
@@ -316,7 +318,17 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
         }
     }
     let mut linked = BTreeSet::new();
+    let mut linked_packages = BTreeSet::new();
     for part in project.board.parts.values() {
+        part.validate_schematic_links().map_err(str::to_owned)?;
+        if let Some(package) = part.schematic_package {
+            if !linked_packages.insert(package) {
+                return Err(format!("multiple PCB components link to schematic package {package}"));
+            }
+            if ids.contains(&package) && !packages.contains(&package) {
+                return Err(format!("schematic package link {package} refers to another object kind"));
+            }
+        }
         if let Some(symbol) = part.schematic_symbol {
             if grouped.contains(&symbol) {
                 return Err("PCB links to individual grouped units are unsupported; package aggregation is required".into());
