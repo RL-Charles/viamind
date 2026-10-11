@@ -791,9 +791,9 @@ mod contract_tests {
         )
         .unwrap();
         let worker = e.clone();
-        let thread = std::thread::spawn(move || add_handle(&worker, "R1").unwrap());
+        let thread = std::thread::spawn(move || worker.execute("add_part", input("R1"), Origin::User).unwrap());
         entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
-        assert_eq!(add_handle(&e, "R2").unwrap().tx, TxId(2));
+        assert_eq!(e.execute("add_part", input("R2"), Origin::User).unwrap().tx, TxId(2));
         release_tx.send(()).unwrap();
         assert_eq!(thread.join().unwrap().tx, TxId(1));
         let facts = facts.lock().unwrap();
@@ -809,7 +809,7 @@ mod contract_tests {
     }
     #[test]
     fn typed_veto_and_selective_redo_preserve_peer_state_and_history() {
-        let mut e = Engine::new(Project::new("selective hooks"));
+        let mut e = crate::Engine::new(Project::new("selective hooks"));
         let a = Origin::agent("a");
         let b = Origin::agent("b");
         let make = |name: &str| serde_json::from_value::<crate::commands::AddPart>(input(name)).unwrap();
