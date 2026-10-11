@@ -29,6 +29,8 @@ SVG has a pixel-coordinate `viewBox` (0,0,width,height). Metadata declares the e
 {"sheet":"SHEET_UUID","options":{"layers":["symbols","pins","wires"],"region_nm":{"min_x":0,"min_y":0,"max_x":30000000,"max_y":20000000},"width_px":900,"height_px":600},"path":"new-sheet.png"}
 ```
 
+Metadata object counts describe the complete captured sheet; category filters and clipping select the drawing and do not change those source counts.
+
 Only `sheet` is required. Optional exact `expected_cursor` guards against stale snapshots. Capture checks budgets before cloning and copies only project id/name and the selected sheet. Unrelated board/other sheets are not copied or validated. Views preserve model, selection, dirty state and undo/history. Edits after capture are absent from that image. Two schematic jobs per live registry share a permit pool for SVG and PNG; cancellation retains the permit until blocking work ends.
 
 Limits: 10000 selected-sheet objects, 100000 pins, 256 KiB aggregate selected-sheet text, 4096 UTF-8 bytes per string, 32768 visible glyphs, viewport dimensions 1–4096 and area at most 4194304 pixels, SVG 16 MiB, PNG 8 MiB. Extreme crops fail if intersecting geometry exceeds a conservative 1/8-pixel float precision budget. Widen the region or hide the large category. Legacy sheets without explicit content yield an empty view with `legacy_empty_sheet: true`.
