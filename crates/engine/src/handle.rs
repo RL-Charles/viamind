@@ -100,6 +100,27 @@ impl EngineHandle {
         self.mutate(|engine| engine.redo(origin))
     }
 
+    /// Undoes `origin`'s most recent transaction, leaving later changes by others
+    /// in place (see [`Engine::undo_own`]). This is the agent-facing undo.
+    pub fn undo_own(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        self.mutate(|engine| engine.undo_own(origin))
+    }
+
+    /// Redoes the transaction `origin` most recently undid (see [`Engine::redo_own`]).
+    pub fn redo_own(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        self.mutate(|engine| engine.redo_own(origin))
+    }
+
+    /// The transaction [`undo_own`](EngineHandle::undo_own) would undo next for `origin`.
+    pub fn next_undo_own(&self, origin: &Origin) -> Option<TxInfo> {
+        self.lock().next_undo_own(origin)
+    }
+
+    /// The transaction [`redo_own`](EngineHandle::redo_own) would redo next for `origin`.
+    pub fn next_redo_own(&self, origin: &Origin) -> Option<TxInfo> {
+        self.lock().next_redo_own(origin)
+    }
+
     /// Whether there is a transaction to undo.
     pub fn can_undo(&self) -> bool {
         self.lock().can_undo()

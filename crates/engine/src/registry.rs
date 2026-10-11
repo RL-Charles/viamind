@@ -8,6 +8,7 @@ use viamind_doc::Project;
 
 use crate::command::{Command, CommandError, CommandSpec};
 use crate::delta::Delta;
+use crate::transaction::{Origin, TxId};
 
 /// Why the engine could not run a command.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
@@ -44,6 +45,17 @@ pub enum EngineError {
         index: usize,
         /// Why it failed.
         error: Box<EngineError>,
+    },
+    /// A selective undo/redo (`undo_own`, `redo_own`) was refused because another
+    /// transaction changed the same objects; nothing was changed.
+    #[error("cannot undo or redo {tx}: {blocked_by} by {blocked_by_origin} changed the same objects; undo that first, or edit the objects directly")]
+    UndoConflict {
+        /// The transaction that could not be undone or redone.
+        tx: TxId,
+        /// The transaction in the way.
+        blocked_by: TxId,
+        /// Who made the transaction in the way.
+        blocked_by_origin: Origin,
     },
 }
 

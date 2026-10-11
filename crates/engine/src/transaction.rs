@@ -34,6 +34,16 @@ pub enum Origin {
     },
 }
 
+/// `user` or `agent <id>`.
+impl fmt::Display for Origin {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Origin::User => f.write_str("user"),
+            Origin::Agent { id } => write!(f, "agent {id}"),
+        }
+    }
+}
+
 impl Origin {
     /// Shorthand for [`Origin::Agent`].
     pub fn agent(id: impl Into<String>) -> Origin {

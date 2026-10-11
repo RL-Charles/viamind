@@ -1,9 +1,10 @@
 //! The engine: one project, its command registry and its undo/redo history.
 
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use serde_json::Value;
-use viamind_doc::Project;
+use viamind_doc::{ObjectId, Project};
 
 use crate::command::{Command, CommandSpec};
 use crate::delta::{Delta, apply_all, coalesce, invert};
@@ -147,6 +148,58 @@ impl Engine {
         Ok(Some(id))
     }
 
+    /// Undoes the most recent transaction made by `origin`, leaving later
+    /// transactions by others in place (an agent's "undo my last change").
+    /// Returns its id, or `None` if `origin` has nothing left to undo.
+    ///
+    /// Fails with [`EngineError::UndoConflict`], changing nothing, if a later
+    /// transaction still in the history touched any of the same objects.
+    pub fn undo_own(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        let Some(index) = self.undo.iter().rposition(|tx| tx.origin == origin) else { return Ok(None) };
+        let ids = object_ids(&self.undo[index]);
+        if let Some(later) = self.undo[index + 1..].iter().find(|later| touches(later, &ids)) {
+            return Err(EngineError::UndoConflict { tx: self.undo[index].id, blocked_by: later.id, blocked_by_origin: later.origin.clone() });
+        }
+        let tx = self.undo.remove(index);
+        let deltas = invert(&tx.deltas);
+        apply_all(&mut self.project, &deltas);
+        let id = tx.id;
+        self.redo.push(tx);
+        self.emit(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
+        Ok(Some(id))
+    }
+
+    /// Redoes the transaction `origin` most recently undid, if it is still
+    /// redoable (any new transaction clears the redo history). Returns its id, or
+    /// `None` if `origin` has nothing to redo.
+    ///
+    /// Fails with [`EngineError::UndoConflict`], changing nothing, if a
+    /// transaction undone before it (and not yet redone) touched the same objects.
+    pub fn redo_own(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
+        let Some(index) = self.redo.iter().rposition(|tx| tx.origin == origin) else { return Ok(None) };
+        let ids = object_ids(&self.redo[index]);
+        if let Some(earlier) = self.redo[index + 1..].iter().find(|earlier| touches(earlier, &ids)) {
+            return Err(EngineError::UndoConflict { tx: self.redo[index].id, blocked_by: earlier.id, blocked_by_origin: earlier.origin.clone() });
+        }
+        let tx = self.redo.remove(index);
+        apply_all(&mut self.project, &tx.deltas);
+        let event = ChangeEvent { tx: tx.id, origin, kind: ChangeKind::Redone, deltas: tx.deltas.clone() };
+        let id = tx.id;
+        self.undo.push(tx);
+        self.emit(event);
+        Ok(Some(id))
+    }
+
+    /// The transaction [`undo_own`](Engine::undo_own) would undo next for `origin`.
+    pub fn next_undo_own(&self, origin: &Origin) -> Option<TxInfo> {
+        self.undo.iter().rfind(|tx| tx.origin == *origin).map(TxInfo::from)
+    }
+
+    /// The transaction [`redo_own`](Engine::redo_own) would redo next for `origin`.
+    pub fn next_redo_own(&self, origin: &Origin) -> Option<TxInfo> {
+        self.redo.iter().rfind(|tx| tx.origin == *origin).map(TxInfo::from)
+    }
+
     /// Whether there is a transaction to undo.
     pub fn can_undo(&self) -> bool {
         !self.undo.is_empty()
@@ -242,6 +295,16 @@ impl Tx<'_> {
         self.deltas.extend_from_slice(&deltas);
         Ok(deltas)
     }
+}
+
+/// Ids of the objects `tx` changes.
+fn object_ids(tx: &Transaction) -> HashSet<ObjectId> {
+    tx.deltas.iter().map(Delta::id).collect()
+}
+
+/// Whether `tx` changes any of `ids`.
+fn touches(tx: &Transaction, ids: &HashSet<ObjectId>) -> bool {
+    tx.deltas.iter().any(|delta| ids.contains(&delta.id()))
 }
 
 #[cfg(test)]
