@@ -161,6 +161,47 @@ impl ViamindApp {
 mod tests {
     use super::*;
     #[test]
+    fn pending_controls_disable_and_real_success_is_retained_while_hidden() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let temp = tempfile::tempdir().unwrap();
+        let source = viamind_doc::file::from_str(include_str!("../../../fixtures/assembly/output-job-population.viamind.json")).unwrap();
+        let path = temp.path().join("historical-release");
+        viamind_fab::OutputJobSnapshot::capture(&source, viamind_fab::OutputJob::new("Hidden success".into(), 0.))
+            .unwrap()
+            .write(viamind_fab::ReleaseCursor { stream_id: source.id, sequence: 17 }, &path, None)
+            .unwrap();
+        let engine = EngineHandle::new(viamind_doc::Project::new("Unrelated current document"));
+        let before = engine.session_state();
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.begin_release_inspection();
+        app.release_inspection.path = path.to_str().unwrap().into();
+        let mut held = None;
+        app.release_inspection.start_with(engine.clone(), egui::Context::default(), |work| {
+            held = Some(work);
+            Ok(())
+        });
+        let mut h = Harness::builder().build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+        h.run_steps(3);
+        for label in ["Saved release directory", "Inspect release"] {
+            assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        h.state_mut().release_inspection.open = false;
+        held.take().unwrap()();
+        h.run_steps(3);
+        assert!(!h.state().release_inspection.busy());
+        assert_eq!(h.state().release_inspection.result.as_ref().unwrap()["exported_cursor"]["sequence"], 17);
+        assert!(h.state().release_inspection.message.is_none());
+        h.state_mut().begin_release_inspection();
+        h.run_steps(3);
+        for label in ["Saved release directory", "Inspect release"] {
+            assert!(!h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        assert_eq!(engine.session_state(), before);
+    }
+    #[test]
     fn spawn_failure_duplicate_hidden_and_disconnect_are_recoverable() {
         let engine = EngineHandle::new(viamind_doc::Project::new("reader controls"));
         let before = engine.session_state();
