@@ -127,12 +127,12 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
     impl<'de> Visitor<'de> for Files {
         type Value = BTreeMap<String, usize>;
         fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            f.write_str("at most15 unique fixed release file entries")
+            f.write_str("at most17 unique fixed release file entries")
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
             let mut files = BTreeMap::new();
             while let Some(key) = map.next_key::<String>()? {
-                if files.len() >= 15 || key.len() > 64 || files.contains_key(&key) {
+                if files.len() >= 17 || key.len() > 64 || files.contains_key(&key) {
                     return Err(de::Error::custom("duplicate/excess/oversized release file key"));
                 }
                 let size = map.next_value::<usize>()?;
