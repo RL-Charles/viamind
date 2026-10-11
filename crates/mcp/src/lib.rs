@@ -37,4 +37,5 @@ open, use `query_parts` for filtered, paginated part records or `get_design` for
 affected).";
 
 pub mod png_views;
+pub mod schematic_views;
 pub mod views;

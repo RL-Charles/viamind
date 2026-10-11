@@ -10,6 +10,7 @@ Usage: viamind [--open PATH] [--no-mcp]
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
        viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
+       viamind --export-schematic-svg|--export-schematic-png --sheet UUID --open PATH --output NEW_FILE
        viamind --demo
 
   --headless       Serve full design MCP over stdin/stdout without a window
@@ -23,6 +24,10 @@ Usage: viamind [--open PATH] [--no-mcp]
   --overwrite      Allow replacing the CSV destination
   --export-svg     Export a read-only board SVG without a window
   --export-png     Export transparent board PNG (at most 4194304 pixels, 8 MiB)
+  --export-schematic-svg Export a selected native schematic sheet with outlined text
+  --export-schematic-png Export the same selected sheet as transparent PNG
+  --sheet UUID     Required selected sheet for schematic export
+  --schematic-layers LIST wires,symbols,pins,junctions,labels (default all)
   --view-layers LIST Comma-separated top_copper,bottom_copper,outline (default all)
   --view-bounds MM  Explicit min_x,min_y,max_x,max_y in model-space mm (default auto-fit)
   --view-size PX    Viewport width,height in pixels, each 1–4096 (default 1600,1000)
@@ -44,6 +49,10 @@ pub struct Options {
     pub save_as: Option<PathBuf>,
     pub export_svg: bool,
     pub export_png: bool,
+    pub export_schematic_svg: bool,
+    pub export_schematic_png: bool,
+    pub sheet: Option<viamind_doc::ObjectId>,
+    pub schematic_options: viamind_render::SchematicViewOptions,
     pub svg_options: viamind_render::SvgOptions,
     pub export_csv: Option<viamind_fab::AssemblyCsv>,
     pub output: Option<PathBuf>,
@@ -88,6 +97,31 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             Some("--export-svg") => options.export_svg = true,
             Some("--export-png") => options.export_png = true,
+            Some("--export-schematic-svg") => options.export_schematic_svg = true,
+            Some("--export-schematic-png") => options.export_schematic_png = true,
+            Some("--sheet") => {
+                options.sheet = Some(
+                    args.next()
+                        .and_then(|s| s.into_string().ok())
+                        .ok_or("--sheet requires a UUID")?
+                        .parse()
+                        .map_err(|_| "--sheet requires a UUID")?,
+                );
+            }
+            Some("--schematic-layers") => {
+                let value = args.next().and_then(|s| s.into_string().ok()).ok_or("--schematic-layers requires a list")?;
+                options.schematic_options.layers = value
+                    .split(',')
+                    .map(|s| match s {
+                        "wires" => Ok(viamind_render::SchematicLayer::Wires),
+                        "symbols" => Ok(viamind_render::SchematicLayer::Symbols),
+                        "pins" => Ok(viamind_render::SchematicLayer::Pins),
+                        "junctions" => Ok(viamind_render::SchematicLayer::Junctions),
+                        "labels" => Ok(viamind_render::SchematicLayer::Labels),
+                        _ => Err("unknown schematic layer"),
+                    })
+                    .collect::<Result<_, _>>()?;
+            }
             Some("--view-layers" | "--view-bounds" | "--view-size" | "--view-padding-mm") => {
                 let value = args.next().and_then(|s| s.into_string().ok()).ok_or_else(|| format!("{} requires a value", arg.to_string_lossy()))?;
                 match arg.to_str().unwrap() {
@@ -145,6 +179,35 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
+    }
+    let schematic_export = options.export_schematic_svg || options.export_schematic_png;
+    if schematic_export {
+        if options.open.is_none() || options.output.is_none() || options.sheet.is_none() {
+            return Err("schematic export requires --open, --sheet UUID and --output NEW_FILE".into());
+        }
+        if options.export_schematic_svg && options.export_schematic_png
+            || options.export_svg
+            || options.export_png
+            || options.export_gerber
+            || options.export_csv.is_some()
+            || options.overwrite
+            || options.demo
+            || options.headless
+            || options.no_mcp
+            || options.save_as.is_some()
+            || seen.contains(&OsString::from("--view-layers"))
+        {
+            return Err("schematic export is a separate invocation; use --schematic-layers for its layers".into());
+        }
+        options.schematic_options.region_nm = options.svg_options.region_nm;
+        options.schematic_options.padding_nm = options.svg_options.padding_nm;
+        options.schematic_options.width_px = options.svg_options.width_px;
+        options.schematic_options.height_px = options.svg_options.height_px;
+        options.schematic_options.validate().map_err(|e| e.to_string())?;
+        return Ok(Invocation::Run(options));
+    }
+    if options.sheet.is_some() || seen.contains(&OsString::from("--schematic-layers")) {
+        return Err("--sheet and --schematic-layers require schematic export".into());
     }
     if options.export_gerber {
         if options.open.is_none()
