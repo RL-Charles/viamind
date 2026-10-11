@@ -86,6 +86,24 @@ application's default live registry remains unchanged; new tools default to
 blocked until explicitly audited as observations. Human editing continues to use
 the shared engine.
 
-Later merged feature observations and final combined catalog/build/CI evidence
-are recorded separately when integrated. Historical full-gate and native hashes
-retain their actual source identity.
+Combined source `959fb1f31351af6d9a5865b5b89cd777aa3be3f9`, based on merged
+`14953656f2835a6694c0a8975e88cd32528e6ed4`, passed formatting, strict
+workspace/all-target Clippy, seven focused admission/human-editing regressions,
+workspace build, exact live reference parity for **85 tools**, and the original
+18-step isolated agent workflow. This integrates the named-net policy and
+detached footprint tools without changing the historical proof identities.
+
+The combined production executable was copied and stripped of debug sections,
+then launched through Cua on owned port **7929**, PID **1680657**. Its retained
+and running `/proc` executable hashes agree. Two HTTP clients and fresh stdio
+passed **51 actual production checks**, including exact named-net policy/cursor
+observation and detached footprint loading. Policy replacement and detached
+file publication remain hidden and direct calls refuse. Full session, native
+bytes, document status and destination absence remain preserved. The master
+indexes 22 durable artifacts, including distinct combined source, gate log,
+launch/process identity, catalog, workflow and transport reports. Independent
+final review and exact-head CI are tracked in PR #97 and Sherpa.
+
+The existing compact human-input/native-rendering proof remains attached to its
+actual historical source. No repeated native capture or new cadence claim is
+inferred from this transport integration.

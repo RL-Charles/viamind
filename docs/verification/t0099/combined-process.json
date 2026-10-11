@@ -1,0 +1,9 @@
+{
+  "pid": 1680657,
+  "exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/production-combined-959fb1f",
+  "binary_sha256": "ea5a1771cff0abbbbbd20445ab7cbca21c93b0ff1644d08b0930969f418b177a",
+  "running_exe_sha256": "ea5a1771cff0abbbbbd20445ab7cbca21c93b0ff1644d08b0930969f418b177a",
+  "socket": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7929      0.0.0.0:*    users:((\"production-comb\",pid=1680657,fd=6))\n",
+  "port": 7929,
+  "source_commit": "959fb1f31351af6d9a5865b5b89cd777aa3be3f9"
+}

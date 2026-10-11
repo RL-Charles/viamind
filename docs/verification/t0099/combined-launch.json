@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/launch-combined",
+  "pid": 1680657,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind",
+      "bounds": {
+        "height": 1200,
+        "width": 1920,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 1200,
+      "is_on_screen": true,
+      "pid": 1680657,
+      "title": "protected.viamind.json — Viamind",
+      "width": 1920,
+      "window_id": 110379550079056,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}
