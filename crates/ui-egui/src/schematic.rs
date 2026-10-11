@@ -1,4 +1,5 @@
 //! Dedicated schematic capture workspace. All persisted edits use shared sheet commands.
+mod labels;
 use crate::{
     ViamindApp,
     actions::UiAction,
@@ -695,6 +696,13 @@ impl ViamindApp {
             }
         };
         let content = sheet.as_ref().and_then(|s| s.content.as_ref());
+        let symbol_labels = match sheet.as_ref().map(viamind_render::schematic_labels::schematic_label_layout).transpose() {
+            Ok(labels) => labels.unwrap_or_default(),
+            Err(error) => {
+                ui.label(format!("Schematic labels unavailable: {error}"));
+                return;
+            }
+        };
         self.schematic.object_count = content.map_or(0, SchematicContent::object_count);
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
@@ -703,7 +711,15 @@ impl ViamindApp {
             self.schematic.auto_fit = true;
         }
         if fit_requested || (self.schematic.auto_fit && self.schematic.viewport.size() != viewport.size()) {
-            self.schematic.camera.zoom_to_fit(bounds(content), viewport, 50.0);
+            let mut fit = bounds(content);
+            for label in &symbol_labels {
+                let b = label.envelope;
+                fit.min.x = fit.min.x.min(b.min_x as f64 / 1_000_000.0);
+                fit.min.y = fit.min.y.min(b.min_y as f64 / 1_000_000.0);
+                fit.max.x = fit.max.x.max(b.max_x as f64 / 1_000_000.0);
+                fit.max.y = fit.max.y.max(b.max_y as f64 / 1_000_000.0);
+            }
+            self.schematic.camera.zoom_to_fit(fit, viewport, 50.0);
             self.schematic.fit = false;
         }
         self.schematic.viewport = viewport;
@@ -733,6 +749,10 @@ impl ViamindApp {
         let screen = |p: Coordinate| cam.world_to_screen(world(p), viewport);
         let wire_color = Color32::from_rgb(100, 220, 150);
         let symbol_color = Color32::from_rgb(235, 210, 130);
+        let (glyphs, label_error) = match labels::prepare(ui.ctx(), &symbol_labels, cam, viewport, symbol_color) {
+            Ok(glyphs) => (glyphs, None),
+            Err(error) => (vec![], Some(error)),
+        };
         let selected = self.schematic.selected;
         let color = |id, normal| {
             if selected == Some(id) {
@@ -746,15 +766,10 @@ impl ViamindApp {
         for w in c.wires.values() {
             painter.line_segment([screen(w.start), screen(w.end)], Stroke::new(2.0, color(w.id, wire_color)));
         }
-        let unit_labels: std::collections::BTreeMap<_, _> =
-            c.packages.values().flat_map(|p| p.units.iter().map(|u| (u.symbol_id, (u.key.as_str(), u.name.as_str())))).collect();
         for s in c.symbols.values() {
             let corners = body_corners(s);
             let points: Vec<_> = corners.into_iter().map(&screen).collect();
             painter.add(egui::Shape::closed_line(points, Stroke::new(2.0, color(s.id, symbol_color))));
-            let at = screen(s.position);
-            let reference = unit_labels.get(&s.id).map_or_else(|| s.designator.clone(), |(key, name)| format!("{}:{key} ({name})", s.designator));
-            painter.text(at, Align2::CENTER_CENTER, format!("{reference}\n{}", s.value), FontId::proportional(13.0), symbol_color);
             for pin in &s.pins {
                 if let Ok(p) = s.pin_position(pin.position) {
                     let body = Coordinate {
@@ -769,15 +784,25 @@ impl ViamindApp {
                     if self.pin_pad_probe.pin_highlighted(self.schematic.sheet, pin.id) {
                         painter.circle_stroke(at, 10.0, Stroke::new(3.0, Color32::from_rgb(80, 230, 255)));
                     }
-                    painter.text(
-                        at + egui::vec2(5.0, -4.0),
-                        Align2::LEFT_BOTTOM,
-                        format!("{} {}", pin.number, pin.name),
-                        FontId::proportional(11.0),
-                        symbol_color,
-                    );
                 }
             }
+        }
+        labels::paint(ui, &painter, glyphs, cam, viewport, symbol_color);
+        if let Some(error) = label_error {
+            // Unsupported font metrics refuse labels, while original geometry,
+            // picking and wire attachment continue through their existing paths.
+            let galley = painter.layout(error, FontId::proportional(13.0), Color32::LIGHT_RED, (viewport.width() - 16.0).max(1.0));
+            painter.galley(viewport.left_top() + egui::vec2(8.0, 8.0), galley, Color32::LIGHT_RED);
+        }
+
+        if cam.zoom < 10.0 && !symbol_labels.is_empty() {
+            painter.text(
+                viewport.left_top() + egui::vec2(8.0, 8.0),
+                Align2::LEFT_TOP,
+                "Zoom in to read schematic labels",
+                FontId::proportional(13.0),
+                Color32::LIGHT_GRAY,
+            );
         }
         for j in c.junctions.values() {
             painter.circle_filled(screen(j.position), 4.0, color(j.id, wire_color));

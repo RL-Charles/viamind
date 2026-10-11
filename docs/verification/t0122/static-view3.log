@@ -1,0 +1,45 @@
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/schematic.svg
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/schematic.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/wrong-transform.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/wires.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/symbols.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/pins.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/junctions.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/labels.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/crop.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/margin.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/auto-fit.png
+Exported schematic sheet 00000000-0000-0000-0000-000000000066 to /home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/long-text.png
+{
+  "passed": true,
+  "checks": [
+    "outlined text has stable object IDs and no runtime fonts",
+    "semantic Unicode and XML escaping preserved",
+    "unchanged font license accompanies outlines",
+    "absolute region and pixel mapping declared",
+    "independent static RGBA8 decoding",
+    "uniform interiors match independent librsvg",
+    "mirrored quarter-turn asymmetric pin stem one",
+    "mirrored quarter-turn asymmetric pin stem two",
+    "rectangular body corner orientation",
+    "junction is explicit filled dot",
+    "wire center and round cap",
+    "unpainted sheet is transparent",
+    "shared label envelopes are explicit and inside the fixture crop",
+    "reference value pin and scoped label visible",
+    "missing-text negative control rejected",
+    "wrong-quarter-turn negative control rejected",
+    "wires isolation",
+    "symbols isolation",
+    "pins isolation",
+    "junctions isolation",
+    "labels isolation",
+    "explicit pin stem crop",
+    "aspect ratio margins transparent",
+    "automatic fit contains all visible ink with transparent border",
+    "long accented engineering text auto-fit envelope"
+  ],
+  "uniform_interior_samples": 57628,
+  "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/static-view-final/schematic.png",
+  "independent_renderer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3"
+}

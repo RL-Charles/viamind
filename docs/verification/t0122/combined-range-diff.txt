@@ -1,0 +1,11 @@
+ 1:  290277a =  1:  d05ec0f Specify bounded shared schematic label layout before implementation
+ 2:  2e0f888 =  2:  4589970 Clarify displayed glyph budget and disjoint label corner lanes
+ 3:  e183d74 =  3:  0f3f784 Clarify measured Unicode glyph admission before label painting
+ 4:  a15d9b1 =  4:  ab05018 Plan bounded shared schematic labels outside exact symbol geometry
+ 5:  56c6065 =  5:  9f722f4 Cover selected-layer text isolation and correct strict test formatting
+ 6:  74a5592 =  6:  e5ebb17 Use pinned egui native font measurement test entry point
+ 7:  0a3335e =  7:  402c4b7 Preserve exact picking on glyph refusal and handle headless font test textures
+ 8:  8fed2a1 =  8:  8c0fe5a Verify responsive refit compact dense picking and self-closing native label inspection
+ 9:  2c8417b =  9:  d4a91ad Document shared label detail and update independent static text-envelope oracle
+10:  fa9793b = 10:  b453b73 Retain real render proof and prepare compact native manual camera via canvas input
+11:  1c4df0a = 11:  6157a2b Retain Linux MCP native and independent renderer label readability proof

@@ -1,0 +1,284 @@
+{
+  "format": "viamind",
+  "version": 11,
+  "project": {
+    "id": "60e42599-ee5d-5935-82d3-5ca1222e6d62",
+    "name": "Original schematic label wide",
+    "schematic": {
+      "sheets": {
+        "64f9f8e2-a9ac-589f-b15d-b0cc3d0d280c": {
+          "id": "64f9f8e2-a9ac-589f-b15d-b0cc3d0d280c",
+          "name": "wide",
+          "content": {
+            "symbols": {
+              "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e": {
+                "id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 1,
+                  "y": 3
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 6000003,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "number": "1",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input",
+                    "id": "fe86858c-dbac-526b-9bd0-164df0d80002"
+                  },
+                  {
+                    "number": "2",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "77609774-a14f-595c-a68e-5afc28702c5d"
+                  },
+                  {
+                    "number": "3",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output",
+                    "id": "7ff8b03f-4fc9-5f1a-b7ef-086797116e4a"
+                  }
+                ]
+              },
+              "f3acddf0-b719-564a-a7ee-b566b5fe458c": {
+                "id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 25000001,
+                  "y": 3
+                },
+                "rotation_quarters": 1,
+                "mirrored": true,
+                "width": 6000005,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "number": "4",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input",
+                    "id": "99a39b20-c8ee-5acb-954d-f5939f8c8cc1"
+                  },
+                  {
+                    "number": "5",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "5d6e8983-598d-59bf-aa8e-84314885fdaa"
+                  },
+                  {
+                    "number": "6",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output",
+                    "id": "82a4e0b6-dacc-51ed-a710-a62f74b3a808"
+                  }
+                ]
+              },
+              "3da04045-6970-59e1-8b79-4a7949d0ec2b": {
+                "id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 50000001,
+                  "y": 3
+                },
+                "rotation_quarters": 2,
+                "mirrored": false,
+                "width": 6000007,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "number": "7",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input",
+                    "id": "12a04230-bd2a-5ec5-912b-4e8187bc5327"
+                  },
+                  {
+                    "number": "8",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "d18768eb-e0df-52c1-8d9a-42df1631bcfd"
+                  },
+                  {
+                    "number": "9",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output",
+                    "id": "6df6a7d8-d2f1-5ab3-a9a8-33a8f4cedf30"
+                  }
+                ]
+              },
+              "1bd54cb6-f9ce-561a-b068-b930fa36ccf7": {
+                "id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 75000001,
+                  "y": 3
+                },
+                "rotation_quarters": 3,
+                "mirrored": true,
+                "width": 6000009,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "number": "10",
+                    "name": "IN+",
+                    "position": {
+                      "x": -3000003,
+                      "y": -1000007
+                    },
+                    "electrical": "input",
+                    "id": "59579455-8615-5c74-bcb0-79de296d55ef"
+                  },
+                  {
+                    "number": "11",
+                    "name": "IN-",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "24ea9fdc-7733-54d8-b0a5-32d3fa169638"
+                  },
+                  {
+                    "number": "12",
+                    "name": "OUT",
+                    "position": {
+                      "x": 3000003,
+                      "y": 1000007
+                    },
+                    "electrical": "output",
+                    "id": "e4f6dd2e-87b5-5763-9b2e-b6a4aa6aa536"
+                  }
+                ]
+              },
+              "b9c1b3db-091b-5d4e-9e15-14b40387a7b1": {
+                "id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+                "designator": "U1",
+                "value": "Authored fourteen pins",
+                "footprint": "Authored-14pad",
+                "position": {
+                  "x": 100000001,
+                  "y": 3
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 4000003,
+                "height": 6000007,
+                "pins": [
+                  {
+                    "number": "13",
+                    "name": "V+",
+                    "position": {
+                      "x": 7,
+                      "y": -4000003
+                    },
+                    "electrical": "power_input",
+                    "id": "65f21613-7062-5528-80c2-f6aad7eaa7eb"
+                  },
+                  {
+                    "number": "14",
+                    "name": "V-",
+                    "position": {
+                      "x": 7,
+                      "y": 4000003
+                    },
+                    "electrical": "power_input",
+                    "id": "6b7a5286-d92f-5bfb-b601-cf92de746042"
+                  }
+                ]
+              }
+            },
+            "wires": {},
+            "junctions": {},
+            "labels": {},
+            "packages": {
+              "abf8fc45-bbc0-5f9c-a3f0-bc575218800a": {
+                "id": "abf8fc45-bbc0-5f9c-a3f0-bc575218800a",
+                "template_name": "Original quad amplifiers and power",
+                "units": [
+                  {
+                    "key": "A",
+                    "name": "Amplifier A",
+                    "role": "functional",
+                    "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e"
+                  },
+                  {
+                    "key": "B",
+                    "name": "Amplifier B",
+                    "role": "functional",
+                    "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c"
+                  },
+                  {
+                    "key": "C",
+                    "name": "Amplifier C",
+                    "role": "functional",
+                    "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b"
+                  },
+                  {
+                    "key": "D",
+                    "name": "Amplifier D",
+                    "role": "functional",
+                    "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7"
+                  },
+                  {
+                    "key": "P",
+                    "name": "Power",
+                    "role": "power",
+                    "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "board": {
+      "parts": {}
+    }
+  }
+}

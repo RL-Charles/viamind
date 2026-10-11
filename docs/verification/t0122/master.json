@@ -1,0 +1,3431 @@
+{
+  "ticket": "T-0122",
+  "verified_utc": "2026-10-11T21:24:57.123174+00:00",
+  "spec": "docs/specs/schematic-label-layout.md",
+  "spec_approved_before_code": "e183d74b311dd59a9c438b6060d15e6582dcbdc5",
+  "original_base": "95faf824",
+  "product_source": "2c8417bb3fde054436afac777f8d202e6d08b10a",
+  "inspection_refresh_source": "fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8",
+  "source_refs": {
+    "approved_spec": "verification/t0122/approved-spec",
+    "product": "verification/t0122/native-source",
+    "inspection_refresh": "verification/t0122/inspection-source",
+    "combined": "verification/t0122/combined-source"
+  },
+  "full_linux": {
+    "session": 33837,
+    "four_gates_pass": true,
+    "workspace_tests": {
+      "passed": 885,
+      "failed": 0,
+      "ignored": 1
+    },
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "full_shell_exit_code": 1,
+    "post_gate_failure": "Catalog check mistakenly targeted docs/reference; corrected Python-only docs/generated check passed109tools and isolated18workflow. No Rust change.",
+    "mutex": "/tmp/viamind-workspace-gates.lock"
+  },
+  "focused": {
+    "initial_corrected_source": "8fed2a1",
+    "native_default_font_tests": 2,
+    "actual_labels_input_tests": 3,
+    "inherited_schematic_tests": 4,
+    "inherited_wire_tests": 4,
+    "inspection_refresh": {
+      "source": "fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8",
+      "exit_code": 0,
+      "fmt": true,
+      "strict_inspection_clippy": true,
+      "actual_labels_input_tests": 3,
+      "inspection_build": true,
+      "product_code_change": false
+    }
+  },
+  "actual_production": {
+    "stdio_checks": 31,
+    "two_client_http_checks": 31,
+    "actual_tools": 109,
+    "canonical_exact": true,
+    "workflow_checks": 18,
+    "independent_static_uniform_samples": 57628,
+    "independent_static_assertions": 25,
+    "setup_scope": "Explicitly owned scratch engine only; driver setup replaces project and creates dirty board state, then all render success/refusal operations prove full SessionSnapshot/DocumentStatus/graph preservation.",
+    "os_input_claim": false
+  },
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/viamind-2c8417bb3fde",
+    "sha256": "5b07fdbf87f2987ae5f3b546ffd1e8e413f6dc325ae4c9815954498a4cffaea7",
+    "pid": 2834052,
+    "http_port": 7952,
+    "cua_window_id": 110379547653328,
+    "cua_scope": "Actual PID/window metadata and tiny223x135 pixels; AT-SPI degraded, no checked-state or OS input claim"
+  },
+  "retained_binaries": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/viamind-2c8417bb3fde",
+      "sha256": "5b07fdbf87f2987ae5f3b546ffd1e8e413f6dc325ae4c9815954498a4cffaea7",
+      "source": "2c8417bb3fde054436afac777f8d202e6d08b10a"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-2c8417bb3fde",
+      "sha256": "bb86d7e1bcd98941b730168499316769dbcda28972336f8955e6941809ae63b8",
+      "source": "2c8417bb3fde054436afac777f8d202e6d08b10a"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-fa9793b",
+      "sha256": "ab76f0c457b7e2c43b57c984f59fcd3319c67cd60a60d05d9fd208e2b212abc8",
+      "source": "fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/viamind-combined-6157a2b",
+      "sha256": "7873d71334078232b69b7f77a602abda67577f161371e6948ee1e1ed2f9578f7",
+      "source": "6157a2b647a63e0c305d289145c2d687bae932ba"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-combined-6157a2b",
+      "sha256": "073c934fbe082d8b27a3b07ee8e06d48eb072eae2828e766c38bccf575dd73c8",
+      "source": "6157a2b647a63e0c305d289145c2d687bae932ba"
+    }
+  ],
+  "inspection": {
+    "source_path": "crates/ui-egui/examples/schematic_labels_inspection.rs",
+    "capture_api": "actual native eframe WGPU Screenshot event",
+    "os_input_claim": false,
+    "full_session_status_every_ui_pass": true,
+    "preparation": "egui_kittest Fit; compact/low manual-mode actual canvas Zoom event before camera preparation, no native OS input.",
+    "alpha_notice": "OriginalP7RGBA retained; P6/PNG preserve identical original RGBsamples, no opaque-alpha assertion.",
+    "captures": [
+      {
+        "name": "wide",
+        "png": "wide.png",
+        "pid": 2839058,
+        "pixels": [
+          3000,
+          2000
+        ],
+        "rgb_sha256": "581acaa92fa1a5015e2403011b6b1a6e85c64e5183ebd6aea041241bb98d2130",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/wide.p6",
+        "p6_sha256": "c9757bef558b7aedd45995edf7e8ac7d336cf96c8aa1453b7b87c27c72df4299",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/wide.p7",
+        "p7_sha256": "701267edbed4c8b14b06313c38b680fe51c348dffaa3b7ed9d1d7d3880e6080b",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-2c8417bb3fde",
+        "binary_sha256": "bb86d7e1bcd98941b730168499316769dbcda28972336f8955e6941809ae63b8",
+        "source": "2c8417bb3fde054436afac777f8d202e6d08b10a",
+        "runtime": {
+          "actual_text_bounds": [
+            [
+              1303.16064453125,
+              520.2072143554688,
+              1426.69189453125,
+              533.3947143554688
+            ],
+            [
+              1287.2020263671875,
+              666.114013671875,
+              1438.1707763671875,
+              679.301513671875
+            ],
+            [
+              1339.63720703125,
+              544.14501953125,
+              1380.82470703125,
+              557.33251953125
+            ],
+            [
+              1351.0362548828125,
+              642.1762084960938,
+              1392.2237548828125,
+              655.3637084960938
+            ],
+            [
+              1409.1710205078125,
+              642.1762084960938,
+              1450.3585205078125,
+              655.3637084960938
+            ],
+            [
+              1018.1865234375,
+              555.5440063476562,
+              1141.7177734375,
+              568.7315063476562
+            ],
+            [
+              1002.2279663085938,
+              641.0362548828125,
+              1153.19677734375,
+              654.2237548828125
+            ],
+            [
+              1007.9274291992188,
+              581.7615966796875,
+              1042.239990234375,
+              594.9490966796875
+            ],
+            [
+              1132.1761474609375,
+              593.16064453125,
+              1166.4886474609375,
+              606.34814453125
+            ],
+            [
+              1132.1761474609375,
+              617.0984497070312,
+              1166.4886474609375,
+              630.2859497070312
+            ],
+            [
+              448.23834228515625,
+              555.5440063476562,
+              571.7695922851562,
+              568.7315063476562
+            ],
+            [
+              432.27978515625,
+              630.7772216796875,
+              583.24853515625,
+              643.9647216796875
+            ],
+            [
+              437.979248046875,
+              581.7615966796875,
+              472.291748046875,
+              594.9490966796875
+            ],
+            [
+              437.979248046875,
+              605.6994018554688,
+              472.291748046875,
+              618.8869018554688
+            ],
+            [
+              562.22802734375,
+              604.5596923828125,
+              596.54052734375,
+              617.7471923828125
+            ],
+            [
+              1612.072509765625,
+              508.8082580566406,
+              1694.416259765625,
+              521.9957275390625
+            ],
+            [
+              1572.1761474609375,
+              677.5130004882812,
+              1723.1448974609375,
+              690.7005004882812
+            ],
+            [
+              1640.0,
+              532.74609375,
+              1674.3125,
+              545.93359375
+            ],
+            [
+              1640.0,
+              653.5751953125,
+              1674.3125,
+              666.7626953125
+            ],
+            [
+              733.21240234375,
+              520.2072143554688,
+              856.74365234375,
+              533.3947143554688
+            ],
+            [
+              717.25390625,
+              666.114013671875,
+              868.22265625,
+              679.301513671875
+            ],
+            [
+              773.6787109375,
+              544.14501953125,
+              807.9912109375,
+              557.33251953125
+            ],
+            [
+              823.8341064453125,
+              544.14501953125,
+              858.1466064453125,
+              557.33251953125
+            ],
+            [
+              796.476806640625,
+              642.1762084960938,
+              830.789306640625,
+              655.3637084960938
+            ]
+          ],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 11.398963730569948,
+            "x_mm": 50.000001000000005,
+            "y_mm": 2.9999999995311555e-06
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": false,
+          "nonopaque_alpha_pixels": 7924,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/wide.p6",
+          "pid": 2839058,
+          "pixels": [
+            3000,
+            2000
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/wide.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 68700000,
+                "y": -7000002
+              },
+              "display_text": "U1:D (Amplifier D)",
+              "envelope": {
+                "max_x": 81500000,
+                "max_y": -5600002,
+                "min_x": 68500000,
+                "min_y": -7200002
+              },
+              "id": "reference-1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "leader": null,
+              "object_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "role": "reference",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "U1:D (Amplifier D)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 67300000,
+                "y": 5800007
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 82900000,
+                "max_y": 7200007,
+                "min_x": 67100000,
+                "min_y": 5600007
+              },
+              "id": "value-1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "leader": null,
+              "object_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "role": "value",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 71899994,
+                "y": -4900002
+              },
+              "display_text": "12 OUT",
+              "envelope": {
+                "max_x": 76299994,
+                "max_y": -3500002,
+                "min_x": 71699994,
+                "min_y": -5100002
+              },
+              "id": "pin-text-e4f6dd2e-87b5-5763-9b2e-b6a4aa6aa536",
+              "leader": [
+                {
+                  "x": 73999994,
+                  "y": -3000000
+                },
+                {
+                  "x": 73999994,
+                  "y": -3500002
+                }
+              ],
+              "object_id": "e4f6dd2e-87b5-5763-9b2e-b6a4aa6aa536",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "12 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 72900001,
+                "y": 3700007
+              },
+              "display_text": "11 IN-",
+              "envelope": {
+                "max_x": 77300001,
+                "max_y": 5100007,
+                "min_x": 72700001,
+                "min_y": 3500007
+              },
+              "id": "pin-text-24ea9fdc-7733-54d8-b0a5-32d3fa169638",
+              "leader": [
+                {
+                  "x": 75000001,
+                  "y": 3000006
+                },
+                {
+                  "x": 75000001,
+                  "y": 3500007
+                }
+              ],
+              "object_id": "24ea9fdc-7733-54d8-b0a5-32d3fa169638",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "11 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 78000001,
+                "y": 3700007
+              },
+              "display_text": "10 IN+",
+              "envelope": {
+                "max_x": 82400001,
+                "max_y": 5100007,
+                "min_x": 77800001,
+                "min_y": 3500007
+              },
+              "id": "pin-text-59579455-8615-5c74-bcb0-79de296d55ef",
+              "leader": [
+                {
+                  "x": 76000008,
+                  "y": 3000006
+                },
+                {
+                  "x": 80100001,
+                  "y": 3500007
+                }
+              ],
+              "object_id": "59579455-8615-5c74-bcb0-79de296d55ef",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "10 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 43700000,
+                "y": -3900001
+              },
+              "display_text": "U1:C (Amplifier C)",
+              "envelope": {
+                "max_x": 56500000,
+                "max_y": -2500001,
+                "min_x": 43500000,
+                "min_y": -4100001
+              },
+              "id": "reference-3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "leader": null,
+              "object_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "role": "reference",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "U1:C (Amplifier C)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 42300000,
+                "y": 3600003
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 57900000,
+                "max_y": 5000003,
+                "min_x": 42100000,
+                "min_y": 3400003
+              },
+              "id": "value-3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "leader": null,
+              "object_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "role": "value",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 42799997,
+                "y": -1600004
+              },
+              "display_text": "9 OUT",
+              "envelope": {
+                "max_x": 46499997,
+                "max_y": -200004,
+                "min_x": 42599997,
+                "min_y": -1800004
+              },
+              "id": "pin-text-6df6a7d8-d2f1-5ab3-a9a8-33a8f4cedf30",
+              "leader": [
+                {
+                  "x": 46999998,
+                  "y": -1000004
+                },
+                {
+                  "x": 46499997,
+                  "y": -1000004
+                }
+              ],
+              "object_id": "6df6a7d8-d2f1-5ab3-a9a8-33a8f4cedf30",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "9 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 53700004,
+                "y": -599997
+              },
+              "display_text": "8 IN-",
+              "envelope": {
+                "max_x": 57400004,
+                "max_y": 800003,
+                "min_x": 53500004,
+                "min_y": -799997
+              },
+              "id": "pin-text-d18768eb-e0df-52c1-8d9a-42df1631bcfd",
+              "leader": [
+                {
+                  "x": 53000004,
+                  "y": 3
+                },
+                {
+                  "x": 53500004,
+                  "y": 3
+                }
+              ],
+              "object_id": "d18768eb-e0df-52c1-8d9a-42df1631bcfd",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "8 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 53700004,
+                "y": 1500003
+              },
+              "display_text": "7 IN+",
+              "envelope": {
+                "max_x": 57400004,
+                "max_y": 2900003,
+                "min_x": 53500004,
+                "min_y": 1300003
+              },
+              "id": "pin-text-12a04230-bd2a-5ec5-912b-4e8187bc5327",
+              "leader": [
+                {
+                  "x": 53000004,
+                  "y": 1000010
+                },
+                {
+                  "x": 53500004,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "12a04230-bd2a-5ec5-912b-4e8187bc5327",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "7 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -6299999,
+                "y": -3900000
+              },
+              "display_text": "U1:A (Amplifier A)",
+              "envelope": {
+                "max_x": 6500001,
+                "max_y": -2500000,
+                "min_x": -6499999,
+                "min_y": -4100000
+              },
+              "id": "reference-79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "leader": null,
+              "object_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "role": "reference",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "U1:A (Amplifier A)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7699999,
+                "y": 2700007
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 7900001,
+                "max_y": 4100007,
+                "min_x": -7899999,
+                "min_y": 2500007
+              },
+              "id": "value-79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "leader": null,
+              "object_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "role": "value",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -1600004
+              },
+              "display_text": "1 IN+",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": -200004,
+                "min_x": -7400002,
+                "min_y": -1800004
+              },
+              "id": "pin-text-fe86858c-dbac-526b-9bd0-164df0d80002",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": -1000004
+                },
+                {
+                  "x": -3500002,
+                  "y": -1000004
+                }
+              ],
+              "object_id": "fe86858c-dbac-526b-9bd0-164df0d80002",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "1 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 499996
+              },
+              "display_text": "2 IN-",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 1899996,
+                "min_x": -7400002,
+                "min_y": 299996
+              },
+              "id": "pin-text-77609774-a14f-595c-a68e-5afc28702c5d",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 1099996
+                }
+              ],
+              "object_id": "77609774-a14f-595c-a68e-5afc28702c5d",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "2 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 3700004,
+                "y": 400010
+              },
+              "display_text": "3 OUT",
+              "envelope": {
+                "max_x": 7400004,
+                "max_y": 1800010,
+                "min_x": 3500004,
+                "min_y": 200010
+              },
+              "id": "pin-text-7ff8b03f-4fc9-5f1a-b7ef-086797116e4a",
+              "leader": [
+                {
+                  "x": 3000004,
+                  "y": 1000010
+                },
+                {
+                  "x": 3500004,
+                  "y": 1000010
+                }
+              ],
+              "object_id": "7ff8b03f-4fc9-5f1a-b7ef-086797116e4a",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "3 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 95800001,
+                "y": -8000000
+              },
+              "display_text": "U1:P (Power)",
+              "envelope": {
+                "max_x": 104400001,
+                "max_y": -6600000,
+                "min_x": 95600001,
+                "min_y": -8200000
+              },
+              "id": "reference-b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "leader": null,
+              "object_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "role": "reference",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "U1:P (Power)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 92300001,
+                "y": 6800006
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 107900001,
+                "max_y": 8200006,
+                "min_x": 92100001,
+                "min_y": 6600006
+              },
+              "id": "value-b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "leader": null,
+              "object_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "role": "value",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 98250008,
+                "y": -5900000
+              },
+              "display_text": "13 V+",
+              "envelope": {
+                "max_x": 101950008,
+                "max_y": -4500000,
+                "min_x": 98050008,
+                "min_y": -6100000
+              },
+              "id": "pin-text-65f21613-7062-5528-80c2-f6aad7eaa7eb",
+              "leader": [
+                {
+                  "x": 100000008,
+                  "y": -4000000
+                },
+                {
+                  "x": 100000008,
+                  "y": -4500000
+                }
+              ],
+              "object_id": "65f21613-7062-5528-80c2-f6aad7eaa7eb",
+              "role": "pin",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "13 V+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 98250008,
+                "y": 4700006
+              },
+              "display_text": "14 V-",
+              "envelope": {
+                "max_x": 101950008,
+                "max_y": 6100006,
+                "min_x": 98050008,
+                "min_y": 4500006
+              },
+              "id": "pin-text-6b7a5286-d92f-5bfb-b601-cf92de746042",
+              "leader": [
+                {
+                  "x": 100000008,
+                  "y": 4000006
+                },
+                {
+                  "x": 100000008,
+                  "y": 4500006
+                }
+              ],
+              "object_id": "6b7a5286-d92f-5bfb-b601-cf92de746042",
+              "role": "pin",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "14 V-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 18700001,
+                "y": -7000000
+              },
+              "display_text": "U1:B (Amplifier B)",
+              "envelope": {
+                "max_x": 31500001,
+                "max_y": -5600000,
+                "min_x": 18500001,
+                "min_y": -7200000
+              },
+              "id": "reference-f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "leader": null,
+              "object_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "role": "reference",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "U1:B (Amplifier B)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 17300001,
+                "y": 5800006
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 32900001,
+                "max_y": 7200006,
+                "min_x": 17100001,
+                "min_y": 5600006
+              },
+              "id": "value-f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "leader": null,
+              "object_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "role": "value",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 22249994,
+                "y": -4900000
+              },
+              "display_text": "4 IN+",
+              "envelope": {
+                "max_x": 25949994,
+                "max_y": -3500000,
+                "min_x": 22049994,
+                "min_y": -5100000
+              },
+              "id": "pin-text-99a39b20-c8ee-5acb-954d-f5939f8c8cc1",
+              "leader": [
+                {
+                  "x": 23999994,
+                  "y": -3000000
+                },
+                {
+                  "x": 23999994,
+                  "y": -3500000
+                }
+              ],
+              "object_id": "99a39b20-c8ee-5acb-954d-f5939f8c8cc1",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "4 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 26649994,
+                "y": -4900000
+              },
+              "display_text": "5 IN-",
+              "envelope": {
+                "max_x": 30349994,
+                "max_y": -3500000,
+                "min_x": 26449994,
+                "min_y": -5100000
+              },
+              "id": "pin-text-5d6e8983-598d-59bf-aa8e-84314885fdaa",
+              "leader": [
+                {
+                  "x": 25000001,
+                  "y": -3000000
+                },
+                {
+                  "x": 28399994,
+                  "y": -3500000
+                }
+              ],
+              "object_id": "5d6e8983-598d-59bf-aa8e-84314885fdaa",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "5 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 24250008,
+                "y": 3700006
+              },
+              "display_text": "6 OUT",
+              "envelope": {
+                "max_x": 27950008,
+                "max_y": 5100006,
+                "min_x": 24050008,
+                "min_y": 3500006
+              },
+              "id": "pin-text-82a4e0b6-dacc-51ed-a710-a62f74b3a808",
+              "leader": [
+                {
+                  "x": 26000008,
+                  "y": 3000006
+                },
+                {
+                  "x": 26000008,
+                  "y": 3500006
+                }
+              ],
+              "object_id": "82a4e0b6-dacc-51ed-a710-a62f74b3a808",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "6 OUT"
+            }
+          ],
+          "ui_passes": 12,
+          "viewport": [
+            380.0,
+            23.0,
+            1800.0,
+            1177.0
+          ]
+        }
+      },
+      {
+        "name": "compact",
+        "png": "compact.png",
+        "pid": 2856983,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "e85380ce56d1e2f1316f0769a9f40ff77c693e4ff971f0b30de3bb5134ded854",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/compact.p6",
+        "p6_sha256": "fd979c79076bbced16e9e9ea6e028b0365599b8b177758e62f7db56c469bf2ec",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/compact.p7",
+        "p7_sha256": "f4bbc3e47540e1039f20871b29f6fec23e3fafc94471a2e38fe8122cea8a4e25",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-fa9793b",
+        "binary_sha256": "ab76f0c457b7e2c43b57c984f59fcd3319c67cd60a60d05d9fd208e2b212abc8",
+        "source": "fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8",
+        "runtime": {
+          "actual_text_bounds": [
+            [
+              503.09375,
+              93.59373474121094,
+              515.125,
+              104.99998474121094
+            ],
+            [
+              398.09375,
+              294.59375,
+              590.75,
+              306.0
+            ],
+            [
+              438.0937194824219,
+              126.59376525878906,
+              468.1874694824219,
+              138.00001525878906
+            ],
+            [
+              438.0937194824219,
+              147.59376525878906,
+              468.1874694824219,
+              159.00001525878906
+            ],
+            [
+              438.0937194824219,
+              168.59376525878906,
+              468.1874694824219,
+              180.00001525878906
+            ],
+            [
+              438.0937194824219,
+              189.59376525878906,
+              468.1874694824219,
+              201.00001525878906
+            ],
+            [
+              438.0937194824219,
+              210.59376525878906,
+              468.1874694824219,
+              222.00001525878906
+            ],
+            [
+              438.0937194824219,
+              231.59376525878906,
+              468.1874694824219,
+              243.00001525878906
+            ],
+            [
+              438.0937194824219,
+              252.59376525878906,
+              468.1874694824219,
+              264.0
+            ],
+            [
+              438.0937194824219,
+              273.59375,
+              468.1874694824219,
+              285.0
+            ]
+          ],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 10.0,
+            "x_mm": 0.0,
+            "y_mm": 6.7500015
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": false,
+          "nonopaque_alpha_pixels": 2725,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/compact.p6",
+          "pid": 2856983,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/compact.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -700000,
+                "y": -3900000
+              },
+              "display_text": "U9",
+              "envelope": {
+                "max_x": 900000,
+                "max_y": -2500000,
+                "min_x": -900000,
+                "min_y": -4100000
+              },
+              "id": "reference-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "reference",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "U9"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -11200000,
+                "y": 16200003
+              },
+              "display_text": "High precision sensing amplifier",
+              "envelope": {
+                "max_x": 11400000,
+                "max_y": 17600003,
+                "min_x": -11400000,
+                "min_y": 16000003
+              },
+              "id": "value-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "value",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "High precision sensing amplifier"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -599997
+              },
+              "display_text": "5 IN5",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 800003,
+                "min_x": -7400002,
+                "min_y": -799997
+              },
+              "id": "pin-text-13877a93-739d-577d-b12d-c0dc73485924",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 3
+                }
+              ],
+              "object_id": "13877a93-739d-577d-b12d-c0dc73485924",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "5 IN5"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 1500003
+              },
+              "display_text": "1 IN1",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 2900003,
+                "min_x": -7400002,
+                "min_y": 1300003
+              },
+              "id": "pin-text-45985360-b4bb-559f-b5dc-f19a638f5827",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "45985360-b4bb-559f-b5dc-f19a638f5827",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "1 IN1"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 3600003
+              },
+              "display_text": "7 IN7",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 5000003,
+                "min_x": -7400002,
+                "min_y": 3400003
+              },
+              "id": "pin-text-45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 4200003
+                }
+              ],
+              "object_id": "45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "7 IN7"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 5700003
+              },
+              "display_text": "2 IN2",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 7100003,
+                "min_x": -7400002,
+                "min_y": 5500003
+              },
+              "id": "pin-text-72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 6300003
+                }
+              ],
+              "object_id": "72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "2 IN2"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 7800003
+              },
+              "display_text": "4 IN4",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 9200003,
+                "min_x": -7400002,
+                "min_y": 7600003
+              },
+              "id": "pin-text-7708e2be-3e20-5501-ab59-5838b3503df8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 8400003
+                }
+              ],
+              "object_id": "7708e2be-3e20-5501-ab59-5838b3503df8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "4 IN4"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 9900003
+              },
+              "display_text": "3 IN3",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 11300003,
+                "min_x": -7400002,
+                "min_y": 9700003
+              },
+              "id": "pin-text-80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 10500003
+                }
+              ],
+              "object_id": "80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "3 IN3"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 12000003
+              },
+              "display_text": "8 IN8",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 13400003,
+                "min_x": -7400002,
+                "min_y": 11800003
+              },
+              "id": "pin-text-919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 12600003
+                }
+              ],
+              "object_id": "919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "8 IN8"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 14100003
+              },
+              "display_text": "6 IN6",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 15500003,
+                "min_x": -7400002,
+                "min_y": 13900003
+              },
+              "id": "pin-text-ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 14700003
+                }
+              ],
+              "object_id": "ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "6 IN6"
+            }
+          ],
+          "ui_passes": 11,
+          "viewport": [
+            380.0,
+            23.0,
+            640.1875,
+            377.1875
+          ]
+        }
+      },
+      {
+        "name": "low",
+        "png": "low.png",
+        "pid": 2857471,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "64c458e27ea2239044cbfb6ea2b29e74bcd61a8642da26a4109c0d144139d4ab",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/low.p6",
+        "p6_sha256": "6917c4f2ab58d27635aba6f645e459a80cbeaf9d185d4407019bcf684eecab37",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/low.p7",
+        "p7_sha256": "c9cc98b8215ea49d3ee15c1e2a26191cf1109473bb9a894e54070f01ea8b360e",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-fa9793b",
+        "binary_sha256": "ab76f0c457b7e2c43b57c984f59fcd3319c67cd60a60d05d9fd208e2b212abc8",
+        "source": "fa9793b2fe9781aa64e2a84aa6c17ca5006d1db8",
+        "runtime": {
+          "actual_text_bounds": [],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 5.0,
+            "x_mm": 0.0,
+            "y_mm": 6.7500015
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": true,
+          "nonopaque_alpha_pixels": 2725,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/low.p6",
+          "pid": 2857471,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/low.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -700000,
+                "y": -3900000
+              },
+              "display_text": "U9",
+              "envelope": {
+                "max_x": 900000,
+                "max_y": -2500000,
+                "min_x": -900000,
+                "min_y": -4100000
+              },
+              "id": "reference-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "reference",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "U9"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -11200000,
+                "y": 16200003
+              },
+              "display_text": "High precision sensing amplifier",
+              "envelope": {
+                "max_x": 11400000,
+                "max_y": 17600003,
+                "min_x": -11400000,
+                "min_y": 16000003
+              },
+              "id": "value-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "value",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "High precision sensing amplifier"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -599997
+              },
+              "display_text": "5 IN5",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 800003,
+                "min_x": -7400002,
+                "min_y": -799997
+              },
+              "id": "pin-text-13877a93-739d-577d-b12d-c0dc73485924",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 3
+                }
+              ],
+              "object_id": "13877a93-739d-577d-b12d-c0dc73485924",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "5 IN5"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 1500003
+              },
+              "display_text": "1 IN1",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 2900003,
+                "min_x": -7400002,
+                "min_y": 1300003
+              },
+              "id": "pin-text-45985360-b4bb-559f-b5dc-f19a638f5827",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "45985360-b4bb-559f-b5dc-f19a638f5827",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "1 IN1"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 3600003
+              },
+              "display_text": "7 IN7",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 5000003,
+                "min_x": -7400002,
+                "min_y": 3400003
+              },
+              "id": "pin-text-45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 4200003
+                }
+              ],
+              "object_id": "45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "7 IN7"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 5700003
+              },
+              "display_text": "2 IN2",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 7100003,
+                "min_x": -7400002,
+                "min_y": 5500003
+              },
+              "id": "pin-text-72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 6300003
+                }
+              ],
+              "object_id": "72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "2 IN2"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 7800003
+              },
+              "display_text": "4 IN4",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 9200003,
+                "min_x": -7400002,
+                "min_y": 7600003
+              },
+              "id": "pin-text-7708e2be-3e20-5501-ab59-5838b3503df8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 8400003
+                }
+              ],
+              "object_id": "7708e2be-3e20-5501-ab59-5838b3503df8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "4 IN4"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 9900003
+              },
+              "display_text": "3 IN3",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 11300003,
+                "min_x": -7400002,
+                "min_y": 9700003
+              },
+              "id": "pin-text-80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 10500003
+                }
+              ],
+              "object_id": "80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "3 IN3"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 12000003
+              },
+              "display_text": "8 IN8",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 13400003,
+                "min_x": -7400002,
+                "min_y": 11800003
+              },
+              "id": "pin-text-919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 12600003
+                }
+              ],
+              "object_id": "919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "8 IN8"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 14100003
+              },
+              "display_text": "6 IN6",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 15500003,
+                "min_x": -7400002,
+                "min_y": 13900003
+              },
+              "id": "pin-text-ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 14700003
+                }
+              ],
+              "object_id": "ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "6 IN6"
+            }
+          ],
+          "ui_passes": 11,
+          "viewport": [
+            380.0,
+            23.0,
+            640.1875,
+            377.1875
+          ]
+        }
+      },
+      {
+        "name": "combined-wide",
+        "png": "combined-wide.png",
+        "pid": 2873204,
+        "pixels": [
+          3000,
+          2000
+        ],
+        "rgb_sha256": "1dc6d3ce056af223b5bf1406bcaf6b139b0f8ccd1d818c9741dd79378e446b58",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-wide.p6",
+        "p6_sha256": "3bdcdf26c9e722279ce789c9ed74a9c6544573515143c0af960b0ff964b1200f",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-wide.p7",
+        "p7_sha256": "b67eb02611456fe00cf890aceeeaa911f0f0c8dfc0d28656a2f8ebd883a95558",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-combined-6157a2b",
+        "binary_sha256": "073c934fbe082d8b27a3b07ee8e06d48eb072eae2828e766c38bccf575dd73c8",
+        "source": "6157a2b647a63e0c305d289145c2d687bae932ba",
+        "runtime": {
+          "actual_text_bounds": [
+            [
+              1303.16064453125,
+              509.70721435546875,
+              1426.69189453125,
+              522.8947143554688
+            ],
+            [
+              1287.2020263671875,
+              655.614013671875,
+              1438.1707763671875,
+              668.801513671875
+            ],
+            [
+              1339.63720703125,
+              533.64501953125,
+              1380.82470703125,
+              546.83251953125
+            ],
+            [
+              1351.0362548828125,
+              631.6762084960938,
+              1392.2237548828125,
+              644.8637084960938
+            ],
+            [
+              1409.1710205078125,
+              631.6762084960938,
+              1450.3585205078125,
+              644.8637084960938
+            ],
+            [
+              1018.1865234375,
+              545.0440063476562,
+              1141.7177734375,
+              558.2315063476562
+            ],
+            [
+              1002.2279663085938,
+              630.5362548828125,
+              1153.19677734375,
+              643.7237548828125
+            ],
+            [
+              1007.9274291992188,
+              571.2615966796875,
+              1042.239990234375,
+              584.4490966796875
+            ],
+            [
+              1132.1761474609375,
+              582.66064453125,
+              1166.4886474609375,
+              595.84814453125
+            ],
+            [
+              1132.1761474609375,
+              606.5984497070312,
+              1166.4886474609375,
+              619.7859497070312
+            ],
+            [
+              448.23834228515625,
+              545.0440063476562,
+              571.7695922851562,
+              558.2315063476562
+            ],
+            [
+              432.27978515625,
+              620.2772216796875,
+              583.24853515625,
+              633.4647216796875
+            ],
+            [
+              437.979248046875,
+              571.2615966796875,
+              472.291748046875,
+              584.4490966796875
+            ],
+            [
+              437.979248046875,
+              595.1994018554688,
+              472.291748046875,
+              608.3869018554688
+            ],
+            [
+              562.22802734375,
+              594.0596923828125,
+              596.54052734375,
+              607.2471923828125
+            ],
+            [
+              1612.072509765625,
+              498.3082580566406,
+              1694.416259765625,
+              511.4957580566406
+            ],
+            [
+              1572.1761474609375,
+              667.0130004882812,
+              1723.1448974609375,
+              680.2005004882812
+            ],
+            [
+              1640.0,
+              522.24609375,
+              1674.3125,
+              535.43359375
+            ],
+            [
+              1640.0,
+              643.0751953125,
+              1674.3125,
+              656.2626953125
+            ],
+            [
+              733.21240234375,
+              509.70721435546875,
+              856.74365234375,
+              522.8947143554688
+            ],
+            [
+              717.25390625,
+              655.614013671875,
+              868.22265625,
+              668.801513671875
+            ],
+            [
+              773.6787109375,
+              533.64501953125,
+              807.9912109375,
+              546.83251953125
+            ],
+            [
+              823.8341064453125,
+              533.64501953125,
+              858.1466064453125,
+              546.83251953125
+            ],
+            [
+              796.476806640625,
+              631.6762084960938,
+              830.789306640625,
+              644.8637084960938
+            ]
+          ],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 11.398963730569948,
+            "x_mm": 50.000001000000005,
+            "y_mm": 3.000000000419334e-06
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": false,
+          "nonopaque_alpha_pixels": 7889,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-wide.p6",
+          "pid": 2873204,
+          "pixels": [
+            3000,
+            2000
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-wide.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 68700000,
+                "y": -7000002
+              },
+              "display_text": "U1:D (Amplifier D)",
+              "envelope": {
+                "max_x": 81500000,
+                "max_y": -5600002,
+                "min_x": 68500000,
+                "min_y": -7200002
+              },
+              "id": "reference-1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "leader": null,
+              "object_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "role": "reference",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "U1:D (Amplifier D)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 67300000,
+                "y": 5800007
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 82900000,
+                "max_y": 7200007,
+                "min_x": 67100000,
+                "min_y": 5600007
+              },
+              "id": "value-1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "leader": null,
+              "object_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "role": "value",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 71899994,
+                "y": -4900002
+              },
+              "display_text": "12 OUT",
+              "envelope": {
+                "max_x": 76299994,
+                "max_y": -3500002,
+                "min_x": 71699994,
+                "min_y": -5100002
+              },
+              "id": "pin-text-e4f6dd2e-87b5-5763-9b2e-b6a4aa6aa536",
+              "leader": [
+                {
+                  "x": 73999994,
+                  "y": -3000000
+                },
+                {
+                  "x": 73999994,
+                  "y": -3500002
+                }
+              ],
+              "object_id": "e4f6dd2e-87b5-5763-9b2e-b6a4aa6aa536",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "12 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 72900001,
+                "y": 3700007
+              },
+              "display_text": "11 IN-",
+              "envelope": {
+                "max_x": 77300001,
+                "max_y": 5100007,
+                "min_x": 72700001,
+                "min_y": 3500007
+              },
+              "id": "pin-text-24ea9fdc-7733-54d8-b0a5-32d3fa169638",
+              "leader": [
+                {
+                  "x": 75000001,
+                  "y": 3000006
+                },
+                {
+                  "x": 75000001,
+                  "y": 3500007
+                }
+              ],
+              "object_id": "24ea9fdc-7733-54d8-b0a5-32d3fa169638",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "11 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 78000001,
+                "y": 3700007
+              },
+              "display_text": "10 IN+",
+              "envelope": {
+                "max_x": 82400001,
+                "max_y": 5100007,
+                "min_x": 77800001,
+                "min_y": 3500007
+              },
+              "id": "pin-text-59579455-8615-5c74-bcb0-79de296d55ef",
+              "leader": [
+                {
+                  "x": 76000008,
+                  "y": 3000006
+                },
+                {
+                  "x": 80100001,
+                  "y": 3500007
+                }
+              ],
+              "object_id": "59579455-8615-5c74-bcb0-79de296d55ef",
+              "role": "pin",
+              "symbol_id": "1bd54cb6-f9ce-561a-b068-b930fa36ccf7",
+              "text": "10 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 43700000,
+                "y": -3900001
+              },
+              "display_text": "U1:C (Amplifier C)",
+              "envelope": {
+                "max_x": 56500000,
+                "max_y": -2500001,
+                "min_x": 43500000,
+                "min_y": -4100001
+              },
+              "id": "reference-3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "leader": null,
+              "object_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "role": "reference",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "U1:C (Amplifier C)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 42300000,
+                "y": 3600003
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 57900000,
+                "max_y": 5000003,
+                "min_x": 42100000,
+                "min_y": 3400003
+              },
+              "id": "value-3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "leader": null,
+              "object_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "role": "value",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 42799997,
+                "y": -1600004
+              },
+              "display_text": "9 OUT",
+              "envelope": {
+                "max_x": 46499997,
+                "max_y": -200004,
+                "min_x": 42599997,
+                "min_y": -1800004
+              },
+              "id": "pin-text-6df6a7d8-d2f1-5ab3-a9a8-33a8f4cedf30",
+              "leader": [
+                {
+                  "x": 46999998,
+                  "y": -1000004
+                },
+                {
+                  "x": 46499997,
+                  "y": -1000004
+                }
+              ],
+              "object_id": "6df6a7d8-d2f1-5ab3-a9a8-33a8f4cedf30",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "9 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 53700004,
+                "y": -599997
+              },
+              "display_text": "8 IN-",
+              "envelope": {
+                "max_x": 57400004,
+                "max_y": 800003,
+                "min_x": 53500004,
+                "min_y": -799997
+              },
+              "id": "pin-text-d18768eb-e0df-52c1-8d9a-42df1631bcfd",
+              "leader": [
+                {
+                  "x": 53000004,
+                  "y": 3
+                },
+                {
+                  "x": 53500004,
+                  "y": 3
+                }
+              ],
+              "object_id": "d18768eb-e0df-52c1-8d9a-42df1631bcfd",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "8 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 53700004,
+                "y": 1500003
+              },
+              "display_text": "7 IN+",
+              "envelope": {
+                "max_x": 57400004,
+                "max_y": 2900003,
+                "min_x": 53500004,
+                "min_y": 1300003
+              },
+              "id": "pin-text-12a04230-bd2a-5ec5-912b-4e8187bc5327",
+              "leader": [
+                {
+                  "x": 53000004,
+                  "y": 1000010
+                },
+                {
+                  "x": 53500004,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "12a04230-bd2a-5ec5-912b-4e8187bc5327",
+              "role": "pin",
+              "symbol_id": "3da04045-6970-59e1-8b79-4a7949d0ec2b",
+              "text": "7 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -6299999,
+                "y": -3900000
+              },
+              "display_text": "U1:A (Amplifier A)",
+              "envelope": {
+                "max_x": 6500001,
+                "max_y": -2500000,
+                "min_x": -6499999,
+                "min_y": -4100000
+              },
+              "id": "reference-79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "leader": null,
+              "object_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "role": "reference",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "U1:A (Amplifier A)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7699999,
+                "y": 2700007
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 7900001,
+                "max_y": 4100007,
+                "min_x": -7899999,
+                "min_y": 2500007
+              },
+              "id": "value-79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "leader": null,
+              "object_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "role": "value",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -1600004
+              },
+              "display_text": "1 IN+",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": -200004,
+                "min_x": -7400002,
+                "min_y": -1800004
+              },
+              "id": "pin-text-fe86858c-dbac-526b-9bd0-164df0d80002",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": -1000004
+                },
+                {
+                  "x": -3500002,
+                  "y": -1000004
+                }
+              ],
+              "object_id": "fe86858c-dbac-526b-9bd0-164df0d80002",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "1 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 499996
+              },
+              "display_text": "2 IN-",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 1899996,
+                "min_x": -7400002,
+                "min_y": 299996
+              },
+              "id": "pin-text-77609774-a14f-595c-a68e-5afc28702c5d",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 1099996
+                }
+              ],
+              "object_id": "77609774-a14f-595c-a68e-5afc28702c5d",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "2 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 3700004,
+                "y": 400010
+              },
+              "display_text": "3 OUT",
+              "envelope": {
+                "max_x": 7400004,
+                "max_y": 1800010,
+                "min_x": 3500004,
+                "min_y": 200010
+              },
+              "id": "pin-text-7ff8b03f-4fc9-5f1a-b7ef-086797116e4a",
+              "leader": [
+                {
+                  "x": 3000004,
+                  "y": 1000010
+                },
+                {
+                  "x": 3500004,
+                  "y": 1000010
+                }
+              ],
+              "object_id": "7ff8b03f-4fc9-5f1a-b7ef-086797116e4a",
+              "role": "pin",
+              "symbol_id": "79df74ca-5b7b-5fc7-bfd6-d8fe67dfa07e",
+              "text": "3 OUT"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 95800001,
+                "y": -8000000
+              },
+              "display_text": "U1:P (Power)",
+              "envelope": {
+                "max_x": 104400001,
+                "max_y": -6600000,
+                "min_x": 95600001,
+                "min_y": -8200000
+              },
+              "id": "reference-b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "leader": null,
+              "object_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "role": "reference",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "U1:P (Power)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 92300001,
+                "y": 6800006
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 107900001,
+                "max_y": 8200006,
+                "min_x": 92100001,
+                "min_y": 6600006
+              },
+              "id": "value-b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "leader": null,
+              "object_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "role": "value",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 98250008,
+                "y": -5900000
+              },
+              "display_text": "13 V+",
+              "envelope": {
+                "max_x": 101950008,
+                "max_y": -4500000,
+                "min_x": 98050008,
+                "min_y": -6100000
+              },
+              "id": "pin-text-65f21613-7062-5528-80c2-f6aad7eaa7eb",
+              "leader": [
+                {
+                  "x": 100000008,
+                  "y": -4000000
+                },
+                {
+                  "x": 100000008,
+                  "y": -4500000
+                }
+              ],
+              "object_id": "65f21613-7062-5528-80c2-f6aad7eaa7eb",
+              "role": "pin",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "13 V+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 98250008,
+                "y": 4700006
+              },
+              "display_text": "14 V-",
+              "envelope": {
+                "max_x": 101950008,
+                "max_y": 6100006,
+                "min_x": 98050008,
+                "min_y": 4500006
+              },
+              "id": "pin-text-6b7a5286-d92f-5bfb-b601-cf92de746042",
+              "leader": [
+                {
+                  "x": 100000008,
+                  "y": 4000006
+                },
+                {
+                  "x": 100000008,
+                  "y": 4500006
+                }
+              ],
+              "object_id": "6b7a5286-d92f-5bfb-b601-cf92de746042",
+              "role": "pin",
+              "symbol_id": "b9c1b3db-091b-5d4e-9e15-14b40387a7b1",
+              "text": "14 V-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 18700001,
+                "y": -7000000
+              },
+              "display_text": "U1:B (Amplifier B)",
+              "envelope": {
+                "max_x": 31500001,
+                "max_y": -5600000,
+                "min_x": 18500001,
+                "min_y": -7200000
+              },
+              "id": "reference-f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "leader": null,
+              "object_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "role": "reference",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "U1:B (Amplifier B)"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 17300001,
+                "y": 5800006
+              },
+              "display_text": "Authored fourteen pins",
+              "envelope": {
+                "max_x": 32900001,
+                "max_y": 7200006,
+                "min_x": 17100001,
+                "min_y": 5600006
+              },
+              "id": "value-f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "leader": null,
+              "object_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "role": "value",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "Authored fourteen pins"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 22249994,
+                "y": -4900000
+              },
+              "display_text": "4 IN+",
+              "envelope": {
+                "max_x": 25949994,
+                "max_y": -3500000,
+                "min_x": 22049994,
+                "min_y": -5100000
+              },
+              "id": "pin-text-99a39b20-c8ee-5acb-954d-f5939f8c8cc1",
+              "leader": [
+                {
+                  "x": 23999994,
+                  "y": -3000000
+                },
+                {
+                  "x": 23999994,
+                  "y": -3500000
+                }
+              ],
+              "object_id": "99a39b20-c8ee-5acb-954d-f5939f8c8cc1",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "4 IN+"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 26649994,
+                "y": -4900000
+              },
+              "display_text": "5 IN-",
+              "envelope": {
+                "max_x": 30349994,
+                "max_y": -3500000,
+                "min_x": 26449994,
+                "min_y": -5100000
+              },
+              "id": "pin-text-5d6e8983-598d-59bf-aa8e-84314885fdaa",
+              "leader": [
+                {
+                  "x": 25000001,
+                  "y": -3000000
+                },
+                {
+                  "x": 28399994,
+                  "y": -3500000
+                }
+              ],
+              "object_id": "5d6e8983-598d-59bf-aa8e-84314885fdaa",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "5 IN-"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": 24250008,
+                "y": 3700006
+              },
+              "display_text": "6 OUT",
+              "envelope": {
+                "max_x": 27950008,
+                "max_y": 5100006,
+                "min_x": 24050008,
+                "min_y": 3500006
+              },
+              "id": "pin-text-82a4e0b6-dacc-51ed-a710-a62f74b3a808",
+              "leader": [
+                {
+                  "x": 26000008,
+                  "y": 3000006
+                },
+                {
+                  "x": 26000008,
+                  "y": 3500006
+                }
+              ],
+              "object_id": "82a4e0b6-dacc-51ed-a710-a62f74b3a808",
+              "role": "pin",
+              "symbol_id": "f3acddf0-b719-564a-a7ee-b566b5fe458c",
+              "text": "6 OUT"
+            }
+          ],
+          "ui_passes": 12,
+          "viewport": [
+            380.0,
+            23.0,
+            1800.0,
+            1156.0
+          ]
+        }
+      },
+      {
+        "name": "combined-compact",
+        "png": "combined-compact.png",
+        "pid": 2873296,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "f0f8b3eb887f3c7f6bad3f33a8fd10051187f61a8148af615704d68e5ccf2254",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-compact.p6",
+        "p6_sha256": "608ac61a69833e3d5397dcbf3ad47f8715f7576573e36fb36bc64ed1c90dd84e",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-compact.p7",
+        "p7_sha256": "34f99a08a6354fde87896c33d2c6c859e02069445970800ba8c0b99c65040bdb",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-combined-6157a2b",
+        "binary_sha256": "073c934fbe082d8b27a3b07ee8e06d48eb072eae2828e766c38bccf575dd73c8",
+        "source": "6157a2b647a63e0c305d289145c2d687bae932ba",
+        "runtime": {
+          "actual_text_bounds": [
+            [
+              503.09375,
+              83.09373474121094,
+              515.125,
+              94.49998474121094
+            ],
+            [
+              398.09375,
+              284.09375,
+              590.75,
+              295.5
+            ],
+            [
+              438.0937194824219,
+              116.09376525878906,
+              468.1874694824219,
+              127.50001525878906
+            ],
+            [
+              438.0937194824219,
+              137.09376525878906,
+              468.1874694824219,
+              148.50001525878906
+            ],
+            [
+              438.0937194824219,
+              158.09376525878906,
+              468.1874694824219,
+              169.50001525878906
+            ],
+            [
+              438.0937194824219,
+              179.09376525878906,
+              468.1874694824219,
+              190.50001525878906
+            ],
+            [
+              438.0937194824219,
+              200.09376525878906,
+              468.1874694824219,
+              211.50001525878906
+            ],
+            [
+              438.0937194824219,
+              221.09376525878906,
+              468.1874694824219,
+              232.50001525878906
+            ],
+            [
+              438.0937194824219,
+              242.09376525878906,
+              468.1874694824219,
+              253.50001525878906
+            ],
+            [
+              438.0937194824219,
+              263.09375,
+              468.1874694824219,
+              274.5
+            ]
+          ],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 10.0,
+            "x_mm": 0.0,
+            "y_mm": 6.7500015
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": false,
+          "nonopaque_alpha_pixels": 2690,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-compact.p6",
+          "pid": 2873296,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-compact.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -700000,
+                "y": -3900000
+              },
+              "display_text": "U9",
+              "envelope": {
+                "max_x": 900000,
+                "max_y": -2500000,
+                "min_x": -900000,
+                "min_y": -4100000
+              },
+              "id": "reference-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "reference",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "U9"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -11200000,
+                "y": 16200003
+              },
+              "display_text": "High precision sensing amplifier",
+              "envelope": {
+                "max_x": 11400000,
+                "max_y": 17600003,
+                "min_x": -11400000,
+                "min_y": 16000003
+              },
+              "id": "value-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "value",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "High precision sensing amplifier"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -599997
+              },
+              "display_text": "5 IN5",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 800003,
+                "min_x": -7400002,
+                "min_y": -799997
+              },
+              "id": "pin-text-13877a93-739d-577d-b12d-c0dc73485924",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 3
+                }
+              ],
+              "object_id": "13877a93-739d-577d-b12d-c0dc73485924",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "5 IN5"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 1500003
+              },
+              "display_text": "1 IN1",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 2900003,
+                "min_x": -7400002,
+                "min_y": 1300003
+              },
+              "id": "pin-text-45985360-b4bb-559f-b5dc-f19a638f5827",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "45985360-b4bb-559f-b5dc-f19a638f5827",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "1 IN1"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 3600003
+              },
+              "display_text": "7 IN7",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 5000003,
+                "min_x": -7400002,
+                "min_y": 3400003
+              },
+              "id": "pin-text-45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 4200003
+                }
+              ],
+              "object_id": "45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "7 IN7"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 5700003
+              },
+              "display_text": "2 IN2",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 7100003,
+                "min_x": -7400002,
+                "min_y": 5500003
+              },
+              "id": "pin-text-72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 6300003
+                }
+              ],
+              "object_id": "72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "2 IN2"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 7800003
+              },
+              "display_text": "4 IN4",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 9200003,
+                "min_x": -7400002,
+                "min_y": 7600003
+              },
+              "id": "pin-text-7708e2be-3e20-5501-ab59-5838b3503df8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 8400003
+                }
+              ],
+              "object_id": "7708e2be-3e20-5501-ab59-5838b3503df8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "4 IN4"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 9900003
+              },
+              "display_text": "3 IN3",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 11300003,
+                "min_x": -7400002,
+                "min_y": 9700003
+              },
+              "id": "pin-text-80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 10500003
+                }
+              ],
+              "object_id": "80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "3 IN3"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 12000003
+              },
+              "display_text": "8 IN8",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 13400003,
+                "min_x": -7400002,
+                "min_y": 11800003
+              },
+              "id": "pin-text-919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 12600003
+                }
+              ],
+              "object_id": "919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "8 IN8"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 14100003
+              },
+              "display_text": "6 IN6",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 15500003,
+                "min_x": -7400002,
+                "min_y": 13900003
+              },
+              "id": "pin-text-ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 14700003
+                }
+              ],
+              "object_id": "ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "6 IN6"
+            }
+          ],
+          "ui_passes": 11,
+          "viewport": [
+            380.0,
+            23.0,
+            640.1875,
+            356.1875
+          ]
+        }
+      },
+      {
+        "name": "combined-low",
+        "png": "combined-low.png",
+        "pid": 2873334,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_sha256": "81a7f1375a12d0535ce0915167e1ec259c4194096770a6c2f2ab74103c5a77f9",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-low.p6",
+        "p6_sha256": "009a1219636d164d5f850099ac030d45492074e44e9293d759329cf2671541e2",
+        "retained_p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-low.p7",
+        "p7_sha256": "e940436203866e44440bcc450737012dbbbbe4d91f27baca41884cdd7aad280f",
+        "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/inspection-combined-6157a2b",
+        "binary_sha256": "073c934fbe082d8b27a3b07ee8e06d48eb072eae2828e766c38bccf575dd73c8",
+        "source": "6157a2b647a63e0c305d289145c2d687bae932ba",
+        "runtime": {
+          "actual_text_bounds": [],
+          "alpha_max": 255,
+          "alpha_min": 242,
+          "camera": {
+            "pixels_per_mm": 5.0,
+            "x_mm": 0.0,
+            "y_mm": 6.7500015
+          },
+          "capture": "actual eframe native WGPU Screenshot event",
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "low_zoom_labels_suppressed": true,
+          "nonopaque_alpha_pixels": 2690,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-low.p6",
+          "pid": 2873334,
+          "pixels": [
+            1067,
+            667
+          ],
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/combined-low.p7",
+          "self_close_after_capture": true,
+          "shared_plan": [
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -700000,
+                "y": -3900000
+              },
+              "display_text": "U9",
+              "envelope": {
+                "max_x": 900000,
+                "max_y": -2500000,
+                "min_x": -900000,
+                "min_y": -4100000
+              },
+              "id": "reference-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "reference",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "U9"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -11200000,
+                "y": 16200003
+              },
+              "display_text": "High precision sensing amplifier",
+              "envelope": {
+                "max_x": 11400000,
+                "max_y": 17600003,
+                "min_x": -11400000,
+                "min_y": 16000003
+              },
+              "id": "value-23937442-91dd-563a-8869-5fa4f8cf37da",
+              "leader": null,
+              "object_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "role": "value",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "High precision sensing amplifier"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": -599997
+              },
+              "display_text": "5 IN5",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 800003,
+                "min_x": -7400002,
+                "min_y": -799997
+              },
+              "id": "pin-text-13877a93-739d-577d-b12d-c0dc73485924",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 3
+                }
+              ],
+              "object_id": "13877a93-739d-577d-b12d-c0dc73485924",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "5 IN5"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 1500003
+              },
+              "display_text": "1 IN1",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 2900003,
+                "min_x": -7400002,
+                "min_y": 1300003
+              },
+              "id": "pin-text-45985360-b4bb-559f-b5dc-f19a638f5827",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 2100003
+                }
+              ],
+              "object_id": "45985360-b4bb-559f-b5dc-f19a638f5827",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "1 IN1"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 3600003
+              },
+              "display_text": "7 IN7",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 5000003,
+                "min_x": -7400002,
+                "min_y": 3400003
+              },
+              "id": "pin-text-45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 4200003
+                }
+              ],
+              "object_id": "45cd2992-e1fa-5f70-a50b-1806e4f06944",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "7 IN7"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 5700003
+              },
+              "display_text": "2 IN2",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 7100003,
+                "min_x": -7400002,
+                "min_y": 5500003
+              },
+              "id": "pin-text-72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 6300003
+                }
+              ],
+              "object_id": "72606ae0-97aa-5aee-84f4-72b96c9f0a51",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "2 IN2"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 7800003
+              },
+              "display_text": "4 IN4",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 9200003,
+                "min_x": -7400002,
+                "min_y": 7600003
+              },
+              "id": "pin-text-7708e2be-3e20-5501-ab59-5838b3503df8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 8400003
+                }
+              ],
+              "object_id": "7708e2be-3e20-5501-ab59-5838b3503df8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "4 IN4"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 9900003
+              },
+              "display_text": "3 IN3",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 11300003,
+                "min_x": -7400002,
+                "min_y": 9700003
+              },
+              "id": "pin-text-80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 10500003
+                }
+              ],
+              "object_id": "80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "3 IN3"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 12000003
+              },
+              "display_text": "8 IN8",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 13400003,
+                "min_x": -7400002,
+                "min_y": 11800003
+              },
+              "id": "pin-text-919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 12600003
+                }
+              ],
+              "object_id": "919a227a-397e-5ca1-9d74-5e8fa4bd70c8",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "8 IN8"
+            },
+            {
+              "abbreviated": false,
+              "anchor": {
+                "x": -7200002,
+                "y": 14100003
+              },
+              "display_text": "6 IN6",
+              "envelope": {
+                "max_x": -3500002,
+                "max_y": 15500003,
+                "min_x": -7400002,
+                "min_y": 13900003
+              },
+              "id": "pin-text-ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "leader": [
+                {
+                  "x": -3000002,
+                  "y": 3
+                },
+                {
+                  "x": -3500002,
+                  "y": 14700003
+                }
+              ],
+              "object_id": "ee7a8113-5940-5782-93e4-824f4cb234c5",
+              "role": "pin",
+              "symbol_id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+              "text": "6 IN6"
+            }
+          ],
+          "ui_passes": 12,
+          "viewport": [
+            380.0,
+            23.0,
+            640.1875,
+            356.1875
+          ]
+        }
+      }
+    ]
+  },
+  "limits": {
+    "page_global_collision_solver": false,
+    "pixel_font_dpi_equivalence": false,
+    "per_string_bytes": 4096,
+    "aggregate_text_bytes": 262144,
+    "source_and_generated_glyph_caps": 32768,
+    "source_objects": 10000,
+    "pins": 100000,
+    "native_min_logical_points": 10,
+    "native_max_logical_points": 32,
+    "display_prefix_unicode_scalars": 32,
+    "ellipsis": "...",
+    "electrical_geometry_and_pick_anchor_changes": false
+  },
+  "final_integration": {
+    "complete": true,
+    "source": "6157a2b647a63e0c305d289145c2d687bae932ba",
+    "base": "d4a4baa1be4e304e40c1001dc1e231e555292d98",
+    "source_ref": "verification/t0122/combined-source",
+    "range_diff": "all11owncommits equal; no conflicts or manual changes",
+    "scoped_gate_session": 78425,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_tests": 43,
+    "failed": 0,
+    "ignored": 0,
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 113,
+    "canonical_exact": true,
+    "workflow_checks": 18,
+    "stdio_checks": 31,
+    "two_client_http_checks": 31,
+    "independent_static_assertions": 25,
+    "independent_static_uniform_samples": 57628,
+    "fresh_native_captures": 3,
+    "second_full_workspace_run": false,
+    "production": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/viamind-combined-6157a2b",
+      "sha256": "7873d71334078232b69b7f77a602abda67577f161371e6948ee1e1ed2f9578f7",
+      "pid": 2873172,
+      "http_port": 7953,
+      "cua_window_id": 110379508599216,
+      "cua_scope": "Actual metadata and tinyproductionpixels; AT-SPI degraded, no checkedstate/OSinput claim"
+    },
+    "exact_head_ci": "pendingafterPRartifactcommit",
+    "independent_review": "pendingfinalsubmission; originalrootprovisionalsourcePASS"
+  },
+  "artifacts": {
+    "catalog-corrected.log": {
+      "bytes": 49,
+      "sha256": "2ffd194e4529e09f57010c8ba376d16adaf09fc81eacb1b381e0c4624a4ba4da"
+    },
+    "catalog.json": {
+      "bytes": 368,
+      "sha256": "e7f92f6ddbfbb1dcff8b3f979fa9b4fe592f2d4d0b7984965d376e95d3192395"
+    },
+    "combined-catalog.json": {
+      "bytes": 368,
+      "sha256": "2b8c25261ea8cf66a7883360f8821c071e0ec05b9c2947da8998fd25cc0e31f1"
+    },
+    "combined-compact-launch.json": {
+      "bytes": 593,
+      "sha256": "a275137c3fe763467af96e07f97435af5d416f203d6fd7249b1d059cdb2ff28e"
+    },
+    "combined-compact-native.log": {
+      "bytes": 5311,
+      "sha256": "c6485f9ba441902c7243942eeb8457ac5350ae5b46513deaec6659e1750e6195"
+    },
+    "combined-compact.png": {
+      "bytes": 80255,
+      "sha256": "c386b4eea295e014f2d27d7e8f86c99fd818dcc86f76433a561ff62ed43e5a39"
+    },
+    "combined-http.json": {
+      "bytes": 4961,
+      "sha256": "76e3418ddd44a053d99df9574bb55911496c09afbae3e99897a706b360466ab9"
+    },
+    "combined-http.log": {
+      "bytes": 122,
+      "sha256": "e923cfa2332325d5fe613ec875bfc71cd09a9f58718138b6cb646a87351c6115"
+    },
+    "combined-low-launch.json": {
+      "bytes": 593,
+      "sha256": "aaa7506413bdbcd81ead0089e44786bfc508ba042634513190624906ff001ebe"
+    },
+    "combined-low-native.log": {
+      "bytes": 4625,
+      "sha256": "347bdbe8836939ee28c199a97626852587aa9397fbcfd4073dc6e866c171aa58"
+    },
+    "combined-low.png": {
+      "bytes": 70621,
+      "sha256": "04810ee13332a0e5c9e76db8688e943a4db22d4a731881a8e0daffd5673d5efa"
+    },
+    "combined-production-cua.png": {
+      "bytes": 10373,
+      "sha256": "1e48885640d51953cf100c0642ed9c4fcaaf10db73c544183bfe0288ccc392c7"
+    },
+    "combined-production-launch.json": {
+      "bytes": 578,
+      "sha256": "5be3d843af717ffda369a0864b0eb59fc429b0b7d144fdbb99af79d57baf0172"
+    },
+    "combined-production-state.json": {
+      "bytes": 1255,
+      "sha256": "e040eb05fb3a449e2be3e69b1dcf8a1b478ecf81c68dcc4922d54320dbe4847d"
+    },
+    "combined-range-diff.txt": {
+      "bytes": 1099,
+      "sha256": "01ab243a63067b63ba18900c5acb82d060f9bf2eb2e92449a0f6aedfb5df6af2"
+    },
+    "combined-stdio.json": {
+      "bytes": 4964,
+      "sha256": "7f63008c8d53bff01d6f62386c9e55cc0236eb587805b4a2a5321260d015a616"
+    },
+    "combined-wide-launch.json": {
+      "bytes": 595,
+      "sha256": "f4ae3be3ed03e202eae6b9d966d8efcf009d8afe4373a656d88de961edb74f0f"
+    },
+    "combined-wide-native.log": {
+      "bytes": 11977,
+      "sha256": "dd2253337d03fce699e31ccdd842749bd4a4ce1c549561384f77a914ab696543"
+    },
+    "combined-wide.png": {
+      "bytes": 164306,
+      "sha256": "21839bf3b7a420b8df85e0790a063836760f7e2886f86b81d4ec27f9f70946a1"
+    },
+    "combined-workflow.json": {
+      "bytes": 1265,
+      "sha256": "269e726e99e3e0a68b61bedf55c36bba10f10b75a802063c4c56b5da2b14262c"
+    },
+    "combined.log": {
+      "bytes": 17658,
+      "sha256": "58ab7d351b754ab0fa80beb6563e5685bcadb784aae37d0c55b34ee9243f5737"
+    },
+    "combined.sh": {
+      "bytes": 2681,
+      "sha256": "8636e56eae5f701d2963291b08b2637bf1f8cec3f425e53ff73fa93229aed328"
+    },
+    "compact-final-launch.json": {
+      "bytes": 590,
+      "sha256": "7210d83e4b0387434e1dae34673d0490e94d2d7f07a0b1c88fa1bfeecc0ca19e"
+    },
+    "compact-final-native.log": {
+      "bytes": 5281,
+      "sha256": "58c9bfeb2b30011bf18bcc09334d1b3df0892d92abd42b7d567620343bb53730"
+    },
+    "compact-launch.json": {
+      "bytes": 584,
+      "sha256": "7d59fa4b23b45b201d2b9fe430ed12c3fce002aaaff1546c8cbb68f97819e6ef"
+    },
+    "compact-native.log": {
+      "bytes": 212,
+      "sha256": "289c4be2b9e642db38af425afde9c36c33eadab6bb1a1e4597b5894bcc8c9a3b"
+    },
+    "compact.png": {
+      "bytes": 76888,
+      "sha256": "22e50968893c87414f94613143855f03e3c84f1a7aee743217e604944ab3a9e6"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 938,
+      "sha256": "b62950656303dc3b391de5abf15a5741e22c56841f32b3a5b2584d6d93f68b03"
+    },
+    "focused.log": {
+      "bytes": 1735,
+      "sha256": "11a3ce187e61aa756e29c76003481709e41f5069f6d6ddbe6ce084fd4baaa1d9"
+    },
+    "focused2.log": {
+      "bytes": 1719,
+      "sha256": "545fde7a71e6d5c8023020dd0d0baaed55fffb5a820a40f1226089efde45ef17"
+    },
+    "focused3.log": {
+      "bytes": 7754,
+      "sha256": "a1b6c28ddf9a34843b19a2a8de60d566e7f9aadde68ff6546803caa599b5d7a5"
+    },
+    "focused4.log": {
+      "bytes": 24909,
+      "sha256": "bdeff5b15213e6a78fbc1444669d539ee0973b9089e908964789ea0d9f6df709"
+    },
+    "full.log": {
+      "bytes": 144363,
+      "sha256": "2a057c9dfeb335477a8de7e8bd46f2ecd825742373eea45a6ecca0ce8d28acb0"
+    },
+    "full.sh": {
+      "bytes": 1663,
+      "sha256": "e35fc85233237faa824fdedcfda0c73efad8318e2b0e8b17d72d5d70a1357e79"
+    },
+    "http.json": {
+      "bytes": 4964,
+      "sha256": "ff36b75fa5f3a36665982eeb2cdfd1b39e7be784a93623bfc669c97d9103e573"
+    },
+    "http.log": {
+      "bytes": 113,
+      "sha256": "4f566e406af3f672fa5603e252e9faf9f75eb97f4befbe49c4f14e222e363181"
+    },
+    "inspection-refresh.log": {
+      "bytes": 2888,
+      "sha256": "3659432c43d477b9361c0599a5f70d89cc73218775d9063a9d4af4bc864f9dbe"
+    },
+    "inspection-refresh.sh": {
+      "bytes": 1022,
+      "sha256": "f1b96a038a339d6f14f5717039e285347697612d40170978a3afea61c0f57a84"
+    },
+    "launch-combined-inspection.sh": {
+      "bytes": 160,
+      "sha256": "3a92c91b5156c73fae4c21d08ebb845fd3fd9d1889cb4f8bea9e00de346866f8"
+    },
+    "launch-combined-production.sh": {
+      "bytes": 223,
+      "sha256": "82458678b1873e1078f51a3009ce347e6f069cba21deda0b48fd336751b0e1bf"
+    },
+    "launch-inspection-final.sh": {
+      "bytes": 151,
+      "sha256": "e9f9274fcbe6e705c87bf614bf985c0728282f1fc5cc48f09a5330c5abd6abf7"
+    },
+    "launch-inspection.sh": {
+      "bytes": 156,
+      "sha256": "7af09bebea6d72e0338ce415258529738d0eef0576998145ae8248164bb8549c"
+    },
+    "launch-production.sh": {
+      "bytes": 210,
+      "sha256": "1fa93d43d6936f261793fef8eb022d47ff0b10817e325880363b9eb73a487f2c"
+    },
+    "low-launch.json": {
+      "bytes": 590,
+      "sha256": "dc281f5fafced4ee486609d076f750f2043c9db15a1134dcd3606f94c002b369"
+    },
+    "low-native.log": {
+      "bytes": 4607,
+      "sha256": "d39dee29a5e9fad6c03e98a17cc55d8b545ca06b1229c33b09aea25c12dcd2eb"
+    },
+    "low.png": {
+      "bytes": 67154,
+      "sha256": "a607b02a78b09bf324dc3de20f2244fe9c4660e83510566ff054ddce553f9d7e"
+    },
+    "production-cua.png": {
+      "bytes": 19209,
+      "sha256": "db21ba03b878454bbe9202776e065add524c75ad89472540d3be813083f2dcb0"
+    },
+    "production-launch.json": {
+      "bytes": 569,
+      "sha256": "a31dda1573f086f470b9ff692969d96f03d4b1e154d6796537d9e607df3b7630"
+    },
+    "production-state.json": {
+      "bytes": 1231,
+      "sha256": "b0ec810118e0198faab7a9f7d84c4b608ad63a033b99152c00451cb183ccc912"
+    },
+    "static-view.log": {
+      "bytes": 216,
+      "sha256": "583250b30b902c5b47515427b36c39ec88237b5a7f98239e06b4bda074ce0a40"
+    },
+    "static-view2.log": {
+      "bytes": 2205,
+      "sha256": "55119ccbea59614ad814497f324e774489025a7afdc4fe7faee41ec6a1085fd1"
+    },
+    "static-view3.log": {
+      "bytes": 3287,
+      "sha256": "84acb6266ccc8baddab7865d43af38309dda96bf34f8c2b588c6bccb52d8d58e"
+    },
+    "stdio.json": {
+      "bytes": 4955,
+      "sha256": "4e93ba8c6fb43f951a2305f0421c5eb06dbab74fbd7e08c8727205b51b16dca8"
+    },
+    "stdio.log": {
+      "bytes": 227,
+      "sha256": "20f28444d1f7fd4edfda19f1df7ee5089687fac98d802347ecd4ac73efc24738"
+    },
+    "stdio2.log": {
+      "bytes": 971,
+      "sha256": "8e4f30d07df254dbe4aa2f13fb16a8ab2fccf2375474c08d757afabcaed93d80"
+    },
+    "stdio3.log": {
+      "bytes": 114,
+      "sha256": "c8f5021852fe5012c254dccbc53dcdbcd6fcd3a85bbbacf1259b47f2f8bf283a"
+    },
+    "ui-focused.log": {
+      "bytes": 5005,
+      "sha256": "456630adf672be479eef4d23358c5d94f427b4460adfd16f9c550b2fab37997c"
+    },
+    "ui-focused.sh": {
+      "bytes": 801,
+      "sha256": "88da18da6659b6a800674792eccb85d207f67a4120b749c14777bcc52bbdad8f"
+    },
+    "verify-artifacts.py": {
+      "bytes": 3578,
+      "sha256": "afac3937a9fa24476239af388b072a4ed335ee1b74c22b2b6e8ef03ca7098fb1"
+    },
+    "wide-launch.json": {
+      "bytes": 586,
+      "sha256": "658c48444d9886afaa0009e3f28ee141af7f1a4ad544fb4e52ef5d5e0b91b0c9"
+    },
+    "wide-native.log": {
+      "bytes": 11958,
+      "sha256": "ba9d02fb17cf09082aa2d874940f8767bdea08484679d379b66557bfba362452"
+    },
+    "wide.png": {
+      "bytes": 159298,
+      "sha256": "051dece32be4343e6235e2f6ea0011c2e8a48b3403aa4f19cb86e26bb7443df4"
+    },
+    "workflow-corrected.log": {
+      "bytes": 41,
+      "sha256": "8e2ec7c62de1e05d2048e07c070119572b3530cc738a1e6cc0552e24b7952e57"
+    },
+    "workflow.json": {
+      "bytes": 1265,
+      "sha256": "09709d8cb44e5eddf0a454b55174ac1ea38d22f14b4fe41a7ae506280473acf1"
+    }
+  },
+  "source_files": {
+    "scripts/verify-schematic-labels-native.py": "6fe31938ac18e71a3b600d43758e6af510905b5e1bbdc318cfb1338d6e0b9196",
+    "scripts/verify-schematic-view.py": "548510842c35c13055fda69321cc35ee73e6c65d693579d5c43702274179d554",
+    "crates/ui-egui/examples/schematic_labels_inspection.rs": "3e06b80bb9360bade92ad991ee38e9f92bafd7268aa46f641b5baf26fbf24f96",
+    "fixtures/schematic/labels-wide.viamind.json": "017fbf7aba8f3e44e6084220f155ce9c2a28cd25302cf797a9db4dd4758dfaff",
+    "fixtures/schematic/labels-compact.viamind.json": "492c4bc2f1d0d12065405cdf68fb2830e1e3bfd069a1d26f4299a78e431c2aad"
+  }
+}

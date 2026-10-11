@@ -1,0 +1,11 @@
+Installed 1 package in 16ms
+Traceback (most recent call last):
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/verify-schematic-labels-native.py", line 94, in <module>
+    call('open_project',{'path':str(ascii_path),'expected_cursor':unchanged['cursor'],'discard_dirty':True})
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0122/verify-schematic-labels-native.py", line 34, in call
+    started=time.monotonic();result=clients[int(peer and bool(args.url))].call(name,arguments or {},expect_error=error)
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/Development/viamind-t-0122/scripts/mcp_reference.py", line 238, in call
+    raise ValueError(f"unexpected tool status: {name}")
+ValueError: unexpected tool status: open_project

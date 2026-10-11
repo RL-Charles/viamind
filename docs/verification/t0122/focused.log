@@ -1,0 +1,26 @@
+Sun Oct 11 20:46:45 UTC 2026
+a15d9b18323f32fc5afaaa797f24173d139fd50c
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0122/crates/render)
+error: variables can be used directly in the `format!` string
+  --> crates/render/tests/schematic_labels.rs:95:21
+   |
+95 |                     assert!(!overlap(label.envelope, other.envelope), "{:?} {:?}", label, other);
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#uninlined_format_args
+   = note: `-D clippy::uninlined-format-args` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::uninlined_format_args)]`
+help: change this to
+   |
+95 -                     assert!(!overlap(label.envelope, other.envelope), "{:?} {:?}", label, other);
+95 +                     assert!(!overlap(label.envelope, other.envelope), "{label:?} {other:?}");
+   |
+
+error: could not compile `viamind-render` (test "schematic_labels") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

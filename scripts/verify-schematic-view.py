@@ -65,7 +65,15 @@ def verify(binary, native, directory):
     def ink(image, box):
         x0,y0,x1,y1=map(lambda v:int(v*30),box)
         return sum(image.getpixel((x,y))[3]>100 for y in range(y0,y1) for x in range(x0,x1))
-    text_boxes=[(7.8,8.85,12.3,9.7),(6.5,10.15,13.5,11),(11.2,5.85,15,6.7),(20.2,4.9,29.5,5.8)]
+    # The symbol presentation is deliberately separate from electrical geometry.
+    # Inspect every declared shared envelope rather than old centered-text slots.
+    symbol_boxes=[tuple(label['envelope'][key]/1_000_000 for key in
+                        ['min_x','min_y','max_x','max_y'])
+                  for label in metadata['view']['symbol_labels']]
+    check('shared label envelopes are explicit and inside the fixture crop',
+          len(symbol_boxes)==4 and all(0<=x0<x1<=30 and 0<=y0<y1<=20
+                                      for x0,y0,x1,y1 in symbol_boxes))
+    text_boxes=symbol_boxes+[(20.2,4.9,29.5,5.8)]
     check('reference value pin and scoped label visible',all(ink(product,b)>30 for b in text_boxes))
     # Remove outlined text by preserved source IDs. Geometry stays identical.
     no_text=ET.parse(svg)
@@ -84,7 +92,7 @@ def verify(binary, native, directory):
     for layer, sample in [('wires',(18,7)),('symbols',(7,9)),('pins',(11,7.5)),('junctions',(16,7)),('labels',(21,5.5))]:
         layer_image=Image.open(export('png',layer,*common,'--schematic-layers',layer)).convert('RGBA')
         check(layer+' isolation',ink(layer_image,(0,0,30,20))>0 and
-              (layer_image.getpixel(at(*sample))[3]>100 if layer!='labels' else ink(layer_image,text_boxes[3])>30))
+              (layer_image.getpixel(at(*sample))[3]>100 if layer!='labels' else ink(layer_image,text_boxes[-1])>30))
     crop=Image.open(export('png','crop','--view-bounds','10.5,7,11.5,8','--view-size','400,400','--schematic-layers','pins')).convert('RGBA')
     check('explicit pin stem crop',crop.getpixel((200,200))[3]>200 and crop.getpixel((20,200))[3]==0)
     margin=Image.open(export('png','margin','--view-bounds','0,0,30,20','--view-size','900,800')).convert('RGBA')

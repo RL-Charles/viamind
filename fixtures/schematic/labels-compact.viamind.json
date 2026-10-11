@@ -1,0 +1,122 @@
+{
+  "format": "viamind",
+  "version": 5,
+  "project": {
+    "id": "cb2134ce-8ef0-5ba5-85a5-da4fee95c939",
+    "name": "Original schematic label compact",
+    "schematic": {
+      "sheets": {
+        "86e24d0c-e728-5a68-bacc-68df103cd339": {
+          "id": "86e24d0c-e728-5a68-bacc-68df103cd339",
+          "name": "compact",
+          "content": {
+            "symbols": {
+              "23937442-91dd-563a-8869-5fa4f8cf37da": {
+                "id": "23937442-91dd-563a-8869-5fa4f8cf37da",
+                "designator": "U9",
+                "value": "High precision sensing amplifier",
+                "footprint": null,
+                "position": {
+                  "x": 1,
+                  "y": 3
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 6000003,
+                "height": 4000007,
+                "pins": [
+                  {
+                    "number": "1",
+                    "name": "IN1",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "45985360-b4bb-559f-b5dc-f19a638f5827"
+                  },
+                  {
+                    "number": "2",
+                    "name": "IN2",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "72606ae0-97aa-5aee-84f4-72b96c9f0a51"
+                  },
+                  {
+                    "number": "3",
+                    "name": "IN3",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "80d8fd76-c3f8-5e3e-b45b-6c40fd7d41e1"
+                  },
+                  {
+                    "number": "4",
+                    "name": "IN4",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "7708e2be-3e20-5501-ab59-5838b3503df8"
+                  },
+                  {
+                    "number": "5",
+                    "name": "IN5",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "13877a93-739d-577d-b12d-c0dc73485924"
+                  },
+                  {
+                    "number": "6",
+                    "name": "IN6",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "ee7a8113-5940-5782-93e4-824f4cb234c5"
+                  },
+                  {
+                    "number": "7",
+                    "name": "IN7",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "45cd2992-e1fa-5f70-a50b-1806e4f06944"
+                  },
+                  {
+                    "number": "8",
+                    "name": "IN8",
+                    "position": {
+                      "x": -3000003,
+                      "y": 0
+                    },
+                    "electrical": "input",
+                    "id": "919a227a-397e-5ca1-9d74-5e8fa4bd70c8"
+                  }
+                ]
+              }
+            },
+            "wires": {},
+            "junctions": {},
+            "labels": {}
+          }
+        }
+      }
+    },
+    "board": {
+      "parts": {}
+    }
+  }
+}
