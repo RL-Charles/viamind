@@ -139,7 +139,7 @@ fn schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves
     h.get_by_label("Schematic").click();
     h.run_steps(5);
     // Choose the explicit populated sheet, even if UUID order made the empty sheet initial.
-    if h.state().schematic.active_sheet_id() != Some(sheet.id) {
+    if h.query_by_label("Empty attention").is_some() {
         h.get_by_label("Empty attention").click();
         h.run_steps(3);
         h.get_by_label(&sheet.name).click();
