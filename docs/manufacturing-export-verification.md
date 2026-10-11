@@ -2,13 +2,15 @@
 
 [Master provenance](verification/t0075-master.json) records the full local Linux
 gate: fmt, strict workspace all-target clippy,446 passing tests with one existing
-ignored test, and workspace build. The exact copied production binary was built
-from5f008c4, SHA256
-`e0c72f33046444025de68f88d2fb3352c46aa994461ab59469ab02867c6d2fde`.
-The implementation was subsequently transplanted onto merged mainceae3ab without
-manufacturing-source changes. Binaries are excluded from git.
+ignored test, and workspace build. The final exact copied production binary was built
+from bb6b61d on combined main c55dc7c, SHA256
+`2b63011a0f05e628791bdac260c2b2005c102451c60a52ea40d9929304282cd1`.
+Rust1.99 CI deprecated `fetch_update`; its behavior-preserving `try_update` rename
+passes local Rust1.98.1 and [stable CI](https://github.com/RL-Charles/viamind/actions/runs/38126471644).
+All four local gates and33 production checks were repeated after that fix.
+The master retains historical evidence from the earlier binary. Binaries are excluded from git.
 
-[Production report](verification/t0075-production-export.json) has33 passing CLI
+[Production report](verification/t0075-rust199-production-export.json) has33 passing CLI
 and actual native HTTP checks. BOM and placement CSV and every Gerber/XNC/manifest
 file are byte-identical to the prior production binary at e5c1144, SHA256
 `17890de437ae1386ce2b05363f4a1aa912921ed0a3494c4c4a0202dae12659be`.
@@ -19,12 +21,12 @@ The same report verifies collisions, active-native protection, overbudget CLI
 and native requests preserving existing outputs, no partial fabrication directory,
 two-agent stale cursor failures, unchanged read-only session/status and exact undo
 restoration after guard/budget edits. The native server is the actual production
-application on7900, PID249312/window110379504973024; an environment-only launch
+application on7902, PID329724/window110379505456096; an environment-only launch
 script selected its port. No inspection application was used.
 
-[Fresh Cua metadata](verification/t0075-native-cua.json) and
-[capture](verification/t0075-native-production.png) identify that process after
-final undo. The compositor tiled this production window to105×59 and AT-SPI
+[Fresh Cua metadata](verification/t0075-rust199-native-cua.json) and
+[capture](verification/t0075-rust199-native-production.png) identify that process after
+final undo. The compositor tiled this production window to45×59 and AT-SPI
 exposes metadata only. This capture provides window identity, not form usability
 or native input evidence. The actual existing desktop fabrication form regression
 passes, including invalid input, shared output and unchanged design/status.
