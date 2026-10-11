@@ -17,6 +17,7 @@ struct Inspection {
     capture: PathBuf,
     report: PathBuf,
     ui_passes: usize,
+    captured: bool,
     started: Instant,
     server: viamind_mcp::HttpServer,
 }
@@ -31,6 +32,10 @@ impl eframe::App for Inspection {
         self.ui_passes += 1;
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(std::fs::read(&self.native).unwrap(), self.native_bytes);
+        if self.captured {
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+            return;
+        }
         assert!(self.started.elapsed() < Duration::from_secs(120) && self.ui_passes < 256, "bounded capture deadline");
         let screenshot = ui.input(|input| {
             input.events.iter().find_map(|event| match event {
@@ -56,6 +61,7 @@ impl eframe::App for Inspection {
             serde_json::to_writer_pretty(&mut file, &report).unwrap();
             file.write_all(b"\n").unwrap();
             file.sync_all().unwrap();
+            self.captured = true;
             println!("{report}");
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         } else {
@@ -117,7 +123,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            Ok(Box::new(Inspection { app, engine, before, native, native_bytes, capture, report, ui_passes: 0, started: Instant::now(), server }))
+            Ok(Box::new(Inspection {
+                app,
+                engine,
+                before,
+                native,
+                native_bytes,
+                capture,
+                report,
+                ui_passes: 0,
+                captured: false,
+                started: Instant::now(),
+                server,
+            }))
         }),
     )
     .map_err(|e| e.to_string())?;
