@@ -48,6 +48,10 @@ pub struct FabricationSnapshot {
 impl FabricationSnapshot {
     /// Validate allocation budgets before cloning. Busy admission never waits.
     pub fn capture(project: &Project) -> io::Result<Self> {
+        Self::capture_for_job(project, false)
+    }
+    /// One permit covers all borrowed preflight and the single geometry copy.
+    pub(crate) fn capture_for_job(project: &Project, calibrated: bool) -> io::Result<Self> {
         let permit = Permit::acquire()?;
         let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
         let mut count =
@@ -91,14 +95,20 @@ impl FabricationSnapshot {
                 check(count)?;
             }
         }
-        Ok(Self {
-            project: Project {
-                id: project.id,
-                name: project.name.clone(),
-                board: project.board.clone_without_assembly(),
-                schematic: Default::default(),
-            },
-            _permit: permit,
-        })
+        if calibrated {
+            crate::assembly_placement::validate(project.board.parts.values())?;
+        }
+        let mut board = project.board.clone_without_assembly();
+        if calibrated {
+            for (id, part) in &mut board.parts {
+                part.assembly = project.board.parts[id].assembly.as_ref().map(|source| viamind_doc::AssemblyMetadata {
+                    populate: source.populate,
+                    mounting: source.populate.then_some(source.mounting).flatten(),
+                    placement: source.populate.then_some(source.placement).flatten(),
+                    ..Default::default()
+                });
+            }
+        }
+        Ok(Self { project: Project { id: project.id, name: project.name.clone(), board, schematic: Default::default() }, _permit: permit })
     }
 }

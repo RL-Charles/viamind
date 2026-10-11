@@ -58,17 +58,36 @@ pub struct OutputJob {
     pub mask_expansion_mm: f64,
     #[serde(default, deserialize_with = "present_checks", skip_serializing_if = "Option::is_none")]
     pub checks: Option<OutputJobChecks>,
+    #[serde(default, deserialize_with = "present_companion", skip_serializing_if = "Option::is_none")]
+    pub include_calibrated_placement: Option<bool>,
+}
+fn present_companion<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<bool>, D::Error> {
+    bool::deserialize(deserializer).map(Some)
 }
 fn present_checks<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<OutputJobChecks>, D::Error> {
     OutputJobChecks::deserialize(deserializer).map(Some)
 }
 impl OutputJob {
     pub fn new(name: String, mask_expansion_mm: f64) -> Self {
-        Self { format: "viamind-output-job".into(), version: 1, name, profile: "generic_outer_2layer".into(), mask_expansion_mm, checks: None }
+        Self {
+            format: "viamind-output-job".into(),
+            version: 1,
+            name,
+            profile: "generic_outer_2layer".into(),
+            mask_expansion_mm,
+            checks: None,
+            include_calibrated_placement: None,
+        }
     }
     pub fn validate(&self) -> io::Result<()> {
-        if self.format != "viamind-output-job" || self.version != 1 || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE) {
+        if self.format != "viamind-output-job"
+            || !matches!(self.version, 1 | 2)
+            || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE)
+        {
             return Err(invalid("unsupported output job format, version or profile"));
+        }
+        if !matches!((self.version, self.include_calibrated_placement), (1, None) | (2, Some(true))) {
+            return Err(invalid("version1 forbids calibrated placement; version2 requires include_calibrated_placement: true"));
         }
         match (self.profile.as_str(), &self.checks) {
             (CHECKED_PROFILE, Some(checks)) => checks.validate()?,
@@ -180,7 +199,8 @@ pub fn output_job_schema(action: &str) -> Value {
         "load" => json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{"path":path}}),
         "save" => json!({"type":"object","additionalProperties":false,"required":["path","job"],"properties":{"path":path,"job":{
             "type":"object","additionalProperties":false,"required":["format","version","name","profile"],
-            "properties":{"format":{"const":"viamind-output-job"},"version":{"const":1},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks},
+            "properties":{"format":{"const":"viamind-output-job"},"version":{"enum":[1,2]},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks,"include_calibrated_placement":{"const":true}},
+            "allOf":[{"oneOf":[{"properties":{"version":{"const":1}},"not":{"required":["include_calibrated_placement"]}},{"properties":{"version":{"const":2}},"required":["include_calibrated_placement"]}]}],
             "oneOf":[{"properties":{"profile":{"const":"generic_outer_2layer"}},"not":{"required":["checks"]}},{"properties":{"profile":{"const":CHECKED_PROFILE}},"required":["checks"]}]
         }}}),
         _ => {
@@ -202,6 +222,14 @@ pub struct ReleaseManifest<C> {
     /// Relative file paths and byte lengths; excludes this manifest itself.
     pub files: BTreeMap<String, usize>,
     pub exclusions: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub calibrated_placement: Option<CalibratedPlacementSummary>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CalibratedPlacementSummary {
+    pub file: String,
+    pub component_count: usize,
+    pub coordinate_convention: String,
 }
 impl OutputJobSnapshot {
     pub fn capture(project: &Project, job: OutputJob) -> io::Result<Self> {
@@ -209,7 +237,7 @@ impl OutputJobSnapshot {
         if project.board.parts.len() > 100_000 {
             return Err(invalid("output jobs support at most 100000 components"));
         }
-        Ok(Self { board: FabricationSnapshot::capture(project)?, job })
+        Ok(Self { board: FabricationSnapshot::capture_for_job(project, job.include_calibrated_placement == Some(true))?, job })
     }
     pub fn write<C: Serialize>(self, cursor: C, path: &Path, native: Option<&Path>) -> io::Result<(PathBuf, ReleaseManifest<C>)> {
         if self.job.checks.is_some() {
@@ -271,21 +299,37 @@ impl OutputJobSnapshot {
             let data = render_csv_limited(self.board.project.board.parts.values(), kind, RELEASE_LIMIT - total)?;
             add_file(&mut files, &mut total, name.into(), data.into_bytes())?;
         }
+        let calibrated_placement = if self.job.include_calibrated_placement == Some(true) {
+            let name = "assembly/calibrated-placement.csv";
+            let data = render_csv_limited(self.board.project.board.parts.values(), AssemblyCsv::AssemblyPlacement, RELEASE_LIMIT - total)?;
+            add_file(&mut files, &mut total, name.into(), data.into_bytes())?;
+            Some(CalibratedPlacementSummary {
+                file: name.into(),
+                component_count: self.board.project.board.parts.values().filter(|part| crate::assembly_templates::populated(part)).count(),
+                coordinate_convention: "global_x_right_y_up_ccw_common_top_view".into(),
+            })
+        } else {
+            None
+        };
+        let assembly_exclusions = if calibrated_placement.is_some() {
+            [
+                "Generic bom.csv and placement.csv inventory all components at component origins; calibrated-placement.csv contains only populated components with explicit mounting, local centroid and orientation marker. These are not a matched populated assembly set.".into(),
+                "No sourcing, inferred identifiers, manufacturer presets or vendor certification. The generic top-view marker does not establish universal vendor zero, polarity or tape orientation.".into(),
+            ]
+        } else {
+            [
+                "Generic placement records component origins, not manufacturer-validated assembly centroids.".into(),
+                "No sourcing or population metadata, manufacturer presets or vendor certification.".into(),
+            ]
+        };
         let manifest = ReleaseManifest {
             format: "viamind-output-release".into(),
-            version: 1,
+            version: self.job.version,
             project_id: self.board.project.id.to_string(),
             exported_cursor: cursor,
             files: files.iter().map(|(n, b)| (n.clone(), b.len())).collect(),
-            exclusions: package
-                .manifest
-                .exclusions
-                .into_iter()
-                .chain([
-                    "Generic placement records component origins, not manufacturer-validated assembly centroids.".into(),
-                    "No sourcing or population metadata, manufacturer presets or vendor certification.".into(),
-                ])
-                .collect(),
+            exclusions: package.manifest.exclusions.into_iter().chain(assembly_exclusions).collect(),
+            calibrated_placement,
         };
         let bytes = bounded_json(&manifest, RELEASE_LIMIT - total)?;
         add_file(&mut files, &mut total, "release-manifest.json".into(), bytes)?;
@@ -386,6 +430,35 @@ mod publication_tests {
         );
         assert!(!failure.exists());
         assert_eq!(std::fs::read_dir(temp.path()).unwrap().count(), 1);
+    }
+    #[test]
+    fn calibrated_capture_budget_precedes_reference_keys_and_only_fixed_metadata_survives() {
+        let _guard = SERIAL.lock().unwrap();
+        let mut source = viamind_doc::file::from_str(include_str!("../../../fixtures/assembly/calibration.viamind.json")).unwrap();
+        let mut config = OutputJob::new("fixed capture".into(), 0.);
+        config.version = 2;
+        config.include_calibrated_placement = Some(true);
+        for part in source.board.parts.values_mut() {
+            let metadata = part.assembly.as_mut().unwrap();
+            metadata.manufacturer = Some("x".repeat(3 * 1024 * 1024));
+            metadata.supplier = Some("invalid\nsource".into());
+        }
+        let snapshot = OutputJobSnapshot::capture(&source, config.clone()).unwrap();
+        for (id, captured) in &snapshot.board.project.board.parts {
+            let metadata = captured.assembly.as_ref().unwrap();
+            let original = source.board.parts[id].assembly.as_ref().unwrap();
+            assert!(metadata.manufacturer.is_none() && metadata.mpn.is_none() && metadata.supplier.is_none() && metadata.supplier_sku.is_none());
+            assert_eq!(metadata.placement, original.placement);
+            assert_eq!(metadata.mounting, original.mounting);
+            assert_eq!(metadata.populate, original.populate);
+        }
+        drop(snapshot);
+        source.name = "x".repeat(4097);
+        for part in source.board.parts.values_mut() {
+            part.assembly = None;
+        }
+        let error = OutputJobSnapshot::capture(&source, config).err().unwrap();
+        assert!(error.to_string().contains("strings must not exceed"), "{error}");
     }
     #[test]
     fn one_job_uses_one_permit_and_unrelated_invalid_schematic_is_excluded() {

@@ -17,6 +17,6 @@ pub use fabrication::{
 pub use snapshot::FabricationSnapshot;
 
 pub use output_job::{
-    CHECKED_PROFILE, OutputJob, OutputJobChecks, OutputJobFileRequest, OutputJobSnapshot, ReleaseManifest, RunOutputJobRequest, SaveOutputJobRequest,
-    load_output_job, output_job_schema, save_output_job,
+    CHECKED_PROFILE, CalibratedPlacementSummary, OutputJob, OutputJobChecks, OutputJobFileRequest, OutputJobSnapshot, ReleaseManifest,
+    RunOutputJobRequest, SaveOutputJobRequest, load_output_job, output_job_schema, save_output_job,
 };
