@@ -64,7 +64,7 @@ fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
     h.get_by_label(label).scroll_to_me();
     h.run_steps(6);
     h.get_by_label(label).click();
-    h.run_steps(3);
+    h.run_steps(5);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, text: &str) {
     h.get_by_label(label).scroll_to_me();
@@ -105,7 +105,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     input(&mut h, "Symbol library file path", &source);
     click(&mut h, "Load symbol template");
     wait(&mut h, "Loaded Original regulator");
-    click(&mut h, "Edit loaded definition");
+    click(&mut h, "New detached definition");
+    click(&mut h, "Add definition pin");
     input(&mut h, "Definition name", "Original stable symbol fields");
     input(&mut h, "Pin 2 name", "Retained input");
     input(&mut h, "Pin 2 X (mm)", "1.000003");
@@ -113,6 +114,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
     let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
     click(&mut h, "Remove pin 1");
+    assert!(h.query_by_label("1 / 1024 ordered pins").is_some(), "actual Remove must reduce two pins to one");
     for (i, field) in fields.iter().enumerate() {
         assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
     }
