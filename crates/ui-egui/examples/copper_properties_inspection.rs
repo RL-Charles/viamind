@@ -40,8 +40,18 @@ impl eframe::App for Inspect {
         });
         if let Some(image) = image {
             assert!(image.pixels.len() <= 4_194_304);
-            assert!(image.pixels.iter().all(|p| p.a() == 255));
+            // X11 opaque surfaces can return nonopaque stored alpha; preserve every
+            // original Screenshot-event channel separately from the RGB review view.
+            let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
+            let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+            let nonopaque_alpha_pixels = image.pixels.iter().filter(|p| p.a() != 255).count();
             let path = self.capture.take().unwrap();
+            let rgba_path = path.with_extension("p7");
+            let mut raw = std::fs::OpenOptions::new().write(true).create_new(true).open(&rgba_path).unwrap();
+            write!(raw, "P7\nWIDTH {}\nHEIGHT {}\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", image.size[0], image.size[1]).unwrap();
+            let rgba: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b(), p.a()]).collect();
+            raw.write_all(&rgba).unwrap();
+            raw.sync_all().unwrap();
             let mut f = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).unwrap();
             write!(f, "P6\n{} {}\n255\n", image.size[0], image.size[1]).unwrap();
             let rgb: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
@@ -49,7 +59,7 @@ impl eframe::App for Inspect {
             f.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"controls":self.controls.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"controls":self.controls.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
@@ -121,7 +131,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .with_inner_size([width, height])
             .with_min_inner_size([width, height])
             .with_max_inner_size([width, height])
-            .with_resizable(false),
+            .with_resizable(false)
+            .with_transparent(false),
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
