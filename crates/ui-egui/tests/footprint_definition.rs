@@ -54,10 +54,17 @@ fn actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo() {
     let before = engine.session_state();
     let status = engine.document_status();
     let old = before.project.board.part(&old.id).unwrap();
-    let mut h = Harness::builder()
-        .with_size(vec2(1400.0, 1200.0))
-        .build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), ViamindApp::with_design(engine.clone(), None));
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.set_schematic_mode(true);
+    let mut h = Harness::builder().with_size(vec2(1400.0, 1200.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     h.run_steps(3);
+    click(&mut h, "Draw wires on canvas");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while !h.state().schematic_wires.previewing() && std::time::Instant::now() < deadline {
+        h.run_steps(2);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    assert!(h.state().schematic_wires.active());
     click(&mut h, "Libraries");
     click(&mut h, "Footprint definitions…");
     input(&mut h, "Footprint definition name", "Original odd Nm");
@@ -72,6 +79,8 @@ fn actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo() {
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
     assert!(h.query_by_label_contains("Created ").is_some());
+    assert!(h.state().schematic_wires.active(), "detached edits/save retain the live wire draft");
+    click(&mut h, "PCB");
     h.state_mut().begin_edit_pads(old.clone());
     h.run_steps(3);
     input(&mut h, "Library file path", path.to_str().unwrap());
