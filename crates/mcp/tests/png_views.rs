@@ -54,7 +54,7 @@ async fn svg_and_png_capture_only_board_and_reject_aggregate_budget_without_stat
     let engine = EngineHandle::new(p);
     let tools = engine_registry(engine.clone()).unwrap();
     let a = CallContext::new("bounded-reader");
-    let cursor = engine.with_engine(|e| e.event_cursor());
+    let cursor = engine.with_engine(viamind_engine::Engine::event_cursor);
     let before_status = engine.document_status();
     for tool in ["render_board_view", "render_board_png"] {
         let result = tools.call(tool, json!({"expected_cursor":cursor,"options":{"width_px":32,"height_px":32}}), a.clone()).await.unwrap();
@@ -62,7 +62,7 @@ async fn svg_and_png_capture_only_board_and_reject_aggregate_budget_without_stat
         assert_eq!(result["metadata"]["pad_count"], 3);
     }
     assert_eq!(engine.document_status(), before_status);
-    assert_eq!(engine.with_engine(|e| e.event_cursor()), cursor);
+    assert_eq!(engine.with_engine(viamind_engine::Engine::event_cursor), cursor);
     assert_eq!(engine.read(|p| p.schematic.sheets.values().next().unwrap().name.len()), 9 * 1024 * 1024);
     let mut p = engine.read(viamind_render::board_view_snapshot).unwrap();
     let mut part = p.board.parts.values().next().unwrap().clone();
