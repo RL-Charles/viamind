@@ -157,7 +157,7 @@ impl CommandHost for EngineHost {
         commands.push(HostCommand {
             name: "snapshot_schematic_wire_sheet".into(),
             description: "Read one bounded validated schematic sheet and exact project/stream/cursor for wire drawing; no mutation.".into(),
-            input_schema: serde_json::to_value(schemars::schema_for!(viamind_engine::SchematicWireSheetQuery)).expect("wire snapshot schema"),
+            input_schema: input_schema::<viamind_engine::SchematicWireSheetQuery>(),
         });
         commands
     }
