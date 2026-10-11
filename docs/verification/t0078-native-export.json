@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "checks": [
+    "shared assembly tool fields/default/kinds advertised",
+    "bom production CLI succeeds",
+    "bom CLI NEW collision preserves bytes",
+    "bom CLI explicit overwrite restores exact bytes",
+    "bom independent CSV preserves Unicode quotes and CRLF",
+    "bom grouping or placement convention",
+    "bom native HTTP matches CLI bytes/source cursor",
+    "bom native HTTP NEW collision preserves bytes",
+    "bom native HTTP explicit overwrite matches CLI",
+    "bom active native protected with explicit overwrite",
+    "placement production CLI succeeds",
+    "placement CLI NEW collision preserves bytes",
+    "placement CLI explicit overwrite restores exact bytes",
+    "placement independent CSV preserves Unicode quotes and CRLF",
+    "placement grouping or placement convention",
+    "placement native HTTP matches CLI bytes/source cursor",
+    "placement native HTTP NEW collision preserves bytes",
+    "placement native HTTP explicit overwrite matches CLI",
+    "placement active native protected with explicit overwrite",
+    "exports preserve full shared session and native status",
+    "second agent invalidates stale export without output",
+    "second agent undo restores exact project and status",
+    "native clients have distinct sessions"
+  ],
+  "production_binary_sha256": "cc5fb8f44540234c6110ebf490f8f016073006d97cc846e7b5d98607169ece35",
+  "endpoint": "http://127.0.0.1:7905/mcp",
+  "outputs": {
+    "bom": "0ce46882917d0234d4c54b9f632064a648cc39a96a2fab2f724e6bf00ead2353",
+    "placement": "cf30f18c85aaca802c1d54d77523f0004bcb334a0629f48f4d53bccd899ee32e"
+  },
+  "native_source_cursor": {
+    "sequence": 0,
+    "stream_id": "151a9cbf-2e73-4640-9e9a-296673b4642c"
+  }
+}
