@@ -224,8 +224,8 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
             high[axis] = high[axis].max(center as f64 + size as f64 / 2.0);
         }
     }
-    let scale = ((rect.width() - 30.0).max(1.0) as f64 / (high[0] - low[0]).max(1.0))
-        .min((rect.height() - 30.0).max(1.0) as f64 / (high[1] - low[1]).max(1.0));
+    let scale = (f64::from((rect.width() - 30.0).max(1.0)) / (high[0] - low[0]).max(1.0))
+        .min(f64::from((rect.height() - 30.0).max(1.0)) / (high[1] - low[1]).max(1.0));
     let at = |x: f64, y: f64| {
         egui::pos2(
             rect.center().x + ((x - (low[0] + high[0]) / 2.0) * scale) as f32,
