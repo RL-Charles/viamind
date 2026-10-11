@@ -36,6 +36,7 @@ fn export_window_keeps_invalid_input_then_exports_snapshot_without_design_change
     assert!(h.query_by_label("Mask expansion needs a finite number from 0 to 10 mm").is_some());
     input(&mut h, "Mask expansion (mm)", "0.05");
     h.get_by_label("Export fabrication snapshot").click();
+    h.run_steps(3);
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
     while h.state().fabrication.busy() && std::time::Instant::now() < deadline {
         h.run_steps(2);
