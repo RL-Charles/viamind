@@ -16,18 +16,20 @@ fn explicit_layer_output_exact_quarter_bottom_and_legacy_defaults() {
         courtyard: Some(RectangularCourtyard { min: Point::new(Nm(-13), Nm(-17)), max: Point::new(Nm(19), Nm(23)), width: Nm(5) }),
     }));
     let top = board_svg(&p, &options).unwrap();
-    assert!(top.svg.contains("x1=\"10.000005\" y1=\"20.000003\" x2=\"10.000011\" y2=\"19.999993\""), "{}", top.svg);
-    assert!(top.svg.contains("stroke-width=\"0.000003\""));
+    assert!(top.svg.contains("x1=\"10.0000050\" y1=\"20.0000030\" x2=\"10.0000110\" y2=\"19.9999930\""), "{}", top.svg);
+    assert!(top.svg.contains("stroke-width=\"0.0000030\""));
     assert_eq!(top.metadata.artwork.as_ref().unwrap().rendered_segments, 5);
     assert_eq!(top.svg.matches("<line ").count(), 5);
     p.board.parts.get_mut(&id).unwrap().side = Side::Bottom;
     let bottom = board_svg(&p, &SvgOptions { layers: vec![ViewLayer::BottomSilkscreen], ..options.clone() }).unwrap();
-    assert!(bottom.svg.contains("x1=\"10.000005\" y1=\"19.999997\" x2=\"10.000011\" y2=\"20.000007\""));
+    assert!(bottom.svg.contains("x1=\"10.0000050\" y1=\"19.9999970\" x2=\"10.0000110\" y2=\"20.0000070\""));
     assert_eq!(bottom.svg.matches("<line ").count(), 1);
     let mut original = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
     let legacy = board_svg(&original, &SvgOptions::default()).unwrap();
     assert_eq!(legacy.svg, baseline.svg);
     assert!(serde_json::to_value(&legacy.metadata).unwrap().get("artwork").is_none());
+    original.board.parts.get_mut(&id).unwrap().artwork = p.board.parts[&id].artwork.clone();
+    assert_eq!(board_svg(&original, &SvgOptions::default()).unwrap().svg, baseline.svg, "nonempty artwork must not alter default layer bytes");
     original.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
     let explicit = board_svg(&original, &SvgOptions::default()).unwrap();
     assert_eq!(explicit.svg, baseline.svg);
