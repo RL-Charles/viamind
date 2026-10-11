@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "binary_sha256": "928ac5873c9b83bc4c1d6d1ee4fd137969dba868db73f33251e26bc098d4110b",
+  "checks": [
+    {
+      "command": "save_footprint_definition",
+      "expected": "1024 pads before typed decoding",
+      "passed": true
+    },
+    {
+      "command": "save_footprint_definition",
+      "expected": "512 UTF-8 bytes before typed decoding",
+      "passed": true
+    },
+    {
+      "command": "save_footprint_definition",
+      "expected": "512 UTF-8 bytes before typed decoding",
+      "passed": true
+    },
+    {
+      "command": "save_footprint_definition",
+      "expected": "4096 UTF-8 bytes",
+      "passed": true
+    },
+    {
+      "command": "load_footprint_definition",
+      "expected": "4096 UTF-8 bytes",
+      "passed": true
+    },
+    {
+      "session_status_and_no_output_preserved": true
+    }
+  ]
+}

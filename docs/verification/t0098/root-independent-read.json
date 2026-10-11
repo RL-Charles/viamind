@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    "new shared actions discovered",
+    "two actual HTTP clients read exact original asymmetric fixture",
+    "complete session and status preserved"
+  ],
+  "native_library_sha256": "34c40eb4fa08d4e890b61aa5e32fde167c54f1d27120750eb0eb77a5da286461",
+  "source_cursor": {
+    "sequence": 6,
+    "stream_id": "43afc210-e25b-4deb-bf99-bdcd50c88d4a"
+  },
+  "tool_count": 83
+}

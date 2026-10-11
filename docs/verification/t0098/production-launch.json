@@ -1,0 +1,11 @@
+{
+  "pid": 1487474,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe",
+  "source_commit": "4d460fe0f2496715ded462918f3c9e270958e103",
+  "port": 7922,
+  "launched_utc": "2026-10-11T14:49:37.067832+00:00",
+  "command": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe"
+  ],
+  "scope": "owned fresh production desktop; original test project only"
+}

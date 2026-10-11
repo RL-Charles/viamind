@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/inspection-83bc7d5",
+    "/home/charlesmowbray/Development/viamind-t-0098/fixtures/footprints/original-detached-asymmetric.viamind-footprint.json",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/compact-new-definition.json",
+    "preview",
+    "640",
+    "400",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/compact.ppm"
+  ],
+  "pid": 1598688,
+  "source_commit": "83bc7d515c01eb81b8ff58284d5ca96e9ae2f0b8",
+  "launched_utc": "2026-10-11T15:10:23.078986+00:00",
+  "scope": "Actual egui input preparing production ViamindApp; actual native WGPU Screenshot; no OS input or compositor capture claim",
+  "exit_code": 0,
+  "exited_utc": "2026-10-11T15:10:24.044077+00:00"
+}
