@@ -211,4 +211,9 @@ wheel zooms, and Home fits the sheet. Schematic-only documents open in this mode
 
 The original regulator example is
 [`fixtures/schematic/regulator.viamind.json`](fixtures/schematic/regulator.viamind.json).
-Electrical connectivity, ERC and board annotation are separate work.
+`query_schematic_connectivity` exposes bounded exact native connectivity over MCP,
+including transformed pin endpoints and local/global/power label scope. The
+regulator fixture yields VIN (2 pins), 3V3 (2 pins) and GND (3 pins). Ambiguous
+crossing labels or exceeded work limits return errors without partial nets.
+ERC, hierarchy, buses and board annotation remain separate work. See the
+[connectivity behavior specification](docs/specs/schematic-connectivity.md).
