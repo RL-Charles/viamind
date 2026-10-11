@@ -100,6 +100,19 @@ checks plus six real early-rejection/session-preservation checks, and the canoni
 existing exact-source native captures remain applicable. The initial JSON transport
 allocation is outside this typed preflight and is not claimed to be bounded here.
 
+## Final named-net integration
+
+After T97 merged as `b845cb7`, final source `c9bb7f1` preserved both additive
+engine exports and UI action helpers. All detached feature modules, tests and
+native inspection source remain byte-identical to the reviewed feature. Gate
+66802 passed format, strict workspace/all-target Clippy, two MCP tests, three
+actual-input tests and workspace build. Its uniquely retained combined production
+executable discovered **85 tools**, regenerated the complete canonical catalog,
+and passed 24 valid detached stdio checks plus six early request-boundary checks.
+Historical native captures remain source `83bc7d5`; annotated tag
+`verification/t0098/combined-native-source` retains that source and the pre-T97
+bounded request refresh ancestry. Both historical source refs resolve on GitHub.
+
 Verify retained artifacts without writes:
 
 ```sh

@@ -336,6 +336,30 @@
     "predecode-valid-stdio.json": {
       "bytes": 2414,
       "sha256": "5f8d4dd0eddf13f4c1ea5adc86ada712c58cec84cab6743a11a5cfbc698158df"
+    },
+    "final-integration.sh": {
+      "bytes": 1631,
+      "sha256": "1358217472510c548bcf504b7c2ec6e3dbadf8202a7a7b667563f9e40caff108"
+    },
+    "final-integration.log": {
+      "bytes": 4668,
+      "sha256": "6b776754c57982de81170c6fb347bbc38c8d718da5e4596a0b83b5082f24e371"
+    },
+    "final-discovery.json": {
+      "bytes": 367,
+      "sha256": "b964956d45cbeed17ab65516727e089098c8c98ff2c08b5a3808b53278da4cb0"
+    },
+    "final-stdio.json": {
+      "bytes": 2414,
+      "sha256": "9d504696cbadb733ca2c3fa716ce36c2f2ef402479bc57be3414af7ec1d1ab80"
+    },
+    "final-predecode.json": {
+      "bytes": 838,
+      "sha256": "8e0524074c78aa87e3e655c60fa91b4ce1fd1116ce4e75b7b891f9941878b6f9"
+    },
+    "final-catalog-check.json": {
+      "bytes": 367,
+      "sha256": "b964956d45cbeed17ab65516727e089098c8c98ff2c08b5a3808b53278da4cb0"
     }
   },
   "historical_source_ref": {
@@ -359,5 +383,33 @@
     "catalog_exact_match_tools": 83,
     "native_capture_repeated": false,
     "scope": "Borrowed JSON Value fields rejected before typed secondary allocation; transport JSON Value itself already exists."
+  },
+  "combined_native_source_ref": {
+    "ref": "refs/tags/verification/t0098/combined-native-source",
+    "commit": "7e080684b464ca210b5204f60b1bfcda450b2946",
+    "retains_combined_source_ancestor": "83bc7d515c01eb81b8ff58284d5ca96e9ae2f0b8",
+    "github_commits_api_resolves_combined": true
+  },
+  "final_integration": {
+    "source": "c9bb7f1b3e21192e9abb670f87dca71c62f309cc",
+    "base": "b845cb7c297e90de0cb3809f4fba38c878cee631",
+    "session": 66802,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "mcp_tests": 2,
+    "actual_input_tests": 3,
+    "workspace_build": true,
+    "tools": 85,
+    "valid_stdio_checks": 24,
+    "predecode_stdio_checks": 6,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-c9bb7f1",
+    "binary_sha256": "47f4e4e067b7a05d4117cd097821d593fc81504f225aca59176a066f3fcd581c",
+    "manual_conflicts": [
+      "engine/lib.rs additive module exports: retained net_rules and footprint_definition",
+      "ui/actions.rs appended helpers: retained named-net rule and footprint-definition functions"
+    ],
+    "owned_feature_modules_unchanged": true,
+    "native_capture_repeated": false
   }
 }

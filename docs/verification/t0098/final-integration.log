@@ -1,0 +1,57 @@
+c9bb7f1b3e21192e9abb670f87dca71c62f309cc
+Sun Oct 11 15:22:28 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.32s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.80s
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-c6e1c6be30c42494)
+
+running 2 tests
+test borrowed_definition_limits_precede_typed_row_decoding_and_preserve_session ... ok
+test real_two_clients_share_detached_files_with_separate_guarded_reuse_and_no_implicit_design_changes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.36s
+     Running tests/footprint_definition.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/footprint_definition-86d1ac3c5b06da09)
+
+running 3 tests
+test actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retained ... ok
+test actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_and_reopen ... ok
+test actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.36s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0098/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.39s
+47f4e4e067b7a05d4117cd097821d593fc81504f225aca59176a066f3fcd581c  /home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-c9bb7f1
+Verified 85 full-application tools (2025-03-26)
+{"passed": true, "checks": 24, "report": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/stdio-c9bb7f1.json"}
+Passed six real production predecode boundary checks
+Sun Oct 11 15:23:25 UTC 2026
