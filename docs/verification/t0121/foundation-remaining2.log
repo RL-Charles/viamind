@@ -1,0 +1,115 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 55.29s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.39s
+     Running tests/footprint.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-e8ded45504408894)
+
+running 2 tests
+test strict_integer_geometry_roundtrips_without_design_fields ... ok
+test bounded_io_preserves_existing_paths_and_native_project_aliases ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-4855945c5dbe28c3)
+
+running 3 tests
+test strict_library_versions_explicit_empty_and_legacy_bytes ... ok
+test mixed_artwork_package_via_and_assembly_features_max_compose_and_clear ... ok
+test native_feature_max_save_and_private_analysis_never_drop_live_artwork ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/footprint_holes.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_holes-d79a80e0c64f5186)
+
+running 7 tests
+test local_geometry_keys_ids_and_odd_half_edges_have_checked_boundaries ... ok
+test eight_independent_cardinal_mirror_oracles_and_computed_arbitrary_quantization ... ok
+test library4_presence_strict_rows_and_max_composition_preserve_old_bytes ... ok
+test strict_rows_centers_duplicates_and_max_plus_one_poison_are_rejected ... ok
+test absent_null_and_explicit_empty_preserve_distinct_native_intent_and_max_versions ... ok
+test global_collisions_refuse_and_padless_analysis_copies_retain_physical_drills ... ok
+test activated_combined_identity_and_key_budgets_precede_invalid_geometry ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.12s
+
+     Running tests/format_determinism.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/format_determinism-b2fdeba012cce152)
+
+running 1 test
+test insertion_order_does_not_change_the_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/package_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/package_links-e0a618e270eabe34)
+
+running 2 tests
+test unresolved_package_identity_is_preserved_at_twelve_and_absence_preserves_old_bytes ... ok
+test dual_nil_duplicate_and_wrong_kind_package_links_refuse ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-0bb73cf489c3678b)
+
+running 3 tests
+test regular_copies_keep_policies_and_analysis_shell_drops_them_before_copy ... ok
+test library3_requires_real_policy_and_library1or2_refuse_even_null_member ... ok
+test legacy_pad_bytes_and_native_minimum_are_preserved_while_explicit_empty_requires14 ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/save_load.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/save_load-a4f16903642d4eb3)
+
+running 4 tests
+test golden_file ... ok
+test rejects_bad_files_with_clear_errors ... ok
+test save_load_and_resave_on_disk ... ok
+test round_trip ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.42s
+
+     Running tests/schematic_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_links-c975a285b13eb17a)
+
+running 2 tests
+test native_links_survive_reference_changes_and_require_schema_six ... ok
+test duplicate_nil_and_wrong_kind_links_reject_but_missing_symbols_remain_unresolved ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 27.74s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-f80c97248dc671f1)
+
+running 3 tests
+test library_two_apply_export_native_save_pad_net_identity_and_assembly_delta_retention ... ok
+test batch_uses_one_initial_cursor_and_raw_overflow_precedes_poison ... ok
+test guarded_atomic_artwork_noop_undo_log_and_reopen ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/footprint_holes_foundation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_holes_foundation-63ea9e064cfc39c0)
+
+running 2 tests
+test log_rejects_an_intermediate_global_hole_collision_even_if_later_removed ... ok
+test log15_base_before_after_and_undo_redo_preserve_exact_drill_intent ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-51acf7164797fb31)
+
+running 2 tests
+test copper_resize_retains_absolute_policy_and_invalid_moved_extents_are_atomic ... ok
+test source_policy_identity_net_retention_full_cursor_and_both_log_delta_sides ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
