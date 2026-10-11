@@ -1,21 +1,55 @@
 //! Retained inspection host: production cleanup controls with an immutable native preview.
 use egui::vec2;
 use egui_kittest::{Harness, kittest::Queryable};
+use std::{io::Write, path::PathBuf};
 use viamind_ui_egui::ViamindApp;
 struct Inspection {
     app: ViamindApp,
     engine: viamind_engine::EngineHandle,
     before: viamind_engine::SessionSnapshot,
+    capture: Option<PathBuf>,
+    frames: usize,
+    control_bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspection {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(self.app.track_cleanup.checked().expect("retained checked preview").counts.deleted_tracks, 2);
+        let content = ui.ctx().content_rect();
+        assert!(self.control_bounds.iter().all(|r| content.contains_rect(*r)), "prepared production controls fit actual native viewport");
+        self.frames += 1;
+        if let Some(path) = &self.capture {
+            let screenshot = ui.input(|i| {
+                i.events.iter().find_map(|event| match event {
+                    egui::Event::Screenshot { image, .. } => Some(image.clone()),
+                    _ => None,
+                })
+            });
+            if let Some(image) = screenshot {
+                assert!(image.pixels.iter().all(|p| p.a() == 255), "opaque native framebuffer required for lossless RGB capture");
+                let mut file = std::fs::File::create(path).expect("create native framebuffer artifact");
+                write!(file, "P6\n{} {}\n255\n", image.size[0], image.size[1]).expect("PPM header");
+                let pixels: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
+                file.write_all(&pixels).expect("native framebuffer RGB pixels");
+                println!(
+                    "{}",
+                    serde_json::json!({"capture":"eframe native WGPU framebuffer Screenshot event","path":path,"pixels":image.size,"native_frames":self.frames,"full_session_unchanged":true,"prepared_control_bounds_fit_native_viewport":true,"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                );
+                self.capture = None;
+            } else {
+                if self.frames == 8 {
+                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
+                }
+                ui.ctx().request_repaint_after(std::time::Duration::from_millis(16));
+            }
+        }
     }
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let path = std::env::args_os().nth(1).ok_or("project path required")?;
+    let mut args = std::env::args_os().skip(1);
+    let path = args.next().ok_or("project path required")?;
+    let capture = args.next().map(PathBuf::from);
     let fixture = viamind_doc::file::load(path)?;
     let engine = viamind_engine::EngineHandle::new(fixture);
     let before = engine.session_state();
@@ -37,9 +71,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(engine.session_state(), before);
     assert_eq!(h.state().track_cleanup.checked().unwrap().counts.deleted_tracks, 2);
     let mut controls = serde_json::Map::new();
+    let mut control_bounds = Vec::new();
     for label in ["Preview cleanup", "Apply cleanup", "Cancel cleanup"] {
         let rect = h.get_by_label(label).rect();
         assert!(rect.min.x >= 0. && rect.min.y >= 0. && rect.max.x <= 1600. && rect.max.y <= 1000., "{label} outside native viewport: {rect:?}");
+        control_bounds.push(rect);
         controls.insert(label.into(), serde_json::json!({"min":[rect.min.x,rect.min.y],"max":[rect.max.x,rect.max.y]}));
     }
     println!(
@@ -63,7 +99,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            Ok(Box::new(Inspection { app, engine, before }))
+            Ok(Box::new(Inspection { app, engine, before, capture, frames: 0, control_bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;
