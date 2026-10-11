@@ -289,7 +289,7 @@ impl ToolRegistry {
     }
 
     /// Call the tool called `name` with `input` on behalf of `ctx.agent`.
-    pub async fn call(&self, name: &str, input: Value, ctx: CallContext) -> Result<Value, CallError> {
+    pub async fn call(&self, name: &str, input: Value, mut ctx: CallContext) -> Result<Value, CallError> {
         let entry = self.tools.get(name).filter(|entry| self.definition(entry).is_some()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
         let file_output = entry.in_memory_def.is_some() && (!input.is_object() || input.get("path").is_some());
         if self.effective_mode() != AgentMode::Live && file_output {
@@ -309,6 +309,7 @@ impl ToolRegistry {
                 CallError::Tool(ToolError::Failed(error.to_string()))
             }
         })?;
+        ctx.endpoint_read_only = self.read_only;
         let handler = entry.handler.clone();
         if let Some(permit) = permit {
             // Caller cancellation drops only the JoinHandle; the actual handler

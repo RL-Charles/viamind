@@ -8,7 +8,7 @@
 
 use std::sync::{
     Arc,
-    atomic::{AtomicU64, Ordering},
+    atomic::{AtomicBool, AtomicU64, Ordering},
 };
 
 use rmcp::{
@@ -17,7 +17,7 @@ use rmcp::{
         CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, Implementation, ListToolsResult, PaginatedRequestParams,
         ServerCapabilities, ServerConfig, Tool,
     },
-    service::{RequestContext, RunningService, ServerInitializeError},
+    service::{NotificationContext, RequestContext, RunningService, ServerInitializeError},
     transport::IntoTransport,
 };
 use serde_json::Value;
@@ -47,13 +47,18 @@ static NEXT_CONNECTION: AtomicU64 = AtomicU64::new(1);
 pub struct ViamindServer {
     registry: Arc<ToolRegistry>,
     connection: u64,
+    mode_notifications_started: AtomicBool,
 }
 
 impl ViamindServer {
     /// Server exposing the tools in `registry`; pass an `Arc<ToolRegistry>` to
     /// share one registry between connections.
     pub fn new(registry: impl Into<Arc<ToolRegistry>>) -> Self {
-        Self { registry: registry.into(), connection: NEXT_CONNECTION.fetch_add(1, Ordering::Relaxed) }
+        Self {
+            registry: registry.into(),
+            connection: NEXT_CONNECTION.fetch_add(1, Ordering::Relaxed),
+            mode_notifications_started: AtomicBool::new(false),
+        }
     }
 
     /// The registry this server serves.
@@ -105,13 +110,37 @@ fn to_png_result(mut value: Value) -> Result<CallToolResult, McpError> {
 
 impl ServerHandler for ViamindServer {
     fn get_info(&self) -> ServerConfig {
-        ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
+        ServerConfig::new(ServerCapabilities::builder().enable_tools().enable_tool_list_changed().build())
             .with_server_info(
                 Implementation::new(SERVER_NAME, env!("CARGO_PKG_VERSION"))
                     .with_title("Viamind")
                     .with_website_url("https://github.com/RL-Charles/viamind"),
             )
-            .with_instructions(if self.registry.is_read_only() { crate::READ_ONLY_INSTRUCTIONS } else { INSTRUCTIONS })
+            .with_instructions(match self.registry.effective_mode() {
+                viamind_engine::agent_policy::AgentMode::ReadOnly => crate::READ_ONLY_INSTRUCTIONS,
+                viamind_engine::agent_policy::AgentMode::Approval => crate::APPROVAL_INSTRUCTIONS,
+                viamind_engine::agent_policy::AgentMode::Live => INSTRUCTIONS,
+            })
+    }
+
+    async fn on_initialized(&self, context: NotificationContext<RoleServer>) {
+        if self.mode_notifications_started.swap(true, Ordering::AcqRel) {
+            return;
+        }
+        let mut changes = self.registry.agent_policy().subscribe();
+        let peer = context.peer;
+        tokio::spawn(async move {
+            loop {
+                tokio::select! {
+                    changed = changes.changed() => {
+                        if changed.is_err() || peer.notify_tool_list_changed().await.is_err() { break; }
+                    }
+                    _ = tokio::time::sleep(std::time::Duration::from_millis(250)) => {
+                        if peer.is_transport_closed() { break; }
+                    }
+                }
+            }
+        });
     }
 
     async fn list_tools(&self, _request: Option<PaginatedRequestParams>, _context: RequestContext<RoleServer>) -> Result<ListToolsResult, McpError> {
