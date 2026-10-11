@@ -79,6 +79,8 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
     h.run_steps(3);
     h.event(egui::Event::Key { key: egui::Key::ArrowLeft, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::NONE });
     h.run_steps(2);
+    h.event(egui::Event::Key { key: egui::Key::ArrowLeft, physical_key: None, pressed: false, repeat: false, modifiers: egui::Modifiers::NONE });
+    h.run_steps(2);
     let retained_text_id = h.ctx.memory(egui::Memory::focused).unwrap();
     let cursor = egui::text_edit::TextEditState::load(&h.ctx, retained_text_id).unwrap().cursor.char_range();
     click(&mut h, "Remove pin 1");
@@ -96,6 +98,7 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
     h.get_by_label("Pin 1 name").scroll_to_me();
     h.run_steps(5);
     h.hover_at(h.get_by_label("Pin 1 name").rect().center());
+    h.run_steps(2);
     h.event(egui::Event::MouseWheel {
         unit: egui::MouseWheelUnit::Point,
         phase: egui::TouchPhase::Move,
@@ -103,7 +106,10 @@ fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_re
         modifiers: egui::Modifiers::NONE,
     });
     h.run_steps(8);
+    h.get_by_label("Pin 13 name").scroll_to_me();
+    h.run_steps(5);
     h.hover_at(h.get_by_label("Pin 13 name").rect().center());
+    h.run_steps(2);
     h.event(egui::Event::MouseWheel {
         unit: egui::MouseWheelUnit::Point,
         phase: egui::TouchPhase::Move,
