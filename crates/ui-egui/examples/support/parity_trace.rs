@@ -120,6 +120,7 @@ struct ImageReceipt {
     state_matches_request: bool,
     draw_states_match_request: bool,
     pair_state_matches_reference: bool,
+    pair_dimensions_match_reference: bool,
     request: Option<Pending>,
     arrival: Frame,
     arrival_state: State,
@@ -258,6 +259,7 @@ impl Trace {
         let draw_states_match_request = pending.as_ref().is_some_and(|p| self.draws[p.draw_start..].iter().all(|draw| draw.state == p.state));
         let pair_state_matches_reference =
             step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.arrival_state == state && previous.dimensions == image.size);
+        let pair_dimensions_match_reference = step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.dimensions == image.size);
         let file_name = format!("image-{:02}.p7", self.images.len());
         let file = OpenOptions::new().write(true).create_new(true).open(self.directory.join(&file_name)).map_err(|e| e.to_string())?;
         let mut writer = BufWriter::new(file);
@@ -279,6 +281,7 @@ impl Trace {
             state_matches_request,
             draw_states_match_request,
             pair_state_matches_reference,
+            pair_dimensions_match_reference,
             request: pending,
             arrival: frame(ctx),
             arrival_state: state,
@@ -291,6 +294,11 @@ impl Trace {
         write_json(&self.directory.join(format!("image-{index:02}.json")), &self.images[index], &mut self.metadata)?;
         if !valid_token {
             return Err("invalid diagnostic token provenance; raw image retained".into());
+        }
+        // Legacy comparison indexes the reference using the arriving image bounds. Refuse
+        // incompatible extents after retaining both receipts, before those indices are used.
+        if !pair_dimensions_match_reference {
+            return Err("diagnostic pair dimensions differ; raw images retained before comparison".into());
         }
         Ok(())
     }
@@ -440,5 +448,33 @@ mod tests {
         assert!(trace.image(1, ViewportId::ROOT, &token, &image, &app, &ctx).is_err());
         assert!(!trace.images[1].valid_token);
         assert_eq!(trace.requests, 1);
+    }
+
+    #[test]
+    fn mismatched_pair_extents_are_retained_and_refused_before_legacy_indexing() {
+        for (reference_size, gpu_size) in [([1, 1], [2, 2]), ([2, 2], [1, 1])] {
+            let temporary = tempfile::tempdir().unwrap();
+            let directory = temporary.path().join("new");
+            let mut trace = Trace::new(directory.clone()).unwrap();
+            let ctx = Context::default();
+            let app = ViamindApp::with_scene_size(1);
+            trace.draw(0, &app, &ctx).unwrap();
+            let token = trace.request(0, &app, &ctx).unwrap();
+            let reference = ColorImage::filled(reference_size, egui::Color32::WHITE);
+            trace.image(0, ViewportId::ROOT, &token, &reference, &app, &ctx).unwrap();
+            trace.draw(1, &app, &ctx).unwrap();
+            let token = trace.request(1, &app, &ctx).unwrap();
+            let gpu = ColorImage::filled(gpu_size, egui::Color32::WHITE);
+            let error = trace.image(1, ViewportId::ROOT, &token, &gpu, &app, &ctx).unwrap_err();
+            assert!(error.contains("pair dimensions differ"));
+            assert_eq!(trace.images.len(), 2);
+            assert!(trace.images[1].valid_token);
+            assert!(!trace.images[1].pair_dimensions_match_reference);
+            assert!(directory.join("image-00.p7").is_file());
+            assert!(directory.join("image-01.p7").is_file());
+            assert!(directory.join("image-01.json").is_file());
+            assert!(trace.finish(Some(&error)).is_err());
+            assert!(directory.join("trace.json").is_file());
+        }
     }
 }
