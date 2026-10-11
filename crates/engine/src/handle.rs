@@ -1,5 +1,6 @@
 //! Thread-safe shared access to one [`Engine`].
 
+use std::sync::mpsc::Receiver;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use serde_json::Value;
@@ -7,6 +8,7 @@ use viamind_doc::Project;
 
 use crate::command::{Command, CommandSpec};
 use crate::engine::{Engine, Tx};
+use crate::event::ChangeEvent;
 use crate::registry::{CommandRegistry, EngineError};
 use crate::transaction::{CommandCall, ExecResult, Origin, TxId, TxInfo};
 
@@ -43,6 +45,20 @@ impl EngineHandle {
         self.engine.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    /// Runs a mutating operation under the lock, then runs any due `on_change`
+    /// callbacks after the lock is released (so they may call back into the handle).
+    fn mutate<R>(&self, f: impl FnOnce(&mut Engine) -> R) -> R {
+        let (result, wakers) = {
+            let mut engine = self.lock();
+            let result = f(&mut engine);
+            (result, engine.take_due_wakers())
+        };
+        for waker in wakers {
+            waker();
+        }
+        result
+    }
+
     /// Specs of every accepted command, ordered by name (MCP tool definitions).
     pub fn specs(&self) -> Vec<CommandSpec> {
         self.lock().specs()
@@ -50,17 +66,17 @@ impl EngineHandle {
 
     /// Runs the command called `name` with JSON `input` as one transaction.
     pub fn execute(&self, name: &str, input: Value, origin: Origin) -> Result<ExecResult, EngineError> {
-        self.lock().execute(name, input, origin)
+        self.mutate(|engine| engine.execute(name, input, origin))
     }
 
     /// Runs a typed command as one transaction.
     pub fn execute_typed<C: Command>(&self, command: C, origin: Origin) -> Result<ExecResult, EngineError> {
-        self.lock().execute_typed(command, origin)
+        self.mutate(|engine| engine.execute_typed(command, origin))
     }
 
     /// Runs `calls` as one all-or-nothing transaction (see [`Engine::execute_batch`]).
     pub fn execute_batch(&self, calls: Vec<CommandCall>, origin: Origin, label: Option<&str>) -> Result<ExecResult, EngineError> {
-        self.lock().execute_batch(calls, origin, label)
+        self.mutate(|engine| engine.execute_batch(calls, origin, label))
     }
 
     /// Runs `f` as one transaction (see [`Engine::transaction`]). The engine is
@@ -71,17 +87,17 @@ impl EngineHandle {
         label: &str,
         f: impl FnOnce(&mut Tx<'_>) -> Result<R, EngineError>,
     ) -> Result<(R, ExecResult), EngineError> {
-        self.lock().transaction(origin, label, f)
+        self.mutate(|engine| engine.transaction(origin, label, f))
     }
 
     /// Undoes the most recent transaction, whoever made it.
     pub fn undo(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
-        self.lock().undo(origin)
+        self.mutate(|engine| engine.undo(origin))
     }
 
     /// Redoes the most recently undone transaction.
     pub fn redo(&self, origin: Origin) -> Result<Option<TxId>, EngineError> {
-        self.lock().redo(origin)
+        self.mutate(|engine| engine.redo(origin))
     }
 
     /// Whether there is a transaction to undo.
@@ -113,5 +129,23 @@ impl EngineHandle {
     /// Runs `f` with the locked engine, e.g. to inspect the undo history.
     pub fn with_engine<R>(&self, f: impl FnOnce(&Engine) -> R) -> R {
         f(&self.lock())
+    }
+
+    /// Subscribes to change events: one [`ChangeEvent`] per committed, undone or
+    /// redone transaction, in commit order, from every origin. The UI and the MCP
+    /// server both use this stream.
+    ///
+    /// Events queue until received; drop the receiver to unsubscribe. From async
+    /// code, pair it with [`on_change`](EngineHandle::on_change) (e.g. to wake a
+    /// `tokio::sync::Notify`) and drain it with `try_recv`.
+    pub fn subscribe(&self) -> Receiver<ChangeEvent> {
+        self.lock().subscribe()
+    }
+
+    /// Registers `f` to run after every change, outside the engine lock. Meant
+    /// as a cheap waker, e.g. egui's `ctx.request_repaint()`; read the details
+    /// from a [`subscribe`](EngineHandle::subscribe) receiver.
+    pub fn on_change(&self, f: impl Fn() + Send + Sync + 'static) {
+        self.lock().on_change(f);
     }
 }

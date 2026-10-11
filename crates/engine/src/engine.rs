@@ -1,10 +1,13 @@
 //! The engine: one project, its command registry and its undo/redo history.
 
+use std::sync::Arc;
+
 use serde_json::Value;
 use viamind_doc::Project;
 
 use crate::command::{Command, CommandSpec};
 use crate::delta::{Delta, apply_all, coalesce, invert};
+use crate::event::{ChangeEvent, ChangeKind, Notifier, Waker};
 use crate::registry::{CommandRegistry, EngineError, apply_typed};
 use crate::transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo};
 
@@ -21,6 +24,7 @@ pub struct Engine {
     undo: Vec<Transaction>,
     redo: Vec<Transaction>,
     next_tx: u64,
+    notifier: Notifier,
 }
 
 impl Engine {
@@ -31,7 +35,7 @@ impl Engine {
 
     /// An engine for `project` accepting the commands in `registry`.
     pub fn with_registry(project: Project, registry: CommandRegistry) -> Engine {
-        Engine { project, registry, undo: Vec::new(), redo: Vec::new(), next_tx: 1 }
+        Engine { project, registry, undo: Vec::new(), redo: Vec::new(), next_tx: 1, notifier: Notifier::default() }
     }
 
     /// The current project.
@@ -101,6 +105,7 @@ impl Engine {
         let result = ExecResult::new(id, deltas.clone());
         if !deltas.is_empty() {
             self.redo.clear();
+            self.notifier.send(ChangeEvent { tx: id, origin: origin.clone(), kind: ChangeKind::Applied, deltas: deltas.clone() });
             self.undo.push(Transaction { id, origin, label: label.to_owned(), deltas });
         }
         Ok((value, result))
@@ -109,22 +114,24 @@ impl Engine {
     /// Undoes the most recent transaction, whoever made it. Returns its id, or
     /// `None` if there is nothing to undo. `origin` is who asked for the undo.
     pub fn undo(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
-        let _ = origin;
         let Some(tx) = self.undo.pop() else { return Ok(None) };
-        apply_all(&mut self.project, &invert(&tx.deltas));
+        let deltas = invert(&tx.deltas);
+        apply_all(&mut self.project, &deltas);
         let id = tx.id;
         self.redo.push(tx);
+        self.notifier.send(ChangeEvent { tx: id, origin, kind: ChangeKind::Undone, deltas });
         Ok(Some(id))
     }
 
     /// Redoes the most recently undone transaction. Returns its id, or `None` if
     /// there is nothing to redo. `origin` is who asked for the redo.
     pub fn redo(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {
-        let _ = origin;
         let Some(tx) = self.redo.pop() else { return Ok(None) };
         apply_all(&mut self.project, &tx.deltas);
+        let event = ChangeEvent { tx: tx.id, origin, kind: ChangeKind::Redone, deltas: tx.deltas.clone() };
         let id = tx.id;
         self.undo.push(tx);
+        self.notifier.send(event);
         Ok(Some(id))
     }
 
@@ -156,6 +163,31 @@ impl Engine {
     /// The redo history; the last entry is redone first.
     pub fn redo_history(&self) -> &[Transaction] {
         &self.redo
+    }
+
+    /// Subscribes to change events: the receiver gets one [`ChangeEvent`] per
+    /// committed, undone or redone transaction, in commit order. Transactions that
+    /// change nothing send no event. Events queue until received, so drain the
+    /// receiver regularly or drop it to unsubscribe.
+    pub fn subscribe(&mut self) -> std::sync::mpsc::Receiver<ChangeEvent> {
+        self.notifier.subscribe()
+    }
+
+    /// Number of live subscribers (closed receivers are dropped on the next event).
+    pub fn subscriber_count(&self) -> usize {
+        self.notifier.subscriber_count()
+    }
+
+    /// Registers `f` to run after every change (see [`crate::EngineHandle::on_change`]).
+    pub fn on_change(&mut self, f: impl Fn() + Send + Sync + 'static) {
+        self.notifier.on_change(Arc::new(f));
+    }
+
+    /// The `on_change` callbacks due because something changed since the last
+    /// call. [`crate::EngineHandle`] runs them after releasing its lock; a caller
+    /// driving an `Engine` directly runs them itself.
+    pub fn take_due_wakers(&mut self) -> Vec<Waker> {
+        self.notifier.take_due_wakers()
     }
 }
 
