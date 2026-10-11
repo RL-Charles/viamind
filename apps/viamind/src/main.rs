@@ -109,7 +109,11 @@ fn main() -> anyhow::Result<()> {
     }
     if options.headless {
         let registry = viamind_mcp::engine_registry(engine.clone())?;
+        let registry = if options.agent_read_only { registry.read_only() } else { registry };
         eprintln!("viamind: headless design MCP on stdin/stdout; close stdin to finish");
+        if options.agent_read_only {
+            eprintln!("viamind: agents read only; edits and file writes are unavailable");
+        }
         tokio::runtime::Runtime::new()?.block_on(viamind_mcp::serve_stdio(registry))?;
         if let Some(path) = options.save_as {
             engine.read(|project| file::save(project, &path)).with_context(|| format!("could not save project {}", path.display()))?;
@@ -126,9 +130,12 @@ fn main() -> anyhow::Result<()> {
             Err(std::env::VarError::NotPresent) => viamind_mcp::DEFAULT_PORT,
             Err(error) => anyhow::bail!("invalid VIAMIND_MCP_PORT: {error}"),
         };
-        match viamind_mcp::spawn_engine_server(engine.clone(), SocketAddr::from((Ipv4Addr::LOCALHOST, port))) {
+        match viamind_mcp::spawn_engine_server_with_mode(engine.clone(), SocketAddr::from((Ipv4Addr::LOCALHOST, port)), options.agent_read_only) {
             Ok(endpoint) => {
                 eprintln!("viamind: agents can connect at {}", endpoint.url());
+                if options.agent_read_only {
+                    eprintln!("viamind: agents read only; human editing remains live");
+                }
                 eprintln!("viamind: e.g. claude mcp add --transport http viamind {}", endpoint.url());
                 mcp_url = Some(endpoint.url());
                 server = Some(endpoint);
@@ -136,7 +143,7 @@ fn main() -> anyhow::Result<()> {
             Err(e) => eprintln!("viamind: MCP endpoint not started: {e:#}"),
         }
     }
-    let result = viamind_ui_egui::run_design(engine, mcp_url).map_err(|e| anyhow::anyhow!("{e}"));
+    let result = viamind_ui_egui::run_design_with_agent_mode(engine, mcp_url, options.agent_read_only).map_err(|e| anyhow::anyhow!("{e}"));
     if let Some(server) = server {
         server.shutdown();
     }

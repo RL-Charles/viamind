@@ -50,6 +50,39 @@ fn preflight_footprint_definition(input: &Value, writing: bool) -> Result<(), St
 }
 
 impl CommandHost for EngineHost {
+    fn is_observation(&self, name: &str) -> bool {
+        matches!(
+            name,
+            "inspect_fabrication_files"
+                | "load_footprint_definition"
+                | "preview_footprint_conversion"
+                | "preview_pcb_import"
+                | "plan_cardinal_track_cleanup"
+                | "plan_pad_walkaround"
+                | "plan_pad_via_walkaround"
+                | "query_route_endpoints"
+                | "query_linked_pin_pads"
+                | "query_linked_components"
+                | "run_erc"
+                | "preview_schematic_pcb_component"
+                | "preview_schematic_pcb_sync"
+                | "query_schematic_connectivity"
+                | "preview_schematic_annotation"
+                | "query_schematic"
+                | "get_document_status"
+                | "get_session_state"
+                | "watch_events"
+                | "get_auto_drc_status"
+                | "run_drc"
+                | "query_parts"
+                | "query_nets"
+                | "query_named_net_rules"
+                | "query_connectivity"
+                | "get_selection"
+                | "snapshot_schematic_wire_sheet"
+        )
+    }
+
     fn commands(&self) -> Vec<HostCommand> {
         let mut commands: Vec<_> = self
             .engine

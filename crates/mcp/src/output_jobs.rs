@@ -7,7 +7,7 @@ fn failed(error: impl std::fmt::Display) -> ToolError {
     ToolError::Failed(error.to_string())
 }
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
-    registry.register(
+    registry.register_observation(
         "load_output_job",
         "Read a strict regular non-symlink detached output-job JSON, at most 64 KiB. Does not change the design or history.",
         viamind_fab::output_job_schema("load"),

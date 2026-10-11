@@ -76,7 +76,13 @@ pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
 /// Starts an HTTP MCP endpoint for `engine` on its own thread and tokio runtime, for apps (like the
 /// egui UI) that do not run tokio themselves. Returns once the port is bound.
 pub fn spawn_engine_server(engine: EngineHandle, addr: SocketAddr) -> anyhow::Result<HttpServer> {
+    spawn_engine_server_with_mode(engine, addr, false)
+}
+
+/// Start the full desktop endpoint with a fixed process-wide observation restriction.
+pub fn spawn_engine_server_with_mode(engine: EngineHandle, addr: SocketAddr, agent_read_only: bool) -> anyhow::Result<HttpServer> {
     let registry = engine_registry(engine)?;
+    let registry = if agent_read_only { registry.read_only() } else { registry };
     let (tx, rx) = std::sync::mpsc::channel();
     thread::Builder::new().name("viamind-mcp".into()).spawn(move || {
         let runtime = match tokio::runtime::Builder::new_multi_thread().worker_threads(2).enable_all().build() {

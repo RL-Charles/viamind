@@ -69,17 +69,20 @@ struct Entry {
     def: ToolDef,
     handler: ToolHandler,
     png_output: bool,
+    observation: bool,
+    in_memory_def: Option<ToolDef>,
 }
 
 /// Set of tools served by the MCP server, ordered by name.
 #[derive(Clone, Default)]
 pub struct ToolRegistry {
     tools: BTreeMap<String, Entry>,
+    read_only: bool,
 }
 
 impl fmt::Debug for ToolRegistry {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(self.tools.keys()).finish()
+        f.debug_list().entries(self.tools().map(|tool| &tool.name)).finish()
     }
 }
 
@@ -94,6 +97,77 @@ impl ToolRegistry {
         let mut registry = Self::new();
         crate::builtin::register_builtins(&mut registry).expect("built-in tool definitions are valid and unique");
         registry
+    }
+
+    /// Restrict this registry and its future registrations to trusted observations.
+    /// Clones retain the restriction; there is no client-controlled admission metadata.
+    #[must_use]
+    pub fn read_only(mut self) -> Self {
+        self.read_only = true;
+        self
+    }
+
+    /// Whether agent calls are restricted to observations.
+    pub fn is_read_only(&self) -> bool {
+        self.read_only
+    }
+
+    /// Register a trusted observation. General registration always defaults to mutating.
+    pub fn register_observation<F, Fut>(
+        &mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+        input_schema: Value,
+        handler: F,
+    ) -> Result<(), RegistryError>
+    where
+        F: Fn(Value) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
+    {
+        let name = name.into();
+        self.register(name.clone(), description, input_schema, handler)?;
+        self.admit_observation(&name);
+        Ok(())
+    }
+
+    /// Trusted host registration only, immediately after registering the audited handler.
+    pub(crate) fn admit_observation(&mut self, name: &str) {
+        self.tools.get_mut(name).expect("classify an existing trusted registration").observation = true;
+    }
+
+    /// Register a trusted SVG/PNG view with optional top-level file output.
+    /// Restricted calls omit `path` entirely, and reject it before invoking the handler.
+    pub fn register_in_memory_view<F, Fut>(
+        &mut self,
+        name: &str,
+        description: &str,
+        schema: Value,
+        png_output: bool,
+        handler: F,
+    ) -> Result<(), RegistryError>
+    where
+        F: Fn(Value) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
+    {
+        let mut in_memory_schema = schema.clone();
+        let properties =
+            in_memory_schema.get_mut("properties").and_then(Value::as_object_mut).ok_or_else(|| RegistryError::InvalidSchema(name.into()))?;
+        if properties.remove("path").is_none() {
+            return Err(RegistryError::InvalidSchema(name.into()));
+        }
+        if let Some(required) = in_memory_schema.get_mut("required").and_then(Value::as_array_mut) {
+            required.retain(|field| field != "path");
+        }
+        in_memory_schema["additionalProperties"] = Value::Bool(false);
+        self.register_observation(name, description, schema, handler)?;
+        let entry = self.tools.get_mut(name).expect("just registered");
+        entry.png_output = png_output;
+        entry.in_memory_def = Some(ToolDef {
+            name: name.into(),
+            description: format!("{description} Agents in this process are read only: omit path; file output is unavailable."),
+            input_schema: in_memory_schema,
+        });
+        Ok(())
     }
 
     /// Register a tool with an async handler that does not need to know who is calling.
@@ -140,7 +214,7 @@ impl ToolRegistry {
         if self.tools.contains_key(&def.name) {
             return Err(RegistryError::Duplicate(def.name));
         }
-        self.tools.insert(def.name.clone(), Entry { def, handler, png_output: false });
+        self.tools.insert(def.name.clone(), Entry { def, handler, png_output: false, observation: false, in_memory_def: None });
         Ok(())
     }
 
@@ -157,32 +231,46 @@ impl ToolRegistry {
     }
 
     pub(crate) fn png_output(&self, name: &str) -> bool {
-        self.tools.get(name).is_some_and(|entry| entry.png_output)
+        self.tools.get(name).is_some_and(|entry| self.definition(entry).is_some() && entry.png_output)
+    }
+
+    fn definition<'a>(&self, entry: &'a Entry) -> Option<&'a ToolDef> {
+        if !self.read_only {
+            Some(&entry.def)
+        } else if entry.observation {
+            Some(entry.in_memory_def.as_ref().unwrap_or(&entry.def))
+        } else {
+            None
+        }
     }
 
     /// Definition of the tool called `name`.
     pub fn get(&self, name: &str) -> Option<&ToolDef> {
-        self.tools.get(name).map(|entry| &entry.def)
+        self.tools.get(name).and_then(|entry| self.definition(entry))
     }
 
     /// All tool definitions, ordered by name.
     pub fn tools(&self) -> impl Iterator<Item = &ToolDef> {
-        self.tools.values().map(|entry| &entry.def)
+        self.tools.values().filter_map(|entry| self.definition(entry))
     }
 
     /// Number of registered tools.
     pub fn len(&self) -> usize {
-        self.tools.len()
+        self.tools().count()
     }
 
     /// Whether no tools are registered.
     pub fn is_empty(&self) -> bool {
-        self.tools.is_empty()
+        self.len() == 0
     }
 
     /// Call the tool called `name` with `input` on behalf of `ctx.agent`.
     pub async fn call(&self, name: &str, input: Value, ctx: CallContext) -> Result<Value, CallError> {
-        let handler = self.tools.get(name).map(|entry| entry.handler.clone()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
+        let entry = self.tools.get(name).filter(|entry| self.definition(entry).is_some()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
+        if self.read_only && entry.in_memory_def.is_some() && (!input.is_object() || input.get("path").is_some()) {
+            return Err(ToolError::InvalidInput("agents are read only; omit path for an in-memory view".into()).into());
+        }
+        let handler = entry.handler.clone();
         Ok(handler(input, ctx).await?)
     }
 }

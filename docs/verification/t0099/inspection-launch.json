@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/launch-inspection",
+  "pid": 1561380,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-agent-read-only-inspection",
+      "bounds": {
+        "height": 400,
+        "width": 640,
+        "x": 2560,
+        "y": 1565
+      },
+      "height": 400,
+      "is_on_screen": true,
+      "pid": 1561380,
+      "title": "*protected.viamind.json — Viamind",
+      "width": 640,
+      "window_id": 110379494710448,
+      "x": 2560,
+      "y": 1565,
+      "z_index": null
+    }
+  ]
+}

@@ -13,7 +13,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
         }
     })?;
     let snapshot = engine.clone();
-    registry.register("snapshot_symbol_sheet", "Capture one bounded schematic sheet and its project UUID/full source cursor for place_symbol_template. Read-only; no unrelated board/sheet copy. At most10000 objects/10000 pins/4096 bytes per string/2MiB sheet text.", input_schema::<SymbolSheetQuery>(), move |input| {
+    registry.register_observation("snapshot_symbol_sheet", "Capture one bounded schematic sheet and its project UUID/full source cursor for place_symbol_template. Read-only; no unrelated board/sheet copy. At most10000 objects/10000 pins/4096 bytes per string/2MiB sheet text.", input_schema::<SymbolSheetQuery>(), move |input| {
         let engine = snapshot.clone();
         async move {
             let input = serde_json::from_value(input).map_err(|e| ToolError::InvalidInput(e.to_string()))?;
@@ -22,7 +22,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
         }
     })?;
     let load = engine.clone();
-    registry.register("load_symbol_template", "Load a strict detached viamind-symbol version1 JSON library file (regular file at most1MiB,1024 pins,4096 bytes per field,256KiB aggregate text). Returns one rectangular single-unit symbol definition without instance identities, nets or links. Read-only; use snapshot_symbol_sheet and place_symbol_template for fresh guarded placement.", input_schema::<LoadSymbolTemplate>(), move |input| {
+    registry.register_observation("load_symbol_template", "Load a strict detached viamind-symbol version1 JSON library file (regular file at most1MiB,1024 pins,4096 bytes per field,256KiB aggregate text). Returns one rectangular single-unit symbol definition without instance identities, nets or links. Read-only; use snapshot_symbol_sheet and place_symbol_template for fresh guarded placement.", input_schema::<LoadSymbolTemplate>(), move |input| {
         let engine = load.clone();
         async move {
             let input = serde_json::from_value(input).map_err(|e| ToolError::InvalidInput(e.to_string()))?;

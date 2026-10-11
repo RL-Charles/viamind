@@ -25,7 +25,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
     let slots = Arc::new(tokio::sync::Semaphore::new(2));
     let svg_engine = engine.clone();
     let svg_slots = Arc::clone(&slots);
-    registry.register("render_schematic_view","Render one explicit native schematic sheet as immutable self-contained SVG with bundled outlined text. Required sheet UUID; options select wires/symbols/pins/junctions/labels, region_nm or auto-fit, padding and bounded viewport. Pixel viewBox with absolute nm mapping in metadata. No board, other sheets, hierarchy or electrical certification. Optional exact expected_cursor and NEW path; no overwrite. Missing font glyphs fail explicitly. Does not change history/dirty state.",viamind_engine::input_schema::<Input>(),move|input|{
+    registry.register_in_memory_view("render_schematic_view","Render one explicit native schematic sheet as immutable self-contained SVG with bundled outlined text. Required sheet UUID; options select wires/symbols/pins/junctions/labels, region_nm or auto-fit, padding and bounded viewport. Pixel viewBox with absolute nm mapping in metadata. No board, other sheets, hierarchy or electrical certification. Optional exact expected_cursor and NEW path; no overwrite. Missing font glyphs fail explicitly. Does not change history/dirty state.",viamind_engine::input_schema::<Input>(),false,move|input|{
   let engine=svg_engine.clone();let slots=Arc::clone(&svg_slots);
   async move{let input:Input=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;input.options.validate().map_err(|e|ToolError::InvalidInput(e.to_string()))?;
    let permit=slots.acquire_owned().await.map_err(|e|ToolError::Failed(e.to_string()))?;
@@ -36,7 +36,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
    }).await.map_err(|e|ToolError::Failed(e.to_string()))?.map_err(|e|ToolError::Failed(format!("could not render schematic SVG: {e}")))
   }
  })?;
-    registry.register_png("render_schematic_png","Render one native schematic sheet as an actual image/png MCP image block plus structured source/view metadata. Same bounded bundled-font geometry/options as render_schematic_view; no system/external resources, 4194304 pixels/8 MiB, two shared schematic jobs per registry. Required sheet, optional exact expected_cursor and NEW file path. Transparent RGBA8, no overwrite, no board/hierarchy/electrical certification; document remains unchanged.",viamind_engine::input_schema::<Input>(),move|input|{
+    registry.register_in_memory_view("render_schematic_png","Render one native schematic sheet as an actual image/png MCP image block plus structured source/view metadata. Same bounded bundled-font geometry/options as render_schematic_view; no system/external resources, 4194304 pixels/8 MiB, two shared schematic jobs per registry. Required sheet, optional exact expected_cursor and NEW file path. Transparent RGBA8, no overwrite, no board/hierarchy/electrical certification; document remains unchanged.",viamind_engine::input_schema::<Input>(),true,move|input|{
   let engine=engine.clone();let slots=Arc::clone(&slots);
   async move{let input:Input=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;input.options.validate().map_err(|e|ToolError::InvalidInput(e.to_string()))?;
    let permit=slots.acquire_owned().await.map_err(|e|ToolError::Failed(e.to_string()))?;
