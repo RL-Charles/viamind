@@ -217,6 +217,11 @@
       "sha256": "00672f31665f179d98bd5a718b70165cc900290228c9a1bd980ebbfd75f2b891"
     },
     {
+      "path": "docs/verification/t0115/independent-native.json",
+      "bytes": 356,
+      "sha256": "f8c17a803238f7e6a71ae75047ca8c6f16b75d79ea7f0daa5e279d3a8e3e978b"
+    },
+    {
       "path": "docs/verification/t0115/independent-production-http.json",
       "bytes": 17685,
       "sha256": "04ff201b1da1c1d3442a44410d9309ad855b503a7ab54f55ca30c8e20d0ac476"
@@ -278,5 +283,11 @@
     },
     "external_fixture_after_probe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/packages.viamind.json",
     "scope": "Fresh independent initialized desktopHTTP rerun on copied owned fixture; native source/captures remain historical272d5d2. Final stack/CI review remains pending."
+  },
+  "independent_native_review": {
+    "reviewer": "root",
+    "report": "docs/verification/t0115/independent-native.json",
+    "report_source_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/review-t0115/independent-native.json",
+    "scope": "Both native review PNGs viewed readable; independently decoded every RGB sample and compared with original P7 RGBA RGB channels and P6. Alpha remains explicitly retained in P7, omitted from PNG."
   }
 }

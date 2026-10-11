@@ -76,7 +76,10 @@ The wide 1600×1000 and compact 640×400 hosts self-closed after 12 and 11 UI pa
 Actual framebuffer sizes were 2667×1667 and 1067×667. All native action rectangles
 fit the production window/content. Both review PNGs were viewed: options, starting
 number, package/member count, unit references and Prepare/Apply/Cancel are
-readable. Long UUID metadata truncates to one row; full metadata remains in
+readable. Root independently viewed both images and compared every RGB sample
+against both original P7 RGBA RGB channels and P6; the exact
+[independent audit](verification/t0115/independent-native.json) is retained.
+Long UUID metadata truncates to one row; full metadata remains in
 its tooltip/JSON, and actual compact scrolling reaches the final member.
 
 ![Wide shared package reference review](verification/t0115/annotation-wide.png)
