@@ -287,13 +287,7 @@ mod tests {
         assert!(ui.result.is_some());
         assert!(!ui.open);
         assert_eq!(engine.session_state(), before);
-        engine
-            .execute(
-                "add_part",
-                serde_json::json!({"designator":"PEER","value":"","footprint":"f","x_mm":0,"y_mm":0}),
-                viamind_engine::Origin::agent("peer"),
-            )
-            .unwrap();
+        UiAction::PlacePart.run(&engine, serde_json::json!({"designator":"PEER","value":"","footprint":"f","x_mm":0,"y_mm":0})).unwrap();
         ui.open = true;
         ui.overlay = true;
         ui.poll(&ctx, &engine);

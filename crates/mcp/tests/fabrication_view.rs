@@ -48,5 +48,5 @@ async fn two_real_clients_inspect_exact_files_without_mutating_and_share_strict_
     assert_eq!(e.session_state(), peer);
     a.cancel().await.unwrap();
     b.cancel().await.unwrap();
-    server.shutdown().await.unwrap();
+    server.shutdown();
 }
