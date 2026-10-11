@@ -315,6 +315,7 @@ impl ViamindApp {
         });
         if edit_artwork {
             self.begin_edit_footprint_artwork(part.clone());
+            return;
         }
         if edit_pads {
             self.begin_edit_pads(part);
