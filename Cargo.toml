@@ -63,3 +63,6 @@ egui_kittest = "0.36"
 # Model and engine (crates/doc, crates/engine)
 uuid = { version = "1.28", features = ["v4", "serde"] }
 schemars = { version = "1.2", features = ["uuid1"] }
+# Geometry (crates/geom)
+rstar = "0.13"
+criterion = "0.8"

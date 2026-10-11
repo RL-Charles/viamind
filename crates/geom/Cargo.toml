@@ -10,8 +10,14 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+rstar.workspace = true
 serde.workspace = true
 
 [dev-dependencies]
+criterion.workspace = true
 proptest.workspace = true
 serde_json.workspace = true
+
+[[bench]]
+name = "index"
+harness = false
