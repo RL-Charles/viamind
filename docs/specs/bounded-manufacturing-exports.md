@@ -3,7 +3,7 @@
 ## Public sources
 
 - [RFC4180 section2](https://www.rfc-editor.org/rfc/rfc4180): CSV record boundaries, quoting comma/quote/newline fields and doubling embedded quotes. Existing generic Viamind field semantics remain those in assembly-csv.md.
-- [Rust AtomicUsize](https://doc.rust-lang.org/std/sync/atomic/struct.AtomicUsize.html): atomic compare/update permits bounded admission across concurrent callers without waiting under the engine mutex.
+- [Rust AtomicUsize](https://doc.rust-lang.org/std/sync/atomic/type.AtomicUsize.html): atomic compare/update permits bounded admission across concurrent callers without waiting under the engine mutex.
 - [Tokio spawn_blocking](https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html): started blocking operations can outlive cancellation of the awaiting task; admission must remain owned by the blocking operation.
 - [Ucamco Gerber2026.05](https://www.ucamco.com/files/downloads/file_en/554/gerber-layer-format-specification-revision-2026-05_en.pdf) and [XNC2021.11](https://www.ucamco.com/files/downloads/file_en/452/xnc-format-specification-revision-2021-11_en.pdf): existing file geometry/coordinate conventions remain as specified in fabrication-gerber.md. Public publisher downloads could not be fetched during this increment; no new format interpretation is introduced.
 

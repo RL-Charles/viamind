@@ -1,3 +1,4 @@
+static TEST: std::sync::Mutex<()> = std::sync::Mutex::new(());
 use std::{
     fs,
     sync::{Arc, Barrier},
@@ -9,6 +10,7 @@ fn sample() -> Project {
 }
 #[test]
 fn exact_geometry_attributes_units_and_deterministic_output() {
+    let _guard = TEST.lock().unwrap();
     let project = sample();
     let package = fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001 }).unwrap();
     assert_eq!(package.files, fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001 }).unwrap().files);
@@ -30,6 +32,7 @@ fn exact_geometry_attributes_units_and_deterministic_output() {
 }
 #[test]
 fn invalid_or_unsupported_model_produces_no_destination_or_staging() {
+    let _guard = TEST.lock().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let target = dir.path().join("fab");
     let mut invalid = sample();
@@ -54,6 +57,7 @@ fn invalid_or_unsupported_model_produces_no_destination_or_staging() {
 }
 #[test]
 fn no_replace_directory_publication_guards_native_symlinks_and_races() {
+    let _guard = TEST.lock().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let target = dir.path().join("fab");
     fs::create_dir(&target).unwrap();
@@ -99,6 +103,7 @@ fn no_replace_directory_publication_guards_native_symlinks_and_races() {
 
 #[test]
 fn export_primitive_bound_rejects_before_any_files_are_created() {
+    let _guard = TEST.lock().unwrap();
     let mut project = sample();
     let template = project.board.vias.values().next().unwrap().clone();
     for _ in 0..40000 {
@@ -114,6 +119,7 @@ fn export_primitive_bound_rejects_before_any_files_are_created() {
 
 #[test]
 fn empty_geometry_and_xnc_two_digit_tool_boundary_are_explicit() {
+    let _guard = TEST.lock().unwrap();
     let mut project = sample();
     project.board.parts.clear();
     project.board.tracks.clear();

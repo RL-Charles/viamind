@@ -132,6 +132,17 @@ fn gerber(graphics: &[Graphic], function: &str, negative: bool, project_id: &str
 
 /// Render supported, explicit model geometry. This is not a fabrication certification.
 pub fn fabrication(project: &Project, options: FabricationOptions) -> io::Result<FabricationPackage> {
+    crate::FabricationSnapshot::capture(project)?.render(options)
+}
+impl crate::FabricationSnapshot {
+    pub fn render(&self, options: FabricationOptions) -> io::Result<FabricationPackage> {
+        render_fabrication(&self.project, options)
+    }
+    pub fn write(&self, options: FabricationOptions, path: &Path, native: Option<&Path>) -> io::Result<(PathBuf, FabricationManifest)> {
+        publish_fabrication(self, options, path, native)
+    }
+}
+fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Result<FabricationPackage> {
     if !options.mask_expansion_mm.is_finite() || !(0.0..=10.0).contains(&options.mask_expansion_mm) {
         return Err(invalid("mask_expansion_mm must be finite and between 0 and 10 mm"));
     }
@@ -237,6 +248,14 @@ pub fn write_fabrication(
     path: &Path,
     native: Option<&Path>,
 ) -> io::Result<(PathBuf, FabricationManifest)> {
+    crate::FabricationSnapshot::capture(project)?.write(options, path, native)
+}
+fn publish_fabrication(
+    snapshot: &crate::FabricationSnapshot,
+    options: FabricationOptions,
+    path: &Path,
+    native: Option<&Path>,
+) -> io::Result<(PathBuf, FabricationManifest)> {
     if path.as_os_str().is_empty() {
         return Err(invalid("fabrication output directory must not be empty"));
     }
@@ -250,7 +269,7 @@ pub fn write_fabrication(
             return Err(invalid("fabrication output must differ from active native project path"));
         }
     }
-    let package = fabrication(project, options)?;
+    let package = snapshot.render(options)?;
     #[cfg(not(target_os = "linux"))]
     {
         let _ = package;

@@ -28,18 +28,18 @@ struct Export {
 pub(crate) fn export_fabrication(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let invalid = |message: String| EngineError::InvalidInput { command: "export_fabrication".into(), message };
     let input: Export = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
-    let (snapshot, native) = engine.with_engine(|e| (e.session_state(), e.document_status().path));
-    if input.expected_cursor.is_some_and(|c| c != snapshot.cursor) {
-        return Err(invalid("document changed; retry export from a fresh snapshot".into()));
-    }
-    let (path, manifest) = viamind_fab::write_fabrication(
-        &snapshot.project,
-        viamind_fab::FabricationOptions { mask_expansion_mm: input.mask_expansion_mm },
-        &input.path,
-        native.as_deref(),
-    )
-    .map_err(|e| invalid(e.to_string()))?;
-    Ok(json!({"path":path,"manifest":manifest,"exported_cursor":snapshot.cursor}))
+    let (snapshot, cursor, native) = engine.with_engine(|e| {
+        let cursor = e.event_cursor();
+        if input.expected_cursor.is_some_and(|c| c != cursor) {
+            return Err(invalid("document changed; retry export from a fresh snapshot".into()));
+        }
+        let snapshot = viamind_fab::FabricationSnapshot::capture(e.project()).map_err(|e| invalid(e.to_string()))?;
+        Ok((snapshot, cursor, e.document_status().path))
+    })?;
+    let (path, manifest) = snapshot
+        .write(viamind_fab::FabricationOptions { mask_expansion_mm: input.mask_expansion_mm }, &input.path, native.as_deref())
+        .map_err(|e| invalid(e.to_string()))?;
+    Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor}))
 }
 impl ViamindApp {
     pub fn begin_fabrication_export(&mut self) {
@@ -102,7 +102,7 @@ impl ViamindApp {
                 self.fabrication.message = Some("Mask expansion needs a finite number from 0 to 10 mm".into());
                 return;
             };
-            let input = json!({"path":self.fabrication.path,"mask_expansion_mm":mask,"expected_cursor":engine.session_state().cursor});
+            let input = json!({"path":self.fabrication.path,"mask_expansion_mm":mask,"expected_cursor":engine.event_cursor()});
             let (sender, receiver) = mpsc::channel();
             self.fabrication.worker = Some(receiver);
             self.fabrication.message = None;
