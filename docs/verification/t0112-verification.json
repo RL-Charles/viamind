@@ -11,7 +11,6 @@
   "focused_ui": 2,
   "production_checks": 56,
   "endpoint": "http://127.0.0.1:7942/mcp",
-  "production_pid": 2242966,
   "inspection_pid": 2246628,
   "inspection_self_closed": true,
   "binaries": [
@@ -175,7 +174,40 @@
       "path": "docs/verification/t0112-independent-production-report.json",
       "bytes": 8147,
       "sha256": "dedfe18759e48d4c8edc9d5903b3469a29eff18d64a05fc2fd3fe507837e09ae"
+    },
+    {
+      "path": "docs/verification/t0112-production-restored-health.json",
+      "bytes": 4823,
+      "sha256": "59c3ac23eb1d4cc6e27a3ab00cb7b866c6bfe433b82ff479bd644067acece6bd"
+    },
+    {
+      "path": "docs/verification/t0112-cua-production-restored-launch.json",
+      "bytes": 593,
+      "sha256": "814e6619cdf7b51cb58e7f87b027d77470b42a0f340508f8d241191149f507c3"
+    },
+    {
+      "path": "docs/verification/t0112-cua-production-restored-state.json",
+      "bytes": 1045,
+      "sha256": "1a4b733236390ff1c485de773a6074ba7e23e1cde01322afd8110183a2755ddb"
+    },
+    {
+      "path": "docs/verification/t0112-launch-production-restored.sh",
+      "bytes": 401,
+      "sha256": "78d3d50218235d8292da93814b6bd942eace66e98a4e0e700561169a4275e1bf"
+    },
+    {
+      "path": "docs/verification/t0112-production-native.log",
+      "bytes": 191,
+      "sha256": "8f114801f57b466b5366d1c38712aaa9b79f2aa55f9381f8eea2f5e7b6255de5"
     }
   ],
-  "independent_production_checks": 56
+  "independent_production_checks": 56,
+  "historical_production_pid": 2242966,
+  "historical_production_exited_cause_unknown": true,
+  "restored_production": {
+    "pid": 2287238,
+    "observed_live_utc": "2026-10-11T18:38:22Z",
+    "binary_sha256": "3c3d9fc74e45977141c466745e58fa2750cca7cf6c5e35c8fb0f84c7e3076c4d",
+    "health_report": "docs/verification/t0112-production-restored-health.json"
+  }
 }
