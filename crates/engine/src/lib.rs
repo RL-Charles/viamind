@@ -31,7 +31,12 @@ pub use assembly::SetPartAssembly;
 pub mod annotation;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
 pub mod auto_drc;
+mod auto_drc_events;
 pub use auto_drc::{AutoDrcConfig, AutoDrcPhase, AutoDrcStatus};
+pub use auto_drc_events::{
+    AUTO_DRC_EVENT_CAPACITY, AutoDrcEvent, AutoDrcEventBatch, AutoDrcEventCursor, AutoDrcEventError, AutoDrcEventState, AutoDrcReportSummary,
+    WatchAutoDrcEvents,
+};
 pub mod command;
 pub mod commands;
 pub mod connectivity;
