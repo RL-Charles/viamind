@@ -18,7 +18,9 @@ below. No external code, symbols or artwork are used.
    instance rotation/mirror or PCB link is stored. Export copies committed
    definitions into a detached template; it never changes the schematic.
 3. Files are regular files of at most 1 MiB; bounded reads check the opened file
-   again. At most 1024 pins, 4096 UTF-8 bytes per field and 256 KiB aggregate
+   descriptor. Linux opens use the existing safe rustix nonblocking API so a
+   FIFO substitution cannot leave a retained worker waiting for a writer.
+   At most 1024 pins, 4096 UTF-8 bytes per field and 256 KiB aggregate
    inspected text are accepted before copying or serialization. Template names
    and pin numbers are nonempty/trimmed/control-free; pin names can be empty.
    Pin numbers are unique. Existing native field length limits also apply. Native

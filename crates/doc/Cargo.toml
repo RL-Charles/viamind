@@ -17,6 +17,7 @@ uuid.workspace = true
 schemars.workspace = true
 thiserror.workspace = true
 tempfile.workspace = true
+rustix.workspace = true
 
 [dev-dependencies]
 proptest.workspace = true

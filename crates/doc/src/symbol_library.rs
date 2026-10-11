@@ -209,9 +209,14 @@ fn check_path(path: &Path) -> Result<(), String> {
 }
 pub fn load(path: &Path) -> Result<SymbolTemplate, String> {
     check_path(path)?;
-    if !std::fs::metadata(path).map_err(|e| e.to_string())?.is_file() {
-        return Err("symbol template path must be a regular file".into());
-    }
+    // Inspect the opened descriptor, without waiting for a writer if the path
+    // names (or is concurrently replaced by) a FIFO.
+    #[cfg(unix)]
+    let file = std::fs::File::from(
+        rustix::fs::open(path, rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::NONBLOCK | rustix::fs::OFlags::CLOEXEC, rustix::fs::Mode::empty())
+            .map_err(|e| format!("{}: {e}", path.display()))?,
+    );
+    #[cfg(not(unix))]
     let file = std::fs::File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
     if !file.metadata().map_err(|e| e.to_string())?.is_file() {
         return Err("symbol template path must be a regular file".into());
@@ -219,6 +224,17 @@ pub fn load(path: &Path) -> Result<SymbolTemplate, String> {
     let mut bytes = Vec::new();
     file.take((MAX_BYTES + 1) as u64).read_to_end(&mut bytes).map_err(|e| e.to_string())?;
     from_slice(&bytes)
+}
+
+#[cfg(all(test, unix))]
+mod regular_file_tests {
+    #[test]
+    fn loading_a_fifo_without_a_writer_rejects_instead_of_waiting() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("replaced.viamind-symbol.json");
+        rustix::fs::mkfifo(&path, rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR).unwrap();
+        assert!(super::load(&path).unwrap_err().contains("regular file"));
+    }
 }
 /// Publish a new library entry atomically; never replace an existing file.
 pub fn save_new(template: &SymbolTemplate, path: &Path, native: Option<&Path>) -> Result<PathBuf, String> {
