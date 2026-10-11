@@ -356,14 +356,14 @@ mod tests {
         let (vertices, indices) = pack_layer(&layer);
         assert_eq!(vertices.len(), 6 * 24);
         for (bytes, (vertex, slot)) in
-            vertices.chunks_exact(24).zip(a.mesh.vertices.iter().map(|v| (v, 7u32)).chain(b.mesh.vertices.iter().map(|v| (v, 19u32))))
+            vertices.as_chunks::<24>().0.iter().zip(a.mesh.vertices.iter().map(|v| (v, 7u32)).chain(b.mesh.vertices.iter().map(|v| (v, 19u32))))
         {
-            let floats: Vec<_> = bytes[..16].chunks_exact(4).map(|b| f32::from_le_bytes(b.try_into().unwrap())).collect();
+            let floats: Vec<_> = bytes[..16].as_chunks::<4>().0.iter().map(|b| f32::from_le_bytes(*b)).collect();
             assert_eq!(floats, [vertex.pos.x, vertex.pos.y, vertex.uv.x, vertex.uv.y]);
             assert_eq!(&bytes[16..20], &vertex.color.to_array());
             assert_eq!(u32::from_le_bytes(bytes[20..24].try_into().unwrap()), slot);
         }
-        let indices: Vec<_> = indices.chunks_exact(4).map(|b| u32::from_le_bytes(b.try_into().unwrap())).collect();
+        let indices: Vec<_> = indices.as_chunks::<4>().0.iter().map(|b| u32::from_le_bytes(*b)).collect();
         assert_eq!(indices, [2, 0, 1, 5, 3, 4]);
     }
 
