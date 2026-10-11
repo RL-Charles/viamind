@@ -46,6 +46,7 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<NewProject>(),
         });
         commands.push(HostCommand { name: "plan_pad_walkaround".into(), description: "Read-only bounded static cardinal walkaround plan with complete shared scoped joint DRC on the captured board snapshot. Same input as route_pad_walkaround: exact project/full cursor, same-net same-side quarter-turn explicit pad IDs, positive grid/width Nm and optional rules. Rectangular outer outline and rectangular cutouts only; cutout exclusions use route half-width plus board-edge clearance plus1Nm, separately from copper rules; combined conservative cutout/foreign copper/ALL via-hole boxes share existing limits; explicit obstacle/graph/work budgets and busy refusal. Result includes exact points/stubs, work counters, derived net/layer and source_cursor. No document/history/selection changes; commit recomputes. No shove or physical certification.".into(), input_schema: input_schema::<viamind_engine::RoutePadWalkaround>() });
+        commands.push(HostCommand { name: "plan_pad_via_walkaround".into(), description: "Read-only checked two-side static cardinal walkaround through one explicit fixed grid-aligned new through via. Same typed input as route_pad_via_walkaround. One bounded board snapshot and retained admission; aggregate obstacle/graph/intersection/result budgets cover both legs. Rectangular outer outline/cutouts, exact quarter-turn opposite-side same-net pad endpoints. Success requires complete joint DRC of BOTH paths plus via, including annular/drill/edge/hole spacing. Returns exact paths, derived sides/net, full cursor and aggregate work; no mutation or automatic via relocation. Commit recomputes atomically.".into(), input_schema: input_schema::<viamind_engine::RoutePadViaWalkaround>() });
         commands.push(HostCommand { name:"query_route_endpoints".into(),description:"Read bounded immutable UUID-ordered explicit pad routing endpoints with exact quarter-turn integer centers, derived net/outer side, rendering corners and unsupported reasons. Legacy previews omitted; arbitrary rotations/unassigned nets cannot attach. offset 0, limit 1..1000 default 100, optional exact net. Max 100000 board structural objects / 2 MiB text / 512-byte labels (route net at most 256 bytes); no unrelated schematic capture. Preserve model/selection/history; source_cursor changes require restarting pages. No continuity or guide-completion claim.".into(),input_schema:input_schema::<viamind_engine::RouteEndpointQuery>() });
         commands.push(HostCommand {
             name: "query_linked_pin_pads".into(),
@@ -195,6 +196,10 @@ impl CommandHost for EngineHost {
         if name == "plan_pad_walkaround" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid walkaround input: {e}"))?;
             return serde_json::to_value(self.engine.plan_pad_walkaround(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "plan_pad_via_walkaround" {
+            let input = serde_json::from_value(input).map_err(|e| format!("invalid via walkaround input: {e}"))?;
+            return serde_json::to_value(self.engine.plan_pad_via_walkaround(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "query_route_endpoints" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid endpoint query: {e}"))?;

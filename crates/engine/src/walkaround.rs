@@ -7,9 +7,9 @@ use viamind_doc::{CopperLayer, ObjectId, Project, Side};
 use viamind_geom::{Nm, Point, Polygon, Rect};
 
 static ACTIVE: AtomicUsize = AtomicUsize::new(0);
-struct Permit;
+pub(crate) struct Permit;
 impl Permit {
-    fn acquire() -> Result<Self, CommandError> {
+    pub(crate) fn acquire() -> Result<Self, CommandError> {
         let mut current = ACTIVE.load(Ordering::Acquire);
         loop {
             if current >= 2 {
@@ -140,6 +140,57 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     if project.id != input.expected_project {
         return Err(CommandError::conflict("walkaround project changed"));
     }
+    validate_scene(project)?;
+    let (start, layer, net) = crate::route_endpoints::resolve(project, input.start)?;
+    let (target, other_layer, other_net) = crate::route_endpoints::resolve(project, input.target)?;
+    if input.start == input.target || start == target || layer != other_layer || net != other_net {
+        return Err(invalid("distinct same-side explicit pad centers with exact same assigned net required"));
+    }
+    let (domain, obstacles) = scene(project, layer, net, input.width, &input.rules, viamind_router::walkaround::MAX_WALKAROUND_OBSTACLES)?;
+    let plan = viamind_router::plan_walkaround(start, target, input.grid, domain, &obstacles).map_err(invalid)?;
+    let tracks = RoutePolyline {
+        expected_project: input.expected_project,
+        expected_cursor: input.expected_cursor,
+        points: plan.path.points.clone(),
+        grid: input.grid,
+        width: input.width,
+        layer,
+        net: net.to_owned(),
+        rules: input.rules.clone(),
+    }
+    .prepare_segments(project, true)?;
+    let deltas = crate::routing::prepare_route_candidate(project, tracks, Vec::new(), &input.rules)?;
+    Ok((
+        CheckedWalkaround {
+            project_id: project.id,
+            source_cursor: input.expected_cursor,
+            layer,
+            net: net.to_owned(),
+            plan,
+            complete_scoped_preflight: true,
+        },
+        deltas,
+    ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn admission_refuses_third_retained_operation_and_releases_on_drop() {
+        let first = Permit::acquire().unwrap();
+        let second = Permit::acquire().unwrap();
+        assert!(Permit::acquire().is_err());
+        drop(first);
+        let replacement = Permit::acquire().unwrap();
+        assert!(Permit::acquire().is_err());
+        drop(second);
+        drop(replacement);
+        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
+    }
+}
+
+pub(crate) fn validate_scene(project: &Project) -> Result<(), CommandError> {
     capture(project)?;
     let mut ids = std::collections::BTreeSet::new();
     validate_id(&mut ids, project.id, project.id)?;
@@ -160,13 +211,19 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     for (key, v) in &project.board.vias {
         validate_id(&mut ids, *key, v.id)?;
     }
-    let rules = input.rules.validate().map_err(|e| invalid(e.to_string()))?;
-    let r = half(input.width)?;
-    let (start, layer, net) = crate::route_endpoints::resolve(project, input.start)?;
-    let (target, other_layer, other_net) = crate::route_endpoints::resolve(project, input.target)?;
-    if input.start == input.target || start == target || layer != other_layer || net != other_net {
-        return Err(invalid("distinct same-side explicit pad centers with exact same assigned net required"));
-    }
+    Ok(())
+}
+
+pub(crate) fn scene(
+    project: &Project,
+    layer: CopperLayer,
+    net: &str,
+    width: Nm,
+    input: &viamind_drc::DrcInput,
+    remaining_obstacles: usize,
+) -> Result<(Rect, Vec<Rect>), CommandError> {
+    let rules = input.validate().map_err(|e| invalid(e.to_string()))?;
+    let r = half(width)?;
     let edge = r + i128::from(rules.edge_clearance.0) + 1;
     let domain = domain(project, edge)?;
     let copper = r + i128::from(rules.copper_clearance.0) + 1;
@@ -174,7 +231,7 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
     let mut obstacles = Vec::new();
     let mut push = |bounds: Rect| -> Result<(), CommandError> {
         if let Some(clipped) = bounds.intersection(&domain) {
-            if obstacles.len() >= viamind_router::walkaround::MAX_WALKAROUND_OBSTACLES {
+            if obstacles.len() >= remaining_obstacles {
                 return Err(invalid("walkaround relevant obstacle box limit64 exceeded"));
             }
             obstacles.push(clipped);
@@ -226,45 +283,5 @@ fn prepare(project: &Project, input: &RoutePadWalkaround) -> Result<(CheckedWalk
         let margin = half(via.drill)? + hole;
         push(expanded(Rect::from_point(via.position), margin, margin)?)?;
     }
-    let plan = viamind_router::plan_walkaround(start, target, input.grid, domain, &obstacles).map_err(invalid)?;
-    let tracks = RoutePolyline {
-        expected_project: input.expected_project,
-        expected_cursor: input.expected_cursor,
-        points: plan.path.points.clone(),
-        grid: input.grid,
-        width: input.width,
-        layer,
-        net: net.to_owned(),
-        rules: input.rules.clone(),
-    }
-    .prepare_segments(project, true)?;
-    let deltas = crate::routing::prepare_route_candidate(project, tracks, Vec::new(), &input.rules)?;
-    Ok((
-        CheckedWalkaround {
-            project_id: project.id,
-            source_cursor: input.expected_cursor,
-            layer,
-            net: net.to_owned(),
-            plan,
-            complete_scoped_preflight: true,
-        },
-        deltas,
-    ))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn admission_refuses_third_retained_operation_and_releases_on_drop() {
-        let first = Permit::acquire().unwrap();
-        let second = Permit::acquire().unwrap();
-        assert!(Permit::acquire().is_err());
-        drop(first);
-        let replacement = Permit::acquire().unwrap();
-        assert!(Permit::acquire().is_err());
-        drop(second);
-        drop(replacement);
-        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
-    }
+    Ok((domain, obstacles))
 }

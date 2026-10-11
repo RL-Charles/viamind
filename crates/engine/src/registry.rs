@@ -113,6 +113,7 @@ impl CommandRegistry {
             .with::<crate::RoutePadPolyline>()
             .with::<crate::RoutePadPosture>()
             .with::<crate::RoutePadWalkaround>()
+            .with::<crate::RoutePadViaWalkaround>()
             .with::<crate::RoutePadViaPolyline>()
             .with::<crate::ApplyFootprint>()
             .with::<crate::AnnotateSchematic>()

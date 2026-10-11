@@ -2,7 +2,7 @@
 pub mod posture;
 pub use posture::{CornerMode, PadPathPlan, Posture, plan_pad_path};
 pub mod walkaround;
-pub use walkaround::{WalkaroundPlan, WalkaroundWork, plan_walkaround};
+pub use walkaround::{WalkaroundBudget, WalkaroundPlan, WalkaroundWork, plan_walkaround, plan_walkaround_with_budget};
 
 use viamind_geom::{Nm, Point};
 

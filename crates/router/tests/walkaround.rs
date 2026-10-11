@@ -79,3 +79,28 @@ fn dense_work_is_bounded_before_search_can_run_unchecked() {
         }
     }
 }
+
+#[test]
+fn combined_budget_refuses_second_leg_before_graph_expansion() {
+    use viamind_router::{WalkaroundBudget, plan_walkaround_with_budget};
+    let domain = r(0, 0, 1000, 1000);
+    let obstacles: Vec<_> = (0..33).map(|i| r(100 + i * 10, 100 + i * 10, 101 + i * 10, 101 + i * 10)).collect();
+    let first = plan_walkaround(p(10, 10), p(900, 10), Nm(1), domain, &obstacles).unwrap();
+    let second = plan_walkaround(p(900, 10), p(900, 900), Nm(1), domain, &obstacles).unwrap();
+    assert_eq!((first.work.obstacle_boxes, second.work.obstacle_boxes), (33, 33));
+    let mut budget = WalkaroundBudget::default();
+    plan_walkaround_with_budget(p(10, 10), p(900, 10), Nm(1), domain, &obstacles, &mut budget).unwrap();
+    let charged = budget.used.clone();
+    assert!(plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &obstacles, &mut budget).unwrap_err().contains("at most64"));
+    assert_eq!(budget.used, charged); // No second-leg nodes, edges or intersections.
+    // Limits are checked before allocating even a zero-obstacle second graph.
+    budget.used.graph_nodes = 20_000;
+    assert!(plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &[], &mut budget).unwrap_err().contains("node/edge budget"));
+    assert_eq!(budget.used.graph_nodes, 20_000);
+    budget.used.graph_nodes = 0;
+    budget.used.intersection_tests = 4_000_000;
+    assert!(
+        plan_walkaround_with_budget(p(900, 10), p(900, 900), Nm(1), domain, &obstacles[..1], &mut budget).unwrap_err().contains("intersection-work")
+    );
+    assert_eq!(budget.used.intersection_tests, 4_000_000);
+}
