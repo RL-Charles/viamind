@@ -84,7 +84,7 @@ impl OutputJob {
     }
     pub fn validate(&self) -> io::Result<()> {
         if self.format != "viamind-output-job"
-            || !matches!(self.version, 1 | 2 | 3)
+            || !matches!(self.version, 1..=3)
             || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE)
         {
             return Err(invalid("unsupported output job format, version or profile"));

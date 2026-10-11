@@ -62,5 +62,5 @@ pub(crate) fn render(parts: &BTreeMap<ObjectId, Part>, limit: usize) -> io::Resu
         digest.update(id.0.as_bytes());
         count += 1;
     }
-    Ok((output, count, format!("{:x}", digest.finalize())))
+    Ok((output, count, digest.finalize().iter().map(|byte| format!("{byte:02x}")).collect()))
 }

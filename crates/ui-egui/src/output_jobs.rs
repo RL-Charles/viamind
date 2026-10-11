@@ -257,7 +257,7 @@ impl ViamindApp {
                 let label = ui.label("NEW release directory");
                 ui.add(egui::TextEdit::singleline(&mut self.output_jobs.release_path).char_limit(4096).desired_width(500.)).labelled_by(label.id);
                 ui.label("Existing files and directories are preserved. At most 100000 components, 200000 board primitives and 192 MiB release.");
-                ui.label("Requires explicit pads and outline. Scoped checks exclude connectivity, mask, silk and complete DFM. No inner copper, pours, sourcing metadata or fabrication certification.");
+                ui.label("Requires explicit pads and outline. Scoped checks exclude connectivity, mask, silk and complete DFM. No inner copper, pours or fabrication certification.");
                 if ui.button("Run saved job to NEW directory").clicked() {
                     action = Some(UiAction::RunOutputJob);
                 }
