@@ -14,13 +14,16 @@ struct Inspect {
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
-        self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(self.engine.document_status(), self.status);
         if self.capture.is_none() {
+            // Skip the production dirty-document close dialog once immutable proof is saved.
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
             return;
         }
+        self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
+        assert_eq!(self.engine.session_state(), self.before);
+        assert_eq!(self.engine.document_status(), self.status);
         self.ui_passes += 1;
         let content = ui.ctx().content_rect();
         assert!(self.controls.iter().all(|r| content.contains_rect(*r)), "prepared controls must fit actual native viewport");
