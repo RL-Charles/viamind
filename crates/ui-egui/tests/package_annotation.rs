@@ -87,7 +87,7 @@ fn compact_painted_actions_and_virtualized_last_member_scrolling_remain_reachabl
         painted(&h, label);
         assert!(!h.get_by_label(label).accesskit_node().is_disabled());
     }
-    let rows = h.query_all_by_label_contains("U? to U").collect::<Vec<_>>();
+    let rows = h.query_all_by_label_contains(" to U").collect::<Vec<_>>();
     assert!(!rows.is_empty() && rows.len() < 12, "rendered {} of12", rows.len());
     let at = rows[0].rect().center();
     drop(rows);
@@ -99,7 +99,7 @@ fn compact_painted_actions_and_virtualized_last_member_scrolling_remain_reachabl
         modifiers: Modifiers::NONE,
     });
     h.run_steps(10);
-    assert!(h.query_by_label_contains("U? to U8 - single").is_some());
+    assert!(h.query_by_label_contains("u to U8 - single").is_some());
     for label in ["Prepare annotation", "Apply annotation", "Cancel annotation preview"] {
         painted(&h, label);
     }
