@@ -3,6 +3,48 @@ use viamind_doc::{BoardOutline, Project};
 use viamind_engine::EngineHandle;
 use viamind_mcp::{CallContext, engine_registry};
 #[tokio::test]
+async fn checked_cardinal_cleanup_is_read_only_guarded_and_one_undo_for_two_agents() {
+    use viamind_doc::{CopperLayer, ObjectId, Track};
+    use viamind_geom::{Nm, Point};
+    let mut project = Project::new("MCP cleanup");
+    project.board.outline = Some(
+        serde_json::from_value(json!({"outer":[{"x":0,"y":0},{"x":50000000,"y":0},{"x":50000000,"y":30000000},{"x":0,"y":30000000}],"cutouts":[]}))
+            .unwrap(),
+    );
+    for (a, b) in [(10_000_123, 20_000_127), (20_000_127, 30_000_129)] {
+        let track = Track {
+            id: ObjectId::new(),
+            start: Point::new(Nm(a), Nm(10_000_007)),
+            end: Point::new(Nm(b), Nm(10_000_007)),
+            width: Nm(250_001),
+            layer: CopperLayer::Top,
+            net: Some("N".into()),
+        };
+        project.board.tracks.insert(track.id, track);
+    }
+    let e = EngineHandle::new(project);
+    let registry = engine_registry(e.clone()).unwrap();
+    let a = CallContext::new("cleanup-a");
+    let b = CallContext::new("cleanup-b");
+    let before = e.session_state();
+    let input = json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"tracks":{"source":"net","net":"N","layer":"top"}});
+    let plan = registry.call("plan_cardinal_track_cleanup", input.clone(), b.clone()).await.unwrap();
+    assert_eq!(plan["counts"]["deleted_tracks"], 1);
+    assert_eq!(plan["replacements"][0]["after"]["start"]["x"], 10_000_123);
+    assert_eq!(plan["replacements"][0]["after"]["end"]["x"], 30_000_129);
+    assert_eq!(e.session_state(), before);
+    registry.call("cleanup_cardinal_tracks", input.clone(), a.clone()).await.unwrap();
+    let after = e.read(Clone::clone);
+    assert_eq!(after.board.tracks.len(), 1);
+    assert!(registry.call("cleanup_cardinal_tracks", input.clone(), b.clone()).await.is_err());
+    assert!(registry.call("plan_cardinal_track_cleanup", input, b).await.is_err());
+    assert_eq!(e.read(Clone::clone), after);
+    registry.call("undo", json!({}), a.clone()).await.unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    registry.call("redo", json!({}), a).await.unwrap();
+    assert_eq!(e.read(Clone::clone), after);
+}
+#[tokio::test]
 async fn independent_agents_route_atomic_polylines_and_reject_stale_session_cursors() {
     let mut project = Project::new("MCP route");
     let p = |x, y| json!({"x":x,"y":y});

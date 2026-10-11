@@ -89,6 +89,8 @@ ui_actions! {
     RoutePadWalkaround => (viamind_engine::RoutePadWalkaround::NAME,input_schema::<viamind_engine::RoutePadWalkaround>(),route_pad_walkaround),
     PlanPadViaWalkaround => ("plan_pad_via_walkaround",input_schema::<viamind_engine::RoutePadViaWalkaround>(),plan_pad_via_walkaround),
     RoutePadViaWalkaround => (viamind_engine::RoutePadViaWalkaround::NAME,input_schema::<viamind_engine::RoutePadViaWalkaround>(),route_pad_via_walkaround),
+    PlanCardinalTrackCleanup => ("plan_cardinal_track_cleanup", input_schema::<viamind_engine::CleanupCardinalTracks>(), plan_cardinal_track_cleanup),
+    CleanupCardinalTracks => (viamind_engine::CleanupCardinalTracks::NAME, input_schema::<viamind_engine::CleanupCardinalTracks>(), cleanup_cardinal_tracks),
     RoutePadPosture => (viamind_engine::RoutePadPosture::NAME,input_schema::<viamind_engine::RoutePadPosture>(),route_pad_posture),
     RoutePadViaPolyline => (viamind_engine::RoutePadViaPolyline::NAME,input_schema::<viamind_engine::RoutePadViaPolyline>(),route_pad_via_polyline),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
@@ -320,6 +322,16 @@ fn route_pad_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, En
 }
 fn route_pad_via_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePadViaWalkaround::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn cleanup_cardinal_tracks(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::CleanupCardinalTracks::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn plan_cardinal_track_cleanup(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(
+        engine.plan_cardinal_track_cleanup(&input).map_err(|error| EngineError::Command { command: "plan_cardinal_track_cleanup".into(), error })?,
+    )
+    .map_err(encode_error)
 }
 fn plan_pad_via_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let input = serde_json::from_value(input).map_err(encode_error)?;

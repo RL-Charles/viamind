@@ -366,6 +366,7 @@ impl ViamindApp {
     }
     pub fn begin_route(&mut self) {
         if self.schematic.active
+            || self.track_cleanup.editing()
             || self.files.busy()
             || self.parts.placing()
             || self.pads.editing()

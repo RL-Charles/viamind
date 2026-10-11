@@ -111,6 +111,8 @@ pub mod walkaround;
 pub use walkaround::{CheckedWalkaround, RoutePadWalkaround};
 pub mod via_walkaround;
 pub use via_walkaround::{CheckedViaWalkaround, RoutePadViaWalkaround};
+pub mod cardinal_cleanup;
+pub use cardinal_cleanup::{CardinalTrackReplacement, CheckedCardinalCleanup, CleanupCardinalTracks, CleanupCounts, CleanupTracks};
 mod schematic_budget;
 
 pub mod symbol_library;

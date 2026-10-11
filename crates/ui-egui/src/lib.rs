@@ -40,6 +40,7 @@ pub mod schematic_wires;
 pub mod selection;
 mod symbol_definition;
 pub mod symbol_library;
+pub mod track_cleanup;
 pub mod view_export;
 
 use std::sync::mpsc::Receiver;
@@ -163,6 +164,7 @@ pub struct ViamindApp {
     pub outlines: outlines::OutlineUi,
     pub copper: copper::CopperUi,
     pub routing: routing::RoutingUi,
+    pub track_cleanup: track_cleanup::TrackCleanupUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
     pub erc: erc::ErcUi,
@@ -214,6 +216,7 @@ impl ViamindApp {
             outlines: outlines::OutlineUi::default(),
             copper: copper::CopperUi::default(),
             routing: routing::RoutingUi::default(),
+            track_cleanup: track_cleanup::TrackCleanupUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             erc: erc::ErcUi::default(),
@@ -257,6 +260,7 @@ impl ViamindApp {
             outlines: outlines::OutlineUi::default(),
             copper: copper::CopperUi::default(),
             routing: routing::RoutingUi::default(),
+            track_cleanup: track_cleanup::TrackCleanupUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             erc: erc::ErcUi::default(),
@@ -300,6 +304,7 @@ impl ViamindApp {
     /// Undo the latest change from anyone (the human can undo agent edits).
     pub fn undo_design(&mut self) {
         self.routing.cancel();
+        self.track_cleanup.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Undo.run(&design.engine, json!({}));
         }
@@ -308,6 +313,7 @@ impl ViamindApp {
     /// Redo the latest undone change.
     pub fn redo_design(&mut self) {
         self.routing.cancel();
+        self.track_cleanup.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Redo.run(&design.engine, json!({}));
         }
@@ -315,7 +321,7 @@ impl ViamindApp {
 
     /// Places a 10k 0603 resistor with the next free designator near the board centre (Edit menu).
     pub fn place_test_resistor(&mut self) {
-        if self.routing.editing() {
+        if self.routing.editing() || self.track_cleanup.editing() {
             return;
         }
         let Some(design) = &self.design else { return };
@@ -363,6 +369,7 @@ impl ViamindApp {
         }
         self.sync_design();
         self.sync_schematic_wires(ui.ctx());
+        self.sync_track_cleanup(ui.ctx());
         if let Some(design) = &self.design {
             self.routing.sync_walkaround(ui.ctx(), &design.engine);
         }
@@ -393,6 +400,7 @@ impl ViamindApp {
         self.pcb_sync_window(ui);
         self.schematic_component_window(ui);
         self.symbol_library_window(ui);
+        self.track_cleanup_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
@@ -407,15 +415,21 @@ impl ViamindApp {
                     && !self.outlines.editing()
                     && !self.pads.editing()
                     && !self.copper.editing()
-                    && !self.routing.editing();
+                    && !self.routing.editing()
+                    && !self.track_cleanup.editing();
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
-                let routing_enabled =
-                    !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
+                let routing_enabled = !self.files.busy()
+                    && !self.parts.placing()
+                    && !self.outlines.editing()
+                    && !self.pads.editing()
+                    && !self.copper.editing()
+                    && !self.track_cleanup.editing();
                 self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
             self.paint_cross_probe(ui, response.rect);
             self.paint_fabrication_overlay(ui, response.rect);
             self.paint_pin_pad_probe(ui, response.rect);
+            self.paint_track_cleanup(ui, response.rect);
             self.paint_labels(ui);
         });
         self.file_dialogs(ui);
@@ -567,7 +581,8 @@ impl ViamindApp {
                                 && !self.outlines.editing()
                                 && !self.pads.editing()
                                 && !self.copper.editing()
-                                && !self.routing.editing(),
+                                && !self.routing.editing()
+                                && !self.track_cleanup.editing(),
                         );
                     }
                     ui.separator();
@@ -611,6 +626,10 @@ impl ViamindApp {
             }
             if self.design.is_some() && !self.schematic.active {
                 ui.menu_button("Board", |ui| {
+                    if ui.button("Clean cardinal track joints…").clicked() {
+                        self.begin_track_cleanup();
+                        ui.close();
+                    }
                     if ui.button("Export fabrication…").clicked() {
                         self.begin_fabrication_export();
                         ui.close();
