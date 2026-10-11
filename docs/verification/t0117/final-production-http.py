@@ -3,6 +3,7 @@
 import argparse,json,sys,importlib.util,hashlib
 from pathlib import Path
 from contextlib import ExitStack
+from urllib.parse import urlparse
 sys.dont_write_bytecode=True
 p=argparse.ArgumentParser();p.add_argument('--repo',type=Path,required=True);p.add_argument('--binary',type=Path,required=True);p.add_argument('--url',required=True);p.add_argument('--directory',type=Path,required=True);p.add_argument('--expected-native',type=Path,required=True);p.add_argument('--pid',type=int,required=True);a=p.parse_args()
 assert a.pid>1
@@ -11,6 +12,19 @@ live_exe=Path(f'/proc/{a.pid}/exe').resolve(strict=True)
 assert live_exe==expected_exe,(live_exe,expected_exe)
 binary_sha=hashlib.sha256(expected_exe.read_bytes()).hexdigest()
 assert hashlib.sha256(Path(f'/proc/{a.pid}/exe').read_bytes()).hexdigest()==binary_sha
+endpoint=urlparse(a.url)
+assert endpoint.scheme=='http' and endpoint.hostname=='127.0.0.1' and endpoint.port and endpoint.path=='/mcp'
+sockets=set()
+for fd in Path(f'/proc/{a.pid}/fd').iterdir():
+ try: target=fd.readlink().as_posix()
+ except FileNotFoundError: continue
+ if target.startswith('socket:['): sockets.add(target[8:-1])
+listeners=[]
+for table in ['tcp','tcp6']:
+ for row in Path(f'/proc/{a.pid}/net/{table}').read_text().splitlines()[1:]:
+  fields=row.split()
+  if fields[3]=='0A' and int(fields[1].split(':')[1],16)==endpoint.port and fields[9] in sockets: listeners.append(fields[9])
+assert listeners,'supplied PID must actually own the loopback MCP listener'
 spec=importlib.util.spec_from_file_location('smoke',a.repo/'scripts/mcp-smoke.py');smoke=importlib.util.module_from_spec(spec);spec.loader.exec_module(smoke)
 root=a.directory;root.mkdir();checks=[]
 def check(label,condition):assert condition,label;checks.append(label)
@@ -39,5 +53,5 @@ with ExitStack() as stack:
  y.call('inspect_pcb_branch',{'branch_id':bid},expect_error=True);y.call('discard_pcb_branch',{'branch_id':bid,'expected_revision':1},expect_error=True);invariant('apply diff and private-owner refusals preserve complete live state')
  x.call('discard_pcb_branch',{'branch_id':bid,'expected_revision':1});check('creator can reject private candidate without live acceptance',x.call('list_pcb_branches',{})==[]);invariant('desktop rejection preserves original session history status DRC and native')
  check('forbidden destination absent',not(root/'forbidden').exists())
-report={'passed':True,'checks':checks,'transport':'two actual initialized same-name desktop HTTP clients','url':a.url,'binary_sha256':binary_sha,'pid':a.pid,'live_executable':str(live_exe),'native_path':str(native.resolve()),'native_sha256':hashlib.sha256(original).hexdigest(),'scope':'Startup Approval on actual desktop process; dynamic human change/accept/undo/redo verified separately via actual HTTP server and shared desktop controls'}
+report={'passed':True,'checks':checks,'transport':'two actual initialized same-name desktop HTTP clients','url':a.url,'binary_sha256':binary_sha,'pid':a.pid,'listener_inodes':listeners,'live_executable':str(live_exe),'native_path':str(native.resolve()),'native_sha256':hashlib.sha256(original).hexdigest(),'scope':'Startup Approval on actual desktop process; dynamic human change/accept/undo/redo verified separately via actual HTTP server and shared desktop controls'}
 (root/'verification.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'passed':True,'checks':len(checks)}))
