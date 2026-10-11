@@ -805,3 +805,6 @@ whole-command envelope. No inferred aliases, PCB synchronization or hierarchy.
 Desktop Annotate symbols exposes the same Prepare/Apply/Cancel workflow.
 See [behavior spec](../../docs/specs/package-aware-annotation.md) and
 [verification](../../docs/package-aware-annotation-verification.md).
+## Trusted agent modes
+
+The desktop status bar exposes trusted Live apply, Approval and Read only controls shared by all endpoints. `--agent-approval` begins in Approval; agents can prepare private PCB proposals but a human must Accept or Reject through Board → Agent branches. Direct writers and file publication are hidden and refused. `get_agent_mode` reports current policy; initialized clients receive tool-list change notifications. `--agent-read-only` is an immutable startup ceiling. A mode change refuses while an admitted writer is unfinished, including retained work after caller cancellation. Human editing remains available. See [agent mode usage](../../docs/agent-modes.md) and the [behavior contract](../../docs/specs/agent-approval-modes.md).

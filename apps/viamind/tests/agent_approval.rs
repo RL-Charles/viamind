@@ -42,7 +42,7 @@ async fn actual_approval_stdio_prepares_private_candidate_without_live_or_file_w
     }}; }
     let init =
         request!("initialize", json!({"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"human-admin-live","version":"1"}}));
-    assert!(init["result"]["instructions"].as_str().unwrap().contains("approval"));
+    assert!(init["result"]["instructions"].as_str().unwrap().contains("Approval mode"));
     input.write_all(b"{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}\n").await.unwrap();
     input.flush().await.unwrap();
     let listed = request!("tools/list", json!({}));
@@ -83,4 +83,19 @@ async fn actual_approval_stdio_prepares_private_candidate_without_live_or_file_w
     assert!(String::from_utf8(finished.stderr).unwrap().contains("approval"));
     assert_eq!(std::fs::read(&native).unwrap(), original);
     assert!(!output.exists());
+}
+
+#[test]
+fn incompatible_startup_modes_refuse_before_opening_input_or_display() {
+    let directory = tempfile::tempdir().unwrap();
+    let result = std::process::Command::new(env!("CARGO_BIN_EXE_viamind"))
+        .args(["--agent-read-only", "--agent-approval", "--open"])
+        .arg(directory.path().join("missing.json"))
+        .env_remove("DISPLAY")
+        .env_remove("WAYLAND_DISPLAY")
+        .env("VIAMIND_MCP_PORT", "invalid-before-endpoint")
+        .output()
+        .unwrap();
+    assert!(!result.status.success());
+    assert!(String::from_utf8(result.stderr).unwrap().contains("choose only one of --agent-read-only and --agent-approval"));
 }
