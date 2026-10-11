@@ -96,6 +96,7 @@ def package(output, runtime, cache, bundle=None, offline=False):
         if (info["host"] != "x86_64-unknown-linux-gnu" or not info["headless_mcp_verified"]
                 or digest(payload / "viamind") != info["binary_sha256"]):
             raise ValueError("Linux bundle host or application provenance mismatch")
+        application_files = {str(path.relative_to(payload)): digest(path) for path in sorted(payload.rglob("*")) if path.is_file()}
         appdir = stage / "Viamind.AppDir"
         (appdir / "usr/bin").mkdir(parents=True)
         (appdir / "usr/lib").mkdir()
@@ -134,6 +135,12 @@ def package(output, runtime, cache, bundle=None, offline=False):
         for relative in ["usr/bin/viamind", "usr/lib/viamind/viamind"]:
             if digest(readback / relative) != info["binary_sha256"]:
                 raise ValueError("image readback application checksum mismatch")
+        for relative, expected in application_files.items():
+            if digest(readback / "usr/lib/viamind" / relative) != expected:
+                raise ValueError("image readback application/license inventory mismatch")
+        for relative in ["AppRun", "viamind.desktop", "viamind.svg", ".DirIcon", "usr/share/viamind-runtime/manifest.json"]:
+            if digest(readback / relative) != digest(appdir / relative):
+                raise ValueError("image readback launcher/desktop/runtime manifest mismatch")
         for relative, expected in runtime_manifest["files_sha256"].items():
             if digest(readback / "usr/share/viamind-runtime" / relative) != expected:
                 raise ValueError("image readback runtime companion mismatch")
@@ -167,7 +174,13 @@ def package(output, runtime, cache, bundle=None, offline=False):
         extract_regular(companion, stage / "companion-readback")
         subprocess.run([str(stage / "companion-readback/viamind-runtime/relink/relink.sh"), str(stage / "companion-only-runtime")], check=True)
         subprocess.run([str(stage / "companion-only-runtime"), "--appimage-version"], check=True, stdout=subprocess.DEVNULL)
-        metadata = {"application": info, "appimage_sha256": digest(image), "runtime_sha256": digest(runtime / "runtime-x86_64"),
+        packaging_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        packaging_dirt = [line for line in subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=normal"], cwd=ROOT, text=True).splitlines()
+                          if ".sherpa/" not in line]
+        metadata = {"packaging_revision": packaging_revision, "packaging_source_dirty": packaging_dirt,
+                    "packaging_files_sha256": {name: digest(ROOT / name) for name in ["scripts/package-appimage.py", "scripts/appimage_support.py", "packaging/appimage/viamind.svg"]},
+                    "application_inventory_files": len(application_files), "application_inventory_sha256": application_files,
+                    "application": info, "appimage_sha256": digest(image), "runtime_sha256": digest(runtime / "runtime-x86_64"),
                     "runtime_manifest_sha256": digest(runtime / "manifest.json"), "companion_sha256": digest(companion),
                     "tool": pins()["tool"], "actual_image_no_display_help_version_mcp_add_query_undo": True,
                     "relative_project_output_arguments_and_cwd": True, "embedded_and_external_companion_relink": True,
