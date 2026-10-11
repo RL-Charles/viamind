@@ -129,7 +129,7 @@ fn color(layer: Layer) -> Color32 {
         Layer::TopMaskOpenings => Color32::from_rgba_unmultiplied(235, 80, 230, 115),
         Layer::BottomMaskOpenings => Color32::from_rgba_unmultiplied(80, 235, 170, 115),
         Layer::Profile => Color32::YELLOW,
-        Layer::Drill => Color32::LIGHT_CYAN,
+        Layer::Drill => Color32::from_rgb(120, 255, 255),
     }
 }
 impl ViamindApp {

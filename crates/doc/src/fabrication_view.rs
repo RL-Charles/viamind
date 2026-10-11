@@ -169,7 +169,7 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
                             "Positive" => false,
                             "Negative" => true,
                             _ => return Err(invalid()),
-                        })
+                        });
                     }
                     "SameCoordinates" => same_coordinates = Some(value.parse::<ObjectId>().map_err(|_| invalid())?),
                     _ => return Err(invalid()),
