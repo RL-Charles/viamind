@@ -1,0 +1,182 @@
+{
+  "format": "viamind-symbol-package",
+  "version": 1,
+  "package": {
+    "name": "Original quad amplifiers and power",
+    "value": "Authored fourteen pins",
+    "footprint": "Authored-14pad",
+    "units": [
+      {
+        "key": "A",
+        "name": "Amplifier A",
+        "role": "functional",
+        "width": 6000003,
+        "height": 4000007,
+        "pins": [
+          {
+            "number": "1",
+            "name": "IN+",
+            "position": {
+              "x": -3000003,
+              "y": -1000007
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "2",
+            "name": "IN-",
+            "position": {
+              "x": -3000003,
+              "y": 0
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "3",
+            "name": "OUT",
+            "position": {
+              "x": 3000003,
+              "y": 1000007
+            },
+            "electrical": "output"
+          }
+        ]
+      },
+      {
+        "key": "B",
+        "name": "Amplifier B",
+        "role": "functional",
+        "width": 6000005,
+        "height": 4000007,
+        "pins": [
+          {
+            "number": "4",
+            "name": "IN+",
+            "position": {
+              "x": -3000003,
+              "y": -1000007
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "5",
+            "name": "IN-",
+            "position": {
+              "x": -3000003,
+              "y": 0
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "6",
+            "name": "OUT",
+            "position": {
+              "x": 3000003,
+              "y": 1000007
+            },
+            "electrical": "output"
+          }
+        ]
+      },
+      {
+        "key": "C",
+        "name": "Amplifier C",
+        "role": "functional",
+        "width": 6000007,
+        "height": 4000007,
+        "pins": [
+          {
+            "number": "7",
+            "name": "IN+",
+            "position": {
+              "x": -3000003,
+              "y": -1000007
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "8",
+            "name": "IN-",
+            "position": {
+              "x": -3000003,
+              "y": 0
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "9",
+            "name": "OUT",
+            "position": {
+              "x": 3000003,
+              "y": 1000007
+            },
+            "electrical": "output"
+          }
+        ]
+      },
+      {
+        "key": "D",
+        "name": "Amplifier D",
+        "role": "functional",
+        "width": 6000009,
+        "height": 4000007,
+        "pins": [
+          {
+            "number": "10",
+            "name": "IN+",
+            "position": {
+              "x": -3000003,
+              "y": -1000007
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "11",
+            "name": "IN-",
+            "position": {
+              "x": -3000003,
+              "y": 0
+            },
+            "electrical": "input"
+          },
+          {
+            "number": "12",
+            "name": "OUT",
+            "position": {
+              "x": 3000003,
+              "y": 1000007
+            },
+            "electrical": "output"
+          }
+        ]
+      },
+      {
+        "key": "P",
+        "name": "Power",
+        "role": "power",
+        "width": 4000003,
+        "height": 6000007,
+        "pins": [
+          {
+            "number": "13",
+            "name": "V+",
+            "position": {
+              "x": 7,
+              "y": -4000003
+            },
+            "electrical": "power_input"
+          },
+          {
+            "number": "14",
+            "name": "V-",
+            "position": {
+              "x": 7,
+              "y": 4000003
+            },
+            "electrical": "power_input"
+          }
+        ]
+      }
+    ]
+  }
+}

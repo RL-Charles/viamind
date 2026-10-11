@@ -202,7 +202,7 @@ impl EngineHandle {
                 checks_not_performed: vec![
                     "hierarchy, buses and hidden power pins",
                     "no-connect markers and power flags absent from the native model",
-                    "multi-unit/shared pins and simulation",
+                    "implicit shared/common pins, hidden package connections and simulation (explicit unit pins are checked)",
                     "board annotation, net classes and off-grid checks",
                     "wire/label diagnostics and electrical correctness beyond selected pin policy",
                 ],
