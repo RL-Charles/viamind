@@ -41,6 +41,8 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    LinkSchematicSymbol => (viamind_engine::LinkSchematicSymbol::NAME, input_schema::<viamind_engine::LinkSchematicSymbol>(), link_schematic_symbol),
+    SynchronizeSchematicPcb => (viamind_engine::SynchronizeSchematicPcb::NAME, input_schema::<viamind_engine::SynchronizeSchematicPcb>(), synchronize_schematic_pcb),
     AnnotateSchematic => (viamind_engine::AnnotateSchematic::NAME, input_schema::<viamind_engine::AnnotateSchematic>(), annotate_schematic),
     EditSchematicSheet => (viamind_engine::EditSchematicSheet::NAME, input_schema::<viamind_engine::EditSchematicSheet>(), edit_schematic_sheet),
     DeleteSchematicSheet => (viamind_engine::DeleteSchematicSheet::NAME, input_schema::<viamind_engine::DeleteSchematicSheet>(), delete_schematic_sheet),
@@ -211,4 +213,11 @@ fn annotate_schematic(engine: &EngineHandle, input: Value) -> Result<Value, Engi
 
 fn route_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePolyline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn link_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::LinkSchematicSymbol::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn synchronize_schematic_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SynchronizeSchematicPcb::NAME, input, Origin::User)?).map_err(encode_error)
 }

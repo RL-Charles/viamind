@@ -70,7 +70,7 @@ fn sync_budget(project: &Project) -> Result<(), CommandError> {
     let mut count_more = |n: usize| -> Result<(), CommandError> {
         count = count.saturating_add(n);
         if count > MAX_OBJECTS {
-            return Err(CommandError::invalid("project", "synchronization supports at most10000 objects including pins, pads and outline vertices"));
+            return Err(CommandError::invalid("project", "synchronization supports at most 10000 objects including pins, pads and outline vertices"));
         }
         Ok(())
     };
@@ -95,7 +95,7 @@ fn sync_budget(project: &Project) -> Result<(), CommandError> {
     let mut add = |s: &str| -> Result<(), CommandError> {
         text = text.saturating_add(s.len());
         if s.len() > 4096 || text > MAX_TEXT {
-            return Err(CommandError::invalid("project", "synchronization text exceeds4096 bytes per string or4 MiB aggregate"));
+            return Err(CommandError::invalid("project", "synchronization text exceeds 4096 bytes per string or 4 MiB aggregate"));
         }
         Ok(())
     };
@@ -143,7 +143,7 @@ fn sync_budget(project: &Project) -> Result<(), CommandError> {
     Ok(())
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum PcbSyncDirection {
     Forward,
@@ -187,12 +187,18 @@ pub struct PcbSyncPreview {
     pub exclusions: Vec<&'static str>,
 }
 impl crate::EngineHandle {
-    /// Capture once under lock, then calculate the immutable preview outside it.
-    pub fn preview_schematic_pcb_sync(&self, direction: PcbSyncDirection) -> Result<PcbSyncPreview, CommandError> {
-        let (expected, source_cursor) = self.with_engine(|e| {
-            validate_sync_project(e.project())?;
+    /// Bounded immutable link/preview input; detailed validation runs after releasing the lock.
+    pub fn schematic_pcb_snapshot(&self) -> Result<(Project, crate::EventCursor), CommandError> {
+        let (project, cursor) = self.with_engine(|e| {
+            sync_budget(e.project())?;
             Ok::<_, CommandError>((e.project().clone(), e.event_cursor()))
         })?;
+        validate_sync_project(&project)?;
+        Ok((project, cursor))
+    }
+    /// Capture once under lock, then calculate the immutable preview outside it.
+    pub fn preview_schematic_pcb_sync(&self, direction: PcbSyncDirection) -> Result<PcbSyncPreview, CommandError> {
+        let (expected, source_cursor) = self.schematic_pcb_snapshot()?;
         let command = SynchronizeSchematicPcb { expected, source_cursor, direction };
         let plan = calculate_sync(&command.expected, direction, source_cursor)?;
         Ok(PcbSyncPreview {
@@ -214,7 +220,7 @@ fn validate_sync_project(project: &Project) -> Result<(), CommandError> {
     sync_budget(project)?;
     // Structural/text limits precede this allocation; this also bounds command output.
     if serde_json::to_vec(project).map_err(|e| CommandError::invalid("project", e.to_string()))?.len() > 8 * 1024 * 1024 {
-        return Err(CommandError::invalid("project", "serialized synchronization guard exceeds8 MiB"));
+        return Err(CommandError::invalid("project", "serialized synchronization guard exceeds 8 MiB"));
     }
     viamind_doc::file::validate_pads(project).map_err(|e| CommandError::invalid("project", e.to_string()))?;
     viamind_doc::file::validate_copper(project).map_err(|e| CommandError::invalid("project", e.to_string()))?;
@@ -244,10 +250,10 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
         .schematic
         .sheets
         .values()
-        .flat_map(|sheet| sheet.content.iter().flat_map(|c| c.symbols.values().map(|symbol| (symbol.id, (sheet.id, symbol)))))
+        .flat_map(|sheet| sheet.content.iter().flat_map(move |c| c.symbols.values().map(move |symbol| (symbol.id, (sheet.id, symbol)))))
         .collect();
     let linked: BTreeSet<_> = project.board.parts.values().filter_map(|p| p.schematic_symbol).collect();
-    let unlinked_symbols = symbols.keys().filter(|id| !linked.contains(id)).copied().collect();
+    let unlinked_symbols = symbols.keys().filter(|id| !linked.contains(*id)).copied().collect();
     let unlinked_parts = project.board.parts.values().filter(|p| p.schematic_symbol.is_none()).map(|p| p.id).collect();
     let copper_nets: BTreeSet<_> =
         project.board.tracks.values().filter_map(|t| t.net.as_deref()).chain(project.board.vias.values().filter_map(|v| v.net.as_deref())).collect();
@@ -256,7 +262,7 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
     for part in project.board.parts.values() {
         let Some(symbol_id) = part.schematic_symbol else { continue };
         let (sheet_id, symbol) = symbols.get(&symbol_id).ok_or_else(|| {
-            CommandError::conflict(format!("part{} has an unresolved symbol link{}; unlink or resolve explicitly", part.id, symbol_id))
+            CommandError::conflict(format!("part {} has an unresolved symbol link {}; unlink or resolve explicitly", part.id, symbol_id))
         })?;
         let mut record = |field, pad_id, before: Option<String>, value: Option<String>| {
             if before != value {
@@ -267,18 +273,18 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
             PcbSyncDirection::Forward => {
                 if symbol.footprint.as_ref().is_some_and(|f| f != &part.footprint) {
                     return Err(CommandError::conflict(format!(
-                        "part{} footprint assignment differs; explicitly apply matching geometry before synchronizing",
+                        "part {} footprint assignment differs; explicitly apply matching geometry before synchronizing",
                         part.id
                     )));
                 }
                 let pads = part
                     .pads
                     .as_ref()
-                    .ok_or_else(|| CommandError::conflict(format!("part{} requires explicit numbered pads before forward annotation", part.id)))?;
+                    .ok_or_else(|| CommandError::conflict(format!("part {} requires explicit numbered pads before forward annotation", part.id)))?;
                 let pin_numbers: BTreeSet<_> = symbol.pins.iter().map(|p| &p.number).collect();
                 let pad_numbers: BTreeSet<_> = pads.0.iter().map(|p| &p.number).collect();
                 if pin_numbers != pad_numbers || pin_numbers.len() != symbol.pins.len() || pad_numbers.len() != pads.0.len() {
-                    return Err(CommandError::conflict(format!("part{} requires an exact unambiguous pin/pad-number bijection", part.id)));
+                    return Err(CommandError::conflict(format!("part {} requires an exact unambiguous pin/pad-number bijection", part.id)));
                 }
                 let target = after.board.parts.get_mut(&part.id).expect("captured part");
                 record("designator", None, Some(part.designator.clone()), Some(symbol.designator.clone()));
@@ -291,7 +297,7 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
                     let value = Some(net.clone());
                     if pad.net != value && (pad.net.as_deref().is_some_and(|n| copper_nets.contains(n)) || copper_nets.contains(net.as_str())) {
                         return Err(CommandError::conflict(format!(
-                            "pad{} net change touches existing routed copper; explicit routed-net migration is required",
+                            "pad {} net change touches existing routed copper; explicit routed-net migration is required",
                             pad.id
                         )));
                     }

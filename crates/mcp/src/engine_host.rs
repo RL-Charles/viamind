@@ -50,7 +50,7 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand {
             name: "preview_schematic_pcb_sync".into(),
-            description: "Read-only bounded forward/back synchronization preview for explicitly UUID-linked existing PCB parts and schematic symbols. Returns exact guarded command, deterministic property/pad-net changes, physical net identities with schematic labels and unlinked exclusions. Forward requires explicit bijective numbered pads and matching footprint assignment; routed-net changes reject. Back updates references/values/footprint assignment without topology edits. Captures at most10000 objects,4 MiB text,8 MiB serialized guard; exact graph limits also apply. No creation/deletion/inferred links. Does not change session/history/selection/dirty state.".into(),
+            description: "Read-only bounded forward/back synchronization preview for explicitly UUID-linked existing PCB parts and schematic symbols. Returns exact guarded command, deterministic property/pad-net changes, physical net identities with schematic labels and unlinked exclusions. Forward requires explicit bijective numbered pads and matching footprint assignment; routed-net changes reject. Back updates references/values/footprint assignment without topology edits. Captures at most 10000 objects, 4 MiB text, 8 MiB serialized guard; exact graph limits also apply. No creation/deletion/inferred links. Does not change session/history/selection/dirty state.".into(),
             input_schema: input_schema::<viamind_engine::PcbSyncRequest>(),
         });
         commands.push(HostCommand {
