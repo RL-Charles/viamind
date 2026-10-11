@@ -16,7 +16,7 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 11 to preserve explicit multi-unit symbol packages.
+/// New logs use version 12 to preserve explicit complete-package PCB links.
 pub const LOG_VERSION: u32 = 12;
 
 /// Why a log could not be read.

@@ -67,6 +67,7 @@ impl CommandHost for EngineHost {
                 | "query_linked_components"
                 | "run_erc"
                 | "preview_schematic_pcb_component"
+                | "preview_package_pcb_component"
                 | "preview_schematic_pcb_sync"
                 | "query_schematic_connectivity"
                 | "preview_schematic_annotation"
@@ -139,6 +140,11 @@ impl CommandHost for EngineHost {
             name: "run_erc".into(),
             description: "Read-only bounded native pin ERC over one exact schematic graph snapshot. Configurable symmetric allowed/warning/error pin-type matrix plus input connection/drive, missing power_output and no-connect attachment checks. Returns effective matrix, stable sheet/symbol/pin/net IDs, deterministic issues, source_cursor, complete-for-selected-checks flag and explicit full_erc=false coverage. Labels never supply power. Max10000 graph objects, 1000000 contact candidates, 250000 pin pairs and max_violations1..10000(default1000); partial policy prefixes explicitly incomplete. Graph ambiguity/limits reject. No hierarchy, buses, hidden power pins or all-ERC claim; preserves model/history/selection/dirty state.".into(),
             input_schema: input_schema::<viamind_engine::ErcInput>(),
+        });
+        commands.push(HostCommand {
+            name: "preview_package_pcb_component".into(),
+            description: "Read-only bounded preview creating one physical PCB Part from one complete explicit multi-unit package UUID. Requires current expected_project/full source_cursor and explicit rectangular SMD footprint/Nm origin/side/cardinal rotation. Complete unique all-unit pin/pad bijection and actual pin UUID graph nets; returns guarded create_package_pcb_component command plus unit/pin provenance. No role/reference inference, partial packages or clearance certification. Preserves full session; at most10000 sync objects,4MiB text,8MiB guard.".into(),
+            input_schema: input_schema::<viamind_engine::PackageComponentRequest>(),
         });
         commands.push(HostCommand {
             name: "preview_schematic_pcb_component".into(),
@@ -292,6 +298,10 @@ impl CommandHost for EngineHost {
         if name == "preview_schematic_pcb_component" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.preview_schematic_pcb_component(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "preview_package_pcb_component" {
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.preview_package_pcb_component(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "snapshot_schematic_wire_sheet" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid wire snapshot: {e}"))?;

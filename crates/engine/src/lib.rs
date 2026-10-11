@@ -27,7 +27,11 @@
 //! ```
 
 pub mod assembly;
+pub mod package_component;
 pub use assembly::SetPartAssembly;
+pub use package_component::{
+    CreatePackagePcbComponent, LinkSchematicPackage, PackageComponentPin, PackageComponentPlacement, PackageComponentPreview, PackageComponentRequest,
+};
 pub mod annotation;
 mod annotation_bounds;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};

@@ -29,6 +29,9 @@ impl Command for LinkSchematicSymbol {
         if self.expected_project != project.id || project.board.parts.get(&self.expected_part.id) != Some(&self.expected_part) {
             return Err(CommandError::conflict("project or part changed; reload before linking"));
         }
+        if self.expected_part.schematic_package.is_some() {
+            return Err(CommandError::invalid("part", "component is linked to a complete package; use explicit package unlink first"));
+        }
         let symbol_id = if let SchematicLinkTarget::Symbol { expected } = &self.target {
             let current = project.schematic.sheets.values().filter_map(|s| s.content.as_ref()).find_map(|c| c.symbols.get(&expected.id));
             if current != Some(expected) {

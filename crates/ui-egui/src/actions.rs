@@ -71,6 +71,8 @@ ui_actions! {
     QueryLinkedPinPads => ("query_linked_pin_pads", input_schema::<viamind_engine::PinPadLinkQuery>(), query_linked_pin_pads),
     QueryLinkedComponents => ("query_linked_components", input_schema::<viamind_engine::ComponentLinkQuery>(), query_linked_components),
     CreateSchematicPcbComponent => (viamind_engine::CreateSchematicPcbComponent::NAME, input_schema::<viamind_engine::CreateSchematicPcbComponent>(), create_schematic_pcb_component),
+    CreatePackagePcbComponent => (viamind_engine::CreatePackagePcbComponent::NAME, input_schema::<viamind_engine::CreatePackagePcbComponent>(), create_package_pcb_component),
+    LinkSchematicPackage => (viamind_engine::LinkSchematicPackage::NAME, input_schema::<viamind_engine::LinkSchematicPackage>(), link_schematic_package),
     LinkSchematicSymbol => (viamind_engine::LinkSchematicSymbol::NAME, input_schema::<viamind_engine::LinkSchematicSymbol>(), link_schematic_symbol),
     SynchronizeSchematicPcb => (viamind_engine::SynchronizeSchematicPcb::NAME, input_schema::<viamind_engine::SynchronizeSchematicPcb>(), synchronize_schematic_pcb),
     AnnotateSchematic => (viamind_engine::AnnotateSchematic::NAME, input_schema::<viamind_engine::AnnotateSchematic>(), annotate_schematic),
@@ -306,6 +308,12 @@ fn link_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 fn create_schematic_pcb_component(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::CreateSchematicPcbComponent::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn create_package_pcb_component(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::CreatePackagePcbComponent::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn link_schematic_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::LinkSchematicPackage::NAME, input, Origin::User)?).map_err(encode_error)
 }
 fn synchronize_schematic_pcb(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::SynchronizeSchematicPcb::NAME, input, Origin::User)?).map_err(encode_error)
