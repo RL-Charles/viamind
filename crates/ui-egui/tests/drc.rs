@@ -6,10 +6,14 @@ use viamind_doc::Project;
 use viamind_engine::{EngineHandle, Origin};
 use viamind_ui_egui::ViamindApp;
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).click();
     h.run_steps(5);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).focus();
     h.event(Event::Key { key: Key::A, physical_key: None, pressed: true, repeat: false, modifiers: Modifiers::COMMAND });
     h.run_steps(2);
@@ -49,7 +53,7 @@ fn desktop_drc_reports_coverage_selects_issue_parts_and_marks_agent_edits_stale(
     click(&mut h, "Coverage and exclusions");
     assert!(h.query_by_label_contains("legacy footprint preview").is_some());
     click(&mut h, "Select issue 1");
-    assert_eq!(engine.selection().ids.len(), 2);
+    assert_eq!(engine.selection().ids.len(), 2, "tree={:#?}", h.root());
     assert_eq!(engine.read(Clone::clone), before.project);
     input(&mut h, "Copper clearance (mm)", "-1");
     click(&mut h, "Run DRC");

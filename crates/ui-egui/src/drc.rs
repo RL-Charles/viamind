@@ -69,56 +69,56 @@ impl ViamindApp {
         let engine = design.engine.clone();
         let mut run = false;
         let mut select = None;
-        egui::Window::new("Design rule check").open(&mut self.drc.open).default_width(570.0).show(ui.ctx(), |ui| {
-            ui.label("Batch checks: explicit rectangular SMD pads and polygon board boundaries.");
-            ui.label("This report covers the listed checks. Additional fabrication checks remain.");
-            ui.horizontal(|ui| {
-                let copper = ui.label("Copper clearance (mm)");
-                ui.add(egui::TextEdit::singleline(&mut self.drc.copper).desired_width(70.0)).labelled_by(copper.id);
-                let edge = ui.label("Board edge clearance (mm)");
-                ui.add(egui::TextEdit::singleline(&mut self.drc.edge).desired_width(70.0)).labelled_by(edge.id);
-            });
-            ui.horizontal(|ui| {
-                ui.label("Maximum issues");
-                ui.add(egui::DragValue::new(&mut self.drc.limit).range(1..=10000));
-                run = ui.button("Run DRC").clicked();
-            });
-            if let Some(message) = &self.drc.message {
-                ui.label(message);
-            }
-            if stale {
-                ui.label("Results are stale: the design changed. Run DRC again.");
-            }
-            if let Some(report) = &self.drc.report {
-                let coverage = &report.coverage;
-                ui.label(format!(
-                    "{} scoped violations · {} explicit pads · {} unassigned pads · {} excluded parts",
-                    report.violations.len(),
-                    coverage.checked_pads,
-                    coverage.unassigned_pads,
-                    coverage.excluded_part_count
-                ));
-                if let Some(reason) = &report.incomplete_reason {
-                    ui.label(format!("Incomplete: {reason}"));
-                }
-                if !coverage.explicit_outline_checked {
-                    ui.label("Board boundary checks excluded: no explicit outline.");
-                }
-                ui.collapsing("Coverage and exclusions", |ui| {
-                    if coverage.excluded_details_truncated {
-                        ui.label(format!("Showing first {} of {} excluded parts", coverage.excluded_parts.len(), coverage.excluded_part_count));
-                    }
-                    for part in &coverage.excluded_parts {
-                        ui.label(format!("Excluded {} ({}): {}", part.designator, part.part_id, part.reason));
-                    }
-                    for check in &coverage.checks_not_performed {
-                        ui.label(format!("Not checked: {check}"));
-                    }
-                    if let Some(cursor) = self.drc.source_cursor {
-                        ui.monospace(format!("Snapshot {} / {}", cursor.stream_id, cursor.sequence));
-                    }
+        egui::Window::new("Design rule check").open(&mut self.drc.open).default_width(570.0).default_height(600.0).show(ui.ctx(), |ui| {
+            egui::ScrollArea::vertical().id_salt("drc_contents").show(ui, |ui| {
+                ui.label("Batch checks: explicit rectangular SMD pads and polygon board boundaries.");
+                ui.label("This report covers the listed checks. Additional fabrication checks remain.");
+                ui.horizontal(|ui| {
+                    let copper = ui.label("Copper clearance (mm)");
+                    ui.add(egui::TextEdit::singleline(&mut self.drc.copper).desired_width(70.0)).labelled_by(copper.id);
+                    let edge = ui.label("Board edge clearance (mm)");
+                    ui.add(egui::TextEdit::singleline(&mut self.drc.edge).desired_width(70.0)).labelled_by(edge.id);
                 });
-                egui::ScrollArea::vertical().max_height(330.0).show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    ui.label("Maximum issues");
+                    ui.add(egui::DragValue::new(&mut self.drc.limit).range(1..=10000));
+                    run = ui.button("Run DRC").clicked();
+                });
+                if let Some(message) = &self.drc.message {
+                    ui.label(message);
+                }
+                if stale {
+                    ui.label("Results are stale: the design changed. Run DRC again.");
+                }
+                if let Some(report) = &self.drc.report {
+                    let coverage = &report.coverage;
+                    ui.label(format!(
+                        "{} scoped violations · {} explicit pads · {} unassigned pads · {} excluded parts",
+                        report.violations.len(),
+                        coverage.checked_pads,
+                        coverage.unassigned_pads,
+                        coverage.excluded_part_count
+                    ));
+                    if let Some(reason) = &report.incomplete_reason {
+                        ui.label(format!("Incomplete: {reason}"));
+                    }
+                    if !coverage.explicit_outline_checked {
+                        ui.label("Board boundary checks excluded: no explicit outline.");
+                    }
+                    ui.collapsing("Coverage and exclusions", |ui| {
+                        if coverage.excluded_details_truncated {
+                            ui.label(format!("Showing first {} of {} excluded parts", coverage.excluded_parts.len(), coverage.excluded_part_count));
+                        }
+                        for part in &coverage.excluded_parts {
+                            ui.label(format!("Excluded {} ({}): {}", part.designator, part.part_id, part.reason));
+                        }
+                        for check in &coverage.checks_not_performed {
+                            ui.label(format!("Not checked: {check}"));
+                        }
+                        if let Some(cursor) = self.drc.source_cursor {
+                            ui.monospace(format!("Snapshot {} / {}", cursor.stream_id, cursor.sequence));
+                        }
+                    });
                     for (i, issue) in report.violations.iter().enumerate() {
                         ui.separator();
                         let title = match issue.kind {
@@ -138,8 +138,8 @@ impl ViamindApp {
                             select = Some(issue.objects.iter().map(|p| p.part_id).collect::<std::collections::BTreeSet<_>>());
                         }
                     }
-                });
-            }
+                }
+            });
         });
         if run {
             self.run_design_drc();
