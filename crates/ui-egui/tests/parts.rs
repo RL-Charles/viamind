@@ -1,6 +1,9 @@
 //! Normal placement and selected-part property workflows use shared actions.
 use egui::{Event, Key, Modifiers, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use serde_json::json;
 use viamind_doc::{Project, Side};
 use viamind_engine::{EngineHandle, Origin};
@@ -14,17 +17,24 @@ fn harness(engine: &EngineHandle) -> Harness<'static, ViamindApp> {
     h
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).click();
     h.run_steps(5);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).focus();
+    h.run_steps(2);
+    assert!(h.get_by_label(label).is_focused());
     h.event(Event::Key { key: Key::A, physical_key: None, pressed: true, repeat: false, modifiers: Modifiers::COMMAND });
     h.run_steps(2);
     h.event(Event::Key { key: Key::A, physical_key: None, pressed: false, repeat: false, modifiers: Modifiers::COMMAND });
     h.run_steps(1);
     h.get_by_label(label).type_text(value);
     h.run_steps(5);
+    assert_eq!(h.get_by_label(label).accesskit_node().value().as_deref(), Some(value));
 }
 #[test]
 fn place_edit_delete_and_undo_use_the_same_engine() {
