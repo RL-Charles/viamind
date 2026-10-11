@@ -98,9 +98,11 @@ S079 compatibility and S083 cross-tool/fabrication fidelity remain open.
 
 ## Final integration
 
-Final clean rebase includes sourcing metadata main `80d67c0`. The board parser
+Final clean integration includes sourcing metadata main `80d67c0` and the
+read-only fabrication overlay main `cd19c84`. The board parser
 retains `assembly: None`; detached definitions contain no sourcing fields.
-Range-diff preserves all nine ticket commits, with only additive action-function
-context changed. Both sourcing and conversion handlers remain present. Formatting
+Range-diff preserves feature logic, with only additive engine exports, MCP
+registration/dispatch and desktop action context changed. Sourcing, overlay and
+conversion handlers remain present. Formatting
 passes; fresh combined CI validates this integrated PR head. Historical binary,
 test and native capture provenance above is unchanged.
