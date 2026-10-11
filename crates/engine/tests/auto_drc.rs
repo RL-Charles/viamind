@@ -74,7 +74,13 @@ fn named_policy_edit_and_undo_refresh_captured_automatic_checker_sources() {
         viamind_engine::SetNamedNetRules {
             expected_project: e.read(|p| p.id),
             expected_cursor: e.event_cursor(),
-            rules: vec![viamind_engine::NamedNetRuleRow { net: "A".into(), minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300_001) }],
+            rules: vec![viamind_engine::NamedNetRuleRow {
+                net: "A".into(),
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(300_001),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            }],
         },
         Origin::User,
     )

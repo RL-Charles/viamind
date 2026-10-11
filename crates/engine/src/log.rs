@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs preserve assembly calibration, named-net policy and older feature snapshots.
-pub const LOG_VERSION: u32 = 9;
+/// New logs use version 8 to preserve guarded named-net policy deltas.
+pub const LOG_VERSION: u32 = 10;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -146,6 +146,8 @@ impl EventLog {
                     }),
                     crate::Delta::NamedNetRules { id, before, after } => {
                         header.version >= 8
+                            && header.version >= viamind_doc::net_rules::minimum_rule_version(before)
+                            && header.version >= viamind_doc::net_rules::minimum_rule_version(after)
                             && *id == current.id
                             && viamind_doc::named_net_rule_budget(before).is_ok()
                             && viamind_doc::named_net_rule_budget(after).is_ok()

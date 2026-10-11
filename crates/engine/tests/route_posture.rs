@@ -126,7 +126,13 @@ fn exact_named_width_floor_preserves_odd_nm_posture_geometry_without_widening() 
         viamind_engine::SetNamedNetRules {
             expected_project: old.project.id,
             expected_cursor: old.cursor,
-            rules: vec![viamind_engine::NamedNetRuleRow { net: "EXACT".into(), minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300001) }],
+            rules: vec![viamind_engine::NamedNetRuleRow {
+                net: "EXACT".into(),
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(300001),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            }],
         },
         Origin::User,
     )

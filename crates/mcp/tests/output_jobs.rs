@@ -197,3 +197,48 @@ async fn checked_job_cannot_weaken_named_width_floor_and_reports_both_captured_s
     assert_eq!(retained["report"]["document_net_rules"]["GND"]["minimum_track_width"], 250_000);
     assert_eq!(source.board.net_rules["GND"].minimum_track_width.0, 250_001);
 }
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn checked_saved_zero_baselines_cannot_weaken_captured_via_minima() {
+    let _guard = TEST.lock().await;
+    for (drill, annulus, success) in [(300000, 250000, true), (300001, 250000, false), (300000, 250001, false)] {
+        let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+        project.board.net_rules.insert(
+            "GND".into(),
+            serde_json::from_value(
+                json!({"minimum_copper_clearance":0,"minimum_track_width":1,"minimum_via_drill":drill,"minimum_annular_width":annulus}),
+            )
+            .unwrap(),
+        );
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let tools = viamind_mcp::engine_registry(e.clone()).unwrap();
+        let directory = tempfile::tempdir().unwrap();
+        let mut job = OutputJob::new("Via document floors".into(), 0.);
+        job.profile = viamind_fab::CHECKED_PROFILE.into();
+        job.checks = Some(viamind_fab::OutputJobChecks {
+            copper_clearance_mm: 0.,
+            edge_clearance_mm: 0.,
+            minimum_via_drill_mm: 0.,
+            minimum_annular_width_mm: 0.,
+            hole_clearance_mm: 0.,
+            hole_to_copper_clearance_mm: 0.,
+            max_violations: 1000,
+        });
+        let path = directory.path().join("job.json");
+        save_output_job(&job, &path, None).unwrap();
+        let output = directory.path().join("release");
+        let result = tools.call("run_output_job", json!({"job_path":path,"path":output,"expected_cursor":before.cursor}), Default::default()).await;
+        if success {
+            assert_eq!(result.unwrap()["file_count"], 12);
+            let report: serde_json::Value = serde_json::from_slice(&std::fs::read(output.join("validation/drc.json")).unwrap()).unwrap();
+            assert_eq!(report["report"]["document_net_rules"], json!(before.project.board.net_rules));
+            assert_eq!(report["report"]["rules"]["minimum_via_drill"], 0);
+            assert_eq!(report["report"]["rules"]["minimum_annular_width"], 0);
+        } else {
+            assert!(result.unwrap_err().to_string().contains("violations"));
+            assert!(!output.exists());
+        }
+        assert_eq!(e.session_state(), before);
+        assert!(!std::fs::read_dir(directory.path()).unwrap().any(|p| p.unwrap().file_name().to_string_lossy().starts_with(".viamind-output-job-")));
+    }
+}

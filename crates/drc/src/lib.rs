@@ -409,16 +409,22 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
         report.coverage.checked_vias += 1;
         report.coverage.checked_holes += 1;
         report.coverage.unassigned_vias += usize::from(via.net.is_none());
-        for (kind, measured, required, message) in [
-            (ViolationKind::MinimumViaDrill, via.drill.0 as f64, report.rules.minimum_via_drill, "via drill diameter is below minimum"),
+        let drill_minimum = viamind_doc::net_rules::named_via_drill(&project.board.net_rules, report.rules.minimum_via_drill, via.net.as_deref());
+        let annular_minimum =
+            viamind_doc::net_rules::named_annular_width(&project.board.net_rules, report.rules.minimum_annular_width, via.net.as_deref());
+        let doubled_annulus = via.diameter.0.checked_sub(via.drill.0).ok_or_else(|| DrcError("via annulus overflow".into()))?;
+        let doubled_required = annular_minimum.0.checked_mul(2).ok_or_else(|| DrcError("via annular minimum overflow".into()))?;
+        for (kind, measured, required, below, message) in [
+            (ViolationKind::MinimumViaDrill, via.drill.0 as f64, drill_minimum, via.drill < drill_minimum, "via drill diameter is below minimum"),
             (
                 ViolationKind::MinimumAnnularWidth,
-                (via.diameter.0 - via.drill.0) as f64 / 2.0,
-                report.rules.minimum_annular_width,
+                doubled_annulus as f64 / 2.0,
+                annular_minimum,
+                doubled_annulus < doubled_required,
                 "via radial annular width is below minimum",
             ),
         ] {
-            if measured + EPS < required.0 as f64 && !report.truncated {
+            if below && !report.truncated {
                 report.add(
                     Violation {
                         kind,
