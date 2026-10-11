@@ -94,14 +94,15 @@ pub(crate) struct DocumentState {
     pub(crate) saved: Project,
     pub(crate) path: Option<PathBuf>,
     pub(crate) dirty: bool,
+    pub(crate) unsaved_import: bool,
 }
 
 impl DocumentState {
     pub(crate) fn new(project: Project) -> Self {
-        Self { saved: project, path: None, dirty: false }
+        Self { saved: project, path: None, dirty: false, unsaved_import: false }
     }
 
     pub(crate) fn status(&self) -> DocumentStatus {
-        DocumentStatus { path: self.path.clone(), dirty: self.dirty }
+        DocumentStatus { path: self.path.clone(), dirty: self.dirty || self.unsaved_import }
     }
 }

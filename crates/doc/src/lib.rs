@@ -13,6 +13,7 @@ pub mod footprint;
 pub mod id;
 pub mod outline;
 pub mod pad;
+pub mod pcb_sexpr;
 pub mod project;
 pub mod schematic;
 pub mod symbol_library;

@@ -26,6 +26,7 @@ pub mod output_jobs;
 mod pad_routing;
 pub mod pads;
 pub mod parts;
+pub mod pcb_import;
 pub mod pcb_sync;
 pub mod pin_pad_probe;
 pub mod placement;
@@ -149,6 +150,7 @@ pub struct ViamindApp {
     pub design: Option<Design>,
     pub view_export: view_export::ViewExportUi,
     pub assembly_export: assembly_export::AssemblyExportUi,
+    pub pcb_import: pcb_import::PcbImportUi,
     pub fabrication: fabrication::FabricationUi,
     pub output_jobs: output_jobs::OutputJobUi,
     pub files: files::FileUi,
@@ -197,6 +199,7 @@ impl ViamindApp {
             design: None,
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
+            pcb_import: pcb_import::PcbImportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
@@ -237,6 +240,7 @@ impl ViamindApp {
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
+            pcb_import: pcb_import::PcbImportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
@@ -416,6 +420,7 @@ impl ViamindApp {
         self.output_jobs_window(ui);
         self.view_export_window(ui);
         self.assembly_export_window(ui);
+        self.pcb_import_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
             let name =
@@ -486,6 +491,11 @@ impl ViamindApp {
                     ui.separator();
                     if ui.button("Saved output jobs…").clicked() {
                         self.begin_output_jobs();
+                        ui.close();
+                    }
+
+                    if ui.button("Import PCB S-expression…").clicked() {
+                        self.begin_pcb_import();
                         ui.close();
                     }
                     if ui.button("Export assembly CSV…").clicked() {

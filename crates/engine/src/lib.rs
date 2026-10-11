@@ -113,3 +113,7 @@ pub mod symbol_library;
 pub use symbol_library::{
     ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot, SymbolTemplateExportResult,
 };
+
+
+mod pcb_import;
+pub use pcb_import::{ImportPcb, PcbImportPreview, PcbImportResult, PreviewPcbImport};

@@ -180,17 +180,55 @@ impl EngineHandle {
         origin: Origin,
         load: impl FnOnce() -> Result<(Project, Option<std::path::PathBuf>), EngineError>,
     ) -> Result<crate::SessionSnapshot, EngineError> {
+        self.replace_project_internal(command, guard, origin, None, false, load)
+    }
+
+    pub(crate) fn replace_imported_project(
+        &self,
+        expected_project: viamind_doc::ObjectId,
+        expected_cursor: crate::EventCursor,
+        origin: Origin,
+        load: impl FnOnce() -> Result<Project, EngineError>,
+    ) -> Result<crate::SessionSnapshot, EngineError> {
+        self.replace_project_internal(
+            "import_pcb",
+            crate::ReplaceGuard { discard_dirty: false, expected_cursor: Some(expected_cursor) },
+            origin,
+            Some(expected_project),
+            true,
+            || Ok((load()?, None)),
+        )
+    }
+
+    fn replace_project_internal(
+        &self,
+        command: &str,
+        guard: crate::ReplaceGuard,
+        origin: Origin,
+        expected_project: Option<viamind_doc::ObjectId>,
+        imported: bool,
+        load: impl FnOnce() -> Result<(Project, Option<std::path::PathBuf>), EngineError>,
+    ) -> Result<crate::SessionSnapshot, EngineError> {
         let files = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
         let before = {
             let engine = self.lock();
             Self::check_replace(&engine, &guard, command)?;
+            if expected_project.is_some_and(|id| id != engine.project().id) {
+                return Err(EngineError::InvalidInput { command: command.into(), message: "project changed; preview again".into() });
+            }
             engine.event_cursor()
         };
         let (project, path) = load()?;
         let (snapshot, wakers) = {
             let mut engine = self.lock();
             Self::check_replace(&engine, &crate::ReplaceGuard { expected_cursor: Some(before), ..guard }, command)?;
+            if expected_project.is_some_and(|id| id != engine.project().id) {
+                return Err(EngineError::InvalidInput { command: command.into(), message: "project changed; preview again".into() });
+            }
             engine.replace_document(project, path, origin);
+            if imported {
+                engine.mark_imported_unsaved();
+            }
             self.automatic_drc.design_changed();
             (engine.session_state(), engine.take_due_wakers())
         };

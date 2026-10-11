@@ -277,3 +277,8 @@ PCB static cardinal walkaround: [checked pad-to-pad planning and conservative li
 
 Reusable native schematic symbols: [detached symbol library files and guarded fresh placement](docs/native-symbol-libraries.md).
 Saved manufacturing settings: [desktop, CLI and MCP output jobs](docs/saved-output-jobs.md) create a coherent NEW release with generic assembly tables and supported outer-layer fabrication files.
+
+
+## Standalone PCB geometry import
+
+File → Import PCB S-expression… provides a bounded read-only fidelity preview and guarded conversion of the explicitly supported standalone PCB subset. Imported geometry starts as an unsaved native document; dirty work and source changes are protected. See [workflow and exclusions](docs/pcb-import.md). Full project/corpus and fabrication equivalence remain open.

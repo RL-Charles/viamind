@@ -22,7 +22,10 @@ agreement and full fabrication fidelity remain unproven.
 Accept one `kicad_pcb` root and explicitly tested date-version headers
 `20221018`, `20240108` and `20241229`. Other versions reject with an actionable
 message; this whitelist does not promise every feature of any application release.
-Require canonical front/back copper layers without inner copper.
+Require unique unsigned layer ordinals, unique documented canonical layer names,
+exact name/type/optional-display-name scalar arity and documented layer types.
+Front copper precedes back copper in stack ordering; no undocumented fixed numeric
+ID mapping is inferred. Inner copper or unknown canonical layers block Apply.
 
 - `gr_line` and `gr_rect` on `Edge.Cuts` form exact closed loops. Each endpoint
   has degree two; no snapping or healing. The largest loop is the sole outer
@@ -51,9 +54,9 @@ and positive-size bounds. No floating-point geometry or approximations.
 
 ## Identity and connectivity
 
-Preserve supported object UUIDs from `uuid` or legacy `tstamp`; ambiguous duplicate
+Preserve native part, pad, track and via UUIDs from `uuid` or legacy `tstamp`; ambiguous duplicate
 fields, nil, missing, malformed and repeated IDs reject. Use a fresh native
-project UUID. References and exact literal pad numbers must be unique in their
+project UUID. Outline edge UUIDs are retained only as report source IDs; their identity fields are omitted because native outlines have no per-edge identities. Exact outline geometry is imported. References and exact literal pad numbers must be unique in their
 native scope. No reference, nearest-point or net-name inference.
 
 Resolve track/via/pad numeric net references through the declared net table.
@@ -92,7 +95,9 @@ work is bounded by its vertex limit. Report paths use child indices and bounded
 depth rather than copying arbitrary names. Reject excess diagnostics, never hide
 objects behind a result cap.
 
-Read a regular UTF-8 file only. Check file type/size before opening, then verify
+Read a regular UTF-8 file only. Cap source paths at 4096 encoded bytes before
+absolute-path construction or OS calls. Use safe nonblocking Linux open so a
+regular-file→FIFO swap cannot stall a worker; validate the opened descriptor. Check file type/size before opening, then verify
 opened metadata and read at most limit+1; FIFO, devices, directories, binary and
 invalid UTF-8 reject. Recheck after reading. No source writes, external includes,
 commands, models or network fetches. Preview returns SHA256 of the exact bytes.
