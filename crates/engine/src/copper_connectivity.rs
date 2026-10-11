@@ -17,6 +17,7 @@ const MAX_NM: u64 = 10_000_000_000;
 pub struct CopperConnectivityCoverage {
     pub mode: &'static str,
     pub budget_fallback: bool,
+    pub fallback_reason: Option<&'static str>,
     pub supported_named_pads: usize,
     pub unsupported_named_pads: usize,
     pub analyzed_tracks: usize,
@@ -29,6 +30,7 @@ impl Default for CopperConnectivityCoverage {
         Self {
             mode: "conservative_exact_endpoints",
             budget_fallback: false,
+            fallback_reason: None,
             supported_named_pads: 0,
             unsupported_named_pads: 0,
             analyzed_tracks: 0,
@@ -116,18 +118,25 @@ fn distance2(a: Point, b: Point) -> i128 {
     dx * dx + dy * dy
 }
 impl CopperProof {
-    fn fallback() -> Self {
-        Self { coverage: CopperConnectivityCoverage { budget_fallback: true, ..Default::default() }, pads: BTreeMap::new() }
+    fn fallback(reason: &'static str) -> Self {
+        Self {
+            coverage: CopperConnectivityCoverage {
+                budget_fallback: reason != "invalid_via_geometry",
+                fallback_reason: Some(reason),
+                ..Default::default()
+            },
+            pads: BTreeMap::new(),
+        }
     }
     pub fn analyze(project: &Project) -> Self {
         let mut result = Self { coverage: CopperConnectivityCoverage::default(), pads: BTreeMap::new() };
         if !budget(project) {
-            return Self::fallback();
+            return Self::fallback("allocation_budget");
         }
         // All holes matter, including unassigned and foreign-net vias. Broad phase
         // boxes are exact here (coordinates below 2^53); over-exclusion is safe.
         if project.board.vias.values().any(|v| v.validate().is_err()) {
-            return Self::fallback();
+            return Self::fallback("invalid_via_geometry");
         }
         let holes =
             SpatialIndex::bulk_load(project.board.vias.values().map(|v| (v.id, Rect::from_point(v.position).inflate(Nm((v.drill.0 + 1) / 2)))));
@@ -137,7 +146,7 @@ impl CopperProof {
             for (id, _) in holes.query_rect(&Rect::from_point(via.position).inflate(Nm((via.diameter.0 + 1) / 2))) {
                 result.coverage.hole_candidates += 1;
                 if result.coverage.hole_candidates > 1_000_000 {
-                    return Self::fallback();
+                    return Self::fallback("hole_candidate_budget");
                 }
                 safe &= id == via.id;
             }
@@ -159,7 +168,7 @@ impl CopperProof {
             for (id, _) in holes.query_rect(&Rect::new(track.start, track.end)) {
                 result.coverage.hole_candidates += 1;
                 if result.coverage.hole_candidates > 1_000_000 {
-                    return Self::fallback();
+                    return Self::fallback("hole_candidate_budget");
                 }
                 let via = &project.board.vias[&id];
                 let incident = (track.start == via.position || track.end == via.position)
@@ -217,7 +226,7 @@ impl CopperProof {
                 for _ in holes.query_rect(&Rect::from_point(center)) {
                     result.coverage.hole_candidates += 1;
                     if result.coverage.hole_candidates > 1_000_000 {
-                        return Self::fallback();
+                        return Self::fallback("hole_candidate_budget");
                     }
                     hole_affected = true;
                 }

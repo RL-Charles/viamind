@@ -33,3 +33,7 @@ centers, except a segment reaching an isolated same-net via annulus from its exa
 center. Overlapping hole/annulus boxes disable that via proof. These box checks
 can leave extra guides. Invalid via geometry or more than one million aggregate
 spatial candidates disables all suppression.
+
+`fallback_reason` distinguishes allocation limits, hole-candidate limits and
+invalid via geometry. `budget_fallback` is true only for the two budget cases;
+any non-null reason means no copper suppression was attempted for that board.

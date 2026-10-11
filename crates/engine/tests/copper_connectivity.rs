@@ -133,7 +133,7 @@ fn mirrored_quarter_turn_exact_off_grid_routes_disappear_and_undo_restores_guide
 }
 #[test]
 fn through_via_bridges_exact_sides_only_with_annulus_reaching_incident_tracks() {
-    for mode in 0..5 {
+    for mode in 0..6 {
         let mut project = Project::new("Via endpoint proof");
         part(&mut project, 10_000_000, 10_000_000, Side::Top);
         part(&mut project, 30_000_000, 10_000_000, Side::Bottom);
@@ -155,6 +155,17 @@ fn through_via_bridges_exact_sides_only_with_annulus_reaching_incident_tracks() 
         }
         if mode == 4 {
             project.board.vias.values_mut().next().unwrap().drill = Nm(600_000);
+        }
+        if mode == 5 {
+            let other = Via {
+                id: ObjectId::new(),
+                position: p(20_350_000, 10_000_000),
+                diameter: Nm(600_000),
+                drill: Nm(300_000),
+                net: Some("foreign".into()),
+            };
+            project.board.vias.insert(other.id, other);
+            assert_eq!(query(&project).copper_proof.analyzed_vias, 0);
         }
         assert_eq!(query(&project).guide_count, usize::from(mode != 0), "mode{mode}");
     }
@@ -214,5 +225,30 @@ fn drilled_away_shapes_and_foreign_midsegment_holes_never_hide_guides() {
         if tiny {
             assert_eq!(result.copper_proof.unsupported_named_pads, 2);
         }
+    }
+}
+#[test]
+fn dense_hole_candidates_and_invalid_via_geometry_disable_all_proofs_explicitly() {
+    for invalid in [false, true] {
+        let mut project = Project::new("Hole proof fallback");
+        part(&mut project, 10_000_000, 10_000_000, Side::Top);
+        part(&mut project, 30_000_000, 10_000_000, Side::Top);
+        track(&mut project, p(10_000_000, 10_000_000), p(30_000_000, 10_000_000), CopperLayer::Top, "N");
+        assert_eq!(query(&project).guide_count, 0);
+        for _ in 0..if invalid { 1 } else { 1001 } {
+            let via = Via {
+                id: ObjectId::new(),
+                position: p(50_000_000, 50_000_000),
+                diameter: Nm(600_000),
+                drill: Nm(if invalid { 600_000 } else { 300_000 }),
+                net: Some("other".into()),
+            };
+            project.board.vias.insert(via.id, via);
+        }
+        let result = query(&project);
+        assert_eq!(result.guide_count, 1);
+        assert_eq!(result.copper_proof.analyzed_tracks, 0);
+        assert_eq!(result.copper_proof.budget_fallback, !invalid);
+        assert_eq!(result.copper_proof.fallback_reason, Some(if invalid { "invalid_via_geometry" } else { "hole_candidate_budget" }));
     }
 }
