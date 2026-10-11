@@ -8,7 +8,7 @@ struct Inspection {
     engine: viamind_engine::EngineHandle,
     before: viamind_engine::SessionSnapshot,
     capture: Option<PathBuf>,
-    frames: usize,
+    ui_passes: usize,
     control_bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspection {
@@ -18,7 +18,7 @@ impl eframe::App for Inspection {
         assert_eq!(self.app.track_cleanup.checked().expect("retained checked preview").counts.deleted_tracks, 2);
         let content = ui.ctx().content_rect();
         assert!(self.control_bounds.iter().all(|r| content.contains_rect(*r)), "prepared production controls fit actual native viewport");
-        self.frames += 1;
+        self.ui_passes += 1;
         if let Some(path) = &self.capture {
             let screenshot = ui.input(|i| {
                 i.events.iter().find_map(|event| match event {
@@ -28,17 +28,17 @@ impl eframe::App for Inspection {
             });
             if let Some(image) = screenshot {
                 assert!(image.pixels.iter().all(|p| p.a() == 255), "opaque native framebuffer required for lossless RGB capture");
-                let mut file = std::fs::File::create(path).expect("create native framebuffer artifact");
+                let mut file = std::fs::File::options().write(true).create_new(true).open(path).expect("create native framebuffer artifact");
                 write!(file, "P6\n{} {}\n255\n", image.size[0], image.size[1]).expect("PPM header");
                 let pixels: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
                 file.write_all(&pixels).expect("native framebuffer RGB pixels");
                 println!(
                     "{}",
-                    serde_json::json!({"capture":"eframe native WGPU framebuffer Screenshot event","path":path,"pixels":image.size,"native_frames":self.frames,"full_session_unchanged":true,"prepared_control_bounds_fit_native_viewport":true,"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                    serde_json::json!({"capture":"eframe native WGPU framebuffer Screenshot event","path":path,"pixels":image.size,"native_ui_passes":self.ui_passes,"full_session_unchanged":true,"prepared_control_bounds_fit_native_viewport":true,"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
                 );
                 self.capture = None;
             } else {
-                if self.frames == 8 {
+                if self.ui_passes == 8 {
                     ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
                 }
                 ui.ctx().request_repaint_after(std::time::Duration::from_millis(16));
@@ -99,7 +99,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            Ok(Box::new(Inspection { app, engine, before, capture, frames: 0, control_bounds }))
+            Ok(Box::new(Inspection { app, engine, before, capture, ui_passes: 0, control_bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;
