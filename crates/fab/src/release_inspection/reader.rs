@@ -8,6 +8,7 @@ use std::{
     path::Path,
     sync::atomic::{AtomicBool, Ordering},
 };
+use viamind_doc::fabrication_view::{FabricationLayer, FabricationPrimitive, FabricationReadBudget, MAX_FILE_BYTES, parse_gerber};
 static INSPECTING: AtomicBool = AtomicBool::new(false);
 struct Permit;
 impl Permit {
@@ -110,6 +111,65 @@ fn revalidate(root_path: &Path, root: &Opened, dirs: &BTreeMap<&str, Opened>, fi
     }
     Ok(())
 }
+fn opening_layer(name: &str) -> Option<(FabricationLayer, bool)> {
+    Some(match name {
+        "fabrication/top-mask.gbr" => (FabricationLayer::TopMaskOpenings, true),
+        "fabrication/bottom-mask.gbr" => (FabricationLayer::BottomMaskOpenings, true),
+        "fabrication/top-paste.gbr" => (FabricationLayer::TopPaste, false),
+        "fabrication/bottom-paste.gbr" => (FabricationLayer::BottomPaste, false),
+        _ => return None,
+    })
+}
+fn inspect_openings(
+    bytes: &[u8],
+    name: &str,
+    project: ObjectId,
+    budget: &mut FabricationReadBudget,
+    observed: &mut ObservedPadOpenings,
+) -> io::Result<()> {
+    let (layer, negative) = opening_layer(name).expect("only selected opening files");
+    let text = std::str::from_utf8(bytes).map_err(invalid)?;
+    let geometry = parse_gerber(text, budget).map_err(invalid)?;
+    if geometry.layer != layer || geometry.negative_file_polarity != negative || geometry.same_coordinates != Some(project) {
+        return Err(invalid(format!("{name} opening side/polarity/common-coordinate identity differs from release")));
+    }
+    let mut rectangles = 0;
+    let mut circles = 0;
+    for primitive in geometry.primitives {
+        match primitive {
+            FabricationPrimitive::Rectangle { .. } => rectangles += 1,
+            FabricationPrimitive::Circle { .. } if negative => circles += 1,
+            _ => return Err(invalid(format!("{name} only permits rectangular pad flashes and mask via circles"))),
+        }
+    }
+    match layer {
+        FabricationLayer::TopMaskOpenings => {
+            observed.top_mask_rectangles = rectangles;
+            observed.top_mask_via_circles = circles;
+        }
+        FabricationLayer::BottomMaskOpenings => {
+            observed.bottom_mask_rectangles = rectangles;
+            observed.bottom_mask_via_circles = circles;
+        }
+        FabricationLayer::TopPaste => observed.top_paste_rectangles = rectangles,
+        FabricationLayer::BottomPaste => observed.bottom_paste_rectangles = rectangles,
+        _ => unreachable!(),
+    }
+    Ok(())
+}
+fn match_openings(observed: &ObservedPadOpenings, fab: &FabManifest) -> io::Result<()> {
+    let summary = fab.pad_apertures.as_ref().ok_or_else(|| invalid("job5 needs explicit aperture summary"))?;
+    if observed.top_mask_rectangles != summary.top_mask_rectangles
+        || observed.bottom_mask_rectangles != summary.bottom_mask_rectangles
+        || observed.top_paste_rectangles != summary.top_paste_rectangles
+        || observed.bottom_paste_rectangles != summary.bottom_paste_rectangles
+        || observed.top_mask_via_circles != fab.through_via_count
+        || observed.bottom_mask_via_circles != fab.through_via_count
+    {
+        return Err(invalid("observed mask/paste flash side/counts differ from explicit aperture summary or through-via count"));
+    }
+    Ok(())
+}
 pub(super) fn inspect(input: &InspectOutputRelease) -> io::Result<ReleaseInspection> {
     inspect_with(input, || {})
 }
@@ -161,15 +221,30 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
     }
     let mut placement = None;
     let mut bom = None;
+    let mut fab_manifest = None;
+    let mut opening_budget = FabricationReadBudget::default();
+    let mut observed_openings = (job.include_paste == Some(true)).then(ObservedPadOpenings::default);
     for name in manifest.files.keys().filter(|name| name.as_str() != "job.json") {
-        let parsed = matches!(name.as_str(), CALIBRATED | POPULATED | "fabrication/manifest.json");
-        let bytes = read(files.get_mut(name).expect("opened fixed path"), cap(name), parsed)?;
+        let openings = observed_openings.is_some() && opening_layer(name).is_some();
+        let parsed = openings || matches!(name.as_str(), CALIBRATED | POPULATED | "fabrication/manifest.json");
+        let byte_cap = if openings { MAX_FILE_BYTES } else { cap(name) };
+        let bytes = read(files.get_mut(name).expect("opened fixed path"), byte_cap, parsed)?;
+        if openings {
+            inspect_openings(&bytes, name, manifest.project_id, &mut opening_budget, observed_openings.as_mut().expect("job5"))?;
+        }
         match name.as_str() {
             CALIBRATED => placement = Some(bytes),
             POPULATED => bom = Some(bytes),
-            "fabrication/manifest.json" => validate_fabrication(&json::<FabManifest>(&bytes)?, &manifest, &job)?,
+            "fabrication/manifest.json" => {
+                let fab = json::<FabManifest>(&bytes)?;
+                validate_fabrication(&fab, &manifest, &job)?;
+                fab_manifest = Some(fab);
+            }
             _ => {}
         }
+    }
+    if let Some(observed) = &observed_openings {
+        match_openings(observed, fab_manifest.as_ref().expect("required fabrication manifest"))?;
     }
     let matched = if let Some(cal) = &manifest.calibrated_placement {
         csv::inspect(
@@ -189,11 +264,11 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
     }
     revalidate(&path, &root, &dirs, &files)?;
     Ok(ReleaseInspection{
-        path,format:manifest.format,version:manifest.version,profile:job.profile,project_id:manifest.project_id,exported_cursor:manifest.exported_cursor,
+        observed_pad_openings:observed_openings,path,format:manifest.format,version:manifest.version,profile:job.profile,project_id:manifest.project_id,exported_cursor:manifest.exported_cursor,
         file_count:facts.len()+1,observed_bytes:total,files:facts,
         calibrated_component_count:manifest.calibrated_placement.map(|c|c.component_count),matched_assembly:matched,release_exclusions:manifest.exclusions,
-        checks_performed:vec!["Strict supported release/job layout and version/profile/summary matrix".into(),"Declared/observed regular file byte lengths and observed path/descriptor identity stability".into(),"Fabrication manifest project/files/mask/coordinate metadata consistency".into(),"When present: calibrated row/count validity and populated shared fields/component membership/identity digest".into()],
-        checks_not_performed:vec!["No authenticated file-content digest, original-export authenticity or current-board equality".into(),"No geometry/Gerber/XNC/legacy assembly/validation report semantic or DRC recomputation".into(),"No vendor/manufacturing/stock/polarity acceptance".into(),"Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports".into(),"Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return".into()],
+        checks_performed:vec!["Strict supported release/job layout and version/profile/summary matrix".into(),"Declared/observed regular file byte lengths and observed path/descriptor identity stability".into(),"Fabrication manifest project/files/mask/coordinate metadata consistency".into(),"For job5: independently parsed mask/paste side, polarity, common coordinate ID, rectangular pad flash counts and mask via-circle counts (shared 10000 primitive/100000 command budget; 4 MiB/file)".into(),"When present: calibrated row/count validity and populated shared fields/component membership/identity digest".into()],
+        checks_not_performed:vec!["No authenticated file-content digest, original-export authenticity or current-board equality".into(),"No geometry equality, copper/profile/Legend Gerber, XNC/legacy assembly/validation semantic or DRC recomputation; legacy jobs do not parse openings".into(),"No vendor/manufacturing/stock acceptance or component electrical polarity checks".into(),"Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports".into(),"Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return".into()],
     })
 }
 

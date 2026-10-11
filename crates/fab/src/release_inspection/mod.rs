@@ -56,8 +56,20 @@ pub struct ReleaseFileFact {
     pub declared_bytes: usize,
     pub observed_bytes: usize,
 }
+/// Independently observed supported opening flashes, not original-board equality.
+#[derive(Clone, Debug, Default, Serialize, PartialEq, Eq)]
+pub struct ObservedPadOpenings {
+    pub top_mask_rectangles: usize,
+    pub bottom_mask_rectangles: usize,
+    pub top_mask_via_circles: usize,
+    pub bottom_mask_via_circles: usize,
+    pub top_paste_rectangles: usize,
+    pub bottom_paste_rectangles: usize,
+}
 #[derive(Clone, Debug, Serialize)]
 pub struct ReleaseInspection {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub observed_pad_openings: Option<ObservedPadOpenings>,
     pub path: PathBuf,
     pub format: String,
     pub version: u32,

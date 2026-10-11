@@ -13,5 +13,15 @@
     "profile.gbr": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4",
     "top-copper.gbr": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf",
     "top-mask.gbr": "4a83b7ca001c4ca0b3016f201d5c3c3ae03302704079b027f923bcaa083778f6"
+  },
+  "svg": {
+    "file": "board.svg",
+    "bytes": 3751,
+    "sha256": "a6cf856b3dc82480394f696ed2a207941f741100bdc6d167d4e678c0344babb4",
+    "layers": [
+      "top_copper",
+      "bottom_copper",
+      "profile"
+    ]
   }
 }

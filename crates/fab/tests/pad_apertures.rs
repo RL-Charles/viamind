@@ -139,3 +139,79 @@ fn version5_companion_matrix_exact_release_files_and_null_summary_refuse() {
         assert!(OutputJobSnapshot::capture(&p, job).is_err());
     }
 }
+
+fn change_release_file(path: &std::path::Path, name: &str, mutate: impl FnOnce(String) -> String) {
+    let file = path.join(name);
+    let bytes = mutate(fs::read_to_string(&file).unwrap());
+    fs::write(&file, bytes.as_bytes()).unwrap();
+    let manifest_path = path.join("release-manifest.json");
+    let mut manifest: serde_json::Value = serde_json::from_slice(&fs::read(&manifest_path).unwrap()).unwrap();
+    manifest["files"][name] = serde_json::json!(bytes.len());
+    fs::write(manifest_path, serde_json::to_vec(&manifest).unwrap()).unwrap();
+}
+#[test]
+fn independent_job5_observed_openings_refuse_semantic_corruption_even_when_lengths_agree() {
+    let _lock = SERIAL.lock().unwrap();
+    let mut p = sample();
+    for part in p.board.parts.values_mut() {
+        for pad in &mut part.pads.as_mut().unwrap().0 {
+            pad.apertures = Some(PadApertures {
+                mask: Some(ApertureRect { width: Nm(7), height: Nm(11) }),
+                paste: Some(ApertureRect { width: Nm(3), height: Nm(5) }),
+            });
+        }
+    }
+    let mut job = OutputJob::new("Independent opening observations".into(), 0.0);
+    job.version = 5;
+    job.include_paste = Some(true);
+    let snapshot = OutputJobSnapshot::capture(&p, job).unwrap();
+    let tmp = tempfile::tempdir().unwrap();
+    for n in 0..5 {
+        let (path, manifest) = snapshot
+            .write(ReleaseCursor { stream_id: viamind_doc::ObjectId::new(), sequence: 0 }, &tmp.path().join(format!("case-{n}")), None)
+            .unwrap();
+        let input = InspectOutputRelease { path: path.clone() };
+        let report = inspect_output_release(&input).unwrap();
+        let observed = report.observed_pad_openings.unwrap();
+        let summary = manifest.pad_apertures.as_ref().unwrap();
+        assert_eq!(observed.top_mask_rectangles, summary.top_mask_rectangles);
+        assert_eq!(observed.bottom_mask_rectangles, summary.bottom_mask_rectangles);
+        assert_eq!(observed.top_paste_rectangles, summary.top_paste_rectangles);
+        assert_eq!(observed.bottom_paste_rectangles, summary.bottom_paste_rectangles);
+        assert_eq!(observed.top_mask_via_circles, p.board.vias.len());
+        assert_eq!(observed.bottom_mask_via_circles, p.board.vias.len());
+        match n {
+            0 => change_release_file(&path, "fabrication/top-mask.gbr", |s| {
+                let changed = s.replace("Soldermask,Top", "Soldermask,Bot");
+                assert_ne!(s, changed);
+                assert_eq!(s.len(), changed.len());
+                changed
+            }),
+            1 => change_release_file(&path, "fabrication/top-paste.gbr", |s| {
+                let changed = s.replace("FilePolarity,Positive", "FilePolarity,Negative");
+                assert_ne!(s, changed);
+                assert_eq!(s.len(), changed.len());
+                changed
+            }),
+            2 => change_release_file(&path, "fabrication/bottom-paste.gbr", |s| {
+                let changed = s.replace(&p.id.to_string(), &viamind_doc::ObjectId::new().to_string());
+                assert_ne!(s, changed);
+                assert_eq!(s.len(), changed.len());
+                changed
+            }),
+            3 => {
+                let side = if summary.top_paste_rectangles > 0 { "top" } else { "bottom" };
+                change_release_file(&path, &format!("fabrication/{side}-paste.gbr"), |s| {
+                    let flash = s.lines().find(|line| line.starts_with('X') && line.ends_with("D03*")).unwrap();
+                    s.replacen(&format!("{flash}\n"), "", 1)
+                });
+            }
+            _ => change_release_file(&path, "fabrication/manifest.json", |s| {
+                let mut v: serde_json::Value = serde_json::from_str(&s).unwrap();
+                v["through_via_count"] = serde_json::json!(p.board.vias.len() + 1);
+                serde_json::to_string(&v).unwrap()
+            }),
+        }
+        assert!(inspect_output_release(&input).is_err(), "corruption {n} accepted despite matching declared byte length");
+    }
+}
