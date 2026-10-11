@@ -124,7 +124,11 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
     let page = registry.call("query_route_endpoints", json!({"net":"EXACT"}), a.clone()).await.unwrap();
     assert_eq!(page["total"], 2);
     assert_eq!(e.session_state(), before);
-    let input = json!({"expected_project":page["project_id"],"expected_cursor":page["source_cursor"],"start":page["endpoints"][0]["id"],"target":page["endpoints"][1]["id"],"via":{"x":20000000,"y":20000000},"before":[],"after":[],"grid":250000,"width":250000,"via_diameter":600000,"via_drill":300000});
+    // Discovery order is stable by identity, not by randomly generated UUID's layer.
+    let endpoints = page["endpoints"].as_array().unwrap();
+    let top = endpoints.iter().find(|endpoint| endpoint["layer"] == "top").unwrap();
+    let bottom = endpoints.iter().find(|endpoint| endpoint["layer"] == "bottom").unwrap();
+    let input = json!({"expected_project":page["project_id"],"expected_cursor":page["source_cursor"],"start":top["id"],"target":bottom["id"],"via":{"x":20000000,"y":20000000},"before":[],"after":[],"grid":250000,"width":250000,"via_diameter":600000,"via_drill":300000});
     let result = registry.call("route_pad_via_polyline", input.clone(), a.clone()).await.unwrap();
     assert_eq!(result["created"].as_array().unwrap().len(), 3);
     let after = e.session_state();
