@@ -240,11 +240,6 @@ impl ViamindApp {
         let mut clear_sourcing = false;
         let enabled =
             !self.files.busy() && !self.copper.editing() && self.parts.placement.is_none() && !self.outlines.editing() && !self.pads.editing();
-        ui.add_enabled_ui(enabled, |ui| {
-            properties.sourcing.fields(ui);
-            apply_sourcing = ui.button("Apply sourcing").clicked();
-            clear_sourcing = ui.button("Clear sourcing").clicked();
-        });
         if let Some(message) = &self.parts.message {
             ui.label(message);
         }
@@ -257,6 +252,11 @@ impl ViamindApp {
             reload = ui.button("Reload").clicked();
         });
         delete |= ui.button("Delete part").clicked();
+        ui.add_enabled_ui(enabled, |ui| {
+            properties.sourcing.fields(ui);
+            apply_sourcing = ui.button("Apply sourcing").clicked();
+            clear_sourcing = ui.button("Clear sourcing").clicked();
+        });
         if edit_pads {
             self.begin_edit_pads(part);
             return;

@@ -61,6 +61,11 @@ fn compact_sourcing_is_guarded_undoable_and_matches_live_mcp_csv() {
     click(&mut h, "Apply sourcing");
     assert_eq!(engine.session_state(), state);
     click(&mut h, "Reload");
+    click(&mut h, "Clear sourcing");
+    assert!(engine.read(|p| p.board.part(&id).unwrap().assembly.is_none()));
+    engine.undo(Origin::User).unwrap();
+    h.run_steps(5);
+    let state = engine.session_state();
     let runtime = tokio::runtime::Runtime::new().unwrap();
     let registry = viamind_mcp::engine_registry(engine.clone()).unwrap();
     let directory = tempfile::tempdir().unwrap();
@@ -73,9 +78,18 @@ fn compact_sourcing_is_guarded_undoable_and_matches_live_mcp_csv() {
             Default::default(),
         ))
         .unwrap();
-    UiAction::ExportAssemblyCsv.run(&engine, json!({"kind":"sourcing_bom","path":desktop,"expected_cursor":engine.event_cursor()})).unwrap();
+    click(&mut h, "File");
+    click(&mut h, "Export assembly CSV…");
+    click(&mut h, "Sourcing BOM");
+    input(&mut h, "CSV output file", desktop.to_str().unwrap());
+    click(&mut h, "Export CSV to NEW file");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while h.state().assembly_export.busy() && std::time::Instant::now() < deadline {
+        h.run_steps(3);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    h.run_steps(3);
+    assert!(!h.state().assembly_export.busy());
     assert_eq!(std::fs::read(mcp).unwrap(), std::fs::read(desktop).unwrap());
     assert_eq!(engine.session_state(), state);
-    click(&mut h, "Clear sourcing");
-    assert!(engine.read(|p| p.board.part(&id).unwrap().assembly.is_none()));
 }
