@@ -130,7 +130,7 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     }
     h.get_by_label("Pin 2 X (mm)").type_text("1.000003");
     h.run_steps(3);
-    let original_id = h.ctx.memory(|m| m.focused()).expect("focused second pin coordinate");
+    let original_id = h.ctx.memory(egui::Memory::focused).expect("focused second pin coordinate");
     let original_cursor = egui::text_edit::TextEditState::load(&h.ctx, original_id).unwrap().cursor.char_range();
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[1].x, "1.000003");
     println!("compact sidebar canvas before draft {viewport_before:?}; with draft {:?}", h.state().schematic.viewport);
@@ -147,7 +147,7 @@ fn compact_sidebar_retained_pin_field_identity_survives_other_row_removal() {
     h.run_steps(10);
     h.get_by_label("Pin 1 X (mm)").focus();
     h.run_steps(2);
-    let retained_id = h.ctx.memory(|m| m.focused()).expect("focused retained pin coordinate");
+    let retained_id = h.ctx.memory(egui::Memory::focused).expect("focused retained pin coordinate");
     assert_eq!(retained_id, original_id, "retained row text state must not acquire the removed row's identity");
     assert_eq!(egui::text_edit::TextEditState::load(&h.ctx, retained_id).unwrap().cursor.char_range(), original_cursor);
     assert_eq!(h.state().schematic.draft.as_ref().unwrap().pins[0].x, "1.000003");
@@ -186,7 +186,14 @@ fn compact_sidebar_local_drafts_and_exact_apply_keep_existing_atomic_undo() {
     assert_eq!(engine.session_state(), before);
     click(&mut h, "Apply schematic object");
     let after = engine.session_state();
-    let symbol = after.project.schematic.sheets.values().flat_map(|sheet| sheet.content.iter().flat_map(|c| c.symbols.values())).find(|s|s.designator=="U77").unwrap();
+    let symbol = after
+        .project
+        .schematic
+        .sheets
+        .values()
+        .flat_map(|sheet| sheet.content.iter().flat_map(|c| c.symbols.values()))
+        .find(|s| s.designator == "U77")
+        .unwrap();
     assert_eq!((symbol.position.x.0, symbol.position.y.0), (12_000_003, -7));
     assert_eq!(symbol.pins[0].name, "EXACT");
     assert_eq!(after.project.board, before.project.board);
@@ -197,7 +204,13 @@ fn compact_sidebar_local_drafts_and_exact_apply_keep_existing_atomic_undo() {
     }
     assert_eq!(engine.session_state().project, before.project);
     for pressed in [true, false] {
-        h.event(egui::Event::Key { key: Key::Z, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND | egui::Modifiers::SHIFT });
+        h.event(egui::Event::Key {
+            key: Key::Z,
+            physical_key: None,
+            pressed,
+            repeat: false,
+            modifiers: egui::Modifiers::COMMAND | egui::Modifiers::SHIFT,
+        });
         h.run_steps(3);
     }
     assert_eq!(engine.session_state().project, after.project);
