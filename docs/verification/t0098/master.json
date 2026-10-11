@@ -1,0 +1,415 @@
+{
+  "ticket": "T-0098",
+  "verified_utc": "2026-10-11T15:11:51.836116+00:00",
+  "spec": "docs/specs/footprint-definition-editor.md",
+  "spec_reviewed_before_implementation": true,
+  "historical_product_source": "4d460fe0f2496715ded462918f3c9e270958e103",
+  "combined_source": "83bc7d515c01eb81b8ff58284d5ca96e9ae2f0b8",
+  "combined_base": "c506d6b67e318a59e199c2faa136e718b982ac13",
+  "combined_source_trees": {
+    "crates": "2b34af9ecd23c06f0dae7b76982e9092f67c9c02",
+    "apps": "82424413e11b6c6365ede1b52c428878474d4eb8",
+    "Cargo.toml": "eaca2e88aaabdcbb93db9319f04ba414f29d59c9",
+    "Cargo.lock": "e3540f9af73daadff33e300e31c0a27a6d6ef7cd"
+  },
+  "full_linux": {
+    "session": 60802,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 674,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": true,
+    "native_example_build": true,
+    "python_tests": 13,
+    "tool_count": 83,
+    "workflow_checks": 18
+  },
+  "combined_gate": {
+    "session": 18872,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_integration_tests": 6,
+    "workspace_build": true,
+    "inspection_build": true,
+    "discovery": {
+      "binary_sha256": "dfc3e2d3f52c031b35356d5c2e907d90f96badac01770b1140d49bf6719e24bc",
+      "discovery_only": true,
+      "protocolVersion": "2025-03-26",
+      "sha256": {
+        "mcp-tools.json": "92d6d60a150c3178bb29210e27181ca76c231c6c643a3fc3456dd01c47b8ed48",
+        "mcp-tools.md": "8ca46b57c783f2c6ab0470fea3baaf1cb1fa309b955b929a9564f4d3212dd4e4"
+      },
+      "tool_count": 83
+    }
+  },
+  "production_original": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe",
+    "sha256": "fa5efff6eb2d6bfa760d938607f898bb994563396debe9ec96bda1a2161148e4",
+    "pid": 1487474,
+    "http_port": 7922,
+    "stdio_checks": 24,
+    "actual_desktop_two_client_http_checks": 23
+  },
+  "production_combined": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-83bc7d5",
+    "sha256": "dfc3e2d3f52c031b35356d5c2e907d90f96badac01770b1140d49bf6719e24bc",
+    "stdio_checks": 24
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/inspection-83bc7d5",
+    "sha256": "1357aa74d3318a619a043cba32f51c8242cbd6d7e83a87e02710393cb5e25e4e",
+    "captures": [
+      {
+        "name": "normal",
+        "pixels": [
+          1600,
+          1100
+        ],
+        "native": {
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            1600.0,
+            1100.0
+          ],
+          "controls": [
+            [
+              23.0,
+              615.0,
+              204.21875,
+              633.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/normal.ppm",
+          "pid": 1598525,
+          "pixels": [
+            1600,
+            1100
+          ],
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        },
+        "exit_code": 0,
+        "source_ppm": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/normal.ppm",
+        "ppm_sha256": "979e948b3dc417e5515f72caa4abd06a62567d63ae8f1fc936d57d0ad0bbd77c",
+        "rgb_sha256": "effc16587f0bee19ebb9925d737d263a1d8dd34d012fae41ffd07a5e8aec1713",
+        "png": "normal.png",
+        "png_crc_and_exact_rgb_readback": true
+      },
+      {
+        "name": "compact",
+        "pixels": [
+          640,
+          400
+        ],
+        "native": {
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            640.0,
+            400.0
+          ],
+          "controls": [
+            [
+              23.0,
+              203.0,
+              204.21875,
+              221.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/compact.ppm",
+          "pid": 1598688,
+          "pixels": [
+            640,
+            400
+          ],
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        },
+        "exit_code": 0,
+        "source_ppm": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/compact.ppm",
+        "ppm_sha256": "35fba1f1c5cf1860522bd585260d69eaeae943bfcffc2e2187d5c8a711ad8c68",
+        "rgb_sha256": "029f29b673889241fb4560e1b31ac0aed3535f65fe25c72798b55664b9860a59",
+        "png": "compact.png",
+        "png_crc_and_exact_rgb_readback": true
+      },
+      {
+        "name": "completed",
+        "pixels": [
+          1600,
+          1100
+        ],
+        "native": {
+          "capture": "eframe native WGPU Screenshot event",
+          "content_rect": [
+            0.0,
+            0.0,
+            1600.0,
+            1100.0
+          ],
+          "controls": [
+            [
+              23.0,
+              905.0,
+              615.96875,
+              935.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/completed.ppm",
+          "pid": 1598701,
+          "pixels": [
+            1600,
+            1100
+          ],
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        },
+        "exit_code": 0,
+        "source_ppm": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/completed.ppm",
+        "ppm_sha256": "2ed4f33af19169d5d7d65ffb0418ff2e7ec942e5d757f09c0a86a73a8a4061f5",
+        "rgb_sha256": "9dafeb42bf7b15d7d7ec5ad6462c8b2503249a00bb7c777139a32d09794e8e1a",
+        "png": "completed.png",
+        "png_crc_and_exact_rgb_readback": true
+      }
+    ],
+    "actual_local_egui_input": true,
+    "actual_native_wgpu_readback": true,
+    "all_own_hosts_self_closed_exit_zero": true,
+    "compositor_or_os_input_claim": false,
+    "ui_passes_not_frame_cadence": true
+  },
+  "scope": "Detached bounded native rectangular SMD editor; explicit guarded component reuse remains separate. No graphics, holes, mask/paste, inferred centroid/mounting/population or fabrication approval.",
+  "artifacts": {
+    "capture-native.py": {
+      "bytes": 1961,
+      "sha256": "cc561d419bdcf3b95f27ce467b5af73a4178c4a8aeb4dedbc9696b3189c13cec"
+    },
+    "catalog-check-original.json": {
+      "bytes": 367,
+      "sha256": "8547947eecb75b8dca31c2183b8e92f522db8250d1319a9b1631d145a77a219f"
+    },
+    "combined-linux.log": {
+      "bytes": 5853,
+      "sha256": "a969b32f42d427961cd3d6c29e0f40807933711bb3f927e900c32e55db44aa6e"
+    },
+    "combined-linux.sh": {
+      "bytes": 1783,
+      "sha256": "19f3cf36efeed492dfecbeb3d4ad24e73b44b08b34e663784b4bcff1a895f376"
+    },
+    "combined-stdio.json": {
+      "bytes": 2414,
+      "sha256": "8a95dadb67649c9f412b3b2e23cfb60d57ff5d23aa753256ffc459a9804ca0dc"
+    },
+    "compact-launch.json": {
+      "bytes": 784,
+      "sha256": "3ac32d1a72010a811760b8abb3f377b5914a5dfbc89a7cf21ae2174227397730"
+    },
+    "compact-native.log": {
+      "bytes": 352,
+      "sha256": "358c00057a1322037b313e27a66f3a23d70450a91b7793aea69a80e6a741e77b"
+    },
+    "compact.png": {
+      "bytes": 29868,
+      "sha256": "9c3d1b16b7fd25f5d39a89a14a7bf0343c90e308afe1f965b69b1049cc88147b"
+    },
+    "completed-footprint.viamind-footprint.json": {
+      "bytes": 471,
+      "sha256": "5d0224acb41cea57d1688e9d24e1f26e567e5b545820b43bd340195ee27ab32b"
+    },
+    "completed-launch.json": {
+      "bytes": 792,
+      "sha256": "d4766ebfb738f5bd4c451463a925b63c30bd7856cda1d7c0ea7dffe392a9b202"
+    },
+    "completed-native.log": {
+      "bytes": 358,
+      "sha256": "d8c73f329fe60f953c999a07936471e64d0d605a7125e4569ec375f2b6d45395"
+    },
+    "completed.png": {
+      "bytes": 118650,
+      "sha256": "9f3256c0d72529df4c6ee7377a4a51c149dc4e05f68d638fa6173f4e539794be"
+    },
+    "discovery-combined.json": {
+      "bytes": 367,
+      "sha256": "8122655bb536abb10709d369eb79d0c760fdead6954a7bf86e050debd31e95dc"
+    },
+    "discovery-original.json": {
+      "bytes": 367,
+      "sha256": "8547947eecb75b8dca31c2183b8e92f522db8250d1319a9b1631d145a77a219f"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 935,
+      "sha256": "e3d439a132ab57a74062e0a096f1ebc530b13196f8de8c389b481fa9a4d56142"
+    },
+    "full-linux.log": {
+      "bytes": 111601,
+      "sha256": "bf88cc0090312ca75579b63eef73c4597da70cbbcfaf21116387153879d4a760"
+    },
+    "full-linux.sh": {
+      "bytes": 1689,
+      "sha256": "389c9d1db09f00fadfc20c6ce79118986c34ff50e7bd2313fede193ef1ac3a34"
+    },
+    "http.json": {
+      "bytes": 2364,
+      "sha256": "fd0d69d403378d926c57d15c2658ed6c355b647e453b309d08d2ea3127e4c1d9"
+    },
+    "normal-launch.json": {
+      "bytes": 784,
+      "sha256": "d990d22b2e7a4138534a996c70e617bed6cb43b1437c49634626a59d952acbf0"
+    },
+    "normal-native.log": {
+      "bytes": 355,
+      "sha256": "70db945cc7748e0f4d4799961322e7cea2035b29d03599e01d8e0d2cc7f7de0e"
+    },
+    "normal.png": {
+      "bytes": 110149,
+      "sha256": "1be1c045319dffea955a6e22b081906c90ec0433cdf157a3f11cdbf70b6d31cf"
+    },
+    "production-launch.json": {
+      "bytes": 418,
+      "sha256": "ec953b1e57874e70d6dcdfba0f0cd9a7e71ba590bec1b384b5a08eb25dd0f20e"
+    },
+    "production-process.json": {
+      "bytes": 658,
+      "sha256": "2535e0e5793b34fe8bedc99732fdfc3eb05d12e987b021216c50ce1684d1d5d8"
+    },
+    "queued-source.json": {
+      "bytes": 634,
+      "sha256": "4f0190e8f90894132c80d13c7916da03f2f1fcf03637b3924ec5bbb22e2ccb47"
+    },
+    "stdio.json": {
+      "bytes": 2414,
+      "sha256": "4bbfc5dfa21fc9e41876574837c7997dd17df950c1908a6f259093a0fabcb008"
+    },
+    "workflow-combined.json": {
+      "bytes": 1264,
+      "sha256": "356c97832965f258a6fa9b1e637d62904dd679d27fb4ae6a83e1b066dd790258"
+    },
+    "workflow-original.json": {
+      "bytes": 1264,
+      "sha256": "e6bc6b4c5239289462878bfed94254412e0df24e86bfe6d93f7004ce59a9ef0f"
+    },
+    "catalog-check-combined.json": {
+      "bytes": 367,
+      "sha256": "8122655bb536abb10709d369eb79d0c760fdead6954a7bf86e050debd31e95dc"
+    },
+    "root-independent-read.json": {
+      "bytes": 407,
+      "sha256": "91be5d45ef56490509c7846a8c69e2556d3f9de313a7fc17867dcf1e1b1feced"
+    },
+    "verify-artifacts.py": {
+      "bytes": 1651,
+      "sha256": "eb3ab0f56fedf29cab5ec4bef539e96ba146d0c57287f72d99edfe053ab8d6b0"
+    },
+    "predecode-catalog-check.json": {
+      "bytes": 367,
+      "sha256": "c09120e6f8d3e262b4f2593ebbddd7738b590784825406fd0d6b58fd3b43301d"
+    },
+    "predecode-check.py": {
+      "bytes": 2293,
+      "sha256": "a551d9c3920641949091c5107fa2aec531fc72065d6ea344b025b9aab6debfaf"
+    },
+    "predecode-linux.log": {
+      "bytes": 3716,
+      "sha256": "34002735a1792bfd9499d0d998b6d3f31d1def8fa865fa8914b87b4617c67207"
+    },
+    "predecode-linux.sh": {
+      "bytes": 1056,
+      "sha256": "8ddce6ffdc94d081064ebfefa3d348e9c9634e1704bc060e33f8dc3c111fdd99"
+    },
+    "predecode-stdio.json": {
+      "bytes": 838,
+      "sha256": "83cb228abb44fcf1b0d9f3e1737b8a661a3c0a32a044cfca09151725d09d0ef0"
+    },
+    "predecode-valid-stdio.json": {
+      "bytes": 2414,
+      "sha256": "5f8d4dd0eddf13f4c1ea5adc86ada712c58cec84cab6743a11a5cfbc698158df"
+    },
+    "final-integration.sh": {
+      "bytes": 1631,
+      "sha256": "1358217472510c548bcf504b7c2ec6e3dbadf8202a7a7b667563f9e40caff108"
+    },
+    "final-integration.log": {
+      "bytes": 4668,
+      "sha256": "6b776754c57982de81170c6fb347bbc38c8d718da5e4596a0b83b5082f24e371"
+    },
+    "final-discovery.json": {
+      "bytes": 367,
+      "sha256": "b964956d45cbeed17ab65516727e089098c8c98ff2c08b5a3808b53278da4cb0"
+    },
+    "final-stdio.json": {
+      "bytes": 2414,
+      "sha256": "9d504696cbadb733ca2c3fa716ce36c2f2ef402479bc57be3414af7ec1d1ab80"
+    },
+    "final-predecode.json": {
+      "bytes": 838,
+      "sha256": "8e0524074c78aa87e3e655c60fa91b4ce1fd1116ce4e75b7b891f9941878b6f9"
+    },
+    "final-catalog-check.json": {
+      "bytes": 367,
+      "sha256": "b964956d45cbeed17ab65516727e089098c8c98ff2c08b5a3808b53278da4cb0"
+    }
+  },
+  "historical_source_ref": {
+    "ref": "refs/tags/verification/t0098/native-source",
+    "commit": "fae0e140762a0b464aa9eb0516e8ff669a428688",
+    "retains_product_ancestor": "4d460fe0f2496715ded462918f3c9e270958e103",
+    "github_commits_api_resolves_product": true
+  },
+  "predecode_boundary_refresh": {
+    "source": "d45570b5b37a3d2736687d7ea892778dacf304db",
+    "session": 31667,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "mcp_integration_tests": 2,
+    "workspace_build": true,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-d45570b",
+    "binary_sha256": "928ac5873c9b83bc4c1d6d1ee4fd137969dba868db73f33251e26bc098d4110b",
+    "valid_stdio_checks": 24,
+    "predecode_stdio_checks": 6,
+    "catalog_exact_match_tools": 83,
+    "native_capture_repeated": false,
+    "scope": "Borrowed JSON Value fields rejected before typed secondary allocation; transport JSON Value itself already exists."
+  },
+  "combined_native_source_ref": {
+    "ref": "refs/tags/verification/t0098/combined-native-source",
+    "commit": "7e080684b464ca210b5204f60b1bfcda450b2946",
+    "retains_combined_source_ancestor": "83bc7d515c01eb81b8ff58284d5ca96e9ae2f0b8",
+    "github_commits_api_resolves_combined": true
+  },
+  "final_integration": {
+    "source": "c9bb7f1b3e21192e9abb670f87dca71c62f309cc",
+    "base": "b845cb7c297e90de0cb3809f4fba38c878cee631",
+    "session": 66802,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "mcp_tests": 2,
+    "actual_input_tests": 3,
+    "workspace_build": true,
+    "tools": 85,
+    "valid_stdio_checks": 24,
+    "predecode_stdio_checks": 6,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-c9bb7f1",
+    "binary_sha256": "47f4e4e067b7a05d4117cd097821d593fc81504f225aca59176a066f3fcd581c",
+    "manual_conflicts": [
+      "engine/lib.rs additive module exports: retained net_rules and footprint_definition",
+      "ui/actions.rs appended helpers: retained named-net rule and footprint-definition functions"
+    ],
+    "owned_feature_modules_unchanged": true,
+    "native_capture_repeated": false
+  }
+}

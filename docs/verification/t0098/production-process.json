@@ -1,0 +1,9 @@
+{
+  "pid": 1487474,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe",
+  "sha256": "fa5efff6eb2d6bfa760d938607f898bb994563396debe9ec96bda1a2161148e4",
+  "running_exe_sha256": "fa5efff6eb2d6bfa760d938607f898bb994563396debe9ec96bda1a2161148e4",
+  "running_exe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe",
+  "cmdline": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0098/viamind-4d460fe ",
+  "socket": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7922      0.0.0.0:*    users:((\"viamind-4d460fe\",pid=1487474,fd=6))\n"
+}

@@ -30,6 +30,25 @@ impl EngineHost {
     }
 }
 
+/// Bound borrowed request fields before serde allocates typed definition rows.
+fn preflight_footprint_definition(input: &Value, writing: bool) -> Result<(), String> {
+    if input.get("path").and_then(Value::as_str).is_some_and(|path| path.len() > 4096) {
+        return Err("footprint definition paths require at most 4096 UTF-8 bytes".into());
+    }
+    if writing && let Some(footprint) = input.get("footprint") {
+        let pads = footprint.get("pads").and_then(Value::as_array);
+        if pads.is_some_and(|pads| pads.len() > 1024) {
+            return Err("footprint definitions require at most 1024 pads before typed decoding".into());
+        }
+        if footprint.get("name").and_then(Value::as_str).is_some_and(|name| name.len() > 512)
+            || pads.is_some_and(|pads| pads.iter().any(|pad| pad.get("number").and_then(Value::as_str).is_some_and(|number| number.len() > 512)))
+        {
+            return Err("footprint definition name/number fields require at most 512 UTF-8 bytes before typed decoding".into());
+        }
+    }
+    Ok(())
+}
+
 impl CommandHost for EngineHost {
     fn commands(&self) -> Vec<HostCommand> {
         let mut commands: Vec<_> = self
@@ -48,6 +67,8 @@ impl CommandHost for EngineHost {
             description: "Read-only strict bounded Gerber/XNC geometry inspection. Requires exact expected_project/full expected_cursor and one to six explicit paths. Supports native-export metric5.6 circular/rectangular flashes, linear circular strokes, aperture rotation, mask openings/profile and metric drill hits. Unknown semantics reject atomically. Max4MiB/file,16MiB total,100000 commands,10000 primitives; one nonwaiting reader retained inside blocking work. Returns native downward-Y geometry, exact file SHA256, captured cursor and file attributes. SameCoordinates UUID mismatch rejects; drill common origin unverified. Files are read independently, not an atomic package snapshot or fabrication/equivalence certification. No design/history/selection/file mutation.".into(),
             input_schema: input_schema::<viamind_engine::InspectFabricationFiles>(),
         });
+        commands.push(HostCommand { name: "load_footprint_definition".into(), description: "Read one strict detached native viamind-footprint version1 library (regular file <=1MiB, path <=4096 bytes). Named rectangular SMD local integer Nm geometry only, at most1024 pads. Does not require a selected part or change project/history/selection/dirty state. Does not parse foreign footprint formats.".into(), input_schema: input_schema::<viamind_engine::LoadFootprintDefinition>() });
+        commands.push(HostCommand { name: "save_footprint_definition".into(), description: "Validate and publish one detached native rectangular SMD footprint definition to a NEW file. Explicit local integer Nm centers/dimensions and unique pad numbers, at most1024 pads, no IDs/nets/placement or inferred manufacturing data. Refuses existing paths and protects the latest active native project under its lifecycle guard. No design/history/selection/dirty change; apply separately using guarded import_footprint.".into(), input_schema: input_schema::<viamind_engine::SaveFootprintDefinition>() });
         commands.push(HostCommand { name: "preview_footprint_conversion".into(), description: "Read-only bounded standalone footprint S-expression preview. Front zero-angle footprints with cardinal rectangular SMD pads only (-360..360 degrees), exact integer nm and exhaustive per-list fidelity report with full_fidelity=false. Source UUIDs and cosmetic/model metadata are report-only omissions; meaningful source nets, unsupported geometry and unknown semantics block conversion. Regular UTF-8 file <=1MiB. Returns exact source SHA256; never changes the project or writes source.".into(), input_schema: input_schema::<viamind_engine::PreviewFootprintConversion>() });
         commands.push(HostCommand { name: "convert_footprint_file".into(), description: "Reparse the exact SHA256-guarded footprint source and publish one explicit new detached native footprint library without overwriting source, existing files or the current native project. Dirty work, history, selection and active native path remain unchanged. Converted libraries omit source UUIDs/nets and require separate explicit import_footprint to reuse: matching pad numbers retain native IDs/nets; new numbers receive fresh IDs and no net. No full fidelity claim.".into(), input_schema: input_schema::<viamind_engine::ConvertFootprintFile>() });
         commands.push(HostCommand {
@@ -192,6 +213,16 @@ impl CommandHost for EngineHost {
         if name == "inspect_fabrication_files" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.inspect_fabrication_files(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "load_footprint_definition" {
+            preflight_footprint_definition(&input, false)?;
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.load_footprint_definition(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "save_footprint_definition" {
+            preflight_footprint_definition(&input, true)?;
+            let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.save_footprint_definition(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "preview_footprint_conversion" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;

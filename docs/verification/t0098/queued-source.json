@@ -1,0 +1,15 @@
+{
+  "ticket": "T-0098",
+  "source_commit": "4d460fe0f2496715ded462918f3c9e270958e103",
+  "base_commit": "f7d73811f5229ff77712014628861f19d6beea4f",
+  "source_trees": {
+    "crates": "12c7b0f93f8eb7116468cd613cc108c115e0c1ac",
+    "apps": "cab628887f5ae4d721baca81a39034fa8ab8087e",
+    "Cargo.toml": "eaca2e88aaabdcbb93db9319f04ba414f29d59c9",
+    "Cargo.lock": "e3540f9af73daadff33e300e31c0a27a6d6ef7cd"
+  },
+  "recorded_utc": "2026-10-11T14:41:51.208679+00:00",
+  "gate_session": 60802,
+  "source_frozen": true,
+  "stable_field_ids": "Explicit row UUID and field name; accessible node identity checked after earlier-row deletion"
+}

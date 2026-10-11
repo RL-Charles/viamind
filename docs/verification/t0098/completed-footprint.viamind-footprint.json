@@ -1,0 +1,27 @@
+{
+  "format": "viamind-footprint",
+  "version": 1,
+  "footprint": {
+    "name": "Original edited odd Nm",
+    "pads": [
+      {
+        "number": "1",
+        "position": {
+          "x": -500003,
+          "y": 250001
+        },
+        "width": 1200003,
+        "height": 800001
+      },
+      {
+        "number": "2",
+        "position": {
+          "x": 750007,
+          "y": -125003
+        },
+        "width": 600003,
+        "height": 1000001
+      }
+    ]
+  }
+}
