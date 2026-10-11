@@ -82,7 +82,7 @@ impl Command for RoutePadViaPolyline {
 /// The same central document/request floors are rechecked by final joint DRC.
 pub(crate) fn validate_via_minima(project: &Project, via: &Via, input: &viamind_drc::DrcInput) -> Result<(), CommandError> {
     viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| CommandError::invalid("rules", e))?;
-    let rules = input.validate().map_err(|e| CommandError::invalid("rules", e))?;
+    let rules = input.validate().map_err(|e| CommandError::invalid("rules", e.to_string()))?;
     let drill = viamind_doc::net_rules::named_via_drill(&project.board.net_rules, rules.minimum_via_drill, via.net.as_deref());
     let annulus = viamind_doc::net_rules::named_annular_width(&project.board.net_rules, rules.minimum_annular_width, via.net.as_deref());
     let actual = via.diameter.0.checked_sub(via.drill.0).ok_or_else(|| CommandError::invalid("via", "annular dimension overflow"))?;

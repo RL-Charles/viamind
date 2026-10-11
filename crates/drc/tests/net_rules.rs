@@ -103,3 +103,26 @@ fn exact_via_drill_and_half_nm_annulus_use_matching_maxima_without_resizing() {
         }
     }
 }
+#[test]
+fn zero_via_fields_keep_legacy_report_policy_bytes_and_half_nm_decisions() {
+    let mut p = Project::new("Old report");
+    p.board.net_rules.insert("A".into(), rule(0, 1));
+    for difference in [299999, 300000, 300001] {
+        let via = viamind_doc::Via {
+            id: ObjectId::new(),
+            position: Point::ORIGIN,
+            diameter: Nm(300000 + difference),
+            drill: Nm(300000),
+            net: Some("A".into()),
+        };
+        p.board.vias.clear();
+        p.board.vias.insert(via.id, via);
+        let report = run_drc(&p, &DrcInput { minimum_annular_width_mm: 0.15, ..Default::default() }).unwrap();
+        assert_eq!(report.violations.len(), usize::from(difference < 300000));
+        let text = serde_json::to_string(&report).unwrap();
+        let expected = r#""document_net_rules":{"A":{"minimum_copper_clearance":0,"minimum_track_width":1}}"#;
+        assert!(text.contains(expected));
+        let restored: viamind_drc::DrcReport = serde_json::from_str(&text).unwrap();
+        assert_eq!(serde_json::to_string(&restored).unwrap(), text);
+    }
+}
