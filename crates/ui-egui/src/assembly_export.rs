@@ -194,12 +194,7 @@ mod tests {
         let before = std::fs::read(&destination).unwrap();
         let mut opened = None;
         let result = export_with_before_publish(&engine, json!({"kind":"bom","path":destination,"overwrite":true}), || {
-            engine
-                .open_project(
-                    viamind_engine::OpenProject { path: destination.clone(), discard_dirty: false, expected_cursor: None },
-                    viamind_engine::Origin::agent("other-native-editor"),
-                )
-                .unwrap();
+            UiAction::OpenProject.run(&engine, json!({"path":destination})).unwrap();
             opened = Some((engine.session_state(), engine.document_status()));
         });
         assert!(result.unwrap_err().to_string().contains("active native"));
