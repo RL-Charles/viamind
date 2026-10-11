@@ -41,3 +41,5 @@ The exact Cua production snapshot was degraded AT-SPI discovery with223×135pixe
 Repeat `scripts/verify-symbol-definition-native.py --binary RETAINED_APP --report NEW_REPORT` for fresh isolated stdio; add `--url http://127.0.0.1:OWNED_PORT/mcp` only for an explicitly owned scratch desktop engine. The HTTP verifier starts a new scratch document. Native driver and encoder are retained in the artifact directory; all output destinations must be NEW. `verify-artifacts.py` checks the durable master and three complete PNG RGB readbacks.
 
 Final integration and exact-head CI remain merge gates; historical product/helper identities above remain fixed.
+
+Historical product and inspection ancestry is retained by annotated tag`verification/t0102/native-source` at18f60b2. Both original source IDs resolve through the GitHub commits API. Clean integration onto merged T103 main`d8a8e57` had no conflicts or T102 implementation changes; final combined catalog/gates and CI are recorded separately.
