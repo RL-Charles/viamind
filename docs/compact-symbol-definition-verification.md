@@ -29,3 +29,5 @@ The row view shows all five pin fields and Remove within a measured 131-point in
 The [master](verification/t0110/master.json) indexes 28 durable artifacts with exact source, binary, capture and process provenance. Run `python3 docs/verification/t0110/verify-artifacts.py` for 28 hashes and two full native RGB checks. The retained production and old previews remain running/preserved; both owned inspection hosts exited.
 
 Final stacked integration on T109, fresh exact-head CI and independent review remain gates. After predecessors merge, prospective main-plus-HEAD tree must equal the tested combined tree; content differences require fresh verification. Smaller/scaled viewports and multi-unit symbols remain separate work.
+
+Historical product/evidence ancestry is retained publicly under `verification/t0110/native-source`; the original independently approved specification is retained under `verification/t0110/pre-code-spec`. GitHub resolves both exact historical source IDs.

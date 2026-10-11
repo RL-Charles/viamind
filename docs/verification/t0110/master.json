@@ -330,5 +330,11 @@
       "bytes": 1687,
       "sha256": "54e43ab8ea5c1d5085d8cf3e0b86be3d44a84a41e60597e6cf6c0b6b0200cc55"
     }
+  },
+  "historical_source_retention": {
+    "native_source_tag": "verification/t0110/native-source",
+    "native_source_tag_target": "e55db5b",
+    "pre_code_spec_tag": "verification/t0110/pre-code-spec",
+    "github_exact_product_and_spec_commit_resolution": true
   }
 }
