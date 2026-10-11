@@ -17,7 +17,9 @@ The [complete gate log](verification/t0086-linux-gates.log) includes doctests.
 The copied production binary SHA256 is
 `c1de0e34c72baa6cdf3cbcad6aa7bc6f1e26f19faf26be124f871aeae3ed713f`.
 
-The branch cleanly rebases onto `51e5c87`. Editor, shared writer, worker and MCP
+The branch integrates main `8e2a7d7`, including the separately verified PCB import.
+Rebase preserved both README workflow links; Rust changes were additive context.
+Editor, shared writer, worker and MCP
 feature modules are unchanged from the verified production source. A later
 inspection-only change transfers prepared scroll memory into its native host.
 Its source is `56ddcc0f220118a7a279acb756a96f5356f2754f`, binary SHA256

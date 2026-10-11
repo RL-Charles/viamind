@@ -24,7 +24,7 @@
     "strict workspace all-target Clippy",
     "inspection example build"
   ],
-  "integration": "Clean rebase onto main51e5c87. Feature modules unchanged from verified production source; only inspection host changed. Fresh final combined CI required.",
+  "integration": "Rebased onto main8e2a7d7 including independently verified PCB import. README link conflict preserves both workflows; Rust changes are additive context and feature modules unchanged. Fresh combined CI required.",
   "cache_safety": "Full gate and inspection build/copies under shared flock; source mtimes refreshed; incremental disabled; two jobs.",
   "cache_cleanup": {
     "removed_count": 345,
