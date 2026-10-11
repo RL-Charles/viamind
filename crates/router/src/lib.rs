@@ -1,6 +1,8 @@
 //! Exact grid snapping shared by local PCB route previews and committed commands.
 pub mod posture;
 pub use posture::{CornerMode, PadPathPlan, Posture, plan_pad_path};
+pub mod walkaround;
+pub use walkaround::{WalkaroundPlan, WalkaroundWork, plan_walkaround};
 
 use viamind_geom::{Nm, Point};
 
