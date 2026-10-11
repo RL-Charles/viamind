@@ -1,0 +1,321 @@
+{
+  "date": "2026-10-11",
+  "platform": "Linux x86_64 Hyprland",
+  "gates": {
+    "source_commit": "020b70f474b2630424f44b52065cfd66f5c74a22",
+    "source_base": "14953656f2835a6694c0a8975e88cd32528e6ed4",
+    "fmt": "pass",
+    "clippy": "workspace all-targets -Dwarnings pass",
+    "workspace": {
+      "passed": 715,
+      "failed": 0,
+      "ignored": 1
+    },
+    "build": "workspace pass",
+    "focused": {
+      "source_commit": "7d77fd6",
+      "passed": 42,
+      "failed": 0
+    },
+    "tooling_tests": 13,
+    "actual_discovered_tools": 85,
+    "agent_workflow_checks": 18,
+    "production_sha256": "805ce54106e28315d0a5947904f767bd0d248bb32ab26fed47a06552c5bf7678",
+    "inspection_sha256": "163ef039eb7bc3453a4688e1482ad6d966355bfe9008fcd78c1971171b7a892a"
+  },
+  "gate_environment": {
+    "mutex": "/tmp/viamind-workspace-gates.lock",
+    "preflight": "touch workspace Rust mtimes under whole sequence mutex; copy unique binaries before unlock",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp",
+    "profile": "unoptimized debug; debug info stripped",
+    "offline_locked": true
+  },
+  "production": {
+    "launch": {
+      "active": false,
+      "bundle_id": null,
+      "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/launch-production",
+      "pid": 1721109,
+      "running": true,
+      "windows": [
+        {
+          "app_name": "viamind",
+          "bounds": {
+            "height": 1200,
+            "width": 1920,
+            "x": 1920,
+            "y": 1152
+          },
+          "height": 1200,
+          "is_on_screen": true,
+          "pid": 1721109,
+          "title": "Untitled \u2014 Viamind",
+          "width": 1920,
+          "window_id": 110379554939808,
+          "x": 1920,
+          "y": 1152,
+          "z_index": null
+        }
+      ]
+    },
+    "mcp_port": 7928,
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/verified-020b70f/viamind",
+    "sha256": "805ce54106e28315d0a5947904f767bd0d248bb32ab26fed47a06552c5bf7678",
+    "inherited_policy_http_checks": 42,
+    "new_via_http_checks": 37,
+    "total_actual_two_client_http_checks": 79,
+    "latency_ms": {
+      "set_rules": 1.3562819949584082,
+      "manual_via_equal": 1.680864006630145,
+      "plan_via_equal": 1.814703005948104,
+      "commit_via_equal": 1.894126005936414,
+      "checked_via_equal": 14.039896996109746
+    },
+    "checked_release_files": 12
+  },
+  "inspection": {
+    "source_commit": "020b70f474b2630424f44b52065cfd66f5c74a22",
+    "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/verified-020b70f/inspection",
+    "sha256": "163ef039eb7bc3453a4688e1482ad6d966355bfe9008fcd78c1971171b7a892a",
+    "host": "crates/ui-egui/examples/t0097_inspection.rs",
+    "capture": "actual eframe WGPU Screenshot event; exclusive new opaqueRGB P6 +fsync; lossless PNG with exactRGB readback; self-close before app.show",
+    "os_input_claim": false,
+    "ui_passes_meaning": "native UI callbacks; not presented frames",
+    "windows": [
+      {
+        "mode": "wide",
+        "launch": {
+          "active": false,
+          "bundle_id": null,
+          "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/launch-inspection-wide",
+          "pid": 1723056,
+          "running": true,
+          "windows": [
+            {
+              "app_name": "viamind-net-minima-inspection",
+              "bounds": {
+                "height": 1000,
+                "width": 1600,
+                "x": 2080,
+                "y": 1265
+              },
+              "height": 1000,
+              "is_on_screen": true,
+              "pid": 1723056,
+              "title": "Untitled \u2014 Viamind",
+              "width": 1600,
+              "window_id": 110379538832848,
+              "x": 2080,
+              "y": 1265,
+              "z_index": null
+            }
+          ]
+        },
+        "runtime_assertions": [
+          {
+            "control_bounds": {
+              "Apply named-net rules": {
+                "max": [
+                  161.3125,
+                  332.0
+                ],
+                "min": [
+                  23.0,
+                  314.0
+                ]
+              },
+              "Cancel rules": {
+                "max": [
+                  334.34375,
+                  332.0
+                ],
+                "min": [
+                  256.78125,
+                  314.0
+                ]
+              },
+              "Reload rules": {
+                "max": [
+                  248.78125,
+                  332.0
+                ],
+                "min": [
+                  169.3125,
+                  314.0
+                ]
+              }
+            },
+            "full_session_unchanged": true,
+            "inspection_only": true,
+            "named_rules": {
+              "N": {
+                "minimum_annular_width": 150001,
+                "minimum_copper_clearance": 0,
+                "minimum_track_width": 1,
+                "minimum_via_drill": 300001
+              }
+            },
+            "os_input_claim": false,
+            "prepared_production_editor_via_egui": true
+          },
+          {
+            "capture": "actual eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              1600.0,
+              1000.0
+            ],
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/editor-wide.p6",
+            "pixels": [
+              1600,
+              1000
+            ],
+            "prepared_actual_egui_control_bounds_fit_native_viewport": true,
+            "self_close_after_fsync": true,
+            "ui_passes": 11
+          }
+        ],
+        "process_after_capture": "absent; clean self-close",
+        "p6_sha256": "6dde0712043e7ce5c64031f12e796acfef7c1a5659e61c832fcec5129a9db043",
+        "png_sha256": "bc17d6bbc4316616241f498eee80920a2dc08a59d766353221c138f01f706489",
+        "exact_rgb_readback": true
+      },
+      {
+        "mode": "compact",
+        "launch": {
+          "active": false,
+          "bundle_id": null,
+          "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/launch-inspection-compact",
+          "pid": 1723432,
+          "running": true,
+          "windows": [
+            {
+              "app_name": "viamind-net-minima-inspection",
+              "bounds": {
+                "height": 400,
+                "width": 640,
+                "x": 2560,
+                "y": 1565
+              },
+              "height": 400,
+              "is_on_screen": true,
+              "pid": 1723432,
+              "title": "Untitled \u2014 Viamind",
+              "width": 640,
+              "window_id": 110379552219728,
+              "x": 2560,
+              "y": 1565,
+              "z_index": null
+            }
+          ]
+        },
+        "runtime_assertions": [
+          {
+            "control_bounds": {
+              "Apply named-net rules": {
+                "max": [
+                  161.3125,
+                  316.0
+                ],
+                "min": [
+                  23.0,
+                  298.0
+                ]
+              },
+              "Cancel rules": {
+                "max": [
+                  334.34375,
+                  316.0
+                ],
+                "min": [
+                  256.78125,
+                  298.0
+                ]
+              },
+              "Reload rules": {
+                "max": [
+                  248.78125,
+                  316.0
+                ],
+                "min": [
+                  169.3125,
+                  298.0
+                ]
+              }
+            },
+            "full_session_unchanged": true,
+            "inspection_only": true,
+            "named_rules": {
+              "N": {
+                "minimum_annular_width": 150001,
+                "minimum_copper_clearance": 0,
+                "minimum_track_width": 1,
+                "minimum_via_drill": 300001
+              }
+            },
+            "os_input_claim": false,
+            "prepared_production_editor_via_egui": true
+          },
+          {
+            "capture": "actual eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              640.0,
+              400.0
+            ],
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/editor-compact.p6",
+            "pixels": [
+              640,
+              400
+            ],
+            "prepared_actual_egui_control_bounds_fit_native_viewport": true,
+            "self_close_after_fsync": true,
+            "ui_passes": 11
+          }
+        ],
+        "process_after_capture": "absent; clean self-close",
+        "p6_sha256": "32c364f0744362835877c5a9b5f4c5b67d17ff275e0958ad7a1e6398f65e6095",
+        "png_sha256": "5d901a5f3cdd5a8d523f49a79923c6268a0024ceaee6de26ea8c2243539dfbcb",
+        "exact_rgb_readback": true
+      }
+    ]
+  },
+  "integration": {
+    "base_after_clean_rebase": "b9b09fc8f432e100436ab12b9b8749ec3c02d58f",
+    "source": "179b2fdb670c8648ead35091a1a04c892d1b4fec",
+    "note": "T99 unrelated read-only integration, clean rebase; historical production/native evidence retains exact source020b70f. Final combined catalog and CI pending."
+  },
+  "artifact_sha256": {
+    "agent-workflow.json": "a32798d953d415d867f473863d77c00823baa1cebd64e691b53cd7d15540a850",
+    "catalog-discovery.json": "439140f837637b37f14b638407db2b9562a1478587cebcb36543156940104fd7",
+    "checked-drc.json": "9857715d3c47b2eaa6a71d41b2352ed38bb698bff5b451f5beaafebffa17b128",
+    "checked-manifest.json": "f3f26c5405bbfa5fd37e58a6784037ceb75fb31808c7366e3577676627a01813",
+    "checked-via-job.json": "11d88fee7fd4669af376d74d64267106848a1e5b2a9d550e6c77d4cc1a6cfb62",
+    "checked-via-rules.viamind.json": "48a0a5b7f45e99b94f67141ef0c673546e5bb02402ae56c3ca0344c3fcc2a332",
+    "cleared-via-to-schema8.viamind.json": "964a188e9f0808028b2da8bf87e0872578870441e8e35c1b6601818a0464c209",
+    "client.py": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6",
+    "editor-compact.png": "5d901a5f3cdd5a8d523f49a79923c6268a0024ceaee6de26ea8c2243539dfbcb",
+    "editor-wide.png": "bc17d6bbc4316616241f498eee80920a2dc08a59d766353221c138f01f706489",
+    "focused-pass.log": "c9f8fcc5d886b83722d12f8e60c639c2f6abf78815afa0ce26af5f329133fb09",
+    "inspection-compact-launch.json": "ccb5e6c3ff5d189e6fbc8e19656d54c0b58d62ab147e07519bd7f49b04b4bc2e",
+    "inspection-compact.log": "c23d88c8e9ac38c0d27f4fe0e9504df1234d154e88ba0249c4822effc1ed350f",
+    "inspection-wide-launch.json": "527beb37fea253aa04fd538ea6c6a0ab13eb1deea89697c7829184d3bbe3e8e1",
+    "inspection-wide.log": "8baeaeb850c853dd231932b8459ee53ca3f9d7f8791dbdc7bfb7a0ea9a6b0d02",
+    "legacy-production-check.py": "28842b67e59811cfac54de5cea2783270bc2f42416275b3f9cc3065748776bfc",
+    "legacy-production-http.json": "3e727f79e49298db91022a2a0ed820df2153df44addb0fb0f61ccf97d28d1279",
+    "legacy-zero-via.viamind.json": "964a188e9f0808028b2da8bf87e0872578870441e8e35c1b6601818a0464c209",
+    "linux-full.log": "a721f9679b624eaa5a31cc62fc7dbc832763d102cad1393e5aa621ff5b45539e",
+    "linux-full.sh": "74f558bc4b0261b1c200853b8540da89698496fecc37b982220d921f361e6740",
+    "linux-gates.json": "cc995bf98c10776316e5527735db874a5625e2a59101f673c03582a22a002c3d",
+    "production-launch.json": "6f2c3b0fb15418f63aad4cab68d8256664e8e0d87b3143309d3d65672ef142b9",
+    "production-via-http.json": "996204def8472410198b3e46557d8b0479c1459ee65e1dc8b762bfd2febc1e73",
+    "production-via.py": "250ce758644918412059f29be0e087c89e5213849f698d10de6ee330c02fc334",
+    "via-rules.viamind.json": "0d3de95d99e8166258c7077dfe9fa427b2c163a85aaddee9a40884b67c583973"
+  }
+}

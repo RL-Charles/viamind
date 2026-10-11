@@ -1,0 +1,94 @@
+{
+  "format": "viamind",
+  "version": 10,
+  "project": {
+    "id": "d0dcba7e-2a2a-4182-987a-d73602bc6b6c",
+    "name": "Named via minima HTTP proof",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "net_rules": {
+        "N": {
+          "minimum_copper_clearance": 0,
+          "minimum_track_width": 1,
+          "minimum_via_drill": 300001,
+          "minimum_annular_width": 150001
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 100000000,
+            "y": 0
+          },
+          {
+            "x": 100000000,
+            "y": 100000000
+          },
+          {
+            "x": 0,
+            "y": 100000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "b8c482b4-5a31-4b90-828f-337aab607759": {
+          "pads": [
+            {
+              "id": "6ae97930-58ba-4f8e-a651-1d585378bf72",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "b8c482b4-5a31-4b90-828f-337aab607759",
+          "designator": "J2",
+          "value": "via floor endpoint",
+          "footprint": "explicit",
+          "position": {
+            "x": 60000000,
+            "y": 10000000
+          },
+          "rotation_mdeg": 0,
+          "side": "bottom"
+        },
+        "dc7ec8fe-d868-47c7-a708-f5ad51dd5e37": {
+          "pads": [
+            {
+              "id": "626b36c5-869f-43e3-99f4-705632303ea7",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "dc7ec8fe-d868-47c7-a708-f5ad51dd5e37",
+          "designator": "J1",
+          "value": "via floor endpoint",
+          "footprint": "explicit",
+          "position": {
+            "x": 10000000,
+            "y": 10000000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        }
+      }
+    }
+  }
+}

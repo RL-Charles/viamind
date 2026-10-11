@@ -1,0 +1,22 @@
+{
+  "source_commit": "020b70f474b2630424f44b52065cfd66f5c74a22",
+  "source_base": "14953656f2835a6694c0a8975e88cd32528e6ed4",
+  "fmt": "pass",
+  "clippy": "workspace all-targets -Dwarnings pass",
+  "workspace": {
+    "passed": 715,
+    "failed": 0,
+    "ignored": 1
+  },
+  "build": "workspace pass",
+  "focused": {
+    "source_commit": "7d77fd6",
+    "passed": 42,
+    "failed": 0
+  },
+  "tooling_tests": 13,
+  "actual_discovered_tools": 85,
+  "agent_workflow_checks": 18,
+  "production_sha256": "805ce54106e28315d0a5947904f767bd0d248bb32ab26fed47a06552c5bf7678",
+  "inspection_sha256": "163ef039eb7bc3453a4688e1482ad6d966355bfe9008fcd78c1971171b7a892a"
+}
