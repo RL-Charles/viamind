@@ -12,6 +12,7 @@ struct Inspect {
     capture: Option<PathBuf>,
     ui_passes: usize,
     controls: Vec<egui::Id>,
+    field: Option<egui::Id>,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -40,6 +41,15 @@ impl eframe::App for Inspect {
                 .collect::<Vec<_>>()
         } else {
             Vec::new()
+        };
+        let native_field = if self.ui_passes >= 3 {
+            self.field.map(|id| {
+                let response = ui.ctx().read_response(id).expect("actual native prepared silk width field");
+                assert!(content.contains_rect(response.rect));
+                response.rect
+            })
+        } else {
+            None
         };
         let image = ui.ctx().input(|i| {
             i.events.iter().find_map(|e| match e {
@@ -70,7 +80,7 @@ impl eframe::App for Inspect {
             f.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"control_bounds":"actual native Apply artwork/Reload artwork/Cancel read_response rectangles using exact safely captured labeled widget IDs","controls":native_buttons.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
+                serde_json::json!({"capture":"eframe native WGPU Screenshot event","pid":std::process::id(),"path":path,"rgba_path":rgba_path,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_alpha_pixels":nonopaque_alpha_pixels,"rgba_representation":"original egui Screenshot Color32 channels","rgb_review":"same RGB samples; alpha omitted for review, no opaque readback assertion","native_viewport_transparent":false,"pixels":image.size,"ui_passes":self.ui_passes,"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"control_bounds":"actual native Apply artwork/Reload artwork/Cancel read_response rectangles using exact safely captured labeled widget IDs","controls":native_buttons.iter().map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]).collect::<Vec<_>>(),"prepared_silk_width_bounds":native_field.map(|r|[r.min.x,r.min.y,r.max.x,r.max.y]),"content_rect":[content.min.x,content.min.y,content.max.x,content.max.y]})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
@@ -129,6 +139,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             controls.push(id);
         }
     }
+    let field = if board {
+        None
+    } else {
+        input(&mut h, "Silk 1 Stroke width", "0.150003");
+        Some(h.ctx.memory(egui::Memory::focused).expect("prepared silk width focus"))
+    };
+    let memory = h.ctx.memory(Clone::clone);
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
     println!(
@@ -152,8 +169,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Viamind footprint artwork inspection",
         options,
         Box::new(move |cc| {
+            cc.egui_ctx.memory_mut(|m| *m = memory);
             app.configure_renderer(cc);
-            Ok(Box::new(Inspect { app, engine: e, before, status, capture: Some(capture), ui_passes: 0, controls }))
+            Ok(Box::new(Inspect { app, engine: e, before, status, capture: Some(capture), ui_passes: 0, controls, field }))
         }),
     )
     .map_err(|e| e.to_string())?;
