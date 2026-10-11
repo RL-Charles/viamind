@@ -89,7 +89,7 @@ the desktop. Register the built application with your agent client, for example:
 
 ```sh
 cargo build --release -p viamind
-claude mcp add viamind-headless -- "$PWD/target/release/viamind" --headless
+claude mcp add --transport stdio viamind-headless -- "$PWD/target/release/viamind" --headless
 ```
 
 To work on an existing native project and retain the result, add file options to
@@ -108,6 +108,9 @@ existing project in the desktop. See `viamind --help` for options.
 Agents can inspect a subset of parts with `query_parts`, combining IDs, exact
 fields, text, side and origin bounds, with bounded UUID cursor pages. See
 [the MCP guide](crates/mcp/README.md) for examples and the repeatable live smoke test.
+The [generated tool reference](docs/generated/mcp-tools.md) preserves complete
+discovered schemas. [Agent workflows](docs/agent-workflows.md) includes a runnable
+isolated example with guarded edits, stale rejection, undo/redo and native save/reopen.
 
 Agents can follow design and selection changes through `get_session_state` and
 `watch_events`. The snapshot includes a cursor that resumes after reconnecting;
