@@ -334,7 +334,6 @@ fn export_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, 
     serde_json::to_value(engine.export_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
 }
 
-
 fn preview_pcb_import(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let input = serde_json::from_value(input).map_err(encode_error)?;
     serde_json::to_value(engine.preview_pcb_import(input)?).map_err(encode_error)
