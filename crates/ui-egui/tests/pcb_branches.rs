@@ -7,6 +7,7 @@ use serde_json::json;
 use viamind_doc::Project;
 use viamind_engine::{EngineHandle, Origin, pcb_branches::*};
 use viamind_ui_egui::ViamindApp;
+static TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 fn proposal(e: &EngineHandle) -> PcbBranchInfo {
     let actor = BranchActor::agent(1, "branch fixture");
@@ -58,6 +59,7 @@ fn has_color(shape: &Shape, color: Color32) -> bool {
 }
 #[test]
 fn actual_compact_review_toggle_merge_one_undo_and_no_shared_selection() {
+    let _lock = TEST_LOCK.lock().unwrap();
     let e = EngineHandle::new(Project::new("desktop branch"));
     let before = e.session_state();
     let b = proposal(&e);
@@ -85,6 +87,7 @@ fn actual_compact_review_toggle_merge_one_undo_and_no_shared_selection() {
 }
 #[test]
 fn actual_stale_refresh_discard_and_reopen_clear_ghost_without_mutation() {
+    let _lock = TEST_LOCK.lock().unwrap();
     let e = EngineHandle::new(Project::new("desktop stale branch"));
     proposal(&e);
     let mut app = ViamindApp::with_design(e.clone(), None);
@@ -96,6 +99,7 @@ fn actual_stale_refresh_discard_and_reopen_clear_ghost_without_mutation() {
     h.run_steps(5);
     let peer = e.session_state();
     click(&mut h, "Refresh branches");
+    assert!(h.get_by_label("Merge branch").accesskit_node().is_disabled());
     click(&mut h, "Merge branch");
     assert_eq!(e.session_state(), peer);
     assert_eq!(e.list_pcb_branches().len(), 1);
