@@ -269,6 +269,8 @@ impl ViamindApp {
         }
         let changes = engine.subscribe();
         let scene = engine.read(board_scene::scene_from_project);
+        let mut layers = LayerStack::pcb_default(4);
+        layers.sync_courtyards(&scene);
         let schematic = schematic::SchematicUi::with_active(
             engine.read(|p| !p.schematic.sheets.is_empty() && p.board.parts.is_empty() && p.board.tracks.is_empty() && p.board.vias.is_empty()),
         );
@@ -288,7 +290,7 @@ impl ViamindApp {
             schematic_component: schematic_component::SchematicComponentUi::default(),
             package_component: package_component::PackageComponentUi::default(),
             scene,
-            layers: LayerStack::pcb_default(4),
+            layers,
             canvas,
             stats: FrameStats::default(),
             selection: selection::Selection::default(),
@@ -344,6 +346,7 @@ impl ViamindApp {
         }
         if changed {
             self.scene = design.engine.read(board_scene::scene_from_project);
+            self.layers.sync_courtyards(&self.scene);
             self.canvas.scene_changed();
             self.selection.invalidate();
         }
@@ -390,6 +393,7 @@ impl ViamindApp {
     pub fn set_scene_size(&mut self, n: usize) {
         if self.scene.items.len() != n {
             self.scene = Scene::synthetic(n);
+            self.layers.sync_courtyards(&self.scene);
             self.canvas.scene_changed();
             self.canvas.fit_pending = true;
         }
