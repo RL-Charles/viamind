@@ -1,0 +1,13 @@
+test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit (test_appimage.AppImageTests.test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit) ... ok
+test_archive_paths_links_duplicates_and_expansion_are_bounded (test_appimage.AppImageTests.test_archive_paths_links_duplicates_and_expansion_are_bounded) ... ok
+test_atomic_publish_preserves_racing_destination (test_appimage.AppImageTests.test_atomic_publish_preserves_racing_destination) ... ok
+test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution (test_appimage.AppImageTests.test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution) ... ok
+test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture (test_appimage.AppImageTests.test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture) ... ok
+test_relink_refuses_destination_created_after_early_check (test_appimage.AppImageTests.test_relink_refuses_destination_created_after_early_check) ... ok
+test_runtime_inventory_digest_and_failed_package_cleanup (test_appimage.AppImageTests.test_runtime_inventory_digest_and_failed_package_cleanup) ... ok
+test_wrong_architecture_refuses_before_inputs_or_publication (test_appimage.AppImageTests.test_wrong_architecture_refuses_before_inputs_or_publication) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.170s
+
+OK

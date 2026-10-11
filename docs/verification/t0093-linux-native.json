@@ -1,0 +1,415 @@
+{
+  "ticket": "T-0093",
+  "public_spec": "docs/specs/linux-appimage.md",
+  "ubuntu_artifact": {
+    "workflow_run": 38141065493,
+    "workflow_head": "0f4ed01f2912df59c1e8d2bc183f150f4dc29647",
+    "artifact_id": 11703006622,
+    "zip_sha256": "f4c7ad3dd3bc31ddbe3e53d0f5bda946e610d387f113f1553b405e7e099eda19",
+    "file_checksums_pass": true,
+    "appimage": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0093/ubuntu-artifact-38141065493/viamind-0.1.0-63fb95402c74-x86_64.AppImage",
+    "application": {
+      "version": "0.1.0",
+      "revision": "63fb95402c7488f3fef208cbf4977d47ff8f38c1",
+      "source_dirty": false,
+      "host": "x86_64-unknown-linux-gnu",
+      "compiler": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1",
+      "glibc": "glibc 2.39",
+      "binary_sha256": "d25a2582ab396471a14a4d248e287f0918fb7ff854d6fb072dffdb902b16364e",
+      "runtime_libraries": "linux-vdso.so.1 (0x00007fb56b070000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fb56b030000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fb568d17000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fb568a00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fb56b072000)",
+      "dependency_license_entries": 363,
+      "headless_mcp_verified": true
+    },
+    "appimage_sha256": "6a98592c182c5c4f357e49bfe8d7c53122f49ec7105cd38e0052cb391af5bd3f",
+    "runtime_sha256": "c962680dd2a74b1c9d86bc7f77ce5190e5ca53b5f44281617770da875d31e643",
+    "packaging_revision": "63fb95402c7488f3fef208cbf4977d47ff8f38c1"
+  },
+  "production_native": {
+    "launch_pid": 1204257,
+    "application_pid": 1204342,
+    "application_executable": "/home/charlesmowbray/.cache/viamind/tmp/appimage_extracted_52c7094b94e429187bd7f36c835b4b04/usr/bin/viamind",
+    "application_sha256": "d25a2582ab396471a14a4d248e287f0918fb7ff854d6fb072dffdb902b16364e",
+    "caller_appdir_preserved": true,
+    "port": 7921,
+    "window": {
+      "address": "0x6463bddf4330",
+      "mapped": true,
+      "hidden": false,
+      "visible": true,
+      "acceptsInput": true,
+      "at": [
+        2048,
+        1330
+      ],
+      "size": [
+        -6,
+        -5
+      ],
+      "workspace": {
+        "id": 2,
+        "name": "2"
+      },
+      "floating": false,
+      "monitor": 0,
+      "class": "viamind",
+      "title": "native-project.viamind.json \u2014 Viamind",
+      "initialClass": "viamind",
+      "initialTitle": "native-project.viamind.json \u2014 Viamind",
+      "pid": 1204342,
+      "xwayland": false,
+      "pinned": false,
+      "pinFullscreened": false,
+      "fullscreen": 0,
+      "fullscreenClient": 0,
+      "fullscreenHandler": "default",
+      "allowedOverFullscreen": true,
+      "grouped": [],
+      "tags": [
+        "default-opacity*"
+      ],
+      "swallowing": "0x0",
+      "focusHistoryID": 0,
+      "inhibitingIdle": false,
+      "xdgTag": "",
+      "xdgDescription": "",
+      "contentType": "none",
+      "tearingHint": false,
+      "stableId": "1800010b"
+    },
+    "mcp_smoke": {
+      "url": "http://127.0.0.1:7921/mcp",
+      "checks": [
+        "atomic session snapshot",
+        "tool discovery",
+        "observer sees attributed design event",
+        "event cursor resumes on a new connection",
+        "event wait timeout keeps cursor",
+        "agent placement visible to other agent",
+        "agent undo preserves other agent edits",
+        "agent redo restores its edit",
+        "move uses exact nanometres",
+        "query filters and stable cursor pages",
+        "query bounds include exact part origin",
+        "query validation changes no shared state",
+        "duplicate designator gives actionable error",
+        "out-of-range move changes nothing",
+        "selection is shared across agents",
+        "selection identifies the agent",
+        "invalid selection is atomic",
+        "overlapping agent edits reject selective undo",
+        "undo works after resolving the conflict",
+        "delete prunes shared selection",
+        "event stream orders delete before selection pruning",
+        "delete is undoable",
+        "delete is redoable",
+        "pre-test design restored exactly",
+        "pre-test selection restored"
+      ],
+      "passed": true
+    },
+    "source_fixture_preserved": true
+  },
+  "local_gates": {
+    "source_commit_prefix": "506f4b7",
+    "base": "cc1813f2c734eb808d702002da4bcc2c93bf6bf3",
+    "workspace_tests": {
+      "passed": 638,
+      "failed": 0,
+      "ignored": 1
+    },
+    "legacy_bundle_tests": 2,
+    "appimage_tests": 8,
+    "fmt": true,
+    "strict_all_target_clippy": true,
+    "workspace_build": true,
+    "log": "docs/verification/t0093/full-linux.log",
+    "source_commit": "506f4b7132832afb58c9173e61e7db56de8fad96"
+  },
+  "local_runtime": {
+    "inventory_bytes": 142477086,
+    "sha256": "c962680dd2a74b1c9d86bc7f77ce5190e5ca53b5f44281617770da875d31e643",
+    "log": "docs/verification/t0093/runtime-build.log",
+    "general_reproducibility_claim": false,
+    "inventory_payload_files": 170,
+    "total_files_including_manifest": 171
+  },
+  "readable_inspection": {
+    "source": "41e5156cd60f0daff26551b9652b3b359cc11864",
+    "source_base": "cc1813f2c734eb808d702002da4bcc2c93bf6bf3",
+    "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0093/inspection-native",
+    "executable_sha256": "deb3b15a780983527218c6b4ce049da6f40fa7af620100dc2fac622499c4ba3a",
+    "pid": 1277767,
+    "window_id": 110379552232768,
+    "compositor_window": {
+      "address": "0x6463be005540",
+      "mapped": true,
+      "hidden": false,
+      "visible": true,
+      "acceptsInput": true,
+      "at": [
+        2080,
+        1265
+      ],
+      "size": [
+        1600,
+        1000
+      ],
+      "workspace": {
+        "id": 2,
+        "name": "2"
+      },
+      "floating": true,
+      "monitor": 0,
+      "class": "viamind-appimage-rendering-inspection",
+      "title": "Untitled \u2014 Viamind",
+      "initialClass": "viamind-appimage-rendering-inspection",
+      "initialTitle": "Untitled \u2014 Viamind",
+      "pid": 1277767,
+      "xwayland": false,
+      "pinned": false,
+      "pinFullscreened": false,
+      "fullscreen": 0,
+      "fullscreenClient": 0,
+      "fullscreenHandler": "default",
+      "allowedOverFullscreen": true,
+      "grouped": [],
+      "tags": [
+        "default-opacity*"
+      ],
+      "swallowing": "0x0",
+      "focusHistoryID": 1,
+      "inhibitingIdle": false,
+      "xdgTag": "",
+      "xdgDescription": "",
+      "contentType": "none",
+      "tearingHint": false,
+      "stableId": "18000115"
+    },
+    "framebuffer": {
+      "capture": "eframe native WGPU framebuffer Screenshot event",
+      "content_rect": [
+        0.0,
+        0.0,
+        1600.0,
+        1000.0
+      ],
+      "full_session_unchanged": true,
+      "inspection_only": true,
+      "mcp_enabled": false,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0093/native-framebuffer.ppm",
+      "pixels": [
+        1600,
+        1000
+      ],
+      "ui_passes": 11
+    },
+    "visually_inspected": true,
+    "visual_findings": [
+      "readable PCB toolbar/layer panel/status",
+      "asymmetric substrate and internal cutout",
+      "two labelled components and opposite copper sides",
+      "round via/drill rings and cyan connection guides"
+    ],
+    "separate_debug_inspection_host": true,
+    "actual_packaged_native_application_verified_separately": true
+  },
+  "limitations": [
+    "Ubuntu24.04 x86_64 initial baseline; arbitrary Linux distributions and non-Linux platforms unverified",
+    "Native production window allocation[-6,-5] excluded from readable proof; exact Cua capture refused stale target",
+    "Inspection host is separate debug native WGPU application; no OS input, physical scanout or frame cadence proof",
+    "MCP smoke restores design and selection; undo history can change",
+    "Artifact source is historical; final combined exact-head CI remains required"
+  ],
+  "artifacts": {
+    "docs/verification/t0093/encode-framebuffer.py": {
+      "sha256": "69ff86cb9db77c9fd8fb549e84531e99730799e2f0e7c9b6444a0a0ae1b93c53",
+      "bytes": 1467
+    },
+    "docs/verification/t0093/framebuffer-encoding.json": {
+      "sha256": "c4774de1ce0c5bcae4da6a7966e766362f3f1e49be703e99204d32b5d396936d",
+      "bytes": 493
+    },
+    "docs/verification/t0093/full-linux.log": {
+      "sha256": "7de0dff7e3e53be0da3c4df7930274bc532403bac0e411a3bdae38fab6244ef3",
+      "bytes": 102890
+    },
+    "docs/verification/t0093/independent-python.log": {
+      "sha256": "83f8bd8e2d0b1ffff8a80525bd93f909db443e262465587a01938fcf8c0eccc8",
+      "bytes": 1368
+    },
+    "docs/verification/t0093/inspection-build.log": {
+      "sha256": "d3ed4a85336f001d03fc23b9388041f0f2e23496d10489c258cd98643442cf66",
+      "bytes": 2060
+    },
+    "docs/verification/t0093/inspection-launch.json": {
+      "sha256": "86cf89ba7cc735018651d51fd89c39c1fdc891f23837f8255d0f7844ff68f8e9",
+      "bytes": 187
+    },
+    "docs/verification/t0093/inspection-process-proof.json": {
+      "sha256": "d4bf609749da51278b784e8ce5443045a9e38df4d4ff8b19bf85ad6e27ad102f",
+      "bytes": 2171
+    },
+    "docs/verification/t0093/inspection-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "docs/verification/t0093/inspection-stdout.log": {
+      "sha256": "0442bc86aecfdf3275fb43aed0a1556a891512900b2a50086098b0650e7a7b61",
+      "bytes": 301
+    },
+    "docs/verification/t0093/launch-inspection": {
+      "sha256": "db6c3493ab7f451ea75437068ea597505e0e69d807139a915d3fe4b2c48c8acd",
+      "bytes": 491
+    },
+    "docs/verification/t0093/native-framebuffer.png": {
+      "sha256": "c598653393df26aac9c50b53a7c44b9840db1cae0497fc973532a626999330f3",
+      "bytes": 126485
+    },
+    "docs/verification/t0093/native-http-smoke.json": {
+      "sha256": "63fdfdf45e0a4865b55b2344cbb302b7f2613e6eafcf854b594ec42e71127430",
+      "bytes": 1093
+    },
+    "docs/verification/t0093/native-http-smoke.log": {
+      "sha256": "63fdfdf45e0a4865b55b2344cbb302b7f2613e6eafcf854b594ec42e71127430",
+      "bytes": 1093
+    },
+    "docs/verification/t0093/native-project.viamind.json": {
+      "sha256": "67a1aa2a05bdc347b04bed37cd05c01e334d8703a52b111d6b8bdc18e7d1e1ea",
+      "bytes": 4149
+    },
+    "docs/verification/t0093/production-cua-refusal.txt": {
+      "sha256": "ae4d92f53f8770fb5f7ffb96e4767335cf092b327bbae80277ce27bf9a06ad0f",
+      "bytes": 106
+    },
+    "docs/verification/t0093/production-cua.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "docs/verification/t0093/production-launch.json": {
+      "sha256": "70454d7782988c88196140eb1e918131d39b3c87473bdc5fafde45f6654ce3d7",
+      "bytes": 457
+    },
+    "docs/verification/t0093/production-process-proof.json": {
+      "sha256": "e3408022926e3ffefe0387dcb7a73a1353033e04c9616030c328a697c135e9c4",
+      "bytes": 2528
+    },
+    "docs/verification/t0093/readonly-tool-discovery.json": {
+      "sha256": "bd7976d8493ac7188e0d5d35b181d4a101c29db7173a1e0df1d4e8eb0c49b4d1",
+      "bytes": 2362
+    },
+    "docs/verification/t0093/runtime-build.log": {
+      "sha256": "6922285d079a9822e75b48605e3b37267f5c4fdaef7da52f12abf5828743dda1",
+      "bytes": 26696
+    },
+    "docs/verification/t0093/runtime-inventory-check.json": {
+      "sha256": "3691b1734805b824a1acf7901445014902a5e500be79ff552c712b79bf4d37ad",
+      "bytes": 23200
+    },
+    "docs/verification/t0093/ubuntu-SHA256SUMS": {
+      "sha256": "19811d6ad7b34230f0f4dd90e66eaa86950cf6deda02e566c7f01f123ed2dc9b",
+      "bytes": 323
+    },
+    "docs/verification/t0093/ubuntu-appimage-info.json": {
+      "sha256": "cff9b949d433d4147c8302f7c80ef54504b58f7f43945463e24df3b52bdf15ed",
+      "bytes": 79610
+    },
+    "docs/verification/t0093/ubuntu-artifact-provenance.json": {
+      "sha256": "2b3f236fc7c0c50922937f9ca1f88e8c6fe6c2c183f7d382e82ae74a2c19e71a",
+      "bytes": 1551
+    }
+  },
+  "readonly_discovery": {
+    "checked_at_utc": "2026-10-11T13:21:50.880528+00:00",
+    "url": "http://127.0.0.1:7921/mcp",
+    "application_pid": 1204342,
+    "application_sha256": "d25a2582ab396471a14a4d248e287f0918fb7ff854d6fb072dffdb902b16364e",
+    "full_session_unchanged": true,
+    "tools": [
+      "add_part",
+      "add_track",
+      "add_via",
+      "annotate_schematic",
+      "apply_footprint",
+      "configure_auto_drc",
+      "convert_footprint_file",
+      "create_schematic_pcb_component",
+      "delete_part",
+      "delete_schematic_sheet",
+      "delete_track",
+      "delete_via",
+      "draw_schematic_wire_polyline",
+      "echo",
+      "edit_schematic_sheet",
+      "export_assembly_csv",
+      "export_fabrication",
+      "export_footprint",
+      "export_symbol_template",
+      "get_auto_drc_status",
+      "get_design",
+      "get_document_status",
+      "get_selection",
+      "get_session_state",
+      "import_board_outline_dxf",
+      "import_footprint",
+      "import_pcb",
+      "inspect_fabrication_files",
+      "link_schematic_symbol",
+      "load_output_job",
+      "load_symbol_template",
+      "move_part",
+      "new_project",
+      "open_project",
+      "place_symbol_template",
+      "plan_pad_via_walkaround",
+      "plan_pad_walkaround",
+      "preview_footprint_conversion",
+      "preview_pcb_import",
+      "preview_schematic_annotation",
+      "preview_schematic_pcb_component",
+      "preview_schematic_pcb_sync",
+      "query_connectivity",
+      "query_linked_components",
+      "query_linked_pin_pads",
+      "query_nets",
+      "query_parts",
+      "query_route_endpoints",
+      "query_schematic",
+      "query_schematic_connectivity",
+      "redo",
+      "render_board_png",
+      "render_board_view",
+      "render_schematic_png",
+      "render_schematic_view",
+      "route_pad_polyline",
+      "route_pad_posture",
+      "route_pad_via_polyline",
+      "route_pad_via_walkaround",
+      "route_pad_walkaround",
+      "route_polyline",
+      "run_drc",
+      "run_erc",
+      "run_output_job",
+      "save_output_job",
+      "save_project",
+      "save_symbol_template",
+      "set_board_outline",
+      "set_part_assembly",
+      "set_part_pads",
+      "set_selection",
+      "snapshot_schematic_wire_sheet",
+      "snapshot_symbol_sheet",
+      "synchronize_schematic_pcb",
+      "transform_parts",
+      "undo",
+      "update_part",
+      "viamind_version",
+      "watch_events"
+    ],
+    "tool_count": 79,
+    "next_cursor": null,
+    "version": {
+      "name": "viamind",
+      "version": "0.1.0"
+    }
+  }
+}

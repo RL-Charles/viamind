@@ -1,0 +1,85 @@
+{
+  "launch_pid": 1204257,
+  "application_pid": 1204342,
+  "application_executable": "/home/charlesmowbray/.cache/viamind/tmp/appimage_extracted_52c7094b94e429187bd7f36c835b4b04/usr/bin/viamind",
+  "application_sha256": "d25a2582ab396471a14a4d248e287f0918fb7ff854d6fb072dffdb902b16364e",
+  "caller_appdir_preserved": true,
+  "port": 7921,
+  "window": {
+    "address": "0x6463bddf4330",
+    "mapped": true,
+    "hidden": false,
+    "visible": true,
+    "acceptsInput": true,
+    "at": [
+      2048,
+      1330
+    ],
+    "size": [
+      -6,
+      -5
+    ],
+    "workspace": {
+      "id": 2,
+      "name": "2"
+    },
+    "floating": false,
+    "monitor": 0,
+    "class": "viamind",
+    "title": "native-project.viamind.json \u2014 Viamind",
+    "initialClass": "viamind",
+    "initialTitle": "native-project.viamind.json \u2014 Viamind",
+    "pid": 1204342,
+    "xwayland": false,
+    "pinned": false,
+    "pinFullscreened": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "fullscreenHandler": "default",
+    "allowedOverFullscreen": true,
+    "grouped": [],
+    "tags": [
+      "default-opacity*"
+    ],
+    "swallowing": "0x0",
+    "focusHistoryID": 0,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": "",
+    "contentType": "none",
+    "tearingHint": false,
+    "stableId": "1800010b"
+  },
+  "mcp_smoke": {
+    "url": "http://127.0.0.1:7921/mcp",
+    "checks": [
+      "atomic session snapshot",
+      "tool discovery",
+      "observer sees attributed design event",
+      "event cursor resumes on a new connection",
+      "event wait timeout keeps cursor",
+      "agent placement visible to other agent",
+      "agent undo preserves other agent edits",
+      "agent redo restores its edit",
+      "move uses exact nanometres",
+      "query filters and stable cursor pages",
+      "query bounds include exact part origin",
+      "query validation changes no shared state",
+      "duplicate designator gives actionable error",
+      "out-of-range move changes nothing",
+      "selection is shared across agents",
+      "selection identifies the agent",
+      "invalid selection is atomic",
+      "overlapping agent edits reject selective undo",
+      "undo works after resolving the conflict",
+      "delete prunes shared selection",
+      "event stream orders delete before selection pruning",
+      "delete is undoable",
+      "delete is redoable",
+      "pre-test design restored exactly",
+      "pre-test selection restored"
+    ],
+    "passed": true
+  },
+  "source_fixture_preserved": true
+}

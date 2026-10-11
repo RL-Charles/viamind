@@ -1,0 +1,457 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 389B done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BASE_IMAGE} results in empty or invalid base image name (line 2)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine@sha256:3c81aa9a3d770b316568f4499e30461a5cd3fbd7180bd89e28e34894c7845832
+#2 DONE 0.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/library/alpine@sha256:3c81aa9a3d770b316568f4499e30461a5cd3fbd7180bd89e28e34894c7845832
+#4 resolve docker.io/library/alpine@sha256:3c81aa9a3d770b316568f4499e30461a5cd3fbd7180bd89e28e34894c7845832 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 10.88MB 0.1s done
+#5 DONE 0.1s
+
+#6 [2/6] RUN apk add --no-cache bash alpine-sdk util-linux file autoconf automake libtool xz     eudev-dev gettext-dev linux-headers meson zstd-dev zstd-static zlib-dev     zlib-static clang musl-dev mimalloc-dev
+#6 CACHED
+
+#7 [3/6] COPY source /runtime
+#7 CACHED
+
+#8 [4/6] COPY inputs /inputs
+#8 CACHED
+
+#9 [5/6] COPY build-runtime.sh /build-runtime.sh
+#9 DONE 0.1s
+
+#10 [6/6] RUN bash /build-runtime.sh
+#10 0.210 WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.21/main: No such file or directory
+#10 0.210 WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.21/community: No such file or directory
+#10 0.856 patching file lib/mount.c
+#10 3.201 The Meson build system
+#10 3.201 Version: 1.6.1
+#10 3.201 Source dir: /work/fuse-3.15.0
+#10 3.201 Build dir: /work/fuse-3.15.0/build
+#10 3.201 Build type: native build
+#10 3.201 Project name: libfuse3
+#10 3.201 Project version: 3.15.0
+#10 3.201 C compiler for the host machine: cc (gcc 14.2.0 "cc (Alpine 14.2.0) 14.2.0")
+#10 3.201 C linker for the host machine: cc ld.bfd 2.43.1
+#10 3.201 Host machine cpu family: x86_64
+#10 3.201 Host machine cpu: x86_64
+#10 3.201 Checking for function "fork" : YES 
+#10 3.201 Checking for function "fstatat" : YES 
+#10 3.201 Checking for function "openat" : YES 
+#10 3.201 Checking for function "readlinkat" : YES 
+#10 3.201 Checking for function "pipe2" : YES 
+#10 3.201 Checking for function "splice" : YES 
+#10 3.201 Checking for function "vmsplice" : YES 
+#10 3.201 Checking for function "posix_fallocate" : YES 
+#10 3.201 Checking for function "fdatasync" : YES 
+#10 3.201 Checking for function "utimensat" : YES 
+#10 3.201 Checking for function "copy_file_range" : YES 
+#10 3.201 Checking for function "fallocate" : YES 
+#10 3.201 Checking for function "setxattr" : YES 
+#10 3.201 Checking for function "iconv" : YES 
+#10 3.201 Checking whether type "struct stat" has member "st_atim" : YES 
+#10 3.201 Checking whether type "struct stat" has member "st_atimespec" : NO 
+#10 3.201 Message: Compiler warns about unused result even when casting to void
+#10 3.201 Message: Enabling versioned libc symbols
+#10 3.201 Message: Compiler supports symver attribute
+#10 3.201 Configuring fuse_config.h using configuration
+#10 3.201 Configuring libfuse_config.h using configuration
+#10 3.201 Run-time dependency threads found: YES
+#10 3.201 Library iconv found: NO
+#10 3.201 Library dl found: YES
+#10 3.201 Library rt found: YES
+#10 3.201 Found pkg-config: YES (/usr/bin/pkg-config) 2.3.0
+#10 3.201 Run-time dependency udev found: YES 251
+#10 3.201 C++ compiler for the host machine: c++ (gcc 14.2.0 "c++ (Alpine 14.2.0) 14.2.0")
+#10 3.201 C++ linker for the host machine: c++ ld.bfd 2.43.1
+#10 3.201 Build targets in project: 29
+#10 3.201 
+#10 3.201 libfuse3 3.15.0
+#10 3.201 
+#10 3.201   User defined options
+#10 3.201     default_library: static
+#10 3.201     prefix         : /usr
+#10 3.201 
+#10 3.201 Found ninja-1.9 at /usr/bin/ninja
+#10 3.419 ninja: entering directory 'build'
+#10 3.421 [1/73] Generating test/test_scripts with a custom command
+#10 3.422 [2/73] Compiling C object test/release_unlink_race.p/release_unlink_race.c.o
+#10 3.425 [3/73] Compiling C object test/readdir_inode.p/readdir_inode.c.o
+#10 3.574 [4/73] Compiling C object test/test_syscalls.p/test_syscalls.c.o
+#10 3.598 [5/73] Linking target test/readdir_inode
+#10 3.630 [6/73] Compiling C object test/test_setattr.p/test_setattr.c.o
+#10 3.778 [7/73] Compiling C object test/test_write_cache.p/test_write_cache.c.o
+#10 3.920 [8/73] Compiling C++ object example/passthrough_hp.p/passthrough_hp.cc.o
+#10 4.813 [9/73] Linking target test/test_syscalls
+#10 4.828 [10/73] Compiling C object example/poll.p/poll.c.o
+#10 5.001 [11/73] Compiling C object example/notify_inval_entry.p/notify_inval_entry.c.o
+#10 5.128 [12/73] Compiling C object example/notify_store_retrieve.p/notify_store_retrieve.c.o
+#10 5.321 [13/73] Compiling C object example/invalidate_path.p/invalidate_path.c.o
+#10 5.539 [14/73] Compiling C object example/notify_inval_inode.p/notify_inval_inode.c.o
+#10 5.776 [15/73] Compiling C object example/null.p/null.c.o
+#10 6.050 [16/73] Compiling C object example/passthrough_ll.p/passthrough_ll.c.o
+#10 6.765 [17/73] Compiling C object example/cuse_client.p/cuse_client.c.o
+#10 6.898 [18/73] Compiling C object example/cuse.p/cuse.c.o
+#10 7.143 [19/73] Compiling C object example/ioctl.p/ioctl.c.o
+#10 7.338 [20/73] Compiling C object example/poll_client.p/poll_client.c.o
+#10 7.430 [21/73] Compiling C object example/ioctl_client.p/ioctl_client.c.o
+#10 7.478 [22/73] Compiling C object example/printcap.p/printcap.c.o
+#10 7.583 [23/73] Compiling C object example/hello_ll_uds.p/hello_ll_uds.c.o
+#10 7.825 [24/73] Compiling C object example/hello_ll.p/hello_ll.c.o
+#10 8.025 [25/73] Compiling C object example/hello.p/hello.c.o
+#10 8.304 [26/73] Compiling C object example/passthrough_fh.p/passthrough_fh.c.o
+#10 8.636 [27/73] Compiling C object example/passthrough.p/passthrough.c.o
+#10 9.004 [28/73] Compiling C object util/mount.fuse3.p/mount.fuse.c.o
+#10 9.395 [29/73] Compiling C object util/fusermount3.p/.._lib_mount_util.c.o
+#10 9.638 [30/73] Compiling C object util/fusermount3.p/fusermount.c.o
+#10 10.43 [31/73] Linking target util/fusermount3
+#10 10.46 [32/73] Compiling C object lib/libfuse3.a.p/modules_iconv.c.o
+#10 11.10 [33/73] Compiling C object lib/libfuse3.a.p/mount.c.o
+#10 11.36 [34/73] Compiling C object lib/libfuse3.a.p/compat.c.o
+#10 11.47 [35/73] Compiling C object lib/libfuse3.a.p/fuse_log.c.o
+#10 11.52 [36/73] Compiling C object lib/libfuse3.a.p/mount_util.c.o
+#10 11.78 [37/73] Compiling C object lib/libfuse3.a.p/modules_subdir.c.o
+#10 12.34 [38/73] Compiling C object lib/libfuse3.a.p/helper.c.o
+#10 12.63 [39/73] Compiling C object lib/libfuse3.a.p/cuse_lowlevel.c.o
+#10 12.87 [40/73] Compiling C object lib/libfuse3.a.p/buffer.c.o
+#10 13.14 [41/73] Compiling C object lib/libfuse3.a.p/fuse_signals.c.o
+#10 13.26 [42/73] Compiling C object lib/libfuse3.a.p/fuse_opt.c.o
+#10 13.63 [43/73] Compiling C object lib/libfuse3.a.p/fuse_lowlevel.c.o
+#10 15.52 [44/73] Compiling C object lib/libfuse3.a.p/fuse_loop_mt.c.o
+#10 15.80 [45/73] Compiling C object lib/libfuse3.a.p/fuse_loop.c.o
+#10 15.88 [46/73] Compiling C object lib/libfuse3.a.p/fuse.c.o
+#10 19.19 [47/73] Linking static target lib/libfuse3.a
+#10 19.20 [48/73] Linking target test/release_unlink_race
+#10 19.24 [49/73] Linking target test/test_setattr
+#10 19.28 [50/73] Linking target test/test_write_cache
+#10 19.30 [51/73] Linking target example/poll
+#10 19.33 [52/73] Linking target example/notify_inval_entry
+#10 19.36 [53/73] Linking target example/notify_store_retrieve
+#10 19.41 [54/73] Linking target example/invalidate_path
+#10 19.45 [55/73] Linking target example/notify_inval_inode
+#10 19.49 [56/73] Linking target example/null
+#10 19.53 [57/73] Linking target example/passthrough_ll
+#10 19.57 [58/73] Linking target example/cuse_client
+#10 19.59 [59/73] Linking target example/cuse
+#10 19.64 [60/73] Linking target example/ioctl
+#10 19.75 [61/73] Linking target example/poll_client
+#10 19.78 [62/73] Linking target example/ioctl_client
+#10 19.83 [63/73] Linking target example/printcap
+#10 19.91 [64/73] Linking target example/hello_ll_uds
+#10 19.96 [65/73] Linking target example/hello_ll
+#10 20.00 [66/73] Linking target example/hello
+#10 20.04 [67/73] Linking target example/passthrough_fh
+#10 20.09 [68/73] Linking target example/passthrough
+#10 20.17 [69/73] Linking target util/mount.fuse3
+#10 20.23 [70/73] Compiling C object test/wrong_command.p/wrong_command.c.o
+#10 20.30 [71/73] Linking target test/wrong_command
+#10 24.47 [72/73] Linking target example/passthrough_hp
+#10 24.77 [73/73] Installing files.
+#10 25.11 == FURTHER ACTION REQUIRED ==
+#10 25.11 Make sure that your init system will start the /etc/init.d//init.d/fuse3 init script
+#10 25.11 Installing lib/libfuse3.a to /usr/lib
+#10 25.11 Installing util/fusermount3 to /usr/bin
+#10 25.11 Installing util/mount.fuse3 to /usr/sbin
+#10 25.11 Installing /work/fuse-3.15.0/include/fuse.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/include/fuse_common.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/include/fuse_lowlevel.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/include/fuse_opt.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/include/cuse_lowlevel.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/include/fuse_log.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/doc/fusermount3.1 to /usr/share/man/man1
+#10 25.11 Installing /work/fuse-3.15.0/doc/mount.fuse3.8 to /usr/share/man/man8
+#10 25.11 Installing /work/fuse-3.15.0/build/libfuse_config.h to /usr/include/fuse3
+#10 25.11 Installing /work/fuse-3.15.0/build/meson-private/fuse3.pc to /usr/lib/pkgconfig
+#10 25.11 Running custom install script '/work/fuse-3.15.0/util/install_helper.sh /etc /usr/bin /usr/lib/udev/rules.d true /etc/init.d/'
+#10 28.10 aclocal: installing 'm4/libtool.m4' from '/usr/share/aclocal/libtool.m4'
+#10 28.10 aclocal: installing 'm4/ltoptions.m4' from '/usr/share/aclocal/ltoptions.m4'
+#10 28.11 aclocal: installing 'm4/ltsugar.m4' from '/usr/share/aclocal/ltsugar.m4'
+#10 28.11 aclocal: installing 'm4/ltversion.m4' from '/usr/share/aclocal/ltversion.m4'
+#10 28.11 aclocal: installing 'm4/lt~obsolete.m4' from '/usr/share/aclocal/lt~obsolete.m4'
+#10 28.11 aclocal: installing 'm4/pkg.m4' from '/usr/share/aclocal/pkg.m4'
+#10 30.43 libtoolize: putting auxiliary files in AC_CONFIG_AUX_DIR, 'build-aux'.
+#10 30.43 libtoolize: copying file 'build-aux/ltmain.sh'
+#10 34.37 configure.ac:15: installing 'build-aux/ar-lib'
+#10 34.37 configure.ac:13: installing 'build-aux/compile'
+#10 34.37 configure.ac:10: installing 'build-aux/config.guess'
+#10 34.38 configure.ac:10: installing 'build-aux/config.sub'
+#10 34.38 configure.ac:12: installing 'build-aux/install-sh'
+#10 34.38 configure.ac:12: installing 'build-aux/missing'
+#10 34.45 Makefile.am: installing 'build-aux/depcomp'
+#10 34.54 parallel-tests: installing 'build-aux/test-driver'
+#10 34.64 checking build system type... x86_64-pc-linux-musl
+#10 34.72 checking host system type... x86_64-pc-linux-musl
+#10 34.72 checking target system type... x86_64-pc-linux-musl
+#10 34.72 checking for a BSD-compatible install... /usr/bin/install -c
+#10 34.96 checking whether sleep supports fractional seconds... yes
+#10 34.96 checking filesystem timestamp resolution... 2
+#10 35.20 checking whether build environment is sane... yes
+#10 35.22 checking for a race-free mkdir -p... /bin/mkdir -p
+#10 35.22 checking for gawk... no
+#10 35.22 checking for mawk... no
+#10 35.22 checking for nawk... no
+#10 35.22 checking for awk... awk
+#10 35.22 checking whether make sets $(MAKE)... yes
+#10 35.23 checking whether make supports nested variables... yes
+#10 35.24 checking xargs -n works... yes
+#10 35.24 checking whether make supports the include directive... yes (GNU style)
+#10 35.25 checking for gcc... gcc
+#10 35.27 checking whether the C compiler works... yes
+#10 35.31 checking for C compiler default output file name... a.out
+#10 35.31 checking for suffix of executables... 
+#10 35.35 checking whether we are cross compiling... no
+#10 35.39 checking for suffix of object files... o
+#10 35.42 checking whether the compiler supports GNU C... yes
+#10 35.45 checking whether gcc accepts -g... yes
+#10 35.47 checking for gcc option to enable C11 features... none needed
+#10 35.55 checking whether gcc understands -c and -o together... yes
+#10 35.60 checking dependency style of gcc... gcc3
+#10 35.63 checking for stdio.h... yes
+#10 35.66 checking for stdlib.h... yes
+#10 35.69 checking for string.h... yes
+#10 35.72 checking for inttypes.h... yes
+#10 35.74 checking for stdint.h... yes
+#10 35.78 checking for strings.h... yes
+#10 35.82 checking for sys/stat.h... yes
+#10 35.88 checking for sys/types.h... yes
+#10 35.93 checking for unistd.h... yes
+#10 35.99 checking for wchar.h... yes
+#10 36.09 checking for minix/config.h... no
+#10 36.17 checking whether it is safe to define __EXTENSIONS__... yes
+#10 36.25 checking whether _XOPEN_SOURCE should be defined... no
+#10 36.31 checking for ar... ar
+#10 36.31 checking the archiver (ar) interface... ar
+#10 36.41 checking how to print strings... printf
+#10 36.41 checking for a sed that does not truncate output... /bin/sed
+#10 36.42 checking for grep that handles long lines and -e... /bin/grep
+#10 36.50 checking for egrep... /bin/grep -E
+#10 36.50 checking for fgrep... /bin/grep -F
+#10 36.50 checking for ld used by gcc... /usr/x86_64-alpine-linux-musl/bin/ld
+#10 36.52 checking if the linker (/usr/x86_64-alpine-linux-musl/bin/ld) is GNU ld... yes
+#10 36.52 checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+#10 36.52 checking the name lister (/usr/bin/nm -B) interface... BSD nm
+#10 36.57 checking whether ln -s works... yes
+#10 36.57 checking the maximum length of command line arguments... 98304
+#10 36.57 checking how to convert x86_64-pc-linux-musl file names to x86_64-pc-linux-musl format... func_convert_file_noop
+#10 36.57 checking how to convert x86_64-pc-linux-musl file names to toolchain format... func_convert_file_noop
+#10 36.57 checking for /usr/x86_64-alpine-linux-musl/bin/ld option to reload object files... -r
+#10 36.57 checking for file... file
+#10 36.57 checking for objdump... objdump
+#10 36.57 checking how to recognize dependent libraries... pass_all
+#10 36.57 checking for dlltool... no
+#10 36.57 checking how to associate runtime and link libraries... printf %s\n
+#10 36.57 checking for archiver @FILE support... @
+#10 36.62 checking for strip... strip
+#10 36.62 checking for ranlib... ranlib
+#10 36.62 checking command to parse /usr/bin/nm -B output from gcc object... ok
+#10 36.71 checking for sysroot... no
+#10 36.71 checking for a working dd... /bin/dd
+#10 36.71 checking how to truncate binary pipes... /bin/dd bs=4096 count=1
+#10 36.73 checking for mt... no
+#10 36.73 checking if : is a manifest tool... no
+#10 36.74 checking for dlfcn.h... yes
+#10 36.79 checking for objdir... .libs
+#10 36.91 checking if gcc supports -fno-rtti -fno-exceptions... no
+#10 36.92 checking for gcc option to produce PIC... -fPIC -DPIC
+#10 36.93 checking if gcc PIC flag -fPIC -DPIC works... yes
+#10 36.95 checking if gcc static flag -static works... yes
+#10 36.99 checking if gcc supports -c -o file.o... yes
+#10 37.03 checking if gcc supports -c -o file.o... (cached) yes
+#10 37.03 checking whether the gcc linker (/usr/x86_64-alpine-linux-musl/bin/ld -m elf_x86_64) supports shared libraries... yes
+#10 37.06 checking whether -lc should be explicitly linked in... no
+#10 37.11 checking dynamic linker characteristics... GNU/Linux ld.so
+#10 37.21 checking how to hardcode library paths into programs... immediate
+#10 37.21 checking whether stripping libraries is possible... yes
+#10 37.21 checking if libtool supports shared libraries... yes
+#10 37.21 checking whether to build shared libraries... yes
+#10 37.21 checking whether to build static libraries... yes
+#10 37.21 checking for pkg-config... /usr/bin/pkg-config
+#10 37.21 checking pkg-config is at least version 0.9.0... yes
+#10 37.22 checking for gawk... (cached) awk
+#10 37.22 checking for a sed that does not truncate output... (cached) /bin/sed
+#10 37.22 checking how to run the C preprocessor... gcc -E
+#10 37.29 checking for gcc option to enable large file support... none needed
+#10 37.36 checking how to enable all compiler warnings... -Wall
+#10 37.40 checking for QNX makedev... no
+#10 37.44 checking for sys/mkdev.h... no
+#10 37.46 checking for sys/sysmacros.h... yes
+#10 37.49 configure: checking for definition needed by makedev
+#10 37.49 checking if makedev works without changes... yes
+#10 37.55 configure: checking for definition needed by pread
+#10 37.55 checking if pread works without changes... yes
+#10 37.63 configure: checking for definition needed by S_IFSOCK
+#10 37.63 checking if S_IFSOCK works without changes... yes
+#10 37.69 checking for attr/xattr.h... no
+#10 37.72 configure: checking for definition needed by ENOATTR
+#10 37.72 checking if ENOATTR works without changes... no
+#10 37.75 checking if ENOATTR requires changing _DARWIN_C_SOURCE... no
+#10 37.78 checking if ENOATTR requires changing _NETBSD_SOURCE... no
+#10 37.83 checking if ENOATTR requires changing _XOPEN_SOURCE... no
+#10 37.88 checking if ENOATTR requires changing _BSD_SOURCE... no
+#10 37.89 checking if ENOATTR requires changing _GNU_SOURCE... no
+#10 37.91 checking if ENOATTR requires changing _POSIX_C_SOURCE... no
+#10 37.93 configure: checking for definition needed by symlink
+#10 37.93 checking if symlink works without changes... yes
+#10 37.98 checking for library containing uncompress... -lz
+#10 38.06 checking for zlib.h... yes
+#10 38.09 checking for liblzma... no
+#10 38.09 checking for library containing lzma_stream_buffer_decode... no
+#10 38.20 checking for library containing lzo1x_decompress_safe... no
+#10 38.29 checking for library containing LZ4_decompress_safe... no
+#10 38.38 checking for library containing ZSTD_decompress... -lzstd
+#10 43.28 checking for zstd.h... yes
+#10 43.37 checking for fuse3 >= 3.2... yes
+#10 43.37 checking for FUSE library... already present
+#10 43.48 checking for FUSE header... yes
+#10 43.52 checking for gcc options needed to detect all undeclared functions... none needed
+#10 43.59 checking whether fuse_session_loop is declared... yes
+#10 43.66 checking for fuse_session_loop... yes
+#10 43.83 checking whether fuse_add_direntry is declared... yes
+#10 43.89 checking whether fuse_add_dirent is declared... no
+#10 43.94 checking whether fuse_daemonize is declared... yes
+#10 44.01 checking whether fuse_session_remove_chan is declared... no
+#10 44.06 checking for two-argument fuse_unmount... no
+#10 44.12 checking for 64_t third argument to fuse ll forget op... yes
+#10 44.23 checking whether fuse_cmdline_help is declared... yes
+#10 44.29 checking for position argument to FUSE xattr operations... no
+#10 44.35 checking if make supports export... yes
+#10 44.36 checking for __le16... yes
+#10 44.45 checking for asm/byteorder.h... yes
+#10 44.50 checking for endian.h... yes
+#10 44.53 checking for inline... inline
+#10 44.54 checking for fusermount3... fusermount3
+#10 44.54 checking for mksquashfs... no
+#10 44.54 checking for md5sum... md5sum
+#10 44.54 checking for pthread_mutex_lock in -lpthread... yes
+#10 44.60 checking that generated files are newer than configure... done
+#10 44.60 configure: creating ./config.status
+#10 44.85 config.status: creating tests/ll-smoke.sh
+#10 44.86 config.status: creating tests/ll-smoke-singlethreaded.sh
+#10 44.87 config.status: creating tests/umount-test.sh
+#10 44.89 config.status: creating Makefile
+#10 44.92 config.status: creating squashfuse.pc
+#10 44.93 config.status: creating squashfuse_ll.pc
+#10 44.94 config.status: creating tests/lib.sh
+#10 44.95 config.status: creating ci/features
+#10 44.97 config.status: creating config.h
+#10 44.98 config.status: executing depfiles commands
+#10 45.07 config.status: executing libtool commands
+#10 45.10 
+#10 45.10 Compression support ....... : ZLIB ZSTD
+#10 45.10 High-level FUSE driver .... : yes
+#10 45.10 Low-level FUSE driver ..... : yes
+#10 45.10 Demo program .............. : yes
+#10 45.10 Tests ..................... : none
+#10 45.10 
+#10 45.18 make  all-am
+#10 45.18 make[1]: Entering directory '/work/squashfuse-0.5.2'
+#10 45.18 SED="/bin/sed" ./gen_swap.sh ./squashfs_fs.h
+#10 45.18   CC       squashfuse-hl.o
+#10 45.20   CC       libfuseprivate_la-fuseprivate.lo
+#10 45.48   CC       libfuseprivate_la-nonstd-makedev.lo
+#10 45.59   CC       libfuseprivate_la-nonstd-enoattr.lo
+#10 45.64   CC       libfuseprivate_la-stat.lo
+#10 45.76   CC       squashfuse_ll-ll_main.o
+#10 45.93   CC       libsquashfuse_ll_convenience_la-ll.lo
+#10 45.94   CC       libsquashfuse_ll_convenience_la-ll_inode.lo
+#10 46.13   CC       libsquashfuse_ll_convenience_la-nonstd-daemon.lo
+#10 46.26   CC       ls.o
+#10 46.31   CC       squashfuse_extract-extract.o
+#10 46.44   CC       squashfuse_extract-stat.o
+#10 46.46   CC       squashfuse_extract-nonstd-makedev.o
+#10 46.52   CC       squashfuse_extract-nonstd-symlink.o
+#10 46.54   CC       libsquashfuse_convenience_la-swap.lo
+#10 46.58   CC       libsquashfuse_convenience_la-cache.lo
+#10 46.74   CC       libsquashfuse_convenience_la-table.lo
+#10 47.00   CC       libsquashfuse_convenience_la-dir.lo
+#10 47.03   CC       libsquashfuse_convenience_la-file.lo
+#10 47.34   CC       libsquashfuse_convenience_la-fs.lo
+#10 47.35   CC       libsquashfuse_convenience_la-decompress.lo
+#10 47.62   CC       libsquashfuse_convenience_la-xattr.lo
+#10 48.06   CC       libsquashfuse_convenience_la-hash.lo
+#10 48.11   CC       libsquashfuse_convenience_la-stack.lo
+#10 48.37   CC       libsquashfuse_convenience_la-traverse.lo
+#10 48.39   CC       libsquashfuse_convenience_la-util.lo
+#10 48.58   CC       libsquashfuse_convenience_la-nonstd-pread.lo
+#10 48.71   CC       libsquashfuse_convenience_la-nonstd-stat.lo
+#10 48.73   CC       libsquashfuse_convenience_la-cache_mt.lo
+#10 48.86   CCLD     libfuseprivate.la
+#10 49.12   CCLD     libsquashfuse_convenience.la
+#10 49.43   CCLD     libsquashfuse_ll_convenience.la
+#10 49.43   CCLD     squashfuse
+#10 49.64   CCLD     libsquashfuse.la
+#10 49.71   CCLD     squashfuse_ll
+#10 49.77   CCLD     libsquashfuse_ll.la
+#10 49.80   CCLD     squashfuse_ls
+#10 49.89   CCLD     squashfuse_extract
+#10 50.03 make[1]: Leaving directory '/work/squashfuse-0.5.2'
+#10 50.05 make[1]: Entering directory '/work/squashfuse-0.5.2'
+#10 50.06  /bin/mkdir -p '/usr/local/lib'
+#10 50.06  /bin/sh ./libtool   --mode=install /usr/bin/install -c   libsquashfuse.la libsquashfuse_ll.la '/usr/local/lib'
+#10 50.09 libtool: install: /usr/bin/install -c .libs/libsquashfuse.lai /usr/local/lib/libsquashfuse.la
+#10 50.10 libtool: install: /usr/bin/install -c .libs/libsquashfuse_ll.lai /usr/local/lib/libsquashfuse_ll.la
+#10 50.11 libtool: install: /usr/bin/install -c .libs/libsquashfuse.a /usr/local/lib/libsquashfuse.a
+#10 50.12 libtool: install: chmod 644 /usr/local/lib/libsquashfuse.a
+#10 50.12 libtool: install: ranlib /usr/local/lib/libsquashfuse.a
+#10 50.18 libtool: install: /usr/bin/install -c .libs/libsquashfuse_ll.a /usr/local/lib/libsquashfuse_ll.a
+#10 50.19 libtool: install: chmod 644 /usr/local/lib/libsquashfuse_ll.a
+#10 50.20 libtool: install: ranlib /usr/local/lib/libsquashfuse_ll.a
+#10 50.31 libtool: finish: PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /usr/local/lib
+#10 50.31 ----------------------------------------------------------------------
+#10 50.31 Libraries have been installed in:
+#10 50.31    /usr/local/lib
+#10 50.31 
+#10 50.31 If you ever happen to want to link against installed libraries
+#10 50.31 in a given directory, LIBDIR, you must either use libtool, and
+#10 50.31 specify the full pathname of the library, or use the '-LLIBDIR'
+#10 50.31 flag during linking and do at least one of the following:
+#10 50.31    - add LIBDIR to the 'LD_LIBRARY_PATH' environment variable
+#10 50.31      during execution
+#10 50.31    - add LIBDIR to the 'LD_RUN_PATH' environment variable
+#10 50.31      during linking
+#10 50.31    - use the '-Wl,-rpath -Wl,LIBDIR' linker flag
+#10 50.31 
+#10 50.31 See any operating system documentation about shared libraries for
+#10 50.31 more information, such as the ld(1) and ld.so(8) manual pages.
+#10 50.31 ----------------------------------------------------------------------
+#10 50.31  /bin/mkdir -p '/usr/local/bin'
+#10 50.32   /bin/sh ./libtool   --mode=install /usr/bin/install -c squashfuse squashfuse_ll '/usr/local/bin'
+#10 50.37 libtool: install: /usr/bin/install -c squashfuse /usr/local/bin/squashfuse
+#10 50.39 libtool: install: /usr/bin/install -c squashfuse_ll /usr/local/bin/squashfuse_ll
+#10 50.39  /bin/mkdir -p '/usr/local/share/man/man1'
+#10 50.40  /usr/bin/install -c -m 644 squashfuse.1 squashfuse_ll.1 '/usr/local/share/man/man1'
+#10 50.41  /bin/mkdir -p '/usr/local/lib/pkgconfig'
+#10 50.41  /usr/bin/install -c -m 644 squashfuse.pc squashfuse_ll.pc '/usr/local/lib/pkgconfig'
+#10 50.42  /bin/mkdir -p '/usr/local/include/squashfuse'
+#10 50.42  /usr/bin/install -c -m 644 squashfuse.h squashfs_fs.h cache.h common.h config.h decompress.h dir.h file.h fs.h stack.h table.h traverse.h util.h xattr.h ll.h '/usr/local/include/squashfuse'
+#10 50.43 make[1]: Leaving directory '/work/squashfuse-0.5.2'
+#10 50.44 clang -I/usr/local/include/squashfuse -I/usr/include/fuse3 -std=gnu99 -Os -D_FILE_OFFSET_BITS=64 -DGIT_COMMIT=\"dd6cebedcbddde9c82f89b011e8e1d40b6e43868\" -T data_sections.ld -ffunction-sections -fdata-sections -Wl,--gc-sections -static -Wall -Werror -static-pie runtime.c -lsquashfuse -lsquashfuse_ll -lzstd -lz -lfuse3 -lmimalloc -o runtime
+#10 DONE 52.5s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 8.9s done
+#11 exporting manifest sha256:02b55a26670a48a95aa509bea9a62cec0e42260af705aab097cf2ea17b7dc2fb 0.0s done
+#11 exporting config sha256:3e1436d43cc8e16bae627a3aec386e82785160f16090af1d348e4a8ac6d09d99 0.0s done
+#11 exporting attestation manifest sha256:3978325ebdd31af8bdddb0a50cf3419d74399ca5d4437470dba3e9e5d1d192a0 0.0s done
+#11 exporting manifest list sha256:07bee5d9195b19111e58679cd716c285e3169180e5a44380a39b94b5f59613c9 0.0s done
+#11 naming to docker.io/library/viamind-appimage-runtime:1743f315445d1e6bceaaec6e done
+#11 unpacking to docker.io/library/viamind-appimage-runtime:1743f315445d1e6bceaaec6e
+#11 unpacking to docker.io/library/viamind-appimage-runtime:1743f315445d1e6bceaaec6e 1.6s done
+#11 DONE 10.6s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BASE_IMAGE} results in empty or invalid base image name (line 2)
+/home/charlesmowbray/.cache/viamind/native-artifacts/t0093-runtime-v2

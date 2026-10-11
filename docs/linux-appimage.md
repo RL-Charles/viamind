@@ -104,5 +104,5 @@ finite expansion, publication races, process argument/environment/stream/exit
 semantics and failed-stage cleanup. CI publishes downloadable Ubuntu 24.04
 artifacts with 14-day retention; this workflow does not publish a GitHub release.
 
-Native verification and exact local artifact provenance will be recorded in
-`docs/linux-appimage-verification.md` before this ticket is submitted.
+See [native verification and exact artifact provenance](linux-appimage-verification.md)
+for the actual Ubuntu image, shared native MCP checks and rendering limitations.

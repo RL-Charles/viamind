@@ -1,0 +1,80 @@
+{
+  "source": "41e5156cd60f0daff26551b9652b3b359cc11864",
+  "source_base": "cc1813f2c734eb808d702002da4bcc2c93bf6bf3",
+  "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0093/inspection-native",
+  "executable_sha256": "deb3b15a780983527218c6b4ce049da6f40fa7af620100dc2fac622499c4ba3a",
+  "pid": 1277767,
+  "window_id": 110379552232768,
+  "compositor_window": {
+    "address": "0x6463be005540",
+    "mapped": true,
+    "hidden": false,
+    "visible": true,
+    "acceptsInput": true,
+    "at": [
+      2080,
+      1265
+    ],
+    "size": [
+      1600,
+      1000
+    ],
+    "workspace": {
+      "id": 2,
+      "name": "2"
+    },
+    "floating": true,
+    "monitor": 0,
+    "class": "viamind-appimage-rendering-inspection",
+    "title": "Untitled \u2014 Viamind",
+    "initialClass": "viamind-appimage-rendering-inspection",
+    "initialTitle": "Untitled \u2014 Viamind",
+    "pid": 1277767,
+    "xwayland": false,
+    "pinned": false,
+    "pinFullscreened": false,
+    "fullscreen": 0,
+    "fullscreenClient": 0,
+    "fullscreenHandler": "default",
+    "allowedOverFullscreen": true,
+    "grouped": [],
+    "tags": [
+      "default-opacity*"
+    ],
+    "swallowing": "0x0",
+    "focusHistoryID": 1,
+    "inhibitingIdle": false,
+    "xdgTag": "",
+    "xdgDescription": "",
+    "contentType": "none",
+    "tearingHint": false,
+    "stableId": "18000115"
+  },
+  "framebuffer": {
+    "capture": "eframe native WGPU framebuffer Screenshot event",
+    "content_rect": [
+      0.0,
+      0.0,
+      1600.0,
+      1000.0
+    ],
+    "full_session_unchanged": true,
+    "inspection_only": true,
+    "mcp_enabled": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0093/native-framebuffer.ppm",
+    "pixels": [
+      1600,
+      1000
+    ],
+    "ui_passes": 11
+  },
+  "visually_inspected": true,
+  "visual_findings": [
+    "readable PCB toolbar/layer panel/status",
+    "asymmetric substrate and internal cutout",
+    "two labelled components and opposite copper sides",
+    "round via/drill rings and cyan connection guides"
+  ],
+  "separate_debug_inspection_host": true,
+  "actual_packaged_native_application_verified_separately": true
+}
