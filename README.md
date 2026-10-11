@@ -217,5 +217,11 @@ The original regulator example is
 including transformed pin endpoints and local/global/power label scope. The
 regulator fixture yields VIN (2 pins), 3V3 (2 pins) and GND (3 pins). Ambiguous
 crossing labels or exceeded work limits return errors without partial nets.
-ERC, hierarchy, buses and board annotation remain separate work. See the
-[connectivity behavior specification](docs/specs/schematic-connectivity.md).
+`run_erc` adds read-only native pin checks over that exact graph, with a configurable
+66-pair compatibility matrix and stable actionable pin/net identities. Reports
+state supported coverage and any work/result truncation; they never certify full
+ERC. The regulator reports missing power-output sources on VIN and GND because
+power labels name nets without supplying power. Desktop ERC results, hierarchy,
+buses and board annotation remain separate work. See the
+[connectivity behavior specification](docs/specs/schematic-connectivity.md) and
+[native ERC policy](docs/specs/schematic-erc.md).

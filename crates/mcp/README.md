@@ -435,7 +435,7 @@ with `offset`, `limit` (1..100), `total` and `next_offset`. Queries preserve his
 and dirty state. Get exact edit guards from `get_session_state`; restart paging
 when another client edits. New schematic content saves as native schema 5.
 Use `query_schematic_connectivity` below for bounded native graph evaluation.
-ERC, hierarchy and board annotation remain separate work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
+Use `run_erc` below for scoped native pin checks. Hierarchy and board annotation remain separate work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
 
 ## Read-only board SVG snapshot
 
