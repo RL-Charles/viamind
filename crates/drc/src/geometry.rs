@@ -1,5 +1,5 @@
 //! Ephemeral oriented copper geometry in nanometres; no persistent float model.
-use viamind_doc::{Part, Side};
+use viamind_doc::Part;
 use viamind_geom::{Nm, Point, Rect};
 
 pub(crate) const EPS: f64 = 0.001;
@@ -13,20 +13,13 @@ pub(crate) fn bounds(points: &[P]) -> Rect {
     Rect::new(Point::new(Nm(min(0)), Nm(min(1))), Point::new(Nm(max(0)), Nm(max(1))))
 }
 pub(crate) fn rectangle(part: &Part, pad: &viamind_doc::Pad) -> [P; 4] {
-    let (s, c) = match part.rotation_mdeg {
-        0 => (0.0, 1.0),
-        90_000 => (1.0, 0.0),
-        180_000 => (0.0, -1.0),
-        270_000 => (-1.0, 0.0),
-        angle => (f64::from(angle) / 1000.0).to_radians().sin_cos(),
-    };
     let x = pad.position.x.0 as f64;
     let y = pad.position.y.0 as f64;
     let w = pad.width.0 as f64 / 2.0;
     let h = pad.height.0 as f64 / 2.0;
     [[x - w, y - h], [x + w, y - h], [x + w, y + h], [x - w, y + h]].map(|[x, y]| {
-        let x = if part.side == Side::Bottom { -x } else { x };
-        [part.position.x.0 as f64 + x * c + y * s, part.position.y.0 as f64 - x * s + y * c]
+        let (x, y) = part.local_to_world_mm(x / 1_000_000.0, y / 1_000_000.0);
+        [x * 1_000_000.0, y * 1_000_000.0]
     })
 }
 fn cross(a: P, b: P, p: P) -> f64 {

@@ -202,6 +202,30 @@ next page, repeat the same filters and pass `next_after` as `after`. `limit`
 defaults to 100, maximum 1000. Restart pagination after design edits.
 See [the complete query contract](../../docs/specs/part-queries.md).
 
+## Scoped batch DRC
+
+`run_drc` checks a captured project snapshot and returns `{source_cursor, report}`.
+It leaves the model, selection, undo/redo and dirty state unchanged. Optional
+`copper_clearance_mm` (default 0.2) and `edge_clearance_mm` (default 0.25) must be
+finite 0..100 mm. `max_violations` defaults to 1000, limited to 1..10000. These
+example defaults are not fabrication approval.
+
+The initial scope is persisted rectangular SMD pads: same-layer copper separation
+between different named nets or any unassigned pad, and actual polygon board/cutout
+containment and edge clearance. Bottom-side mirroring and arbitrary part rotation
+are included. Results contain stable part/pad IDs, references, nets and measured/
+required Nm distances. Copper contact is flagged even with zero clearance.
+
+Read coverage: legacy preview parts and unsupported extreme transforms are excluded
+with part IDs/reasons (first 1000 details, total count and explicit detail truncation);
+absent outline excludes substrate checks. Tracks/vias, pours,
+drills, mask/silkscreen, unrouted-net and full manufacturing checks are excluded.
+`truncated`/`incomplete_reason` report result/work limits. Zero scoped issues does
+not establish fabrication readiness. Run again after edits; compare `source_cursor`
+to your observed session state. The desktop uses the same checker under **Board →
+Design rule check**, exposes coverage, marks stale reports and selects issue parts.
+See [the scoped contract](../../docs/specs/batch-pad-drc.md).
+
 ## Watch design and selection changes
 
 Call `get_session_state {}` for an atomic `project`, `selection` and `cursor` snapshot.

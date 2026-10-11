@@ -10,6 +10,7 @@ use viamind_geom::{Nm, Rect, SpatialIndex};
 
 pub const MAX_PADS: usize = 100_000;
 pub const MAX_CANDIDATE_PAIRS: usize = 1_000_000;
+pub const MAX_EXCLUDED_DETAILS: usize = 1000;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(default, deny_unknown_fields)]
@@ -89,6 +90,8 @@ pub struct Coverage {
     pub checked_pads: usize,
     pub unassigned_pads: usize,
     pub excluded_parts: Vec<ExcludedPart>,
+    pub excluded_part_count: usize,
+    pub excluded_details_truncated: bool,
     pub explicit_outline_checked: bool,
     pub examined_candidate_pairs: usize,
     pub checks_not_performed: Vec<String>,
@@ -186,6 +189,8 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             checked_pads: 0,
             unassigned_pads: 0,
             excluded_parts: Vec::new(),
+            excluded_part_count: 0,
+            excluded_details_truncated: false,
             explicit_outline_checked: project.board.outline.is_some(),
             examined_candidate_pairs: 0,
             checks_not_performed: [
@@ -215,7 +220,12 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             None
         };
         if let Some(reason) = reason {
-            report.coverage.excluded_parts.push(ExcludedPart { part_id: part.id, designator: part.designator.clone(), reason: reason.into() });
+            report.coverage.excluded_part_count += 1;
+            if report.coverage.excluded_parts.len() < MAX_EXCLUDED_DETAILS {
+                report.coverage.excluded_parts.push(ExcludedPart { part_id: part.id, designator: part.designator.clone(), reason: reason.into() });
+            } else {
+                report.coverage.excluded_details_truncated = true;
+            }
             continue;
         }
         let pads = part.pads.as_ref().expect("modeled part");

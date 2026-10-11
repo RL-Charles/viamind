@@ -140,12 +140,14 @@ fn coverage_limits_native_roundtrip_and_ordering_are_honest_and_deterministic() 
     c.id = ObjectId::new();
     c.designator = "C".into();
     c.pads.as_mut().unwrap().0[0].id = ObjectId::new();
+    let extreme_id = extreme.id;
     let p = project(vec![a, b, c, legacy, extreme]);
     let before = p.clone();
     let r = run_drc(&p, &DrcInput::default()).unwrap();
     assert_eq!(p, before);
     assert_eq!(r.coverage.checked_pads, 3);
     assert_eq!(r.coverage.excluded_parts.len(), 2);
+    assert!(r.coverage.excluded_parts.iter().any(|p| p.part_id == extreme_id && p.reason.contains("unsupported transform")));
     assert!(!r.coverage.explicit_outline_checked);
     assert_eq!(r.violations.len(), 3);
     assert!(!r.truncated);
@@ -170,4 +172,35 @@ fn sparse_pad_broadphase_avoids_quadratic_pair_distance_evaluations() {
     assert_eq!(report.coverage.checked_pads, 10_000);
     assert_eq!(report.coverage.examined_candidate_pairs, 0);
     assert!(report.violations.is_empty());
+}
+
+#[test]
+fn dense_exempt_copper_pairs_still_obey_the_work_budget_and_report_incomplete() {
+    let parts = (0..1500).map(|i| part(&format!("R{i}"), 0.0, 0.0, 1.0, 1.0, 0, Side::Top, Some("GND"))).collect();
+    let report = run_drc(&project(parts), &DrcInput::default()).unwrap();
+    assert!(report.violations.is_empty());
+    assert!(report.truncated);
+    assert_eq!(report.coverage.examined_candidate_pairs, viamind_drc::MAX_CANDIDATE_PAIRS);
+    assert!(report.incomplete_reason.unwrap().contains("candidate-pair limit"));
+}
+
+#[test]
+fn legacy_heavy_coverage_keeps_total_and_bounds_actionable_details() {
+    let mut legacy = part("Legacy", 0.0, 0.0, 1.0, 1.0, 0, Side::Top, None);
+    legacy.pads = None;
+    let parts = (0..1001)
+        .map(|i| {
+            let mut p = legacy.clone();
+            p.id = ObjectId::new();
+            p.designator = format!("L{i}");
+            p
+        })
+        .collect();
+    let report = run_drc(&project(parts), &DrcInput::default()).unwrap();
+    assert_eq!(report.coverage.checked_pads, 0);
+    assert_eq!(report.coverage.excluded_part_count, 1001);
+    assert_eq!(report.coverage.excluded_parts.len(), viamind_drc::MAX_EXCLUDED_DETAILS);
+    assert!(report.coverage.excluded_details_truncated);
+    assert!(!report.coverage.explicit_outline_checked);
+    assert!(!report.coverage.checks_not_performed.is_empty());
 }

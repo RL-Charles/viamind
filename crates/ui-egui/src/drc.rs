@@ -95,7 +95,8 @@ impl ViamindApp {
                     "{} scoped violations · {} explicit pads · {} unassigned pads · {} excluded parts",
                     report.violations.len(),
                     coverage.checked_pads,
-                    coverage.unassigned_pads
+                    coverage.unassigned_pads,
+                    coverage.excluded_part_count
                 ));
                 if let Some(reason) = &report.incomplete_reason {
                     ui.label(format!("Incomplete: {reason}"));
@@ -104,6 +105,9 @@ impl ViamindApp {
                     ui.label("Board boundary checks excluded: no explicit outline.");
                 }
                 ui.collapsing("Coverage and exclusions", |ui| {
+                    if coverage.excluded_details_truncated {
+                        ui.label(format!("Showing first {} of {} excluded parts", coverage.excluded_parts.len(), coverage.excluded_part_count));
+                    }
                     for part in &coverage.excluded_parts {
                         ui.label(format!("Excluded {} ({}): {}", part.designator, part.part_id, part.reason));
                     }
@@ -126,7 +130,7 @@ impl ViamindApp {
                         ui.label(format!("Measured {:.6} mm; required {:.6} mm", issue.measured_clearance.to_mm(), issue.required_clearance.to_mm()));
                         for object in &issue.objects {
                             ui.monospace(format!(
-                                "{} pad {} · {:?} · {:?}\npart {} / pad {}",
+                                "{} pad {} · {:?} · {:?}\npart {}\npad {}",
                                 object.designator, object.pad_number, object.side, object.net, object.part_id, object.pad_id
                             ));
                         }
@@ -140,10 +144,10 @@ impl ViamindApp {
         if run {
             self.run_design_drc();
         }
-        if let Some(ids) = select {
-            if let Err(error) = UiAction::SetSelection.run(&engine, json!({"ids":ids})) {
-                self.drc.message = Some(error.to_string());
-            }
+        if let Some(ids) = select
+            && let Err(error) = UiAction::SetSelection.run(&engine, json!({"ids":ids}))
+        {
+            self.drc.message = Some(error.to_string());
         }
     }
 }

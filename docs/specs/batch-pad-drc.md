@@ -19,7 +19,7 @@ narrowphase distance or topology.
 Input rules are nonnegative finite millimetres, at most 100 mm each. Example defaults
 are 0.2 mm copper and 0.25 mm board-edge clearance, not a manufacturing guarantee.
 Convert rules once to integer Nm. Limit result count to 1..10000 (default 1000),
-explicit pad geometry to 100000 pads and examined eligible candidate pairs to
+explicit pad geometry to 100000 pads and examined broadphase candidate pairs (including exempt nets/layers) to
 1000000. Exceeding the pad limit errors; exhausting result/work limits sets a
 visible incomplete/truncated flag and reason. Never silently claim a complete run.
 
@@ -52,7 +52,8 @@ keep both references for a copper pair. No persistent design objects are created
 ## Coverage and presentation
 
 Report explicit pads checked, unassigned pad count, parts with no explicit pad
-model, unsupported transforms, whether an explicit outline was checked, candidate
+model, unsupported transforms (total exclusion count and first 1000 actionable
+ID details, with an explicit details-truncated flag), whether an explicit outline was checked, candidate
 pair count and truncation. Always list excluded checks: tracks/vias, pours, drills,
 mask/silkscreen, schematic/net connectivity and manufacturing constraints. Legacy
 footprint previews are not copper geometry for DRC. No explicit outline means

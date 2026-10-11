@@ -53,7 +53,13 @@ async fn batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edi
         .structured_content
         .unwrap();
     assert_eq!(limited["report"]["truncated"], true);
-    for bad in [json!({"copper_clearance_mm":-1}), json!({"edge_clearance_mm":101}), json!({"max_violations":0}), json!({"unknown":true})] {
+    for bad in [
+        json!({"copper_clearance_mm":-1}),
+        json!({"copper_clearance_mm":null}),
+        json!({"edge_clearance_mm":101}),
+        json!({"max_violations":0}),
+        json!({"unknown":true}),
+    ] {
         assert_eq!(
             a.call_tool(CallToolRequestParams::new("run_drc").with_arguments(bad.as_object().unwrap().clone())).await.unwrap().is_error,
             Some(true)

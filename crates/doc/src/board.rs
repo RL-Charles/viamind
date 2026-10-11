@@ -58,7 +58,13 @@ impl Part {
     /// This does not modify or store floating-point geometry in the design model.
     pub fn local_to_world_mm(&self, x_mm: f64, y_mm: f64) -> (f64, f64) {
         let x = if self.side == Side::Bottom { -x_mm } else { x_mm };
-        let (s, c) = (f64::from(self.rotation_mdeg) / 1000.0).to_radians().sin_cos();
+        let (s, c) = match self.rotation_mdeg {
+            0 => (0.0, 1.0),
+            90_000 => (1.0, 0.0),
+            180_000 => (0.0, -1.0),
+            270_000 => (-1.0, 0.0),
+            angle => (f64::from(angle) / 1000.0).to_radians().sin_cos(),
+        };
         (self.position.x.to_mm() + x * c + y_mm * s, self.position.y.to_mm() - x * s + y_mm * c)
     }
 }
