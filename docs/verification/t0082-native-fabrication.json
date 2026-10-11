@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "checks": [
+    "unchanged shared fabrication schema advertises NEW path and default mask",
+    "default production CLI succeeds without display",
+    "default complete seven-file package and integer mask",
+    "default previous production CLI succeeds",
+    "default all file bytes unchanged from previous verified production",
+    "default CLI collision preserves all files",
+    "default native HTTP matches all CLI file bytes and full source cursor",
+    "default HTTP NEW collision preserves all files",
+    "expanded production CLI succeeds without display",
+    "expanded complete seven-file package and integer mask",
+    "expanded previous production CLI succeeds",
+    "expanded all file bytes unchanged from previous verified production",
+    "expanded CLI collision preserves all files",
+    "expanded native HTTP matches all CLI file bytes and full source cursor",
+    "expanded HTTP NEW collision preserves all files",
+    "CLI active native destination rejects unchanged",
+    "HTTP active native destination explicitly protected",
+    "empty invalid request creates no directory",
+    "negative invalid request creates no directory",
+    "too-large invalid request creates no directory",
+    "extra invalid request creates no directory",
+    "existing file destination preserved",
+    "missing parent produces no partial destination",
+    "all exports and failures preserve shared session/status/native",
+    "second agent stale guard precedes invalid mask without output",
+    "second agent undo restores project and status",
+    "native clients use distinct sessions",
+    "no staging directories remain after success or failure"
+  ],
+  "endpoint": "http://127.0.0.1:7908/mcp",
+  "production_binary_sha256": "7a85830884a6abc824e7a7dfb93dd10a6083f05b27d395906c475e9ad5bd888f",
+  "previous_binary_sha256": "cc5fb8f44540234c6110ebf490f8f016073006d97cc846e7b5d98607169ece35",
+  "outputs": {
+    "default": {
+      "bottom-copper.gbr": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120",
+      "bottom-mask.gbr": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d",
+      "manifest.json": "632053a0b47170001a2e946e27df06fd3b3d5bbe820293678e75b2c3c66c0a63",
+      "plated-through.xnc": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d",
+      "profile.gbr": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4",
+      "top-copper.gbr": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf",
+      "top-mask.gbr": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    "expanded": {
+      "bottom-copper.gbr": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120",
+      "bottom-mask.gbr": "ce15b114b9bf90830339ebac477125cf9f19cbea10ec29febe99dca45d64dc65",
+      "manifest.json": "596221706692585d4a3040545fcf716834872fc3e6225b2c6a73b1f84475d1d0",
+      "plated-through.xnc": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d",
+      "profile.gbr": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4",
+      "top-copper.gbr": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf",
+      "top-mask.gbr": "4a83b7ca001c4ca0b3016f201d5c3c3ae03302704079b027f923bcaa083778f6"
+    }
+  },
+  "native_source_cursor": {
+    "sequence": 0,
+    "stream_id": "15e437af-c22c-415b-a98a-c829c1d50408"
+  }
+}

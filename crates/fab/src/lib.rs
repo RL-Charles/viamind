@@ -8,5 +8,7 @@ mod fabrication;
 mod snapshot;
 
 pub use assembly::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot, PreparedAssemblyCsv, assembly_schema, csv, write_csv};
-pub use fabrication::{FabricationManifest, FabricationOptions, FabricationPackage, fabrication, fabrication_schema, write_fabrication};
+pub use fabrication::{
+    FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, fabrication, fabrication_schema, write_fabrication,
+};
 pub use snapshot::FabricationSnapshot;

@@ -1,0 +1,44 @@
+{
+  "ticket": "T-0082",
+  "artifact_source_head": "44e29fa110641f30453a9ca4faaf9c8e3610ad99",
+  "base_main": "ef03274",
+  "integration_main": "3c55c9fb72cdeff77b269990a7fe57ae93b40cde",
+  "integration_note": "Subsequent pin/pad navigation integration preserves all UI hooks/actions and both README links. Fabrication implementation and artifact identities remain unchanged; fresh combined CI required.",
+  "linux_gates": {
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "tests_passed": 500,
+    "tests_ignored": 1,
+    "build": true,
+    "local_log": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0082/full-gates.log",
+    "post_gate_copy_failure": "All four required Cargo gates passed. The following optional binary copy exceeded /tmp quota; removed only that incomplete copy and preserved a strip --strip-debug output in home cache. No gate result inferred from the failed copy."
+  },
+  "source_ci": "https://github.com/RL-Charles/viamind/actions/runs/38129796451",
+  "production_binary_sha256": "7a85830884a6abc824e7a7dfb93dd10a6083f05b27d395906c475e9ad5bd888f",
+  "production_postprocessing": "strip --strip-debug -o unique-artifact shared-target/debug/viamind after the successful source44e29fa workspace build; native smoke verifies this exact artifact. /tmp name symlinks to home cache to preserve quota.",
+  "native_verification": {
+    "runtime": "Fixed1600x1000 inspection wrapper using production ViamindApp, EngineHandle and shared MCP; actual production CLI binary tested separately",
+    "wrapper_binary_sha256": "68b1a5ac51033e52369c5ffcd647f4ed7c49568829274b54cc9f5dff5e362879",
+    "wrapper_build": "cargo rustc --manifest-path external-inspection/Cargo.toml --offline -- -C link-arg=-Wl,--strip-debug; fresh44e29fa source touched under shared flock; TMPDIR/home artifacts avoid /tmp quota",
+    "endpoint": "http://127.0.0.1:7908/mcp",
+    "pid": 613888,
+    "window_id": 110379509010960,
+    "viewport": [
+      1600,
+      1000
+    ],
+    "report": "t0082-native-fabrication.json",
+    "passed_checks": 28,
+    "source": "t0082-native-inspection.rs",
+    "manifest_template": "t0082-native-Cargo.toml.in",
+    "script": "t0082-fabrication-smoke.py",
+    "fixture": "../../fixtures/fabrication/asymmetric.viamind.json",
+    "prior_artifact_source": "7f6672af987add71d8b16f474ef9b81ecc261883",
+    "prior_production_binary_sha256": "cc5fb8f44540234c6110ebf490f8f016073006d97cc846e7b5d98607169ece35"
+  },
+  "cua": {
+    "report": "t0082-native-cua.json",
+    "screenshot": "t0082-native-fabrication.png",
+    "limitation": "Cua reports unavailable AT-SPI and X11 window metadata fallback. Fresh screenshot verifies readable actual production form in wrapper; actual pointer/text/640x400 scroll and disabled controls verified by egui_kittest, not native raw input."
+  }
+}
