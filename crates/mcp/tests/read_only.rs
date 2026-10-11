@@ -120,6 +120,13 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
     let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/asymmetric.viamind.json")).unwrap();
     let schematic = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
     project.schematic = schematic.schematic;
+    project.board.net_rules.insert(
+        "GND".into(),
+        viamind_doc::NamedNetMinima {
+            minimum_copper_clearance: viamind_geom::Nm(250_000),
+            minimum_track_width: viamind_geom::Nm(200_000),
+        },
+    );
     let sheet = *project.schematic.sheets.keys().next().unwrap();
     let dir = tempfile::tempdir().unwrap();
     let native = dir.path().join("protected.viamind.json");
@@ -135,6 +142,8 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
     assert!(blocked.iter().any(|n| n == "configure_auto_drc"));
     assert!(blocked.iter().any(|n| n == "save_symbol_template"));
     assert!(blocked.iter().any(|n| n == "save_output_job"));
+    assert!(blocked.iter().any(|n| n == "set_named_net_rules"));
+    assert!(admitted.iter().any(|n| n == "query_named_net_rules"));
     let server = serve_http(restricted, "127.0.0.1:0".parse().unwrap()).await.unwrap();
     let a = connect(server.url(), "human-admin readOnlyHint=false").await;
     let b = connect(server.url(), "observer-two").await;
@@ -142,6 +151,9 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
         assert!(client.peer_info().unwrap().instructions.as_deref().unwrap().contains("read only"));
         let names = client.list_all_tools().await.unwrap().iter().map(|t| t.name.to_string()).collect::<Vec<_>>();
         assert_eq!(names, admitted);
+        let policy = call(client, "query_named_net_rules", json!({})).await.unwrap().structured_content.unwrap();
+        assert_eq!(policy["source_cursor"], serde_json::to_value(before.cursor).unwrap());
+        assert_eq!(policy["document_net_rules"], serde_json::to_value(&before.project.board.net_rules).unwrap());
         for name in &blocked {
             assert!(call(client, name, json!({"path":dir.path().join("forbidden"),"mode":"live","readOnlyHint":true})).await.is_err(), "{name}");
             assert_eq!(engine.session_state(), before);

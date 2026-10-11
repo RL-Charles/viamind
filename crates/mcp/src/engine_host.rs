@@ -75,6 +75,7 @@ impl CommandHost for EngineHost {
                 | "run_drc"
                 | "query_parts"
                 | "query_nets"
+                | "query_named_net_rules"
                 | "query_connectivity"
                 | "get_selection"
                 | "snapshot_schematic_wire_sheet"

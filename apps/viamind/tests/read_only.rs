@@ -82,6 +82,8 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
     let listed = request!("tools/list", json!({}));
     let tools = listed["result"]["tools"].as_array().unwrap();
     assert!(tools.iter().any(|t| t["name"] == "get_session_state"));
+    assert!(tools.iter().any(|t| t["name"] == "query_named_net_rules"));
+    assert!(tools.iter().all(|t| t["name"] != "set_named_net_rules"));
     assert!(tools.iter().all(|t| t["name"] != "save_project" && t["name"] != "add_part"));
     for name in ["render_board_view", "render_board_png", "render_schematic_view", "render_schematic_png"] {
         assert!(tools.iter().find(|t| t["name"] == name).unwrap()["inputSchema"]["properties"].get("path").is_none());
@@ -102,6 +104,7 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
         "save_output_job",
         "run_output_job",
         "configure_auto_drc",
+        "set_named_net_rules",
     ] {
         let rejected = request!("tools/call", json!({"name":name,"arguments":{"path":output,"mode":"live","readOnlyHint":true}}));
         assert!(rejected["error"].is_object(), "{name}: {rejected}");
@@ -119,6 +122,7 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
     }
     for (name, args) in [
         ("query_parts", json!({})),
+        ("query_named_net_rules", json!({})),
         ("run_drc", json!({})),
         ("render_board_view", json!({"options":{"width_px":128,"height_px":96}})),
         ("render_board_png", json!({"options":{"width_px":128,"height_px":96}})),

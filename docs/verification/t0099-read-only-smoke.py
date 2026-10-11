@@ -93,6 +93,12 @@ def verify(client, label, live):
               and (not name.endswith("png") or any(c["type"] == "image" for c in response["content"])))
     drc = client.call("run_drc", {})
     check(label + " production DRC remains admitted", drc["source_cursor"] == initial["cursor"])
+    if "query_named_net_rules" in live:
+        policy = client.call("query_named_net_rules", {})
+        check(label + " named-net observation admitted and replacement hidden",
+              "query_named_net_rules" in tools and "set_named_net_rules" in hidden
+              and policy["source_cursor"] == initial["cursor"]
+              and policy["document_net_rules"] == initial["project"]["board"].get("net_rules", {}))
     client.call("query_parts", {"limit": 1})
     client.call("get_auto_drc_status", {})
     client.call("watch_events", {"after": initial["cursor"], "timeout_ms": 1})
