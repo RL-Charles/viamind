@@ -28,7 +28,7 @@ is deterministic. Pin names are descriptive only. This is physical identity
 mapping, not net connectivity, routing continuity, ERC or board annotation.
 
 Before allocating identity sets or copying strings, reject more than 10000 combined
-sheets, symbols, parts, pins and explicit pads. Inspected references, pin names and
+sheets, symbols, parts, pins and explicit pads. Inspected sheet names, references, pin names and
 terminal numbers are limited to 4096 bytes per string and 2 MiB total. Nil,
 duplicate or key-mismatched inspected IDs and duplicate/invalid terminal numbers
 are errors. Unused schematic objects, board copper and unused value/footprint/net

@@ -34,6 +34,10 @@ pub struct PinPadProbeUi {
     message: Option<String>,
 }
 impl PinPadProbeUi {
+    /// Current local exact physical pair; does not alter engine selection.
+    pub fn selected_terminal(&self) -> Option<(ObjectId, ObjectId)> {
+        self.selected().and_then(|(_, row)| Some((row.pin_id?, row.pad_id?)))
+    }
     fn poll(&mut self) {
         let Some(pending) = &self.pending else { return };
         let result = match pending.receiver.try_recv() {
@@ -209,7 +213,7 @@ impl ViamindApp {
         let fresh = design.engine.with_engine(|e| {
             e.project().id == context.source.project
                 && e.event_cursor() == context.source.cursor
-                && (context.source.schematic || e.selection().ids.iter().copied().collect::<Vec<_>>() == context.source.ids)
+                && (context.source.schematic || e.selection().ids == context.source.ids)
         });
         if !fresh
             || (context.source.schematic
@@ -238,5 +242,65 @@ impl ViamindApp {
             let at = self.canvas.camera.world_to_screen(WorldPos::new(at.x.to_mm(), at.y.to_mm()), viewport);
             ui.painter_at(viewport).circle_stroke(at, 10.0, Stroke::new(3.0, Color32::from_rgb(80, 230, 255)));
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn fixture() -> (Context, PinPadLinkResult) {
+        let e = viamind_engine::EngineHandle::new(
+            viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap(),
+        );
+        let id = e.read(|p| *p.board.parts.keys().next().unwrap());
+        let result = e.query_linked_pin_pads(&PinPadLinkQuery { component_id: id, offset: 0, limit: None }).unwrap();
+        (
+            Context {
+                source: Source { project: result.project_id, cursor: result.source_cursor, schematic: false, ids: vec![id] },
+                component: id,
+                offset: 0,
+            },
+            result,
+        )
+    }
+    #[test]
+    fn one_pending_receiver_survives_replacement_and_rejects_old_stream_selection_and_page() {
+        for case in 0..3 {
+            let (context, result) = fixture();
+            let mut next = context.clone();
+            match case {
+                0 => next.source.cursor.stream_id = ObjectId::new(),
+                1 => next.source.ids.clear(),
+                _ => next.offset = 100,
+            }
+            let (sender, receiver) = sync_channel(1);
+            let mut ui = PinPadProbeUi { current: Some(next.clone()), pending: Some(Pending { context, receiver }), ..Default::default() };
+            ui.poll();
+            assert!(ui.pending.is_some());
+            sender.try_send(Ok(result)).unwrap();
+            ui.poll();
+            assert!(ui.pending.is_none());
+            assert!(ui.result.is_none());
+            assert_eq!(ui.current, Some(next));
+            assert!(ui.selected_terminal().is_none());
+        }
+    }
+    #[test]
+    fn completion_with_changed_cursor_or_disconnect_never_publishes_terminal_highlights() {
+        let (context, mut result) = fixture();
+        result.source_cursor.sequence += 1;
+        let (sender, receiver) = sync_channel(1);
+        sender.try_send(Ok(result)).unwrap();
+        let mut ui =
+            PinPadProbeUi { current: Some(context.clone()), pending: Some(Pending { context: context.clone(), receiver }), ..Default::default() };
+        ui.poll();
+        assert!(ui.current.is_none());
+        assert!(ui.result.is_none());
+        assert!(ui.message.unwrap().contains("changed"));
+        let (sender, receiver) = sync_channel(1);
+        drop(sender);
+        let mut ui = PinPadProbeUi { current: Some(context.clone()), pending: Some(Pending { context, receiver }), ..Default::default() };
+        ui.poll();
+        assert!(ui.message.unwrap().contains("worker stopped"));
     }
 }

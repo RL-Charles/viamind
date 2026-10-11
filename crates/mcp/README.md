@@ -616,3 +616,11 @@ report rejection and one undo/redo apply to the entire plan. No obstacle avoidan
 walkaround/shove, automatic pad-edge inference, rounded corners or via transitions.
 Existing free/manual/via commands and connectivity proof APIs retain their own
 behavior. See [the posture contract](../../docs/specs/pad-routing-postures.md).
+
+### Stable pin/pad cross-probing
+
+`query_linked_pin_pads` inspects one existing part or symbol UUID through the
+explicit stable component link. It pairs exact unique terminal numbers, returns
+bounded deterministic pages with source cursors, exact supported integer centers
+and explicit legacy/mismatch/angle exclusions. No electrical inference or session
+mutation occurs. See [desktop and MCP usage](../../docs/pin-pad-cross-probing.md).

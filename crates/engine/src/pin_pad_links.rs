@@ -60,7 +60,7 @@ fn preflight(project: &Project) -> Result<(), CommandError> {
     let mut inspect = |value: &str| {
         text = text.saturating_add(value.len());
         if value.len() > 4096 || text > 2 * 1024 * 1024 {
-            Err(invalid("inspected references, pin names and terminal numbers exceed 4096 bytes per string or 2 MiB aggregate"))
+            Err(invalid("inspected sheet names, references, pin names and terminal numbers exceed 4096 bytes per string or 2 MiB aggregate"))
         } else {
             Ok(())
         }
@@ -69,6 +69,7 @@ fn preflight(project: &Project) -> Result<(), CommandError> {
         return Err(invalid("at most 10000 combined sheets, symbols, parts, pins and explicit pads are supported"));
     }
     for sheet in project.schematic.sheets.values() {
+        inspect(&sheet.name)?;
         if let Some(content) = &sheet.content {
             count = count.saturating_add(content.symbols.len());
             if count > 10000 {
@@ -215,7 +216,10 @@ impl EngineHandle {
                     });
                     let board_position = pad.and_then(|pad| {
                         part.and_then(|p| {
-                            if !bounded(p.position) || !bounded(pad.position) {
+                            if !bounded(p.position)
+                                || !bounded(pad.position)
+                                || [pad.width.0, pad.height.0].iter().any(|n| *n <= 0 || *n > 10_000_000_000)
+                            {
                                 return None;
                             }
                             p.local_to_world_nm_exact(pad.position).ok().filter(|p| bounded(*p))
@@ -225,7 +229,10 @@ impl EngineHandle {
                         reasons.push("Schematic endpoint transform is invalid, overflows or exceeds ±10000 mm".into());
                     }
                     if pad.is_some() && board_position.is_none() {
-                        reasons.push("PCB pad center requires a quarter-turn rotation and coordinates within ±10000 mm without overflow".into());
+                        reasons.push(
+                            "PCB pad requires positive bounded dimensions, a quarter-turn rotation and coordinates within ±10000 mm without overflow"
+                                .into(),
+                        );
                     }
                     LinkedPinPad {
                         number: number.into(),

@@ -58,6 +58,10 @@ fn exact_odd_nanometre_mirrored_quarter_turn_geometry_and_honest_unsupported_cen
     let row = r.terminals.iter().find(|p| p.pad_id == Some(id)).unwrap();
     assert_eq!(row.board_position.unwrap().x, Nm(90));
     assert_eq!(row.board_position.unwrap().y, Nm(210));
+    let mut invalid = e.read(Clone::clone);
+    invalid.board.parts.get_mut(&q.component_id).unwrap().pads.as_mut().unwrap().0[0].width = Nm(0);
+    let invalid = EngineHandle::new(invalid).query_linked_pin_pads(&q).unwrap();
+    assert!(invalid.terminals.iter().filter(|p| p.pad_id == Some(id)).all(|p| !p.navigable));
     for position in [0, i64::MAX] {
         let mut p = e.read(Clone::clone);
         let part = p.board.parts.get_mut(&q.component_id).unwrap();
@@ -99,7 +103,7 @@ fn mismatch_legacy_unlinked_and_empty_coverage_never_offer_partial_navigation() 
 fn malformed_identities_numbers_queries_and_unrelated_structure_limits_reject_unchanged() {
     let e = engine();
     let q = query(&e);
-    for case in 0..6 {
+    for case in 0..7 {
         let mut p = e.read(Clone::clone);
         match case {
             0 => {
@@ -112,7 +116,7 @@ fn malformed_identities_numbers_queries_and_unrelated_structure_limits_reject_un
             }
             2 => {
                 p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap().symbols.values_mut().next().unwrap().pins[0].name =
-                    "x".repeat(4097)
+                    "x".repeat(4097);
             }
             3 => {
                 let template = p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().symbols.values().next().unwrap().pins[0].clone();
@@ -120,7 +124,8 @@ fn malformed_identities_numbers_queries_and_unrelated_structure_limits_reject_un
                     vec![template; 10001];
             }
             4 => p.board.parts.get_mut(&q.component_id).unwrap().pads.as_mut().unwrap().0[0].number = " ".into(),
-            _ => p.board.parts.get_mut(&q.component_id).unwrap().pads.as_mut().unwrap().0[0].id = p.id,
+            5 => p.board.parts.get_mut(&q.component_id).unwrap().pads.as_mut().unwrap().0[0].id = p.id,
+            _ => p.schematic.sheets.values_mut().next().unwrap().name = "x".repeat(4097),
         }
         let e = EngineHandle::new(p);
         let before = e.session_state();
