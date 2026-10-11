@@ -224,6 +224,46 @@ impl Engine {
         Ok((value, result))
     }
 
+    /// Only the internal sandbox manager supplies prepared deltas. Agent inputs
+    /// cannot select this entry point or submit arbitrary model replacements.
+    pub(crate) fn commit_prepared_pcb_branch(
+        &mut self,
+        project: ObjectId,
+        cursor: crate::EventCursor,
+        deltas: Vec<Delta>,
+        origin: Origin,
+        label: &str,
+    ) -> Result<ExecResult, crate::pcb_branches::BranchError> {
+        use crate::pcb_branches::BranchError;
+        let invalid = |message: &str| BranchError { message: message.into() };
+        if self.project.id != project || self.event_cursor() != cursor {
+            return Err(invalid("document changed; inspect/discard this stale branch and rebuild"));
+        }
+        if deltas.is_empty() {
+            return Err(invalid("branch has no net changes to merge"));
+        }
+        for delta in &deltas {
+            let matches = match delta {
+                Delta::Part { id, before, .. } => self.project.board.parts.get(id) == before.as_ref(),
+                Delta::Track { id, before, .. } => self.project.board.tracks.get(id) == before.as_ref(),
+                Delta::Via { id, before, .. } => self.project.board.vias.get(id) == before.as_ref(),
+                _ => false,
+            };
+            if !matches {
+                return Err(invalid("original branch object changed; discard and rebuild"));
+            }
+        }
+        self.transaction(origin, label, |tx| {
+            for delta in &deltas {
+                delta.apply_to(tx.project);
+            }
+            tx.deltas = deltas;
+            Ok(())
+        })
+        .map(|((), result)| result)
+        .map_err(|e| BranchError { message: e.to_string() })
+    }
+
     /// Undoes the most recent transaction, whoever made it. Returns its id, or
     /// `None` if there is nothing to undo. `origin` is who asked for the undo.
     pub fn undo(&mut self, origin: Origin) -> Result<Option<TxId>, EngineError> {

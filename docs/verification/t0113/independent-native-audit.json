@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "reviewed_source": "842e9c1",
+  "durable_hashes": 30,
+  "binaries_verified": 2,
+  "captures": [
+    {
+      "mode": "ghost",
+      "all_original_rgba_and_png_rgb_samples_verified": true,
+      "rgb_bytes": 13337667,
+      "self_closed": true,
+      "controls_inside_actual_clips": true
+    },
+    {
+      "mode": "compact",
+      "all_original_rgba_and_png_rgb_samples_verified": true,
+      "rgb_bytes": 2135067,
+      "self_closed": true,
+      "controls_inside_actual_clips": true
+    },
+    {
+      "mode": "merged",
+      "all_original_rgba_and_png_rgb_samples_verified": true,
+      "rgb_bytes": 13337667,
+      "self_closed": true,
+      "controls_inside_actual_clips": true
+    }
+  ]
+}

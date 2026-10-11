@@ -1,0 +1,32 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/apps/viamind)
+error: consider adding a `;` to the last statement for consistent formatting
+   --> crates/mcp/src/pcb_branches.rs:151:13
+    |
+151 | /             locked_engine.with_engine(|_| {
+152 | |                 locked_tx.send(()).unwrap();
+153 | |                 release_rx.recv().unwrap();
+154 | |             })
+    | |______________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#semicolon_if_nothing_returned
+    = note: `-D clippy::semicolon-if-nothing-returned` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::semicolon_if_nothing_returned)]`
+help: add a `;` here
+    |
+151 |             locked_engine.with_engine(|_| {
+152 |                 locked_tx.send(()).unwrap();
+153 |                 release_rx.recv().unwrap();
+154 ~             });
+    |
+
+error: could not compile `viamind-mcp` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

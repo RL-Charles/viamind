@@ -27,6 +27,7 @@ pub struct EngineHandle {
     saves: Arc<Mutex<()>>,
     pub(crate) automatic_drc: Arc<crate::auto_drc::AutoDrcController>,
     pub(crate) agent_presence: Arc<Mutex<crate::agent_presence::PresenceStore>>,
+    pub(crate) pcb_branches: Arc<Mutex<crate::pcb_branches::BranchStore>>,
 }
 
 impl EngineHandle {
@@ -50,6 +51,7 @@ impl EngineHandle {
             session_changed: Arc::new(Condvar::new()),
             saves: Arc::new(Mutex::new(())),
             agent_presence: Arc::default(),
+            pcb_branches: Arc::default(),
         }
     }
 
@@ -268,7 +270,7 @@ impl EngineHandle {
 
     /// Runs a mutating operation under the lock, then runs any due `on_change`
     /// callbacks after the lock is released (so they may call back into the handle).
-    fn mutate<R>(&self, f: impl FnOnce(&mut Engine) -> R) -> R {
+    pub(crate) fn mutate<R>(&self, f: impl FnOnce(&mut Engine) -> R) -> R {
         let (result, wakers, changed) = {
             let mut engine = self.lock();
             let before = engine.event_cursor();

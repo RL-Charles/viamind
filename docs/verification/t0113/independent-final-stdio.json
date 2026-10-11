@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "checks": [
+    "creation preserves full live session native status and DRC journal",
+    "initial exact source and independent revision",
+    "private component track and via preserve complete live state",
+    "deterministic bounded pagination",
+    "candidate exact odd Nm and retained generated identities",
+    "private revision advances original source unchanged coalesces object",
+    "partial duplicate batch refuses atomically",
+    "forbidden document action refuses atomically",
+    "no-op refuses atomically",
+    "wrong revision refuses atomically",
+    "excess malformed commands refuses atomically",
+    "excess serialized input refuses atomically",
+    "every private refusal and observation preserves full session and DRC journal",
+    "ordinary automatic DRC enabled before merge",
+    "merge schedules normal automatic DRC on committed cursor",
+    "one merge keeps all generated identities and exact candidate",
+    "one own undo restores original project exactly",
+    "one own redo restores exact candidate and identities",
+    "merge undo and redo never implicitly save native file",
+    "peer edit stale merge preserves full peer session",
+    "replacement refuses old worker source and preserves full session",
+    "four slots refuse fifth without peer eviction",
+    "discarding every slot preserves replacement session"
+  ],
+  "binary_sha256": "ed09b9f77b0169cb74224c56314101604ac01c6a516d5438a3879289618820f8",
+  "transport": "actual initialized stdio",
+  "scope": "Owned scratch document only; no lease wall-clock/cadence or enforced approval security claim",
+  "native_original_sha256": "6817cc78b263983a5eb546ad3a62b5558bcf5883deb27231d4eefe261cacb2c2"
+}

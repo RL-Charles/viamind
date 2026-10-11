@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/launch-ghost",
+  "pid": 2331447,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-pcb-branches-inspection",
+      "bounds": {
+        "height": 1667,
+        "width": 2667,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 1667,
+      "is_on_screen": true,
+      "pid": 2331447,
+      "title": "ghost.viamind.json — Viamind",
+      "width": 2667,
+      "window_id": 110379550034160,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}

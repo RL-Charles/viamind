@@ -1,0 +1,71 @@
+842e9c1991ff835a6a0ef8807defb0e6c7531a25
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 06s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.10s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 9 tests
+test pcb_branches::budget::tests::borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text ... ok
+test pcb_branches::tests::blocked_private_worker_retains_permit_allows_live_edit_and_reopen_refuses_publish ... ok
+test pcb_branches::tests::count_before_malformed_input_and_structural_or_serialized_project_limits ... ok
+test pcb_branches::tests::isolated_commands_coalesce_and_merge_one_transaction_with_exact_undo_redo_ids ... ok
+test pcb_branches::tests::monotonic_expiry_reads_errors_and_four_branch_capacity_do_not_renew ... ok
+test pcb_branches::tests::ownership_atomic_errors_noops_and_exact_private_object_guards ... ok
+test pcb_branches::tests::per_step_candidate_byte_overflow_refuses_whole_private_batch_without_renewal ... ok
+test pcb_branches::tests::saved_native_status_and_drc_journal_are_unchanged_until_merge_and_selection_stales_merge ... ok
+test pcb_branches::tests::stale_live_cursor_and_wrong_merge_guards_preserve_candidate_and_peer_edits ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 69 filtered out; finished in 1.30s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 47.02s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_mcp-829831512f8da5c8)
+
+running 2 tests
+test pcb_branches::tests::canceling_real_create_awaiter_does_not_release_its_blocked_worker_permit ... ok
+test pcb_branches::tests::oversized_or_control_creator_refuses_instead_of_losing_original_undo_attribution ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.03s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0113/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 27.02s
+     Running tests/pcb_branches.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_branches-98af7c5c07dbe559)
+
+running 1 test
+
+thread 'actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides_all_writers' (2385721) panicked at crates/mcp/tests/pcb_branches.rs:60:5:
+assertion `left == right` failed
+  left: Object {"branch": Object {"branch_id": String("1c74c59f-319a-416e-a682-5b1011821d18"), "busy": Bool(false), "changed_objects": Number(1), "creator": Object {"id": String("same branch client#1"), "kind": String("agent")}, "label": String("private proposal"), "project_id": String("d325f747-71c2-4731-85b8-77297706e78d"), "remaining_ms": Number(299959), "revision": Number(1), "source_cursor": Object {"sequence": Number(0), "stream_id": String("9e15de01-a863-4d28-aa1e-d3e245d6902e")}, "stale": Bool(false)}, "deltas": Array [Object {"after": Object {"designator": String("U1"), "footprint": String("authored"), "id": String("e9784a3f-2c9c-4f7f-9e60-a7fb272b0fd0"), "position": Object {"x": Number(1000003), "y": Number(-2000007)}, "rotation_mdeg": Number(0), "side": String("top"), "value": String("authored")}, "before": Null, "id": String("e9784a3f-2c9c-4f7f-9e60-a7fb272b0fd0"), "kind": String("part")}], "next_offset": Null, "offset": Number(0), "total": Number(1)}
+ right: Object {"branch": Object {"branch_id": String("1c74c59f-319a-416e-a682-5b1011821d18"), "busy": Bool(false), "changed_objects": Number(1), "creator": Object {"id": String("same branch client#1"), "kind": String("agent")}, "label": String("private proposal"), "project_id": String("d325f747-71c2-4731-85b8-77297706e78d"), "remaining_ms": Number(299989), "revision": Number(1), "source_cursor": Object {"sequence": Number(0), "stream_id": String("9e15de01-a863-4d28-aa1e-d3e245d6902e")}, "stale": Bool(false)}, "deltas": Array [Object {"after": Object {"designator": String("U1"), "footprint": String("authored"), "id": String("e9784a3f-2c9c-4f7f-9e60-a7fb272b0fd0"), "position": Object {"x": Number(1000003), "y": Number(-2000007)}, "rotation_mdeg": Number(0), "side": String("top"), "value": String("authored")}, "before": Null, "id": String("e9784a3f-2c9c-4f7f-9e60-a7fb272b0fd0"), "kind": String("part")}], "next_offset": Null, "offset": Number(0), "total": Number(1)}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides_all_writers ... FAILED
+
+failures:
+
+failures:
+    actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides_all_writers
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+error: test failed, to rerun pass `-p viamind-mcp --test pcb_branches`

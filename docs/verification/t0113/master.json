@@ -1,0 +1,269 @@
+{
+  "passed": true,
+  "scope": "Original full Linux/production/native proof plus final T112 scoped integration and independent source/native/final production review. Fresh exact-head CI remains the merge gate.",
+  "source": "032740a386c47f5adf98d91bbe954d26b947deaf",
+  "precode_source": "116dcf9",
+  "workspace_tests": {
+    "passed": 804,
+    "failed": 0,
+    "ignored": 1
+  },
+  "focused_tests": 18,
+  "production_stdio": 23,
+  "production_http": 25,
+  "read_only_checks": 8,
+  "catalog_tools": 100,
+  "workflow_checks": 18,
+  "binaries": [
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/original-verified/pcb-branches-inspection",
+      "sha256": "ccf4249b795d9e9517ad0c59d87e27652c4a45d78b7dd7dff7ed6ec5b5443cfa"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/original-verified/viamind",
+      "sha256": "b7e9d65ca963d9c8db688ced7f37e6a1bd78452019bab9cc65595f1f66461a89"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/final-verified/pcb-branches-inspection",
+      "sha256": "bcf7bed407f7c94eece78a13dccc21e346bd99416cb82fa55251f979c63e2364"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/final-verified/viamind",
+      "sha256": "ed09b9f77b0169cb74224c56314101604ac01c6a516d5438a3879289618820f8"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/verification/t0113/compact-launch.json",
+      "bytes": 597,
+      "sha256": "041741cf624ce53bbce57cdc85f9522dcb8281704ee97498a1e98681ce329da9"
+    },
+    {
+      "path": "docs/verification/t0113/compact-runtime.log",
+      "bytes": 906,
+      "sha256": "e0c7140cc161ee6d5fc58d5398a04a9ea22a20e2f959544a09dbbeae309fbb65"
+    },
+    {
+      "path": "docs/verification/t0113/compact-state.json",
+      "bytes": 4152,
+      "sha256": "210fbd1e930ce21ab2918cee1f23c830332088fe1af776d9bdf8b1262e911269"
+    },
+    {
+      "path": "docs/verification/t0113/compact.png",
+      "bytes": 94569,
+      "sha256": "894f626b169a26df6e4ee595e47e45787289e79cea0a01faa9c555feda7641b3"
+    },
+    {
+      "path": "docs/verification/t0113/final-catalog-check.json",
+      "bytes": 368,
+      "sha256": "ded64aac61c17b0135f89eea27396f7e2a79b9e3e2135d658c03b6cfa317380f"
+    },
+    {
+      "path": "docs/verification/t0113/final-catalog-report.json",
+      "bytes": 368,
+      "sha256": "ded64aac61c17b0135f89eea27396f7e2a79b9e3e2135d658c03b6cfa317380f"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined-racy-test-failure.log",
+      "bytes": 4769,
+      "sha256": "fc7532afec1cf494849ed9124ba59449086e163aa24347cde8181637e74af71e"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined-ttl-test-failure.log",
+      "bytes": 7061,
+      "sha256": "094b8fb77d53af763c613aaa04f4b4920da5013faec14fa938defcc926a57c20"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined.sh",
+      "bytes": 2547,
+      "sha256": "05b65f710555f158ba077652795e31bb0556cdd3119c193ce45e8d73021de924"
+    },
+    {
+      "path": "docs/verification/t0113/final-combined3.log",
+      "bytes": 12463,
+      "sha256": "00bb041132452769922622e56a700964f2e7f9c74d9ec6f684ebd50a20d0c436"
+    },
+    {
+      "path": "docs/verification/t0113/final-production-stdio.json",
+      "bytes": 1707,
+      "sha256": "5bbe65b855d2b7ec2acd4cdad817d9374f53c5200a8c7e2f9e24680652a9608c"
+    },
+    {
+      "path": "docs/verification/t0113/final-read-only.json",
+      "bytes": 670,
+      "sha256": "52507e065b56598d2eb83c73b03012973dd5751eeabe4ce1b02eed2a4d7cc444"
+    },
+    {
+      "path": "docs/verification/t0113/final-workflow.json",
+      "bytes": 1265,
+      "sha256": "58aa63d92219d962e1221afe2ee1d746806d9da9c929d9b5f3414cd65f8d6683"
+    },
+    {
+      "path": "docs/verification/t0113/full-linux.log",
+      "bytes": 114732,
+      "sha256": "6775f14cdaf8257d9a3e0ddd3b4686bcbb3edb8e9283fc3064971a30e7c19f19"
+    },
+    {
+      "path": "docs/verification/t0113/full-linux.sh",
+      "bytes": 1121,
+      "sha256": "999c9fdda88075fc13464e7551f46ff55e64e0c6038d8123e88bee6a32a8ed03"
+    },
+    {
+      "path": "docs/verification/t0113/ghost-launch.json",
+      "bytes": 595,
+      "sha256": "f713a97aa820980bcbd32ff5da4d14516bfb11a042cc3e1827353d48b0a833f7"
+    },
+    {
+      "path": "docs/verification/t0113/ghost-runtime.log",
+      "bytes": 887,
+      "sha256": "fa9c1f99c274a21a4c3f144f8a6783171ef364c880d8d58acce69a584645c73d"
+    },
+    {
+      "path": "docs/verification/t0113/ghost-state.json",
+      "bytes": 4148,
+      "sha256": "6206a164139baf4fe19065677a8e7d101353e85a55c50155c35b7f36fcbc147a"
+    },
+    {
+      "path": "docs/verification/t0113/ghost.png",
+      "bytes": 261640,
+      "sha256": "764391c05fba1a6a4d5e0462415c09042c56e5bd728ee1d935f4c986b6b97301"
+    },
+    {
+      "path": "docs/verification/t0113/historical-ci-clippy-failure.log",
+      "bytes": 61293,
+      "sha256": "0413b193cd466757d8fc1b34c7209b21988f4b2f2801cba22f4ab2fd616e4dd2"
+    },
+    {
+      "path": "docs/verification/t0113/independent-final-stdio.json",
+      "bytes": 1707,
+      "sha256": "3f38c3a4d2d4bc26d128fd5b592636cc51108b12d609de50975e9e4ea13d427f"
+    },
+    {
+      "path": "docs/verification/t0113/independent-native-audit.json",
+      "bytes": 716,
+      "sha256": "2a01c8335d5c142d1373cba541101139049faceda22042fa617170388872ddef"
+    },
+    {
+      "path": "docs/verification/t0113/merged-launch.json",
+      "bytes": 598,
+      "sha256": "f8e49b5c76782a2d70c3f72a94a3d1cda9912f2cbd8b48f031f058bef76b2bcb"
+    },
+    {
+      "path": "docs/verification/t0113/merged-runtime.log",
+      "bytes": 680,
+      "sha256": "c0e554db958ebdc3fded51a47874e7615c026f5f84230b498f4676819c60e80c"
+    },
+    {
+      "path": "docs/verification/t0113/merged-state.json",
+      "bytes": 4876,
+      "sha256": "4a19edc440d4e5ae1393bb271e25735c139e9af4e17d02f5ef9980c75bb7869d"
+    },
+    {
+      "path": "docs/verification/t0113/merged.png",
+      "bytes": 233482,
+      "sha256": "9bed07003df997f8d20ec8e751a8bf92c6c7aa16bf4368395e1d18d9224b8b37"
+    },
+    {
+      "path": "docs/verification/t0113/native-audit.json",
+      "bytes": 7230,
+      "sha256": "9de836661e5c5fa390ce716c05e22f72961c4ebf5edb1e4b458e8e335a8fcd67"
+    },
+    {
+      "path": "docs/verification/t0113/original-catalog-check.json",
+      "bytes": 368,
+      "sha256": "486716e7b2ebc856aef409131616e9f251b6f76dbf424c574e64fc84fe09e0ac"
+    },
+    {
+      "path": "docs/verification/t0113/original-catalog-report.json",
+      "bytes": 368,
+      "sha256": "486716e7b2ebc856aef409131616e9f251b6f76dbf424c574e64fc84fe09e0ac"
+    },
+    {
+      "path": "docs/verification/t0113/original-workflow.json",
+      "bytes": 1265,
+      "sha256": "8c5c6a9712cb016821a1f61a4ff25f6fe6558c3e3c8ea2fbc5ebe31048bcb1e8"
+    },
+    {
+      "path": "docs/verification/t0113/production-http.json",
+      "bytes": 1810,
+      "sha256": "ab971db4821f8dff0db9284d55d38616ffa588745b3043d40c9b049674cbf4e4"
+    },
+    {
+      "path": "docs/verification/t0113/production-probe.py",
+      "bytes": 8997,
+      "sha256": "38ed1075a08fbad052fafd54423c9e26b93a0bacb6745d989fb5f1e00af49192"
+    },
+    {
+      "path": "docs/verification/t0113/production-stdio.json",
+      "bytes": 1707,
+      "sha256": "f6e77e153711856668dad541733c8ab509cdb0b1de81e0160c6c3803429ecf72"
+    },
+    {
+      "path": "docs/verification/t0113/production-window-metadata.json",
+      "bytes": 1130,
+      "sha256": "584b1b951131b011ff4b666f120dd9b164f8bc5c2ca6f5f1772609543d4cb4f2"
+    },
+    {
+      "path": "docs/verification/t0113/read-only-probe.py",
+      "bytes": 2108,
+      "sha256": "27cd69c6a68cdccb4e110d1f4e09bee87646cee6141bf353e7f3d7606f12c420"
+    },
+    {
+      "path": "docs/verification/t0113/read-only.json",
+      "bytes": 670,
+      "sha256": "436483c2863ef9fd8a02cd43010776ff34506dc58f5b95be24b96cb0d02f191a"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-focused2.log",
+      "bytes": 35,
+      "sha256": "e548c8c29322eaae4ec08c908660b0dccf22ff190561f8e859520bfc2fb6be25"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-focused3.log",
+      "bytes": 1401,
+      "sha256": "02b918bc2a8bda6fcdf1b082a8b4bf214560306d396cdca68768b8955a6bb1af"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-focused3.sh",
+      "bytes": 730,
+      "sha256": "54d77209617e947a0c3abc3fdefd21a413f48c139a90994ca23608c98c135b89"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-focused4.log",
+      "bytes": 1940,
+      "sha256": "026630ddc5a5463e47d1b06c92e28a840dc4dac831079a536d7f278e7d3bf028"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-focused5.log",
+      "bytes": 6594,
+      "sha256": "85dc16b53bfbf22c99fd685348a957e46c371b76f1a0d5f31f84624135d01ec8"
+    },
+    {
+      "path": "docs/verification/t0113/surfaces-initial-constructor-failure.log",
+      "bytes": 1248,
+      "sha256": "627539d1fbb4d6fcbf1b81943f2a5e86234af1d3dfb2f4d33e4580dd0a03734b"
+    }
+  ],
+  "final_combined": {
+    "source": "b54593abcd733e3d02e11d0fe58d08ec7b7dbbfb",
+    "stack_parent": "b76179325f8205df093bb45908dfeea1fdf1a52c",
+    "focused_tests": 33,
+    "fmt": true,
+    "strict_all_target_workspace_lint": true,
+    "workspace_build": true,
+    "inspection_build": true,
+    "catalog_tools": 104,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "stdio_checks": 23,
+    "read_only_checks": 8,
+    "python_reference_tests": 13
+  },
+  "independent_final_stdio_checks": 23,
+  "historical_ci_failure": {
+    "run": 38167257944,
+    "job": 114552283286,
+    "scope": "Clippy1.99 needless borrows in three noncapturing summary closures; corrected by removing borrow only",
+    "retained_production_source_unchanged": "b54593abcd733e3d02e11d0fe58d08ec7b7dbbfb"
+  }
+}

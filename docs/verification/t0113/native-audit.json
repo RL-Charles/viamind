@@ -1,0 +1,233 @@
+{
+  "passed": true,
+  "captures": [
+    {
+      "mode": "ghost",
+      "passed": true,
+      "rgba_samples": 17783556,
+      "rgb_samples": 13337667,
+      "rgba_sha256": "ccd03d337aacf6f88073be72725aeaf25ed47bf25742b6be0fa256a437cfd8bf",
+      "rgb_sha256": "9b9fac5bd355bb1ae9cbee9250aa1796241fe45f0b13282c49a2caa4388912f0",
+      "p7_sha256": "81d571a1f93cacaf4ca7a6af7ed1945849cb5bed31823c47a67179f5dfbfcffb",
+      "p6_sha256": "a6d86c4d75847cc240089b93fb7594fadbefc121f8c46fb066cc18d459485553",
+      "png_sha256": "764391c05fba1a6a4d5e0462415c09042c56e5bd728ee1d935f4c986b6b97301",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 5636,
+      "all_png_rgb_samples_equal_original": true,
+      "original_rgba_rgb_equal_p6": true,
+      "capture": {
+        "alpha_max": 255,
+        "alpha_min": 242,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          1600.1875,
+          1000.1875
+        ],
+        "controls_and_effective_clips": [
+          [
+            [
+              23.40625,
+              234.0,
+              96.71875,
+              252.0
+            ],
+            [
+              17.1875,
+              56.875,
+              375.1875,
+              429.1875
+            ]
+          ],
+          [
+            [
+              104.71875,
+              234.0,
+              193.3125,
+              252.0
+            ],
+            [
+              17.1875,
+              56.875,
+              375.1875,
+              429.1875
+            ]
+          ],
+          [
+            [
+              201.3125,
+              234.0,
+              294.90625,
+              252.0
+            ],
+            [
+              17.1875,
+              56.875,
+              375.1875,
+              429.1875
+            ]
+          ]
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "merged": false,
+        "native_requested_transparent": false,
+        "nonopaque_alpha_pixels": 5636,
+        "original_color32_rgba_retained": true,
+        "os_input": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/ghost.p6",
+        "pid": 2331447,
+        "pixels": [
+          2667,
+          1667
+        ],
+        "rgb_review": "original Color32 RGB samples; alpha omitted for review",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/ghost.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 12
+      },
+      "self_closed_observed": true,
+      "root_viewed_readable": true
+    },
+    {
+      "mode": "compact",
+      "passed": true,
+      "rgba_samples": 2846756,
+      "rgb_samples": 2135067,
+      "rgba_sha256": "a174345d47e27b4d2fe383d5a6c4259759df2a2fb74291fb9e6b00a3db6b3b39",
+      "rgb_sha256": "b4009a935507f03f042e9b05944ac66deaa6d07cb737969b95add7f3b63ac865",
+      "p7_sha256": "a2f81f263d2e89820b4cc27f3a916b97791cb49494df3a806ba45a80f9ad85d3",
+      "p6_sha256": "a1d3819d5e01c663eb655fe53c313a4794efb806f3f60270aac5bcea02cc0eed",
+      "png_sha256": "894f626b169a26df6e4ee595e47e45787289e79cea0a01faa9c555feda7641b3",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 1630,
+      "all_png_rgb_samples_equal_original": true,
+      "original_rgba_rgb_equal_p6": true,
+      "capture": {
+        "alpha_max": 255,
+        "alpha_min": 242,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          640.1875,
+          400.1875
+        ],
+        "controls_and_effective_clips": [
+          [
+            [
+              23.40625,
+              167.40625,
+              96.71875,
+              185.40625
+            ],
+            [
+              17.1875,
+              40.6875,
+              375.1875,
+              313.0
+            ]
+          ],
+          [
+            [
+              104.71875,
+              167.40625,
+              193.3125,
+              185.40625
+            ],
+            [
+              17.1875,
+              40.6875,
+              375.1875,
+              313.0
+            ]
+          ],
+          [
+            [
+              201.3125,
+              167.40625,
+              294.90625,
+              185.40625
+            ],
+            [
+              17.1875,
+              40.6875,
+              375.1875,
+              313.0
+            ]
+          ]
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "merged": false,
+        "native_requested_transparent": false,
+        "nonopaque_alpha_pixels": 1630,
+        "original_color32_rgba_retained": true,
+        "os_input": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/compact.p6",
+        "pid": 2334147,
+        "pixels": [
+          1067,
+          667
+        ],
+        "rgb_review": "original Color32 RGB samples; alpha omitted for review",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/compact.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 11
+      },
+      "self_closed_observed": true,
+      "root_viewed_readable": true
+    },
+    {
+      "mode": "merged",
+      "passed": true,
+      "rgba_samples": 17783556,
+      "rgb_samples": 13337667,
+      "rgba_sha256": "d0c696288fd8d1f1a3caaed20d822b2b61e6c39e798aef443cdb3b2564f9e37b",
+      "rgb_sha256": "4fef389ac19778bbdae7d16d2dca169df5341386ef0a0fc5287834ec166a0243",
+      "p7_sha256": "edbd454e949013a4ec2240fb54e57b283c8f7ab093b3bb1b2927b67351bd0b1f",
+      "p6_sha256": "aa2f39791c82bca270dedf3c23d7a8a0b6541617c228d343b07a0501675609c4",
+      "png_sha256": "9bed07003df997f8d20ec8e751a8bf92c6c7aa16bf4368395e1d18d9224b8b37",
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 5997,
+      "all_png_rgb_samples_equal_original": true,
+      "original_rgba_rgb_equal_p6": true,
+      "capture": {
+        "alpha_max": 255,
+        "alpha_min": 242,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "content_rect": [
+          0.0,
+          0.0,
+          1600.1875,
+          1000.1875
+        ],
+        "controls_and_effective_clips": [],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "merged": true,
+        "native_requested_transparent": false,
+        "nonopaque_alpha_pixels": 5997,
+        "original_color32_rgba_retained": true,
+        "os_input": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/merged.p6",
+        "pid": 2335179,
+        "pixels": [
+          2667,
+          1667
+        ],
+        "rgb_review": "original Color32 RGB samples; alpha omitted for review",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/merged.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 11
+      },
+      "self_closed_observed": true,
+      "root_viewed_readable": true
+    }
+  ],
+  "scope": "Original WGPU RGBA retained in cache; review PNG/P6 omit alpha. Local egui input, no OS input/cadence claim. Wide/compact viewport scroll leaves legend above view; merge completion shows legend."
+}

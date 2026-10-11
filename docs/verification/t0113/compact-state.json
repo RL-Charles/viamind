@@ -1,0 +1,158 @@
+{
+  "actual_local_inspect_and_merge_inputs": true,
+  "after_preparation_or_merge": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "1c2f9cd1-e4ac-407d-9eca-2c7edf504a35"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "69122c6e-0559-40f9-a09e-699170484fb7": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "69122c6e-0559-40f9-a09e-699170484fb7",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "1d616557-b2b5-4c07-9a96-e0855b4f8606",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "31fd221d-7ec0-450f-9d8b-3b3e0363da75",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "5a0533f1-cf37-41e1-8674-1b0d64e8850b": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "5a0533f1-cf37-41e1-8674-1b0d64e8850b",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "1c527267-ef7d-47d3-9745-af6c82491bf1",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "mode": "compact",
+  "native_unchanged": true,
+  "original": {
+    "cursor": {
+      "sequence": 3,
+      "stream_id": "1c2f9cd1-e4ac-407d-9eca-2c7edf504a35"
+    },
+    "project": {
+      "board": {
+        "parts": {
+          "69122c6e-0559-40f9-a09e-699170484fb7": {
+            "designator": "U1",
+            "footprint": "authored",
+            "id": "69122c6e-0559-40f9-a09e-699170484fb7",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "1d616557-b2b5-4c07-9a96-e0855b4f8606",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": -1000003,
+                  "y": 7
+                },
+                "width": 800000
+              },
+              {
+                "height": 600000,
+                "id": "31fd221d-7ec0-450f-9d8b-3b3e0363da75",
+                "net": "N",
+                "number": "2",
+                "position": {
+                  "x": 1000003,
+                  "y": 7
+                },
+                "width": 800000
+              }
+            ],
+            "position": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "rotation_mdeg": 90000,
+            "side": "bottom",
+            "value": "live geometry"
+          }
+        },
+        "tracks": {
+          "5a0533f1-cf37-41e1-8674-1b0d64e8850b": {
+            "end": {
+              "x": 40000000,
+              "y": 30000000
+            },
+            "id": "5a0533f1-cf37-41e1-8674-1b0d64e8850b",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 30000000,
+              "y": 30000000
+            },
+            "width": 400000
+          }
+        }
+      },
+      "id": "1c527267-ef7d-47d3-9745-af6c82491bf1",
+      "name": "Authored PCB branch visual proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "os_input": false,
+  "status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/compact.viamind.json"
+  }
+}
