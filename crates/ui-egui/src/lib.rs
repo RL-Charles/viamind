@@ -5,6 +5,7 @@
 //! (CADCraft, MIT/Apache-2.0): `default-features = false` plus only the features we use.
 
 pub mod actions;
+pub mod agent_modes;
 mod agent_presence;
 pub mod annotation;
 pub mod assembly_export;
@@ -151,6 +152,7 @@ pub struct FrameStats {
 /// The Viamind application state.
 pub struct ViamindApp {
     pub pcb_branches: pcb_branches::PcbBranchesUi,
+    pub agent_modes: agent_modes::AgentModesUi,
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
     pub symbol_library: symbol_library::SymbolLibraryUi,
@@ -209,6 +211,7 @@ impl ViamindApp {
     pub fn with_scene_size(n: usize) -> Self {
         Self {
             pcb_branches: pcb_branches::PcbBranchesUi::default(),
+            agent_modes: agent_modes::AgentModesUi::default(),
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
@@ -253,6 +256,9 @@ impl ViamindApp {
 
     /// A live human editor whose agents can be restricted independently of human commands.
     pub fn with_design_agent_mode(engine: EngineHandle, mcp_url: Option<String>, agent_read_only: bool) -> Self {
+        if agent_read_only {
+            engine.agent_policy().lock_read_only().expect("startup read-only mode is configured before admitting agent writers");
+        }
         let changes = engine.subscribe();
         let scene = engine.read(board_scene::scene_from_project);
         let schematic = schematic::SchematicUi::with_active(
@@ -262,6 +268,7 @@ impl ViamindApp {
         canvas.fit_pending = true;
         Self {
             pcb_branches: pcb_branches::PcbBranchesUi::default(),
+            agent_modes: agent_modes::AgentModesUi::default(),
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
@@ -437,6 +444,7 @@ impl ViamindApp {
         self.track_cleanup_window(ui);
         self.named_net_rules_window(ui);
         self.pcb_branches_window(ui);
+        self.agent_modes_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
@@ -757,18 +765,20 @@ impl ViamindApp {
         });
     }
 
-    fn status_bar(&self, ui: &mut Ui) {
-        if let Some(design) = &self.design
-            && design.agent_read_only
-        {
+    fn status_bar(&mut self, ui: &mut Ui) {
+        if let Some(design) = &self.design {
+            let status = design.engine.agent_policy().status();
+            let mut open_modes = false;
             ui.horizontal(|ui| {
-                ui.strong("Agents read only").on_hover_text(
-                    "Agents can query and preview. Human editing remains live; restart without --agent-read-only to allow agent edits.",
-                );
+                ui.strong(agent_modes::mode_label(status.mode));
+                open_modes = ui.button("Agent modes…").clicked();
                 if design.mcp_url.is_none() {
                     ui.label("MCP unavailable");
                 }
             });
+            if open_modes {
+                self.begin_agent_modes();
+            }
         }
         if self.schematic.active {
             self.schematic_status(ui);
