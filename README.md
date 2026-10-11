@@ -19,6 +19,9 @@ Licensed under the [MIT License](LICENSE).
 
 ## Try it
 
+Linux is the initial target. CI builds and tests on Linux; macOS and Windows
+support is deferred.
+
 ```sh
 cargo run --release -p viamind          # opens a new design and serves it to agents
 claude mcp add --transport http viamind http://127.0.0.1:7878/mcp
