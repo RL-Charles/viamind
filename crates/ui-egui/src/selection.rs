@@ -56,6 +56,13 @@ fn mode(modifiers: Modifiers) -> SelectionMode {
 }
 
 impl Selection {
+    /// Cancel local pointer previews when switching workspaces, preserving shared IDs.
+    pub fn cancel_gestures(&mut self) {
+        self.gesture = None;
+        self.cancelled = true;
+        self.placement.cancel();
+    }
+
     pub fn invalidate(&mut self) {
         self.dirty = true;
     }

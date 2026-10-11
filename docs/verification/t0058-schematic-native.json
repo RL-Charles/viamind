@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checks": [
+    "distinct actual native HTTP MCP sessions",
+    "schematic command/query discovery",
+    "production native fixture contains complete original drawing",
+    "bounded actual native query",
+    "queries preserve all shared session state",
+    "agent edit visible to independent native client",
+    "stale native edit preserves exact shared state",
+    "connection-specific native undo restores circuit",
+    "native redo restores live drawing",
+    "native save persists schema5 and full circuit",
+    "native reopen restores project and changes session stream",
+    "native reopened document is saved"
+  ],
+  "active_path": "/tmp/viamind-t0058-roundtrip-0a49df8854894641a9c5a04b3352bb21.viamind.json",
+  "project_id": "00000000-0000-0000-0000-000000000065",
+  "sheet_id": "00000000-0000-0000-0000-000000000066",
+  "ticket": "T-0058",
+  "source_before_unrelated_gpu_timing_rebase": "3411f96174f4d2d1419e31f63c2e753ba8b17aee",
+  "local_gates": {
+    "fmt": "pass",
+    "strict_all_target_clippy": "pass",
+    "workspace_tests_passed": 315,
+    "workspace_tests_failed": 0,
+    "existing_ignored": 1,
+    "workspace_build": "pass"
+  },
+  "native_inspection": {
+    "renderer": "wgpu",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "objects": 12,
+    "pins": 7,
+    "fixture": "fixtures/schematic/regulator.viamind.json",
+    "screenshot": "t0058-schematic-native.png",
+    "harness": "Temporary fixed-size eframe wrapper around the production ViamindApp; same fixture and renderer. Actual production binary HTTP MCP verified separately. No desktop configuration changes.",
+    "observation": "Three original rectangle symbols, seven pin endpoints, five wires, junction and VIN/3V3/GND labels fit and remain readable after separating coincident pin and net-label text."
+  },
+  "limitations": [
+    "Electrical graph and ERC are separate work.",
+    "Production window is tiled narrowly on this host; visual verification used a fixed-size native wrapper. Native form interactions are verified by actual egui input tests."
+  ],
+  "production_binary_sha256": "fb3ad1b247f5b41e882e4fa2f841da5344b39ace9e2c3ee5d7cd9ad28b96fabb",
+  "inspection_binary_sha256": "1676c6cc3a42e6dcec438e5e1f1639e5a615f77562653bb364af255be7bd1006",
+  "screenshot_sha256": "8f756f4c4b2d4eed668341da8b3d4680e8d90a7d3f17e18580f3f60c50d82351"
+}
