@@ -140,16 +140,18 @@ impl eframe::App for Inspection {
         if self.frames < 30 {
             return;
         }
-        if self.phase == 7 && self.target.is_none() && self.frames.is_multiple_of(10) {
-            if let Some(rect) = ctx.memory(|m| m.area_rect(egui::Id::new(Some("Complete package to one PCB component")))) {
-                input.events.push(egui::Event::PointerMoved(rect.left_top() + egui::vec2(25., 100.)));
-                input.events.push(egui::Event::MouseWheel {
-                    unit: egui::MouseWheelUnit::Point,
-                    delta: egui::vec2(0., -200.),
-                    modifiers: egui::Modifiers::NONE,
-                });
-                self.events += 2;
-            }
+        if self.phase == 7
+            && self.target.is_none()
+            && self.frames.is_multiple_of(10)
+            && let Some(rect) = ctx.memory(|m| m.area_rect(egui::Id::new(Some("Complete package to one PCB component"))))
+        {
+            input.events.push(egui::Event::PointerMoved(rect.left_top() + egui::vec2(25., 100.)));
+            input.events.push(egui::Event::MouseWheel {
+                unit: egui::MouseWheelUnit::Point,
+                delta: egui::vec2(0., -200.),
+                modifiers: egui::Modifiers::NONE,
+            });
+            self.events += 2;
         }
         if let Some(pos) = self.target {
             input.events.push(egui::Event::PointerMoved(pos));
