@@ -75,6 +75,70 @@
       "capture": "t0089-initial-completed-wide.png",
       "new_native_library_pads": 2
     },
-    "known_display_issue": "Introductory Unicode arrow displays as missing glyph. Plain-text correction and final fresh capture follow; these initial captures retain exact historical provenance."
+    "known_display_issue": "Historical introductory Unicode arrow displayed as missing glyph. Final plain-text correction and fresh captures below resolve it; original captures retain historical provenance."
+  },
+  "final_refresh": {
+    "source_commit": "d17344b5c0a96c32a8d05d357a27ef70741b9498",
+    "source_base": "f5a6b963827debd5c43e35650cc65e2769b8a31b",
+    "reason": "Clean additive routing integration and one introductory UI label changed from unsupported arrow glyph to plain to. Original full workspace and actual desktop backend proof remains explicitly tied to ce71d1a.",
+    "fmt": "pass",
+    "clippy_ui_all_targets_deny_warnings": "pass",
+    "actual_desktop_interaction_tests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "production_build": "pass",
+    "inspection_build": "pass",
+    "gate_commands": [
+      "cargo fmt --all -- --check",
+      "cargo clippy -p viamind-ui-egui --all-targets --locked --offline -- -D warnings",
+      "cargo test -p viamind-ui-egui --test footprint_conversion --locked --offline",
+      "cargo build -p viamind --locked --offline",
+      "cargo build -p viamind-ui-egui --example footprint_conversion_inspection --locked --offline"
+    ],
+    "gate_log": "t0089-final-ui-gates.log",
+    "gate_log_sha256": "19d2721ba408904644831fbeeb149e65ce8a4578b0d1eebc789189271d02d86f",
+    "production_binary_sha256": "4f57014b31979e89273de650e5051ce290b62a06f6bedecaf765db5ecf31c176",
+    "production_stdio_checks": 17,
+    "production_stdio_report": "t0089-final-production-stdio.json",
+    "inspection_binary_sha256": "c11037d96dcb1b6df5b4066b92458841d299833b06a3ddf688b29702cf42ed45",
+    "operating_system_input_claim": false,
+    "actual_egui_input_preparation": true,
+    "complete_session_unchanged_every_native_frame": true,
+    "captures": [
+      {
+        "pid": 1058515,
+        "window_id": 110379546535328,
+        "viewport": [
+          1600,
+          1000
+        ],
+        "capture": "t0089-preview-wide.png",
+        "sha256": "4e2e08cb64cba3583bb4ee9bb09f1b492b8bdaad00f08abb737b23e4a609cc99",
+        "scope": "Expanded per-list report; outer scrolling reaches Create."
+      },
+      {
+        "pid": 1058915,
+        "window_id": 110379546980720,
+        "viewport": [
+          640,
+          400
+        ],
+        "capture": "t0089-preview-compact.png",
+        "sha256": "f4b3f7c534c5b8b09bdddcf29afbf25f6df4b47a2c385d9c7f4cd22b6ec5f352",
+        "scope": "Create bounds asserted within viewport."
+      },
+      {
+        "pid": 1059381,
+        "window_id": 110379547236656,
+        "viewport": [
+          1600,
+          1000
+        ],
+        "capture": "t0089-completed-wide.png",
+        "sha256": "14b14c98f84ece1153503e0b2c465f71d62b4378f4bdca9870c7c8c0a3e4be6c",
+        "scope": "Actual new-file conversion completed; entire session remains unchanged."
+      }
+    ]
   }
 }

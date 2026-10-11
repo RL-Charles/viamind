@@ -62,12 +62,32 @@ Cua captures the exact owned native windows without operating-system pointer
 input or desktop customization. The crowded production 16×22 window is provenance
 only; it is not the readable interface proof.
 
-Initial normal, compact and completed captures identified a missing font glyph
-for the introductory arrow. Their source/binary/window provenance is retained in
-[the Linux/native master](verification/t0089-linux-native.json); a plain-text
-correction and fresh final capture follow. Expanded normal per-list preview
-requires outer scrolling to reach Create; the compact action capture directly
-proves the reachable control. No unrelated canvas rendering claim is made.
+Initial captures identified a missing font glyph for the introductory arrow.
+The final label uses plain “to”. Source `d17344b5c0a96c32a8d05d357a27ef70741b9498`
+rebases cleanly onto main `f5a6b96` and changes only that label. Its
+[narrow refresh](verification/t0089-final-ui-gates.log) passes formatting, strict
+UI all-target Clippy, all three actual-input cases, production and inspection
+builds. Fresh production SHA256
+`4f57014b31979e89273de650e5051ce290b62a06f6bedecaf765db5ecf31c176`
+passes [17 stdio checks](verification/t0089-final-production-stdio.json).
+Full workspace and actual desktop HTTP results above retain their exact historical
+source provenance. All binary hashes, owned PIDs/windows and image hashes are in
+[the Linux/native master](verification/t0089-linux-native.json).
+
+![Expanded per-list preview](verification/t0089-preview-wide.png)
+
+Expanded normal per-list preview requires outer scrolling to reach Create. The
+compact action capture directly proves the reachable control and readable plain
+text at 640×400:
+
+![Compact reachable conversion](verification/t0089-preview-compact.png)
+
+The completed view follows actual input publication of a new two-pad native
+library, with complete session immutability asserted every native frame:
+
+![Completed detached library conversion](verification/t0089-completed-wide.png)
+
+No unrelated canvas rendering claim is made.
 
 ## Limits
 
