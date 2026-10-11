@@ -74,7 +74,13 @@ fn named_policy_edit_and_undo_refresh_captured_automatic_checker_sources() {
         viamind_engine::SetNamedNetRules {
             expected_project: e.read(|p| p.id),
             expected_cursor: e.event_cursor(),
-            rules: vec![viamind_engine::NamedNetRuleRow { net: "A".into(), minimum_copper_clearance: Nm(0), minimum_track_width: Nm(300_001) }],
+            rules: vec![viamind_engine::NamedNetRuleRow {
+                net: "A".into(),
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(300_001),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            }],
         },
         Origin::User,
     )
@@ -86,6 +92,44 @@ fn named_policy_edit_and_undo_refresh_captured_automatic_checker_sources() {
     assert_eq!(report.violations.len(), 1);
     assert_eq!(report.violations[0].kind, viamind_drc::ViolationKind::MinimumTrackWidth);
     e.undo(Origin::User).unwrap();
+    let report = ready(&e).report.unwrap();
+    assert!(report.document_net_rules.is_empty() && report.violations.is_empty());
+}
+#[test]
+fn via_policy_edit_and_undo_refresh_exact_automatic_sources_and_geometry() {
+    let mut p = Project::new("Automatic via minima");
+    let via = viamind_doc::Via { id: ObjectId::new(), position: Point::ORIGIN, diameter: Nm(600001), drill: Nm(300000), net: Some("A".into()) };
+    p.board.vias.insert(via.id, via.clone());
+    let e = EngineHandle::new(p);
+    e.configure_auto_drc(AutoDrcConfig { enabled: true, ..Default::default() }).unwrap();
+    assert!(ready(&e).report.unwrap().violations.is_empty());
+    let before = e.session_state();
+    e.execute_typed(
+        viamind_engine::SetNamedNetRules {
+            expected_project: before.project.id,
+            expected_cursor: before.cursor,
+            rules: vec![viamind_engine::NamedNetRuleRow {
+                net: "A".into(),
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(1),
+                minimum_via_drill: Nm(300001),
+                minimum_annular_width: Nm(150001),
+            }],
+        },
+        Origin::User,
+    )
+    .unwrap();
+    let status = ready(&e);
+    assert_eq!(status.source_cursor, Some(e.event_cursor()));
+    let report = status.report.unwrap();
+    assert_eq!(report.document_net_rules, e.read(|p| p.board.net_rules.clone()));
+    assert_eq!(
+        report.violations.iter().map(|v| v.kind).collect::<Vec<_>>(),
+        vec![viamind_drc::ViolationKind::MinimumViaDrill, viamind_drc::ViolationKind::MinimumAnnularWidth]
+    );
+    assert_eq!(e.read(|p| p.board.vias[&via.id].clone()), via);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.session_state().project, before.project);
     let report = ready(&e).report.unwrap();
     assert!(report.document_net_rules.is_empty() && report.violations.is_empty());
 }

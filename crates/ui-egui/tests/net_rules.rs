@@ -50,6 +50,8 @@ fn actual_compact_exact_input_atomic_apply_undo_and_cancel() {
     input(&mut h, "Net 1", "USB D+");
     input(&mut h, "Clearance 1 (mm)", "0.200001");
     input(&mut h, "Track width 1 (mm)", "0.300001");
+    input(&mut h, "Via drill 1 (mm)", "0.300001");
+    input(&mut h, "Annular width 1 (mm)", "0.150001");
     assert_eq!(e.session_state(), before);
     for label in ["Apply named-net rules", "Reload rules", "Cancel rules"] {
         let r = h.get_by_label(label).rect();
@@ -67,6 +69,9 @@ fn actual_compact_exact_input_atomic_apply_undo_and_cancel() {
     let r = after.board.net_rules["USB D+"];
     assert_eq!(r.minimum_copper_clearance, Nm(200001));
     assert_eq!(r.minimum_track_width, Nm(300001));
+    assert_eq!(r.minimum_via_drill, Nm(300001));
+    assert_eq!(r.minimum_annular_width, Nm(150001));
+    assert_eq!(viamind_doc::file::minimum_version(&after), 10);
     assert_eq!(e.event_cursor().sequence, before.cursor.sequence + 1);
     e.undo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
@@ -97,8 +102,12 @@ fn actual_duplicate_invalid_precision_and_peer_reopen_require_reload() {
     click(&mut h, "Remove rule 2");
     click(&mut h, "Add exact net rule");
     let retained = h.get_by_label("Net 2").accesskit_node().id();
+    let via_field = h.get_by_label("Via drill 2 (mm)").accesskit_node().id();
+    let annular_field = h.get_by_label("Annular width 2 (mm)").accesskit_node().id();
     click(&mut h, "Remove rule 1");
     assert_eq!(h.get_by_label("Net 1").accesskit_node().id(), retained, "removing another row retains the actual field identity");
+    assert_eq!(h.get_by_label("Via drill 1 (mm)").accesskit_node().id(), via_field);
+    assert_eq!(h.get_by_label("Annular width 1 (mm)").accesskit_node().id(), annular_field);
     e.execute("add_part", serde_json::json!({"designator":"R1","value":"peer","footprint":"x","x_mm":1,"y_mm":1}), Origin::agent("peer")).unwrap();
     h.run_steps(3);
     let peer = e.session_state();
@@ -122,10 +131,15 @@ fn actual_duplicate_invalid_precision_and_peer_reopen_require_reload() {
 #[test]
 fn invalid_borrowed_policy_refuses_render_fab_and_explicit_drc_before_copy() {
     let mut project = Project::new("Capture policy");
-    project
-        .board
-        .net_rules
-        .insert("unused".repeat(100000), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+    project.board.net_rules.insert(
+        "unused".repeat(100000),
+        viamind_doc::NamedNetMinima {
+            minimum_copper_clearance: Nm(1),
+            minimum_track_width: Nm(1),
+            minimum_via_drill: viamind_geom::Nm(0),
+            minimum_annular_width: viamind_geom::Nm(0),
+        },
+    );
     assert!(viamind_render::board_view_snapshot(&project).is_err());
     assert!(viamind_fab::FabricationSnapshot::capture(&project).is_err());
     let e = EngineHandle::new(project);

@@ -704,7 +704,7 @@ source cursor. `set_named_net_rules` atomically replaces the map using
 `expected_project`, `expected_cursor` and at most128 distinct rule rows. Each row
 contains exact `net`, integer-Nm `minimum_copper_clearance` (0..100000000) and
 `minimum_track_width` (1..100000000). Empty rows clear the policy; nonempty native
-files require schema8. One undo restores the previous map. The Board menu's
+files require at least schema8 (nonzero via floors require10). One undo restores the previous map. The Board menu's
 **Exact named-net minima** editor uses the same command and exact decimal mm input.
 
 Shared scoped DRC resolves the greater request baseline and both matching net
@@ -715,3 +715,15 @@ fixed-via and cleanup previews retain the captured rules; commits recompute unde
 the current guarded cursor. Rules match exact case-sensitive names; no patterns,
 class hierarchy, preferred sizes, region priorities or physical certification.
 See the [public specification](../../docs/specs/named-net-minima.md).
+
+### Exact named-net via minima
+
+Existing `query_named_net_rules` / guarded `set_named_net_rules` rows additionally
+accept optional integer-Nm `minimum_via_drill` and `minimum_annular_width`, each
+0..100000000. Zero/missing fields add no document floor and omit canonically;
+any nonzero via floor requires native/event schema10. Annular width is radial,
+not via diameter. Shared DRC and explicit-via route planning use the greater
+request baseline and exact matching net floor; specified drill/outer diameter
+never resize. Saved checked jobs retain the same captured policy and cannot
+weaken it with zero baselines. Class/layer/region policy and other via types
+remain outside this scope.

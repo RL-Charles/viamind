@@ -19,6 +19,15 @@ pub struct NamedNetMinima {
     pub minimum_copper_clearance: Nm,
     #[schemars(range(min = 1, max = 100000000))]
     pub minimum_track_width: Nm,
+    #[serde(default, skip_serializing_if = "is_zero_nm")]
+    #[schemars(range(min = 0, max = 100000000))]
+    pub minimum_via_drill: Nm,
+    #[serde(default, skip_serializing_if = "is_zero_nm")]
+    #[schemars(range(min = 0, max = 100000000))]
+    pub minimum_annular_width: Nm,
+}
+pub fn is_zero_nm(value: &Nm) -> bool {
+    value.0 == 0
 }
 pub type NamedNetRules = BTreeMap<String, NamedNetMinima>;
 
@@ -34,6 +43,9 @@ impl NamedNetMinima {
         }
         if !(1..=MAX_MINIMUM_NM).contains(&self.minimum_track_width.0) {
             return Err("minimum_track_width must be within 1..100000000 Nm (100mm)");
+        }
+        if !(0..=MAX_MINIMUM_NM).contains(&self.minimum_via_drill.0) || !(0..=MAX_MINIMUM_NM).contains(&self.minimum_annular_width.0) {
+            return Err("via drill and annular minima must be within 0..100000000 Nm (100mm)");
         }
         Ok(())
     }
@@ -70,6 +82,22 @@ pub fn maximum_named_clearance(rules: &NamedNetRules, baseline: Nm) -> Nm {
 /// No match contributes zero: existing positive track widths keep their old behavior.
 pub fn named_track_width(rules: &NamedNetRules, net: Option<&str>) -> Nm {
     net.and_then(|net| rules.get(net)).map_or(Nm(0), |rule| rule.minimum_track_width)
+}
+pub fn named_via_drill(rules: &NamedNetRules, baseline: Nm, net: Option<&str>) -> Nm {
+    net.and_then(|net| rules.get(net)).map_or(baseline, |rule| baseline.max(rule.minimum_via_drill))
+}
+pub fn named_annular_width(rules: &NamedNetRules, baseline: Nm, net: Option<&str>) -> Nm {
+    net.and_then(|net| rules.get(net)).map_or(baseline, |rule| baseline.max(rule.minimum_annular_width))
+}
+/// Zero new fields omit canonically and preserve the prior policy feature version.
+pub fn minimum_rule_version(rules: &NamedNetRules) -> u32 {
+    if rules.values().any(|r| r.minimum_via_drill.0 != 0 || r.minimum_annular_width.0 != 0) {
+        10
+    } else if !rules.is_empty() {
+        8
+    } else {
+        1
+    }
 }
 
 /// Validate a borrowed decoded label before allocating its owned rule name.

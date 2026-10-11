@@ -1389,6 +1389,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "additionalProperties": false,
                   "properties": {
+                    "minimum_annular_width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "maximum": 100000000,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
                     "minimum_copper_clearance": {
                       "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
                       "format": "int64",
@@ -1401,6 +1408,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "format": "int64",
                       "maximum": 100000000,
                       "minimum": 1,
+                      "type": "integer"
+                    },
+                    "minimum_via_drill": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "maximum": 100000000,
+                      "minimum": 0,
                       "type": "integer"
                     }
                   },
@@ -7266,7 +7280,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read-only bounded exact document named-net minimum clearance/track-width policy and full source cursor. Empty map preserves existing request baselines. No mutation; use set_named_net_rules for guarded undoable replacement.",
+  "description": "Read-only bounded exact document named-net minimum clearance/track-width/via-drill/annular policy and full source cursor. Empty map preserves existing request baselines. No mutation; use set_named_net_rules for guarded undoable replacement.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {},
@@ -9521,7 +9535,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit width floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -10183,7 +10197,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Atomically replace the bounded persisted exact named-net minima map. Requires expected_project and full initial expected_cursor; stale peers/reopen reject all rows. At most 128 distinct trimmed names within 128 characters/256 UTF-8 bytes each and 32768 aggregate name bytes. Integer Nm copper minimum 0..100000000, track-width minimum 1..100000000. Empty rows clear policy and preserve legacy schema; nonempty rules require native 8. Shared DRC and guarded routing resolve max(request clearance baseline, both named minima); widths stay explicit and below-minimum requests refuse. No preferred width, widening, classes/patterns/regions or shove. Existing violations may remain. One undo restores exact policy; no-op emits no event.",
+  "description": "Atomically replace the bounded persisted exact named-net minima map. Requires expected_project and full initial expected_cursor; stale peers/reopen reject all rows. At most 128 distinct trimmed names within 128 characters/256 UTF-8 bytes each and 32768 aggregate name bytes. Integer Nm copper minimum 0..100000000, track-width minimum 1..100000000. Optional via drill/annular minima 0..100000000 Nm; zero fields omit canonically. Empty rows clear policy and preserve legacy schema; copper/width policy requires native 8, nonzero via minima require native 10. Shared DRC and guarded routing resolve max(request clearance baseline, both named minima); widths and via dimensions stay explicit and below-minimum requests refuse without resizing. No preferred width, widening, classes/patterns/regions or shove. Existing violations may remain. One undo restores exact policy; no-op emits no event.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -10220,6 +10234,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "items": {
           "additionalProperties": false,
           "properties": {
+            "minimum_annular_width": {
+              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+              "format": "int64",
+              "maximum": 100000000,
+              "minimum": 0,
+              "type": "integer"
+            },
             "minimum_copper_clearance": {
               "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
               "format": "int64",
@@ -10232,6 +10253,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "format": "int64",
               "maximum": 100000000,
               "minimum": 1,
+              "type": "integer"
+            },
+            "minimum_via_drill": {
+              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+              "format": "int64",
+              "maximum": 100000000,
+              "minimum": 0,
               "type": "integer"
             },
             "net": {
@@ -11064,6 +11092,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "additionalProperties": {
                   "additionalProperties": false,
                   "properties": {
+                    "minimum_annular_width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "maximum": 100000000,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
                     "minimum_copper_clearance": {
                       "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
                       "format": "int64",
@@ -11076,6 +11111,13 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "format": "int64",
                       "maximum": 100000000,
                       "minimum": 1,
+                      "type": "integer"
+                    },
+                    "minimum_via_drill": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "maximum": 100000000,
+                      "minimum": 0,
                       "type": "integer"
                     }
                   },

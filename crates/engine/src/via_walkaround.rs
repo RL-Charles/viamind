@@ -94,6 +94,7 @@ fn prepare(project: &Project, input: &RoutePadViaWalkaround) -> Result<(CheckedV
     }
     let via = Via { id: ObjectId::new(), position: input.via, diameter: input.via_diameter, drill: input.via_drill, net: Some(net.to_owned()) };
     via.validate().map_err(invalid)?;
+    crate::route_via::validate_via_minima(project, &via, &input.rules)?;
     let mut work = WalkaroundBudget::default();
     let mut leg = |first, last, layer| {
         let remaining = viamind_router::walkaround::MAX_WALKAROUND_OBSTACLES - work.used().obstacle_boxes;

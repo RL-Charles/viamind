@@ -1,0 +1,156 @@
+{
+  "passed": true,
+  "port": 7928,
+  "source_commit": "020b70f474b2630424f44b52065cfd66f5c74a22",
+  "binary_sha256": "805ce54106e28315d0a5947904f767bd0d248bb32ab26fed47a06552c5bf7678",
+  "checks": [
+    "zero via fields omit canonical policy keys and retain native schema8",
+    "both exact odd-Nm via floors replace policy in one event",
+    "independent peer query returns exact full cursor and via minima",
+    "stale peer policy replace rejects whole record",
+    "negative drill rejects unchanged complete session",
+    "oversized drill rejects unchanged complete session",
+    "negative annulus rejects unchanged complete session",
+    "oversized annulus rejects unchanged complete session",
+    "route_pad_via_polyline one-Nm drill below refuses without any copper/event",
+    "route_pad_via_polyline half-Nm annulus below refuses without any copper/event",
+    "plan_pad_via_walkaround one-Nm drill below refuses without any copper/event",
+    "plan_pad_via_walkaround half-Nm annulus below refuses without any copper/event",
+    "route_pad_via_walkaround one-Nm drill below refuses without any copper/event",
+    "route_pad_via_walkaround half-Nm annulus below refuses without any copper/event",
+    "manual route equality preserves explicit dimensions and groups tracks/via into one event",
+    "manual equality one undo restores exact board and policy",
+    "manual equality redo restores identical via/track IDs",
+    "fixed-via equality returns only complete joint checked immutable plan with actual document floors",
+    "fixed-via equality commits exact dimensions without implicit resizing",
+    "fixed-via joint undo restores original pads/policy with no new copper",
+    "stronger saved request drill baseline cannot be weakened by document floor",
+    "half-Nm stored radial annulus produces stable-ID exact required-floor DRC issue",
+    "immutable DRC reports zero request baselines plus actual full document via policy",
+    "nonzero via minima require canonical native schema10",
+    "same-project reopen stream rejects stale via rule command",
+    "nonzero via minima reject older native header8 unchanged",
+    "nonzero via minima reject older native header9 unchanged",
+    "duplicate nonzero via field key refuses without last-wins native parsing",
+    "clearing only via floors restores exact authored legacy schema8 native bytes",
+    "checked job exact drill/annulus equality publishes complete twelve-file release without mutating design",
+    "checked validation retains zero caller thresholds and actual captured document via floors",
+    "checked validation and release manifest identify same captured full cursor",
+    "one-Nm-drill document floor cannot be bypassed by zero saved request or publish output",
+    "one-Nm-drill one undo restores exact saved-source geometry/policy",
+    "one-Nm-annulus document floor cannot be bypassed by zero saved request or publish output",
+    "one-Nm-annulus one undo restores exact saved-source geometry/policy",
+    "all checked refusals leave no hidden output-job staging"
+  ],
+  "latency_ms": {
+    "set_rules": 1.3562819949584082,
+    "manual_via_equal": 1.680864006630145,
+    "plan_via_equal": 1.814703005948104,
+    "commit_via_equal": 1.894126005936414,
+    "checked_via_equal": 14.039896996109746
+  },
+  "assertion_count": 37,
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/via-rules.viamind.json",
+  "checked_release": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/checked-via-release",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "dbdd05ab-35ff-4afa-8822-6f533466b62f"
+    },
+    "project": {
+      "board": {
+        "net_rules": {
+          "N": {
+            "minimum_annular_width": 150001,
+            "minimum_copper_clearance": 0,
+            "minimum_track_width": 1,
+            "minimum_via_drill": 300001
+          }
+        },
+        "outline": {
+          "cutouts": [],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 100000000,
+              "y": 0
+            },
+            {
+              "x": 100000000,
+              "y": 100000000
+            },
+            {
+              "x": 0,
+              "y": 100000000
+            }
+          ]
+        },
+        "parts": {
+          "b8c482b4-5a31-4b90-828f-337aab607759": {
+            "designator": "J2",
+            "footprint": "explicit",
+            "id": "b8c482b4-5a31-4b90-828f-337aab607759",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "6ae97930-58ba-4f8e-a651-1d585378bf72",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 60000000,
+              "y": 10000000
+            },
+            "rotation_mdeg": 0,
+            "side": "bottom",
+            "value": "via floor endpoint"
+          },
+          "dc7ec8fe-d868-47c7-a708-f5ad51dd5e37": {
+            "designator": "J1",
+            "footprint": "explicit",
+            "id": "dc7ec8fe-d868-47c7-a708-f5ad51dd5e37",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "626b36c5-869f-43e3-99f4-705632303ea7",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 10000000,
+              "y": 10000000
+            },
+            "rotation_mdeg": 0,
+            "side": "top",
+            "value": "via floor endpoint"
+          }
+        }
+      },
+      "id": "d0dcba7e-2a2a-4182-987a-d73602bc6b6c",
+      "name": "Named via minima HTTP proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  }
+}

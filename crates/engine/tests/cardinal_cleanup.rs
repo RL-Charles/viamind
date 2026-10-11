@@ -349,7 +349,15 @@ fn named_width_floor_applies_to_complete_cleanup_candidate_and_report_sources() 
         let mut project = fixture();
         track(&mut project, p(-10_000_000, 0), p(0, 0), CopperLayer::Top);
         track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
-        project.board.net_rules.insert("N".into(), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(0), minimum_track_width: Nm(minimum) });
+        project.board.net_rules.insert(
+            "N".into(),
+            viamind_doc::NamedNetMinima {
+                minimum_copper_clearance: Nm(0),
+                minimum_track_width: Nm(minimum),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
+        );
         let e = EngineHandle::new(project);
         let before = e.session_state();
         let cmd = request(&e);

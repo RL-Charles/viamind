@@ -51,6 +51,7 @@ impl Command for RoutePadViaPolyline {
         let net = start_net.to_owned();
         let via = Via { id: ObjectId::new(), position: self.via, diameter: self.via_diameter, drill: self.via_drill, net: Some(net.clone()) };
         via.validate().map_err(|e| CommandError::invalid("via", e))?;
+        validate_via_minima(project, &via, &self.rules)?;
         let mut first = Vec::with_capacity(self.before.len() + 2);
         first.push(start);
         first.extend(self.before);
@@ -76,4 +77,21 @@ impl Command for RoutePadViaPolyline {
         tracks.extend(leg(second, target_layer)?);
         crate::routing::apply_route_candidate(project, tracks, vec![via], &self.rules)
     }
+}
+
+/// The same central document/request floors are rechecked by final joint DRC.
+pub(crate) fn validate_via_minima(project: &Project, via: &Via, input: &viamind_drc::DrcInput) -> Result<(), CommandError> {
+    viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| CommandError::invalid("rules", e))?;
+    let rules = input.validate().map_err(|e| CommandError::invalid("rules", e.to_string()))?;
+    let drill = viamind_doc::net_rules::named_via_drill(&project.board.net_rules, rules.minimum_via_drill, via.net.as_deref());
+    let annulus = viamind_doc::net_rules::named_annular_width(&project.board.net_rules, rules.minimum_annular_width, via.net.as_deref());
+    let actual = via.diameter.0.checked_sub(via.drill.0).ok_or_else(|| CommandError::invalid("via", "annular dimension overflow"))?;
+    let required = annulus.0.checked_mul(2).ok_or_else(|| CommandError::invalid("via", "annular minimum overflow"))?;
+    if via.drill < drill || actual < required {
+        return Err(CommandError::invalid(
+            "via",
+            format!("explicit via requires drill >= {} Nm and radial annular width >= {} Nm; no resizing", drill.0, annulus.0),
+        ));
+    }
+    Ok(())
 }

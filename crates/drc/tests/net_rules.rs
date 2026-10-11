@@ -12,7 +12,12 @@ fn track(y: i64, net: Option<&str>, width: i64) -> Track {
     }
 }
 fn rule(clearance: i64, width: i64) -> NamedNetMinima {
-    NamedNetMinima { minimum_copper_clearance: Nm(clearance), minimum_track_width: Nm(width) }
+    NamedNetMinima {
+        minimum_copper_clearance: Nm(clearance),
+        minimum_track_width: Nm(width),
+        minimum_via_drill: viamind_geom::Nm(0),
+        minimum_annular_width: viamind_geom::Nm(0),
+    }
 }
 #[test]
 fn far_pairs_are_discovered_but_unrelated_large_rules_do_not_pollute_pair_minima() {
@@ -62,4 +67,62 @@ fn empty_policy_preserves_report_bytes_and_old_report_deserialization() {
     let bytes = serde_json::to_string(&report).unwrap();
     assert!(!bytes.contains("document_net_rules"));
     assert_eq!(serde_json::from_str::<viamind_drc::DrcReport>(&bytes).unwrap(), report);
+}
+#[test]
+fn exact_via_drill_and_half_nm_annulus_use_matching_maxima_without_resizing() {
+    // Outer minus drill is twice the true radial annulus. Both odd sides matter.
+    for (net, drill, difference, request_drill, request_annulus, expected) in [
+        (Some("A"), 300000, 300002, 0., 0., vec![ViolationKind::MinimumViaDrill]),
+        (Some("A"), 300001, 300001, 0., 0., vec![ViolationKind::MinimumAnnularWidth]),
+        (Some("A"), 300001, 300002, 0., 0., vec![]),
+        (Some("A"), 300002, 300003, 0., 0., vec![]),
+        (Some("a"), 1, 1, 0., 0., vec![]),
+        (None, 1, 1, 0., 0., vec![]),
+        (Some("A"), 300001, 300002, 0.300002, 0., vec![ViolationKind::MinimumViaDrill]),
+        (Some("A"), 300001, 300002, 0., 0.150002, vec![ViolationKind::MinimumAnnularWidth]),
+    ] {
+        let mut p = Project::new("Via floors");
+        let via = viamind_doc::Via {
+            id: ObjectId::new(),
+            position: Point::new(Nm(0), Nm(0)),
+            diameter: Nm(drill + difference),
+            drill: Nm(drill),
+            net: net.map(str::to_owned),
+        };
+        let original = via.clone();
+        p.board.vias.insert(via.id, via);
+        p.board.net_rules.insert("A".into(), NamedNetMinima { minimum_via_drill: Nm(300001), minimum_annular_width: Nm(150001), ..rule(0, 1) });
+        let input = DrcInput { minimum_via_drill_mm: request_drill, minimum_annular_width_mm: request_annulus, ..Default::default() };
+        let report = run_drc(&p, &input).unwrap();
+        assert_eq!(report.violations.iter().map(|v| v.kind).collect::<Vec<_>>(), expected);
+        assert_eq!(p.board.vias[&original.id], original);
+        assert_eq!(report.document_net_rules, p.board.net_rules);
+        for v in report.violations {
+            assert_eq!(v.objects[0].selection_id(), original.id);
+            assert!(v.measured_clearance < v.required_clearance);
+        }
+    }
+}
+#[test]
+fn zero_via_fields_keep_legacy_report_policy_bytes_and_half_nm_decisions() {
+    let mut p = Project::new("Old report");
+    p.board.net_rules.insert("A".into(), rule(0, 1));
+    for difference in [299999, 300000, 300001] {
+        let via = viamind_doc::Via {
+            id: ObjectId::new(),
+            position: Point::ORIGIN,
+            diameter: Nm(300000 + difference),
+            drill: Nm(300000),
+            net: Some("A".into()),
+        };
+        p.board.vias.clear();
+        p.board.vias.insert(via.id, via);
+        let report = run_drc(&p, &DrcInput { minimum_annular_width_mm: 0.15, ..Default::default() }).unwrap();
+        assert_eq!(report.violations.len(), usize::from(difference < 300000));
+        let text = serde_json::to_string(&report).unwrap();
+        let expected = r#""document_net_rules":{"A":{"minimum_copper_clearance":0,"minimum_track_width":1}}"#;
+        assert!(text.contains(expected));
+        let restored: viamind_drc::DrcReport = serde_json::from_str(&text).unwrap();
+        assert_eq!(serde_json::to_string(&restored).unwrap(), text);
+    }
 }

@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0101/launch-inspection-compact",
+  "pid": 1723432,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-net-minima-inspection",
+      "bounds": {
+        "height": 400,
+        "width": 640,
+        "x": 2560,
+        "y": 1565
+      },
+      "height": 400,
+      "is_on_screen": true,
+      "pid": 1723432,
+      "title": "Untitled — Viamind",
+      "width": 640,
+      "window_id": 110379552219728,
+      "x": 2560,
+      "y": 1565,
+      "z_index": null
+    }
+  ]
+}

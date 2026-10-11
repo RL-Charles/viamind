@@ -6,7 +6,13 @@ fn edit(e: &EngineHandle, width: i64) -> SetNamedNetRules {
     SetNamedNetRules {
         expected_project: s.project.id,
         expected_cursor: s.cursor,
-        rules: vec![NamedNetRuleRow { net: "A".into(), minimum_copper_clearance: Nm(600_000), minimum_track_width: Nm(width) }],
+        rules: vec![NamedNetRuleRow {
+            net: "A".into(),
+            minimum_copper_clearance: Nm(600_000),
+            minimum_track_width: Nm(width),
+            minimum_via_drill: viamind_geom::Nm(0),
+            minimum_annular_width: viamind_geom::Nm(0),
+        }],
     }
 }
 #[test]
@@ -134,4 +140,43 @@ fn grouped_rule_edits_share_initial_cursor_coalesce_and_undo_as_one_map() {
         .unwrap();
     assert!(result.deltas.is_empty());
     assert_eq!(e.session_state(), applied);
+}
+#[test]
+fn via_floor_policy_delta_before_after_and_base_require_log_ten_and_one_undo() {
+    let e = EngineHandle::new(Project::new("Via log"));
+    let old = edit(&e, 300001);
+    let old_bytes = serde_json::to_string(&old).unwrap();
+    assert!(!old_bytes.contains("minimum_via_drill"));
+    e.execute_typed(old, Origin::User).unwrap();
+    let before = e.session_state();
+    let mut via = edit(&e, 300001);
+    via.rules[0].minimum_via_drill = Nm(300001);
+    via.rules[0].minimum_annular_width = Nm(150001);
+    e.execute_typed(via, Origin::User).unwrap();
+    let after = e.session_state();
+    assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.session_state().project, before.project);
+    e.redo(Origin::User).unwrap();
+    assert_eq!(e.session_state().project, after.project);
+    let mut bytes = Vec::new();
+    e.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+    assert_eq!(viamind_engine::EventLog::read_jsonl(text.as_bytes()).unwrap().replay(), after.project);
+    assert!(
+        viamind_engine::EventLog::read_jsonl(
+            text.replacen(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":9", 1).as_bytes()
+        )
+        .is_err()
+    );
+    let base = EngineHandle::new(after.project);
+    let mut bytes = Vec::new();
+    base.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+    assert!(
+        viamind_engine::EventLog::read_jsonl(
+            text.replacen(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":9", 1).as_bytes()
+        )
+        .is_err()
+    );
 }

@@ -15,6 +15,12 @@ pub struct NamedNetRuleRow {
     pub minimum_copper_clearance: viamind_geom::Nm,
     #[schemars(range(min = 1, max = 100000000))]
     pub minimum_track_width: viamind_geom::Nm,
+    #[serde(default, skip_serializing_if = "viamind_doc::net_rules::is_zero_nm")]
+    #[schemars(range(min = 0, max = 100000000))]
+    pub minimum_via_drill: viamind_geom::Nm,
+    #[serde(default, skip_serializing_if = "viamind_doc::net_rules::is_zero_nm")]
+    #[schemars(range(min = 0, max = 100000000))]
+    pub minimum_annular_width: viamind_geom::Nm,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -48,7 +54,7 @@ impl EngineHandle {
 }
 impl Command for SetNamedNetRules {
     const NAME: &'static str = "set_named_net_rules";
-    const DESCRIPTION: &'static str = "Atomically replace the bounded persisted exact named-net minima map. Requires expected_project and full initial expected_cursor; stale peers/reopen reject all rows. At most 128 distinct trimmed names within 128 characters/256 UTF-8 bytes each and 32768 aggregate name bytes. Integer Nm copper minimum 0..100000000, track-width minimum 1..100000000. Empty rows clear policy and preserve legacy schema; nonempty rules require native 8. Shared DRC and guarded routing resolve max(request clearance baseline, both named minima); widths stay explicit and below-minimum requests refuse. No preferred width, widening, classes/patterns/regions or shove. Existing violations may remain. One undo restores exact policy; no-op emits no event.";
+    const DESCRIPTION: &'static str = "Atomically replace the bounded persisted exact named-net minima map. Requires expected_project and full initial expected_cursor; stale peers/reopen reject all rows. At most 128 distinct trimmed names within 128 characters/256 UTF-8 bytes each and 32768 aggregate name bytes. Integer Nm copper minimum 0..100000000, track-width minimum 1..100000000. Optional via drill/annular minima 0..100000000 Nm; zero fields omit canonically. Empty rows clear policy and preserve legacy schema; copper/width policy requires native 8, nonzero via minima require native 10. Shared DRC and guarded routing resolve max(request clearance baseline, both named minima); widths and via dimensions stay explicit and below-minimum requests refuse without resizing. No preferred width, widening, classes/patterns/regions or shove. Existing violations may remain. One undo restores exact policy; no-op emits no event.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.expected_cursor)
     }
@@ -64,9 +70,14 @@ impl Command for SetNamedNetRules {
         let mut text = 0_usize;
         for row in &self.rules {
             viamind_doc::net_rules::validate_net_rule_name(&row.net).map_err(|e| CommandError::invalid("net", e))?;
-            NamedNetMinima { minimum_copper_clearance: row.minimum_copper_clearance, minimum_track_width: row.minimum_track_width }
-                .validate()
-                .map_err(|e| CommandError::invalid("rules", e))?;
+            NamedNetMinima {
+                minimum_copper_clearance: row.minimum_copper_clearance,
+                minimum_track_width: row.minimum_track_width,
+                minimum_via_drill: row.minimum_via_drill,
+                minimum_annular_width: row.minimum_annular_width,
+            }
+            .validate()
+            .map_err(|e| CommandError::invalid("rules", e))?;
             text = text.saturating_add(row.net.len());
             if text > viamind_doc::net_rules::MAX_NAMED_NET_RULE_TEXT {
                 return Err(CommandError::invalid("rules", "rule names exceed 32768 bytes"));
@@ -79,7 +90,17 @@ impl Command for SetNamedNetRules {
         let after = self
             .rules
             .into_iter()
-            .map(|r| (r.net, NamedNetMinima { minimum_copper_clearance: r.minimum_copper_clearance, minimum_track_width: r.minimum_track_width }))
+            .map(|r| {
+                (
+                    r.net,
+                    NamedNetMinima {
+                        minimum_copper_clearance: r.minimum_copper_clearance,
+                        minimum_track_width: r.minimum_track_width,
+                        minimum_via_drill: r.minimum_via_drill,
+                        minimum_annular_width: r.minimum_annular_width,
+                    },
+                )
+            })
             .collect();
         if project.board.net_rules == after {
             return Ok(Vec::new());
@@ -127,10 +148,26 @@ mod tests {
     #[test]
     fn borrowed_policy_rows_and_text_charge_shared_capture_before_copy() {
         let mut project = Project::new("Policy capture");
-        project.board.net_rules.insert("A".into(), NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+        project.board.net_rules.insert(
+            "A".into(),
+            NamedNetMinima {
+                minimum_copper_clearance: Nm(1),
+                minimum_track_width: Nm(1),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
+        );
         assert!(crate::auto_drc::snapshot_budget(&project, 0).unwrap_err().contains("structural objects"));
         assert!(crate::auto_drc::snapshot_budget(&project, 1).is_ok());
-        project.board.net_rules.insert("large".repeat(100000), NamedNetMinima { minimum_copper_clearance: Nm(1), minimum_track_width: Nm(1) });
+        project.board.net_rules.insert(
+            "large".repeat(100000),
+            NamedNetMinima {
+                minimum_copper_clearance: Nm(1),
+                minimum_track_width: Nm(1),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
+        );
         assert!(crate::auto_drc::snapshot_budget(&project, 100000).unwrap_err().contains("256"));
     }
 }

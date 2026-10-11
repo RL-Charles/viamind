@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 9;
+pub const VERSION: u32 = 10;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -178,7 +178,7 @@ pub fn minimum_version(project: &Project) -> u32 {
     } else {
         1
     };
-    geometry_version.max(assembly_version).max(if project.board.net_rules.is_empty() { 1 } else { 8 })
+    geometry_version.max(assembly_version).max(crate::net_rules::minimum_rule_version(&project.board.net_rules))
 }
 /// Validate globally unique pad identities, including collisions with other objects.
 pub fn validate_pads(project: &Project) -> Result<(), FileError> {

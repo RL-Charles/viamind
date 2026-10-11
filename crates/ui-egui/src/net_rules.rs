@@ -10,6 +10,8 @@ struct Row {
     net: String,
     clearance: String,
     width: String,
+    via_drill: String,
+    annular_width: String,
 }
 struct Draft {
     project: ObjectId,
@@ -97,6 +99,8 @@ impl ViamindApp {
                             net,
                             clearance: mm(r.minimum_copper_clearance),
                             width: mm(r.minimum_track_width),
+                            via_drill: mm(r.minimum_via_drill),
+                            annular_width: mm(r.minimum_annular_width),
                         })
                         .collect(),
                     message: None,
@@ -124,7 +128,8 @@ impl ViamindApp {
         egui::Window::new("Exact named-net minima").open(&mut open).default_width(470.).max_width((content.width()-24.).max(240.)).max_height((content.height()-24.).max(160.)).show(ui.ctx(),|ui| {
             egui::ScrollArea::vertical().max_height((content.height()-145.).clamp(60.,650.)).show(ui,|ui| {
                 ui.label("Enforced document floors in mm. Copper pairs use the greater request baseline and both exact net minima. Width remains an explicit routing choice.");
-                ui.label("No preferred sizes, automatic widening, patterns or net assignment. Existing copper may violate newly saved minima; run scoped DRC.");
+                ui.label("Via drill and radial annulus are separate minima; zero adds no document floor. Explicit via dimensions never resize automatically.");
+                ui.label("No preferred sizes, patterns or net assignment. Existing copper may violate newly saved minima; run scoped DRC.");
                 ui.label(format!("{} of 128 rules; empty restores legacy document policy",draft.rows.len()));
                 for (i,row) in draft.rows.iter_mut().enumerate() {
                     ui.push_id(row.widget,|ui| {
@@ -132,9 +137,11 @@ impl ViamindApp {
                         ui.horizontal(|ui| {let label=ui.label(format!("Net {}",i+1));ui.add(egui::TextEdit::singleline(&mut row.net).id(egui::Id::new((row.widget,"net"))).char_limit(128).desired_width(150.)).labelled_by(label.id);if ui.button(format!("Remove rule {}",i+1)).clicked(){remove=Some(i);} });
                         ui.horizontal(|ui| {let label=ui.label(format!("Clearance {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.clearance).id(egui::Id::new((row.widget,"clearance"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
                         ui.horizontal(|ui| {let label=ui.label(format!("Track width {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.width).id(egui::Id::new((row.widget,"width"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
+                        ui.horizontal(|ui| {let label=ui.label(format!("Via drill {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.via_drill).id(egui::Id::new((row.widget,"via_drill"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
+                        ui.horizontal(|ui| {let label=ui.label(format!("Annular width {} (mm)",i+1));ui.add(egui::TextEdit::singleline(&mut row.annular_width).id(egui::Id::new((row.widget,"annular_width"))).char_limit(32).desired_width(100.)).labelled_by(label.id);});
                     });
                 }
-                if ui.add_enabled(draft.rows.len()<128,egui::Button::new("Add exact net rule")).clicked() {draft.rows.push(Row {widget:ObjectId::new(),net:format!("N{}",draft.rows.len()+1),clearance:"0.2".into(),width:"0.25".into()});}
+                if ui.add_enabled(draft.rows.len()<128,egui::Button::new("Add exact net rule")).clicked() {draft.rows.push(Row {widget:ObjectId::new(),net:format!("N{}",draft.rows.len()+1),clearance:"0.2".into(),width:"0.25".into(),via_drill:"0".into(),annular_width:"0".into()});}
                 if stale {ui.colored_label(Color32::YELLOW,"Document or selection changed. Reload rules before applying; local rows remain uncommitted.");}
                 if let Some(message)=&draft.message {ui.colored_label(Color32::LIGHT_RED,message);}
             });
@@ -165,6 +172,8 @@ impl ViamindApp {
                         net: row.net.clone(),
                         minimum_copper_clearance: parse_minimum_mm(&row.clearance)?,
                         minimum_track_width: parse_minimum_mm(&row.width)?,
+                        minimum_via_drill: parse_minimum_mm(&row.via_drill)?,
+                        minimum_annular_width: parse_minimum_mm(&row.annular_width)?,
                     });
                 }
                 Ok::<_, String>(SetNamedNetRules { expected_project: draft.project, expected_cursor: draft.cursor, rules: rows })
@@ -191,6 +200,13 @@ pub(crate) fn show_document_minima(ui: &mut Ui, rules: &viamind_doc::NamedNetRul
                     mm(r.minimum_copper_clearance),
                     mm(r.minimum_track_width)
                 ));
+                if r.minimum_via_drill.0 != 0 || r.minimum_annular_width.0 != 0 {
+                    ui.label(format!(
+                        "{net}: via drill floor {} mm; radial annular floor {} mm",
+                        mm(r.minimum_via_drill),
+                        mm(r.minimum_annular_width)
+                    ));
+                }
             }
         });
     }

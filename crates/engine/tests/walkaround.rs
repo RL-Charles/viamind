@@ -290,10 +290,15 @@ fn named_pair_clearance_inflates_only_matching_obstacles_and_width_floor_refuses
     let (mut project, ids) = fixture();
     barrier(&mut project, Some("FOREIGN"), CopperLayer::Top);
     for (name, clearance, width) in [("N", 1_100_001, 300_001), ("FOREIGN", 1_500_000, 1), ("UNUSED", 10_000_000, 1)] {
-        project
-            .board
-            .net_rules
-            .insert(name.into(), viamind_doc::NamedNetMinima { minimum_copper_clearance: Nm(clearance), minimum_track_width: Nm(width) });
+        project.board.net_rules.insert(
+            name.into(),
+            viamind_doc::NamedNetMinima {
+                minimum_copper_clearance: Nm(clearance),
+                minimum_track_width: Nm(width),
+                minimum_via_drill: viamind_geom::Nm(0),
+                minimum_annular_width: viamind_geom::Nm(0),
+            },
+        );
     }
     let e = EngineHandle::new(project);
     let cmd = RoutePadWalkaround { width: Nm(300_001), ..input(&e, ids) };
