@@ -373,6 +373,7 @@ impl ViamindApp {
         self.schematic.draft = None;
         self.schematic.message = None;
         self.schematic.fit = false;
+        self.schematic.auto_fit = false;
         self.schematic.camera.center = WorldPos::new(position.x.to_mm(), position.y.to_mm());
         self.schematic.camera.zoom = self.schematic.camera.zoom.max(10.0);
         Ok(())

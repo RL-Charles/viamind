@@ -25,3 +25,5 @@ Use the original linked regulator fixture. Exercise both selection directions, e
 ## Stacked development base
 
 This ticket begins on T-0066 feature head `6ff809c4aa605a93341f5482fa740cdfb7be54f3`. After T-0066 merges, transplant only T-0070 commits onto merged main and run fresh combined CI. T-0066 remains independently owned and reviewed.
+
+T-0070 commits were transplanted onto merged main `30e7531`, preserving ERC, synchronization and routing. Explicit navigation also disables startup resize auto-fit; actual tests cover first-ever schematic navigation.
