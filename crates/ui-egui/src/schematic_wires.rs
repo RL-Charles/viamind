@@ -124,7 +124,7 @@ impl Default for SchematicWiresUi {
 }
 impl SchematicWiresUi {
     pub fn active(&self) -> bool {
-        self.draft.is_some() || self.pending.is_some()
+        self.draft.is_some() || self.pending.as_ref().is_some_and(|p| !p.cancelled)
     }
     pub fn confirmed_vertices(&self) -> Vec<Coordinate> {
         self.draft.as_ref().map_or_else(Vec::new, |d| d.points.clone())
@@ -193,13 +193,16 @@ impl ViamindApp {
             self.schematic_wires.message = Some("Finish or cancel the current object/file/board edit before drawing wires".into());
             return;
         }
-        if let (Some(design), Some(sheet)) = (&self.design, self.schematic.sheet) {
+        if let (Some(design), Some(sheet)) = (&self.design, self.schematic.active_sheet_id()) {
             self.schematic_wires.start(design.engine.clone(), sheet);
         }
     }
     pub(crate) fn schematic_wire_toolbar(&mut self, ui: &mut Ui) {
         let context = self.design.as_ref().and_then(|d| {
-            self.schematic.active.then_some(d).and_then(|d| self.schematic.sheet.map(|s| (d.engine.read(|p| p.id), d.engine.event_cursor(), s)))
+            self.schematic
+                .active
+                .then_some(d)
+                .and_then(|d| self.schematic.active_sheet_id().map(|s| (d.engine.read(|p| p.id), d.engine.event_cursor(), s)))
         });
         self.schematic_wires.poll(context);
         if self.schematic_wires.pending.is_some() {

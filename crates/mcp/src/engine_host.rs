@@ -154,7 +154,7 @@ impl CommandHost for EngineHost {
             description: "Read the shared selection: sorted part/track/via IDs, revision and last origin.".into(),
             input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
         });
-        commands.push(CommandSpec {
+        commands.push(HostCommand {
             name: "snapshot_schematic_wire_sheet".into(),
             description: "Read one bounded validated schematic sheet and exact project/stream/cursor for wire drawing; no mutation.".into(),
             input_schema: serde_json::to_value(schemars::schema_for!(viamind_engine::SchematicWireSheetQuery)).expect("wire snapshot schema"),

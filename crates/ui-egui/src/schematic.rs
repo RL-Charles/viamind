@@ -278,6 +278,9 @@ impl Default for SchematicUi {
     }
 }
 impl SchematicUi {
+    pub(crate) fn active_sheet_id(&self) -> Option<ObjectId> {
+        self.sheet
+    }
     pub(crate) fn with_active(active: bool) -> Self {
         Self { active, ..Default::default() }
     }
