@@ -788,6 +788,7 @@ mod tests {
         other.content = Some(content);
         let other_id = other.id;
         project.schematic.sheets.insert(other.id, other.clone());
+        viamind_doc::schematic::validate_project(&project, None).expect("authored cross-sheet fixture is native-valid before planner");
         let e = EngineHandle::new(project);
         let before = e.session_state();
         let input = request(&e, sheet, symbol, p(3, 7));
@@ -797,6 +798,101 @@ mod tests {
         assert_eq!(e.read(|p| p.schematic.sheets[&other_id].clone()), other);
         e.undo(Origin::User).unwrap();
         assert_eq!(e.session_state().project, before.project);
+    }
+    #[test]
+    fn complete_regulator_fixture_keeps_independently_declared_original_net_members_and_names() {
+        let _lock = LOCK.lock().unwrap();
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
+        viamind_doc::schematic::validate_project(&project, None).unwrap();
+        let id = |n: u16| format!("00000000-0000-0000-0000-{n:012x}").parse::<ObjectId>().unwrap();
+        let expected = BTreeMap::from([
+            ("VIN".to_owned(), [104, 108, 113, 119].into_iter().map(id).collect::<BTreeSet<_>>()),
+            ("3V3".to_owned(), [106, 111, 114, 120].into_iter().map(id).collect::<BTreeSet<_>>()),
+            ("GND".to_owned(), [105, 109, 112, 115, 116, 117, 118, 121].into_iter().map(id).collect::<BTreeSet<_>>()),
+        ]);
+        let original: BTreeSet<_> = expected.values().flatten().copied().collect();
+        let check_graph = |graph: &SchematicConnectivityResult| {
+            assert!(graph.next_offset.is_none());
+            assert_eq!(graph.nets.len(), 3);
+            let actual: BTreeMap<_, BTreeSet<_>> = graph
+                .nets
+                .iter()
+                .map(|net| {
+                    assert_eq!(net.names.len(), 1);
+                    let name = &net.names[0];
+                    let (label, scope) = match name.name.as_str() {
+                        "VIN" => (119, LabelScope::Local),
+                        "3V3" => (120, LabelScope::Local),
+                        "GND" => (121, LabelScope::Power),
+                        other => panic!("unexpected named net {other}"),
+                    };
+                    assert_eq!((name.sheet_id, name.label_id, name.scope), (id(102), id(label), scope));
+                    assert!(net.members.iter().all(|member| member.sheet_id == id(102)));
+                    (name.name.clone(), net.members.iter().map(|member| member.id).filter(|member| original.contains(member)).collect())
+                })
+                .collect();
+            assert_eq!(actual, expected);
+        };
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let before_bytes = viamind_doc::file::to_string(&before.project).unwrap();
+        check_graph(&e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 10_000 }).unwrap());
+        let input = request(&e, id(102), id(103), p(1_000_000, -2_000_000));
+        let preview = e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap();
+        assert_eq!((preview.original_graph_members, preview.added_wire_count), (16, 3));
+        assert_eq!(e.session_state(), before);
+        e.execute_typed(input, Origin::agent("regulator mover")).unwrap();
+        let after = e.session_state();
+        assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
+        assert_eq!(after.project.board, before.project.board);
+        let source = before.project.schematic.sheets[&id(102)].content.as_ref().unwrap();
+        let target = after.project.schematic.sheets[&id(102)].content.as_ref().unwrap();
+        for fixed in [107, 110] {
+            assert_eq!(target.symbols[&id(fixed)], source.symbols[&id(fixed)]);
+        }
+        for fixed in [115, 116] {
+            assert_eq!(target.wires[&id(fixed)], source.wires[&id(fixed)]);
+        }
+        assert_eq!(target.labels, source.labels);
+        assert_eq!(target.junctions, source.junctions);
+        assert_eq!(target.packages, source.packages);
+        assert_eq!(target.symbols[&id(103)].position, p(21_000_000, 18_000_000));
+        let graph = e.query_schematic_connectivity(&crate::SchematicConnectivityQuery { offset: 0, limit: 10_000 }).unwrap();
+        assert_eq!(graph.coverage.members, 19);
+        check_graph(&graph);
+        assert_eq!(e.with_engine(|e| e.log().replay()), after.project);
+        e.undo_own(Origin::agent("regulator mover")).unwrap();
+        assert_eq!(viamind_doc::file::to_string(&e.session_state().project).unwrap(), before_bytes);
+        e.redo_own(Origin::agent("regulator mover")).unwrap();
+        assert_eq!(e.session_state().project, after.project);
+    }
+    #[test]
+    fn later_nonconflicting_peer_part_survives_origin_owned_drag_undo_and_redo() {
+        let _lock = LOCK.lock().unwrap();
+        let (project, sheet, symbol, _) = fixture();
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let mover = Origin::agent("symbol mover");
+        let peer = Origin::agent("later PCB peer");
+        e.execute_typed(request(&e, sheet, symbol, p(3, 7)), mover.clone()).unwrap();
+        e.execute(
+            "add_part",
+            serde_json::json!({"designator":"R_LATER","value":"preserve peer edit","footprint":"EXPLICIT_PREVIEW","x_mm":1.25,"y_mm":2.5}),
+            peer.clone(),
+        )
+        .unwrap();
+        let both = e.session_state();
+        assert_eq!(both.project.board.parts.len(), 1);
+        let mut expected_undo = before.project.clone();
+        expected_undo.board = both.project.board.clone();
+        e.undo_own(mover.clone()).unwrap();
+        assert_eq!(e.session_state().project, expected_undo, "selective sheet undo must retain the entire later peer board and exact IDs");
+        e.redo_own(mover.clone()).unwrap();
+        assert_eq!(e.session_state().project, both.project);
+        e.undo_own(mover).unwrap();
+        e.undo_own(peer).unwrap();
+        assert_eq!(e.session_state().project, before.project);
+        assert_eq!(e.with_engine(|e| e.log().replay()), before.project);
     }
     #[test]
     fn combined_board_identity_preflight_refuses_before_native_duplicate_validation() {

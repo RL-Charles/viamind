@@ -5,6 +5,7 @@ struct Inspection {
     app: ViamindApp,
     engine: viamind_engine::EngineHandle,
     before: viamind_engine::SessionSnapshot,
+    status: viamind_engine::DocumentStatus,
     native: Vec<u8>,
     path: PathBuf,
     output: PathBuf,
@@ -16,6 +17,9 @@ struct Inspection {
     queued: Vec<egui::Event>,
     capturing: bool,
     finished: bool,
+    size: [usize; 2],
+    seen_controls: std::collections::BTreeSet<String>,
+    window_wheel_events: usize,
 }
 impl Inspection {
     fn point(&self, x: f64, y: f64) -> egui::Pos2 {
@@ -41,7 +45,7 @@ impl eframe::App for Inspection {
         self.frames += 1;
         assert!(self.frames < 1500, "bounded connected drag inspection");
         assert_eq!(self.engine.session_state(), self.before);
-        assert_eq!(self.engine.document_status().path.as_ref(), Some(&self.path));
+        assert_eq!(self.engine.document_status(), self.status);
         let layers = ui.ctx().memory(|m| m.areas().visible_layer_ids());
         let painted: Vec<_> = ui.ctx().graphics(|g| {
             layers
@@ -54,6 +58,13 @@ impl eframe::App for Inspection {
                 })
                 .collect()
         });
+        const REQUIRED: [&str; 6] =
+            ["Delta X mm", "Delta Y mm", "Grid mm", "Preview connected move", "Apply connected move", "Cancel connected move"];
+        for (label, _) in &painted {
+            if REQUIRED.contains(&label.as_str()) {
+                self.seen_controls.insert(label.clone());
+            }
+        }
         if self.frames - self.last >= 3 {
             match self.phase {
                 0 if self.frames > 8 => {
@@ -74,7 +85,7 @@ impl eframe::App for Inspection {
                     } else if self.frames - self.last >= 8 {
                         assert!(self.wheel_events < 40, "connected move toolbar must be reachable through sidebar scroll");
                         self.queued.extend([
-                            egui::Event::PointerMoved(egui::pos2(160.0, 800.0)),
+                            egui::Event::PointerMoved(egui::pos2(160.0, self.size[1] as f32 - 80.0)),
                             egui::Event::MouseWheel {
                                 unit: egui::MouseWheelUnit::Point,
                                 delta: egui::vec2(0.0, -240.0),
@@ -122,13 +133,29 @@ impl eframe::App for Inspection {
                     self.last = self.frames;
                 }
                 9 if !self.capturing => {
-                    for required in ["Delta X mm", "Delta Y mm", "Grid mm", "Preview connected move", "Apply connected move", "Cancel connected move"]
-                    {
-                        assert!(painted.iter().any(|(s, _)| s == required), "visible effective-clip {required}");
+                    let ready = REQUIRED.iter().all(|label| self.seen_controls.contains(*label))
+                        && REQUIRED[3..].iter().all(|label| painted.iter().any(|(s, _)| s == label))
+                        && painted.iter().any(|(s, _)| s.starts_with("Native graph preserved"));
+                    if ready {
+                        self.capturing = true;
+                        ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
+                    } else {
+                        assert!(self.window_wheel_events < 40, "fields and completion controls must be reachable through compact window scrolling");
+                        let window =
+                            ui.ctx().memory(|m| m.area_rect(egui::Id::new("connected_schematic_move"))).expect("fresh connected-move window");
+                        let point = window.intersect(ui.ctx().content_rect()).center();
+                        self.queued.extend([
+                            egui::Event::PointerMoved(point),
+                            egui::Event::MouseWheel {
+                                unit: egui::MouseWheelUnit::Point,
+                                delta: egui::vec2(0.0, -80.0),
+                                phase: egui::TouchPhase::Move,
+                                modifiers: egui::Modifiers::NONE,
+                            },
+                        ]);
+                        self.window_wheel_events += 1;
+                        self.last = self.frames;
                     }
-                    assert!(painted.iter().any(|(s, _)| s.starts_with("Native graph preserved")));
-                    self.capturing = true;
-                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
                 }
                 _ => {}
             }
@@ -138,20 +165,21 @@ impl eframe::App for Inspection {
         if self.capturing
             && let Some(image) = image
         {
-            assert_eq!(image.size, [1600, 1000]);
+            assert_eq!(image.size, self.size);
             assert_eq!(std::fs::read(&self.path).unwrap(), self.native);
+            assert_eq!(self.engine.document_status(), self.status);
             let rgba: Vec<_> = image.pixels.iter().flat_map(egui::Color32::to_array).collect();
             let rgb: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
-            for (name, header, bytes) in [
-                ("native.p7", b"P7\nWIDTH 1600\nHEIGHT 1000\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n".as_slice(), rgba.as_slice()),
-                ("native.p6", b"P6\n1600 1000\n255\n".as_slice(), rgb.as_slice()),
-            ] {
+            let pam_header = format!("P7\nWIDTH {}\nHEIGHT {}\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", self.size[0], self.size[1]);
+            let ppm_header = format!("P6\n{} {}\n255\n", self.size[0], self.size[1]);
+            for (name, header, bytes) in [("native.p7", pam_header.as_bytes(), rgba.as_slice()), ("native.p6", ppm_header.as_bytes(), rgb.as_slice())]
+            {
                 let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(self.output.join(name)).unwrap();
                 file.write_all(header).unwrap();
                 file.write_all(bytes).unwrap();
                 file.sync_all().unwrap();
             }
-            let report = serde_json::json!({"passed":true,"route":"production ViamindApp pointer selection, actual visible toolbar click, local drag and native WGPU Screenshot event","pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"frames":self.frames,"local_injected_events":self.events,"sidebar_wheel_events":self.wheel_events,"full_session_unchanged":true,"native_path_and_bytes_unchanged":true,"source_cursor":self.before.cursor,"preview":self.app.schematic_drag.report(),"visible_labels":painted.iter().map(|(s,_)|s).collect::<Vec<_>>(),"width":1600,"height":1000,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"channels":"original Color32 RGBA and identical RGB; no unpremultiplication or flattening","host_only_preparation":"The host hides/reopens the connected-move window around canvas dragging; viewport is fixed. No model changes or OS input.","claims_excluded":["OS input","ERC/DRC certification","frame cadence"]});
+            let report = serde_json::json!({"passed":true,"route":"production ViamindApp pointer selection, actual visible toolbar click, local drag and native WGPU Screenshot event","pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"frames":self.frames,"local_injected_events":self.events,"sidebar_wheel_events":self.wheel_events,"window_wheel_events":self.window_wheel_events,"full_session_unchanged":true,"complete_document_status_unchanged":true,"document_status":self.status,"native_path_and_bytes_unchanged":true,"source_cursor":self.before.cursor,"preview":self.app.schematic_drag.report(),"visible_labels":painted.iter().map(|(s,_)|s).collect::<Vec<_>>(),"effective_clip_seen_controls":self.seen_controls,"width":self.size[0],"height":self.size[1],"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"channels":"original Color32 RGBA and identical RGB; no unpremultiplication or flattening","host_only_preparation":"The host hides/reopens the connected-move window around canvas dragging; viewport is fixed. Fields are verified as reachable across actual scrolling, with all completion buttons and result visible at capture. No model changes or OS input.","claims_excluded":["OS input","ERC/DRC certification","frame cadence"]});
             let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(self.output.join("native-report.json")).unwrap();
             serde_json::to_writer_pretty(&mut file, &report).unwrap();
             file.sync_all().unwrap();
@@ -169,21 +197,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let path = PathBuf::from(args.next().ok_or("existing native required")?);
     let output = PathBuf::from(args.next().ok_or("NEW output directory required")?);
+    let size = match args.next() {
+        None => [1600, 1000],
+        Some(flag) if flag == "--compact" => [640, 400],
+        _ => return Err("only native, NEW output directory and optional --compact accepted".into()),
+    };
     if args.next().is_some() {
-        return Err("only native and NEW output directory accepted".into());
+        return Err("unexpected inspection argument".into());
     }
     std::fs::create_dir(&output)?;
     let engine = viamind_engine::EngineHandle::load(&path)?;
     let path = engine.document_status().path.ok_or("native path")?;
     let native = std::fs::read(&path)?;
     let before = engine.session_state();
+    let status = engine.document_status();
+    let viewport_size = [size[0] as f32, size[1] as f32];
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_title("Viamind connected symbol move inspection")
             .with_app_id("viamind-connected-move-inspection")
-            .with_inner_size([1600., 1000.])
-            .with_min_inner_size([1600., 1000.])
-            .with_max_inner_size([1600., 1000.])
+            .with_inner_size(viewport_size)
+            .with_min_inner_size(viewport_size)
+            .with_max_inner_size(viewport_size)
             .with_resizable(false),
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
@@ -199,6 +234,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 app,
                 engine,
                 before,
+                status,
                 native,
                 path,
                 output,
@@ -210,6 +246,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 queued: vec![],
                 capturing: false,
                 finished: false,
+                size,
+                seen_controls: Default::default(),
+                window_wheel_events: 0,
             }))
         }),
     )
