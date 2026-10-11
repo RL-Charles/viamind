@@ -14,6 +14,8 @@ name = "viamind-mcp"
 path = "src/bin/viamind-mcp.rs"
 
 [dependencies]
+viamind-doc.workspace = true
+base64.workspace = true
 viamind-drc.workspace = true
 viamind-engine.workspace = true
 viamind-fab.workspace = true
@@ -21,7 +23,7 @@ viamind-render.workspace = true
 schemars.workspace = true
 serde.workspace = true
 rmcp = { workspace = true, features = ["server", "transport-io", "transport-streamable-http-server"] }
-tokio = { workspace = true, features = ["rt-multi-thread", "macros", "io-std", "net"] }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "io-std", "net", "sync"] }
 axum.workspace = true
 tokio-util.workspace = true
 serde_json.workspace = true
@@ -32,4 +34,3 @@ thiserror.workspace = true
 tempfile.workspace = true
 tokio = { workspace = true, features = ["process", "io-util", "time"] }
 rmcp = { workspace = true, features = ["client", "transport-streamable-http-client-reqwest"] }
-viamind-doc.workspace = true

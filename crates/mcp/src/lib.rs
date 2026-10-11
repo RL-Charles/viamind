@@ -36,4 +36,5 @@ open, use `query_parts` for filtered, paginated part records or `get_design` for
 `redo` to step through your own changes (changes made by the human or other agents are not \
 affected).";
 
+pub mod png_views;
 pub mod views;

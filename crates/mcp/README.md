@@ -450,9 +450,22 @@ be a NEW file and cannot replace the active native project.
 Explicit SMD pads, straight tracks, through vias and polygon cutouts are rendered
 in model X-right/Y-down coordinates, viewed from above without whole-bottom-side
 mirroring. Physical drill holes stay transparent. Legacy previews are omitted
-and counted; schematics, inner copper, pours and product PNG output are excluded.
+and counted; schematics, inner copper and pours are excluded.
 Rendering preserves the shared document, selection, history and native dirty
 state. See [the view guide](../../docs/board-views.md) for limits and examples.
+
+### PNG image snapshots
+
+`render_board_png` accepts the same `options`, `path` and `expected_cursor` as
+`render_board_view`. It returns one MCP image content block (`type: image`,
+`mimeType: image/png`, base64 `data`) and compact structured metadata with
+`media_type`, `metadata`, `source_cursor`, `path`; image bytes are not duplicated
+in structured/text output. PNG is static transparent RGBA8, at most 4194304
+pixels and 8 MiB. Two concurrent jobs are allowed per registry, with snapshot
+guards evaluated after waiting. Far-origin crops are translated internally before
+raster parsing, preserving absolute response regions; extreme zooms beyond the
+conservative precision budget fail explicitly. File publication, immutable state,
+layer support and exclusions match SVG.
 
 ## Exact native schematic connectivity
 

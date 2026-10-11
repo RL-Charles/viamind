@@ -68,6 +68,7 @@ pub struct ToolDef {
 struct Entry {
     def: ToolDef,
     handler: ToolHandler,
+    png_output: bool,
 }
 
 /// Set of tools served by the MCP server, ordered by name.
@@ -139,8 +140,24 @@ impl ToolRegistry {
         if self.tools.contains_key(&def.name) {
             return Err(RegistryError::Duplicate(def.name));
         }
-        self.tools.insert(def.name.clone(), Entry { def, handler });
+        self.tools.insert(def.name.clone(), Entry { def, handler, png_output: false });
         Ok(())
+    }
+
+    /// Register a trusted PNG handler. Its `png_base64` field becomes an MCP image
+    /// block and is omitted from the structured/text metadata on the wire.
+    pub fn register_png<F, Fut>(&mut self, name: &str, description: &str, schema: Value, handler: F) -> Result<(), RegistryError>
+    where
+        F: Fn(Value) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
+    {
+        self.register(name, description, schema, handler)?;
+        self.tools.get_mut(name).expect("just registered").png_output = true;
+        Ok(())
+    }
+
+    pub(crate) fn png_output(&self, name: &str) -> bool {
+        self.tools.get(name).is_some_and(|entry| entry.png_output)
     }
 
     /// Definition of the tool called `name`.
@@ -183,6 +200,18 @@ mod tests {
 
     fn object_schema() -> Value {
         json!({ "type": "object" })
+    }
+
+    #[test]
+    fn only_explicit_trusted_registration_selects_image_output() {
+        let mut registry = ToolRegistry::new();
+        registry.register("ordinary", "plain", object_schema(), |_| async { Ok(json!({"png_base64":"AA=="})) }).unwrap();
+        registry.register_png("picture", "image", object_schema(), |_| async { Ok(json!({"png_base64":"AA=="})) }).unwrap();
+        assert!(!registry.png_output("ordinary"));
+        assert!(registry.clone().png_output("picture"));
+        assert!(!registry.png_output("unknown"));
+        assert!(registry.register_png("ordinary", "duplicate", object_schema(), |_| async { Ok(Value::Null) }).is_err());
+        assert!(!registry.png_output("ordinary"));
     }
 
     #[tokio::test]

@@ -38,6 +38,9 @@ too_many_arguments = "allow"
 type_complexity = "allow"
 
 [workspace.dependencies]
+resvg = { version = "=0.48.1", default-features = false }
+base64 = "0.22"
+png = "0.18"
 quick-xml = "0.41"
 viamind-geom = { path = "crates/geom" }
 viamind-doc = { path = "crates/doc" }

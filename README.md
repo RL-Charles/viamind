@@ -186,7 +186,7 @@ This is a scoped geometry export, not fabrication certification. See
 [the specification](docs/specs/fabrication-gerber.md) and the independent reader
 check in [scripts/verify-fabrication.py](scripts/verify-fabrication.py).
 
-## Board inspection SVG
+## Board inspection SVG and PNG
 
 ```sh
 viamind --export-svg --open board.viamind.json --output new-board.svg --view-layers top_copper,outline
@@ -196,7 +196,9 @@ MCP `render_board_view` returns the same bounded, immutable SVG snapshot with it
 source cursor, selected layers and region metadata. Explicit pads, round-cap
 tracks, drilled through vias and polygon cutouts retain model X-right/Y-down
 top-view geometry. Existing output paths are preserved. Legacy previews and
-unsupported geometry are reported; PNG views remain subsequent work. See
+unsupported geometry are reported. `--export-png` uses the same view options for
+transparent RGBA PNG; MCP `render_board_png` returns actual image content with
+source metadata. PNG is bounded to 4194304 pixels and 8 MiB. See
 [board view instructions](docs/board-views.md) for cropping, viewport options,
 agent requests and independent SVG verification.
 
