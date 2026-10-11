@@ -108,11 +108,11 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     }
     validate_pads(&project)?;
     validate_copper(&project)?;
+    check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
     crate::schematic::validate_project(&project, None).map_err(FileError::Schematic)?;
     if envelope.version < minimum_version(&project) {
         return Err(FileError::FeatureVersion(minimum_version(&project)));
     }
-    check_keys("sheet", &project.schematic.sheets, |sheet| sheet.id)?;
     check_keys("part", &project.board.parts, |part| part.id)?;
     Ok(project)
 }
