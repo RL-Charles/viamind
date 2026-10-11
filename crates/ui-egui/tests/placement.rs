@@ -1,6 +1,9 @@
 //! Actual desktop pointer, keyboard and menu inputs drive one shared guarded placement command.
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use serde_json::json;
 use viamind_doc::{ObjectId, Project, Side};
 use viamind_engine::{EngineHandle, Origin, SelectionMode, SetSelection};
@@ -147,4 +150,19 @@ fn actual_arrange_menu_aligns_and_distributes_selected_origins() {
     h.state_mut().undo_design();
     h.run_steps(3);
     assert_eq!(e.read(|p| p.board.part(&ids[1]).unwrap().position.x.0), 30000000);
+}
+
+#[test]
+fn copper_modal_cancels_active_preview_and_blocks_canvas_and_menu_transforms() {
+    let (e, _, mut h) = setup();
+    let before = e.session_state();
+    let end = begin_drag(&mut h);
+    h.state_mut().begin_copper();
+    h.run_steps(3);
+    assert!(!h.state().selection.placement.moving());
+    button(&mut h, end, false);
+    key(&mut h, Key::R);
+    key(&mut h, Key::F);
+    assert_eq!(e.session_state(), before);
+    assert!(h.get_by_label("Edit").accesskit_node().is_disabled(), "copper modal blocks placement menu access");
 }

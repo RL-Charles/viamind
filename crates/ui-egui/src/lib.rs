@@ -274,7 +274,8 @@ impl ViamindApp {
             let response = self.canvas.show(ui, &self.scene, &self.layers);
             if let Some(design) = &self.design {
                 self.selection.sync(&design.engine, &self.layers);
-                let placement_enabled = !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing();
+                let placement_enabled =
+                    !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
             }
             self.paint_labels(ui);
@@ -377,7 +378,7 @@ impl ViamindApp {
                         self.selection.placement_menu(
                             ui,
                             &design.engine,
-                            !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing(),
+                            !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing(),
                         );
                     }
                     ui.separator();
