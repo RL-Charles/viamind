@@ -6,6 +6,7 @@ use viamind_doc::{CopperLayer, ObjectId};
 
 struct Draft {
     project: ObjectId,
+    page: usize,
     via: bool,
     x: String,
     y: String,
@@ -38,6 +39,7 @@ impl ViamindApp {
         let Some(design) = &self.design else { return };
         self.copper.draft = Some(Draft {
             project: design.engine.read(|p| p.id),
+            page: 0,
             via: false,
             x: "10".into(),
             y: "10".into(),
@@ -54,8 +56,16 @@ impl ViamindApp {
     pub(crate) fn copper_dialog(&mut self, ui: &mut Ui) {
         let Some(draft) = &mut self.copper.draft else { return };
         let Some(design) = &self.design else { return };
-        let (tracks, vias) =
-            design.engine.read(|p| (p.board.tracks.values().cloned().collect::<Vec<_>>(), p.board.vias.values().cloned().collect::<Vec<_>>()));
+        let (track_count, via_count, page, tracks, vias) = design.engine.read(|p| {
+            let track_count = p.board.tracks.len();
+            let via_count = p.board.vias.len();
+            let page = draft.page.min((track_count + via_count).saturating_sub(1) / 50);
+            let offset = page * 50;
+            let tracks: Vec<_> = p.board.tracks.values().skip(offset).take(50).cloned().collect();
+            let vias: Vec<_> = p.board.vias.values().skip(offset.saturating_sub(track_count)).take(50 - tracks.len()).cloned().collect();
+            (track_count, via_count, page, tracks, vias)
+        });
+        draft.page = page;
         let mut add = false;
         let mut close = false;
         let mut deletion: Option<(UiAction, Value)> = None;
@@ -94,7 +104,16 @@ impl ViamindApp {
                 close = ui.button("Close copper").clicked();
             });
             ui.separator();
-            ui.label(format!("Existing copper: {} tracks, {} through vias", tracks.len(), vias.len()));
+            ui.label(format!("Existing copper: {} tracks, {} through vias", track_count, via_count));
+            ui.horizontal(|ui| {
+                if ui.add_enabled(draft.page > 0, egui::Button::new("Previous copper page")).clicked() {
+                    draft.page -= 1;
+                }
+                ui.label(format!("Page {}", draft.page + 1));
+                if ui.add_enabled((draft.page + 1) * 50 < track_count + via_count, egui::Button::new("Next copper page")).clicked() {
+                    draft.page += 1;
+                }
+            });
             egui::ScrollArea::vertical().max_height(150.0).show(ui, |ui| {
                 for track in &tracks {
                     ui.horizontal(|ui| {
