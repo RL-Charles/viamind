@@ -285,7 +285,7 @@ Desktop fabrication snapshots: [retained export controls, complete source cursor
 PCB static cardinal walkaround: [checked pad-to-pad planning and conservative limits](docs/static-cardinal-walkaround.md).
 
 Reusable native schematic symbols: [detached symbol library files and guarded fresh placement](docs/native-symbol-libraries.md).
-Saved manufacturing settings: [desktop, CLI and MCP output jobs](docs/saved-output-jobs.md) create a coherent NEW release with generic assembly tables and supported outer-layer fabrication files.
+Saved manufacturing settings: [desktop, CLI and MCP output jobs](docs/saved-output-jobs.md) create a coherent NEW release with generic assembly tables and supported outer-layer fabrication files. An explicit [version 3 option](docs/saved-output-jobs.md#matched-populated-generic-bom-version-3) adds matched populated sourcing and calibrated placement companions.
 
 Explicit [component sourcing and population](docs/component-sourcing.md) is undoable
 and available in a generic sourcing BOM; existing assembly inventories remain unchanged.

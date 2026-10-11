@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/charlesmowbray/Development/viamind-t-0108/docs/verification/t0108-population-smoke.py", line 62, in <module>
+    check('independent CSV and UUID digest verify exact explicit sourcing and matched stable subset',matched_oracle(before['project'],first,result['manifest']['populated_assembly']))
+                                                                                                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/charlesmowbray/Development/viamind-t-0108/docs/verification/t0108-population-smoke.py", line 41, in matched_oracle
+    for column,field in [('Manufacturer','manufacturer'),('MPN','mpn'),('Supplier','supplier'),('Supplier SKU','supplier_sku')]:assert row[column]==part['assembly'].get(field,'')
+                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

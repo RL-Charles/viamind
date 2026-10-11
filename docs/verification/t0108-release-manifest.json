@@ -1,0 +1,41 @@
+{
+  "format": "viamind-output-release",
+  "version": 3,
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "exported_cursor": {
+    "stream_id": "82c49ab1-9ed2-4bf6-aeeb-89a0700e4e62",
+    "sequence": 0
+  },
+  "files": {
+    "assembly/bom.csv": 248,
+    "assembly/calibrated-placement.csv": 388,
+    "assembly/placement.csv": 321,
+    "assembly/populated-bom.csv": 407,
+    "fabrication/bottom-copper.gbr": 745,
+    "fabrication/bottom-mask.gbr": 513,
+    "fabrication/manifest.json": 929,
+    "fabrication/plated-through.xnc": 166,
+    "fabrication/profile.gbr": 734,
+    "fabrication/top-copper.gbr": 638,
+    "fabrication/top-mask.gbr": 439,
+    "job.json": 236
+  },
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+    "Generic bom.csv and placement.csv inventory all components at component origins. populated-bom.csv and calibrated-placement.csv contain the same explicitly populated all-mounting component subset; their stable identity digest is declared separately.",
+    "Sourcing identifiers are exact user-entered values and may be unavailable; no stock, procurement, inferred identifiers or vendor certification. The generic top-view marker does not establish universal vendor zero, polarity, tape orientation or manufacturer-specific mounting filters."
+  ],
+  "calibrated_placement": {
+    "file": "assembly/calibrated-placement.csv",
+    "component_count": 2,
+    "coordinate_convention": "global_x_right_y_up_ccw_common_top_view"
+  },
+  "populated_assembly": {
+    "bom_file": "assembly/populated-bom.csv",
+    "placement_file": "assembly/calibrated-placement.csv",
+    "component_count": 2,
+    "component_ids_sha256": "8b08ac1ca98bead3d02a7d357cb77d1154ad244e380bf906a2c0970faba5f1a7"
+  }
+}

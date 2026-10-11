@@ -1,0 +1,10 @@
+{
+  "binary_sha256": "3adbb92ff788b976a002c03ce1aa27a265ceafffd405b12a7e4c7511d05238e3",
+  "discovery_only": true,
+  "protocolVersion": "2025-03-26",
+  "sha256": {
+    "mcp-tools.json": "a4bdfc39796b2f9eb0adec6210f5674b72e2ba640aecad469dcb4bc0a4b36a6f",
+    "mcp-tools.md": "2c07d7f225988295f7a1f83ae37fc069a07fd40e975b68b6abdabdb34f858bbe"
+  },
+  "tool_count": 91
+}

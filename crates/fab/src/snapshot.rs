@@ -48,10 +48,10 @@ pub struct FabricationSnapshot {
 impl FabricationSnapshot {
     /// Validate allocation budgets before cloning. Busy admission never waits.
     pub fn capture(project: &Project) -> io::Result<Self> {
-        Self::capture_for_job(project, false)
+        Self::capture_for_job(project, false, false)
     }
     /// One permit covers all borrowed preflight and the single geometry copy.
-    pub(crate) fn capture_for_job(project: &Project, calibrated: bool) -> io::Result<Self> {
+    pub(crate) fn capture_for_job(project: &Project, calibrated: bool, populated_bom: bool) -> io::Result<Self> {
         let permit = Permit::acquire()?;
         let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
         let mut count =
@@ -95,6 +95,9 @@ impl FabricationSnapshot {
                 check(count)?;
             }
         }
+        if populated_bom {
+            crate::populated_bom::validate(&project.board.parts)?;
+        }
         if calibrated {
             crate::assembly_placement::validate(project.board.parts.values())?;
         }
@@ -103,10 +106,13 @@ impl FabricationSnapshot {
             for (id, part) in &mut board.parts {
                 part.assembly = project.board.parts[id].assembly.as_ref().map(|source| {
                     Box::new(viamind_doc::AssemblyMetadata {
+                        manufacturer: (populated_bom && source.populate).then(|| source.manufacturer.clone()).flatten(),
+                        mpn: (populated_bom && source.populate).then(|| source.mpn.clone()).flatten(),
+                        supplier: (populated_bom && source.populate).then(|| source.supplier.clone()).flatten(),
+                        supplier_sku: (populated_bom && source.populate).then(|| source.supplier_sku.clone()).flatten(),
                         populate: source.populate,
                         mounting: source.populate.then_some(source.mounting).flatten(),
                         placement: source.populate.then_some(source.placement).flatten(),
-                        ..Default::default()
                     })
                 });
             }

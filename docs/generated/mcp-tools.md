@@ -10228,7 +10228,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Version1 generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Explicit version2/include_calibrated_placement:true adds one populated-only generic calibrated centroid/marker companion (12/13 files), requiring explicit mounting/calibration; old generic inventories still contain all components. No universal vendor zero. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/sourcing strings. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+  "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Version1 generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Explicit version2/include_calibrated_placement:true adds one populated-only generic calibrated centroid/marker companion (12/13 files), requiring explicit mounting/calibration; old generic inventories still contain all components. Version3 additionally requires include_populated_bom:true and writes one generic per-component populated BOM matching the calibrated component subset (13/14 files); explicit optional sourcing only, missing identifiers stay blank. Reports bounded matched count/identity SHA256; existing file map is byte lengths. No universal vendor zero. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/inferred identifiers or procurement. Versions1/2 exclude sourcing strings. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
@@ -10379,8 +10379,17 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "oneOf": [
               {
                 "not": {
-                  "required": [
-                    "include_calibrated_placement"
+                  "anyOf": [
+                    {
+                      "required": [
+                        "include_calibrated_placement"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "include_populated_bom"
+                      ]
+                    }
                   ]
                 },
                 "properties": {
@@ -10390,6 +10399,11 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 }
               },
               {
+                "not": {
+                  "required": [
+                    "include_populated_bom"
+                  ]
+                },
                 "properties": {
                   "version": {
                     "const": 2
@@ -10397,6 +10411,17 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 },
                 "required": [
                   "include_calibrated_placement"
+                ]
+              },
+              {
+                "properties": {
+                  "version": {
+                    "const": 3
+                  }
+                },
+                "required": [
+                  "include_calibrated_placement",
+                  "include_populated_bom"
                 ]
               }
             ]
@@ -10483,6 +10508,9 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "include_calibrated_placement": {
             "const": true
           },
+          "include_populated_bom": {
+            "const": true
+          },
           "mask_expansion_mm": {
             "default": 0,
             "maximum": 10,
@@ -10503,7 +10531,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "version": {
             "enum": [
               1,
-              2
+              2,
+              3
             ]
           }
         },
