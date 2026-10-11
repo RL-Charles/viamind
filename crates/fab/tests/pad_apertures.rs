@@ -109,7 +109,7 @@ fn version5_companion_matrix_exact_release_files_and_null_summary_refuse() {
             let (path, manifest) =
                 snapshot.write(ReleaseCursor { stream_id: viamind_doc::ObjectId::new(), sequence: 7 }, &temp.path().join("new"), None).unwrap();
             assert_eq!(manifest.files.len() + 1, 13 + usize::from(silk) * 2 + usize::from(cal) + usize::from(pop));
-            assert!(inspect_output_release(&InspectOutputRelease { path: path.clone() }).is_ok());
+            inspect_output_release(&InspectOutputRelease { path: path.clone() }).unwrap_or_else(|e| panic!("silk={silk} cal={cal} pop={pop}: {e}"));
             let file = path.join("release-manifest.json");
             let mut raw: serde_json::Value = serde_json::from_slice(&fs::read(&file).unwrap()).unwrap();
             raw["pad_apertures"] = serde_json::Value::Null;
