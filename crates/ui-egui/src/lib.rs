@@ -141,10 +141,15 @@ impl Default for ViamindApp {
 }
 
 impl ViamindApp {
-    /// Use native persistent GPU tiles when eframe supplies a wgpu renderer.
+    /// Use native persistent GPU layers when the renderer supports vertex storage buffers.
     pub fn configure_renderer(&mut self, cc: &eframe::CreationContext<'_>) {
-        if let Some(render) = &cc.wgpu_render_state {
+        if let Some(render) = &cc.wgpu_render_state
+            && render.device.limits().max_storage_buffers_per_shader_stage > 0
+            && render.adapter.get_downlevel_capabilities().flags.contains(eframe::wgpu::DownlevelFlags::VERTEX_STORAGE)
+        {
             self.canvas.cache.enable_gpu(render.target_format);
+        } else {
+            self.canvas.cache.disable_gpu();
         }
     }
 
