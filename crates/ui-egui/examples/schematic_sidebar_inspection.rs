@@ -12,36 +12,23 @@ struct Inspect {
     labels: Vec<&'static str>,
     capture: Option<PathBuf>,
     ui_passes: usize,
+    stable_visible_passes: usize,
+    screenshot_requested: bool,
+    injected_wheel_events: usize,
 }
-fn control(shapes: &[egui::epaint::ClippedShape], label: &str, content: egui::Rect) -> (egui::Rect, egui::Rect) {
-    let text = shapes
-        .iter()
-        .find_map(|s| {
-            let egui::Shape::Text(text) = &s.shape else { return None };
-            (text.galley.job.text == label).then_some(text.visual_bounding_rect())
-        })
-        .unwrap_or_else(|| {
-            panic!(
-                "current-pass painted production label missing: {label}; current texts: {:?}; shape count {}",
-                shapes
-                    .iter()
-                    .filter_map(|s| if let egui::Shape::Text(t) = &s.shape { Some(t.galley.job.text.as_str()) } else { None })
-                    .collect::<Vec<_>>(),
-                shapes.len()
-            )
-        });
-    let (rect, clip) = shapes
-        .iter()
-        .filter_map(|s| {
-            let egui::Shape::Rect(r) = &s.shape else { return None };
-            (r.rect.contains_rect(text) && r.rect.width() <= text.width() + 24.0 && r.rect.height() <= text.height() + 24.0)
-                .then_some((r.rect, s.clip_rect.intersect(content)))
-        })
-        .min_by(|a, b| a.0.area().total_cmp(&b.0.area()))
-        .unwrap_or_else(|| panic!("current painted button missing: {label}"));
-    assert!(clip.contains_rect(rect), "current native button {label} {rect:?} clipped by {clip:?}");
-    (rect, clip)
+fn control(shapes: &[egui::epaint::ClippedShape], label: &str, content: egui::Rect) -> Option<(egui::Rect, egui::Rect)> {
+    let text = shapes.iter().find_map(|s| {
+        let egui::Shape::Text(text) = &s.shape else { return None };
+        (text.galley.job.text == label).then_some(text.visual_bounding_rect())
+    })?;
+    let (rect, clip) = shapes.iter().filter_map(|s| {
+        let egui::Shape::Rect(r) = &s.shape else { return None };
+        (r.rect.contains_rect(text) && r.rect.width() <= text.width() + 24.0 && r.rect.height() <= text.height() + 24.0)
+            .then_some((r.rect, s.clip_rect.intersect(content)))
+    }).min_by(|a,b| a.0.area().total_cmp(&b.0.area()))?;
+    clip.contains_rect(rect).then_some((rect,clip))
 }
+
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         assert_eq!(self.engine.session_state(), self.before);
@@ -57,8 +44,8 @@ impl eframe::App for Inspect {
         let shapes: Vec<_> = ui.ctx().graphics(|g| g.clone().drain(&[], &Default::default()));
         assert!(shapes.len() <= 32768);
         let content = ui.ctx().content_rect();
-        let controls: Vec<_> =
-            if self.ui_passes >= 3 { self.labels.iter().map(|label| (label, control(&shapes, label, content))).collect() } else { vec![] };
+        let controls: Vec<_> = self.labels.iter().filter_map(|label| control(&shapes, label, content).map(|bounds| (label,bounds))).collect();
+        if controls.len() == self.labels.len() { self.stable_visible_passes += 1; } else { self.stable_visible_passes = 0; }
         let image = ui.ctx().input(|i| {
             i.events.iter().find_map(|e| match e {
                 egui::Event::Screenshot { image, .. } => Some(image.clone()),
@@ -66,6 +53,8 @@ impl eframe::App for Inspect {
             })
         });
         if let Some(image) = image {
+            assert_eq!(controls.len(), self.labels.len(), "every requested native control must still be fully visible at capture");
+            assert!(self.stable_visible_passes >= 8);
             assert!(image.pixels.len() <= 4_194_304);
             let path = self.capture.take().unwrap();
             let rgba_path = path.with_extension("p7");
@@ -81,12 +70,13 @@ impl eframe::App for Inspect {
             file.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"ui_passes":self.ui_passes,"os_input_claim":false,"path":path,"rgba_path":rgba_path,"pixels":image.size,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"current_pass_controls":controls.iter().map(|(label,(r,c))|serde_json::json!({"label":label,"rect":[r.min.x,r.min.y,r.max.x,r.max.y],"effective_clip":[c.min.x,c.min.y,c.max.x,c.max.y]})).collect::<Vec<_>>()})
+                serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"ui_passes":self.ui_passes,"os_input_claim":false,"preparation":"egui test preparation plus native raw_input_hook wheel events; no OS input","injected_wheel_events":self.injected_wheel_events,"path":path,"rgba_path":rgba_path,"pixels":image.size,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"current_pass_controls":controls.iter().map(|(label,(r,c))|serde_json::json!({"label":label,"rect":[r.min.x,r.min.y,r.max.x,r.max.y],"effective_clip":[c.min.x,c.min.y,c.max.x,c.max.y]})).collect::<Vec<_>>()})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         } else {
-            if self.ui_passes == 8 {
+            if self.stable_visible_passes >= 8 && !self.screenshot_requested {
+                self.screenshot_requested = true;
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
             }
             assert!(self.ui_passes < 180);
@@ -96,6 +86,11 @@ impl eframe::App for Inspect {
     fn raw_input_hook(&mut self, _: &egui::Context, raw: &mut egui::RawInput) {
         raw.focused = true;
         raw.events.retain(|e| !matches!(e, egui::Event::WindowFocused(false)));
+        if self.capture.is_some() && self.stable_visible_passes == 0 && self.ui_passes.is_multiple_of(4) {
+            raw.events.push(egui::Event::PointerMoved(egui::pos2(100.0,120.0)));
+            raw.events.push(egui::Event::MouseWheel { unit:egui::MouseWheelUnit::Point, delta:egui::vec2(0.0,-80.0), phase:egui::TouchPhase::Move, modifiers:egui::Modifiers::NONE });
+            self.injected_wheel_events += 1;
+        }
     }
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -150,7 +145,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before, status, labels, capture: Some(path), ui_passes: 0 }))
+            Ok(Box::new(Inspect { app, engine, before, status, labels, capture: Some(path), ui_passes: 0, stable_visible_passes: 0, screenshot_requested: false, injected_wheel_events: 0 }))
         }),
     )
     .map_err(|e| e.to_string())?;
