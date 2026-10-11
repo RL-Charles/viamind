@@ -58,6 +58,7 @@ ui_actions! {
     RenderBoardPng => ("render_board_png", input_schema::<viamind_render::BoardViewRequest<EventCursor>>(), render_board_png),
     RenderSchematicSvg => ("render_schematic_view", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_svg),
     RenderSchematicPng => ("render_schematic_png", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_png),
+    ExportAssemblyCsv => ("export_assembly_csv", viamind_fab::assembly_schema(), export_assembly_csv),
     ExportFabrication => ("export_fabrication", viamind_fab::fabrication_schema(), export_fabrication),
     ConfigureAutoDrc => ("configure_auto_drc", input_schema::<viamind_engine::AutoDrcConfig>(), configure_auto_drc),
     GetAutoDrcStatus => ("get_auto_drc_status", no_args(), get_auto_drc_status),
@@ -279,4 +280,8 @@ fn snapshot_schematic_wire_sheet(engine: &EngineHandle, input: Value) -> Result<
 
 fn route_pad_posture(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePadPosture::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn export_assembly_csv(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    crate::assembly_export::export(engine, input)
 }

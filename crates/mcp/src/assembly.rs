@@ -1,43 +1,17 @@
 //! Snapshot-based manufacturing file export tools shared by HTTP and headless MCP.
-use std::path::PathBuf;
-
-use serde::Deserialize;
 use serde_json::json;
 use viamind_engine::{EngineHandle, EventCursor};
-use viamind_fab::AssemblyCsv;
 
 use crate::{RegistryError, ToolError, ToolRegistry};
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Export {
-    kind: AssemblyCsv,
-    path: PathBuf,
-    #[serde(default)]
-    overwrite: bool,
-    #[serde(default)]
-    expected_cursor: Option<EventCursor>,
-}
+type Export = viamind_fab::AssemblyExportRequest<EventCursor>;
 
 /// Add read-only design export. Publication uses explicit overwrite permission.
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
     registry.register(
         "export_assembly_csv",
         "Export generic Viamind BOM or placement CSV to a local path. Placement uses component origins in global mm, positive Y down, CCW degrees viewed from top; bottom keeps the stored transform. Not a manufacturer preset. Refuses existing files unless overwrite=true and always protects the active native file. Optional expected_cursor guards the exported snapshot; returns exported_cursor. Bounded to100000 components,4096 bytes/string,2 MiB aggregate text and32 MiB output. Shared two-snapshot process admission rejects busy requests. Does not change design/history/dirty state.",
-        json!({
-            "type": "object", "additionalProperties": false,
-            "required": ["kind", "path"],
-            "properties": {
-                "kind": {"type": "string", "enum": ["bom", "placement"]},
-                "path": {"type": "string", "minLength": 1},
-                "overwrite": {"type": "boolean", "default": false},
-                "expected_cursor": {"type": ["object", "null"], "additionalProperties": false,
-                    "required": ["stream_id", "sequence"], "properties": {
-                        "stream_id": {"type": "string", "format": "uuid"},
-                        "sequence": {"type": "integer", "minimum": 0}
-                    }}
-            }
-        }),
+        viamind_fab::assembly_schema(),
         move |input| {
             let engine = engine.clone();
             async move {

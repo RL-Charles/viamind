@@ -17,6 +17,35 @@ pub enum AssemblyCsv {
     Placement,
 }
 
+/// Shared desktop/MCP request; the caller supplies its source cursor type.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields, bound(deserialize = "C: Deserialize<'de>"))]
+pub struct AssemblyExportRequest<C> {
+    pub kind: AssemblyCsv,
+    pub path: PathBuf,
+    #[serde(default)]
+    pub overwrite: bool,
+    #[serde(default)]
+    pub expected_cursor: Option<C>,
+}
+/// Unchanged generic assembly request schema, shared by desktop and MCP.
+pub fn assembly_schema() -> serde_json::Value {
+    serde_json::json!({
+        "type": "object", "additionalProperties": false,
+        "required": ["kind", "path"],
+        "properties": {
+            "kind": {"type": "string", "enum": ["bom", "placement"]},
+            "path": {"type": "string", "minLength": 1},
+            "overwrite": {"type": "boolean", "default": false},
+            "expected_cursor": {"type": ["object", "null"], "additionalProperties": false,
+                "required": ["stream_id", "sequence"], "properties": {
+                    "stream_id": {"type": "string", "format": "uuid"},
+                    "sequence": {"type": "integer", "minimum": 0}
+                }}
+        }
+    })
+}
+
 /// Immutable component headers; unrelated pads, copper and schematic data are never copied.
 pub struct AssemblySnapshot {
     parts: Vec<Part>,
