@@ -95,9 +95,53 @@ def inspect(native, svg):
             'renderer': subprocess.check_output(['rsvg-convert', '--version'], text=True).strip()}
 
 
+def inspect_variants(binary, native, directory):
+    checks = []
+    for layer, count in [('top_copper', 1), ('bottom_copper', 2)]:
+        path = directory / (layer + '.svg')
+        subprocess.run([str(binary), '--export-svg', '--open', str(native),
+                        '--output', str(path), '--view-layers', layer,
+                        '--view-bounds', '0,0,60,40', '--view-size', '1200,800'], check=True)
+        root = ET.parse(path).getroot()
+        assert sum(e.attrib.get('id', '').startswith('pad-') for e in root.iter()) == count
+        assert sum(e.attrib.get('id', '').startswith('track-') for e in root.iter()) == 1
+        png = path.with_suffix('.png')
+        subprocess.run(['rsvg-convert', '--output', str(png), str(path)], check=True)
+        image = Image.open(png).convert('RGBA')
+        # Interior points on the distinct straight top/bottom tracks.
+        top = image.getpixel((200, 191))[3]
+        bottom = image.getpixel((700, 260))[3]
+        assert (top > 200 and bottom == 0) if layer == 'top_copper' else (top == 0 and bottom > 200)
+        if layer == 'top_copper':
+            assert image.getpixel((98, 160))[3] > 200  # round cap before start
+            assert image.getpixel((96, 160))[3] == 0   # beyond radius
+        checks.append(layer + ' independently rendered isolation and track geometry')
+    path = directory / 'crop.svg'
+    subprocess.run([str(binary), '--export-svg', '--open', str(native),
+                    '--output', str(path), '--view-layers', 'top_copper',
+                    '--view-bounds', '17,11,19,13', '--view-size', '400,400'], check=True)
+    root = ET.parse(path).getroot()
+    assert list(map(float, root.attrib['viewBox'].split())) == [17, 11, 2, 2]
+    png = path.with_suffix('.png')
+    subprocess.run(['rsvg-convert', '--output', str(png), str(path)], check=True)
+    image = Image.open(png).convert('RGBA')
+    assert image.size == (400, 400)
+    assert image.getpixel((200, 200))[3] == 0  # physical hole retains cropped position
+    assert image.getpixel((250, 200))[3] > 200  # annulus
+    assert image.getpixel((0, 0))[3] == 0
+    checks.append('explicit cropped region maps actual via geometry without auto padding')
+    return checks
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('native', type=Path)
     parser.add_argument('svg', type=Path)
+    parser.add_argument('--binary', type=Path, help='also export and render filtered/cropped variants in a fresh temporary directory')
     args = parser.parse_args()
-    print(json.dumps(inspect(args.native, args.svg), indent=2))
+    report = inspect(args.native, args.svg)
+    if args.binary:
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix='viamind-svg-reader-') as directory:
+            report['checks'].extend(inspect_variants(args.binary, args.native, Path(directory)))
+    print(json.dumps(report, indent=2))

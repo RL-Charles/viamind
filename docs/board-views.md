@@ -70,7 +70,7 @@ With librsvg (`rsvg-convert`, tested 2.62.3) and Python Pillow installed:
 ```sh
 viamind --export-svg --open fixtures/views/asymmetric.viamind.json \
   --output /tmp/board-view.svg --view-bounds 0,0,60,40 --view-size 1200,800
-python scripts/verify-board-view.py fixtures/views/asymmetric.viamind.json /tmp/board-view.svg
+python scripts/verify-board-view.py fixtures/views/asymmetric.viamind.json /tmp/board-view.svg --binary /absolute/path/to/viamind
 ```
 
 The script parses XML independently, compares oriented asymmetric pad corners,

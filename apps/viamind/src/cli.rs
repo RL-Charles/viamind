@@ -96,7 +96,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                                 "outline" => Ok(viamind_render::ViewLayer::Outline),
                                 _ => Err("unknown SVG layer".to_string()),
                             })
-                            .collect::<Result<_, _>>()?
+                            .collect::<Result<_, _>>()?;
                     }
                     "--view-bounds" => {
                         let v = value.split(',').map(view_nm).collect::<Result<Vec<_>, _>>()?;
