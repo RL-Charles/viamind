@@ -1,7 +1,7 @@
 use egui::vec2;
 use egui_kittest::{
     Harness,
-    kittest::{NodeT, Queryable},
+    kittest::Queryable,
 };
 use serde_json::json;
 use viamind_doc::Project;

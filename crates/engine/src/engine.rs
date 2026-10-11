@@ -254,7 +254,9 @@ impl Engine {
             }
         };
         let deltas = coalesce(tx.deltas);
-        if !deltas.is_empty() && let Err(error) = self.validate_hooks(&deltas, &origin, label, ChangeKind::Applied) {
+        if !deltas.is_empty()
+            && let Err(error) = self.validate_hooks(&deltas, &origin, label, ChangeKind::Applied)
+        {
             apply_all(&mut self.project, &invert(&deltas));
             return Err(error);
         }

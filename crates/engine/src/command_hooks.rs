@@ -602,8 +602,8 @@ mod contract_tests {
             "inventory".into(),
             Arc::new(move |c| {
                 assert!(captured.query_parts(&Default::default()).is_err());
-                assert!(captured.query_nets(&crate::NetQuery{after:None,limit:100}).is_err());
-                assert!(captured.query_connectivity(&crate::ConnectivityQuery{net:"A".into(),offset:0,limit:100}).is_err());
+                assert!(captured.query_nets(&crate::NetQuery { after: None, limit: 100 }).is_err());
+                assert!(captured.query_connectivity(&crate::ConnectivityQuery { net: "A".into(), offset: 0, limit: 100 }).is_err());
                 assert!(captured.save_project(Default::default()).is_err());
                 assert!(captured.new_project(crate::NewProject { name: "blocked".into(), ..Default::default() }, Origin::User).is_err());
                 assert!(captured.configure_auto_drc(Default::default()).is_err());
@@ -620,8 +620,8 @@ mod contract_tests {
                 assert!(policy.set_mode(AgentMode::Approval).is_err());
                 assert!(policy.admit(AgentEffect::LiveWriter).is_err());
                 assert!(policy.admit(AgentEffect::Observation).is_err());
-                assert!(catch_unwind(AssertUnwindSafe(||policy.status())).is_err());
-                assert!(catch_unwind(AssertUnwindSafe(||policy.subscribe())).is_err());
+                assert!(catch_unwind(AssertUnwindSafe(|| policy.status())).is_err());
+                assert!(catch_unwind(AssertUnwindSafe(|| policy.subscribe())).is_err());
                 assert!(
                     captured
                         .create_pcb_branch(
