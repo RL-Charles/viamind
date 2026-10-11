@@ -264,9 +264,10 @@ impl ViamindApp {
             ui.add_enabled_ui(!state.busy(), |ui| {
                 ui.horizontal(|ui| { ui.selectable_value(&mut state.target, Target::Board, "Board view"); ui.selectable_value(&mut state.target, Target::Schematic, "Schematic sheet"); });
                 if state.target == Target::Schematic {
+                    let label = ui.label("Schematic sheet to export");
                     egui::ComboBox::from_id_salt("view_export_sheet").selected_text(state.sheet.map_or("Choose a sheet".into(), |id| sheets.iter().find(|(key, _)| *key == id).map_or_else(|| format!("Missing sheet {id}"), |(_, name)| name.clone()))).show_ui(ui, |ui| {
                         for (id, name) in &sheets { ui.selectable_value(&mut state.sheet, Some(*id), format!("{name} ({id})")); }
-                    });
+                    }).response.labelled_by(label.id);
                     if more { ui.label("Chooser shows the first 128 sheets; use MCP or CLI for other sheet IDs."); }
                     ui.label("Selected sheet only: symbol bodies, pin stems, wires, junctions and scoped labels. Bundled outlined text; no hierarchy or electrical certification.");
                 } else { ui.label("Explicit outer copper pads, tracks, through vias and polygon outline/cutouts. Legacy previews omitted; no inner copper, pours or fabrication certification."); }

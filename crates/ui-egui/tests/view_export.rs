@@ -55,7 +55,7 @@ fn actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_withou
             input(&mut h, "New output file", directory.path().join("no-sheet.svg").to_str().unwrap());
             click(&mut h, "Export snapshot to NEW file");
             assert!(h.query_by_label("Select the schematic sheet to export.").is_some());
-            click(&mut h, "Choose a sheet");
+            click(&mut h, "Schematic sheet to export");
             let label = e.read(|p| {
                 let s = p.schematic.sheets.values().next().unwrap();
                 format!("{} ({})", s.name, s.id)
