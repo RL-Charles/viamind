@@ -16,6 +16,58 @@ const MAX_METADATA: usize = 1024 * 1024;
 const MAX_PASSES: usize = 1800;
 const MAX_LAYERS: usize = 64;
 const MAX_REGIONS: usize = 2;
+const MAX_INPUT_EVENTS: usize = 100_000;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum IoMode {
+    Immediate,
+    Deferred,
+}
+
+#[derive(Debug, Default, Serialize)]
+struct NavigationInput {
+    pointer_motion: usize,
+    pointer_button: usize,
+    wheel: usize,
+    zoom: usize,
+    home: usize,
+    space: usize,
+    smooth_scroll: [f32; 2],
+    zoom_delta: f32,
+    pointer_delta: [f32; 2],
+    home_held: bool,
+    space_held: bool,
+    middle_held: bool,
+}
+fn input_count(ctx: &Context) -> Result<(), String> {
+    if ctx.input(|i| i.events.len()) > MAX_INPUT_EVENTS { Err("diagnostic input event count exceeded".into()) } else { Ok(()) }
+}
+fn navigation_input(ctx: &Context) -> Result<NavigationInput, String> {
+    input_count(ctx)?;
+    Ok(ctx.input(|i| {
+        let mut result = NavigationInput {
+            smooth_scroll: i.smooth_scroll_delta.to_array(),
+            zoom_delta: i.zoom_delta(),
+            pointer_delta: i.pointer.delta().to_array(),
+            home_held: i.key_down(egui::Key::Home),
+            space_held: i.key_down(egui::Key::Space),
+            middle_held: i.pointer.button_down(egui::PointerButton::Middle),
+            ..Default::default()
+        };
+        for event in &i.events {
+            match event {
+                Event::PointerMoved(_) => result.pointer_motion += 1,
+                Event::PointerButton { .. } => result.pointer_button += 1,
+                Event::MouseWheel { .. } => result.wheel += 1,
+                Event::Zoom(_) => result.zoom += 1,
+                Event::Key { key: egui::Key::Home, .. } => result.home += 1,
+                Event::Key { key: egui::Key::Space, .. } => result.space += 1,
+                _ => {}
+            }
+        }
+        result
+    }))
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub struct Token {
@@ -95,6 +147,8 @@ struct Draw {
     state: State,
     drawn: usize,
     cache: [usize; 6],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    navigation_input: Option<NavigationInput>,
 }
 #[derive(Serialize)]
 struct Pending {
@@ -153,6 +207,8 @@ pub struct Trace {
     requests: usize,
     raw_bytes: usize,
     metadata: MetadataBudget,
+    io_mode: IoMode,
+    deferred_images: Vec<Option<std::sync::Arc<ColorImage>>>,
     finished: bool,
 }
 
@@ -179,13 +235,28 @@ pub fn screenshot(events: &[Event]) -> Result<Option<(std::sync::Arc<ColorImage>
 
 impl Trace {
     pub fn new(directory: PathBuf) -> Result<Self, String> {
+        Self::with_mode(directory, IoMode::Immediate)
+    }
+
+    pub fn deferred(directory: PathBuf) -> Result<Self, String> {
+        Self::with_mode(directory, IoMode::Deferred)
+    }
+
+    fn with_mode(directory: PathBuf, io_mode: IoMode) -> Result<Self, String> {
         if directory.as_os_str().len() > 4096 {
             return Err("diagnostic output path exceeds 4096 bytes".into());
         }
         let mut metadata = MetadataBudget::default();
         // Preallocate bounded, lean typed slots once. No retained JSON trees or report clones.
         // Fixed allowance covers one I/O buffer, bounded paths/tokens and an 8KiB failure report.
-        metadata.reserve(MAX_PASSES * size_of::<Draw>() + 10 * size_of::<ImageReceipt>() + size_of::<Pending>() + size_of::<State>() + 64 * 1024)?;
+        metadata.reserve(
+            MAX_PASSES * size_of::<Draw>()
+                + 10 * size_of::<ImageReceipt>()
+                + size_of::<Pending>()
+                + size_of::<State>()
+                + 64 * 1024
+                + if io_mode == IoMode::Deferred { 10 * size_of::<Option<std::sync::Arc<ColorImage>>>() } else { 0 },
+        )?;
         fs::create_dir(&directory).map_err(|e| format!("diagnostic directory must be NEW: {e}"))?;
         Ok(Self {
             directory,
@@ -197,11 +268,16 @@ impl Trace {
             requests: 0,
             raw_bytes: 0,
             metadata,
+            io_mode,
+            deferred_images: Vec::with_capacity(if io_mode == IoMode::Deferred { 10 } else { 0 }),
             finished: false,
         })
     }
 
     pub fn check_budget(&mut self, ctx: &Context) -> Result<(), String> {
+        if self.io_mode == IoMode::Deferred {
+            input_count(ctx)?;
+        }
         let initial = *self.initial_frame.get_or_insert(ctx.cumulative_frame_nr());
         if ctx.cumulative_frame_nr().saturating_sub(initial) > 900 || self.started.elapsed() > Duration::from_secs(180) {
             return Err("diagnostic native frame/time budget exceeded".into());
@@ -214,6 +290,7 @@ impl Trace {
             return Err("diagnostic UI-pass receipt budget exceeded".into());
         }
         let state = State::capture(app, ctx, &mut self.metadata)?;
+        let navigation_input = if self.io_mode == IoMode::Deferred { Some(navigation_input(ctx)?) } else { None };
         let s = app.canvas.cache.stats;
         self.draws.push(Draw {
             step,
@@ -221,6 +298,7 @@ impl Trace {
             state,
             drawn: app.canvas.drawn,
             cache: [s.tiles, s.tiles_drawn, s.tiles_built, s.vertices, s.gpu_layers, s.gpu_draw_calls],
+            navigation_input,
         });
         Ok(())
     }
@@ -241,7 +319,7 @@ impl Trace {
         step: usize,
         viewport_id: ViewportId,
         user_data: &UserData,
-        image: &ColorImage,
+        image: &std::sync::Arc<ColorImage>,
         app: &ViamindApp,
         ctx: &Context,
     ) -> Result<(), String> {
@@ -260,17 +338,13 @@ impl Trace {
         let pair_state_matches_reference =
             step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.arrival_state == state && previous.dimensions == image.size);
         let pair_dimensions_match_reference = step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.dimensions == image.size);
-        let file_name = format!("image-{:02}.p7", self.images.len());
-        let file = OpenOptions::new().write(true).create_new(true).open(self.directory.join(&file_name)).map_err(|e| e.to_string())?;
-        let mut writer = BufWriter::new(file);
-        write!(writer, "P7\nWIDTH {}\nHEIGHT {}\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", image.size[0], image.size[1])
-            .map_err(|e| e.to_string())?;
-        for pixel in &image.pixels {
-            writer.write_all(&pixel.to_array()).map_err(|e| e.to_string())?;
+        if self.io_mode == IoMode::Deferred {
+            // No pixel copy and no image/JSON I/O until the sequence is terminal. The checked
+            // raw aggregate above admits this unique image before retaining its shared handle.
+            self.deferred_images.push(Some(std::sync::Arc::clone(image)));
+        } else {
+            write_image(&self.directory, self.images.len(), image)?;
         }
-        writer.flush().map_err(|e| e.to_string())?;
-        writer.get_ref().sync_all().map_err(|e| e.to_string())?;
-        drop(writer);
         self.raw_bytes += bytes;
         self.images.push(ImageReceipt {
             image: self.images.len(),
@@ -291,7 +365,9 @@ impl Trace {
             original_rgba_bytes: bytes,
         });
         let index = self.images.len() - 1;
-        write_json(&self.directory.join(format!("image-{index:02}.json")), &self.images[index], &mut self.metadata)?;
+        if self.io_mode == IoMode::Immediate {
+            write_json(&self.directory.join(format!("image-{index:02}.json")), &self.images[index], &mut self.metadata)?;
+        }
         if !valid_token {
             return Err("invalid diagnostic token provenance; raw image retained".into());
         }
@@ -307,11 +383,14 @@ impl Trace {
         if self.finished {
             return Ok(());
         }
+        self.finished = true;
+        let flush_error = self.flush_deferred().err();
+        let failure = flush_error.as_deref().or(failure);
         let valid = self.images.len() == 10
             && self.requests == 10
             && self.images.iter().all(|r| r.valid_token && r.state_matches_request && r.draw_states_match_request && r.pair_state_matches_reference);
         let report = Report {
-            mode: "initial_legacy_transition_trace",
+            mode: if self.io_mode == IoMode::Deferred { "deferred_io_legacy_transition_trace" } else { "initial_legacy_transition_trace" },
             elapsed_seconds: self.started.elapsed().as_secs_f64(),
             failure,
             requests: self.requests,
@@ -340,8 +419,35 @@ impl Trace {
             return Err(error);
         }
         self.finished = true;
-        if valid { Ok(()) } else { Err("legacy trace has invalid paired provenance; inspect retained receipts".into()) }
+        if let Some(error) = flush_error {
+            Err(error)
+        } else if valid {
+            Ok(())
+        } else {
+            Err("legacy trace has invalid paired provenance; inspect retained receipts".into())
+        }
     }
+
+    fn flush_deferred(&mut self) -> Result<(), String> {
+        for (index, slot) in self.deferred_images.iter_mut().enumerate() {
+            let Some(image) = slot.take() else { continue };
+            write_image(&self.directory, index, &image)?;
+            write_json(&self.directory.join(format!("image-{index:02}.json")), &self.images[index], &mut self.metadata)?;
+        }
+        Ok(())
+    }
+}
+
+fn write_image(directory: &std::path::Path, index: usize, image: &ColorImage) -> Result<(), String> {
+    let file = OpenOptions::new().write(true).create_new(true).open(directory.join(format!("image-{index:02}.p7"))).map_err(|e| e.to_string())?;
+    let mut writer = BufWriter::new(file);
+    write!(writer, "P7\nWIDTH {}\nHEIGHT {}\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n", image.size[0], image.size[1])
+        .map_err(|e| e.to_string())?;
+    for pixel in &image.pixels {
+        writer.write_all(&pixel.to_array()).map_err(|e| e.to_string())?;
+    }
+    writer.flush().map_err(|e| e.to_string())?;
+    writer.get_ref().sync_all().map_err(|e| e.to_string())
 }
 
 struct LimitedWriter<'a, W> {
@@ -460,11 +566,11 @@ mod tests {
             let app = ViamindApp::with_scene_size(1);
             trace.draw(0, &app, &ctx).unwrap();
             let token = trace.request(0, &app, &ctx).unwrap();
-            let reference = ColorImage::filled(reference_size, egui::Color32::WHITE);
+            let reference = Arc::new(ColorImage::filled(reference_size, egui::Color32::WHITE));
             trace.image(0, ViewportId::ROOT, &token, &reference, &app, &ctx).unwrap();
             trace.draw(1, &app, &ctx).unwrap();
             let token = trace.request(1, &app, &ctx).unwrap();
-            let gpu = ColorImage::filled(gpu_size, egui::Color32::WHITE);
+            let gpu = Arc::new(ColorImage::filled(gpu_size, egui::Color32::WHITE));
             let error = trace.image(1, ViewportId::ROOT, &token, &gpu, &app, &ctx).unwrap_err();
             assert!(error.contains("pair dimensions differ"));
             assert_eq!(trace.images.len(), 2);
@@ -476,5 +582,91 @@ mod tests {
             assert!(trace.finish(Some(&error)).is_err());
             assert!(directory.join("trace.json").is_file());
         }
+    }
+
+    #[test]
+    fn deferred_capture_retains_shared_pixels_without_files_until_finish_and_releases_them() {
+        let temporary = tempfile::tempdir().unwrap();
+        let directory = temporary.path().join("new");
+        let mut trace = Trace::deferred(directory.clone()).unwrap();
+        let ctx = Context::default();
+        let app = ViamindApp::with_scene_size(1);
+        let originals: Vec<_> =
+            (0..10).map(|n| Arc::new(ColorImage::filled([2, 1], egui::Color32::from_rgba_premultiplied(n, 20, 30, 255)))).collect();
+        for (step, image) in originals.iter().enumerate() {
+            trace.draw(step, &app, &ctx).unwrap();
+            let token = trace.request(step, &app, &ctx).unwrap();
+            trace.image(step, ViewportId::ROOT, &token, image, &app, &ctx).unwrap();
+            assert_eq!(Arc::strong_count(image), 2, "retention shares the original pixel allocation");
+            assert_eq!(fs::read_dir(&directory).unwrap().count(), 0, "no image or JSON I/O during sequence");
+        }
+        assert!(trace.image(10, ViewportId::ROOT, &UserData::default(), &originals[0], &app, &ctx).is_err());
+        assert_eq!(trace.deferred_images.len(), 10);
+        trace.finish(None).unwrap();
+        for (index, original) in originals.iter().enumerate() {
+            assert_eq!(Arc::strong_count(original), 1, "terminal flush releases diagnostic ownership");
+            let raw = fs::read(directory.join(format!("image-{index:02}.p7"))).unwrap();
+            let end = raw.windows(7).position(|w| w == b"ENDHDR\n").unwrap() + 7;
+            let expected: Vec<_> = original.pixels.iter().flat_map(|p| p.to_array()).collect();
+            assert_eq!(&raw[end..], expected);
+            assert!(directory.join(format!("image-{index:02}.json")).is_file());
+        }
+        assert!(directory.join("trace.json").is_file());
+    }
+
+    #[test]
+    fn deferred_abort_flushes_prior_pixels_and_raw_budget_refuses_before_retention() {
+        let temporary = tempfile::tempdir().unwrap();
+        let directory = temporary.path().join("new");
+        let mut trace = Trace::deferred(directory.clone()).unwrap();
+        let ctx = Context::default();
+        let app = ViamindApp::with_scene_size(1);
+        let image = Arc::new(ColorImage::filled([2, 1], egui::Color32::WHITE));
+        trace.draw(0, &app, &ctx).unwrap();
+        let token = trace.request(0, &app, &ctx).unwrap();
+        trace.image(0, ViewportId::ROOT, &token, &image, &app, &ctx).unwrap();
+        assert_eq!(fs::read_dir(&directory).unwrap().count(), 0);
+        assert!(trace.finish(Some("explicit bounded abort")).is_err());
+        assert_eq!(Arc::strong_count(&image), 1);
+        assert!(directory.join("image-00.p7").is_file());
+        let report = fs::read_to_string(directory.join("trace.json")).unwrap();
+        assert!(report.contains("explicit bounded abort"));
+        assert!(report.contains("deferred_io_legacy_transition_trace"));
+
+        let mut capped = Trace::deferred(temporary.path().join("capped")).unwrap();
+        capped.raw_bytes = MAX_RAW_BYTES - 7;
+        capped.draw(0, &app, &ctx).unwrap();
+        let token = capped.request(0, &app, &ctx).unwrap();
+        assert!(capped.image(0, ViewportId::ROOT, &token, &image, &app, &ctx).is_err());
+        assert_eq!(Arc::strong_count(&image), 1);
+        assert!(capped.deferred_images.is_empty());
+        assert!(capped.images.is_empty());
+        assert_eq!(capped.raw_bytes, MAX_RAW_BYTES - 7);
+    }
+
+    #[test]
+    fn navigation_observations_refuse_excess_events_and_never_retain_text() {
+        let ctx = Context::default();
+        let _ = ctx.run_ui(
+            egui::RawInput {
+                events: vec![
+                    Event::Text("private input text".into()),
+                    Event::Paste("private clipboard".into()),
+                    Event::PointerMoved(egui::pos2(10.0, 20.0)),
+                ],
+                ..Default::default()
+            },
+            |ui| {
+                let input = navigation_input(ui.ctx()).unwrap();
+                assert_eq!(input.pointer_motion, 1);
+                let serialized = serde_json::to_string(&input).unwrap();
+                assert!(!serialized.contains("private"));
+                assert!(!serialized.contains("clipboard"));
+            },
+        );
+        let _ = ctx
+            .run_ui(egui::RawInput { events: vec![Event::PointerMoved(egui::Pos2::ZERO); MAX_INPUT_EVENTS + 1], ..Default::default() }, |ui| {
+                assert!(navigation_input(ui.ctx()).unwrap_err().contains("input event count"))
+            });
     }
 }
