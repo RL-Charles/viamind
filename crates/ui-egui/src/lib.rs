@@ -22,6 +22,7 @@ pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
 pub mod outlines;
+pub mod output_jobs;
 mod pad_routing;
 pub mod pads;
 pub mod parts;
@@ -149,6 +150,7 @@ pub struct ViamindApp {
     pub view_export: view_export::ViewExportUi,
     pub assembly_export: assembly_export::AssemblyExportUi,
     pub fabrication: fabrication::FabricationUi,
+    pub output_jobs: output_jobs::OutputJobUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
@@ -196,6 +198,7 @@ impl ViamindApp {
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
+            output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -235,6 +238,7 @@ impl ViamindApp {
             view_export: view_export::ViewExportUi::default(),
             assembly_export: assembly_export::AssemblyExportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
+            output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -409,6 +413,7 @@ impl ViamindApp {
         self.drc_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);
+        self.output_jobs_window(ui);
         self.view_export_window(ui);
         self.assembly_export_window(ui);
         if let Some(design) = &self.design {
@@ -479,6 +484,10 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    if ui.button("Saved output jobs…").clicked() {
+                        self.begin_output_jobs();
+                        ui.close();
+                    }
                     if ui.button("Export assembly CSV…").clicked() {
                         self.begin_assembly_export();
                         ui.close();

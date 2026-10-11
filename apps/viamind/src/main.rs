@@ -27,6 +27,14 @@ fn main() -> anyhow::Result<()> {
         Some(path) => EngineHandle::load(&path).with_context(|| format!("could not open project {}", path.display()))?,
         None => EngineHandle::new(Project::new("Untitled")),
     };
+    if let Some(job_path) = options.run_output_job {
+        let job = viamind_fab::load_output_job(&job_path)?;
+        let (snapshot, cursor, native) = engine
+            .with_engine(|e| viamind_fab::OutputJobSnapshot::capture(e.project(), job).map(|s| (s, e.event_cursor(), e.document_status().path)))?;
+        let (path, manifest) = snapshot.write(cursor, options.output.as_deref().expect("validated output"), native.as_deref())?;
+        eprintln!("Exported {} files to {} (snapshot {} / {})", manifest.files.len() + 1, path.display(), cursor.stream_id, cursor.sequence);
+        return Ok(());
+    }
     if options.export_schematic_svg || options.export_schematic_png {
         let sheet = options.sheet.expect("validated sheet");
         let snapshot = engine.read(|p| viamind_render::schematic_view_snapshot(p, sheet))?;
