@@ -5,7 +5,7 @@
 
 use egui::Color32;
 
-/// Identifies a layer. The constants are the layers of [`LayerStack::pcb_default`].
+/// Identifies a display layer, including optional explicit artwork layers.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct LayerId(pub u16);
 

@@ -99,3 +99,25 @@ fn actual_stable_row_identity_and_stale_peer_refusal() {
     assert!(h.query_by_label_contains("session changed; read get_session_state").is_some());
     click(&mut h, "Cancel");
 }
+
+#[test]
+fn explicit_courtyard_layers_follow_live_edits_and_undo_without_changing_legacy_defaults() {
+    use viamind_ui_egui::layers::LayerId;
+    let (e, mut h) = setup(vec2(1000., 1000.));
+    click(&mut h, "Cancel");
+    let legacy = h.state().layers.clone();
+    assert!(legacy.get(LayerId::F_COURTYARD).is_none() && legacy.get(LayerId::B_COURTYARD).is_none());
+    let before = e.session_state();
+    let expected = before.project.board.parts.values().next().unwrap();
+    e.execute("set_footprint_artwork", json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"expected":expected,"artwork":{"silkscreen":[],"courtyard":{"min":{"x":-2000003,"y":-3000005},"max":{"x":4000007,"y":5000011},"width":100001}}}), Origin::User).unwrap();
+    h.run_steps(6);
+    assert!(h.state().layers.get(LayerId::F_COURTYARD).is_some());
+    assert!(h.state().layers.get(LayerId::B_COURTYARD).is_none());
+    e.undo(Origin::User).unwrap();
+    h.run_steps(6);
+    assert_eq!(h.state().layers, legacy);
+    assert_eq!(e.read(Clone::clone), before.project);
+    e.redo(Origin::User).unwrap();
+    h.run_steps(6);
+    assert!(h.state().layers.get(LayerId::F_COURTYARD).is_some());
+}
