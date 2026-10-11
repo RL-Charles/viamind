@@ -108,6 +108,17 @@ an existing active path. `get_document_status {}` returns absolute `path` (or nu
 dirty state. Edits made while a save is in progress remain dirty. Both HTTP and stdio
 support these tools. See [the saving contract](../../docs/specs/project-saving.md).
 
+## Board outline
+
+`set_board_outline` requires `outline`, containing `outer` and optional `cutouts`
+rings of `{x_mm,y_mm}` vertices. Rings close implicitly; omit the repeated last
+vertex. Supply explicit `outline: null` to remove the native outline. Geometry
+validation rejects crossings, overlapping/nested cutouts and cutouts touching or
+outside the outer boundary. Optional `expected` contains the `project_id` and the
+exact current model `outline` from `get_design` (integer nanometres, or null).
+A mismatch rejects without changing state. Changes are one undoable transaction;
+outline-bearing native files use version 2. See [the outline contract](../../docs/specs/board-outline.md).
+
 ## Part properties
 
 `update_part` accepts a part `id` and optional designator, value, footprint, x_mm,

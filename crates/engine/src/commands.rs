@@ -176,6 +176,70 @@ impl Command for UpdatePart {
     }
 }
 
+/// An outline vertex at the millimetre input boundary.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct OutlinePoint {
+    pub x_mm: f64,
+    pub y_mm: f64,
+}
+
+/// Polygon board outline input, implicitly closed without a repeated end vertex.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct OutlineMm {
+    pub outer: Vec<OutlinePoint>,
+    #[serde(default)]
+    pub cutouts: Vec<Vec<OutlinePoint>>,
+}
+/// Exact outline state observed when starting an edit.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ExpectedOutline {
+    pub project_id: ObjectId,
+    pub outline: Option<viamind_doc::BoardOutline>,
+}
+
+/// Replace the substrate outline in one undoable transaction.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct SetBoardOutline {
+    /// New polygons in millimetres, or explicit null to restore the legacy preview.
+    #[serde(deserialize_with = "Option::deserialize")]
+    #[schemars(required)]
+    pub outline: Option<OutlineMm>,
+    /// Optional exact project/outline guard; model snapshot uses integer nanometres.
+    pub expected: Option<ExpectedOutline>,
+}
+impl Command for SetBoardOutline {
+    const NAME: &'static str = "set_board_outline";
+    const DESCRIPTION: &'static str = "Set a fixed board outer polygon and internal cutouts. Vertices are x_mm/y_mm, rings close implicitly. Rejects crossings, overlaps, degenerate rings and cutouts outside the board. Max 2048 vertices/64 cutouts. Null outline restores legacy preview. Optional expected contains project_id and exact current model outline (integer nm), guarding stale drafts. One undoable change; native saves use version 2 when geometry is present.";
+    fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
+        if self.expected.is_some_and(|e| e.project_id != project.id || e.outline != project.board.outline) {
+            return Err(CommandError::conflict("board outline or document changed; reload the outline before applying"));
+        }
+        let outline = self
+            .outline
+            .map(|input| {
+                let ring = |points: Vec<OutlinePoint>| -> Result<viamind_geom::Polygon, CommandError> {
+                    points
+                        .into_iter()
+                        .map(|p| position_mm("x_mm", p.x_mm, "y_mm", p.y_mm))
+                        .collect::<Result<Vec<_>, _>>()
+                        .map(viamind_geom::Polygon::new)
+                };
+                viamind_doc::BoardOutline::new(ring(input.outer)?, input.cutouts.into_iter().map(ring).collect::<Result<Vec<_>, _>>()?)
+                    .map_err(|e| CommandError::invalid("outline", e.to_string()))
+            })
+            .transpose()?;
+        if project.board.outline == outline {
+            return Ok(Vec::new());
+        }
+        let before = std::mem::replace(&mut project.board.outline, outline.clone());
+        Ok(vec![Delta::BoardOutline { id: project.id, before, after: outline }])
+    }
+}
+
 /// Removes a part from the board.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]

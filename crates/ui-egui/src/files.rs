@@ -66,7 +66,7 @@ impl ViamindApp {
 
     /// Present the New or Open form without changing the document.
     pub fn begin_document(&mut self, new: bool) {
-        if self.design.is_none() || self.files.busy() || self.parts.placing() {
+        if self.design.is_none() || self.files.busy() || self.parts.placing() || self.outlines.editing() {
             return;
         }
         self.files.editor = Some(new);
@@ -83,6 +83,7 @@ impl ViamindApp {
         self.files.save_as = false;
         self.files.editor = None;
         self.parts.cancel_placement();
+        self.outlines.cancel();
         self.request_destination(Destination::Quit, ctx);
     }
 
@@ -193,7 +194,7 @@ impl ViamindApp {
             ui.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             self.request_close(ui.ctx());
         }
-        if self.design.is_none() || self.files.busy() || self.parts.placing() {
+        if self.design.is_none() || self.files.busy() || self.parts.placing() || self.outlines.editing() {
             return;
         }
         if ui.input_mut(|input| input.consume_shortcut(&NEW)) {

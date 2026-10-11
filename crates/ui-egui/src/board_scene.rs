@@ -88,6 +88,11 @@ pub fn part_items(part: &Part) -> Vec<Item> {
 
 /// The board outline: the default board, grown to include every part with a 5 mm margin.
 pub fn board_outline(project: &Project) -> WorldRect {
+    if let Some(outline) = &project.board.outline
+        && let Some(bounds) = outline.outer.bbox()
+    {
+        return WorldRect::new(WorldPos::new(bounds.min.x.to_mm(), bounds.min.y.to_mm()), WorldPos::new(bounds.max.x.to_mm(), bounds.max.y.to_mm()));
+    }
     let mut board = WorldRect::new(WorldPos::new(0.0, 0.0), WorldPos::new(DEFAULT_BOARD_MM.0, DEFAULT_BOARD_MM.1));
     for part in project.board.parts.values() {
         let p = WorldPos::new(part.position.x.to_mm(), part.position.y.to_mm());
@@ -102,13 +107,50 @@ pub fn board_outline(project: &Project) -> WorldRect {
 /// The whole design as a canvas scene: the board outline on Edge.Cuts plus every part.
 pub fn scene_from_project(project: &Project) -> Scene {
     let board = board_outline(project);
-    let corners = [board.min, WorldPos::new(board.max.x, board.min.y), board.max, WorldPos::new(board.min.x, board.max.y)];
-    let mut items: Vec<Item> =
-        (0..4).map(|i| Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: 0.2 }, LayerId::EDGE_CUTS)).collect();
+    let mut items = Vec::new();
+    let substrate = if let Some(outline) = &project.board.outline {
+        for ring in outline.rings() {
+            for edge in ring.edges() {
+                let world = |p: viamind_geom::Point| WorldPos::new(p.x.to_mm(), p.y.to_mm());
+                items.push(Item::new(Prim::Segment { a: world(edge.a), b: world(edge.b), width: 0.2 }, LayerId::EDGE_CUTS));
+            }
+        }
+        Some(substrate_triangles(outline))
+    } else {
+        let corners = [board.min, WorldPos::new(board.max.x, board.min.y), board.max, WorldPos::new(board.min.x, board.max.y)];
+        items.extend((0..4).map(|i| Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: 0.2 }, LayerId::EDGE_CUTS)));
+        None
+    };
     for part in project.board.parts.values() {
         items.extend(part_items(part));
     }
-    Scene { board, items }
+    Scene { board, substrate, items }
+}
+
+/// Triangulate validated polygons once while rebuilding a scene.
+pub fn substrate_triangles(outline: &viamind_doc::BoardOutline) -> Vec<[WorldPos; 3]> {
+    let mut vertices = Vec::new();
+    let mut holes = Vec::new();
+    for (i, ring) in outline.rings().enumerate() {
+        if i > 0 {
+            holes.push(vertices.len() / 2);
+        }
+        for p in &ring.points {
+            vertices.extend([p.x.to_mm(), p.y.to_mm()]);
+        }
+    }
+    let Ok(indices) = earcutr::earcut(&vertices, &holes, 2) else { return Vec::new() };
+    indices
+        .as_chunks::<3>()
+        .0
+        .iter()
+        .map(|triangle| {
+            std::array::from_fn(|i| {
+                let index = triangle[i] * 2;
+                WorldPos::new(vertices[index], vertices[index + 1])
+            })
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -118,7 +160,7 @@ mod tests {
 
     use super::*;
 
-    fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
+    pub(super) fn part(footprint: &str, rotation_mdeg: i32, side: Side) -> Part {
         Part {
             id: ObjectId::new(),
             designator: "R1".into(),
@@ -163,5 +205,37 @@ mod tests {
         let scene = scene_from_project(&project);
         assert_eq!(scene.items.iter().filter(|i| i.layer == LayerId::EDGE_CUTS).count(), 4);
         assert_eq!(scene.items.len(), 4 + 8);
+    }
+}
+
+#[cfg(test)]
+mod outline_tests {
+    use super::*;
+    use viamind_doc::BoardOutline;
+    use viamind_geom::{Point, Polygon};
+    #[test]
+    fn concave_substrate_triangulation_excludes_cutouts_and_keeps_fixed_boundaries() {
+        let polygon = |points: &[(f64, f64)]| Polygon::new(points.iter().map(|&(x, y)| Point::from_mm(x, y)).collect());
+        let outline = BoardOutline::new(
+            polygon(&[(0.0, 0.0), (40.0, 0.0), (40.0, 20.0), (20.0, 20.0), (20.0, 40.0), (0.0, 40.0)]),
+            vec![polygon(&[(5.0, 5.0), (10.0, 5.0), (10.0, 10.0), (5.0, 10.0)])],
+        )
+        .unwrap();
+        let triangles = substrate_triangles(&outline);
+        let area: f64 = triangles.iter().map(|[a, b, c]| ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)).abs() / 2.0).sum();
+        assert!((area - 1175.0).abs() < 1e-8);
+        let hole = &outline.cutouts[0];
+        for [a, b, c] in triangles {
+            assert!(!hole.contains(Point::from_mm((a.x + b.x + c.x) / 3.0, (a.y + b.y + c.y) / 3.0)));
+        }
+        let mut project = Project::new("fixed");
+        project.board.outline = Some(outline);
+        let p = super::tests::part("R_0603", 0, Side::Top);
+        let mut p = p;
+        p.position = Point::from_mm(150.0, 150.0);
+        project.board.parts.insert(p.id, p);
+        let scene = scene_from_project(&project);
+        assert_eq!(scene.board.max, WorldPos::new(40.0, 40.0));
+        assert!(scene.bounds().max.x > 150.0 && scene.bounds().max.y > 150.0);
     }
 }

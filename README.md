@@ -43,6 +43,10 @@ rotation and side. Selecting one part shows editable properties in the sidebar;
 **Apply properties** commits one undoable edit. **Reload** refreshes an older draft
 when an agent has changed that part. Agents use `update_part` with an optional
 `expected` part snapshot to guard against stale edits.
+Use **Board → Board outline** to define an outer polygon and internal cutouts.
+Enter one X,Y pair in mm per line, with blank lines between cutouts. Explicit
+outlines stay fixed when parts move; malformed or stale edits are rejected.
+Outline-bearing native files use version 2 and require a build with outline support.
 Undo anything with Ctrl+Z or the Edit menu; agents undo their own changes with the `undo` tool.
 `viamind --demo` opens the synthetic 10k-object test scene, and `VIAMIND_MCP_PORT` changes the port.
 

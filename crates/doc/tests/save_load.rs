@@ -112,7 +112,7 @@ fn rejects_bad_files_with_clear_errors() {
     assert!(matches!(err, FileError::WrongFormat(ref f) if f == "other"), "{err}");
 
     let err = file::from_str(&good.replace("\"version\": 1", "\"version\": 99")).unwrap_err();
-    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 1)");
+    assert_eq!(err.to_string(), "project file version 99 is newer than this build supports (version 2)");
 
     let err = file::from_str(&good[..good.len() - 4]).unwrap_err();
     assert!(err.to_string().contains("line"), "parse errors carry a position: {err}");

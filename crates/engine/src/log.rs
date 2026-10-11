@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// Log version written by this build.
-pub const LOG_VERSION: u32 = 1;
+/// Highest supported log version; outline-bearing bases require version 2.
+pub const LOG_VERSION: u32 = 2;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -112,7 +112,7 @@ impl EventLog {
         let mut lines = input.lines().enumerate().filter(|(_, line)| line.as_ref().map_or(true, |l| !l.trim().is_empty()));
         let (index, header) = lines.next().ok_or(LogError::BadHeader)?;
         let header: Header<Project> = serde_json::from_str(&header?).map_err(|source| LogError::Parse { line: index + 1, source })?;
-        if header.format != LOG_FORMAT || header.version > LOG_VERSION {
+        if header.format != LOG_FORMAT || header.version > LOG_VERSION || (header.base.board.outline.is_some() && header.version < 2) {
             return Err(LogError::BadHeader);
         }
         let mut log = EventLog::new(header.base);
@@ -126,7 +126,7 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
-    serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: LOG_VERSION, base })?;
+    serde_json::to_writer(&mut out, &Header { format: LOG_FORMAT.to_owned(), version: if base.board.outline.is_some() { 2 } else { 1 }, base })?;
     out.write_all(b"\n")
 }
 

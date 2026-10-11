@@ -113,7 +113,19 @@ impl Canvas {
 
         painter.rect_filled(viewport, CornerRadius::ZERO, CANVAS_BG);
         let board = screen_rect(scene.board);
-        painter.rect_filled(board, CornerRadius::ZERO, BOARD_FILL);
+        if let Some(triangles) = &scene.substrate {
+            let mut mesh = egui::Mesh::default();
+            for triangle in triangles {
+                let start = mesh.vertices.len() as u32;
+                for &point in triangle {
+                    mesh.colored_vertex(to_screen(point), BOARD_FILL);
+                }
+                mesh.add_triangle(start, start + 1, start + 2);
+            }
+            painter.add(Shape::mesh(mesh));
+        } else {
+            painter.rect_filled(board, CornerRadius::ZERO, BOARD_FILL);
+        }
         paint_grid(painter, &cam, viewport);
 
         if self.cached {

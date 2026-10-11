@@ -45,6 +45,8 @@ impl Item {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Scene {
     pub board: WorldRect,
+    /// Actual substrate triangles, including cutouts; None uses the synthetic rectangle.
+    pub substrate: Option<Vec<[WorldPos; 3]>>,
     pub items: Vec<Item>,
 }
 
@@ -97,7 +99,7 @@ impl Scene {
                 items.push(Item::new(Prim::Segment { a: WorldPos::new(x, y), b: WorldPos::new(bx, by), width: w }, layer));
             }
         }
-        Self { board, items }
+        Self { board, substrate: None, items }
     }
 
     /// Bounds of the board and everything on it, for zoom to fit.

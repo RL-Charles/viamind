@@ -344,3 +344,30 @@ async fn property_updates_are_discoverable_shared_guarded_and_undoable() {
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn board_outline_changes_are_shared_and_guarded_over_http() {
+    let engine = EngineHandle::new(Project::new("Outline HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = connect(server.url(), "outline-a").await;
+    let b = connect(server.url(), "outline-b").await;
+    let before = call(&b, "get_design", json!({})).await.structured_content.unwrap();
+    let outline = json!({"outer":[{"x_mm":0,"y_mm":0},{"x_mm":40,"y_mm":0},{"x_mm":40,"y_mm":30},{"x_mm":0,"y_mm":30}],"cutouts":[]});
+    assert_eq!(
+        call(&a, "set_board_outline", json!({"outline":outline,"expected":{"project_id":before["id"],"outline":null}})).await.is_error,
+        Some(false)
+    );
+    let after = call(&b, "get_design", json!({})).await.structured_content.unwrap();
+    assert_eq!(after["board"]["outline"]["outer"][1]["x"], 40_000_000);
+    assert_eq!(
+        call(&b, "set_board_outline", json!({"outline":null,"expected":{"project_id":before["id"],"outline":null}})).await.is_error,
+        Some(true)
+    );
+    assert_eq!(call(&a, "undo", json!({})).await.is_error, Some(false));
+    assert_eq!(call(&b, "get_design", json!({})).await.structured_content.unwrap(), before);
+    assert_eq!(call(&a, "redo", json!({})).await.is_error, Some(false));
+    assert_eq!(call(&b, "get_design", json!({})).await.structured_content.unwrap(), after);
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}

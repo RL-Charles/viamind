@@ -95,8 +95,8 @@ impl CommandRegistry {
 
     /// A registry with every built-in command (see [`crate::commands`]).
     pub fn builtin() -> CommandRegistry {
-        use crate::commands::{AddPart, DeletePart, MovePart, UpdatePart};
-        CommandRegistry::new().with::<AddPart>().with::<MovePart>().with::<DeletePart>().with::<UpdatePart>()
+        use crate::commands::{AddPart, DeletePart, MovePart, SetBoardOutline, UpdatePart};
+        CommandRegistry::new().with::<AddPart>().with::<MovePart>().with::<DeletePart>().with::<UpdatePart>().with::<SetBoardOutline>()
     }
 
     /// Adds command type `C`.
