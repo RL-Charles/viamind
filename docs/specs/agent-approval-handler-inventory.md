@@ -18,6 +18,20 @@ T-0117 pre-implementation inventory, source stack T113 `842e9c1` atop T112 `b761
 
 All these production registrations have an awaited completion boundary. Test-only `std::thread::spawn` barriers are not detached production handlers. The existing transport's `JoinHandle` or request future can be dropped before its blocking child completes; that fact is why registry admission must retain the complete handler independently of the transport runtime. A private process-lifetime executor must finish these awaited chains before dropping its writer token. No general handler-completion claim is inferred from its observation annotation or name.
 
+## Additive package-stack audit
+
+Read against T116 immutable product source `37f1a654ffbb0b253393c12fb6a26bd671ccf9cd`, including T114 and T115. The final combined gate remains separate from this source audit.
+
+| New registration or command | Trusted admission | Actual completion boundary |
+| --- | --- | --- |
+| `symbol_packages::register`: `load_symbol_package`, `query_symbol_packages` | Explicit observations; bounded regular-file read or schematic-only query | Each handler directly awaits its `spawn_blocking` worker, then serializes the result. No publication or project mutation. |
+| `symbol_packages::register`: `save_symbol_package` | General registration defaults to writer; hidden and refused in Approval and ReadOnly | Borrowed path/unit/pin admission precedes typed decoding. The handler directly awaits `EngineHandle::save_symbol_package`, including synchronous private staging and lifecycle-guarded no-clobber publication. |
+| Engine host `place_symbol_package`, `delete_symbol_package`, `annotate_schematic` | General host registration defaults to writer | `host::blocking` directly awaits synchronous original engine dispatch and transaction completion. Package membership and annotation guards remain inside that original dispatch. |
+| Engine host `preview_schematic_annotation`, `preview_package_pcb_component` | Explicit names in `EngineHost::is_observation` | The same awaited blocking dispatch completes bounded capture, original cursor/identity checks and preview construction without committing the proposal. Returning a guarded command never admits that command as an observation. |
+| Engine host `create_package_pcb_component`, `link_schematic_package`, `synchronize_schematic_pcb` | General host registration defaults to writer | The same awaited blocking dispatch retains the original whole-project/full-cursor guards through the synchronous transaction. One physical package owner does not change admission. |
+
+Source paths: `crates/mcp/src/symbol_packages.rs`, `crates/mcp/src/engine_host.rs`, `crates/mcp/src/host.rs`, `crates/engine/src/package_component.rs`, and the original package/annotation/sync command implementations. No new production worker detaches from its returned handler future. The registry's retained executor therefore owns the entire awaited publication/transaction chain after caller cancellation, as for the original registrations.
+
 ## Verification obligations for the executor
 
 Use actual default-deny counter handlers and held blocking workers; admit at most 16 writers without queuing. Preserve original CallContext and native/library publication guards. Cancel the caller, close its real session and drop the endpoint runtime while a worker is held; policy must remain busy until it finishes. Test panic and rejected admission without token leaks. Every Live mixed view with any path presence must enter this same retained path, including malformed values; restricted path refusal must occur before handler entry. Re-audit new package save/export/create/link/annotation/sync registrations on final integration and preserve their independent predecode bounds.
