@@ -2,9 +2,10 @@
 
 use egui::{Color32, Key, Modifiers, PointerButton, Pos2, Response, Shape, Stroke, StrokeKind, Ui};
 use viamind_doc::{ObjectId, Project};
-use viamind_engine::{EngineHandle, Origin, SelectionMode, SetSelection};
+use viamind_engine::{EngineHandle, SelectionMode, SetSelection};
 use viamind_geom::{Nm, Point, Polygon, Rect, SegmentIntersection, SpatialIndex};
 
+use crate::actions::UiAction;
 use crate::{
     board_scene,
     camera::{Camera, WorldPos},
@@ -122,7 +123,8 @@ impl Selection {
     fn apply(&self, engine: &EngineHandle, ids: Vec<ObjectId>, mode: SelectionMode) {
         // An agent may have deleted a hit between picking and committing. The engine rejects
         // the entire stale request, leaving the current selection consistent.
-        let _ = engine.set_selection(SetSelection { ids, mode }, Origin::User);
+        let input = serde_json::to_value(SetSelection { ids, mode }).expect("selection input serializes");
+        let _ = UiAction::SetSelection.run(engine, input);
     }
 
     /// Handle the canvas response and paint selection above the cached scene.

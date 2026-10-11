@@ -4423,9 +4423,11 @@ dependencies = [
  "egui",
  "egui_kittest",
  "serde_json",
+ "tokio",
  "viamind-doc",
  "viamind-engine",
  "viamind-geom",
+ "viamind-mcp",
  "viamind-render",
 ]
 

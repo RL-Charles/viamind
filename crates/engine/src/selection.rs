@@ -7,7 +7,7 @@ use viamind_doc::ObjectId;
 use crate::Origin;
 
 /// How supplied IDs modify the current selection.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Deserialize, JsonSchema)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum SelectionMode {
     #[default]
@@ -18,7 +18,7 @@ pub enum SelectionMode {
 }
 
 /// Input shared by UI selection actions and the MCP tool.
-#[derive(Clone, Debug, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SetSelection {
     /// IDs of existing board parts. Empty with replace clears selection.

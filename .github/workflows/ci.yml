@@ -63,4 +63,6 @@ jobs:
             libxrandr-dev libxi-dev libgl1-mesa-dev
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.9.2
+      - name: UI and agent command parity
+        run: cargo test -p viamind-ui-egui --test command_parity --locked
       - run: cargo test --workspace --locked

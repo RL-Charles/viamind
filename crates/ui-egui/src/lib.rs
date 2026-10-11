@@ -4,6 +4,7 @@
 //! with eframe's wgpu backend. The eframe/egui-wgpu setup follows the ArtCraft Craft apps
 //! (CADCraft, MIT/Apache-2.0): `default-features = false` plus only the features we use.
 
+pub mod actions;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
@@ -16,6 +17,7 @@ pub mod selection;
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
+use crate::actions::UiAction;
 use egui::{Key, KeyboardShortcut, Modifiers, Ui};
 use serde_json::json;
 use viamind_engine::{ChangeEvent, ChangeKind, EngineHandle, Origin};
@@ -169,16 +171,16 @@ impl ViamindApp {
     }
 
     /// Undo the latest change from anyone (the human can undo agent edits).
-    pub fn undo(&mut self) {
+    pub fn undo_design(&mut self) {
         if let Some(design) = &self.design {
-            let _ = design.engine.undo(Origin::User);
+            let _ = UiAction::Undo.run(&design.engine, json!({}));
         }
     }
 
     /// Redo the latest undone change.
-    pub fn redo(&mut self) {
+    pub fn redo_design(&mut self) {
         if let Some(design) = &self.design {
-            let _ = design.engine.redo(Origin::User);
+            let _ = UiAction::Redo.run(&design.engine, json!({}));
         }
     }
 
@@ -189,7 +191,7 @@ impl ViamindApp {
         let x = 20.0 + f64::from((n - 1) % 10) * 6.0;
         let y = 20.0 + f64::from((n - 1) / 10) * 6.0;
         let input = json!({ "designator": format!("R{n}"), "value": "10k", "footprint": "R_0603", "x_mm": x, "y_mm": y });
-        if let Err(e) = design.engine.execute("add_part", input, Origin::User)
+        if let Err(e) = UiAction::PlacePart.run(&design.engine, input)
             && let Some(design) = &mut self.design
         {
             design.last_change = Some(format!("place failed: {e}"));
@@ -213,9 +215,9 @@ impl ViamindApp {
         self.update_stats(ui, cpu_ms);
         if self.design.is_some() {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
-                self.redo();
+                self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
-                self.undo();
+                self.undo_design();
             }
         }
         self.sync_design();
@@ -284,12 +286,12 @@ impl ViamindApp {
                     let (can_undo, can_redo) = self.design.as_ref().map_or((false, false), |d| (d.engine.can_undo(), d.engine.can_redo()));
                     let undo = egui::Button::new("Undo").shortcut_text(ui.ctx().format_shortcut(&UNDO));
                     if ui.add_enabled(can_undo, undo).clicked() {
-                        self.undo();
+                        self.undo_design();
                         ui.close();
                     }
                     let redo = egui::Button::new("Redo").shortcut_text(ui.ctx().format_shortcut(&REDO));
                     if ui.add_enabled(can_redo, redo).clicked() {
-                        self.redo();
+                        self.redo_design();
                         ui.close();
                     }
                     ui.separator();
