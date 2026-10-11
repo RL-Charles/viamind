@@ -46,6 +46,8 @@ pub use auto_drc_events::{
 pub mod command;
 pub mod commands;
 pub mod connectivity;
+pub mod unrouted;
+pub use unrouted::{UnroutedCoverage, UnroutedNet, UnroutedNetQuery, UnroutedNetReason, UnroutedNetResult, UnroutedNetStatus, UnroutedNetWork};
 mod copper_connectivity;
 pub use copper_connectivity::CopperConnectivityCoverage;
 pub mod delta;

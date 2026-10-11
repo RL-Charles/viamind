@@ -1,0 +1,200 @@
+{
+  "format": "viamind-unrouted-net-verification",
+  "version": 1,
+  "original_product_source": "2d96cf0ba6ca226927245308eb4601ecfbaa62cc",
+  "original_stack_parent": "d4a4baa1be4e304e40c1001dc1e231e555292d98",
+  "focused_source": "aa5cbe870b26c4cee884996238d1203a877e1723",
+  "original_gates": {
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_passed": 934,
+    "workspace_failed": 0,
+    "workspace_ignored": 1,
+    "focused_passed": 19,
+    "initial_full_exit": 101,
+    "initial_full_failure": "later normal-profile build reused stale shared engine library missing newly exported query; source and completed test compilation had query",
+    "build_refresh_exit": 0,
+    "workspace_build": true,
+    "inspection_build": true,
+    "cache_refresh": "own Rust inputs touched under whole mutex before remaining build; no source content change"
+  },
+  "production_checks": 58,
+  "independent_production_checks": 58,
+  "production_process": {
+    "pid": 3024427,
+    "port": 7955,
+    "live_at_packaging": true,
+    "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-owned.viamind.json"
+  },
+  "native": {
+    "route": "production ViamindApp with4local egui pointer events and native WGPU Screenshot",
+    "pid": 3025596,
+    "process_live_at_packaging": false,
+    "self_closed_after_capture": true,
+    "source": "2d96cf0ba6ca226927245308eb4601ecfbaa62cc",
+    "all_RGBA_and_RGB_verified": true,
+    "raw_capture_paths": [
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-proof/native.p7",
+      "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-proof/native.p6"
+    ],
+    "encoder_note": "first verification-only encoder published exact PNG then failed for unavailable Pillow; corrected encoder independently used installed FFmpeg and verified existing bytes; native capture/product unchanged",
+    "exit_status_recorded": false,
+    "lifecycle_note": "Close requested after capture/fsync and PID observed absent afterward with empty runtime log; launcher did not retain numeric exit status."
+  },
+  "retained_binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/viamind",
+      "sha256": "c716d3fe9e9dee6f80b43d59158512413dd74a4cf0b44de96e1ef6f13480d888"
+    },
+    "unrouted-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/unrouted-inspection",
+      "sha256": "4d083742f084d260f5f333c11a7b76c92338456a9c6f354c6bf34e36d287057f"
+    }
+  },
+  "retained_large_fixture": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-proof/large.viamind.json",
+    "sha256": "a14cb27a4f4c363612925c02cf37ade58c1443ed2c5622c8103a5090ac65e54e",
+    "reproduction": "production-probe.py deterministically generates1201net fixture from authored seed"
+  },
+  "final_combined_pending": false,
+  "ci_pending": true,
+  "claims_excluded": [
+    "physical copper continuity",
+    "DRC or DFM certification",
+    "unbounded arbitrary geometry",
+    "OS input",
+    "frame cadence"
+  ],
+  "artifacts": {
+    "crates/ui-egui/examples/t0123_inspection.rs": "3d72bc2ac87ba1fd3f8cb8fd4cc76f693d0dd4dacf99ab87fa0bb36a2d8d3fff",
+    "docs/specs/unrouted-net-query.md": "d61248fb2514d6509d665f35067cfb625a4664997f89f05a47e6a8b7960a3645",
+    "docs/unrouted-net-verification.md": "5a7ddb666f6872ff3f5e337054f1c1a5af16f8ef1f6cc5e2f96d643d88b0bfe4",
+    "docs/verification/t0123/build-refresh.log": "da67c70685d1703520eb10cd7c6feeb72a9f04774dea4d07ff5d64008ba3db45",
+    "docs/verification/t0123/build-refresh.sh": "8965221e7bb1179bf52d2af1ff68a8724a78fa62dc7611c9bef902b447f701be",
+    "docs/verification/t0123/desktop-result.json": "d7d4741fbbc0733db25498beefbb261f9da9e1280298433ea256b7ec528a918f",
+    "docs/verification/t0123/focused-lint-failed.log": "bf2cc362d3d513513961e0423d5da8f1f0494e951d9f937184dd76cc4febc34a",
+    "docs/verification/t0123/focused-pass.log": "26da2a6dc286eed8c7688c982c6f726a30365e661f2c9b3255b9840358add404",
+    "docs/verification/t0123/foundation-failed.log": "c91eab59b330134334f9db52036efc3dae5895e17f52fc34c7de0063495b371c",
+    "docs/verification/t0123/independent-native-audit.json": "3d777501a9c441cedefaeebcbdfc5388d0a38026ea6f8d23a235d69c513acfd4",
+    "docs/verification/t0123/independent-production-report.json": "9f83aa75631858be3885f52d9e1d652189882dc9c34c742dcd2fce46e63b5672",
+    "docs/verification/t0123/large-result.json": "d801b77a4b3e068c0bcd228ef5768a6ba62477f77c0114f41eb75ce6a8ec6c94",
+    "docs/verification/t0123/native-channels.json": "3834882d887716affe9aee560b9e2148465ab6abfaa6b091b994a8af2b8a9d81",
+    "docs/verification/t0123/native-launch.json": "02317358749af258e9dc86f0ea746a88313d5caf294f44404dabb1a348a15ba6",
+    "docs/verification/t0123/native-report.json": "1e5fac56d85a8a44d5418cf115fadb4eadbb19d54e1311dcb2e594804adfb2da",
+    "docs/verification/t0123/native-runtime.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/verification/t0123/native.png": "54c67139b9740b4ce1e456e7ed188fa24075a9925b7991eea9c4df14c82a9b9d",
+    "docs/verification/t0123/original-full-build-collision.log": "e39593f16e2079005bab926090666f035679685ed5b49cf771e7abdb56256ac0",
+    "docs/verification/t0123/original-full.sh": "aa704d11ea8116db4bffbea0e49fedb0e1ae4ca6d22e2fae24f2110004ee0335",
+    "docs/verification/t0123/production-launch.json": "0f42f32170c39ae16c50d4c13819b73a9e3181f67b0dae13c11a3aec1297fc52",
+    "docs/verification/t0123/production-probe.py": "95aab5c51f431d27cbaf7139b82dc27fe72b27b02046c8e8a039660665f777f5",
+    "docs/verification/t0123/production-proof.log": "dd0d33804e6c6bea0620329c4653dd926d515f8d5cbd130df59c9cdcf13ab571",
+    "docs/verification/t0123/production-report.json": "9f83aa75631858be3885f52d9e1d652189882dc9c34c742dcd2fce46e63b5672",
+    "docs/verification/t0123/production-runtime.log": "33aa5fc67338e371bb4f39644192543b05eea036fe6c1d1794dfba719fb05be5",
+    "docs/verification/t0123/stdio-approval-result.json": "6d49ce3ba0d897b580b41cb7baff5af1bdb40263611ba62a1ab9d3c829afbba3",
+    "docs/verification/t0123/stdio-live-result.json": "6450a2ebabfc1c0632027c8e7daab14a83a83bbba7150f4243b602da3cdd96c4",
+    "docs/verification/t0123/stdio-owned.viamind.json": "1e9fe204ff07d166af8ff0146b0f1c9511c1e090092fcc7b4b4f154709ac39aa",
+    "docs/verification/t0123/stdio-read-only-result.json": "6d95cafd06d5eb9e6fd7085c4e4ed256e5f66c16e2aaa99f952e4fcecf908801",
+    "docs/verification/t0123/verify-native.py": "439172fa93a5fb4fe95e4cabaa8d72bfbc6dc975887c032647ed345ab2ba8ef1",
+    "fixtures/connectivity/one-call.viamind.json": "86418e6b84e23e220809b9f34a7df6930bf462a20a52d0f8c41e11ee17d9a3bf",
+    "docs/verification/t0123/final-combined.log": "28105fff0aab1cb93729af02fadcb6974355eecd7ca75f8e3c6783fe948b0fc9",
+    "docs/verification/t0123/final-combined.sh": "748a31035e36cb88b6b0c854a6d0e1902717f20b908f5b57acaa665a28449301",
+    "docs/verification/t0123/final-catalog-check.log": "dbc5d36878ca6df6bd741e2afa7b6c7aa680f024f2ef163ae7f73b49c9b46c70",
+    "docs/verification/t0123/final-workflow.json": "c45741c08b33f57cd225be66dadcb107a2c2d5899b756717e5844b5c83d8c4e2",
+    "docs/verification/t0123/final-production-report.json": "0c0004182a83c8550eeb91c13740ebdee9177de43715da7925a2fd439834eebe",
+    "docs/verification/t0123/final-desktop-result.json": "6f7ac24c298a864c28e3f1014d5bf74044a568887f0cda6f15890b4950fd34a5",
+    "docs/verification/t0123/final-production-proof.log": "dd0d33804e6c6bea0620329c4653dd926d515f8d5cbd130df59c9cdcf13ab571",
+    "docs/verification/t0123/final-production-runtime.log": "43b85ca7a8fe0241ffdf5ac268aa94b765ea5e15f016df508609e876ebc2fdf9",
+    "docs/verification/t0123/final-production-launch.json": "5d04c789b041f57749bb7c6673606f840f922baf6d94a549c56639cbc53049c8",
+    "docs/verification/t0123/final-native-report.json": "55f1e452449defc80fb8b4ad1e533bfcdd6587cad3accf833903be8415f271e6",
+    "docs/verification/t0123/final-native-channels.json": "551c0325adca7981814fd31bda7dbf9bd7b583576a2e95c50502ca32bdcf55ce",
+    "docs/verification/t0123/final-native.png": "50c4919cd5ac35471871bdfe41d9c45d67fdc550cd8cf3e85b819ba6a99bf20f",
+    "docs/verification/t0123/final-native-launch.json": "49f86118ae8b5952a3509ab53355d102d5d628b01d3325e3411711972385162b",
+    "docs/verification/t0123/final-native-runtime.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/verification/t0123/ci-refresh.sh": "7ec584341af3b66b605903e355626f6a07b4fade6cc9dcab70cd515230742b71",
+    "docs/verification/t0123/ci-refresh.log": "7db84954017a7f8ca586abb3d4adfae7079ba321ff54c6bd74d064620966f9d8",
+    "docs/verification/t0123/final-ci-clippy-failed.log": "5434c48862d7f39d7639f70c1bfef2d11a713fb7bcc89a0e05d13cc2ebcd2e0d",
+    "docs/verification/t0123/catalog-final/mcp-tools.json": "6facc67727d837490befcd10ba64a5ffa813e37f72d0f6d53a2824f59316422c",
+    "docs/verification/t0123/catalog-final/mcp-tools.md": "db22ac42f0f488df2c03d87644a54ece9700f24816c104f340f3f72066d18954",
+    "docs/verification/t0123/inherited-property-ci-failed.log": "81a5deba3c003b82fbb20b46914551a1618166b7283c42a0f02ba3b9412f39a9"
+  },
+  "final_combined": {
+    "source": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
+    "stack_parent": "9a28241450969f2cecc9068e15393e515b639b97",
+    "gate_exit": 0,
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_passed": 19,
+    "focused_failed": 0,
+    "workspace_build": true,
+    "inspection_build": true,
+    "actual_exact_catalog_tools": 115,
+    "actual_workflow_checks": 18,
+    "python_tooling_tests": 13,
+    "actual_production_checks": 58,
+    "production_process": {
+      "pid": 3075669,
+      "port": 7957,
+      "live_at_packaging": true,
+      "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-final-owned.viamind.json"
+    },
+    "retained_binaries": {
+      "viamind": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/viamind",
+        "sha256": "5a2d2a81b202788436556cd4524fd9f4b1b27cea1123346625d5c8188d05142c"
+      },
+      "unrouted-inspection": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/unrouted-inspection",
+        "sha256": "bbc3551ff275ee5040d67d659cba6bcf805df062862002a4369d83044c0d9540"
+      }
+    },
+    "native": {
+      "pid": 3076404,
+      "live_at_packaging": false,
+      "close_requested": true,
+      "exit_status_recorded": false,
+      "all_original_RGBA_and_RGB_verified": true,
+      "raw_capture_paths": [
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-final-proof/native.p7",
+        "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/native-final-proof/native.p6"
+      ]
+    },
+    "large_fixture": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-final-proof/large.viamind.json",
+      "sha256": "a14cb27a4f4c363612925c02cf37ade58c1443ed2c5622c8103a5090ac65e54e"
+    }
+  },
+  "compatibility_correction": {
+    "source": "4eec348b04cb2b3e40ab60d3a0a5f7bd7433ea34",
+    "failed_ci": "38180135385",
+    "reason": "newer CI Rust deprecates AtomicUsize::fetch_update; equivalent compare_exchange_weak loop supports both toolchains",
+    "gate_exit": 0,
+    "format": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_passed": 14,
+    "workspace_build": true,
+    "actual_catalog_drift_tools": 115,
+    "retained_binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/ci-verified/viamind",
+      "sha256": "d41410d2f088a077c55f9133fe71353ce70e8ba29abad8790524d50598e82e8b",
+      "source": "4eec348b04cb2b3e40ab60d3a0a5f7bd7433ea34"
+    },
+    "prior_actual_runtime_source_preserved": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
+    "future_T118_guard_requirement": "check_read before prepare admission and before captured-work engine lock"
+  },
+  "inherited_test_followup": {
+    "source_range": "9a28241450969f2cecc9068e15393e515b639b97..1293b30d0b0793cdf3408c8e0abe96b5a4d0ad41",
+    "integrated_head": "930dacf222a9dbc6476dc8d84c83d144aca9ffb0",
+    "scope": "Sidebar test scroll/layout/focus and typed-value assertion; T119 failure/pass receipts and immutable114-tool historical catalog. No product change.",
+    "verification": "T119 three property tests, format and strict workspace lint passed; receipts retained under docs/verification/t0119. No extra broad gate requested.",
+    "previous_ci": {
+      "run": 38180459745,
+      "format": "success",
+      "clippy": "success",
+      "linux_at_integration": "in_progress",
+      "failure_inferred": false,
+      "linux_final": "failure",
+      "failure": "Inherited stale_properties test expectedR9 but remainedR1, parts.rs82; same correction already integrated"
+    },
+    "exact_final_ci_pending": true
+  }
+}

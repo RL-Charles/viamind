@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "source": "2d96cf0ba6ca226927245308eb4601ecfbaa62cc",
+  "independent_actual_checks": 58,
+  "native_pid_exited": 3025596,
+  "all_original_RGBA_PNG_and_P6_RGB_equal": true,
+  "rgba_channels_compared": 6400000,
+  "rgb_channels_compared": 4800000,
+  "binaries_rehashed": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/viamind",
+      "sha256": "c716d3fe9e9dee6f80b43d59158512413dd74a4cf0b44de96e1ef6f13480d888"
+    },
+    "unrouted-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/unrouted-inspection",
+      "sha256": "4d083742f084d260f5f333c11a7b76c92338456a9c6f354c6bf34e36d287057f"
+    }
+  },
+  "scope": "Independent Pillow decoder exact channel comparison and retained executable checks plus independently rerun original production protocol driver; no OS input or cadence claim."
+}

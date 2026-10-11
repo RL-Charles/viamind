@@ -1,0 +1,31 @@
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/apps/viamind)
+error: consider adding a `;` to the last statement for consistent formatting
+  --> crates/mcp/tests/unrouted.rs:79:9
+   |
+79 | /         held.with_engine(|_| {
+80 | |             locked.send(()).unwrap();
+81 | |             wait.recv().unwrap();
+82 | |         })
+   | |__________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#semicolon_if_nothing_returned
+   = note: `-D clippy::semicolon-if-nothing-returned` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::semicolon_if_nothing_returned)]`
+help: add a `;` here
+   |
+79 |         held.with_engine(|_| {
+80 |             locked.send(()).unwrap();
+81 |             wait.recv().unwrap();
+82 ~         });
+   |
+
+error: could not compile `viamind-mcp` (test "unrouted") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

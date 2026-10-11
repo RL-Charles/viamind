@@ -43,6 +43,7 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    QueryUnroutedNets => ("query_unrouted_nets", input_schema::<viamind_engine::UnroutedNetQuery>(), query_unrouted_nets),
     ListPcbBranches => ("list_pcb_branches", no_args(), list_pcb_branches),
     GetPcbBranchDiff => ("get_pcb_branch_diff", input_schema::<viamind_engine::pcb_branches::PcbBranchDiffInput>(), get_pcb_branch_diff),
     MergePcbBranch => ("merge_pcb_branch", input_schema::<viamind_engine::pcb_branches::MergePcbBranch>(), merge_pcb_branch),
@@ -135,6 +136,10 @@ ui_actions! {
 
 fn branch_error(error: impl std::fmt::Display) -> EngineError {
     EngineError::InvalidInput { command: "pcb_branch".into(), message: error.to_string() }
+}
+fn query_unrouted_nets(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let query = serde_json::from_value(input).map_err(encode_error)?;
+    engine.prepare_unrouted_nets(query).map_err(branch_error)?.run_value().map_err(branch_error)
 }
 fn list_pcb_branches(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     if !input.as_object().is_some_and(serde_json::Map::is_empty) {

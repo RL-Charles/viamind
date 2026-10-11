@@ -20,6 +20,7 @@ pub mod output_jobs;
 pub mod pcb_branches;
 pub mod registry;
 pub mod server;
+mod unrouted;
 
 pub use agent::{AgentId, CallContext};
 pub use engine_host::EngineHost;

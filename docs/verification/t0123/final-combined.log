@@ -1,0 +1,388 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.11s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 37.61s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 10 tests
+test unrouted::tests::annulus_pair_and_radial_interval_integer_predicates_exclude_outer_disk_false_joins ... ok
+test unrouted::tests::mirrored_quarter_turn_rectangles_keep_half_nm_extents_without_rounding ... ok
+test unrouted::tests::budget_identity_name_and_candidate_failures_refuse_whole_results ... ok
+test unrouted::tests::unsupported_scalars_and_legacy_parts_are_explicit_incomplete_coverage ... ok
+test unrouted::tests::interior_crossings_pad_edges_width_contacts_and_exact_gaps_have_independent_oracles ... ok
+test unrouted::tests::annulus_interior_contacts_bridge_layers_and_drill_center_never_counts_as_copper ... ok
+test unrouted::tests::purpose_capture_excludes_unused_poison_and_live_observation_preserves_complete_state ... ok
+test unrouted::tests::aggregate_object_text_and_distinct_net_caps_reject_before_secondary_geometry_copies ... ok
+test unrouted::tests::retained_admission_survives_caller_drop_and_workers_hold_it_through_actual_capture ... ok
+test unrouted::tests::complete_inventory_exceeds_old_pages_and_includes_zero_one_and_copper_only_definitions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 86 filtered out; finished in 0.13s
+
+     Running tests/annotation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/annotation-1aa837035a5cbb0f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/assembly.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/assembly-51366fa0f27cb18e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/auto_drc.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/auto_drc-fdcf4967870e8930)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/cardinal_cleanup.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cardinal_cleanup-fa35de7e1785df84)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+
+     Running tests/component_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/component_links-01ca2109ea9cef40)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/connectivity-9021dba3e2db0abe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/copper.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper-f33f1fb5a4533e65)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/copper_connectivity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_connectivity-5d76368c6daf2cde)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+     Running tests/copper_properties.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/copper_properties-d424828fd2a24b4f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/dxf.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/dxf-5be6d84270095d28)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/events.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/events-1f97578cc84681c3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/fabrication_view.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/fabrication_view-a027240decb60c96)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/footprint.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint-3c8b4354672bf671)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-f80c97248dc671f1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/footprint_conversion.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_conversion-fa5660edbeceb115)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-ed415d5b657563a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/history.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/history-544b058d10d1de93)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/lifecycle.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/lifecycle-e627971bb831aa45)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/net_rules.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/net_rules-87f632c6c0ba4796)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/outlines.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/outlines-d84a304b9629f8ef)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/own_undo.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/own_undo-5fb9ca22071b66ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/package_annotation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/package_annotation-20e34a727651cd24)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+     Running tests/package_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/package_component-d461b6717688e62c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+     Running tests/pads.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pads-fd31f001d8141137)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/part_commands.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/part_commands-c65ca30e09674650)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/pcb_import.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_import-9eefcc9e7e9cb3d5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/pcb_sync.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_sync-1849300fafbdf5d2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+     Running tests/pin_pad_links.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pin_pad_links-fe37c35fd9cfac30)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/placement.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/placement-840ba64b777d8ef8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/queries.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/queries-50523a39fa4ce479)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/replay.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/replay-626bc189fe670173)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/route_endpoints.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_endpoints-5652b7317ffb725f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/route_posture.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_posture-0b8450133be2a6a7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/route_terminals.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_terminals-c21ad48a7fc6fe5f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+     Running tests/route_via.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/route_via-404d66e65a3077a7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/routing.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/routing-99cac868e6541011)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/saving.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/saving-e063af1249a38194)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-bc3cc0619e76ce61)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/schematic_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-f4a214b9a1ec0a64)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/schematic_wires.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_wires-a9ce9260a8fbe04b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/selection.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/selection-6ffbe6679c0daae4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/session.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/session-618b7944c560d06a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/symbol_library.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-df142db15e932c21)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+     Running tests/symbol_package.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_package-b960cff3149a44a2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+
+     Running tests/update_part.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/update_part-0a045c2103d3f613)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/via_walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/via_walkaround-4c5105e9fbbb2d5e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/walkaround.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround-1597a6d1b9938fff)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/walkaround_cutouts.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/walkaround_cutouts-32e73c3c6488d8ed)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.42s
+     Running tests/unrouted.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/unrouted-7fd94f012f1c83bb)
+
+running 2 tests
+test cancelled_actual_registry_awaiter_keeps_queued_capture_admission_until_worker_retires ... ok
+test actual_same_name_two_client_whole_inventory_in_every_mode_matches_typed_result_and_preserves_native_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.90s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 2 tests
+test unrouted::tests::controlled_spawn_failure_and_disconnected_worker_leave_no_false_busy_and_retry_succeeds ... ok
+test unrouted::tests::actual_disabled_duplicate_control_hidden_poll_and_retained_admission_survive_dialog_close ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 98 filtered out; finished in 0.17s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.57s
+     Running tests/command_parity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/command_parity-feaa1e6b69d7c699)
+
+running 4 tests
+test parity_gate_detects_a_missing_tool ... ok
+test ui_and_agent_actions_operate_on_the_same_engine ... ok
+test ui_mutations_route_through_the_catalog ... ok
+test every_ui_action_has_a_matching_mcp_tool_and_input_schema ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/unrouted.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/unrouted-a4308aac242d3e7c)
+
+running 1 test
+test actual_compact_observation_scrolls_full_results_matches_shared_catalog_and_marks_peer_changes_stale ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.03s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+{"viamind": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/viamind", "sha256": "5a2d2a81b202788436556cd4524fd9f4b1b27cea1123346625d5c8188d05142c"}, "unrouted-inspection": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/final-verified/unrouted-inspection", "sha256": "bbc3551ff275ee5040d67d659cba6bcf805df062862002a4369d83044c0d9540"}}
+Verified 115 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.435s
+
+OK

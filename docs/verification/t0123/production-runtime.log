@@ -1,0 +1,3 @@
+viamind: agents can connect at http://127.0.0.1:7955/mcp
+viamind: agents read only; human editing remains live
+viamind: e.g. claude mcp add --transport http viamind http://127.0.0.1:7955/mcp

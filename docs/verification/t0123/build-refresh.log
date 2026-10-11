@@ -1,0 +1,14 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 34.83s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.45s
+{"viamind": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/viamind", "sha256": "c716d3fe9e9dee6f80b43d59158512413dd74a4cf0b44de96e1ef6f13480d888"}, "unrouted-inspection": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/unrouted-inspection", "sha256": "4d083742f084d260f5f333c11a7b76c92338456a9c6f354c6bf34e36d287057f"}}

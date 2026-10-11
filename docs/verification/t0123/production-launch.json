@@ -1,0 +1,12 @@
+{
+  "pid": 3024427,
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/viamind",
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-owned.viamind.json",
+  "port": 7955,
+  "args": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/full-verified/viamind",
+    "--open",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0123/production-owned.viamind.json",
+    "--agent-read-only"
+  ]
+}

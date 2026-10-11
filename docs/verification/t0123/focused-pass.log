@@ -1,0 +1,79 @@
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.79s
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.01s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 10 tests
+test unrouted::tests::annulus_pair_and_radial_interval_integer_predicates_exclude_outer_disk_false_joins ... ok
+test unrouted::tests::mirrored_quarter_turn_rectangles_keep_half_nm_extents_without_rounding ... ok
+test unrouted::tests::budget_identity_name_and_candidate_failures_refuse_whole_results ... ok
+test unrouted::tests::unsupported_scalars_and_legacy_parts_are_explicit_incomplete_coverage ... ok
+test unrouted::tests::interior_crossings_pad_edges_width_contacts_and_exact_gaps_have_independent_oracles ... ok
+test unrouted::tests::annulus_interior_contacts_bridge_layers_and_drill_center_never_counts_as_copper ... ok
+test unrouted::tests::purpose_capture_excludes_unused_poison_and_live_observation_preserves_complete_state ... ok
+test unrouted::tests::retained_admission_survives_caller_drop_and_workers_hold_it_through_actual_capture ... ok
+test unrouted::tests::aggregate_object_text_and_distinct_net_caps_reject_before_secondary_geometry_copies ... ok
+test unrouted::tests::complete_inventory_exceeds_old_pages_and_includes_zero_one_and_copper_only_definitions ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 86 filtered out; finished in 0.18s
+
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.24s
+     Running tests/unrouted.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/unrouted-7fd94f012f1c83bb)
+
+running 2 tests
+test cancelled_actual_registry_awaiter_keeps_queued_capture_admission_until_worker_retires ... ok
+test actual_same_name_two_client_whole_inventory_in_every_mode_matches_typed_result_and_preserves_native_session ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 34.80s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 2 tests
+test unrouted::tests::controlled_spawn_failure_and_disconnected_worker_leave_no_false_busy_and_retry_succeeds ... ok
+test unrouted::tests::actual_disabled_duplicate_control_hidden_poll_and_retained_admission_survive_dialog_close ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 95 filtered out; finished in 0.26s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0123/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.46s
+     Running tests/command_parity.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/command_parity-feaa1e6b69d7c699)
+
+running 4 tests
+test ui_and_agent_actions_operate_on_the_same_engine ... ok
+test parity_gate_detects_a_missing_tool ... ok
+test ui_mutations_route_through_the_catalog ... ok
+test every_ui_action_has_a_matching_mcp_tool_and_input_schema ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/unrouted.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/unrouted-a4308aac242d3e7c)
+
+running 1 test
+test actual_compact_observation_scrolls_full_results_matches_shared_catalog_and_marks_peer_changes_stale ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
