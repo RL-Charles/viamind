@@ -10,13 +10,19 @@ use viamind_engine::{
 
 const ADDED: Color32 = Color32::from_rgba_premultiplied(30, 190, 85, 210);
 const REMOVED: Color32 = Color32::from_rgba_premultiplied(210, 45, 55, 210);
+struct GhostCache {
+    id: ObjectId,
+    revision: u64,
+    items: Vec<(Item, Color32)>,
+    details: Vec<String>,
+}
 #[derive(Default)]
 pub struct PcbBranchesUi {
     open: bool,
     shown: bool,
     selected: Option<ObjectId>,
     branches: Vec<PcbBranchInfo>,
-    cached: Option<(ObjectId, u64, Vec<(Item, Color32)>)>,
+    cached: Option<GhostCache>,
     message: Option<String>,
 }
 impl PcbBranchesUi {
@@ -30,7 +36,7 @@ impl PcbBranchesUi {
         self.message.as_deref()
     }
     pub fn ghost_items(&self) -> usize {
-        self.cached.as_ref().map_or(0, |(_, _, items)| items.len())
+        self.cached.as_ref().map_or(0, |cache| cache.items.len())
     }
     fn refresh(&mut self, engine: &EngineHandle) {
         match UiAction::ListPcbBranches.run(engine, json!({})).and_then(|v| {
@@ -48,12 +54,15 @@ impl PcbBranchesUi {
                 self.clear();
                 return;
             }
-            if self.cached.as_ref().is_some_and(|(cached, revision, _)| *cached == id && *revision == info.revision) {
+            if self.cached.as_ref().is_some_and(|cache| cache.id == id && cache.revision == info.revision) {
                 return;
             }
             match UiAction::GetPcbBranchDiff.run(engine, json!({"branch_id":id,"offset":0,"limit":128})) {
                 Ok(value) => match serde_json::from_value::<PcbBranchDiff>(value) {
-                    Ok(diff) => self.cached = Some((id, diff.branch.revision, ghosts(diff.deltas))),
+                    Ok(diff) => {
+                        let details = details(&diff.deltas);
+                        self.cached = Some(GhostCache { id, revision: diff.branch.revision, items: ghosts(diff.deltas), details });
+                    }
                     Err(error) => {
                         self.cached = None;
                         self.message = Some(error.to_string());
@@ -71,6 +80,77 @@ impl PcbBranchesUi {
         self.selected = None;
         self.cached = None;
     }
+}
+fn abbreviated(text: &str) -> String {
+    let mut value: String = text.chars().take(80).collect();
+    if text.chars().count() > 80 {
+        value.push('…');
+    }
+    value
+}
+fn details(deltas: &[Delta]) -> Vec<String> {
+    deltas
+        .iter()
+        .map(|delta| match delta {
+            Delta::Part { id, before, after } => {
+                let summary = |p: &viamind_doc::Part| {
+                    format!(
+                        "{} value={} footprint={} at({}, {})Nm rotation={}mdeg {:?} pads={}",
+                        abbreviated(&p.designator),
+                        abbreviated(&p.value),
+                        abbreviated(&p.footprint),
+                        p.position.x.0,
+                        p.position.y.0,
+                        p.rotation_mdeg,
+                        p.side,
+                        p.pads.as_ref().map_or(0, |pads| pads.0.len())
+                    )
+                };
+                format!(
+                    "Part {id}\nOld: {}\nNew: {}",
+                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    after.as_ref().map_or_else(|| "absent".into(), summary)
+                )
+            }
+            Delta::Track { id, before, after } => {
+                let summary = |t: &viamind_doc::Track| {
+                    format!(
+                        "({}, {}) to({}, {})Nm width={}Nm {:?} net={}",
+                        t.start.x.0,
+                        t.start.y.0,
+                        t.end.x.0,
+                        t.end.y.0,
+                        t.width.0,
+                        t.layer,
+                        t.net.as_deref().map_or_else(|| "unassigned".into(), abbreviated)
+                    )
+                };
+                format!(
+                    "Track {id}\nOld: {}\nNew: {}",
+                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    after.as_ref().map_or_else(|| "absent".into(), summary)
+                )
+            }
+            Delta::Via { id, before, after } => {
+                let summary = |v: &viamind_doc::Via| {
+                    format!(
+                        "({}, {})Nm diameter={}Nm drill={}Nm net={}",
+                        v.position.x.0,
+                        v.position.y.0,
+                        v.diameter.0,
+                        v.drill.0,
+                        v.net.as_deref().map_or_else(|| "unassigned".into(), abbreviated)
+                    )
+                };
+                format!(
+                    "Via {id}\nOld: {}\nNew: {}",
+                    before.as_ref().map_or_else(|| "absent".into(), &summary),
+                    after.as_ref().map_or_else(|| "absent".into(), summary)
+                )
+            }
+            _ => "Unsupported change".into(),
+        })
+        .collect()
 }
 fn ghosts(deltas: Vec<Delta>) -> Vec<(Item, Color32)> {
     let mut before = Board::default();
@@ -152,9 +232,9 @@ impl ViamindApp {
         if !self.pcb_branches.visible() {
             return;
         }
-        let Some((_, _, items)) = &self.pcb_branches.cached else { return };
+        let Some(cache) = &self.pcb_branches.cached else { return };
         let painter = ui.painter_at(viewport);
-        for (item, color) in items {
+        for (item, color) in &cache.items {
             if self.layers.get(item.layer).is_some_and(|l| l.visible) {
                 painter.add(crate::canvas::item_shape(item, *color, &self.canvas.camera, viewport));
             }
@@ -191,6 +271,10 @@ impl ViamindApp {
                     });
                 }
                 if self.pcb_branches.selected.is_some() { ui.checkbox(&mut self.pcb_branches.shown,"Show branch diff"); }
+                if let Some(cache)=&self.pcb_branches.cached {
+                    ui.label("Changed objects (long text abbreviated; MCP diff retains full bounded values):");
+                    for detail in &cache.details {ui.separator();ui.label(detail);}
+                }
                 if let Some(message)=&self.pcb_branches.message { ui.colored_label(Color32::LIGHT_RED,message); }
             });
         });
