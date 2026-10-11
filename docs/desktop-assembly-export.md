@@ -32,3 +32,10 @@ centroid/population inference or manufacturer preset is introduced.
 Agents use the same `export_assembly_csv` request/schema and bounded writer.
 CLI `--export-csv bom|placement` remains available. Rendered SVG/PNG and fabrication
 export menus remain separate choices.
+
+CSV bytes are rendered, written and synced before final publication. The final
+path checks and atomic rename share the native open/new/save lifecycle guard,
+so a file opened or saved as the active project during staging remains protected.
+Both the captured source file and the current active file are protected; ordinary
+design commands remain available during publication. External filesystem changes
+are outside the shared engine lifecycle contract.

@@ -90,7 +90,26 @@ impl AssemblySnapshot {
         render_csv(&self.parts, kind)
     }
     pub fn write(&self, kind: AssemblyCsv, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<PathBuf> {
-        publish_csv(&self.csv(kind)?, path, overwrite, native_path)
+        stage_csv(&self.csv(kind)?, path, overwrite, native_path)?.publish(native_path)
+    }
+    /// Render, write and sync outside a document's native file publication guard.
+    /// The prepared file retains this snapshot's shared admission permit until publication/drop.
+    pub fn prepare(self, kind: AssemblyCsv, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<PreparedAssemblyCsv> {
+        let staged = stage_csv(&self.csv(kind)?, path, overwrite, native_path)?;
+        Ok(PreparedAssemblyCsv { staged, _snapshot: self })
+    }
+}
+
+/// A synced temporary CSV awaiting its small, atomic publication section.
+pub struct PreparedAssemblyCsv {
+    staged: StagedCsv,
+    _snapshot: AssemblySnapshot,
+}
+impl PreparedAssemblyCsv {
+    /// Protect both the captured source native file and the current active native file.
+    /// Shared-engine callers must invoke this inside their native lifecycle guard.
+    pub fn publish(self, current_native_path: Option<&Path>) -> io::Result<PathBuf> {
+        self.staged.publish(current_native_path)
     }
 }
 /// Render a bounded component-only snapshot, preserving text including line breaks.
@@ -186,10 +205,28 @@ pub fn write_csv(project: &Project, kind: AssemblyCsv, path: &Path, overwrite: b
     AssemblySnapshot::capture(project)?.write(kind, path, overwrite, native_path)
 }
 
-fn publish_csv(csv: &str, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<PathBuf> {
-    let path = std::path::absolute(path)?;
-    let parent = path.parent().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "output needs a parent directory"))?;
+struct StagedCsv {
+    temporary: tempfile::NamedTempFile,
+    path: PathBuf,
+    overwrite: bool,
+    captured_native: Option<PathBuf>,
+}
+impl StagedCsv {
+    fn publish(self, current_native_path: Option<&Path>) -> io::Result<PathBuf> {
+        protect_native(&self.path, self.captured_native.as_deref())?;
+        protect_native(&self.path, current_native_path)?;
+        if self.overwrite {
+            self.temporary.persist(&self.path).map_err(|error| error.error)?;
+        } else {
+            self.temporary.persist_noclobber(&self.path).map_err(|error| error.error)?;
+        }
+        Ok(self.path)
+    }
+}
+
+fn protect_native(path: &Path, native_path: Option<&Path>) -> io::Result<()> {
     if let Some(native) = native_path {
+        let parent = path.parent().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "output needs a parent directory"))?;
         let destination = path.canonicalize().unwrap_or(
             parent.canonicalize()?.join(path.file_name().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "output needs a file name"))?),
         );
@@ -198,13 +235,15 @@ fn publish_csv(csv: &str, path: &Path, overwrite: bool, native_path: Option<&Pat
             return Err(io::Error::new(io::ErrorKind::InvalidInput, "CSV output must differ from the active native project path"));
         }
     }
+    Ok(())
+}
+
+fn stage_csv(csv: &str, path: &Path, overwrite: bool, native_path: Option<&Path>) -> io::Result<StagedCsv> {
+    let path = std::path::absolute(path)?;
+    let parent = path.parent().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "output needs a parent directory"))?;
+    protect_native(&path, native_path)?;
     let mut temporary = tempfile::NamedTempFile::new_in(parent)?;
     temporary.write_all(csv.as_bytes())?;
     temporary.as_file().sync_all()?;
-    if overwrite {
-        temporary.persist(&path).map_err(|error| error.error)?;
-    } else {
-        temporary.persist_noclobber(&path).map_err(|error| error.error)?;
-    }
-    Ok(path)
+    Ok(StagedCsv { temporary, path, overwrite, captured_native: native_path.map(Path::to_owned) })
 }

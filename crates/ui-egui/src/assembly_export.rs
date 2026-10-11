@@ -10,6 +10,10 @@ use viamind_engine::{EngineError, EngineHandle, EventCursor};
 use viamind_fab::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot};
 
 pub(crate) fn export(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    export_with_before_publish(engine, input, || {})
+}
+
+fn export_with_before_publish(engine: &EngineHandle, input: Value, before_publish: impl FnOnce()) -> Result<Value, EngineError> {
     let invalid = |message: String| EngineError::InvalidInput { command: "export_assembly_csv".into(), message };
     let request: AssemblyExportRequest<EventCursor> = serde_json::from_value(input).map_err(|e| invalid(e.to_string()))?;
     if request.path.as_os_str().is_empty() {
@@ -24,9 +28,11 @@ pub(crate) fn export(engine: &EngineHandle, input: Value) -> Result<Value, Engin
         Ok((snapshot, cursor, e.document_status().path))
     })?;
     let count = snapshot.component_count();
-    let path = snapshot
-        .write(request.kind, &request.path, request.overwrite, native.as_deref())
+    let prepared = snapshot
+        .prepare(request.kind, &request.path, request.overwrite, native.as_deref())
         .map_err(|e| invalid(format!("could not export CSV: {e}")))?;
+    before_publish();
+    let path = engine.with_native_file_guard(|current| prepared.publish(current)).map_err(|e| invalid(format!("could not export CSV: {e}")))?;
     Ok(json!({"path":path,"exported_cursor":cursor,"component_count":count,"kind":request.kind}))
 }
 
@@ -177,6 +183,30 @@ impl ViamindApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn native_open_after_csv_staging_is_protected_without_changing_the_new_session() {
+        let directory = tempfile::tempdir().unwrap();
+        let source = directory.path().join("source.json");
+        let destination = directory.path().join("new-active.csv");
+        viamind_doc::file::save(&viamind_doc::Project::new("source"), &source).unwrap();
+        viamind_doc::file::save(&viamind_doc::Project::new("new active"), &destination).unwrap();
+        let engine = EngineHandle::load(&source).unwrap();
+        let before = std::fs::read(&destination).unwrap();
+        let mut opened = None;
+        let result = export_with_before_publish(&engine, json!({"kind":"bom","path":destination,"overwrite":true}), || {
+            engine
+                .open_project(
+                    viamind_engine::OpenProject { path: destination.clone(), discard_dirty: false, expected_cursor: None },
+                    viamind_engine::Origin::agent("other-native-editor"),
+                )
+                .unwrap();
+            opened = Some((engine.session_state(), engine.document_status()));
+        });
+        assert!(result.unwrap_err().to_string().contains("active native"));
+        assert_eq!(std::fs::read(&destination).unwrap(), before);
+        assert_eq!((engine.session_state(), engine.document_status()), opened.unwrap());
+        assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 2, "staging cleaned on rejected commit");
+    }
     #[test]
     fn pending_worker_is_retained_while_hidden_and_prevents_duplicate_start() {
         let (tx, rx) = mpsc::channel();
