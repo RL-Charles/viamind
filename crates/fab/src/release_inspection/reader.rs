@@ -226,7 +226,7 @@ mod tests {
         }
         let path = parent.join(name);
         let snapshot = crate::OutputJobSnapshot::capture(&project, job).unwrap();
-        let cursor = ReleaseCursor { stream_id: ObjectId::nil(), sequence: 42 };
+        let cursor = ReleaseCursor { stream_id: "00000000-0000-0000-0000-000000000000".parse().unwrap(), sequence: 42 };
         // Deliberately opaque validation bytes: reader must not claim DRC validation.
         snapshot.write_with_validation(cursor, &path, None, |_, _, _| Ok(b"opaque fixture, not DRC authorization".to_vec())).unwrap();
         path

@@ -110,7 +110,7 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
     struct Files;
     impl<'de> Visitor<'de> for Files {
         type Value = BTreeMap<String, usize>;
-        fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.write_str("at most13 unique fixed release file entries")
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {

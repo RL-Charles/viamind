@@ -197,7 +197,7 @@ pub(super) fn inspect(placement: &[u8], bom: Option<&[u8]>, count: usize, digest
         if parts.get(&id) != Some(&part) {
             return Err(invalid("populated BOM fields/identity differ from calibrated placement"));
         }
-        hash.update(id.as_bytes());
+        hash.update(id.0.as_bytes());
         bom_count += 1;
         Ok(())
     })?;
