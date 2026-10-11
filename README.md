@@ -188,6 +188,11 @@ This is a scoped geometry export, not fabrication certification. See
 [the specification](docs/specs/fabrication-gerber.md) and the independent reader
 check in [scripts/verify-fabrication.py](scripts/verify-fabrication.py).
 
+Use **File → Inspect fabrication files…** to read one to six supported Gerber or
+XNC outputs and compare their geometry with the board. Enable the overlay and
+select individual files; edits clear stale results. See the
+[fabrication viewer workflow and supported subset](docs/fabrication-overlay.md).
+
 ## Board inspection SVG and PNG
 
 ```sh

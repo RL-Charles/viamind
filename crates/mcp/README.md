@@ -407,6 +407,21 @@ Matching numbers preserve pad identities and nets; new pads get fresh IDs and no
 net. Component placement is retained. See
 [the native library guide](../../docs/footprint-libraries.md).
 
+## Read-only fabrication geometry inspection
+
+`inspect_fabrication_files` accepts one to six explicit `.gbr` or `.xnc` paths,
+`expected_project`, and the complete `expected_cursor` from `get_session_state`.
+It independently parses the supported metric output subset, returning ordered
+file reports with exact SHA256, native integer-Nm geometry, layer/polarity and
+captured `source_cursor`. Unknown semantics reject the whole request.
+
+The tool preserves design, history, selection, dirty state and source bytes.
+Concurrent edits can make a result historical; compare project and full cursor
+before displaying it. Each file is read independently. Matching coordinate UUIDs
+do not prove agreement with the current board; drill and identity-free Gerber
+origins remain explicitly unverified. One shared nonwaiting reader bounds work.
+See [viewer limits and behavior](../../docs/fabrication-overlay.md).
+
 ## Scoped fabrication snapshot
 
 `export_fabrication {"path":"new-directory","mask_expansion_mm":0.05}` exports
