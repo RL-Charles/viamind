@@ -161,3 +161,74 @@ fn raw_apply_preserves_duplicate_refusal_before_secondary_geometry_ownership() {
     assert!(serde_json::from_str::<ApplyFootprint>(&raw).is_ok());
     assert_eq!(e.session_state(), s);
 }
+
+#[test]
+fn batch_initial_cursor_atomic_rollback_and_same_uuid_reopen_guard() {
+    use viamind_engine::{CommandCall, OpenProject, SaveProject, SetPadApertures};
+    let e = engine();
+    let before = e.session_state();
+    let part = before.project.board.parts.values().next().unwrap().clone();
+    let pad_id = part.pads.as_ref().unwrap().0[0].id;
+    let first = SetPadApertures {
+        expected_project: before.project.id,
+        expected_cursor: before.cursor,
+        expected: part.clone(),
+        pad_id,
+        apertures: Some(PadApertures { mask: Some(ApertureRect { width: Nm(3), height: Nm(5) }), paste: None }),
+    };
+    let mut second = first.clone();
+    second.expected.pads.as_mut().unwrap().0[0].apertures = first.apertures.clone();
+    second.apertures = Some(PadApertures { mask: None, paste: Some(ApertureRect { width: Nm(7), height: Nm(11) }) });
+    let mut invalid = second.clone();
+    invalid.apertures.as_mut().unwrap().paste.as_mut().unwrap().width = Nm(0);
+    let calls = |a: &SetPadApertures, b: &SetPadApertures| {
+        vec![
+            CommandCall::new("set_pad_apertures", serde_json::to_value(a).unwrap()),
+            CommandCall::new("set_pad_apertures", serde_json::to_value(b).unwrap()),
+        ]
+    };
+    assert!(e.execute_batch(calls(&first, &invalid), Origin::User, None).is_err());
+    assert_eq!(e.session_state(), before);
+    e.execute_batch(calls(&first, &second), Origin::User, None).unwrap();
+    let changed = e.session_state();
+    assert_eq!(changed.cursor.sequence, before.cursor.sequence + 1);
+    assert_eq!(changed.project.board.parts[&part.id].pads.as_ref().unwrap().0[0].apertures, second.apertures);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    e.redo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), changed.project);
+    let now = e.session_state();
+    let stale = SetPadApertures {
+        expected_project: now.project.id,
+        expected_cursor: now.cursor,
+        expected: now.project.board.parts[&part.id].clone(),
+        pad_id,
+        apertures: None,
+    };
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("same.viamind.json");
+    e.save_project(SaveProject { path: Some(path.clone()), overwrite: false }).unwrap();
+    let bytes = std::fs::read(&path).unwrap();
+    e.open_project(OpenProject { path: path.clone(), discard_dirty: false, expected_cursor: None }, Origin::User).unwrap();
+    let reopened = e.session_state();
+    assert_eq!(reopened.project.id, now.project.id);
+    assert_ne!(reopened.cursor.stream_id, now.cursor.stream_id);
+    assert!(e.execute_typed(stale, Origin::User).is_err());
+    assert_eq!(e.session_state(), reopened);
+    assert_eq!(std::fs::read(path).unwrap(), bytes);
+}
+#[test]
+fn borrowed_expected_string_and_aggregate_admission_precede_typed_poison() {
+    let e = engine();
+    let before = e.session_state();
+    let part = before.project.board.parts.values().next().unwrap();
+    let mut input = serde_json::json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"expected":part,"pad_id":part.pads.as_ref().unwrap().0[0].id,"apertures":null});
+    input["expected"]["assembly"] = serde_json::json!({"manufacturer":"m".repeat(513),"mpn":[],"supplier":null,"supplier_sku":null});
+    let err = e.execute("set_pad_apertures", input.clone(), Origin::User).unwrap_err().to_string();
+    assert!(err.contains("512 UTF-8"), "{err}");
+    input["expected"]["assembly"] = serde_json::Value::Null;
+    input["expected"]["poison"] = "x".repeat(2 * 1024 * 1024).into();
+    let err = e.execute("set_pad_apertures", input, Origin::User).unwrap_err().to_string();
+    assert!(err.contains("2MiB"), "{err}");
+    assert_eq!(e.session_state(), before);
+}

@@ -97,6 +97,13 @@ pub(crate) fn preflight_part(value: &Value) -> Result<(), String> {
             return Err("part labels support at most4096 UTF-8 bytes before typed decoding".into());
         }
     }
+    if let Some(assembly) = value.get("assembly") {
+        for key in ["manufacturer", "mpn", "supplier", "supplier_sku"] {
+            if assembly.get(key).and_then(Value::as_str).is_some_and(|s| s.len() > 512) {
+                return Err("sourcing fields support at most512 UTF-8 bytes before typed decoding".into());
+            }
+        }
+    }
     bounded_bytes(value)
 }
 pub(crate) fn bounded_bytes(value: &impl Serialize) -> Result<(), String> {
