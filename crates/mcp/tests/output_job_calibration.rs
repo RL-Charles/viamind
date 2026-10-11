@@ -12,7 +12,13 @@ async fn companion_shared_job_keeps_exact_capture_rules_publication_and_read_onl
             .unwrap(),
         ));
     }
-    project.board.net_rules.insert("GND".into(), serde_json::from_value(json!({"minimum_copper_clearance":0,"minimum_track_width":250000})).unwrap());
+    project.board.net_rules.insert(
+        "GND".into(),
+        serde_json::from_value(
+            json!({"minimum_copper_clearance":0,"minimum_track_width":250000,"minimum_via_drill":300000,"minimum_annular_width":250000}),
+        )
+        .unwrap(),
+    );
     let temp = tempfile::tempdir().unwrap();
     let native = temp.path().join("native.json");
     viamind_doc::file::save(&project, &native).unwrap();
@@ -103,6 +109,23 @@ async fn companion_shared_job_keeps_exact_capture_rules_publication_and_read_onl
     engine.undo(Origin::User).unwrap();
     assert_eq!(engine.read(Clone::clone), before.project);
     assert_eq!(std::fs::read(&native).unwrap(), native_bytes);
+    // The calibrated profile shares the newly merged document via policies too.
+    for (name, drill, annulus) in [("drill-floor", 300001, 250000), ("annular-floor", 300000, 250001)] {
+        let cursor = engine.event_cursor();
+        engine.execute("set_named_net_rules", json!({"expected_project":before.project.id,"expected_cursor":cursor,"rules":[{"net":"GND","minimum_copper_clearance":0,"minimum_track_width":250000,"minimum_via_drill":drill,"minimum_annular_width":annulus}]}), Origin::agent("peer")).unwrap();
+        let current = engine.session_state();
+        let refused = temp.path().join(name);
+        let error = a
+            .call("run_output_job", json!({"job_path":job_path,"path":refused,"expected_cursor":current.cursor}), Default::default())
+            .await
+            .unwrap_err();
+        assert!(error.to_string().contains("violations"), "{error}");
+        assert!(!refused.exists());
+        assert_eq!(engine.session_state(), current);
+        assert!(!std::fs::read_dir(temp.path()).unwrap().any(|p| p.unwrap().file_name().to_string_lossy().starts_with(".viamind-output-job-")));
+        engine.undo(Origin::User).unwrap();
+        assert_eq!(engine.read(Clone::clone), before.project);
+    }
     // A canceled async awaiter cannot release the slot or change a running job's owned capture.
     let retained = engine.read(|p| OutputJobSnapshot::capture(p, job)).unwrap();
     let current = engine.session_state();
