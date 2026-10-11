@@ -75,6 +75,7 @@ ui_actions! {
     RenderSchematicSvg => ("render_schematic_view", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_svg),
     RenderSchematicPng => ("render_schematic_png", input_schema::<viamind_render::SchematicViewRequest<EventCursor>>(), render_schematic_png),
     ExportAssemblyCsv => ("export_assembly_csv", viamind_fab::assembly_schema(), export_assembly_csv),
+    InspectOutputRelease => ("inspect_output_release",viamind_fab::release_inspection_schema(),crate::release_inspection::inspect),
     LoadOutputJob => ("load_output_job", viamind_fab::output_job_schema("load"), load_output_job),
     SaveOutputJob => ("save_output_job", viamind_fab::output_job_schema("save"), save_output_job),
     RunOutputJob => ("run_output_job", viamind_fab::output_job_schema("run"), run_output_job),

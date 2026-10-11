@@ -17,6 +17,21 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
             Ok(json!({"job":job}))
         },
     )?;
+    registry.register_observation(
+        "inspect_output_release",
+        "Read-only bounded consistency inspection of an explicit saved Viamind release directory (versions1–3). Strict fixed layout/JSON and observed regular-file lengths; calibrated row/count checks and version3 matched populated fields/component identity digest. Descriptor-anchored no-follow/nonblock Linux reads; one retained reader. Inspector caps may refuse otherwise valid larger exports. Reports historical exported cursor, not current board equivalence. No authenticated file content, geometry/DRC recomputation, atomic cross-file snapshot, unlisted-file inspection or manufacturer acceptance. No document/file payload mutation.",
+        viamind_fab::release_inspection_schema(),
+        |input| async move {
+            if input.get("path").and_then(serde_json::Value::as_str).is_some_and(|path|path.len()>4096) {
+                return Err(ToolError::InvalidInput("release path exceeds4096 UTF-8 bytes before decoding".into()));
+            }
+            let input:viamind_fab::InspectOutputRelease=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;
+            tokio::task::spawn_blocking(move || {
+                let result=viamind_fab::inspect_output_release(&input).map_err(failed)?;
+                serde_json::to_value(result).map_err(failed)
+            }).await.map_err(failed)?
+        },
+    )?;
     let save_engine = engine.clone();
     registry.register("save_output_job","Save canonical detached job settings to a NEW file. Existing destinations and active native files are preserved. Does not change the design.",viamind_fab::output_job_schema("save"),move |input| {
         let engine=save_engine.clone();async move {

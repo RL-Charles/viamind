@@ -36,6 +36,7 @@ pub mod pcb_import;
 pub mod pcb_sync;
 pub mod pin_pad_probe;
 pub mod placement;
+pub mod release_inspection;
 pub mod routing;
 pub mod scene;
 pub mod schematic;
@@ -172,6 +173,7 @@ pub struct ViamindApp {
     pub fabrication: fabrication::FabricationUi,
     pub fabrication_view: fabrication_view::FabricationViewUi,
     pub output_jobs: output_jobs::OutputJobUi,
+    pub release_inspection: release_inspection::ReleaseInspectionUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
@@ -226,6 +228,7 @@ impl ViamindApp {
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
+            release_inspection: release_inspection::ReleaseInspectionUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -277,6 +280,7 @@ impl ViamindApp {
             fabrication: fabrication::FabricationUi::default(),
             fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
+            release_inspection: release_inspection::ReleaseInspectionUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
@@ -472,6 +476,7 @@ impl ViamindApp {
         self.fabrication_window(ui);
         self.fabrication_inspection_window(ui);
         self.output_jobs_window(ui);
+        self.release_inspection_window(ui);
         self.view_export_window(ui);
         self.assembly_export_window(ui);
         self.pcb_import_window(ui);
@@ -545,6 +550,10 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    if ui.button("Inspect saved release…").clicked() {
+                        self.begin_release_inspection();
+                        ui.close();
+                    }
                     if ui.button("Saved output jobs…").clicked() {
                         self.begin_output_jobs();
                         ui.close();
