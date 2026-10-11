@@ -29,11 +29,7 @@ pub fn run() -> eframe::Result {
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
-    eframe::run_native(
-        "Viamind",
-        options,
-        Box::new(|_cc| Ok(Box::new(ViamindApp::default()))),
-    )
+    eframe::run_native("Viamind", options, Box::new(|_cc| Ok(Box::new(ViamindApp::default()))))
 }
 
 /// Timing of recent frames, for the status bar.
@@ -64,12 +60,7 @@ impl Default for ViamindApp {
 impl ViamindApp {
     /// An app showing [`Scene::synthetic`] with `n` objects.
     pub fn with_scene_size(n: usize) -> Self {
-        Self {
-            scene: Scene::synthetic(n),
-            canvas: Canvas::default(),
-            stats: FrameStats::default(),
-            last_frame_time: None,
-        }
+        Self { scene: Scene::synthetic(n), canvas: Canvas::default(), stats: FrameStats::default(), last_frame_time: None }
     }
 
     /// Replaces the scene with `n` synthetic objects and zooms to fit it.
@@ -89,12 +80,8 @@ impl ViamindApp {
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
-        egui::Panel::left("layers")
-            .default_size(180.0)
-            .show(ui, layer_panel);
-        egui::CentralPanel::default()
-            .frame(egui::Frame::NONE)
-            .show(ui, |ui| self.canvas.show(ui, &self.scene));
+        egui::Panel::left("layers").default_size(180.0).show(ui, layer_panel);
+        egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| self.canvas.show(ui, &self.scene));
 
         self.stats.ui_ms = start.elapsed().as_secs_f32() * 1000.0;
     }
@@ -107,11 +94,7 @@ impl ViamindApp {
             if dt > 0.0 {
                 let fps = 1.0 / dt;
                 // Exponential smoothing; restart after idle gaps so the number stays meaningful.
-                self.stats.fps = if self.stats.fps == 0.0 || dt > 0.5 {
-                    fps
-                } else {
-                    self.stats.fps * 0.9 + fps * 0.1
-                };
+                self.stats.fps = if self.stats.fps == 0.0 || dt > 0.5 { fps } else { self.stats.fps * 0.9 + fps * 0.1 };
             }
         }
         self.last_frame_time = Some(now);
@@ -149,20 +132,10 @@ impl ViamindApp {
             ui.separator();
             ui.monospace(format!("zoom {:.3} px/mm", self.canvas.camera.zoom));
             ui.separator();
-            ui.monospace(format!(
-                "{}/{} drawn",
-                self.canvas.drawn,
-                self.scene.items.len()
-            ));
+            ui.monospace(format!("{}/{} drawn", self.canvas.drawn, self.scene.items.len()));
             ui.separator();
-            let cpu = self
-                .stats
-                .cpu_ms
-                .map_or_else(|| "-".to_owned(), |ms| format!("{ms:.1}"));
-            ui.monospace(format!(
-                "frame cpu {cpu} ms  ui {:.1} ms  {:.0} fps",
-                self.stats.ui_ms, self.stats.fps
-            ));
+            let cpu = self.stats.cpu_ms.map_or_else(|| "-".to_owned(), |ms| format!("{ms:.1}"));
+            ui.monospace(format!("frame cpu {cpu} ms  ui {:.1} ms  {:.0} fps", self.stats.ui_ms, self.stats.fps));
         });
     }
 }
@@ -174,8 +147,7 @@ fn layer_panel(ui: &mut Ui) {
     for layer in Layer::ALL.into_iter().rev() {
         ui.horizontal(|ui| {
             let (rect, _) = ui.allocate_exact_size(egui::vec2(12.0, 12.0), egui::Sense::hover());
-            ui.painter()
-                .rect_filled(rect, 2.0, canvas::layer_color(layer).to_opaque());
+            ui.painter().rect_filled(rect, 2.0, canvas::layer_color(layer).to_opaque());
             ui.label(layer.name());
         });
     }

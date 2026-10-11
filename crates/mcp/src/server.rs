@@ -5,8 +5,8 @@ use std::sync::Arc;
 use rmcp::{
     ErrorData as McpError, RoleServer, ServerHandler, ServiceExt,
     model::{
-        CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, Implementation,
-        ListToolsResult, PaginatedRequestParams, ServerCapabilities, ServerConfig, Tool,
+        CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, Implementation, ListToolsResult, PaginatedRequestParams,
+        ServerCapabilities, ServerConfig, Tool,
     },
     service::RequestContext,
 };
@@ -29,9 +29,7 @@ pub struct ViamindServer {
 impl ViamindServer {
     /// Server exposing the tools in `registry`.
     pub fn new(registry: ToolRegistry) -> Self {
-        Self {
-            registry: Arc::new(registry),
-        }
+        Self { registry: Arc::new(registry) }
     }
 
     /// The registry this server serves.
@@ -54,11 +52,7 @@ fn to_mcp_tool(def: &ToolDef) -> Tool {
 /// content (plus a text copy for older clients); other values are text only,
 /// since MCP structured content must be an object.
 fn to_call_result(value: Value) -> CallToolResult {
-    if value.is_object() {
-        CallToolResult::structured(value)
-    } else {
-        CallToolResult::success(vec![ContentBlock::text(value.to_string())])
-    }
+    if value.is_object() { CallToolResult::structured(value) } else { CallToolResult::success(vec![ContentBlock::text(value.to_string())]) }
 }
 
 impl ServerHandler for ViamindServer {
@@ -72,35 +66,21 @@ impl ServerHandler for ViamindServer {
             .with_instructions(INSTRUCTIONS)
     }
 
-    async fn list_tools(
-        &self,
-        _request: Option<PaginatedRequestParams>,
-        _context: RequestContext<RoleServer>,
-    ) -> Result<ListToolsResult, McpError> {
-        Ok(ListToolsResult::with_all_items(
-            self.registry.tools().map(to_mcp_tool).collect(),
-        ))
+    async fn list_tools(&self, _request: Option<PaginatedRequestParams>, _context: RequestContext<RoleServer>) -> Result<ListToolsResult, McpError> {
+        Ok(ListToolsResult::with_all_items(self.registry.tools().map(to_mcp_tool).collect()))
     }
 
     fn get_tool(&self, name: &str) -> Option<Tool> {
         self.registry.get(name).map(to_mcp_tool)
     }
 
-    async fn call_tool(
-        &self,
-        request: CallToolRequestParams,
-        _context: RequestContext<RoleServer>,
-    ) -> Result<CallToolResponse, McpError> {
+    async fn call_tool(&self, request: CallToolRequestParams, _context: RequestContext<RoleServer>) -> Result<CallToolResponse, McpError> {
         let input = Value::Object(request.arguments.unwrap_or_default());
         match self.registry.call(&request.name, input).await {
             Ok(value) => Ok(to_call_result(value).into()),
             // Tool failures go back as tool results so the agent sees the message.
-            Err(CallError::Tool(err)) => {
-                Ok(CallToolResult::error(vec![ContentBlock::text(err.to_string())]).into())
-            }
-            Err(err @ CallError::UnknownTool(_)) => {
-                Err(McpError::invalid_params(err.to_string(), None))
-            }
+            Err(CallError::Tool(err)) => Ok(CallToolResult::error(vec![ContentBlock::text(err.to_string())]).into()),
+            Err(err @ CallError::UnknownTool(_)) => Err(McpError::invalid_params(err.to_string(), None)),
         }
     }
 }
@@ -109,9 +89,7 @@ impl ServerHandler for ViamindServer {
 ///
 /// Stdout carries the protocol, so nothing else may write to it.
 pub async fn serve_stdio(registry: ToolRegistry) -> anyhow::Result<()> {
-    let service = ViamindServer::new(registry)
-        .serve(rmcp::transport::stdio())
-        .await?;
+    let service = ViamindServer::new(registry).serve(rmcp::transport::stdio()).await?;
     service.waiting().await?;
     Ok(())
 }

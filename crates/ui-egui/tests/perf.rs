@@ -16,21 +16,11 @@ struct Timing {
 }
 
 fn input(screen: Rect, events: Vec<Event>, time: f64) -> RawInput {
-    RawInput {
-        screen_rect: Some(screen),
-        time: Some(time),
-        events,
-        ..Default::default()
-    }
+    RawInput { screen_rect: Some(screen), time: Some(time), events, ..Default::default() }
 }
 
 fn button(pos: Pos2, button: PointerButton, pressed: bool) -> Event {
-    Event::PointerButton {
-        pos,
-        button,
-        pressed,
-        modifiers: Modifiers::NONE,
-    }
+    Event::PointerButton { pos, button, pressed, modifiers: Modifiers::NONE }
 }
 
 /// Runs `FRAMES` frames of a middle-drag pan back and forth over the canvas at the zoom given by
@@ -50,10 +40,7 @@ fn measure(objects: usize, zoom_factor: f64) -> (Vec<Timing>, usize) {
     let canvas = Rect::from_min_max(pos2(200.0, 30.0), pos2(1600.0, 970.0));
     app.canvas.camera.zoom_about(center, canvas, zoom_factor);
     t += 1.0 / 60.0;
-    let start = vec![
-        Event::PointerMoved(center),
-        button(center, PointerButton::Middle, true),
-    ];
+    let start = vec![Event::PointerMoved(center), button(center, PointerButton::Middle, true)];
     let _ = ctx.run_ui(input(screen, start, t), |ui| app.show(ui, None));
 
     let mut timings = Vec::with_capacity(FRAMES);
@@ -63,17 +50,12 @@ fn measure(objects: usize, zoom_factor: f64) -> (Vec<Timing>, usize) {
         let dx = if (i / 15) % 2 == 0 { 4.0 } else { -4.0 };
         pos += vec2(dx, dx * 0.5);
         let t0 = Instant::now();
-        let out = ctx.run_ui(input(screen, vec![Event::PointerMoved(pos)], t), |ui| {
-            app.show(ui, None)
-        });
+        let out = ctx.run_ui(input(screen, vec![Event::PointerMoved(pos)], t), |ui| app.show(ui, None));
         let t1 = Instant::now();
         let prims = ctx.tessellate(out.shapes, out.pixels_per_point);
         let t2 = Instant::now();
         assert!(!prims.is_empty());
-        timings.push(Timing {
-            ui: t1 - t0,
-            tessellate: t2 - t1,
-        });
+        timings.push(Timing { ui: t1 - t0, tessellate: t2 - t1 });
     }
     (timings, app.canvas.drawn)
 }

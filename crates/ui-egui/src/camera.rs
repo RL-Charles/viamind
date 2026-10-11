@@ -38,10 +38,7 @@ impl WorldRect {
 
     /// The bounding box of two points, in any order.
     pub fn from_points(a: WorldPos, b: WorldPos) -> Self {
-        Self {
-            min: WorldPos::new(a.x.min(b.x), a.y.min(b.y)),
-            max: WorldPos::new(a.x.max(b.x), a.y.max(b.y)),
-        }
+        Self { min: WorldPos::new(a.x.min(b.x), a.y.min(b.y)), max: WorldPos::new(a.x.max(b.x), a.y.max(b.y)) }
     }
 
     pub fn width(&self) -> f64 {
@@ -53,26 +50,17 @@ impl WorldRect {
     }
 
     pub fn center(&self) -> WorldPos {
-        WorldPos::new(
-            (self.min.x + self.max.x) * 0.5,
-            (self.min.y + self.max.y) * 0.5,
-        )
+        WorldPos::new((self.min.x + self.max.x) * 0.5, (self.min.y + self.max.y) * 0.5)
     }
 
     /// Grows the rectangle by `margin` on every side.
     pub fn expand(&self, margin: f64) -> Self {
-        Self {
-            min: WorldPos::new(self.min.x - margin, self.min.y - margin),
-            max: WorldPos::new(self.max.x + margin, self.max.y + margin),
-        }
+        Self { min: WorldPos::new(self.min.x - margin, self.min.y - margin), max: WorldPos::new(self.max.x + margin, self.max.y + margin) }
     }
 
     /// True when the two rectangles overlap or touch.
     pub fn intersects(&self, other: &Self) -> bool {
-        self.min.x <= other.max.x
-            && other.min.x <= self.max.x
-            && self.min.y <= other.max.y
-            && other.min.y <= self.max.y
+        self.min.x <= other.max.x && other.min.x <= self.max.x && self.min.y <= other.max.y && other.min.y <= self.max.y
     }
 }
 
@@ -89,10 +77,7 @@ pub struct Camera {
 
 impl Default for Camera {
     fn default() -> Self {
-        Self {
-            center: WorldPos::default(),
-            zoom: 10.0,
-        }
+        Self { center: WorldPos::default(), zoom: 10.0 }
     }
 }
 
@@ -100,27 +85,18 @@ impl Camera {
     /// World millimetres to screen points.
     pub fn world_to_screen(&self, p: WorldPos, viewport: Rect) -> Pos2 {
         let c = viewport.center();
-        pos2(
-            c.x + ((p.x - self.center.x) * self.zoom) as f32,
-            c.y + ((p.y - self.center.y) * self.zoom) as f32,
-        )
+        pos2(c.x + ((p.x - self.center.x) * self.zoom) as f32, c.y + ((p.y - self.center.y) * self.zoom) as f32)
     }
 
     /// Screen points to world millimetres.
     pub fn screen_to_world(&self, s: Pos2, viewport: Rect) -> WorldPos {
         let c = viewport.center();
-        WorldPos::new(
-            self.center.x + f64::from(s.x - c.x) / self.zoom,
-            self.center.y + f64::from(s.y - c.y) / self.zoom,
-        )
+        WorldPos::new(self.center.x + f64::from(s.x - c.x) / self.zoom, self.center.y + f64::from(s.y - c.y) / self.zoom)
     }
 
     /// The part of the world visible in `viewport`.
     pub fn visible_world_rect(&self, viewport: Rect) -> WorldRect {
-        WorldRect::from_points(
-            self.screen_to_world(viewport.min, viewport),
-            self.screen_to_world(viewport.max, viewport),
-        )
+        WorldRect::from_points(self.screen_to_world(viewport.min, viewport), self.screen_to_world(viewport.max, viewport))
     }
 
     /// Moves the view so the content follows a pointer drag of `delta` screen points.
@@ -171,20 +147,10 @@ mod tests {
         let vp = viewport();
         for cam in [
             Camera::default(),
-            Camera {
-                center: WorldPos::new(123.4, -56.7),
-                zoom: 0.37,
-            },
-            Camera {
-                center: WorldPos::new(-1.0, 2.5),
-                zoom: 4_000.0,
-            },
+            Camera { center: WorldPos::new(123.4, -56.7), zoom: 0.37 },
+            Camera { center: WorldPos::new(-1.0, 2.5), zoom: 4_000.0 },
         ] {
-            for p in [
-                WorldPos::new(0.0, 0.0),
-                WorldPos::new(10.25, -3.5),
-                WorldPos::new(cam.center.x + 0.1, cam.center.y - 0.2),
-            ] {
+            for p in [WorldPos::new(0.0, 0.0), WorldPos::new(10.25, -3.5), WorldPos::new(cam.center.x + 0.1, cam.center.y - 0.2)] {
                 let back = cam.screen_to_world(cam.world_to_screen(p, vp), vp);
                 // Screen positions are f32 points; allow a hundredth of a point of error.
                 let tol = 0.01 / cam.zoom + 1e-9 * p.x.abs().max(p.y.abs());
@@ -197,10 +163,7 @@ mod tests {
     #[test]
     fn screen_world_screen_round_trip() {
         let vp = viewport();
-        let cam = Camera {
-            center: WorldPos::new(50.0, 40.0),
-            zoom: 12.5,
-        };
+        let cam = Camera { center: WorldPos::new(50.0, 40.0), zoom: 12.5 };
         for s in [vp.min, vp.center(), vp.max, pos2(333.0, 444.0)] {
             let back = cam.world_to_screen(cam.screen_to_world(s, vp), vp);
             assert!((back - s).length() < 1e-3, "{s:?} -> {back:?}");
@@ -210,10 +173,7 @@ mod tests {
     #[test]
     fn viewport_center_shows_camera_center() {
         let vp = viewport();
-        let cam = Camera {
-            center: WorldPos::new(7.0, 8.0),
-            zoom: 3.0,
-        };
+        let cam = Camera { center: WorldPos::new(7.0, 8.0), zoom: 3.0 };
         assert_eq!(cam.world_to_screen(cam.center, vp), vp.center());
         assert_eq!(cam.screen_to_world(vp.center(), vp), cam.center);
     }
@@ -221,10 +181,7 @@ mod tests {
     #[test]
     fn zoom_about_point_keeps_point_fixed() {
         let vp = viewport();
-        let mut cam = Camera {
-            center: WorldPos::new(20.0, 10.0),
-            zoom: 5.0,
-        };
+        let mut cam = Camera { center: WorldPos::new(20.0, 10.0), zoom: 5.0 };
         let anchor = pos2(321.0, 654.0);
         for factor in [1.1, 2.0, 0.5, 0.9, 37.0, 1.0 / 37.0] {
             let before = cam.screen_to_world(anchor, vp);

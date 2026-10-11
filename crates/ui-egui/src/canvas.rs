@@ -41,13 +41,7 @@ pub struct Canvas {
 
 impl Default for Canvas {
     fn default() -> Self {
-        Self {
-            camera: Camera::default(),
-            fit_pending: true,
-            cursor_world: None,
-            drawn: 0,
-            shapes: Vec::new(),
-        }
+        Self { camera: Camera::default(), fit_pending: true, cursor_world: None, drawn: 0, shapes: Vec::new() }
     }
 }
 
@@ -59,16 +53,13 @@ impl Canvas {
 
         // Zoom to fit: on request, at start-up, and on the Home key.
         if self.fit_pending || ui.input(|i| i.key_pressed(Key::Home)) {
-            self.camera
-                .zoom_to_fit(scene.bounds(), viewport, FIT_MARGIN);
+            self.camera.zoom_to_fit(scene.bounds(), viewport, FIT_MARGIN);
             self.fit_pending = false;
         }
 
         // Pan: middle-drag, or space + primary drag.
         let space_held = ui.input(|i| i.key_down(Key::Space));
-        if response.dragged_by(PointerButton::Middle)
-            || (space_held && response.dragged_by(PointerButton::Primary))
-        {
+        if response.dragged_by(PointerButton::Middle) || (space_held && response.dragged_by(PointerButton::Primary)) {
             self.camera.pan_by_screen(response.drag_delta());
         }
 
@@ -81,16 +72,10 @@ impl Canvas {
             }
         }
 
-        self.cursor_world = response
-            .hover_pos()
-            .map(|p| self.camera.screen_to_world(p, viewport));
+        self.cursor_world = response.hover_pos().map(|p| self.camera.screen_to_world(p, viewport));
 
         if space_held && response.hovered() {
-            ui.set_cursor_icon(if response.dragged() {
-                egui::CursorIcon::Grabbing
-            } else {
-                egui::CursorIcon::Grab
-            });
+            ui.set_cursor_icon(if response.dragged() { egui::CursorIcon::Grabbing } else { egui::CursorIcon::Grab });
         }
 
         self.paint(&painter, viewport, scene);
@@ -105,12 +90,7 @@ impl Canvas {
         let board = screen_rect(scene.board);
         painter.rect_filled(board, CornerRadius::ZERO, BOARD_FILL);
         paint_grid(painter, &cam, viewport);
-        painter.rect_stroke(
-            board,
-            CornerRadius::ZERO,
-            Stroke::new(1.0, BOARD_EDGE),
-            egui::StrokeKind::Middle,
-        );
+        painter.rect_stroke(board, CornerRadius::ZERO, Stroke::new(1.0, BOARD_EDGE), egui::StrokeKind::Middle);
 
         // Cull to the visible area (slightly grown so strokes at the edge are not clipped).
         let visible = cam.visible_world_rect(viewport).expand(2.0 / cam.zoom);
@@ -121,13 +101,8 @@ impl Canvas {
             let color = layer_color(item.layer);
             shapes.push(match item.prim {
                 Prim::Rect(r) => Shape::rect_filled(screen_rect(r), CornerRadius::ZERO, color),
-                Prim::Circle { center, radius } => {
-                    Shape::circle_filled(to_screen(center), radius as f32 * zoom, color)
-                }
-                Prim::Segment { a, b, width } => Shape::line_segment(
-                    [to_screen(a), to_screen(b)],
-                    Stroke::new(width as f32 * zoom, color),
-                ),
+                Prim::Circle { center, radius } => Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
+                Prim::Segment { a, b, width } => Shape::line_segment([to_screen(a), to_screen(b)], Stroke::new(width as f32 * zoom, color)),
             });
         }
         self.drawn = shapes.len();
@@ -140,11 +115,7 @@ impl Canvas {
 pub fn grid_step(zoom: f64, min_px: f64) -> f64 {
     let raw = min_px / zoom;
     let decade = 10f64.powf(raw.log10().floor());
-    [1.0, 2.0, 5.0, 10.0]
-        .into_iter()
-        .map(|m| m * decade)
-        .find(|step| *step >= raw * (1.0 - 1e-9))
-        .unwrap_or(10.0 * decade)
+    [1.0, 2.0, 5.0, 10.0].into_iter().map(|m| m * decade).find(|step| *step >= raw * (1.0 - 1e-9)).unwrap_or(10.0 * decade)
 }
 
 /// Draws minor grid lines at [`grid_step`] and brighter major lines every power of ten above it.
@@ -164,20 +135,14 @@ fn paint_grid(painter: &egui::Painter, cam: &Camera, viewport: Rect) {
     while x <= visible.max.x {
         let sx = cam.world_to_screen(WorldPos::new(x, 0.0), viewport).x;
         let color = if is_major(x) { major_color } else { minor };
-        painter.line_segment(
-            [pos2(sx, viewport.top()), pos2(sx, viewport.bottom())],
-            Stroke::new(1.0, color),
-        );
+        painter.line_segment([pos2(sx, viewport.top()), pos2(sx, viewport.bottom())], Stroke::new(1.0, color));
         x += step;
     }
     let mut y = (visible.min.y / step).floor() * step;
     while y <= visible.max.y {
         let sy = cam.world_to_screen(WorldPos::new(0.0, y), viewport).y;
         let color = if is_major(y) { major_color } else { minor };
-        painter.line_segment(
-            [pos2(viewport.left(), sy), pos2(viewport.right(), sy)],
-            Stroke::new(1.0, color),
-        );
+        painter.line_segment([pos2(viewport.left(), sy), pos2(viewport.right(), sy)], Stroke::new(1.0, color));
         y += step;
     }
 

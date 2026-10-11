@@ -31,11 +31,7 @@ pub enum Prim {
     /// A round pad or via.
     Circle { center: WorldPos, radius: f64 },
     /// A track segment of the given width.
-    Segment {
-        a: WorldPos,
-        b: WorldPos,
-        width: f64,
-    },
+    Segment { a: WorldPos, b: WorldPos, width: f64 },
 }
 
 impl Prim {
@@ -43,10 +39,9 @@ impl Prim {
     pub fn bounds(&self) -> WorldRect {
         match *self {
             Self::Rect(r) => r,
-            Self::Circle { center, radius } => WorldRect::new(
-                WorldPos::new(center.x - radius, center.y - radius),
-                WorldPos::new(center.x + radius, center.y + radius),
-            ),
+            Self::Circle { center, radius } => {
+                WorldRect::new(WorldPos::new(center.x - radius, center.y - radius), WorldPos::new(center.x + radius, center.y + radius))
+            }
             Self::Segment { a, b, width } => WorldRect::from_points(a, b).expand(width * 0.5),
         }
     }
@@ -62,11 +57,7 @@ pub struct Item {
 
 impl Item {
     pub fn new(prim: Prim, layer: Layer) -> Self {
-        Self {
-            prim,
-            layer,
-            bounds: prim.bounds(),
-        }
+        Self { prim, layer, bounds: prim.bounds() }
     }
 }
 
@@ -91,44 +82,21 @@ impl Scene {
         for _ in 0..n {
             let x = rng.range(inset, width - inset);
             let y = rng.range(inset, height - inset);
-            let copper = if rng.next_f64() < 0.6 {
-                Layer::TopCopper
-            } else {
-                Layer::BottomCopper
-            };
+            let copper = if rng.next_f64() < 0.6 { Layer::TopCopper } else { Layer::BottomCopper };
             let kind = rng.next_f64();
             let item = if kind < 0.40 {
                 let hw = rng.range(0.15, 1.0);
                 let hh = rng.range(0.15, 1.0);
-                Item::new(
-                    Prim::Rect(WorldRect::new(
-                        WorldPos::new(x - hw, y - hh),
-                        WorldPos::new(x + hw, y + hh),
-                    )),
-                    copper,
-                )
+                Item::new(Prim::Rect(WorldRect::new(WorldPos::new(x - hw, y - hh), WorldPos::new(x + hw, y + hh))), copper)
             } else if kind < 0.55 {
-                Item::new(
-                    Prim::Circle {
-                        center: WorldPos::new(x, y),
-                        radius: rng.range(0.2, 0.45),
-                    },
-                    Layer::Via,
-                )
+                Item::new(Prim::Circle { center: WorldPos::new(x, y), radius: rng.range(0.2, 0.45) }, Layer::Via)
             } else {
                 // Tracks run in one of eight directions, as routed copper usually does.
                 let dir = (rng.next_u64() % 8) as f64 * std::f64::consts::FRAC_PI_4;
                 let len = rng.range(0.5, 8.0);
                 let bx = (x + len * dir.cos()).clamp(inset, width - inset);
                 let by = (y + len * dir.sin()).clamp(inset, height - inset);
-                Item::new(
-                    Prim::Segment {
-                        a: WorldPos::new(x, y),
-                        b: WorldPos::new(bx, by),
-                        width: rng.range(0.1, 0.5),
-                    },
-                    copper,
-                )
+                Item::new(Prim::Segment { a: WorldPos::new(x, y), b: WorldPos::new(bx, by), width: rng.range(0.1, 0.5) }, copper)
             };
             items.push(item);
         }
@@ -141,14 +109,8 @@ impl Scene {
     pub fn bounds(&self) -> WorldRect {
         self.items.iter().fold(self.board, |acc, item| {
             WorldRect::new(
-                WorldPos::new(
-                    acc.min.x.min(item.bounds.min.x),
-                    acc.min.y.min(item.bounds.min.y),
-                ),
-                WorldPos::new(
-                    acc.max.x.max(item.bounds.max.x),
-                    acc.max.y.max(item.bounds.max.y),
-                ),
+                WorldPos::new(acc.min.x.min(item.bounds.min.x), acc.min.y.min(item.bounds.min.y)),
+                WorldPos::new(acc.max.x.max(item.bounds.max.x), acc.max.y.max(item.bounds.max.y)),
             )
         })
     }
@@ -205,11 +167,7 @@ mod tests {
     #[test]
     fn items_are_sorted_by_paint_order() {
         let scene = Scene::synthetic(1_000);
-        let order: Vec<usize> = scene
-            .items
-            .iter()
-            .map(|i| Layer::ALL.iter().position(|l| *l == i.layer).unwrap_or(0))
-            .collect();
+        let order: Vec<usize> = scene.items.iter().map(|i| Layer::ALL.iter().position(|l| *l == i.layer).unwrap_or(0)).collect();
         assert!(order.windows(2).all(|w| w[0] <= w[1]));
     }
 }

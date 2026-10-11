@@ -8,9 +8,7 @@ pub mod builtin;
 pub mod registry;
 pub mod server;
 
-pub use registry::{
-    CallError, RegistryError, ToolDef, ToolError, ToolFuture, ToolHandler, ToolRegistry,
-};
+pub use registry::{CallError, RegistryError, ToolDef, ToolError, ToolFuture, ToolHandler, ToolRegistry};
 pub use server::{ViamindServer, serve_stdio};
 
 /// Name the server reports in `initialize`.
