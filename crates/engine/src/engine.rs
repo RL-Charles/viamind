@@ -254,11 +254,9 @@ impl Engine {
             }
         };
         let deltas = coalesce(tx.deltas);
-        if !deltas.is_empty() {
-            if let Err(error) = self.validate_hooks(&deltas, &origin, label, ChangeKind::Applied) {
-                apply_all(&mut self.project, &invert(&deltas));
-                return Err(error);
-            }
+        if !deltas.is_empty() && let Err(error) = self.validate_hooks(&deltas, &origin, label, ChangeKind::Applied) {
+            apply_all(&mut self.project, &invert(&deltas));
+            return Err(error);
         }
         let id = TxId(self.next_tx);
         self.next_tx += 1;

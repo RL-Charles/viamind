@@ -68,7 +68,11 @@ impl Drop for PhaseGuard {
     }
 }
 pub(crate) fn check_read() -> Result<(), EngineError> {
-    if PHASE.get() == Some(HookPhase::Pre) { Err(invalid("captured handle reads are unavailable inside pre-command hooks; use borrowed candidate")) } else { Ok(()) }
+    if PHASE.get() == Some(HookPhase::Pre) {
+        Err(invalid("captured handle reads are unavailable inside pre-command hooks; use borrowed candidate"))
+    } else {
+        Ok(())
+    }
 }
 pub(crate) fn read_allowed() {
     if PHASE.get() == Some(HookPhase::Pre) {
@@ -571,5 +575,189 @@ mod tests {
         let d = e.command_hook_status().diagnostics.pop().unwrap();
         assert_eq!(d.message.len(), 1024);
         assert!(d.truncated);
+    }
+}
+
+#[cfg(test)]
+mod contract_tests {
+    use super::*;
+    use crate::{
+        EngineHandle,
+        agent_policy::{AgentEffect, AgentMode},
+        pcb_branches::*,
+    };
+    use serde_json::json;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    fn input(name: &str) -> serde_json::Value {
+        json!({"designator":name,"value":"","footprint":"F","x_mm":0,"y_mm":0})
+    }
+    #[test]
+    fn captured_native_lifecycle_presence_branch_policy_and_read_paths_refuse_before_locks() {
+        let e = EngineHandle::new(Project::new("inventory"));
+        let captured = e.clone();
+        let policy = e.agent_policy();
+        let before = e.session_state();
+        e.register_pre_command_hook(
+            "inventory".into(),
+            Arc::new(move |c| {
+                assert!(captured.query_parts(&Default::default()).is_err());
+                assert!(captured.query_nets(&crate::NetQuery{after:None,limit:100}).is_err());
+                assert!(captured.query_connectivity(&crate::ConnectivityQuery{net:"A".into(),offset:0,limit:100}).is_err());
+                assert!(captured.save_project(Default::default()).is_err());
+                assert!(captured.new_project(crate::NewProject { name: "blocked".into(), ..Default::default() }, Origin::User).is_err());
+                assert!(captured.configure_auto_drc(Default::default()).is_err());
+                assert!(captured.configure_command_hooks(Default::default()).is_err());
+                assert!(captured.watch_auto_drc_events(Default::default()).is_err());
+                assert!(
+                    captured
+                        .clear_agent_presence(
+                            1,
+                            crate::agent_presence::ClearAgentPresence { expected_project: c.project.id, expected_stream: c.source_cursor.stream_id }
+                        )
+                        .is_err()
+                );
+                assert!(policy.set_mode(AgentMode::Approval).is_err());
+                assert!(policy.admit(AgentEffect::LiveWriter).is_err());
+                assert!(
+                    captured
+                        .create_pcb_branch(
+                            CreatePcbBranch { expected_project: c.project.id, expected_cursor: c.source_cursor, label: "blocked".into() },
+                            BranchActor::human(),
+                            reserve_pcb_branch_work().unwrap()
+                        )
+                        .is_err()
+                );
+                for attempt in [0, 1, 2] {
+                    assert!(
+                        catch_unwind(AssertUnwindSafe(|| match attempt {
+                            0 => {
+                                captured.query_agent_presence();
+                            }
+                            1 => {
+                                captured.list_pcb_branches();
+                            }
+                            _ => {
+                                captured.with_native_file_guard(|_| ());
+                            }
+                        }))
+                        .is_err()
+                    );
+                }
+                Err("inventory complete".into())
+            }),
+        )
+        .unwrap();
+        assert!(e.execute("add_part", input("R1"), Origin::User).is_err());
+        assert_eq!(e.session_state(), before);
+        assert_eq!(e.agent_policy().status().active_writers, 0);
+    }
+    #[test]
+    fn branch_veto_preserves_private_candidate_revision_and_live_session() {
+        let e = EngineHandle::new(Project::new("branch veto"));
+        let actor = BranchActor::human();
+        let before = e.session_state();
+        let b = e
+            .create_pcb_branch(
+                CreatePcbBranch { expected_project: before.project.id, expected_cursor: before.cursor, label: "proposal".into() },
+                actor.clone(),
+                reserve_pcb_branch_work().unwrap(),
+            )
+            .unwrap();
+        let b = e
+            .apply_pcb_branch(
+                ApplyPcbBranch {
+                    branch_id: b.branch_id,
+                    expected_revision: 0,
+                    commands: vec![PcbBranchCall { name: "add_part".into(), input: input("R1") }],
+                },
+                &actor,
+                reserve_pcb_branch_work().unwrap(),
+            )
+            .unwrap()
+            .branch;
+        let candidate = e.inspect_pcb_branch(PcbBranchId { branch_id: b.branch_id }, &actor).unwrap();
+        e.register_pre_command_hook("deny".into(), Arc::new(|_| Err("candidate refused".into()))).unwrap();
+        assert!(
+            e.merge_pcb_branch(
+                MergePcbBranch {
+                    branch_id: b.branch_id,
+                    expected_revision: b.revision,
+                    expected_project: before.project.id,
+                    expected_cursor: before.cursor
+                },
+                &actor
+            )
+            .is_err()
+        );
+        let retained = e.inspect_pcb_branch(PcbBranchId { branch_id: b.branch_id }, &actor).unwrap();
+        assert_eq!(retained.board, candidate.board);
+        assert_eq!(retained.branch.revision, candidate.branch.revision);
+        assert_eq!(retained.branch.source_cursor, candidate.branch.source_cursor);
+        assert_eq!(e.session_state(), before);
+        e.remove_command_hook("deny").unwrap();
+        e.merge_pcb_branch(
+            MergePcbBranch {
+                branch_id: b.branch_id,
+                expected_revision: b.revision,
+                expected_project: before.project.id,
+                expected_cursor: before.cursor,
+            },
+            &actor,
+        )
+        .unwrap();
+        assert_eq!(e.read(|p| p.board.parts.len()), 1);
+    }
+    #[test]
+    fn registration_order_capacity_noop_generation_and_overflow_are_exact() {
+        let mut e = crate::Engine::new(Project::new("registration"));
+        let order = Arc::new(Mutex::new(Vec::new()));
+        for i in 0..15 {
+            let out = order.clone();
+            e.register_pre_command_hook(
+                format!("pre{i}"),
+                Arc::new(move |_| {
+                    out.lock().unwrap().push(i);
+                    Ok(())
+                }),
+            )
+            .unwrap();
+        }
+        assert!(e.register_pre_command_hook("overflow".into(), Arc::new(|_| Ok(()))).is_err());
+        for i in 0..16 {
+            e.register_post_command_hook(format!("post{i}"), Arc::new(|_| Ok(()))).unwrap();
+        }
+        assert!(e.register_post_command_hook("overflow".into(), Arc::new(|_| Ok(()))).is_err());
+        assert!(e.register_post_command_hook("pre0".into(), Arc::new(|_| Ok(()))).is_err());
+        let generation = e.command_hook_status().generation;
+        assert!(!e.remove_command_hook("missing").unwrap());
+        e.configure_command_hooks(Default::default()).unwrap();
+        assert_eq!(e.command_hook_status().generation, generation);
+        e.execute("add_part", input("R1"), Origin::User).unwrap();
+        assert_eq!(*order.lock().unwrap(), (0..15).collect::<Vec<_>>());
+        let hooks = Hooks::default();
+        hooks.register_pre("retained".into(), Arc::new(|_| Ok(()))).unwrap();
+        hooks.state().generation = u64::MAX;
+        let before = hooks.status();
+        assert!(hooks.remove("retained").is_err());
+        assert!(hooks.configure(CommandHookConfig { enabled: true, ..Default::default() }).is_err());
+        assert_eq!(hooks.status().pre_callbacks, before.pre_callbacks);
+        assert_eq!(hooks.status().config, before.config);
+    }
+    struct PanicOnDrop(Arc<AtomicBool>);
+    impl Drop for PanicOnDrop {
+        fn drop(&mut self) {
+            self.0.store(true, Ordering::SeqCst);
+            panic!("secondary destructor panic");
+        }
+    }
+    #[test]
+    fn nonstring_panic_payload_never_runs_a_second_unwind_destructor() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        let flag = dropped.clone();
+        let mut e = crate::Engine::new(Project::new("payload"));
+        e.register_pre_command_hook("payload".into(), Arc::new(move |_| std::panic::panic_any(PanicOnDrop(flag.clone())))).unwrap();
+        assert!(e.execute("add_part", input("R1"), Origin::User).is_err());
+        assert!(!dropped.load(Ordering::SeqCst));
+        assert!(e.project().board.parts.is_empty());
     }
 }

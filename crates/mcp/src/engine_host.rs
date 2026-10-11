@@ -421,7 +421,9 @@ impl CommandHost for EngineHost {
             return serde_json::to_value(result).map_err(|e| e.to_string());
         }
         if name == "get_command_hooks" {
-            if input != json!({}) { return Err("get_command_hooks takes an empty object".into()); }
+            if input != json!({}) {
+                return Err("get_command_hooks takes an empty object".into());
+            }
             return serde_json::to_value(self.engine.command_hook_status()).map_err(|e| e.to_string());
         }
         if name == "configure_command_hooks" {
