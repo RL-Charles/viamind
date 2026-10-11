@@ -156,10 +156,10 @@ impl Command for DragSchematicSymbol {
         let content = plan.sheet.content.as_mut().expect("selected symbol requires content");
         for temporary in &plan.new_ids {
             let mut wire = content.wires.remove(temporary).expect("planned new segment");
-            let mut id = ObjectId::new();
-            while plan.ids.contains(&id) {
-                id = ObjectId::new();
-            }
+            let id = (0..16)
+                .map(|_| ObjectId::new())
+                .find(|id| !plan.ids.contains(id))
+                .ok_or_else(|| invalid("fresh wire identity collision budget exhausted"))?;
             plan.ids.insert(id);
             wire.id = id;
             content.wires.insert(id, wire);
@@ -568,7 +568,7 @@ mod tests {
     #[test]
     fn aligned_stretch_and_both_attached_endpoints_preserve_wire_ids() {
         let _lock = LOCK.lock().unwrap();
-        let (project, sheet, symbol, wire) = fixture();
+        let (project, sheet, symbol, _wire) = fixture();
         let engine = EngineHandle::new(project);
         let preview = engine.prepare_schematic_symbol_drag(request(&engine, sheet, symbol, p(5, 0))).unwrap().run().unwrap();
         assert_eq!(preview.added_wire_count, 0);
