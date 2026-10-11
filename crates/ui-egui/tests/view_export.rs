@@ -36,6 +36,8 @@ fn actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_withou
     let e = engine();
     let before = e.session_state();
     let status = e.document_status();
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    let registry = viamind_mcp::engine_registry(e.clone()).unwrap();
     let app = ViamindApp::with_design(e.clone(), None);
     let mut h = Harness::builder().with_size(vec2(1600.0, 1400.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     h.run_steps(3);
@@ -48,6 +50,7 @@ fn actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_withou
     assert!(!h.state().view_export.busy());
     for schematic in [false, true] {
         if schematic {
+            click(&mut h, "SVG");
             click(&mut h, "Schematic sheet");
             input(&mut h, "New output file", directory.path().join("no-sheet.svg").to_str().unwrap());
             click(&mut h, "Export snapshot to NEW file");
@@ -81,15 +84,36 @@ fn actual_file_menu_form_exports_all_formats_and_matches_shared_renderers_withou
                 }
             });
             assert_eq!(bytes, expected);
+            let mcp_path =
+                directory.path().join(format!("mcp-{}-view.{}", if schematic { "schematic" } else { "board" }, if png { "png" } else { "svg" }));
+            let mut args = json!({"path":mcp_path,"expected_cursor":before.cursor});
+            if schematic {
+                args["sheet"] = json!(e.read(|p| *p.schematic.sheets.keys().next().unwrap()));
+            }
+            let action = match (schematic, png) {
+                (false, false) => UiAction::RenderBoardSvg,
+                (false, true) => UiAction::RenderBoardPng,
+                (true, false) => UiAction::RenderSchematicSvg,
+                (true, true) => UiAction::RenderSchematicPng,
+            };
+            runtime.block_on(registry.call(action.tool(), args, viamind_mcp::agent::CallContext::new("desktop-output-comparison"))).unwrap();
+            assert_eq!(std::fs::read(mcp_path).unwrap(), bytes);
+
             assert!(h.query_by_label(&format!("Exported {}", path.display())).is_some());
             click(&mut h, "Export snapshot to NEW file");
             wait(&mut h);
             assert_eq!(std::fs::read(&path).unwrap(), bytes);
-            assert!(!h.query_all_by_label_contains("Export failed:").is_empty());
+            assert!(h.query_all_by_label_contains("Export failed:").next().is_some());
         }
     }
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
+    input(&mut h, "New output file", directory.path().join("source-snapshot.png").to_str().unwrap());
+    click(&mut h, "Export snapshot to NEW file");
+    wait(&mut h);
+    e.execute("add_part", json!({"designator":"R999","value":"","footprint":"R_0603","x_mm":0,"y_mm":0}), Origin::User).unwrap();
+    h.run_steps(3);
+    assert!(h.query_by_label("The design has changed since this exported snapshot.").is_some());
 }
 #[test]
 fn cropped_layers_dimensions_and_decimal_padding_are_validated_in_the_form() {
