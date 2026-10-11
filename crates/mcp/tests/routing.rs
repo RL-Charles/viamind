@@ -80,6 +80,7 @@ async fn immutable_pad_discovery_resolves_exact_identity_and_derives_net_side_wi
             net: Some("EXACT".into()),
         };
         let part = Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -140,6 +141,7 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
             net: Some("EXACT".into()),
         };
         let part = Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -231,6 +233,7 @@ async fn exact_posture_routes_share_planner_and_two_agent_cursor_guards() {
             net: Some("EXACT".into()),
         };
         let part = Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -299,6 +302,7 @@ async fn checked_walkaround_query_preserves_session_and_two_agents_share_atomic_
                 net: Some("N".into()),
             };
             let part = Part {
+                artwork: None,
                 assembly: None,
                 schematic_symbol: None,
                 schematic_package: None,

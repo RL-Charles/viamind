@@ -36,6 +36,7 @@ impl Command for SetPartAssembly {
         if before.assembly == assembly {
             return Ok(vec![]);
         }
+        crate::footprint_artwork::validate_part_artwork(before)?;
         let mut after = before.clone_without_assembly();
         after.assembly = assembly;
         Ok(vec![Delta::record_part(project, self.id, Some(after))])

@@ -263,7 +263,7 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
                 id: engine.project().id,
                 name: String::new(),
                 schematic: Default::default(),
-                board: engine.project().board.clone_without_assembly(),
+                board: engine.project().board.clone_for_electrical_analysis(),
             });
             (engine.design_stamp(), engine.event_cursor(), snapshot, capture_started.elapsed().as_secs_f64() * 1000.0)
         };

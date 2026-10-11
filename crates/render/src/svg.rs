@@ -18,6 +18,10 @@ pub enum ViewLayer {
     BottomCopper,
     TopCopper,
     Outline,
+    BottomSilkscreen,
+    TopSilkscreen,
+    BottomCourtyard,
+    TopCourtyard,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -85,7 +89,7 @@ impl Default for SvgOptions {
 impl SvgOptions {
     pub fn validate(&self) -> io::Result<()> {
         if self.layers.is_empty() || self.layers.len() > 32 {
-            return Err(invalid("layers requires 1–32 entries from top_copper, bottom_copper, outline"));
+            return Err(invalid("layers requires 1–32 entries from copper, outline, silkscreen or courtyard layers"));
         }
         if !(1..=4096).contains(&self.width_px) || !(1..=4096).contains(&self.height_px) {
             return Err(invalid("view pixel dimensions must be between 1 and 4096"));
@@ -101,6 +105,8 @@ impl SvgOptions {
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct SvgMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub artwork: Option<ArtworkViewMetadata>,
     pub region_nm: ViewBounds,
     pub width_px: u32,
     pub height_px: u32,
@@ -113,6 +119,13 @@ pub struct SvgMetadata {
     pub omitted_legacy_parts: usize,
     pub replaced_invalid_xml_text: bool,
     pub exclusions: Vec<&'static str>,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct ArtworkViewMetadata {
+    pub silkscreen_segments: usize,
+    pub courtyards: usize,
+    pub rendered_segments: usize,
+    pub checks_not_performed: &'static str,
 }
 #[derive(Debug, Serialize)]
 pub struct BoardSvg {
@@ -189,6 +202,10 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
         return Err(invalid("SVG view supports at most 100000 primitives"));
     }
     for part in project.board.parts.values() {
+        if let Some(artwork) = &part.artwork {
+            artwork.validate().map_err(invalid)?;
+            count = count.saturating_add(artwork.primitive_count());
+        }
         count = count.saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()));
         if count > 100_000 {
             return Err(invalid("SVG view supports at most 100000 primitives"));
@@ -287,6 +304,59 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     let mut tracks = 0;
     let mut omitted = 0;
     let mut size = 0;
+    let mut artwork_metadata = None;
+    for part in project.board.parts.values() {
+        let Some(artwork) = &part.artwork else { continue };
+        let metadata = artwork_metadata.get_or_insert(ArtworkViewMetadata {
+            silkscreen_segments: 0,
+            courtyards: 0,
+            rendered_segments: 0,
+            checks_not_performed: "Silkscreen clipping/collisions and courtyard clearance are not checked",
+        });
+        metadata.silkscreen_segments += artwork.silkscreen.len();
+        metadata.courtyards += usize::from(artwork.courtyard.is_some());
+        let (silk, court) = if part.side == Side::Bottom {
+            (ViewLayer::BottomSilkscreen, ViewLayer::BottomCourtyard)
+        } else {
+            (ViewLayer::TopSilkscreen, ViewLayer::TopCourtyard)
+        };
+        let mut line = |a: viamind_geom::Point, b: viamind_geom::Point, width: i64, layer: ViewLayer, index: usize| -> io::Result<()> {
+            if !layers.contains(&layer) {
+                return Ok(());
+            }
+            let a = part.local_to_world_mm(a.x.to_mm(), a.y.to_mm());
+            let b = part.local_to_world_mm(b.x.to_mm(), b.y.to_mm());
+            let (ax, ay) = center(a.0, a.1)?;
+            let (bx, by) = center(b.0, b.1)?;
+            let r = width / 2 + width % 2;
+            let bounds = ViewBounds { min_x: ax.min(bx) - r, min_y: ay.min(by) - r, max_x: ax.max(bx) + r, max_y: ay.max(by) + r };
+            let xml = format!(
+                "<line id=\"art-{}-{layer:?}-{index}\" x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"currentColor\" stroke-width=\"{}\" stroke-linecap=\"round\"/>\n",
+                part.id,
+                x(ax),
+                y(ay),
+                x(bx),
+                y(by),
+                mm(width)
+            );
+            size += xml.len();
+            if size > MAX_BYTES {
+                return Err(invalid("SVG view exceeds16MiB"));
+            }
+            shapes.push(Shape { layer, bounds, xml });
+            metadata.rendered_segments += 1;
+            Ok(())
+        };
+        for (i, s) in artwork.silkscreen.iter().enumerate() {
+            line(s.start, s.end, s.width.0, silk, i)?;
+        }
+        if let Some(c) = &artwork.courtyard {
+            let corners = c.corners();
+            for i in 0..4 {
+                line(corners[i], corners[(i + 1) % 4], c.width.0, court, i)?;
+            }
+        }
+    }
     for part in project.board.parts.values() {
         let Some(explicit) = &part.pads else {
             omitted += 1;
@@ -455,13 +525,37 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
         }
         svg.push_str("</g>\n");
     }
-    svg.push_str("</g></g></svg>\n");
+    if layers
+        .iter()
+        .any(|l| matches!(l, ViewLayer::TopSilkscreen | ViewLayer::BottomSilkscreen | ViewLayer::TopCourtyard | ViewLayer::BottomCourtyard))
+    {
+        svg.push_str("</g>\n");
+        for (layer, color) in [
+            (ViewLayer::BottomSilkscreen, "#e8b2a7"),
+            (ViewLayer::TopSilkscreen, "#f2eda1"),
+            (ViewLayer::BottomCourtyard, "#78a0d2"),
+            (ViewLayer::TopCourtyard, "#c878d2"),
+        ] {
+            if !layers.contains(&layer) {
+                continue;
+            }
+            writeln!(svg, "<g id=\"layer-{layer:?}\" fill=\"none\" color=\"{color}\">").unwrap();
+            for shape in shapes.iter().filter(|s| s.layer == layer) {
+                svg.push_str(&shape.xml);
+            }
+            svg.push_str("</g>\n");
+        }
+        svg.push_str("</g></svg>\n");
+    } else {
+        svg.push_str("</g></g></svg>\n");
+    }
     if svg.len() > MAX_BYTES {
         return Err(invalid("SVG view exceeds 16 MiB"));
     }
     Ok(BoardSvg {
         svg,
         metadata: SvgMetadata {
+            artwork: artwork_metadata,
             region_nm: region,
             width_px: options.width_px,
             height_px: options.height_px,

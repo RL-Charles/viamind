@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 12 to preserve explicit complete-package PCB links.
-pub const LOG_VERSION: u32 = 12;
+/// New logs use version13 to preserve explicit footprint artwork and earlier features.
+pub const LOG_VERSION: u32 = 13;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -140,6 +140,7 @@ impl EventLog {
                 let valid_id = match delta {
                     crate::Delta::Part { id, before, after } => before.iter().chain(after).all(|part| {
                         part.id == *id
+                            && part.artwork.as_ref().is_none_or(|a| header.version >= 13 && a.validate().is_ok())
                             && (header.version >= 6 || part.schematic_symbol.is_none())
                             && (header.version >= 12 || part.schematic_package.is_none())
                             && part.assembly.as_ref().is_none_or(|m| header.version >= m.minimum_version())

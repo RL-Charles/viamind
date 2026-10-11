@@ -66,6 +66,7 @@ impl Command for AddPart {
         let rotation_mdeg = rotation_mdeg(self.rotation_deg.unwrap_or(0.0))?;
 
         let part = Part {
+            artwork: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -105,6 +106,7 @@ impl Command for MovePart {
         if part.position == position {
             return Ok(Vec::new());
         }
+        crate::footprint_artwork::validate_part_artwork(part)?;
         let mut moved = part.clone();
         moved.position = position;
         Ok(vec![Delta::record_part(project, self.id, Some(moved))])
@@ -145,6 +147,7 @@ impl Command for UpdatePart {
         if self.expected.as_ref().is_some_and(|expected| expected != before) {
             return Err(CommandError::conflict("part changed since it was read; reload its properties and review the edit"));
         }
+        crate::footprint_artwork::validate_part_artwork(before)?;
         let mut after = before.clone();
         if let Some(designator) = self.designator {
             let designator = designator.trim();

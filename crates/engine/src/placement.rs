@@ -64,6 +64,7 @@ impl Command for TransformParts {
         }
         let mut ids = BTreeSet::new();
         for expected in &self.expected {
+            crate::footprint_artwork::validate_part_artwork(expected)?;
             if !ids.insert(expected.id) {
                 return Err(CommandError::invalid("expected", "duplicate part ID"));
             }

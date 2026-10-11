@@ -6,6 +6,7 @@ use viamind_geom::{Nm, Point};
 
 fn part(i: usize, x: f64, y: f64, net: Option<&str>) -> Part {
     Part {
+        artwork: None,
         assembly: None,
         schematic_symbol: None,
         schematic_package: None,

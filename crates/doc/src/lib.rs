@@ -12,6 +12,7 @@ pub mod dxf;
 pub mod fabrication_view;
 pub mod file;
 pub mod footprint;
+pub mod footprint_artwork;
 pub mod footprint_sexpr;
 pub mod id;
 pub mod net_rules;
@@ -25,6 +26,7 @@ pub mod symbol_package;
 
 pub use assembly::{AssemblyMetadata, AssemblyPlacement, MountingTechnology};
 pub use board::{Board, Part, Side};
+pub use footprint_artwork::{FootprintArtwork, RectangularCourtyard, SilkscreenSegment};
 pub use id::ObjectId;
 pub use outline::{BoardOutline, OutlineError};
 pub use pad::{Pad, Pads};

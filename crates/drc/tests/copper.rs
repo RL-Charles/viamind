@@ -23,6 +23,7 @@ fn via(x: f64, y: f64, diameter: f64, drill: f64, net: Option<&str>) -> Via {
 }
 fn part() -> Part {
     Part {
+        artwork: None,
         assembly: None,
         schematic_symbol: None,
         schematic_package: None,

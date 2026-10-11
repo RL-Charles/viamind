@@ -106,7 +106,12 @@ impl EngineHandle {
             capture(e.project())?;
             // Selector bounds precede owned board/ID capture, including net matches.
             selected(e.project(), &input.tracks)?;
-            Ok(Project { id: e.project().id, name: String::new(), schematic: Default::default(), board: e.project().board.clone_without_assembly() })
+            Ok(Project {
+                id: e.project().id,
+                name: String::new(),
+                schematic: Default::default(),
+                board: e.project().board.clone_for_electrical_analysis(),
+            })
         })?;
         prepare(&project, input).map(|(plan, _)| plan)
     }
@@ -309,7 +314,8 @@ fn prepare(project: &Project, input: &CleanupCardinalTracks) -> Result<(CheckedC
     }
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("explicit substrate outline required for complete scoped cleanup DRC"))?;
     outline.validate().map_err(|e| invalid(e.to_string()))?;
-    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_without_assembly() };
+    let mut candidate =
+        Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_for_electrical_analysis() };
     for delta in &deltas {
         delta.apply_to(&mut candidate);
     }

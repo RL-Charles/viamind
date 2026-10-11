@@ -19,6 +19,7 @@ pub mod erc;
 pub mod fabrication;
 pub mod fabrication_view;
 pub mod files;
+mod footprint_artwork;
 pub mod footprint_conversion;
 pub mod footprint_definition;
 mod gpu_tiles;

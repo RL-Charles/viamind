@@ -510,6 +510,7 @@ fn footprint(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]
         return Err(bad("footprint has no explicit supported pads"));
     }
     let p = Part {
+        artwork: None,
         assembly: None,
         id: identity(n, items)?,
         schematic_symbol: None,

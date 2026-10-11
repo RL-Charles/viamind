@@ -8,6 +8,7 @@ use viamind_geom::Nm;
 
 fn original() -> Footprint {
     Footprint {
+        artwork: None,
         name: "Original asymmetric definition".into(),
         pads: vec![
             FootprintPad { number: "1".into(), position: LocalPosition { x: Nm(-500003), y: Nm(250001) }, width: Nm(1200003), height: Nm(800001) },
@@ -40,7 +41,12 @@ fn detached_files_preserve_dirty_session_and_separate_reuse_retains_link_assembl
     assert_eq!(engine.load_footprint_definition(LoadFootprintDefinition { path: saved.path }).unwrap(), definition);
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
-    engine.import_footprint(FootprintFile { expected_project: before.project.id, expected: expected.clone(), path }, Origin::User).unwrap();
+    engine
+        .import_footprint(
+            FootprintFile { expected_cursor: None, expected_project: before.project.id, expected: expected.clone(), path },
+            Origin::User,
+        )
+        .unwrap();
     let changed = engine.read(|p| p.board.part(&id).unwrap().clone());
     assert_eq!(changed.position, expected.position);
     assert_eq!(changed.rotation_mdeg, expected.rotation_mdeg);
@@ -92,7 +98,7 @@ fn invalid_bounds_precision_free_integer_geometry_and_existing_files_reject_with
     let empty = directory.path().join("empty.json");
     engine
         .save_footprint_definition(SaveFootprintDefinition {
-            footprint: Footprint { name: "Explicit empty".into(), pads: vec![] },
+            footprint: Footprint { artwork: None, name: "Explicit empty".into(), pads: vec![] },
             path: empty.clone(),
         })
         .unwrap();
