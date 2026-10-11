@@ -513,3 +513,44 @@ async fn grouped_placement_rejects_a_stale_member_across_agents_and_undo_is_atom
     other.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn live_schematic_agents_share_guarded_atomic_sheets_and_connection_undo() {
+    let engine = EngineHandle::new(Project::new("Schematic HTTP"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let writer = connect(server.url(), "schematic-writer").await;
+    let other = connect(server.url(), "schematic-other").await;
+    let tools = writer.list_all_tools().await.unwrap();
+    for name in ["edit_schematic_sheet", "delete_schematic_sheet", "query_schematic"] {
+        assert!(tools.iter().any(|t| t.name == name), "{name} discoverable");
+    }
+    let project = engine.read(|p| p.id);
+    let created = call(&writer,"edit_schematic_sheet",json!({"expected_project":project,"name":"Power","edits":[{"kind":"wire","start":{"x":-123,"y":0},"end":{"x":999999,"y":0}},{"kind":"label","position":{"x":-123,"y":0},"name":"VIN","scope":"local"}]})).await;
+    assert_eq!(created.is_error, Some(false), "{created:?}");
+    let id = created.structured_content.unwrap()["created"][0].clone();
+    let snapshot = engine.session_state();
+    let page = call(&other, "query_schematic", json!({"sheet_id":id,"limit":1})).await.structured_content.unwrap();
+    assert_eq!(page["total"], 2);
+    assert_eq!(page["objects"].as_array().unwrap().len(), 1);
+    assert_eq!(engine.session_state(), snapshot);
+    assert_eq!(call(&other, "query_schematic", json!({"limit":0})).await.is_error, Some(true));
+    assert_eq!(call(&other, "query_schematic", json!({"unexpected":1})).await.is_error, Some(true));
+    assert_eq!(call(&other, "undo", json!({})).await.is_error, Some(true), "queries are not undoable edits");
+    let sheet = serde_json::to_value(snapshot.project.schematic.sheets.values().next().unwrap()).unwrap();
+    let request = json!({"expected_project":project,"sheet_id":id,"expected":sheet,"name":"Updated power","edits":[]});
+    assert_eq!(call(&other, "edit_schematic_sheet", request.clone()).await.is_error, Some(false));
+    let edited = engine.session_state();
+    assert_eq!(call(&writer, "edit_schematic_sheet", request).await.is_error, Some(true));
+    assert_eq!(call(&writer, "delete_schematic_sheet", json!({"expected_project":project,"expected":sheet})).await.is_error, Some(true));
+    assert_eq!(engine.session_state(), edited, "stale edits preserve every session field");
+    assert_eq!(call(&writer, "undo", json!({})).await.is_error, Some(true), "same-sheet cross-agent conflict");
+    assert_eq!(call(&other, "undo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), snapshot.project);
+    assert_eq!(call(&writer, "undo", json!({})).await.is_error, Some(false));
+    assert!(engine.read(|p| p.schematic.sheets.is_empty()));
+    assert_eq!(call(&writer, "redo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), snapshot.project);
+    writer.cancel().await.unwrap();
+    other.cancel().await.unwrap();
+    server.shutdown();
+}

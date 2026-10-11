@@ -17,7 +17,7 @@ use crate::event::ChangeEvent;
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
 /// New logs use version 4 to preserve independent copper in appended snapshots.
-pub const LOG_VERSION: u32 = 4;
+pub const LOG_VERSION: u32 = 5;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -117,6 +117,7 @@ impl EventLog {
             || (header.version < viamind_doc::file::minimum_version(&header.base))
             || viamind_doc::file::validate_pads(&header.base).is_err()
             || viamind_doc::file::validate_copper(&header.base).is_err()
+            || viamind_doc::schematic::validate_project(&header.base, None).is_err()
         {
             return Err(LogError::BadHeader);
         }
@@ -133,6 +134,9 @@ impl EventLog {
                 let valid_id = match delta {
                     crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
                     crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
+                    crate::Delta::Sheet { id, before, after } => before.iter().chain(after).all(|sheet| {
+                        sheet.id == *id && viamind_doc::schematic::validate_sheet(sheet).is_ok() && (header.version >= 5 || sheet.content.is_none())
+                    }),
                     _ => true,
                 };
                 if !valid_id {
@@ -142,6 +146,9 @@ impl EventLog {
             log.append(event);
         }
         if viamind_doc::file::validate_copper(&log.replay()).is_err() {
+            return Err(LogError::BadHeader);
+        }
+        if viamind_doc::schematic::validate_project(&log.replay(), None).is_err() {
             return Err(LogError::BadHeader);
         }
         Ok(log)

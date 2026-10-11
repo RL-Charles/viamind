@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 4;
+pub const VERSION: u32 = 5;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -57,6 +57,8 @@ pub enum FileError {
     /// Copper geometry or identity validation failed.
     #[error("invalid copper: {0}")]
     Copper(String),
+    #[error("invalid schematic: {0}")]
+    Schematic(String),
     /// A map key does not match the id of the object stored under it.
     #[error("{object} stored under key {key} has id {id}; the key must equal the object's id")]
     KeyMismatch {
@@ -106,6 +108,7 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     }
     validate_pads(&project)?;
     validate_copper(&project)?;
+    crate::schematic::validate_project(&project, None).map_err(FileError::Schematic)?;
     if envelope.version < minimum_version(&project) {
         return Err(FileError::FeatureVersion(minimum_version(&project)));
     }
@@ -151,7 +154,9 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    if !project.board.tracks.is_empty() || !project.board.vias.is_empty() {
+    if project.schematic.sheets.values().any(|s| s.content.is_some()) {
+        5
+    } else if !project.board.tracks.is_empty() || !project.board.vias.is_empty() {
         4
     } else if project.board.parts.values().any(|p| p.pads.is_some()) {
         3

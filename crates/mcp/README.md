@@ -387,3 +387,20 @@ symlinks always reject, with Linux atomic directory publication. The active
 native path is protected. Optional `expected_cursor` rejects a stale snapshot;
 response includes `exported_cursor` and a manifest. Export preserves document,
 selection, history and dirty state; subsequent edits are not included.
+
+## Schematic sheet foundation
+
+`edit_schematic_sheet` creates or atomically updates a native schematic sheet using
+`expected_project` and, for edits, `sheet_id` plus its complete `expected` snapshot.
+Edits create/replace symbols with numbered pins, straight wires, explicit junctions
+and local/global/power labels, or delete objects. Coordinates and body dimensions
+are integer nanometres; rotation is 0..3 counterclockwise quarter turns after local
+X reflection. Existing pin numbers retain IDs. A failed operation rolls back the
+entire sheet edit. `delete_schematic_sheet` uses the same exact snapshot guard.
+
+`query_schematic` returns UUID-ordered sheet summaries or objects on `sheet_id`,
+with `offset`, `limit` (1..100), `total` and `next_offset`. Queries preserve history
+and dirty state. Get exact edit guards from `get_session_state`; restart paging
+when another client edits. New schematic content saves as native schema 5.
+Electrical graph evaluation, ERC, hierarchy and board annotation remain separate
+work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
