@@ -85,7 +85,7 @@ fn linked_project() -> Project {
     let mut project = file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
     let symbols: Vec<_> = project.schematic.sheets.values().flat_map(|s| s.content.iter().flat_map(|c| c.symbols.values())).cloned().collect();
     for (i, symbol) in symbols.iter().enumerate() {
-        let pads = symbol
+        let pads: Vec<Pad> = symbol
             .pins
             .iter()
             .enumerate()
