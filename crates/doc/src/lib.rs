@@ -9,6 +9,7 @@
 pub mod assembly;
 pub mod board;
 pub mod dxf;
+pub mod fabrication_view;
 pub mod file;
 pub mod footprint;
 pub mod id;

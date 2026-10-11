@@ -41,7 +41,7 @@ guessing occurs.
 Supported file functions are Copper,L1,Top; Copper,L2,Bot; Soldermask,Top;
 Soldermask,Bot; and Profile,NP. Each requires the corresponding positive or
 negative file-polarity declaration. Part,Single and SameCoordinates UUID attributes
-are accepted and retained. Aperture functions ComponentPad,ViaPad,Conductor and
+are accepted and retained. Aperture functions SMDPad,CuDef; ComponentPad; ViaPad; Conductor and
 Profile and TD reset are recognized. Duplicate/conflicting headers, undefined or
 redefined apertures, premature graphics, missing end marker or trailing commands
 reject. Comments remain comments. Unknown semantic commands/attributes reject
