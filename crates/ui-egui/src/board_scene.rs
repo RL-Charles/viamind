@@ -369,6 +369,8 @@ mod artwork_tests {
             (Side::Bottom, 0, (3, 5)),
             (Side::Bottom, 90000, (5, -3)),
             (Side::Top, 180000, (3, -5)),
+            (Side::Top, 270000, (-5, -3)),
+            (Side::Bottom, 180000, (-3, -5)),
             (Side::Bottom, 270000, (-5, 3)),
         ] {
             let mut p = super::tests::part("R_0603", angle, side);
