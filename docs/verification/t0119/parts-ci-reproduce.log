@@ -1,0 +1,29 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0119/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 30.88s
+     Running tests/parts.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/parts-45b8c11b7f9a8525)
+
+running 1 test
+
+thread 'stale_properties_require_reload_and_invalid_placement_keeps_the_form' (3119339) panicked at crates/ui-egui/tests/parts.rs:82:5:
+assertion `left == right` failed
+  left: "R1"
+ right: "R9"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test stale_properties_require_reload_and_invalid_placement_keeps_the_form ... FAILED
+
+failures:
+
+failures:
+    stale_properties_require_reload_and_invalid_placement_keeps_the_form
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.50s
+
+error: test failed, to rerun pass `-p viamind-ui-egui --test parts`
