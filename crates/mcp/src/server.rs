@@ -1,6 +1,15 @@
 //! rmcp server that lists and calls tools from a [`ToolRegistry`].
+//!
+//! One [`ViamindServer`] serves one MCP connection. [`serve`] runs it on any
+//! rmcp transport (stdio, an in-process `tokio::io::duplex` pipe, a
+//! `(Sink, Stream)` channel pair, ...); [`serve_stdio`] is the stdio shortcut
+//! the `viamind-mcp` binary uses. Many connections can share one registry
+//! (and so one engine) through an `Arc<ToolRegistry>`.
 
-use std::sync::Arc;
+use std::sync::{
+    Arc,
+    atomic::{AtomicU64, Ordering},
+};
 
 use rmcp::{
     ErrorData as McpError, RoleServer, ServerHandler, ServiceExt,
@@ -8,33 +17,60 @@ use rmcp::{
         CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, Implementation, ListToolsResult, PaginatedRequestParams,
         ServerCapabilities, ServerConfig, Tool,
     },
-    service::RequestContext,
+    service::{RequestContext, RunningService, ServerInitializeError},
+    transport::IntoTransport,
 };
 use serde_json::Value;
 
 use crate::{
     INSTRUCTIONS, SERVER_NAME,
+    agent::{AgentId, CallContext},
     registry::{CallError, ToolDef, ToolRegistry},
 };
 
-/// MCP server handler backed by a [`ToolRegistry`].
+/// A running MCP connection: await [`RunningService::waiting`] for it to end,
+/// or call [`RunningService::cancel`] to close it.
+pub type RunningServer = RunningService<RoleServer, ViamindServer>;
+
+/// Agent name used when the client did not send `clientInfo.name`.
+pub const UNKNOWN_AGENT: &str = "unknown-agent";
+
+/// Source of per-connection numbers; see [`ViamindServer::connection`].
+static NEXT_CONNECTION: AtomicU64 = AtomicU64::new(1);
+
+/// MCP server handler for one connection, backed by a shared [`ToolRegistry`].
 ///
-/// Serve it on any rmcp transport with [`rmcp::ServiceExt::serve`], or use
-/// [`serve_stdio`].
-#[derive(Debug, Clone)]
+/// Each instance gets a process-unique connection number at construction, so
+/// build a new one per connection (it is deliberately not `Clone`). Tool calls
+/// run as the [`AgentId`] `<clientInfo.name>#<connection>`.
+#[derive(Debug)]
 pub struct ViamindServer {
     registry: Arc<ToolRegistry>,
+    connection: u64,
 }
 
 impl ViamindServer {
-    /// Server exposing the tools in `registry`.
-    pub fn new(registry: ToolRegistry) -> Self {
-        Self { registry: Arc::new(registry) }
+    /// Server exposing the tools in `registry`; pass an `Arc<ToolRegistry>` to
+    /// share one registry between connections.
+    pub fn new(registry: impl Into<Arc<ToolRegistry>>) -> Self {
+        Self { registry: registry.into(), connection: NEXT_CONNECTION.fetch_add(1, Ordering::Relaxed) }
     }
 
     /// The registry this server serves.
     pub fn registry(&self) -> &ToolRegistry {
         &self.registry
+    }
+
+    /// This connection's number, unique within the process.
+    pub fn connection(&self) -> u64 {
+        self.connection
+    }
+
+    /// The agent id for a caller on this connection that reported
+    /// `client_name` (missing or blank: [`UNKNOWN_AGENT`]).
+    pub fn agent_id(&self, client_name: Option<&str>) -> AgentId {
+        let name = client_name.map(str::trim).filter(|name| !name.is_empty()).unwrap_or(UNKNOWN_AGENT);
+        AgentId(format!("{name}#{}", self.connection))
     }
 }
 
@@ -74,9 +110,13 @@ impl ServerHandler for ViamindServer {
         self.registry.get(name).map(to_mcp_tool)
     }
 
-    async fn call_tool(&self, request: CallToolRequestParams, _context: RequestContext<RoleServer>) -> Result<CallToolResponse, McpError> {
+    async fn call_tool(&self, request: CallToolRequestParams, context: RequestContext<RoleServer>) -> Result<CallToolResponse, McpError> {
         let input = Value::Object(request.arguments.unwrap_or_default());
-        match self.registry.call(&request.name, input).await {
+        // Covers both the initialize handshake and per-request `_meta` client
+        // info (the stateless protocol revisions).
+        let client = context.client_info();
+        let ctx = CallContext::new(self.agent_id(client.as_ref().map(|info| info.name.as_str())));
+        match self.registry.call(&request.name, input, ctx).await {
             Ok(value) => Ok(to_call_result(value).into()),
             // Tool failures go back as tool results so the agent sees the message.
             Err(CallError::Tool(err)) => Ok(CallToolResult::error(vec![ContentBlock::text(err.to_string())]).into()),
@@ -85,12 +125,31 @@ impl ServerHandler for ViamindServer {
     }
 }
 
+/// Serve `registry` as one MCP connection over `transport`.
+///
+/// Resolves once the client has finished the MCP handshake, with the running
+/// connection. `transport` is anything rmcp accepts, for example:
+///
+/// - `rmcp::transport::stdio()` (see [`serve_stdio`]);
+/// - one end of `tokio::io::duplex(..)`, or any `AsyncRead + AsyncWrite`, for
+///   an in-process client;
+/// - a `(Sink, Stream)` pair of rmcp messages, e.g. over channels.
+///
+/// For many clients, call it once per connection with clones of one
+/// `Arc<ToolRegistry>`; each connection gets its own [`AgentId`].
+pub async fn serve<T, E, A>(registry: impl Into<Arc<ToolRegistry>>, transport: T) -> Result<RunningServer, Box<ServerInitializeError>>
+where
+    T: IntoTransport<RoleServer, E, A>,
+    E: std::error::Error + Send + Sync + 'static,
+{
+    ViamindServer::new(registry).serve(transport).await.map_err(Box::new)
+}
+
 /// Serve `registry` over stdin/stdout until the client disconnects.
 ///
 /// Stdout carries the protocol, so nothing else may write to it.
-pub async fn serve_stdio(registry: ToolRegistry) -> anyhow::Result<()> {
-    let service = ViamindServer::new(registry).serve(rmcp::transport::stdio()).await?;
-    service.waiting().await?;
+pub async fn serve_stdio(registry: impl Into<Arc<ToolRegistry>>) -> anyhow::Result<()> {
+    serve(registry, rmcp::transport::stdio()).await?.waiting().await?;
     Ok(())
 }
 
@@ -120,5 +179,16 @@ mod tests {
         let echo = server.get_tool("echo").unwrap();
         assert_eq!(echo.input_schema.get("type"), Some(&json!("object")));
         assert!(server.get_tool("missing").is_none());
+    }
+
+    #[test]
+    fn agent_ids_combine_client_name_and_connection() {
+        let registry = Arc::new(ToolRegistry::new());
+        let a = ViamindServer::new(registry.clone());
+        let b = ViamindServer::new(registry);
+        assert_ne!(a.connection(), b.connection());
+        assert_eq!(a.agent_id(Some("claude-code")).0, format!("claude-code#{}", a.connection()));
+        assert_eq!(b.agent_id(Some(" ")).0, format!("{UNKNOWN_AGENT}#{}", b.connection()));
+        assert_eq!(b.agent_id(None).0, format!("{UNKNOWN_AGENT}#{}", b.connection()));
     }
 }
