@@ -53,14 +53,25 @@ impl eframe::App for Check {
             return;
         }
         let image = ui.input(|i| {
-            i.events.iter().find_map(|e| {
-                if let Event::Screenshot { image, user_data, viewport_id } = e {
-                    Some((Arc::clone(image), user_data.clone(), *viewport_id))
-                } else {
-                    None
-                }
-            })
+            if self.trace.is_some() {
+                parity_trace::screenshot(&i.events)
+            } else {
+                Ok(i.events.iter().find_map(|e| {
+                    if let Event::Screenshot { image, user_data, viewport_id } = e {
+                        Some((Arc::clone(image), user_data.clone(), *viewport_id))
+                    } else {
+                        None
+                    }
+                }))
+            }
         });
+        let image = match image {
+            Ok(image) => image,
+            Err(error) => {
+                self.trace_failure(ui, &error);
+                return;
+            }
+        };
         if let Some((image, user_data, viewport_id)) = image {
             if let Some(trace) = &mut self.trace
                 && let Err(error) = trace.image(self.step, viewport_id, &user_data, &image, &self.app, ui.ctx())
