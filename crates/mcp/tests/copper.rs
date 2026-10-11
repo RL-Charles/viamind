@@ -1,13 +1,13 @@
 use serde_json::json;
 use viamind_doc::Project;
 use viamind_engine::{EngineHandle, Origin};
-use viamind_mcp::{CallContext, agent::AgentId, engine_registry};
+use viamind_mcp::{CallContext, engine_registry};
 #[tokio::test]
 async fn independent_agent_copper_edits_share_ids_and_own_undo() {
     let engine = EngineHandle::new(Project::new("MCP Copper"));
     let registry = engine_registry(engine.clone()).unwrap();
-    let a = CallContext { agent: AgentId("route-a".into()) };
-    let b = CallContext { agent: AgentId("route-b".into()) };
+    let a = CallContext::new("route-a");
+    let b = CallContext::new("route-b");
     let project = engine.read(|p| p.id);
     let track = registry
         .call(
