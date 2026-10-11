@@ -64,6 +64,17 @@ impl EngineHandle {
         self.automatic_drc.status()
     }
 
+    /// Atomic current automatic DRC status and its independent observation cursor.
+    pub fn auto_drc_event_state(&self) -> crate::AutoDrcEventState {
+        self.automatic_drc.event_state()
+    }
+
+    /// Read bounded automatic DRC summaries, releasing the state mutex while waiting.
+    /// This never takes the document or native file lock; use a blocking worker from async code.
+    pub fn watch_auto_drc_events(&self, input: crate::WatchAutoDrcEvents) -> Result<crate::AutoDrcEventBatch, crate::AutoDrcEventError> {
+        self.automatic_drc.watch_events(input)
+    }
+
     /// Loads an existing native project and records its active absolute path.
     pub fn load(path: impl AsRef<Path>) -> Result<Self, viamind_doc::file::FileError> {
         let path = path.as_ref();

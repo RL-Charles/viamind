@@ -74,6 +74,8 @@ impl CommandHost for EngineHost {
                 | "get_session_state"
                 | "watch_events"
                 | "get_auto_drc_status"
+                | "get_auto_drc_event_state"
+                | "watch_auto_drc_events"
                 | "run_drc"
                 | "query_parts"
                 | "query_nets"
@@ -205,6 +207,16 @@ impl CommandHost for EngineHost {
             name: "get_auto_drc_status".into(),
             description: "Read shared automatic DRC config, generation, pending/running/ready/skipped/failed state, current scoped report, limits and measured worker latency. A report is present only when current. No project clone or design transaction.".into(),
             input_schema: json!({"type":"object","properties":{},"additionalProperties":false}),
+        });
+        commands.push(HostCommand {
+            name: "get_auto_drc_event_state".into(),
+            description: "Read an atomic current automatic scoped DRC status and its independent event cursor. Initialize/resynchronize here, then watch_auto_drc_events after this cursor. Detailed reports exist only in current ready status; match generation. Preserves document cursors, history and native bytes.".into(),
+            input_schema: json!({"type":"object","properties":{},"additionalProperties":false}),
+        });
+        commands.push(HostCommand {
+            name: "watch_auto_drc_events".into(),
+            description: "Read automatic scoped DRC transition summaries from an independent bounded128-record journal. Reuse after cursor across initialized connections/reconnects; omitted/null after starts at current tail. limit defaults100 (1..128), timeout_ms defaults0 (0..30000). Returns events,cursor,has_more. Wrong/future/expired cursors require get_auto_drc_event_state. No full report history, design cursor mutation, or protocol resource subscription. Use one outstanding watch per observer.".into(),
+            input_schema: input_schema::<viamind_engine::WatchAutoDrcEvents>(),
         });
         commands.push(HostCommand {
             name: "run_drc".into(),
@@ -390,6 +402,16 @@ impl CommandHost for EngineHost {
                 return Err("get_auto_drc_status takes an empty object".into());
             }
             return serde_json::to_value(self.engine.auto_drc_status()).map_err(|e| e.to_string());
+        }
+        if name == "get_auto_drc_event_state" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_auto_drc_event_state takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.auto_drc_event_state()).map_err(|e| e.to_string());
+        }
+        if name == "watch_auto_drc_events" {
+            let input = serde_json::from_value(input).map_err(|e| format!("invalid watch_auto_drc_events input: {e}"))?;
+            return serde_json::to_value(self.engine.watch_auto_drc_events(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "run_drc" {
             let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| format!("invalid run_drc input: {e}"))?;
