@@ -31,6 +31,14 @@ the mismatch is not presumed to affect all primitives or to be a harness defect.
 
 ## Diagnostic behavior and bounds
 
+The first diagnostic-only trace retains the legacy example's transition semantics
+and records raw pairs and repeated-pass/camera transitions before any hardening.
+It flags invalid provenance explicitly and cannot claim such a pair as valid.
+The final hardened diagnostic mode enforces token/deduplication and stable-pair
+requirements below only after causal evidence review. This ordering prevents
+instrumentation from concealing a harness failure before it can be explained.
+Both stages have the same image/work bounds, objects and pixel criteria.
+
 1. Preserve the original failed report and both original release binary hashes.
    Add optional diagnostics to the existing five-case example, retaining the same
    synthetic 5000 scene, added via, quad, ratsnest, layer operations, camera
