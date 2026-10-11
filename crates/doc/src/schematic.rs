@@ -148,6 +148,8 @@ pub struct SchematicLabel {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SchematicContent {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "crate::symbol_package::bounded_packages")]
+    pub packages: BTreeMap<ObjectId, crate::symbol_package::SchematicPackage>,
     pub symbols: BTreeMap<ObjectId, SchematicSymbol>,
     pub wires: BTreeMap<ObjectId, SchematicWire>,
     pub junctions: BTreeMap<ObjectId, SchematicJunction>,
@@ -155,7 +157,12 @@ pub struct SchematicContent {
 }
 impl SchematicContent {
     pub fn object_count(&self) -> usize {
-        self.symbols.len().saturating_add(self.wires.len()).saturating_add(self.junctions.len()).saturating_add(self.labels.len())
+        self.packages
+            .len()
+            .saturating_add(self.symbols.len())
+            .saturating_add(self.wires.len())
+            .saturating_add(self.junctions.len())
+            .saturating_add(self.labels.len())
     }
     pub fn pin_count(&self) -> usize {
         self.symbols.values().map(|s| s.pins.len()).sum()
@@ -167,6 +174,7 @@ impl SchematicContent {
         for s in self.symbols.values() {
             s.validate()?;
         }
+        crate::symbol_package::validate_membership(self)?;
         for w in self.wires.values() {
             w.start.validate()?;
             w.end.validate()?;
@@ -223,13 +231,16 @@ pub fn validate_sheet(sheet: &Sheet) -> Result<(), String> {
     if let Some(content) = &sheet.content {
         name(&sheet.name, false, 128)?;
         content.validate()?;
+        keyed(&mut ids, &content.packages, |v| v.id)?;
         keyed(&mut ids, &content.symbols, |v| v.id)?;
         keyed(&mut ids, &content.wires, |v| v.id)?;
         keyed(&mut ids, &content.junctions, |v| v.id)?;
         keyed(&mut ids, &content.labels, |v| v.id)?;
-        let mut references = BTreeSet::new();
+        let mut references = BTreeMap::new();
+        let owners = crate::symbol_package::membership_owners(content)?;
         for s in content.symbols.values() {
-            if !references.insert(&s.designator) {
+            let owner = owners.get(&s.id).copied().unwrap_or(s.id);
+            if references.insert(&s.designator, owner).is_some_and(|old| old != owner) {
                 return Err("duplicate schematic designator".into());
             }
             for pin in &s.pins {
@@ -264,10 +275,11 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
     for id in project.board.tracks.keys().chain(project.board.vias.keys()) {
         insert_existing(&mut ids, *id)?;
     }
-    let mut references = BTreeSet::new();
+    let mut references = BTreeMap::new();
     let mut objects = 0usize;
     let mut pins = 0usize;
     let mut symbols = BTreeSet::new();
+    let mut grouped = BTreeSet::new();
     for sheet in sheets {
         if sheet.content.is_some() {
             insert(&mut ids, sheet.id)?;
@@ -282,13 +294,19 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
             if objects > MAX_PROJECT_OBJECTS || pins > MAX_PINS {
                 return Err("project exceeds 100000 schematic objects or pins".into());
             }
+            keyed(&mut ids, &content.packages, |v| v.id)?;
             keyed(&mut ids, &content.symbols, |v| v.id)?;
             keyed(&mut ids, &content.wires, |v| v.id)?;
             keyed(&mut ids, &content.junctions, |v| v.id)?;
             keyed(&mut ids, &content.labels, |v| v.id)?;
+            let owners = crate::symbol_package::membership_owners(content)?;
             for s in content.symbols.values() {
                 symbols.insert(s.id);
-                if !references.insert(&s.designator) {
+                let owner = owners.get(&s.id).copied().unwrap_or(s.id);
+                if owner != s.id {
+                    grouped.insert(s.id);
+                }
+                if references.insert(&s.designator, owner).is_some_and(|old| old != owner) {
                     return Err(format!("duplicate schematic reference {}", s.designator));
                 }
                 for p in &s.pins {
@@ -300,6 +318,9 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
     let mut linked = BTreeSet::new();
     for part in project.board.parts.values() {
         if let Some(symbol) = part.schematic_symbol {
+            if grouped.contains(&symbol) {
+                return Err("PCB links to individual grouped units are unsupported; package aggregation is required".into());
+            }
             if symbol.as_uuid().is_nil() || !linked.insert(symbol) {
                 return Err(format!("nil or multiply linked schematic symbol {symbol}"));
             }

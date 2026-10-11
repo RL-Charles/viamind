@@ -40,6 +40,18 @@ impl Command for LinkSchematicSymbol {
             if project.board.parts.values().any(|p| p.id != self.expected_part.id && p.schematic_symbol == Some(expected.id)) {
                 return Err(CommandError::conflict("symbol already linked to another board part; unlink it explicitly first"));
             }
+            if project
+                .schematic
+                .sheets
+                .values()
+                .filter_map(|s| s.content.as_ref())
+                .any(|c| viamind_doc::symbol_package::package_for_symbol(c, expected.id).is_some())
+            {
+                return Err(CommandError::invalid(
+                    "target",
+                    "individual package-unit PCB links are unsupported; package aggregation is required (T116)",
+                ));
+            }
             Some(expected.id)
         } else {
             None
@@ -86,7 +98,8 @@ pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
     }
     for sheet in project.schematic.sheets.values() {
         if let Some(c) = &sheet.content {
-            count_more(c.object_count())?;
+            let (members, _) = viamind_doc::symbol_package::membership_budget(c).map_err(|e| CommandError::invalid("project", e))?;
+            count_more(c.object_count().saturating_add(members.saturating_sub(c.packages.len())))?;
             for symbol in c.symbols.values() {
                 count_more(symbol.pins.len())?;
             }
@@ -125,6 +138,13 @@ pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
     for sheet in project.schematic.sheets.values() {
         add(&sheet.name)?;
         if let Some(c) = &sheet.content {
+            for group in c.packages.values() {
+                add(&group.template_name)?;
+                for unit in &group.units {
+                    add(&unit.key)?;
+                    add(&unit.name)?;
+                }
+            }
             for symbol in c.symbols.values() {
                 add(&symbol.designator)?;
                 add(&symbol.value)?;
@@ -237,6 +257,12 @@ struct SyncPlan {
 fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate::EventCursor) -> Result<SyncPlan, CommandError> {
     use std::collections::{BTreeMap, BTreeSet};
     validate_sync_project(project)?;
+    if project.schematic.sheets.values().filter_map(|s| s.content.as_ref()).any(|c| !c.packages.is_empty()) {
+        return Err(CommandError::invalid(
+            "project",
+            "multi-unit package PCB synchronization is unsupported; package aggregation is required (T116)",
+        ));
+    }
     let graph = crate::schematic_connectivity::project_schematic_connectivity(project, cursor)?;
     let mut pin_nets = BTreeMap::new();
     let mut nets = Vec::new();
