@@ -4,6 +4,7 @@ use viamind_geom::Nm;
 
 fn example() -> Footprint {
     Footprint {
+        holes: None,
         artwork: None,
         name: "Precise_SMD".into(),
         pads: vec![FootprintPad {

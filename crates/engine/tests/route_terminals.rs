@@ -26,6 +26,7 @@ fn fixture() -> (Project, [RouteTerminalId; 3]) {
         apertures: None,
     };
     let part = Part {
+        holes: None,
         artwork: None,
         id: ObjectId::new(),
         assembly: None,

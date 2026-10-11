@@ -155,6 +155,7 @@ mod tests {
     fn bounded_geometry_capture_omits_unused_invalid_sourcing() {
         let mut project = Project::new("Not needed by routing");
         let part = viamind_doc::Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             schematic_symbol: None,

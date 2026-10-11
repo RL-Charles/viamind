@@ -129,6 +129,7 @@ impl AssemblySnapshot {
             .parts
             .values()
             .map(|p| Part {
+                holes: None,
                 artwork: None,
                 assembly: p.assembly.as_ref().and_then(|metadata| {
                     if kind.needs_sourcing() {

@@ -9,6 +9,7 @@ fn pad() -> Pad {
 fn project(pad: Pad) -> Project {
     let mut p = Project::new("Original aperture fixture");
     let part = Part {
+        holes: None,
         artwork: None,
         assembly: None,
         schematic_symbol: None,
@@ -45,6 +46,7 @@ fn legacy_pad_bytes_and_native_minimum_are_preserved_while_explicit_empty_requir
 #[test]
 fn library3_requires_real_policy_and_library1or2_refuse_even_null_member() {
     let mut f = Footprint {
+        holes: None,
         artwork: None,
         name: "Original".into(),
         pads: vec![FootprintPad {

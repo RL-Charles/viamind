@@ -4,6 +4,7 @@ use viamind_drc::{Boundary, DrcInput, ViolationKind, run_drc};
 use viamind_geom::{Nm, Point, Polygon};
 fn part(designator: &str, x: f64, y: f64, width: f64, height: f64, angle: i32, side: Side, net: Option<&str>) -> Part {
     Part {
+        holes: None,
         artwork: None,
         assembly: None,
         schematic_symbol: None,

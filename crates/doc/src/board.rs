@@ -63,6 +63,9 @@ impl Board {
 /// A component placed on the board.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
+    /// Explicit circular nonplated drills; Some(empty) retains authored clear intent.
+    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "crate::footprint_holes::deserialize_holes")]
+    pub holes: Option<Vec<crate::PartHole>>,
     /// Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub artwork: Option<Box<crate::FootprintArtwork>>,
@@ -108,6 +111,7 @@ impl Part {
     /// Purpose-specific copy that never clones unused sourcing strings.
     pub fn clone_without_assembly(&self) -> Self {
         Self {
+            holes: self.holes.clone(),
             artwork: self.artwork.clone(),
             assembly: None,
             schematic_symbol: self.schematic_symbol,
@@ -125,6 +129,7 @@ impl Part {
     /// Private analysis copy only; never use for guards, live deltas, or persistence.
     pub fn clone_for_electrical_analysis(&self) -> Self {
         Self {
+            holes: self.holes.clone(),
             artwork: None,
             assembly: None,
             schematic_symbol: self.schematic_symbol,
@@ -213,6 +218,7 @@ mod tests {
         project.schematic.sheets.insert(sheet.id, sheet);
         for (i, side) in [Side::Top, Side::Bottom].into_iter().enumerate() {
             let part = Part {
+                holes: None,
                 artwork: None,
                 assembly: None,
                 schematic_symbol: None,

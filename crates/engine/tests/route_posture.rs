@@ -20,6 +20,7 @@ fn fixture() -> (EngineHandle, [PadEndpointId; 2]) {
             apertures: None,
         };
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: None,
             id: ObjectId::new(),

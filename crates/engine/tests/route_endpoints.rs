@@ -19,6 +19,7 @@ fn fixture() -> (Project, [PadEndpointId; 2]) {
             apertures: None,
         };
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,
@@ -139,6 +140,7 @@ fn discovery_is_immutable_sorted_filtered_paginated_and_bounded() {
     let (mut project, ids) = fixture();
     project.board.parts.get_mut(&ids[1].part_id).unwrap().rotation_mdeg = 45_000;
     let legacy = Part {
+        holes: None,
         artwork: None,
         assembly: None,
         schematic_symbol: None,

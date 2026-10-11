@@ -34,6 +34,7 @@ async fn actual_independent_http_agents_see_same_conservative_guides_through_rou
             apertures: None,
         };
         let part = Part {
+            holes: None,
             artwork: None,
             assembly: None,
             id: ObjectId::new(),
