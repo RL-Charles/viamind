@@ -24,9 +24,11 @@ pub struct SetNamedNetRules {
     pub rules: Vec<NamedNetRuleRow>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NamedNetRuleSnapshot {
     pub project_id: ObjectId,
     pub source_cursor: EventCursor,
+    #[serde(deserialize_with = "viamind_doc::net_rules::deserialize_named_net_rules")]
     pub document_net_rules: NamedNetRules,
 }
 impl EngineHandle {
