@@ -41,6 +41,8 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
+    SnapshotSchematicWireSheet => ("snapshot_schematic_wire_sheet", input_schema::<viamind_engine::SchematicWireSheetQuery>(), snapshot_schematic_wire_sheet),
     QueryLinkedComponents => ("query_linked_components", input_schema::<viamind_engine::ComponentLinkQuery>(), query_linked_components),
     CreateSchematicPcbComponent => (viamind_engine::CreateSchematicPcbComponent::NAME, input_schema::<viamind_engine::CreateSchematicPcbComponent>(), create_schematic_pcb_component),
     LinkSchematicSymbol => (viamind_engine::LinkSchematicSymbol::NAME, input_schema::<viamind_engine::LinkSchematicSymbol>(), link_schematic_symbol),
@@ -259,4 +261,17 @@ fn render_schematic_png(e: &EngineHandle, input: Value) -> Result<Value, EngineE
 
 fn route_pad_via_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePadViaPolyline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn draw_schematic_wire_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::DrawSchematicWirePolyline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn snapshot_schematic_wire_sheet(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(
+        engine
+            .snapshot_schematic_wire_sheet(&input)
+            .map_err(|error| EngineError::Command { command: "snapshot_schematic_wire_sheet".into(), error })?,
+    )
+    .map_err(encode_error)
 }

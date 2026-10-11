@@ -115,6 +115,7 @@ impl CommandRegistry {
             .with::<crate::ApplyFootprint>()
             .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()
+            .with::<crate::DrawSchematicWirePolyline>()
             .with::<crate::DeleteSchematicSheet>()
             .with::<crate::LinkSchematicSymbol>()
             .with::<crate::SynchronizeSchematicPcb>()
