@@ -1,0 +1,17 @@
+{
+  "admitted": true,
+  "utc": "2026-10-11T23:44:13.143950+00:00",
+  "source": "ce135b238667993f5bf215254389fd71958d4635",
+  "binary_sha256": "4a78ff55e5eef121cda4e9d36d0d429bb12af2ac7e22758b23832fba9e2b236f",
+  "scope": "One initial legacy diagnostic only; no renderer fix or cadence claim",
+  "quiet_acknowledgements": {
+    "root": "foundation89095 EXIT101 compiler finished; no Cargo/native/GPU queued or running; bounded source edits only",
+    "outline": "consumer43995 EXIT101 compiler finished; fresh QUIET READY no Cargo/native/GPU/headless queued or running",
+    "manufacturing": "full62084 EXIT0; fresh QUIET READY no Cargo/native/GPU/headless queued or running"
+  },
+  "source_reviews": [
+    "root ce135b2 mismatch refusal PASS",
+    "outline ce135b2 mismatch refusal PASS"
+  ],
+  "build_evidence": "agent scoped54820 EXIT0 fmt/release strict example lint/4 tests/build; unique binary hash independently checked root"
+}
