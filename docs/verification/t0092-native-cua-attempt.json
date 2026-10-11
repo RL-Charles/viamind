@@ -1,0 +1,11 @@
+{
+  "request": {
+    "pid": 1261069,
+    "window_id": 110379550490704,
+    "screenshot_out_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/native-cua-selected.png",
+    "session": "t0092-selected-final"
+  },
+  "returncode": 0,
+  "stdout": "Window target pid 1261069, window_id 110379550490704 is stale or no longer running; refresh list_windows.\n",
+  "stderr": ""
+}

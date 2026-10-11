@@ -4,6 +4,7 @@
 //! infer assembly centroids, sourcing identifiers or manufacturer compatibility.
 
 mod assembly;
+mod assembly_templates;
 mod fabrication;
 mod output_job;
 mod snapshot;

@@ -16,6 +16,43 @@ fn parse_csv(path: &Path) -> Value {
 }
 
 #[test]
+fn cli_populated_bom_templates_match_shared_writer_and_preserve_native() {
+    let directory = tempfile::tempdir().unwrap();
+    let native = directory.path().join("source.json");
+    let source = include_str!("../../../fixtures/assembly/bom-templates.viamind.json");
+    std::fs::write(&native, source).unwrap();
+    let project = file::from_str(source).unwrap();
+    for kind in [viamind_fab::AssemblyCsv::CatalogBom, viamind_fab::AssemblyCsv::AssemblyBom] {
+        let output = directory.path().join(format!("{}.csv", kind.name()));
+        let run = |path: &Path, replace: bool| {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_viamind"));
+            command
+                .args(["--export-csv", kind.name(), "--open"])
+                .arg(&native)
+                .arg("--output")
+                .arg(path)
+                .env_remove("DISPLAY")
+                .env_remove("WAYLAND_DISPLAY");
+            if replace {
+                command.arg("--overwrite");
+            }
+            command.output().unwrap()
+        };
+        let result = run(&output, false);
+        assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
+        let bytes = std::fs::read(&output).unwrap();
+        assert_eq!(bytes, viamind_fab::csv(&project, kind).unwrap().into_bytes());
+        let parsed = parse_csv(&output);
+        assert_eq!(parsed.as_array().unwrap().len(), 2);
+        assert!(!run(&output, false).status.success());
+        assert_eq!(std::fs::read(&output).unwrap(), bytes);
+        assert!(run(&output, true).status.success());
+        assert!(!run(&native, true).status.success());
+    }
+    assert_eq!(std::fs::read_to_string(&native).unwrap(), source);
+}
+
+#[test]
 fn cli_exports_lossless_tables_without_display_and_requires_explicit_replacement() {
     let directory = tempfile::tempdir().unwrap();
     let native = directory.path().join("source project.json");

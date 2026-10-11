@@ -1,4 +1,4 @@
-//! Human generic BOM/placement exports through the same bounded snapshot writer as MCP.
+//! Human assembly tables through the same bounded snapshot writer as MCP.
 use crate::{ViamindApp, actions::UiAction};
 use egui::Ui;
 use serde_json::{Value, json};
@@ -27,7 +27,7 @@ fn export_with_before_publish(engine: &EngineHandle, input: Value, before_publis
         let snapshot = AssemblySnapshot::capture_for(e.project(), request.kind).map_err(|e| invalid(e.to_string()))?;
         Ok((snapshot, cursor, e.document_status().path))
     })?;
-    let count = snapshot.component_count();
+    let count = snapshot.component_count_for(request.kind);
     let prepared = snapshot
         .prepare(request.kind, &request.path, request.overwrite, native.as_deref())
         .map_err(|e| invalid(format!("could not export CSV: {e}")))?;
@@ -135,23 +135,28 @@ impl ViamindApp {
         let busy = self.assembly_export.busy();
         let mut start = false;
         egui::Window::new("Export assembly CSV").open(&mut self.assembly_export.open).default_width(580.0).vscroll(true).show(ui.ctx(), |ui| {
-            ui.label("Generic component tables from an immutable board snapshot.");
+            ui.label("Component tables from an immutable board snapshot.");
             ui.add_enabled_ui(!busy, |ui| {
-                ui.horizontal(|ui| {
-                    ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::Bom, "BOM");
-                    ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::Placement, "Placement");
-                    ui.selectable_value(&mut self.assembly_export.kind, AssemblyCsv::SourcingBom, "Sourcing BOM");
+                ui.horizontal_wrapped(|ui| {
+                    for kind in AssemblyCsv::ALL {
+                        ui.selectable_value(&mut self.assembly_export.kind, kind, kind.label());
+                    }
                 });
                 ui.label(match self.assembly_export.kind {
                     AssemblyCsv::Bom => "All-component inventory grouped by value/footprint; sourcing and population are not applied.",
                     AssemblyCsv::SourcingBom => "User-entered identifiers and explicit population for every component; no sourcing lookup or vendor preset.",
                     AssemblyCsv::Placement => "All-component inventory; population is not applied. Origins in global mm: X right, Y down, CCW top view. Bottom keeps the stored transform.",
+                    AssemblyCsv::CatalogBom => "Populated components only. Requires value, footprint, explicit LCSC/JLCPCB supplier and C-digits SKU. Catalog BOM template; no lookup or acceptance verification.",
+                    AssemblyCsv::AssemblyBom => "Populated components only. Requires footprint and explicit manufacturer part number. Assembly BOM template; mounting type/instructions stay empty. No acceptance verification.",
                 });
+                if matches!(self.assembly_export.kind, AssemblyCsv::CatalogBom | AssemblyCsv::AssemblyBom) {
+                    ui.label("Included references: 1–64 ASCII letters/digits/underscores, starting with a letter; case collisions are rejected. A separate placement file must use this same populated subset.");
+                }
                 let label = ui.label("CSV output file");
                 ui.add(egui::TextEdit::singleline(&mut self.assembly_export.path).desired_width(520.0).char_limit(4096)).labelled_by(label.id);
                 ui.checkbox(&mut self.assembly_export.overwrite, "Allow replacing this CSV output");
                 ui.label("Default: a NEW file is required. The active native project is always protected.");
-                ui.label("At most 100000 components, 2 MiB aggregate text and 32 MiB CSV. Sourcing fields are explicit user input; no manufacturer preset.");
+                ui.label("At most 100000 source components, 2 MiB aggregate text and 32 MiB CSV. Identifiers are explicit user input; no stock lookup or verified assembly centroids.");
                 start = ui.button(if self.assembly_export.overwrite { "Export CSV (replace allowed)" } else { "Export CSV to NEW file" }).clicked();
             });
             if busy {
@@ -165,7 +170,8 @@ impl ViamindApp {
             }
             if let Some(result) = &self.assembly_export.result {
                 ui.label(format!("Exported {}", result["path"].as_str().unwrap_or("")));
-                ui.label(format!("{} components · {}", result["component_count"], if result["kind"] == "bom" { "BOM" } else { "Placement" }));
+                let label = result["kind"].as_str().and_then(AssemblyCsv::from_name).map_or("CSV", AssemblyCsv::label);
+                ui.label(format!("{} components · {label}", result["component_count"]));
                 ui.label(format!(
                     "Snapshot {} / {}",
                     result["exported_cursor"]["stream_id"].as_str().unwrap_or(""),

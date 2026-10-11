@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "checks": [
+    "two initialized agent sessions are distinct",
+    "shared discovery includes both typed BOM template kinds",
+    "both agents observe identical complete session",
+    "catalog_bom actual production no-display CLI succeeds",
+    "catalog_bom actual HTTP bytes equal CLI and count populated subset",
+    "catalog_bom independent CSV parser sees one included row",
+    "catalog exact header bytes and explicit synthetic identifier",
+    "catalog_bom NEW collision preserves existing bytes",
+    "catalog_bom explicit overwrite publishes exact complete bytes",
+    "catalog_bom CLI and HTTP protect active native bytes",
+    "assembly_bom actual production no-display CLI succeeds",
+    "assembly_bom actual HTTP bytes equal CLI and count populated subset",
+    "assembly_bom independent CSV parser sees one included row",
+    "assembly exact headers Unicode quoting and empty uninferred cells",
+    "assembly_bom NEW collision preserves existing bytes",
+    "assembly_bom explicit overwrite publishes exact complete bytes",
+    "assembly_bom CLI and HTTP protect active native bytes",
+    "all accepted template exports preserve complete shared session/status",
+    "bom previous verified format bytes unchanged",
+    "placement previous verified format bytes unchanged",
+    "sourcing_bom previous verified format bytes unchanged",
+    "seven prior fabrication files retain exact bytes",
+    "ten existing output-job/config files unchanged and new profiles rejected",
+    "supplier explicit invalid/absent sourcing and stale cursor fail atomically",
+    "supplier undo restores exact project and clean native status",
+    "supplier_sku explicit invalid/absent sourcing and stale cursor fail atomically",
+    "supplier_sku undo restores exact project and clean native status",
+    "mpn explicit invalid/absent sourcing and stale cursor fail atomically",
+    "mpn undo restores exact project and clean native status",
+    "original native file bytes never changed",
+    "no failed output or leftover temporary publication files"
+  ],
+  "endpoint": "http://127.0.0.1:7919/mcp",
+  "binary_sha256": "25571b7cbd38f364fadac3c609369a684c56fc8e91c038ed119c4645973cb6de",
+  "previous_binary_sha256": "6e2e97d875ac98348d41f6b8f1384a6b7da12f1658b97ee6c7d7c40fc2b362c1",
+  "fixture_sha256": "c479f4467d0502a8f0538df42a406cacc45d196197d39fa86b2892aa0bfc5a8f",
+  "outputs": {
+    "catalog_bom": "7ef94a791a8c820d6a73386ee053b6d0a1a5ab4f94ffb06b411213e9368f0bc1",
+    "assembly_bom": "0093f995a86dc55b8812f494eda0c94f7f23252045faf8bff5982a99751e88cc"
+  },
+  "initial_cursor": {
+    "sequence": 0,
+    "stream_id": "c6bcdf8c-9554-4253-b894-57b62672f010"
+  },
+  "active_native_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0092/production-project.json",
+  "final_cursor": {
+    "sequence": 6,
+    "stream_id": "c6bcdf8c-9554-4253-b894-57b62672f010"
+  }
+}

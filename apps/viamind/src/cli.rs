@@ -6,7 +6,7 @@ pub const HELP: &str = "Viamind — agent-driven PCB design
 
 Usage: viamind [--open PATH] [--no-mcp]
        viamind --headless [--open PATH] [--save-as PATH]
-       viamind --export-csv bom|placement|sourcing_bom --open PATH --output PATH [--overwrite]
+       viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
@@ -161,12 +161,13 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                 }
             }
             Some("--export-csv") => {
-                options.export_csv = Some(match args.next().as_deref().and_then(|arg| arg.to_str()) {
-                    Some("bom") => viamind_fab::AssemblyCsv::Bom,
-                    Some("placement") => viamind_fab::AssemblyCsv::Placement,
-                    Some("sourcing_bom") => viamind_fab::AssemblyCsv::SourcingBom,
-                    _ => return Err("--export-csv requires bom, placement or sourcing_bom".into()),
-                });
+                options.export_csv = Some(
+                    args.next()
+                        .as_deref()
+                        .and_then(|arg| arg.to_str())
+                        .and_then(viamind_fab::AssemblyCsv::from_name)
+                        .ok_or("--export-csv requires bom, placement, sourcing_bom, catalog_bom or assembly_bom")?,
+                );
             }
             Some("--open" | "--save-as" | "--output" | "--run-output-job") => {
                 let path = args
