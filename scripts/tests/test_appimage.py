@@ -139,6 +139,32 @@ class AppImageTests(unittest.TestCase):
             self.assertFalse(list(root.glob(".appimage-build-*")))
             self.assertEqual((runtime / "runtime-x86_64").read_bytes(), b"runtime")
 
+    def test_relink_refuses_destination_created_after_early_check(self):
+        # Exercise the exact distributed shell program with a linker double
+        # that creates a racing destination after the shell's initial check.
+        source = (support.ROOT / "packaging/appimage/build-runtime.sh").read_text()
+        shell = source.split("cat > /result/relink/relink.sh <<'EOF'\n", 1)[1].split("\nEOF", 1)[0] + "\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            kit = root / "kit with spaces"
+            kit.mkdir()
+            relink = kit / "relink.sh"
+            relink.write_text(shell)
+            relink.chmod(0o755)
+            tools = root / "tools"
+            tools.mkdir()
+            linker = tools / "ld"
+            linker.write_text("#!/usr/bin/env python3\nimport os,pathlib,sys\n"
+                              "pathlib.Path(sys.argv[sys.argv.index('-o')+1]).write_bytes(bytes(20))\n"
+                              "pathlib.Path(os.environ['RACE_DESTINATION']).write_text('racing artifact')\n")
+            linker.chmod(0o755)
+            out = root / "NEW runtime"
+            result = subprocess.run([str(relink), str(out)], env=dict(os.environ, PATH=str(tools)+os.pathsep+os.environ['PATH'],
+                                      RACE_DESTINATION=str(out)), capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(out.read_text(), "racing artifact")
+            self.assertFalse(list(root.glob("NEW runtime.relink.*")))
+
     def test_wrong_architecture_refuses_before_inputs_or_publication(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
