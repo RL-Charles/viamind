@@ -3,7 +3,7 @@ use crate::{
     footprint::{Footprint, FootprintPad, LocalPosition},
     pcb_sexpr::{
         Disposition, FidelityItem, FidelityReport, ImportError, ImportedCounts, Node, allowed, at_zero, atoms, canonical_layer, child, decimal_nm,
-        field, mark, name, parse_tree, subtree, validate_ids,
+        field, mark, name, omit_scalars, parse_tree, subtree, validate_ids,
     },
 };
 use std::collections::BTreeSet;
@@ -39,7 +39,8 @@ fn pad(n: &Node, items: &mut [FidelityItem]) -> Result<FootprintPad> {
     if n.args.len() != 3 || n.args[1] != "smd" || n.args[2] != "rect" {
         return Err(bad("Only detached rectangular smd pads are supported; drilled/other copper shapes block conversion."));
     }
-    allowed(n, &["at", "size", "layers", "net", "uuid", "tstamp"], &["pinfunction", "pintype"], items)?;
+    allowed(n, &["at", "size", "layers", "net", "uuid", "tstamp", "pinfunction", "pintype"], &[], items)?;
+    omit_scalars(n, &["pinfunction", "pintype"], items)?;
     if let Some(net) = child(n, "net")? {
         if atoms(net, 2)? != ["0", ""] {
             return Err(bad("Meaningful net assignment cannot be discarded into a detached library; use an unassigned footprint source."));
@@ -386,7 +387,7 @@ mod tests {
     fn all_source_and_parser_work_limits_precede_unbounded_native_collection() {
         assert!(parse(&" ".repeat(MAX_SOURCE_BYTES + 1)).unwrap_err().0.contains("1 MiB"));
         assert!(parse(&format!("(footprint \"{}\")", "x".repeat(4097))).unwrap_err().0.contains("4096"));
-        assert!(parse(&format!("{}x{}", "(".repeat(34), ")".repeat(34))).is_err());
+        assert!(parse(&format!("{}{}", "(x ".repeat(34), ")".repeat(34))).unwrap_err().0.contains("depth"));
         let pads = "(pad \"1\" smd rect (at 0 0) (size 1 1) (layers \"F.Cu\"))".repeat(1025);
         assert!(parse(&format!("(footprint \"Original\" (version 20241229) (layer \"F.Cu\") {pads})")).unwrap_err().0.contains("1024"));
         assert!(parse(&format!("(footprint \"Original\" {})", "(x)".repeat(20000))).unwrap_err().0.contains("20000"));
@@ -400,5 +401,25 @@ mod tests {
         assert!(parsed.footprint.is_none());
         assert!(parsed.report.items.iter().any(|i| i.token == token));
         assert!(parsed.report.items.iter().map(|i| i.reason.len()).sum::<usize>() < 512 * 1024);
+    }
+}
+
+#[cfg(test)]
+mod omitted_metadata_tests {
+    use super::*;
+    #[test]
+    fn recognized_ignored_fields_and_art_cannot_hide_unknown_semantic_lists() {
+        let source = include_str!("../../../fixtures/import/original-rect-smd.kicad_mod");
+        for field in ["pinfunction", "pintype"] {
+            let valid = source.replacen("(size 0.8 1.2)", &format!("(size 0.8 1.2) ({field} \"VIN\")"), 1);
+            assert!(parse(&valid).unwrap().report.can_import());
+            for injected in [format!("({field} \"VIN\" (zone (net 1)))"), format!("({field} \"VIN\") ({field} \"GND\")")] {
+                let invalid = source.replacen("(size 0.8 1.2)", &format!("(size 0.8 1.2) {injected}"), 1);
+                assert!(!parse(&invalid).unwrap().report.can_import());
+            }
+        }
+        for (from, to) in [("(effects (font", "(effects (unknown 1) (font"), ("(offset (xyz 0 0 0))", "(zone (net 1))")] {
+            assert!(!parse(&source.replace(from, to)).unwrap().report.can_import());
+        }
     }
 }

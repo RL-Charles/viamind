@@ -223,6 +223,16 @@ pub(crate) fn allowed(n: &Node, fields: &[&str], ignored: &[&str], items: &mut [
     }
     Ok(())
 }
+/// Recognized ignored scalar fields must not hide nested semantics or duplicates.
+pub(crate) fn omit_scalars(n: &Node, fields: &[&str], items: &mut [FidelityItem]) -> Result<()> {
+    for field in fields {
+        if let Some(c) = child(n, field)? {
+            atoms(c, 1)?;
+            mark(items, c, Disposition::Omitted, "Recognized scalar pin metadata is not retained; no electrical semantics inferred.");
+        }
+    }
+    Ok(())
+}
 /// Convert exact decimal millimetres without floating-point rounding or precision loss.
 pub fn decimal_nm(s: &str) -> Result<Nm> {
     let (negative, s) = if let Some(s) = s.strip_prefix('-') { (true, s) } else { (false, s.strip_prefix('+').unwrap_or(s)) };
@@ -339,7 +349,8 @@ fn pad(n: &Node, table: &BTreeMap<u32, String>, items: &mut [FidelityItem]) -> R
     if n.args.len() != 3 || n.args[1] != "smd" || n.args[2] != "rect" {
         return Err(bad("only explicit rectangular smd pads are supported"));
     }
-    allowed(n, &["at", "size", "layers", "net", "uuid", "tstamp"], &["pinfunction", "pintype"], items)?;
+    allowed(n, &["at", "size", "layers", "net", "uuid", "tstamp", "pinfunction", "pintype"], &[], items)?;
+    omit_scalars(n, &["pinfunction", "pintype"], items)?;
     let l = child(n, "layers")?.ok_or_else(|| bad("missing pad layers"))?;
     if !l.children.is_empty()
         || !l.args.iter().any(|s| s == "F.Cu")
@@ -765,4 +776,21 @@ pub fn parse(source: &str) -> Result<ParsedPcb> {
     let omitted_lists = items.iter().filter(|i| i.disposition == Disposition::Omitted).count();
     let blocked_lists = items.iter().filter(|i| i.disposition == Disposition::Blocked).count();
     Ok(ParsedPcb { project, report: FidelityReport { format_version: version, imported, omitted_lists, blocked_lists, full_fidelity: false, items } })
+}
+
+#[cfg(test)]
+mod ignored_pin_metadata_tests {
+    use super::*;
+    const SOURCE: &str = include_str!("../../../fixtures/import/original-two-layer.kicad_pcb");
+    #[test]
+    fn scalar_pin_metadata_never_hides_semantic_children_or_duplicate_fields() {
+        for field in ["pinfunction", "pintype"] {
+            let valid = SOURCE.replacen("(size 0.8 1.2)", &format!("(size 0.8 1.2) ({field} \"VIN\")"), 1);
+            assert!(parse(&valid).unwrap().report.can_import());
+            for injected in [format!("({field} \"VIN\" (zone (net 1)))"), format!("({field} \"VIN\") ({field} \"GND\")")] {
+                let source = SOURCE.replacen("(size 0.8 1.2)", &format!("(size 0.8 1.2) {injected}"), 1);
+                assert!(!parse(&source).unwrap().report.can_import());
+            }
+        }
+    }
 }
