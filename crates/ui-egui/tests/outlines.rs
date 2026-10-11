@@ -51,3 +51,46 @@ fn outline_form_validates_applies_and_removes_geometry_through_shared_actions() 
     click(&mut h, "Cancel");
     assert!(engine.read(|p| p.board.outline.is_none()));
 }
+
+#[test]
+fn desktop_dxf_import_reports_errors_and_uses_the_shared_guarded_command() {
+    let engine = EngineHandle::new(Project::new("DXF UI"));
+    let mut h = Harness::builder()
+        .with_size(vec2(1400.0, 1000.0))
+        .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), ViamindApp::with_design(engine.clone(), None));
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("outline.dxf");
+    h.run_steps(5);
+    h.state_mut().begin_board_outline();
+    h.run_steps(5);
+    if h.query_by_label("Import DXF outline").is_none() {
+        click(&mut h, "Import ASCII DXF");
+    }
+    input(&mut h, "DXF file path", path.to_str().unwrap());
+    click(&mut h, "Import DXF outline");
+    assert!(engine.read(|p| p.board.outline.is_none()));
+    std::fs::write(&path, include_str!("../../doc/tests/fixtures/outline-mm.dxf")).unwrap();
+    click(&mut h, "Import DXF outline");
+    assert_eq!(engine.read(|p| p.board.outline.as_ref().unwrap().cutouts.len()), 1);
+    assert!(h.state().scene.substrate.is_some());
+    h.state_mut().undo_design();
+    h.run_steps(5);
+    assert!(engine.read(|p| p.board.outline.is_none()));
+    h.state_mut().begin_board_outline();
+    h.run_steps(5);
+    if h.query_by_label("Import DXF outline").is_none() {
+        click(&mut h, "Import ASCII DXF");
+    }
+    input(&mut h, "DXF file path", path.to_str().unwrap());
+    engine
+        .execute(
+            "import_board_outline_dxf",
+            json!({"text":include_str!("../../doc/tests/fixtures/outline-inch.dxf"),"expected":{"project_id":engine.read(|p|p.id),"outline":null}}),
+            Origin::agent("dxf-writer"),
+        )
+        .unwrap();
+    let after = engine.read(Clone::clone);
+    click(&mut h, "Import DXF outline");
+    assert_eq!(engine.read(Clone::clone), after);
+    click(&mut h, "Cancel");
+}

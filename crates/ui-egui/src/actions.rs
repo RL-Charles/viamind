@@ -5,8 +5,8 @@
 
 use serde_json::{Value, json};
 use viamind_engine::{
-    AddPart, Command, DeletePart, EngineError, EngineHandle, MovePart, NewProject, OpenProject, Origin, SaveProject, SetBoardOutline, SetPartPads,
-    SetSelection, UpdatePart, input_schema,
+    AddPart, Command, DeletePart, EngineError, EngineHandle, ImportBoardOutlineDxf, MovePart, NewProject, OpenProject, Origin, SaveProject,
+    SetBoardOutline, SetPartPads, SetSelection, UpdatePart, input_schema,
 };
 
 macro_rules! ui_actions {
@@ -43,6 +43,7 @@ ui_actions! {
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
+    ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
     SetBoardOutline => (SetBoardOutline::NAME, input_schema::<SetBoardOutline>(), set_board_outline),
     UpdatePart => (UpdatePart::NAME, input_schema::<UpdatePart>(), update_part),
     DeletePart => (DeletePart::NAME, input_schema::<DeletePart>(), delete_part),
@@ -111,4 +112,8 @@ fn set_board_outline(engine: &EngineHandle, input: Value) -> Result<Value, Engin
 
 fn set_part_pads(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(SetPartPads::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn import_board_outline_dxf(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(ImportBoardOutlineDxf::NAME, input, Origin::User)?).map_err(encode_error)
 }

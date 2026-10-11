@@ -23,7 +23,7 @@ fn add(designator: &str, x_mm: f64, y_mm: f64) -> AddPart {
 fn builtin_specs() {
     let specs = CommandRegistry::builtin().specs();
     let names: Vec<_> = specs.iter().map(|spec| spec.name.as_str()).collect();
-    assert_eq!(names, ["add_part", "delete_part", "move_part", "set_board_outline", "set_part_pads", "update_part"]);
+    assert_eq!(names, ["add_part", "delete_part", "import_board_outline_dxf", "move_part", "set_board_outline", "set_part_pads", "update_part"]);
     let add = &specs[0];
     let required: Vec<_> = add.input_schema["required"].as_array().unwrap().iter().map(|v| v.as_str().unwrap()).collect();
     assert_eq!(required, ["designator", "value", "footprint", "x_mm", "y_mm"]);

@@ -251,3 +251,16 @@ explicit overwrite and the active native path is protected. Exporting leaves the
 native saved baseline, selection and design history unchanged. See
 [generic assembly CSV conventions](../../docs/assembly-exports.md) before using
 component-origin placement coordinates for assembly work.
+
+### DXF outline import
+
+`import_board_outline_dxf` accepts ASCII DXF `text`, required `expected` with the
+current `project_id` and exact `outline` from `get_design`, optional `layer` (an
+exact name), and `units`: `header` (default), `mm`, or `inches`. Header mode requires
+supported nonzero `$INSUNITS`; explicit units intentionally override the drawing.
+Closed straight LWPOLYLINE/POLYLINE and exact joined LINE loops are supported.
+DXF +Y-up coordinates map to native -Y, preserving visual orientation.
+Curves, bulges, 3D geometry, open/branching loops and invalid board topology fail
+without changing the document. Import is one undoable outline change. The desktop
+has the same operation under **Board → Board outline → Import ASCII DXF**. See
+[the supported DXF subset](../../docs/specs/dxf-outline-import.md).

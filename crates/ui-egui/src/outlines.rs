@@ -2,6 +2,8 @@
 use crate::{ViamindApp, actions::UiAction};
 use egui::Ui;
 use serde_json::{Value, json};
+use std::io::Read;
+use viamind_doc::dxf::{DxfUnits, MAX_DXF_BYTES};
 use viamind_engine::ExpectedOutline;
 
 struct OutlineDraft {
@@ -9,6 +11,9 @@ struct OutlineDraft {
     cutouts: String,
     expected: ExpectedOutline,
     message: Option<String>,
+    dxf_path: String,
+    dxf_units: DxfUnits,
+    dxf_layer: String,
 }
 #[derive(Default)]
 pub struct OutlineUi {
@@ -58,13 +63,22 @@ impl ViamindApp {
                 )
             }
         });
-        self.outlines.draft = Some(OutlineDraft { outer, cutouts, expected, message: None });
+        self.outlines.draft = Some(OutlineDraft {
+            outer,
+            cutouts,
+            expected,
+            message: None,
+            dxf_path: String::new(),
+            dxf_units: DxfUnits::Header,
+            dxf_layer: String::new(),
+        });
     }
     pub(crate) fn outline_dialog(&mut self, ui: &mut Ui) {
         let Some(draft) = &mut self.outlines.draft else { return };
         let mut apply = false;
         let mut cancel = false;
         let mut remove = false;
+        let mut import = false;
         let modal = egui::Modal::new(egui::Id::new("board_outline_dialog")).show(ui.ctx(), |ui| {
             ui.heading("Board outline");
             ui.label("Vertices: one X,Y pair in mm per line. Rings close automatically.");
@@ -73,6 +87,20 @@ impl ViamindApp {
             let cutouts = ui.label("Cutout vertices");
             ui.add(egui::TextEdit::multiline(&mut draft.cutouts).desired_width(380.0).desired_rows(5)).labelled_by(cutouts.id);
             ui.label("Separate cutout rings with an empty line.");
+            ui.collapsing("Import ASCII DXF", |ui| {
+                let path = ui.label("DXF file path");
+                ui.text_edit_singleline(&mut draft.dxf_path).labelled_by(path.id);
+                ui.horizontal(|ui| {
+                    ui.label("DXF units");
+                    ui.selectable_value(&mut draft.dxf_units, DxfUnits::Header, "Drawing header");
+                    ui.selectable_value(&mut draft.dxf_units, DxfUnits::Mm, "Millimetres");
+                    ui.selectable_value(&mut draft.dxf_units, DxfUnits::Inches, "Inches");
+                });
+                let layer = ui.label("DXF layer (empty = all)");
+                ui.text_edit_singleline(&mut draft.dxf_layer).labelled_by(layer.id);
+                ui.label("Straight closed polylines or joined LINE loops. Curves require conversion.");
+                import = ui.button("Import DXF outline").clicked();
+            });
             if let Some(message) = &draft.message {
                 ui.label(message);
             }
@@ -84,9 +112,18 @@ impl ViamindApp {
         });
         if cancel || modal.should_close() {
             self.outlines.cancel();
-        } else if apply || remove {
+        } else if apply || remove || import {
             let Some(design) = &self.design else { return };
             let result = (|| {
+                if import {
+                    let file = std::fs::File::open(&draft.dxf_path).map_err(|e| format!("Could not open DXF: {e}"))?;
+                    let mut text = String::new();
+                    file.take((MAX_DXF_BYTES + 1) as u64).read_to_string(&mut text).map_err(|e| format!("Could not read ASCII DXF: {e}"))?;
+                    let layer = if draft.dxf_layer.is_empty() { None } else { Some(&draft.dxf_layer) };
+                    return UiAction::ImportBoardOutlineDxf
+                        .run(&design.engine, json!({"text":text,"units":draft.dxf_units,"layer":layer,"expected":draft.expected}))
+                        .map_err(|e| e.to_string());
+                }
                 if remove {
                     return UiAction::SetBoardOutline
                         .run(&design.engine, json!({ "outline": null, "expected": draft.expected }))
