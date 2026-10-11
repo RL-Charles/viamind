@@ -39,3 +39,7 @@ so a file opened or saved as the active project during staging remains protected
 Both the captured source file and the current active file are protected; ordinary
 design commands remain available during publication. External filesystem changes
 are outside the shared engine lifecycle contract.
+
+[Verification and reproduction](desktop-assembly-export-verification.md) records
+actual compact desktop input, controlled native lifecycle races, production CSV
+bytes and readable native inspection evidence.

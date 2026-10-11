@@ -1,13 +1,13 @@
 # Desktop assembly CSV verification (T78)
 
 [Master provenance](verification/t0078-master.json) records exact source
-7f6672a on merged main5a91aa0. Linux fmt, strict workspace all-target clippy,
+7f6672a on merged main 5a91aa0. Linux fmt, strict workspace all-target clippy,
 461 passing tests with one existing ignored test, and workspace build pass.
 [Source CI](https://github.com/RL-Charles/viamind/actions/runs/38128022227) is green.
 Production CLI binary SHA256:
 `cc5fb8f44540234c6110ebf490f8f016073006d97cc846e7b5d98607169ece35`.
 
-[Native report](verification/t0078-native-export.json) records23 passing production
+[Native report](verification/t0078-native-export.json) records 23 passing production
 CLI/native HTTP checks: both kinds preserve byte parity and full source cursors,
 independent Python CSV parsing preserves Unicode/quotes/CRLF, BOM grouping and
 bottom placement conventions match the fixture, explicit overwrite works, NEW
@@ -15,8 +15,8 @@ collisions and active-native overwrite preserve bytes, and exports leave shared
 session/status unchanged. Two transport sessions verify stale cursor rejection
 without output and exact undo restoration.
 
-The native server on7905 is a fixed-size inspection wrapper using production
-`ViamindApp`, `EngineHandle` and production MCP registration, PID448706/window
+The native server on 7905 is a fixed-size inspection wrapper using production
+`ViamindApp`, `EngineHandle` and production MCP registration, PID 448706/window
 110379508130208. Its separate binary SHA256 is
 `6cc4f13fba150262e22861aca6546da04f870d964ee5465564a63a991523edba`.
 The [wrapper source](verification/t0078-native-inspection.rs) changes only the
@@ -30,7 +30,7 @@ CSV form after the final undo. AT-SPI is metadata-only on this desktop; native
 raw clicks are unsupported. Actual pointer/text input is covered by three egui
 input tests, including File-menu access, both kinds, live MCP/library byte parity,
 explicit overwrite, preserved collisions/native/budget/stale failures, and visible
-Export/result/error controls after scrolling at640×400.
+Export/result/error controls after scrolling at 640×400.
 
 Controlled production-path regressions pause after CSV staging while a second
 editor opens the destination as a native project; desktop and MCP publication
