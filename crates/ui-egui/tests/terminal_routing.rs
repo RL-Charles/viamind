@@ -123,7 +123,12 @@ fn compact_persistent_footer_fits_after_scroll_and_cancel_preserves_full_session
     }
     let hover = h.get_by_label("Existing copper route").rect().center();
     h.event(Event::PointerMoved(hover));
-    h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: egui::vec2(0.0, -1000.0), modifiers: Modifiers::NONE });
+    h.event(Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(0.0, -1000.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: Modifiers::NONE,
+    });
     h.run_steps(5);
     for label in ["Finish terminal route", "Cancel terminal route"] {
         let r = h.get_by_label(label).rect();
@@ -141,7 +146,8 @@ fn concurrent_edit_invalidates_draft_and_active_modal_prevents_new_picker() {
     click(&mut h, 10.0, 10.0);
     click(&mut h, 30.0, 25.0);
     h.state_mut().begin_copper();
-    assert!(!h.state().copper.editing());
+    h.run_steps(3);
+    assert!(h.query_by_label("Copper tracks and vias").is_none());
     e.execute("add_part", serde_json::json!({"designator":"R1","value":"x","footprint":"x","x_mm":80,"y_mm":80}), Origin::agent("peer")).unwrap();
     let after = e.session_state();
     h.run_steps(5);
@@ -150,7 +156,7 @@ fn concurrent_edit_invalidates_draft_and_active_modal_prevents_new_picker() {
     assert_eq!(e.session_state(), after);
     h.state_mut().begin_copper();
     h.run_steps(3);
-    assert!(h.state().copper.editing());
+    assert!(h.query_by_label("Copper tracks and vias").is_some());
     h.state_mut().begin_terminal_route();
     h.run_steps(3);
     assert!(!h.state().routing.editing());
