@@ -138,3 +138,8 @@ pub use net_rules::{NamedNetRuleRow, NamedNetRuleSnapshot, SetNamedNetRules};
 
 mod footprint_definition;
 pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, validate_definition};
+
+mod agent_presence;
+pub use agent_presence::{
+    AGENT_PRESENCE_CAPACITY, AGENT_PRESENCE_LEASE, AgentPresence, AgentPresenceSnapshot, ClearAgentPresence, PresencePoint, SetAgentPresence,
+};

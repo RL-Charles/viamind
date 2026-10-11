@@ -5,6 +5,7 @@
 //! (CADCraft, MIT/Apache-2.0): `default-features = false` plus only the features we use.
 
 pub mod actions;
+mod agent_presence;
 pub mod annotation;
 pub mod assembly_export;
 pub mod board_scene;
@@ -456,6 +457,7 @@ impl ViamindApp {
             self.paint_pin_pad_probe(ui, response.rect);
             self.paint_track_cleanup(ui, response.rect);
             self.paint_labels(ui);
+            self.paint_agent_presence(ui, response.rect);
         });
         self.file_dialogs(ui);
         self.placement_dialog(ui);

@@ -86,6 +86,8 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
     assert!(tools.iter().all(|t| t["name"] != "set_named_net_rules"));
     assert!(tools.iter().any(|t| t["name"] == "load_footprint_definition"));
     assert!(tools.iter().all(|t| t["name"] != "save_footprint_definition"));
+    assert!(tools.iter().any(|t| t["name"] == "query_agent_presence"));
+    assert!(tools.iter().all(|t| t["name"] != "set_agent_presence" && t["name"] != "clear_agent_presence"));
     assert!(tools.iter().all(|t| t["name"] != "save_project" && t["name"] != "add_part"));
     for name in ["render_board_view", "render_board_png", "render_schematic_view", "render_schematic_png"] {
         assert!(tools.iter().find(|t| t["name"] == name).unwrap()["inputSchema"]["properties"].get("path").is_none());
@@ -108,6 +110,8 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
         "configure_auto_drc",
         "set_named_net_rules",
         "save_footprint_definition",
+        "set_agent_presence",
+        "clear_agent_presence",
     ] {
         let rejected = request!("tools/call", json!({"name":name,"arguments":{"path":output,"mode":"live","readOnlyHint":true}}));
         assert!(rejected["error"].is_object(), "{name}: {rejected}");
@@ -126,6 +130,7 @@ async fn actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints() {
     for (name, args) in [
         ("query_parts", json!({})),
         ("query_named_net_rules", json!({})),
+        ("query_agent_presence", json!({})),
         (
             "load_footprint_definition",
             json!({"path":std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json")}),
