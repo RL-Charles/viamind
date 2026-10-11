@@ -434,7 +434,8 @@ fn advertised_nullable_net_is_required_exactly_like_command_deserialization() {
         (SetTrackProperties::NAME, serde_json::to_value(track(&e, tid)).unwrap()),
         (SetViaProperties::NAME, serde_json::to_value(via(&e, vid)).unwrap()),
     ] {
-        let schema = viamind_engine::CommandRegistry::builtin().spec(name).unwrap().input_schema;
+        let registry = viamind_engine::CommandRegistry::builtin();
+        let schema = &registry.spec(name).unwrap().input_schema;
         assert!(schema["required"].as_array().unwrap().contains(&json!("net")));
         assert_eq!(schema["properties"]["net"]["type"], json!(["string", "null"]));
         assert!(schema["properties"]["expected"]["required"].as_array().unwrap().contains(&json!("net")));
