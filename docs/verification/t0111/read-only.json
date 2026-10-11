@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "actual read-only tool list includes immutable property query",
+    "both setters are absent from actual read-only tool list",
+    "track read-only original and full cursor are exact",
+    "track hidden mutation handler refuses unchanged",
+    "via read-only original and full cursor are exact",
+    "via hidden mutation handler refuses unchanged",
+    "native input bytes remain unchanged"
+  ],
+  "assertion_count": 7,
+  "binary_sha256": "1e445b620b08d8e84b0e74953d7f2dced5eaef0a5d5012814081f06e145a0239",
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/properties.viamind.json",
+  "scope": "actual no-display headless readonly process; no native window/OS input"
+}

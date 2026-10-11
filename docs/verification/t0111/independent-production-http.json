@@ -1,0 +1,194 @@
+{
+  "passed": true,
+  "port": 7941,
+  "source_commit": "2512b2a",
+  "binary_sha256": "1e445b620b08d8e84b0e74953d7f2dced5eaef0a5d5012814081f06e145a0239",
+  "checks": [
+    "two initialized clients discover property query and both guarded commands",
+    "set_track_properties advertises explicit required nullable net at both levels",
+    "set_track_properties missing replacement net refuses unchanged",
+    "set_track_properties missing original net refuses unchanged",
+    "set_via_properties advertises explicit required nullable net at both levels",
+    "set_via_properties missing replacement net refuses unchanged",
+    "set_via_properties missing original net refuses unchanged",
+    "track immutable peer query returns exact original, full cursor and document policy",
+    "via immutable peer query returns exact original, full cursor and document policy",
+    "unknown query key refuses unchanged",
+    "unsupported pad identity refuses unchanged",
+    "missing identity refuses unchanged",
+    "exact original top track proves pad endpoint chain with zero guides",
+    "track exact odd-Nm width and layer commit retain ID and endpoints",
+    "changing explicit copper side restores conservative guide without changing pad identities",
+    "one track design event and exact delta before/after",
+    "peer reads the same committed track and all unrelated geometry unchanged",
+    "stale full sequence refuses duplicate property commit",
+    "one undo restores exact pre-track project",
+    "undo restores exact conservative stored-endpoint proof",
+    "one redo restores exact track and stable UUID",
+    "through via odd diameter/drill retain exact center and identity",
+    "one via event and same peer committed project",
+    "one undo restores exact pre-via project",
+    "one redo restores exact via and UUID",
+    "below document track width refuses full state/status unchanged",
+    "below document via drill refuses full state/status unchanged",
+    "half-Nm below doubled annular minimum refuses full state/status unchanged",
+    "nonpositive track width refuses full state/status unchanged",
+    "drill equals outer diameter refuses full state/status unchanged",
+    "unknown movement key refuses full state/status unchanged",
+    "oversized raw replacement net refuses full state/status unchanged",
+    "oversized raw expected net refuses full state/status unchanged",
+    "wrong expected object refuses full state/status unchanged",
+    "exact track no-op refuses full state/status unchanged",
+    "exact via no-op refuses full state/status unchanged",
+    "exact doubled annular equality accepted without implicit resizing",
+    "explicit unassigned net retained without inference",
+    "peer rule edit invalidates old full cursor",
+    "fresh zero request cannot weaken new document minimum",
+    "joint candidate DRC rejects foreign copper on changed layer",
+    "same-net hole-spacing failure rejects via atomically",
+    "same UUID reopen retains exact object IDs but replaces stream",
+    "old stream refuses after same UUID reopen",
+    "final native fixture and independent observer are identical"
+  ],
+  "latency_ms": {
+    "track_commit": 4.868563002673909,
+    "via_commit": 4.641556995920837,
+    "annulus_equality": 4.208017999189906,
+    "unassigned_track": 4.411931004142389
+  },
+  "assertion_count": 45,
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/properties.viamind.json",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "563e662c-7a3a-4cef-9b04-f9911ea8d1b3"
+    },
+    "project": {
+      "board": {
+        "net_rules": {
+          "N": {
+            "minimum_annular_width": 150001,
+            "minimum_copper_clearance": 100001,
+            "minimum_track_width": 250001,
+            "minimum_via_drill": 300001
+          }
+        },
+        "outline": {
+          "cutouts": [],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 50000000,
+              "y": 0
+            },
+            {
+              "x": 50000000,
+              "y": 50000000
+            },
+            {
+              "x": 0,
+              "y": 50000000
+            }
+          ]
+        },
+        "parts": {
+          "01d1269c-ff85-49dd-9e99-6de7e4bbb5ff": {
+            "designator": "J2",
+            "footprint": "explicit",
+            "id": "01d1269c-ff85-49dd-9e99-6de7e4bbb5ff",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "a6cea417-0480-45fe-9961-a23ef6f79ed0",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 15000001,
+              "y": 10000007
+            },
+            "rotation_mdeg": 0,
+            "side": "top",
+            "value": "Exact pad anchor"
+          },
+          "c84d29df-add2-4b89-9c23-5d57e13771ff": {
+            "designator": "J1",
+            "footprint": "explicit",
+            "id": "c84d29df-add2-4b89-9c23-5d57e13771ff",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "6f09ba51-6b73-4fe0-927c-f35774bc9b65",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 5000003,
+              "y": 10000007
+            },
+            "rotation_mdeg": 0,
+            "side": "top",
+            "value": "Exact pad anchor"
+          }
+        },
+        "tracks": {
+          "6adb46d9-ceea-474a-a6c3-6f14de891d4a": {
+            "end": {
+              "x": 15000001,
+              "y": 10000007
+            },
+            "id": "6adb46d9-ceea-474a-a6c3-6f14de891d4a",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 5000003,
+              "y": 10000007
+            },
+            "width": 250000
+          }
+        },
+        "vias": {
+          "7730dc96-4fd4-4356-bc9b-deadb5be47d0": {
+            "diameter": 1000000,
+            "drill": 300000,
+            "id": "7730dc96-4fd4-4356-bc9b-deadb5be47d0",
+            "net": "N",
+            "position": {
+              "x": 30000001,
+              "y": 25000003
+            }
+          }
+        }
+      },
+      "id": "e40d9c09-a9b9-4986-97d6-9a47540bd3f9",
+      "name": "Existing copper properties HTTP proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/properties.viamind.json"
+  }
+}

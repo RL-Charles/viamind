@@ -1,0 +1,5 @@
+{"actual_egui_text_edit_preparation":true,"local_fields_only_unchecked":true,"logical_focus_retained_only_in_inspection":true,"os_input":false,"target_id":"5f0e3933-0189-4b8a-9391-c7dd2e8774c4","target_kind":"via"}
+
+thread 'main' (2263653) panicked at crates/ui-egui/examples/copper_properties_inspection.rs:57:13:
+assertion failed: image.pixels.len() <= 4_194_304
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

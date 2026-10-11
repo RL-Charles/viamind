@@ -1,0 +1,482 @@
+{
+  "ticket": "T-0111",
+  "verified_utc": "2026-10-11T18:37:26.919197+00:00",
+  "spec": "docs/specs/existing-copper-property-edits.md",
+  "approved_spec_source": "06871185fdc840025d22cfdbefe0fca92606ac15",
+  "historical_full_linux": {
+    "source": "a83d8b804455675175650ee4ef2f9f8540402d78",
+    "session": 58247,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 811,
+      "failed": 0,
+      "ignored": 1
+    },
+    "additional_actual_ui_tests": 5,
+    "workspace_build": true,
+    "inspection_build": true
+  },
+  "schema_corrected_refresh": {
+    "source": "2512b2ace979043e4c04dda077bcedb613ead89d",
+    "session": 80875,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_tests": 24,
+    "workspace_build": true,
+    "inspection_build": true,
+    "reason": "Actual tool schema advertised omitted net although runtime requires explicit nullable net; required nullable schema wrappers plus runtime/schema regression added. Property mutation logic unchanged."
+  },
+  "production": {
+    "source": "2512b2ace979043e4c04dda077bcedb613ead89d",
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/final-native/viamind",
+    "sha256": "1e445b620b08d8e84b0e74953d7f2dced5eaef0a5d5012814081f06e145a0239",
+    "historical_pid": 2165952,
+    "historical_pid_absent_at_packaging": true,
+    "pid": 2281903,
+    "live_exe_sha256": "1e445b620b08d8e84b0e74953d7f2dced5eaef0a5d5012814081f06e145a0239",
+    "restored_observer_checks": 4,
+    "restart_reason": "Original process/listener absent at packaging; no matching accessible coredump/kernel/journal record found, cause undetermined and no crash inferred. Same exact retained binary restarted; historical45 checks remain distinct.",
+    "http_port": 7941,
+    "actual_two_client_desktop_http_checks": 45,
+    "read_only_headless_checks": 7,
+    "latency": {
+      "track_commit": 4.21480399381835,
+      "via_commit": 5.947729994659312,
+      "annulus_equality": 4.402543010655791,
+      "unassigned_track": 5.060095994849689
+    },
+    "limits": "Small fixture/current load HTTP round trips only; no large-board latency/cadence claim. Production Cua perception unavailable; actual native MCP behavior verified separately from inspection visuals."
+  },
+  "inspection_refresh": {
+    "source": "d04bd2e8e273402b59484d92ef98574891bf888a",
+    "session": 25399,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "example_build": true,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/inspection-rgba/inspection",
+    "sha256": "84cae4b76d900eed7e9c4706e20df46a5f24e147cfa6b36008f5d6732dfa1cee",
+    "scope": "Inspection-only original Screenshot-event Color32 RGBA preserved as P7; PNG omits alpha and retains exact RGB samples. Explicit transparent:false requests opaque native viewport; no claim about final compositor alpha. Child-only XWayland environment permits background readback; logical focus retained only in host. No OS input/compositor capture/cadence claim. Invariants before/after every UI pass; create_new+fsync+self-close."
+  },
+  "native_captures": [
+    {
+      "name": "via-wide-capture",
+      "png": "via-wide-capture.png",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "rgb_sha256": "6c1a1dcb5934f101b2588e8db293d1b1450f3c22bb16ac34dba706da6e2635e3",
+      "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/via-wide-capture.p6",
+      "p6_sha256": "6666fbe5cd565f2365abc09bb630d7b0b5d91340d7492e08df14c886733400b4",
+      "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/via-wide-capture.p7",
+      "p7_sha256": "cf5b5f57be190a34a8ce591f54501935d805fea78824505508620ed63d9521dc",
+      "rgba_sha256": "1b40ca9abad1b44830fbc0b2ddbe054dba135c36de8d785ad31f583159212b36",
+      "rgba_bytes": 17783556,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 6925,
+      "all_rgba_bytes_retained": true,
+      "every_rgb_sample_matches_png": true,
+      "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+    },
+    {
+      "name": "via-compact-capture",
+      "png": "via-compact-capture.png",
+      "pixels": [
+        1067,
+        667
+      ],
+      "rgb_sha256": "f167292202dfeda33f46c07dd8debe6a861dd49168b84767b4f7fdfb4fc495f9",
+      "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/via-compact-capture.p6",
+      "p6_sha256": "6ae317a24e723b117a046ffb6711a6411ff98c79c2a22f180cba8d1fa675c24d",
+      "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/via-compact-capture.p7",
+      "p7_sha256": "c25df128ad74e818b109b8b9d1873b9739c1d8c1beaea385e4b0a5b93a905008",
+      "rgba_sha256": "fe1e66396d1d3620a3bc65b1c4aa609675c1bf898f08f70f6314463659846473",
+      "rgba_bytes": 2846756,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 2231,
+      "all_rgba_bytes_retained": true,
+      "every_rgb_sample_matches_png": true,
+      "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+    },
+    {
+      "name": "track-wide-capture",
+      "png": "track-wide-capture.png",
+      "pixels": [
+        2667,
+        1667
+      ],
+      "rgb_sha256": "5f21e8a272ee355b353e6baff61ba0c91983321970559debb49b351e2d5e3e38",
+      "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/track-wide-capture.p6",
+      "p6_sha256": "12fe7fe555d9248f4e9188469a079e8d7cc300a7d9405c53c4999346b87b4c58",
+      "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/track-wide-capture.p7",
+      "p7_sha256": "d43b3693a2ce980ffe2e1e0fc94172a28fcc4d3c4bcb2b1914a26f254a116ac5",
+      "rgba_sha256": "7b3aa385834e8df7510b6edb59b80b8b83232500aa0396b98cc20390cb73226f",
+      "rgba_bytes": 17783556,
+      "alpha_min": 242,
+      "alpha_max": 255,
+      "nonopaque_alpha_pixels": 6925,
+      "all_rgba_bytes_retained": true,
+      "every_rgb_sample_matches_png": true,
+      "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+    }
+  ],
+  "excluded_attempts": {
+    "wayland_compact": "No readback after background frame callbacks stalled; only owned failed host terminated. No success inferred.",
+    "x11_alpha_assertion": "Incorrect stored-alpha255 assertion failed; original RGBA retention replaces assumption in inspection-only host."
+  },
+  "tooling": {
+    "actual_tools": 96,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "tooling_tests": 13
+  },
+  "integration": {
+    "stack_parent": "9a6114d5982e47724483ba9b549ce5ea6a87e636",
+    "stack_parent_ticket": "T-0110",
+    "stack_parent_pr": 109,
+    "main_after_parent_merge": "96e53ac",
+    "exact_head_ci": "pending final artifact head",
+    "prospective_tree_equality": "checked before final submission; final root merge gate"
+  },
+  "limits": [
+    "Complete shared candidate checker can preserve existing unrelated violations and explicitly disclosed coverage exclusions. No physical certification, implicit resize, movement, net inference, repair or shove.",
+    "Strict native100k60fps acceptance remains open.",
+    "Historical full gate precedes narrow schema correction and inspection-only evidence changes; final exact-head CI gates combined artifact head."
+  ],
+  "independent_review": {
+    "reviewer": "root",
+    "actual_two_client_http_checks": 45,
+    "report_source_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/production-http.json",
+    "report_sha256": "35b257ebdca866648abfd776f62932d01fb9d468ec563765cada9acafb1025a6",
+    "retained_native_path_after_probe": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/properties.viamind.json",
+    "production_binary_unchanged": true
+  },
+  "artifacts": [
+    {
+      "path": "docs/verification/t0111/capture-conversion.json",
+      "bytes": 3045,
+      "sha256": "bff4c24dabe05304451645f5e7fc31e57cdbeda0f623e0346fcac59321f08feb"
+    },
+    {
+      "path": "docs/verification/t0111/capture-dpi-excluded.log",
+      "bytes": 767,
+      "sha256": "e8f81eca51e982b17a9c2626a72a6b13764a48deeb2ec05f9fd97496962031fb"
+    },
+    {
+      "path": "docs/verification/t0111/capture-final-excluded.log",
+      "bytes": 789,
+      "sha256": "9b75a56514edc590cb5f222809437a85a6c029d2c928029fb74a25e6af25fa7e"
+    },
+    {
+      "path": "docs/verification/t0111/capture-final.log",
+      "bytes": 155,
+      "sha256": "9ef566402a601e23c660cec2247245298ec49ed34c3a2d62a6fdd64b52c240b0"
+    },
+    {
+      "path": "docs/verification/t0111/capture-native-final.py",
+      "bytes": 2239,
+      "sha256": "675c9b9c9b4dcfce697eddccababb9a2ddd404583abf41ad8e87c7592f5279da"
+    },
+    {
+      "path": "docs/verification/t0111/capture-size-excluded.log",
+      "bytes": 901,
+      "sha256": "04faaeb7c059c58fb6c5367dce50362247905b2ad01331c25cbb04efcc7499ca"
+    },
+    {
+      "path": "docs/verification/t0111/capture-x11.log",
+      "bytes": 775,
+      "sha256": "39b4296601c3ea16aa02ca9c091dfc2275b36f3ae1d712759583e91a5199624b"
+    },
+    {
+      "path": "docs/verification/t0111/capture.log",
+      "bytes": 565,
+      "sha256": "ff4fa6b6c14b37ed1a87f459c6d88550d62da0b2a36cc33aafee70f37f2d05b6"
+    },
+    {
+      "path": "docs/verification/t0111/catalog-check.json",
+      "bytes": 367,
+      "sha256": "eb1bf2fba32bfc63a1588508d5b28ca0cdac40c142ead646528b05df9fe3db0c"
+    },
+    {
+      "path": "docs/verification/t0111/client.py",
+      "bytes": 1391,
+      "sha256": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6"
+    },
+    {
+      "path": "docs/verification/t0111/compositor-clients.json",
+      "bytes": 1949,
+      "sha256": "a6e4c348b73801527c40688533d115fe0e6496f6967a24b569a55023a4c24ffa"
+    },
+    {
+      "path": "docs/verification/t0111/encode-native-ppm.py",
+      "bytes": 2769,
+      "sha256": "4cb83179220df676cb9ca041eebc8f41e72388a0dc2f1820df6bdbacddbb762b"
+    },
+    {
+      "path": "docs/verification/t0111/full-final.log",
+      "bytes": 131772,
+      "sha256": "2ba6ccffdcd6bd4d7c0fad658923adb4ae30d31b44a464e007799af7d196ba35"
+    },
+    {
+      "path": "docs/verification/t0111/full-source.txt",
+      "bytes": 41,
+      "sha256": "3ff3c7f6516a186f1ef7eee130e96c4a41d4deeb46a14b9a06f70b35e0bbb045"
+    },
+    {
+      "path": "docs/verification/t0111/full.sh",
+      "bytes": 1465,
+      "sha256": "5e80ae35b9714fa7c407f0d83099500c4c15f01b5a82056b0eaa53dc25ed6c5b"
+    },
+    {
+      "path": "docs/verification/t0111/independent-production-http.json",
+      "bytes": 6965,
+      "sha256": "35b257ebdca866648abfd776f62932d01fb9d468ec563765cada9acafb1025a6"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba-first.log",
+      "bytes": 2300,
+      "sha256": "91cf9574b814b4c53f34c4b4cdd8b7171b5b19eb6a01bc0d98721925fa00df42"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba-id-first.log",
+      "bytes": 1857,
+      "sha256": "6abf212d4f0fb70a1d68fbde56cbd32738f11cbeb8cd6743ac66a27d2d94d8df"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba-id-pass.log",
+      "bytes": 2218,
+      "sha256": "7f79de8a9da65da3122796a03ef7f08184cff6ae4f64087bac915ca9862c407c"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba-initial-pass.log",
+      "bytes": 2218,
+      "sha256": "51107d9b9bfe0ee94cc172919454016b379cc6d43f2538e154ff250b61b598ad"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba-size-pass.log",
+      "bytes": 2218,
+      "sha256": "eb23b7358510d76b99b4d8915985696a891766d4f4f4c9e08e793ea502c09e2b"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba.log",
+      "bytes": 2218,
+      "sha256": "a86ffd1fb67935c168fbff6587d7e6ff8a93ce2d25a00ed3e32f5559706186ed"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-rgba.sh",
+      "bytes": 1127,
+      "sha256": "cd3c819b2d38530e16d7f93b89cdedcc3f0bb2487b52b2f4e8b0a59ae155a2a0"
+    },
+    {
+      "path": "docs/verification/t0111/inspection-source.txt",
+      "bytes": 41,
+      "sha256": "6c120dee1bb979b8c358e09aa4ee72eb876c0bf1ed9268e0ee0c8c545945d15e"
+    },
+    {
+      "path": "docs/verification/t0111/production-coredump-check.log",
+      "bytes": 20,
+      "sha256": "e2407dad5480fe176681b503a643685b72e70da34e81a34efea3aef9c6dabb21"
+    },
+    {
+      "path": "docs/verification/t0111/production-http.json",
+      "bytes": 6916,
+      "sha256": "6db9aed3c59b913b5f2018eca4339e16ea28a6c66c20685c5884a5cf0ede9277"
+    },
+    {
+      "path": "docs/verification/t0111/production-http.py",
+      "bytes": 10961,
+      "sha256": "6a0b606165284227c8e69aec8209c31cce189888dbba9b30c3056a3d265dda77"
+    },
+    {
+      "path": "docs/verification/t0111/production-launch.json",
+      "bytes": 187,
+      "sha256": "ea0558a74707a26fadc838b1e29a08dfc370c8c29b55958f1b43fe556a7e47ce"
+    },
+    {
+      "path": "docs/verification/t0111/production-probe.log",
+      "bytes": 3580,
+      "sha256": "3c65338ef1b9aec790b5526b1dfdba3ce24baac2ea5f9f44c51208d096fda049"
+    },
+    {
+      "path": "docs/verification/t0111/production-restored-launch.json",
+      "bytes": 590,
+      "sha256": "4ab6682747842990889bd38cd8fe8e5085e76d79d1198e35cbf65ef5857bd161"
+    },
+    {
+      "path": "docs/verification/t0111/production-restored-observers.json",
+      "bytes": 4150,
+      "sha256": "195ab1f987e3d8b1d00e0a0c459b77f8fd355e955fda95a9bd877b6cebce216d"
+    },
+    {
+      "path": "docs/verification/t0111/production-restored.log",
+      "bytes": 137,
+      "sha256": "1ab795262111eac3f22a1a089a97b15272c86a1e626b66958421447b8918897a"
+    },
+    {
+      "path": "docs/verification/t0111/production-source.txt",
+      "bytes": 41,
+      "sha256": "ff3b49db2b055eef79c0d34c9aa408dbd5f1094e6dc409ff994389886efefb38"
+    },
+    {
+      "path": "docs/verification/t0111/properties.viamind.json",
+      "bytes": 2933,
+      "sha256": "ed3fbb129d63d5b5b09345df5de0d6cc16e25e694a7824974101974d91330688"
+    },
+    {
+      "path": "docs/verification/t0111/read-only-probe.py",
+      "bytes": 1962,
+      "sha256": "bd9ca766afafa8ce7c39410de629ec243ddf58dae52380600952fadbaea15e48"
+    },
+    {
+      "path": "docs/verification/t0111/read-only.json",
+      "bytes": 730,
+      "sha256": "f572fe9439fd1b730031c962b69163541bdcb2ae52bb8b4fdad2d1e68cea68e5"
+    },
+    {
+      "path": "docs/verification/t0111/restored-observer.py",
+      "bytes": 1483,
+      "sha256": "b7f2d9f1d5b325244f9cf525dbbfe3cca64ea302c16b608ac9b694ee736cd2b1"
+    },
+    {
+      "path": "docs/verification/t0111/schema-refresh-final2.log",
+      "bytes": 8653,
+      "sha256": "3125d82cdc5f6dae59b5e852e15a0f668c4f8d5c7991040714cfc1277ae0c36e"
+    },
+    {
+      "path": "docs/verification/t0111/schema-refresh.sh",
+      "bytes": 1873,
+      "sha256": "219d278c860d6d7b3b77464e9c978f64b69149d694b068dac5ef2aa4bb704f77"
+    },
+    {
+      "path": "docs/verification/t0111/tooling.log",
+      "bytes": 112,
+      "sha256": "a448cec9f5f7af19c1089d84c52a1852a385708f775c35acb634ea37e369f30a"
+    },
+    {
+      "path": "docs/verification/t0111/track-wide-capture-launch.json",
+      "bytes": 606,
+      "sha256": "57004283b69c5e1e08d9f709d3baa7e1071811988f44192a676aafd06bc66c25"
+    },
+    {
+      "path": "docs/verification/t0111/track-wide-capture-provenance.json",
+      "bytes": 2238,
+      "sha256": "0a0cfdd83f1e4f3a7cdc91cab13e4ed884149295886603f3eb80ac2f7a930923"
+    },
+    {
+      "path": "docs/verification/t0111/track-wide-capture-runtime.log",
+      "bytes": 1134,
+      "sha256": "345906a80bd91192e195b57e83ab7f78750dba1a24c5a4e45b62bd912105daa7"
+    },
+    {
+      "path": "docs/verification/t0111/track-wide-capture.png",
+      "bytes": 277824,
+      "sha256": "38b099610d307024eebbba10410ce2a5df865f4f7c88dca1e2eac51ac2f1cbad"
+    },
+    {
+      "path": "docs/verification/t0111/verify-artifacts.py",
+      "bytes": 2295,
+      "sha256": "04cdc81bd1da6b5e2d1e55644d4ba3134346c0c231dc162f357e6dcf6d5f9b39"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-capture-launch.json",
+      "bytes": 605,
+      "sha256": "60de9acd6ea4ddcc3ffecb22aef3ea925ac1e46cde3cb1a457ba11d3b52fe3b0"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-capture-provenance.json",
+      "bytes": 2240,
+      "sha256": "98c6789d97fe84c98da77eff48cffefbb1dde3bf6a5d08933c32ab6e3817b384"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-capture-runtime.log",
+      "bytes": 1135,
+      "sha256": "954c923451a98f62e57b3e73768cd36d0f62d6e4eb9bbd97968f8f6a20861a9f"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-capture.png",
+      "bytes": 109045,
+      "sha256": "180555093aebf788d5269ffca1ea39e64e511a980c86e43c0a96ce1234ddb0d9"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-runtime.log",
+      "bytes": 215,
+      "sha256": "25bae69cf25f42e57bbb13a0430272f4980af916c8b6ff73e316c39ef1a6d018"
+    },
+    {
+      "path": "docs/verification/t0111/via-compact-x11-runtime.log",
+      "bytes": 453,
+      "sha256": "63b0c048fa1247e942e27f37f4bfc6f94279a7ccd9910e6e2d5fd55f99328509"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-capture-launch.json",
+      "bytes": 604,
+      "sha256": "ef969f96e3b621b24d6c5d4e2fa35e8589d455d9a5c5d0a597c68a648c9ba452"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-capture-provenance.json",
+      "bytes": 2242,
+      "sha256": "4de643cf242121488fc33626a076b67f251e4bcac4183073625c32d394f9e6a9"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-capture-runtime.log",
+      "bytes": 1138,
+      "sha256": "d4324eeb832f1c034a6c302be78a4489100f5286f0ee6aa26bf13df4734403a2"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-capture.png",
+      "bytes": 274638,
+      "sha256": "a030509a3c6b892ecb79231e4dd824cdb7dcfb7e9e832d9179c88cd29f5dcd4b"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-final-launch.json",
+      "bytes": 191,
+      "sha256": "1b749a4b8d5cc95273df15e9dbe6861d454eb0c31c0c7f4ca1a96ec04add4bc6"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-final-runtime.log",
+      "bytes": 466,
+      "sha256": "00a3df763391dd92ea40dcf4e5157fcd51fde1be3bb4d97431164ebb8aee9f7a"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-readback-launch.json",
+      "bytes": 194,
+      "sha256": "93e3609457b14606768bde18e819acc303a18230cd5058c2d20141470055e289"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-readback-runtime.log",
+      "bytes": 573,
+      "sha256": "23070afbf269a6df38f4af0b1021bdcdb7e98fbc4660f5a10b63ead065a804ce"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-widget-launch.json",
+      "bytes": 603,
+      "sha256": "0323ddf2edafa08ef10b2edcbaf240ed54c717bacf8190a0af43085f9a417c34"
+    },
+    {
+      "path": "docs/verification/t0111/via-wide-widget-runtime.log",
+      "bytes": 443,
+      "sha256": "d9f59ce0de4e888b0480a650f14ed4a10657a9aadf663d3d3e7332fbd94cd84d"
+    },
+    {
+      "path": "docs/verification/t0111/workflow.json",
+      "bytes": 1264,
+      "sha256": "7769e23da87ac880899b84c0faa943d92a2e35747c68b8edda9badbcccd30240"
+    },
+    {
+      "path": "docs/verification/t0111/independent-native-audit.json",
+      "sha256": "5cfff043c0eef75f7cab66bf185a623a1b02b8025aa76e5ab2878c16e1010207",
+      "bytes": 1387
+    }
+  ],
+  "independent_native_audit": {
+    "path": "docs/verification/t0111/independent-native-audit.json",
+    "original_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/native-audit.json",
+    "result": "PASS; all original RGBA channels, RGB review parity, control bounds, invariants and three readable images independently verified"
+  }
+}

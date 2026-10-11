@@ -1,0 +1,80 @@
+{
+  "source": "d04bd2e8e273402b59484d92ef98574891bf888a",
+  "launched_utc": "2026-10-11T18:35:11.401660+00:00",
+  "launch": {
+    "active": false,
+    "bundle_id": null,
+    "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/launch-track-wide-capture",
+    "pid": 2277757,
+    "running": true,
+    "windows": [
+      {
+        "app_name": "viamind-copper-properties-inspection",
+        "bounds": {
+          "height": 1667,
+          "width": 2667,
+          "x": 1920,
+          "y": 1152
+        },
+        "height": 1667,
+        "is_on_screen": true,
+        "pid": 2277757,
+        "title": "Untitled \u2014 Viamind",
+        "width": 2667,
+        "window_id": 110379509526736,
+        "x": 1920,
+        "y": 1152,
+        "z_index": null
+      }
+    ]
+  },
+  "native": {
+    "alpha_max": 255,
+    "alpha_min": 242,
+    "capture": "eframe native WGPU Screenshot event",
+    "content_rect": [
+      0.0,
+      0.0,
+      1152.0,
+      720.0
+    ],
+    "control_bounds": "actual native Apply/Reload/Cancel read_response rectangles using exact safely captured labeled widget IDs",
+    "controls": [
+      [
+        622.0,
+        315.6875,
+        726.3125,
+        333.6875
+      ],
+      [
+        734.3125,
+        315.6875,
+        845.875,
+        333.6875
+      ],
+      [
+        853.875,
+        315.6875,
+        963.5625,
+        333.6875
+      ]
+    ],
+    "document_status_unchanged": true,
+    "full_session_unchanged": true,
+    "native_viewport_transparent": false,
+    "nonopaque_alpha_pixels": 6925,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/track-wide-capture.p6",
+    "pid": 2277757,
+    "pixels": [
+      2667,
+      1667
+    ],
+    "rgb_review": "same RGB samples; alpha omitted for review, no opaque readback assertion",
+    "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/track-wide-capture.p7",
+    "rgba_representation": "original egui Screenshot Color32 channels",
+    "self_close_after_capture": true,
+    "ui_passes": 11
+  },
+  "process_after_capture": "absent; self-closed",
+  "scope": "Inspection-only actual egui text editing and native WGPU Screenshot. Logical focus retained; no OS-input/compositor-capture or cadence claim."
+}

@@ -1,0 +1,2 @@
+viamind: agents can connect at http://127.0.0.1:7941/mcp
+viamind: e.g. claude mcp add --transport http viamind http://127.0.0.1:7941/mcp

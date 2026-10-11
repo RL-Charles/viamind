@@ -746,3 +746,25 @@ menu's **Route existing copper terminals** uses these same commands; its orange
 local preview is unchecked until commit. No resizing, midpoint splitting, new
 via, obstacle avoidance, shove or physical continuity certification. See the
 [public contract](../../docs/specs/existing-copper-route-terminals.md).
+
+## Guarded existing copper properties
+
+`query_copper_properties` takes a strict `target` such as
+`{"kind":"track","id":"<UUID>"}` or `{"kind":"via","id":"<UUID>"}`. It returns
+that original object, project UUID, full source cursor and captured document net
+rules. Querying leaves the document, selection, native status and history intact.
+
+`set_track_properties` requires the exact original `expected` Track, its `id`,
+`expected_project`, full `expected_cursor`, integer-Nm `width`, explicit outer
+`layer` and explicit nullable `net`. `set_via_properties` similarly requires the
+original Via, integer-Nm outer `diameter` and drill diameter `drill`, and explicit
+nullable `net`. Keep the original object's `net` field explicit too; `null` means
+unassigned. No endpoint/center, identity or through-span movement occurs.
+
+Both commands evaluate the shared complete scoped candidate checker and document
+minima before a single stable-ID undoable edit. Stale cursor/original, no-op,
+incomplete checker or an edited-object violation refuses without mutation.
+Existing unrelated violations and disclosed checker exclusions may remain.
+Desktop **Edit selected copper properties** and copper-row **Edit** use these
+same commands. See the [contract](../../docs/specs/existing-copper-property-edits.md)
+and [verification](../../docs/existing-copper-properties-verification.md).

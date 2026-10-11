@@ -1,0 +1,149 @@
+{
+  "passed": true,
+  "utc": "2026-10-11T18:37:01.947852+00:00",
+  "pid": 2281903,
+  "live_exe_sha256": "1e445b620b08d8e84b0e74953d7f2dced5eaef0a5d5012814081f06e145a0239",
+  "checks": [
+    "two initialized observers agree on full session",
+    "immutable track query matches exact original/full cursor",
+    "immutable via query matches exact original/full cursor",
+    "full session and document status unchanged"
+  ],
+  "source": "2512b2ace979043e4c04dda077bcedb613ead89d",
+  "state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "97a745eb-7646-4e5d-acd3-51ef3bda429e"
+    },
+    "project": {
+      "board": {
+        "net_rules": {
+          "N": {
+            "minimum_annular_width": 150001,
+            "minimum_copper_clearance": 100001,
+            "minimum_track_width": 250001,
+            "minimum_via_drill": 300001
+          }
+        },
+        "outline": {
+          "cutouts": [],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 50000000,
+              "y": 0
+            },
+            {
+              "x": 50000000,
+              "y": 50000000
+            },
+            {
+              "x": 0,
+              "y": 50000000
+            }
+          ]
+        },
+        "parts": {
+          "01d1269c-ff85-49dd-9e99-6de7e4bbb5ff": {
+            "designator": "J2",
+            "footprint": "explicit",
+            "id": "01d1269c-ff85-49dd-9e99-6de7e4bbb5ff",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "a6cea417-0480-45fe-9961-a23ef6f79ed0",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 15000001,
+              "y": 10000007
+            },
+            "rotation_mdeg": 0,
+            "side": "top",
+            "value": "Exact pad anchor"
+          },
+          "c84d29df-add2-4b89-9c23-5d57e13771ff": {
+            "designator": "J1",
+            "footprint": "explicit",
+            "id": "c84d29df-add2-4b89-9c23-5d57e13771ff",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "6f09ba51-6b73-4fe0-927c-f35774bc9b65",
+                "net": "N",
+                "number": "1",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "width": 1000000
+              }
+            ],
+            "position": {
+              "x": 5000003,
+              "y": 10000007
+            },
+            "rotation_mdeg": 0,
+            "side": "top",
+            "value": "Exact pad anchor"
+          }
+        },
+        "tracks": {
+          "6adb46d9-ceea-474a-a6c3-6f14de891d4a": {
+            "end": {
+              "x": 15000001,
+              "y": 10000007
+            },
+            "id": "6adb46d9-ceea-474a-a6c3-6f14de891d4a",
+            "layer": "top",
+            "net": "N",
+            "start": {
+              "x": 5000003,
+              "y": 10000007
+            },
+            "width": 250000
+          }
+        },
+        "vias": {
+          "7730dc96-4fd4-4356-bc9b-deadb5be47d0": {
+            "diameter": 1000000,
+            "drill": 300000,
+            "id": "7730dc96-4fd4-4356-bc9b-deadb5be47d0",
+            "net": "N",
+            "position": {
+              "x": 30000001,
+              "y": 25000003
+            }
+          }
+        }
+      },
+      "id": "e40d9c09-a9b9-4986-97d6-9a47540bd3f9",
+      "name": "Existing copper properties HTTP proof",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "document_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0111-independent-proof/properties.viamind.json"
+  },
+  "historical_pid": 2165952,
+  "historical_pid_absent_at_packaging": true,
+  "cause": "undetermined; no matching coredump or kernel/journal error found; no crash inferred"
+}

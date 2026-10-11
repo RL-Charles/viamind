@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/capture-native-final.py", line 14, in <module>
+    assert (root/(name+'.p6')).exists(),(name,(root/(name+'-runtime.log')).read_text())
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+AssertionError: ('via-wide-final', '{"actual_egui_text_edit_preparation":true,"local_fields_only_unchecked":true,"logical_focus_retained_only_in_inspection":true,"os_input":false,"target_id":"5f0e3933-0189-4b8a-9391-c7dd2e8774c4","target_kind":"via"}\n\nthread \'main\' (2211242) panicked at crates/ui-egui/examples/copper_properties_inspection.rs:34:9:\nassertion failed: self.controls.iter().all(|r| content.contains_rect(*r))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n')
