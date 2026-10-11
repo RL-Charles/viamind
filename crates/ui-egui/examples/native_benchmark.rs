@@ -18,6 +18,9 @@ struct Phase {
     intervals: Vec<f64>,
     cpu: Vec<f64>,
     drawn: Vec<usize>,
+    gpu_draw_calls: Vec<usize>,
+    gpu_layers: Vec<usize>,
+    tiles_built: Vec<usize>,
 }
 fn stats(values: &[f64]) -> Value {
     let mut sorted = values.to_vec();
@@ -32,7 +35,7 @@ struct Benchmark {
     base: Option<Camera>,
     last_native_frame: Option<u64>,
     finished: bool,
-    previous: Option<(Instant, usize, bool, usize)>,
+    previous: Option<(Instant, usize, bool, usize, viamind_ui_egui::mesh_cache::CacheStats)>,
     adapter: Value,
     persistent_gpu: bool,
     output: std::fs::File,
@@ -53,7 +56,7 @@ impl eframe::App for Benchmark {
         }
         self.last_native_frame = Some(native_frame);
         let now = Instant::now();
-        if let Some((previous, phase, sample, drawn)) = self.previous.take()
+        if let Some((previous, phase, sample, drawn, cache)) = self.previous.take()
             && sample
         {
             self.phases[phase].intervals.push(now.duration_since(previous).as_secs_f64() * 1000.0);
@@ -61,16 +64,19 @@ impl eframe::App for Benchmark {
                 self.phases[phase].cpu.push(f64::from(cpu) * 1000.0);
             }
             self.phases[phase].drawn.push(drawn);
+            self.phases[phase].gpu_draw_calls.push(cache.gpu_draw_calls);
+            self.phases[phase].gpu_layers.push(cache.gpu_layers);
+            self.phases[phase].tiles_built.push(cache.tiles_built);
         }
         let phase = self.frame / (WARMUP + SAMPLES);
         let local = self.frame % (WARMUP + SAMPLES);
         if phase == PHASES.len() {
             let phases:Vec<_>=self.phases.iter().enumerate().map(|(i,p)| {
                 let intervals=stats(&p.intervals);
-                json!({"name":PHASES[i],"frame_interval":intervals,"egui_cpu":if p.cpu.is_empty(){Value::Null}else{stats(&p.cpu)},"drawn_min":p.drawn.iter().min(),"drawn_max":p.drawn.iter().max(),"meets_60fps":intervals["throughput_fps"].as_f64().unwrap()>=59.5 && intervals["p95_ms"].as_f64().unwrap()<=16.9})
+                json!({"name":PHASES[i],"frame_interval":intervals,"egui_cpu":if p.cpu.is_empty(){Value::Null}else{stats(&p.cpu)},"drawn_min":p.drawn.iter().min(),"drawn_max":p.drawn.iter().max(),"gpu_draw_calls_min":p.gpu_draw_calls.iter().min(),"gpu_draw_calls_max":p.gpu_draw_calls.iter().max(),"gpu_layers_max":p.gpu_layers.iter().max(),"tiles_built_max":p.tiles_built.iter().max(),"meets_60fps":intervals["throughput_fps"].as_f64().unwrap()>=59.5 && intervals["p95_ms"].as_f64().unwrap()<=16.9})
             }).collect();
             let viewport = self.app.canvas.viewport;
-            let report = json!({"objects":100000,"completed_native_frames":self.frame,"egui_passes":ui.ctx().cumulative_pass_nr(),"build":"release","renderer":"wgpu","canvas_renderer":if self.persistent_gpu{"persistent_gpu_tiles"}else{"egui_mesh_tiles"},"adapter":self.adapter,"warmup_frames_per_phase":WARMUP,"sample_frames_per_phase":SAMPLES,"canvas_points":[viewport.width(),viewport.height()],"pixels_per_point":ui.ctx().pixels_per_point(),"phases":phases,"measurement":"native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout"});
+            let report = json!({"objects":100000,"completed_native_frames":self.frame,"egui_passes":ui.ctx().cumulative_pass_nr(),"build":"release","renderer":"wgpu","canvas_renderer":if self.persistent_gpu && self.app.canvas.cache.stats.gpu_layers > 0 {"persistent_gpu_layers"}else{"egui_mesh_tiles"},"adapter":self.adapter,"warmup_frames_per_phase":WARMUP,"sample_frames_per_phase":SAMPLES,"canvas_points":[viewport.width(),viewport.height()],"pixels_per_point":ui.ctx().pixels_per_point(),"phases":phases,"measurement":"native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout"});
             let result = serde_json::to_writer_pretty(&mut self.output, &report)
                 .map_err(|e| e.to_string())
                 .and_then(|()| self.output.write_all(b"\n").map_err(|e| e.to_string()))
@@ -100,7 +106,7 @@ impl eframe::App for Benchmark {
             self.app.canvas.camera.zoom_about(viewport.center(), viewport, factor);
         }
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
-        self.previous = Some((now, phase, local >= WARMUP, self.app.canvas.drawn));
+        self.previous = Some((now, phase, local >= WARMUP, self.app.canvas.drawn, self.app.canvas.cache.stats));
         self.frame += 1;
         ui.ctx().request_repaint();
     }

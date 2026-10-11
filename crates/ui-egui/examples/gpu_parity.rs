@@ -53,9 +53,10 @@ impl eframe::App for Check {
             }
             self.step += 1;
             self.frames = 0;
-            if self.step == 8 {
+            if self.step == 10 {
                 let success = self.report.iter().all(|r| {
-                    r["mean_channel_difference"].as_f64().unwrap() < 0.1
+                    r["drawn"].as_u64().unwrap() > 0
+                        && r["mean_channel_difference"].as_f64().unwrap() < 0.1
                         && r["pixels_over_2_channels"].as_u64().unwrap() < r["pixels"].as_u64().unwrap() / 1000
                 });
                 serde_json::to_writer_pretty(&mut self.file, &json!({"passed":success,"cases":self.report})).unwrap();
@@ -74,6 +75,11 @@ impl eframe::App for Check {
                         self.app.layers.move_layer(LayerId::B_CU, true);
                     }
                     3 => self.app.canvas.camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 1.04),
+                    4 => {
+                        self.app.canvas.camera.center = self.app.scene.board.center();
+                        self.app.canvas.camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 8.0);
+                        self.app.canvas.camera.pan_by_screen(egui::vec2(83.0, -47.0));
+                    }
                     _ => {}
                 }
             }

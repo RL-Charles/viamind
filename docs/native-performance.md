@@ -141,3 +141,57 @@ Native verification uses default single-sample wgpu, no depth attachment,
 1 pixel/point and default linear atlas filtering/dithering. Alternate custom
 sample/depth/filter policies and DPI are unverified in this increment. The public
 API keeps the egui mesh reference available for those integrations.
+
+## Persistent GPU buffers per layer (T55)
+
+T55 packs resident tile geometry into one immutable vertex/index buffer pair per
+layer. Each vertex retains a stable tile transform slot. A packed storage buffer
+supplies transforms once per frame, with a separate viewport uniform. Draws merge
+only adjacent visible index ranges, preserving gaps over culled tiles and the
+existing layer order. Native devices without vertex storage support retain the
+egui mesh path. The same egui geometry, atlas, zoom bucket and overlays remain.
+
+The five native image cases include a populated 8× view with 606 visible objects,
+alongside fit, pan, layer visibility/order/opacity and zoom inside a bucket.
+Across 1,068,480 pixels per case, maximum difference is 2/255, no pixels exceed
+two channel values and mean channel difference stays below 0.000265. Packing
+tests also verify every vertex attribute, transform slot and rebased index;
+cache tests verify camera-only reuse and release of replaced layer generations.
+
+Zoom bucket crossings still tessellate visible tiles and upload the affected
+layer's resident geometry. Previously built, currently culled tiles may remain
+resident until invalidation, but their indices are excluded from draws. A layer
+must fit within the device maximum buffer size; extremely large layers need
+future subdivision. Native verification retains T50's default DPI/sample/filter
+limits, and the original strict 60fps acceptance stays open until measured.
+
+### Sequential same-geometry measurements
+
+Saved release binaries ran sequentially on Linux/Vulkan at 1320 × 954 points,
+1 pixel/point, with 1,260 native frames each. All phase object-count bounds match:
+100,000 throughout fit-pan, 80,311–100,000 for fit-pan-and-zoom, and 1,928–1,965
+for zoomed pan. Source/binary identities and reports are in
+[performance/](performance/). The reference and layer paths use the same T55
+binary; the saved T50 binary provides the preceding tile-buffer comparison.
+
+| Phase | Mesh reference fps | T50 tiles fps | T55 layers fps | Reference mean CPU | Tiles mean CPU | Layers mean CPU | Layers p95 interval |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Fit pan | 9.769 | 14.477 | 23.404 | 55.077 ms | 9.352 ms | 1.600 ms | 51.734 ms |
+| Fit pan and zoom | 10.345 | 10.589 | 22.223 | 50.631 ms | 22.120 ms | 3.285 ms | 65.454 ms |
+| Zoomed 8× pan | 26.993 | 30.210 | 30.044 | 7.211 ms | 2.258 ms | 2.348 ms | 38.605 ms |
+
+**All strict cadence checks fail; the original native 100k/60fps acceptance
+remains open.** Full fit uses exactly 10 indexed draws and 10 layer buffer pairs,
+in place of approximately 2,000 tile pairs. Pan-and-zoom uses 9–110 visible
+ranges while preserving culling, and zoomed pan uses 22–24 ranges. Camera-only
+phases build zero tiles after warmup; the zoom phase can rebuild up to 1,729 tiles
+at a bucket crossing. Lower CPU time supports this allocation/draw optimization,
+while frame cadence still includes GPU execution, presentation and scheduling.
+
+Observed load averages ranged from 11.28 to 18.20 during these runs. Unrelated
+CPU tests/compilation and existing native design previews remained active; the
+Viamind builds for this ticket had completed. One window snapshot was captured
+during the reference run; no input or screenshot actions occurred during either
+GPU timing run. These sequential desktop observations are not a controlled
+hardware ceiling or a GPU timestamp measurement. Host load varied between runs,
+so the fps differences must not be interpreted as an isolated causal estimate.

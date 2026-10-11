@@ -76,6 +76,9 @@ struct LayerTiles {
     /// The fill colour the built meshes have; they are rebuilt when the layer's colour differs.
     color: Option<Color32>,
     tiles: Vec<Tile>,
+    /// Stable transform slots, independent of layer draw order and visibility.
+    slot_offset: usize,
+    gpu: Option<Arc<crate::gpu_tiles::Layer>>,
 }
 
 /// Counters from the last [`MeshCache::paint`], for tests and the status bar.
@@ -89,6 +92,10 @@ pub struct CacheStats {
     pub tiles_built: usize,
     /// Vertices handed to egui last frame.
     pub vertices: usize,
+    /// Native layer buffer generations painted last frame.
+    pub gpu_layers: usize,
+    /// Native indexed draw ranges, merging only adjacent visible tiles.
+    pub gpu_draw_calls: usize,
 }
 
 /// Tessellated scene tiles, kept across frames.
@@ -164,6 +171,8 @@ impl MeshCache {
                 Some(crate::gpu_tiles::Pipeline::new(format, ctx.fonts(|f: &egui::epaint::FontsView<'_>| -> egui::ColorImage { f.image() })));
         }
         let mut gpu_draws = Vec::new();
+        let tile_count: usize = self.layers.iter().map(|l| l.tiles.len()).sum();
+        let mut transforms = vec![[0.0; 4]; if self.gpu_pipeline.is_some() { tile_count } else { 0 }];
         let visible = cam.visible_world_rect(viewport).expand(2.0 / cam.zoom);
         let stale = |b: &Built| {
             let ratio = cam.zoom / b.zoom;
@@ -182,14 +191,18 @@ impl MeshCache {
                 group.clear();
                 group.color = Some(color);
             }
-            for tile in group.tiles.iter_mut().filter(|t| t.bounds.intersects(&visible)) {
+            let mut dirty_layer = false;
+            let mut visible_slots = Vec::new();
+            for (index, tile) in group.tiles.iter_mut().enumerate().filter(|(_, t)| t.bounds.intersects(&visible)) {
                 if tile.built.as_ref().is_none_or(stale) {
                     tile.built = Some(build_tile(tile, color, scene, cam, viewport, ctx, tess_key.pixels_per_point));
                     stats.tiles_built += 1;
+                    dirty_layer = true;
                 }
                 let Some(built) = tile.built.as_mut() else { continue };
                 if self.gpu_pipeline.is_some() && !built.mesh.indices.is_empty() {
-                    let tile = built.gpu.get_or_insert_with(|| {
+                    dirty_layer |= built.gpu.is_none();
+                    built.gpu.get_or_insert_with(|| {
                         let mesh = if built.applied == [1.0, 0.0, 0.0] {
                             Arc::clone(&built.mesh)
                         } else {
@@ -201,7 +214,10 @@ impl MeshCache {
                         };
                         crate::gpu_tiles::Tile::new(mesh)
                     });
-                    gpu_draws.push(crate::gpu_tiles::Draw { tile: Arc::clone(tile), transform: built.transform(cam.zoom, origin) });
+                    let slot = group.slot_offset + index;
+                    let [scale, x, y] = built.transform(cam.zoom, origin);
+                    transforms[slot] = [scale, x, y, 0.0];
+                    visible_slots.push(slot as u32);
                 } else if self.gpu_pipeline.is_none() {
                     built.apply(cam.zoom, origin);
                     painter.add(Shape::Mesh(Arc::clone(&built.mesh)));
@@ -214,9 +230,28 @@ impl MeshCache {
                     tile.items.iter().filter(|&&i| scene.items[i as usize].bounds.intersects(&visible)).count()
                 };
             }
+            if self.gpu_pipeline.is_some() && !visible_slots.is_empty() {
+                if dirty_layer || group.gpu.is_none() {
+                    let tiles = group
+                        .tiles
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(index, tile)| {
+                            let gpu = tile.built.as_ref()?.gpu.as_ref()?;
+                            Some(((group.slot_offset + index) as u32, Arc::clone(gpu)))
+                        })
+                        .collect();
+                    group.gpu = Some(crate::gpu_tiles::Layer::new(tiles));
+                }
+                let batch = Arc::clone(group.gpu.as_ref().unwrap());
+                let ranges = batch.visible_ranges(&visible_slots);
+                stats.gpu_layers += 1;
+                stats.gpu_draw_calls += ranges.len();
+                gpu_draws.push(crate::gpu_tiles::Draw { layer: batch, ranges });
+            }
         }
         if let Some(pipeline) = &self.gpu_pipeline {
-            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, viewport));
+            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, transforms, viewport));
         }
         self.stats = stats;
         drawn
@@ -227,6 +262,7 @@ impl LayerTiles {
     /// Drops the built meshes.
     fn clear(&mut self) {
         self.color = None;
+        self.gpu = None;
         for tile in &mut self.tiles {
             tile.built = None;
         }
@@ -276,10 +312,11 @@ fn make_tiles(scene: &Scene) -> Vec<LayerTiles> {
         let row = (((c.y - bounds.min.y) / cell) as usize).min(rows - 1);
         cells.entry(item.layer).or_insert_with(|| vec![Vec::new(); cols * rows])[row * cols + col].push(i as u32);
     }
+    let mut slot_offset = 0;
     cells
         .into_iter()
         .map(|(layer, cells)| {
-            let tiles = cells
+            let tiles: Vec<_> = cells
                 .into_iter()
                 .filter(|items| !items.is_empty())
                 .map(|items| {
@@ -288,7 +325,9 @@ fn make_tiles(scene: &Scene) -> Vec<LayerTiles> {
                     Tile { bounds, items, built: None }
                 })
                 .collect();
-            LayerTiles { layer, color: None, tiles }
+            let group = LayerTiles { layer, color: None, tiles, slot_offset, gpu: None };
+            slot_offset += group.tiles.len();
+            group
         })
         .collect()
 }
@@ -371,6 +410,9 @@ mod tests {
         for _ in 0..3 {
             paint(&mut cache, &camera, &layers);
         }
+        let layer_snapshots: Vec<_> = cache.layers.iter().filter_map(|l| l.gpu.as_ref()).map(Arc::downgrade).collect();
+        assert_eq!(cache.stats.gpu_layers, layer_snapshots.len());
+        assert_eq!(cache.stats.gpu_draw_calls, cache.stats.gpu_layers, "full fit merges each layer into one draw");
         let snapshots: Vec<_> = cache
             .layers
             .iter()
@@ -383,6 +425,7 @@ mod tests {
         camera.pan_by_screen(egui::vec2(12.5, -9.25));
         paint(&mut cache, &camera, &layers);
         assert_eq!(cache.stats.tiles_built, 0);
+        assert!(cache.layers.iter().filter_map(|l| l.gpu.as_ref()).all(|g| layer_snapshots.iter().any(|s| s.ptr_eq(&Arc::downgrade(g)))));
         for built in cache.layers.iter().flat_map(|l| l.tiles.iter()).filter_map(|t| t.built.as_ref()) {
             let gpu = built.gpu.as_ref().unwrap();
             assert!(snapshots.iter().any(|s| s.ptr_eq(&Arc::downgrade(gpu))));
@@ -399,11 +442,13 @@ mod tests {
         layers.get_mut(LayerId::F_CU).unwrap().opacity = 0.3;
         paint(&mut cache, &camera, &layers);
         assert!(cache.stats.tiles_built > 0 && cache.stats.tiles_built < cache.stats.tiles_drawn);
+        assert_eq!(layer_snapshots.iter().filter(|s| s.upgrade().is_none()).count(), 1, "colour edits replace only their layer generation");
         cache.invalidate();
         paint(&mut cache, &camera, &layers);
         assert_eq!(cache.stats.tiles_built, cache.stats.tiles_drawn);
         drop(cache);
         drop(ctx);
+        assert!(layer_snapshots.iter().all(|s| s.upgrade().is_none()), "old layer generations release after callbacks/cache");
         assert!(snapshots.iter().all(|s| s.upgrade().is_none()), "replaced tile handles do not remain in a global GPU resource map");
     }
 }
