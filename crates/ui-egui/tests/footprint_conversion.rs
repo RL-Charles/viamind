@@ -39,14 +39,22 @@ fn actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged()
     let source = directory.path().join("original.kicad_mod");
     let output = directory.path().join("new.json");
     std::fs::write(&source, SOURCE).unwrap();
-    let engine = EngineHandle::new(viamind_doc::Project::new("keep"));
+    let engine = EngineHandle::new(viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap());
     UiAction::PlacePart.run(&engine, json!({"designator":"KEEP1","value":"dirty","footprint":"old","x_mm":0,"y_mm":0})).unwrap();
     let before = engine.session_state();
     let status = engine.document_status();
     assert!(status.dirty);
-    let app = ViamindApp::with_design(engine.clone(), None);
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.set_schematic_mode(true);
     let mut h = Harness::builder().with_size(vec2(1400.0, 1000.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
     h.run_steps(3);
+    click(&mut h, "Draw wires on canvas");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while !h.state().schematic_wires.previewing() && std::time::Instant::now() < deadline {
+        h.run_steps(2);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    assert!(h.state().schematic_wires.active());
     click(&mut h, "File");
     click(&mut h, "Convert footprint S-expression…");
     input(&mut h, "Footprint source file", source.to_str().unwrap());
@@ -58,6 +66,7 @@ fn actual_menu_and_dirty_session_conversion_leave_project_and_drafts_unchanged()
     click(&mut h, "Create new native footprint file");
     wait(&mut h);
     assert_eq!(viamind_doc::footprint::load(&output).unwrap().pads.len(), 2);
+    assert!(h.state().schematic_wires.active(), "conversion must retain the live wire draft");
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
     assert_eq!(std::fs::read_to_string(source).unwrap(), SOURCE);

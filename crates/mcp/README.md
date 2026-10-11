@@ -675,3 +675,6 @@ DRC of both paths plus via; query is immutable and commit recomputes atomically
 with one undo. Only rectangular outer boards/cutouts and quarter-turn explicit
 endpoints are supported; no automatic via relocation or shove. See the
 [workflow and limits](../../docs/fixed-via-walkaround.md).
+## Detached footprint S-expression conversion
+
+`preview_footprint_conversion` reads one bounded regular `.kicad_mod` and returns exact local rectangular pad geometry, per-list fidelity and source SHA256. `convert_footprint_file` takes `path`, `expected_source_sha256` and `destination`, reparses those exact bytes and publishes one new native footprint library. Existing files and the current active native project are protected; dirty project work, history and selection remain unchanged. Converted source UUIDs/nets are absent. Separate `import_footprint` preserves matching native pad IDs/nets by number and creates fresh IDs without nets for new numbers. [Supported subset, workflow and exclusions](../../docs/footprint-conversion.md).
