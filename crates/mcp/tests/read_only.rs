@@ -52,7 +52,7 @@ async fn restriction_survives_clones_and_every_default_registration_without_runn
             Ok(Value::Null)
         })
     });
-    registry.register_def(viamind_mcp::ToolDef { name: "def_writer".into(), description: "".into(), input_schema: schema() }, handler).unwrap();
+    registry.register_def(viamind_mcp::ToolDef { name: "def_writer".into(), description: String::new(), input_schema: schema() }, handler).unwrap();
     let c = count.clone();
     registry
         .register_png("png_writer", "", schema(), move |_| {
