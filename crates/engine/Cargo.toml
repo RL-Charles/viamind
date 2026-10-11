@@ -10,6 +10,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+sha2.workspace = true
 viamind-router.workspace = true
 viamind-doc.workspace = true
 viamind-drc.workspace = true
