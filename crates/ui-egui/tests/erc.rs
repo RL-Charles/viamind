@@ -112,7 +112,7 @@ fn empty_project_states_supported_scope_and_ui_catalog_matches_mcp_tool() {
     click(&mut h, "Run ERC");
     finish(&mut h);
     assert!(h.query_by_label("No issues in supported checks. Full ERC is not performed.").is_some());
-    e.execute("add_part", json!({"designator":"R1","value":"","footprint":"","x_mm":0,"y_mm":0}), Origin::agent("editor")).unwrap();
+    e.execute("add_part", json!({"designator":"R1","value":"preview","footprint":"preview","x_mm":0,"y_mm":0}), Origin::agent("editor")).unwrap();
     h.run_steps(5);
     assert!(h.query_by_label("No issues in supported checks. Full ERC is not performed.").is_none());
     assert!(h.query_by_label("Previous snapshot: no issues in supported checks; run ERC for current results.").is_some());

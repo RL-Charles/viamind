@@ -122,6 +122,12 @@ impl ViamindApp {
             self.erc.open = true;
         }
     }
+    /// Runs the same bounded native check exposed as `run_erc` over MCP.
+    pub fn run_design_erc(&mut self) {
+        if let Some(design) = &self.design {
+            self.erc.start(design.engine.clone());
+        }
+    }
     pub(crate) fn erc_window(&mut self, ui: &mut Ui) {
         let current = self.design.as_ref().map(|d| Document::current(&d.engine));
         self.erc.sync(current.map(|(document, _)| document));
@@ -252,8 +258,8 @@ impl ViamindApp {
             }
         });
         self.erc.open = open;
-        if run && let Some(design) = &self.design {
-            self.erc.start(design.engine.clone());
+        if run {
+            self.run_design_erc();
         }
         if let Some((project, cursor, pin)) = navigate {
             self.erc.message = self.navigate_erc_pin(project, cursor, &pin).err();
