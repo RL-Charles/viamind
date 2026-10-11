@@ -188,7 +188,7 @@ fn actual_cutout_preview_cancel_outline_invalidation_and_one_commit() {
     h.run_steps(2);
     wait_plan(&mut h);
     let points = h.state().routing.pad_planned_points();
-    assert!(points.iter().any(|p| p.y.0 == 22_500_000), "{:?}", points);
+    assert!(points.iter().any(|p| p.y.0 == 22_500_000), "{points:?}");
     key(&mut h, Key::Enter);
     assert!(!h.state().routing.editing(), "{:?}", h.state().routing.error);
     let after = e.session_state();
