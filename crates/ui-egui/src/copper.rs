@@ -104,7 +104,7 @@ impl ViamindApp {
                 close = ui.button("Close copper").clicked();
             });
             ui.separator();
-            ui.label(format!("Existing copper: {} tracks, {} through vias", track_count, via_count));
+            ui.label(format!("Existing copper: {track_count} tracks, {via_count} through vias"));
             ui.horizontal(|ui| {
                 if ui.add_enabled(draft.page > 0, egui::Button::new("Previous copper page")).clicked() {
                     draft.page -= 1;
