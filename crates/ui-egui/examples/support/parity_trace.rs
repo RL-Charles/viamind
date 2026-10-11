@@ -46,9 +46,9 @@ fn navigation_input(ctx: &Context) -> Result<NavigationInput, String> {
     input_count(ctx)?;
     Ok(ctx.input(|i| {
         let mut result = NavigationInput {
-            smooth_scroll: i.smooth_scroll_delta.to_array(),
+            smooth_scroll: [i.smooth_scroll_delta.x, i.smooth_scroll_delta.y],
             zoom_delta: i.zoom_delta(),
-            pointer_delta: i.pointer.delta().to_array(),
+            pointer_delta: [i.pointer.delta().x, i.pointer.delta().y],
             home_held: i.key_down(egui::Key::Home),
             space_held: i.key_down(egui::Key::Space),
             middle_held: i.pointer.button_down(egui::PointerButton::Middle),
