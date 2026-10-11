@@ -38,6 +38,7 @@ fn builtin_specs() {
             "edit_schematic_sheet",
             "import_board_outline_dxf",
             "move_part",
+            "route_polyline",
             "set_board_outline",
             "set_part_pads",
             "transform_parts",

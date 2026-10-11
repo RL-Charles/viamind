@@ -62,7 +62,13 @@ impl PadsUi {
 }
 impl ViamindApp {
     pub fn begin_edit_pads(&mut self, part: Part) {
-        if self.files.busy() || self.copper.editing() || self.parts.placing() || self.outlines.editing() || self.pads.editing() {
+        if self.routing.editing()
+            || self.files.busy()
+            || self.copper.editing()
+            || self.parts.placing()
+            || self.outlines.editing()
+            || self.pads.editing()
+        {
             return;
         }
         let inputs = match &part.pads {

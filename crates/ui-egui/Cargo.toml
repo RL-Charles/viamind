@@ -10,6 +10,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+viamind-router.workspace = true
 viamind-drc.workspace = true
 earcutr.workspace = true
 viamind-engine.workspace = true

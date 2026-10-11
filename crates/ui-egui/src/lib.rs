@@ -22,6 +22,7 @@ pub mod outlines;
 pub mod pads;
 pub mod parts;
 pub mod placement;
+pub mod routing;
 pub mod scene;
 pub mod schematic;
 pub mod selection;
@@ -134,6 +135,7 @@ pub struct ViamindApp {
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
     pub copper: copper::CopperUi,
+    pub routing: routing::RoutingUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
     last_frame_time: Option<f64>,
@@ -171,6 +173,7 @@ impl ViamindApp {
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
             copper: copper::CopperUi::default(),
+            routing: routing::RoutingUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             last_frame_time: None,
@@ -200,6 +203,7 @@ impl ViamindApp {
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
             copper: copper::CopperUi::default(),
+            routing: routing::RoutingUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             last_frame_time: None,
@@ -241,6 +245,7 @@ impl ViamindApp {
 
     /// Undo the latest change from anyone (the human can undo agent edits).
     pub fn undo_design(&mut self) {
+        self.routing.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Undo.run(&design.engine, json!({}));
         }
@@ -248,6 +253,7 @@ impl ViamindApp {
 
     /// Redo the latest undone change.
     pub fn redo_design(&mut self) {
+        self.routing.cancel();
         if let Some(design) = &self.design {
             let _ = UiAction::Redo.run(&design.engine, json!({}));
         }
@@ -255,6 +261,9 @@ impl ViamindApp {
 
     /// Places a 10k 0603 resistor with the next free designator near the board centre (Edit menu).
     pub fn place_test_resistor(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
         let Some(design) = &self.design else { return };
         let n = design.engine.read(|p| (1..).find(|n| p.board.part_by_designator(&format!("R{n}")).is_none()).unwrap_or(1));
         let x = 20.0 + f64::from((n - 1) % 10) * 6.0;
@@ -289,6 +298,7 @@ impl ViamindApp {
             && !self.outlines.editing()
             && !self.pads.editing()
             && !self.copper.editing()
+            && !self.routing.editing()
             && !ui.ctx().egui_wants_keyboard_input()
         {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
@@ -310,6 +320,9 @@ impl ViamindApp {
                         return;
                     }
                     layer_panel::show(ui, &mut self.layers);
+                    if let Some(design) = &self.design {
+                        self.routing.panel(ui, &design.engine);
+                    }
                     if self.design.is_some() {
                         ui.separator();
                         self.part_properties(ui);
@@ -329,8 +342,12 @@ impl ViamindApp {
                     && !self.parts.placing()
                     && !self.outlines.editing()
                     && !self.pads.editing()
-                    && !self.copper.editing();
+                    && !self.copper.editing()
+                    && !self.routing.editing();
                 self.selection.show_enabled(ui, &response, &self.canvas.camera, &design.engine, placement_enabled);
+                let routing_enabled =
+                    !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
+                self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, routing_enabled);
             }
             self.paint_labels(ui);
         });
@@ -339,6 +356,7 @@ impl ViamindApp {
         self.pads_dialog(ui);
         self.outline_dialog(ui);
         self.copper_dialog(ui);
+        self.route_dialog(ui);
         self.drc_window(ui);
         self.fabrication_window(ui);
         if let Some(design) = &self.design {
@@ -449,7 +467,8 @@ impl ViamindApp {
                                 && !self.parts.placing()
                                 && !self.outlines.editing()
                                 && !self.pads.editing()
-                                && !self.copper.editing(),
+                                && !self.copper.editing()
+                                && !self.routing.editing(),
                         );
                     }
                     ui.separator();
@@ -488,6 +507,10 @@ impl ViamindApp {
                     }
                     if ui.button("Design rule check…").clicked() {
                         self.begin_drc();
+                        ui.close();
+                    }
+                    if ui.button("Route polyline…").clicked() {
+                        self.begin_route();
                         ui.close();
                     }
                     if ui.button("Copper tracks and vias…").clicked() {

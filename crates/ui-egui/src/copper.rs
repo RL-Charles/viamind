@@ -33,7 +33,13 @@ impl CopperUi {
 }
 impl ViamindApp {
     pub fn begin_copper(&mut self) {
-        if self.files.busy() || self.parts.placing() || self.pads.editing() || self.outlines.editing() || self.copper.editing() {
+        if self.routing.editing()
+            || self.files.busy()
+            || self.parts.placing()
+            || self.pads.editing()
+            || self.outlines.editing()
+            || self.copper.editing()
+        {
             return;
         }
         let Some(design) = &self.design else { return };

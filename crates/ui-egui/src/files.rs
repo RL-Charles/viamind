@@ -56,6 +56,7 @@ impl ViamindApp {
     }
 
     pub fn begin_save_as(&mut self) {
+        self.routing.cancel();
         let Some(design) = &self.design else { return };
         self.files.path = design.engine.document_status().path.map_or_else(|| "Untitled.viamind.json".into(), |path| path.display().to_string());
         self.files.overwrite = false;
@@ -66,6 +67,7 @@ impl ViamindApp {
 
     /// Present the New or Open form without changing the document.
     pub fn begin_document(&mut self, new: bool) {
+        self.routing.cancel();
         if self.design.is_none()
             || self.files.busy()
             || self.copper.editing()
@@ -92,6 +94,7 @@ impl ViamindApp {
         self.outlines.cancel();
         self.pads.cancel();
         self.copper.cancel();
+        self.routing.cancel();
         self.request_destination(Destination::Quit, ctx);
     }
 

@@ -4534,6 +4534,7 @@ dependencies = [
  "viamind-doc",
  "viamind-drc",
  "viamind-geom",
+ "viamind-router",
 ]
 
 [[package]]
@@ -4626,6 +4627,7 @@ dependencies = [
  "viamind-geom",
  "viamind-mcp",
  "viamind-render",
+ "viamind-router",
 ]
 
 [[package]]

@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "port": 7890,
+  "binary_sha256": "990f86d7c188ae1f2dd979ec3ace90fc451caf92268551d075c53afe65c9648e",
+  "checks": [
+    "actual desktop HTTP tool discovered",
+    "all polyline segments committed",
+    "second client stale guard preserves whole session",
+    "single own undo removes all segments",
+    "single redo restores exact IDs",
+    "1000-track native fixture loaded",
+    "five measured commits added ten exact tracks",
+    "native clearance failure adds no tracks/history/events",
+    "native off-grid failure preserves session",
+    "final top/bottom native board committed"
+  ],
+  "empty_board_http_commit_ms": 2.7224559962633066,
+  "1000_track_http_commit_ms": [
+    29.879920999519527,
+    21.748444996774197,
+    24.56360300129745,
+    28.59000199532602,
+    34.38187599385856
+  ],
+  "1000_track_http_mean_ms": 27.83276939735515,
+  "source_head": "4d8a8f99da4037ec7951f3774c48195764821408",
+  "profile": "unoptimized debug",
+  "transport": "actual production desktop HTTP MCP, two independent clients",
+  "latency_scope": "HTTP tools/call wall time including scoped synchronous commit preflight; 5 small-fixture samples, not a worst-case bound",
+  "existing_track_fixture": {
+    "count": 1000,
+    "length_nm": 250000,
+    "width_nm": 100000,
+    "net": "OTHER",
+    "layer": "top",
+    "positions_mm": "x=50+(i%40), y=50+floor(i/40), i in 0..1000"
+  },
+  "inspection_binary_sha256": "1bae2fa03cc6b0a61ed64c06e1d662de329c98d844a4dc25d656ad3527ee2cdd",
+  "inspection_viewport": [
+    1600,
+    1000
+  ],
+  "screenshot_pixels": [
+    1568,
+    980
+  ],
+  "inspection_note": "Separate fixed-size wrapper around production ViamindApp, no MCP endpoint or native input claim. Native production preview remains on port7890. Actual pointer/key behavior verified by egui tests."
+}

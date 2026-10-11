@@ -476,3 +476,32 @@ layer support and exclusions match SVG.
 `run_erc {}` checks a single exact schematic snapshot with a documented default symmetric pin matrix, unconnected/undriven inputs, missing power-output sources and attached no-connect pins. `compatibility` overrides unordered pairs using `{"a":"output","b":"output","severity":"warning"}`; severities are `allow`, `warning` or `error`. Duplicate/reversed pairs reject. Single checks have independent severity fields. Policy is per request and never modifies model/history/selection/dirty state.
 
 The report returns the effective 66-pair matrix, stable pin/symbol/sheet/net IDs, source cursor, deterministic issues and explicit coverage. `complete` applies only to the selected checks; `coverage.full_erc` is always false. Graph errors/limits reject without a report. The 250000 pin-pair limit and `max_violations` (default1000, 1..10000) return an explicitly incomplete prefix with a stop reason. Power labels do not supply power; native power_output pins do. No hierarchy, buses, hidden power-pin inference, absent native markers/power flags or full ERC certification. See [the native ERC policy](../../docs/specs/schematic-erc.md).
+
+## Interactive PCB polyline routing foundation
+
+Desktop **Board → Route polyline…** and the `route_polyline` tool commit the same
+straight round-ended track segments, with one undo/redo transaction. Read
+`get_session_state {}` and supply its project ID and exact cursor:
+
+```json
+{"expected_project":"<project UUID>","expected_cursor":{"stream_id":"<session UUID>","sequence":0},"points":[{"x":10000000,"y":10000000},{"x":30000000,"y":10000000},{"x":30000000,"y":20000000}],"grid":250000,"width":250000,"layer":"top","net":"GND"}
+```
+
+Coordinates, grid and width are integer nanometres. Supply 2–1025 vertices lying
+exactly on the positive grid; the desktop snaps nearest, with ties away from
+zero. Layer is `top` or `bottom`; the exact trimmed nonempty net is required.
+Optional `rules` uses the same inputs as `run_drc`. Any changed project/session,
+invalid vertex, scoped violation involving a proposed track or incomplete DRC
+report rejects every segment. A batch compares all cursor guards against its
+initial session cursor, while checking geometry after earlier batch edits.
+
+An explicit board outline is required. Preflight checks explicit pads, tracks,
+through vias, outline and cutouts; existing unrelated violations may remain.
+Parts without explicit pads and other `run_drc` exclusions remain unchecked.
+Board capture is bounded to 100000 structural objects including proposed tracks,
+2 MiB of text and 256-byte labels. Unrelated schematic contents are not copied.
+DRC runs synchronously during commit and can delay other edits; preview is local
+and unchecked. No push/shove, obstacle avoidance, automatic pad attachment,
+routing vias or electrical continuity verification is implemented. Ratsnest
+connection guides remain conservative pad-only estimates. See the
+[routing behavior and limits](../../docs/specs/interactive-polyline-routing.md).

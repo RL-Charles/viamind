@@ -266,7 +266,7 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
     }
 }
 /// Check cheap lengths before cloning. Iterate only after structural counts fit.
-fn snapshot_budget(project: &Project, limit: usize) -> Result<(), String> {
+pub(crate) fn snapshot_budget(project: &Project, limit: usize) -> Result<(), String> {
     let board = &project.board;
     let mut objects = board.parts.len().saturating_add(board.tracks.len()).saturating_add(board.vias.len());
     let mut text = 0_usize;
