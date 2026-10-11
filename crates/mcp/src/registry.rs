@@ -10,6 +10,7 @@ use std::{collections::BTreeMap, fmt, future::Future, pin::Pin, sync::Arc};
 use serde_json::Value;
 
 use crate::agent::CallContext;
+use viamind_engine::agent_policy::{AgentEffect, AgentMode, AgentPolicy};
 
 /// Error returned by a tool handler. The message is shown to the calling agent.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -70,6 +71,7 @@ struct Entry {
     handler: ToolHandler,
     png_output: bool,
     observation: bool,
+    private_candidate: bool,
     in_memory_def: Option<ToolDef>,
 }
 
@@ -78,6 +80,7 @@ struct Entry {
 pub struct ToolRegistry {
     tools: BTreeMap<String, Entry>,
     read_only: bool,
+    policy: Arc<AgentPolicy>,
 }
 
 impl fmt::Debug for ToolRegistry {
@@ -107,9 +110,21 @@ impl ToolRegistry {
         self
     }
 
+    /// Bind trusted shared session admission before exposing this registry.
+    #[must_use]
+    pub fn with_agent_policy(mut self, policy: Arc<AgentPolicy>) -> Self {
+        self.policy = policy;
+        self
+    }
+    pub fn agent_policy(&self) -> Arc<AgentPolicy> {
+        Arc::clone(&self.policy)
+    }
+    pub fn effective_mode(&self) -> AgentMode {
+        if self.read_only { AgentMode::ReadOnly } else { self.policy.status().mode }
+    }
     /// Whether agent calls are restricted to observations.
     pub fn is_read_only(&self) -> bool {
-        self.read_only
+        self.effective_mode() == AgentMode::ReadOnly
     }
 
     /// Register a trusted observation. General registration always defaults to mutating.
@@ -133,6 +148,11 @@ impl ToolRegistry {
     /// Trusted host registration only, immediately after registering the audited handler.
     pub(crate) fn admit_observation(&mut self, name: &str) {
         self.tools.get_mut(name).expect("classify an existing trusted registration").observation = true;
+    }
+
+    /// Trusted original private branch operations only; never client metadata.
+    pub(crate) fn admit_private_candidate(&mut self, name: &str) {
+        self.tools.get_mut(name).expect("classify existing registration").private_candidate = true;
     }
 
     /// Register a trusted SVG/PNG view with optional top-level file output.
@@ -164,7 +184,7 @@ impl ToolRegistry {
         entry.png_output = png_output;
         entry.in_memory_def = Some(ToolDef {
             name: name.into(),
-            description: format!("{description} Agents in this process are read only: omit path; file output is unavailable."),
+            description: format!("{description} Agents in this endpoint cannot publish files: omit path; in-memory output only."),
             input_schema: in_memory_schema,
         });
         Ok(())
@@ -214,7 +234,8 @@ impl ToolRegistry {
         if self.tools.contains_key(&def.name) {
             return Err(RegistryError::Duplicate(def.name));
         }
-        self.tools.insert(def.name.clone(), Entry { def, handler, png_output: false, observation: false, in_memory_def: None });
+        self.tools
+            .insert(def.name.clone(), Entry { def, handler, png_output: false, observation: false, private_candidate: false, in_memory_def: None });
         Ok(())
     }
 
@@ -235,10 +256,13 @@ impl ToolRegistry {
     }
 
     fn definition<'a>(&self, entry: &'a Entry) -> Option<&'a ToolDef> {
-        if !self.read_only {
+        let mode = self.effective_mode();
+        if mode == AgentMode::Live {
             Some(&entry.def)
         } else if entry.observation {
             Some(entry.in_memory_def.as_ref().unwrap_or(&entry.def))
+        } else if mode == AgentMode::Approval && entry.private_candidate {
+            Some(&entry.def)
         } else {
             None
         }
@@ -267,11 +291,50 @@ impl ToolRegistry {
     /// Call the tool called `name` with `input` on behalf of `ctx.agent`.
     pub async fn call(&self, name: &str, input: Value, ctx: CallContext) -> Result<Value, CallError> {
         let entry = self.tools.get(name).filter(|entry| self.definition(entry).is_some()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
-        if self.read_only && entry.in_memory_def.is_some() && (!input.is_object() || input.get("path").is_some()) {
-            return Err(ToolError::InvalidInput("agents are read only; omit path for an in-memory view".into()).into());
+        let file_output = entry.in_memory_def.is_some() && (!input.is_object() || input.get("path").is_some());
+        if self.effective_mode() != AgentMode::Live && file_output {
+            return Err(ToolError::InvalidInput("agents cannot publish files in this mode; omit path for an in-memory view".into()).into());
         }
+        let effect = if file_output || (!entry.observation && !entry.private_candidate) {
+            AgentEffect::LiveWriter
+        } else if entry.private_candidate {
+            AgentEffect::PrivateCandidate
+        } else {
+            AgentEffect::Observation
+        };
+        let permit = self.policy.admit(effect).map_err(|error| {
+            if error == viamind_engine::agent_policy::AgentPolicyError::Forbidden {
+                CallError::UnknownTool(name.to_owned())
+            } else {
+                CallError::Tool(ToolError::Failed(error.to_string()))
+            }
+        })?;
         let handler = entry.handler.clone();
-        Ok(handler(input, ctx).await?)
+        if let Some(permit) = permit {
+            // Caller cancellation drops only the JoinHandle; the actual handler
+            // and all awaited children continue on this process-lifetime runtime.
+            static EXECUTOR: std::sync::OnceLock<Result<tokio::runtime::Runtime, String>> = std::sync::OnceLock::new();
+            let executor = EXECUTOR
+                .get_or_init(|| {
+                    tokio::runtime::Builder::new_multi_thread()
+                        .worker_threads(2)
+                        .thread_name("viamind-agent-writer")
+                        .enable_all()
+                        .build()
+                        .map_err(|e| e.to_string())
+                })
+                .as_ref()
+                .map_err(|e| ToolError::Failed(format!("agent writer executor unavailable: {e}")))?;
+            Ok(executor
+                .spawn(async move {
+                    let _permit = permit;
+                    handler(input, ctx).await
+                })
+                .await
+                .map_err(|e| ToolError::Failed(format!("agent operation failed: {e}")))??)
+        } else {
+            Ok(handler(input, ctx).await?)
+        }
     }
 }
 

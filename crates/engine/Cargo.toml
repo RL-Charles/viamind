@@ -10,6 +10,7 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+tokio = { workspace = true, features = ["sync"] }
 sha2.workspace = true
 rustix.workspace = true
 viamind-router.workspace = true
