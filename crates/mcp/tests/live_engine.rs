@@ -59,6 +59,19 @@ async fn agent_places_resistor_live_and_it_can_be_undone() {
     let design = design.structured_content.expect("design json");
     assert_eq!(design["board"]["parts"].as_object().unwrap().len(), 1);
 
+    // Selection is shared with the UI, transient, and attributed to this agent.
+    let id = engine.read(|p| *p.board.parts.keys().next().unwrap());
+    let selected = call(&agent, "set_selection", json!({ "ids": [id] })).await;
+    assert_eq!(selected.is_error, Some(false), "{selected:?}");
+    assert_eq!(engine.selection().ids, [id]);
+    assert!(matches!(engine.selection().origin, Some(Origin::Agent { .. })));
+    let selection = call(&agent, "get_selection", json!({})).await.structured_content.unwrap();
+    assert_eq!(selection["ids"], json!([id]));
+    let invalid = call(&agent, "set_selection", json!({ "ids": [viamind_doc::ObjectId::new()] })).await;
+    assert_eq!(invalid.is_error, Some(true));
+    assert_eq!(engine.selection().ids, [id]);
+    assert_eq!(call(&agent, "get_selection", json!({ "unexpected": true })).await.is_error, Some(true));
+
     // Bad input comes back as a tool error the agent can read, and changes nothing.
     let dup = call(&agent, "add_part", resistor("R1", 30.0)).await;
     assert_eq!(dup.is_error, Some(true));
@@ -67,6 +80,7 @@ async fn agent_places_resistor_live_and_it_can_be_undone() {
     // The agent undoes its own change, then redoes it.
     assert_eq!(call(&agent, "undo", json!({})).await.is_error, Some(false));
     assert_eq!(engine.read(|p| p.board.parts.len()), 0);
+    assert!(engine.selection().ids.is_empty());
     assert_eq!(call(&agent, "redo", json!({})).await.is_error, Some(false));
     assert_eq!(engine.read(|p| p.board.parts.len()), 1);
 

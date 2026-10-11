@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin};
+use viamind_engine::{EngineHandle, Origin, SetSelection, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -30,14 +30,37 @@ impl EngineHost {
 
 impl CommandHost for EngineHost {
     fn commands(&self) -> Vec<HostCommand> {
-        self.engine
+        let mut commands: Vec<_> = self
+            .engine
             .specs()
             .into_iter()
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
-            .collect()
+            .collect();
+        commands.push(HostCommand {
+            name: "set_selection".into(),
+            description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
+            input_schema: input_schema::<SetSelection>(),
+        });
+        commands.push(HostCommand {
+            name: "get_selection".into(),
+            description: "Read the shared selection: sorted part IDs, revision and last origin.".into(),
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        });
+        commands
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "get_selection" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_selection takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.selection()).map_err(|e| e.to_string());
+        }
+        if name == "set_selection" {
+            let input: SetSelection = serde_json::from_value(input).map_err(|e| format!("invalid set_selection input: {e}"))?;
+            let selection = self.engine.set_selection(input, Self::origin(agent)).map_err(|e| e.to_string())?;
+            return serde_json::to_value(selection).map_err(|e| e.to_string());
+        }
         let result = self.engine.execute(name, input, Self::origin(agent)).map_err(|e| e.to_string())?;
         serde_json::to_value(result).map_err(|e| format!("internal error: could not encode the result ({e})"))
     }

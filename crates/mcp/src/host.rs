@@ -55,7 +55,8 @@ pub trait CommandHost: Send + Sync + 'static {
     /// The commands to expose as tools. Read once, by [`register_host`].
     fn commands(&self) -> Vec<HostCommand>;
     /// Run command `name` with `input` on behalf of `agent` and return its
-    /// result. The change must be undoable and attributed to `agent`.
+    /// result. Document changes must be undoable and attributed to `agent`.
+    /// Session actions such as selection preserve document history.
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String>;
     /// Undo `agent`'s most recent change.
     fn undo(&self, agent: &AgentId) -> Result<Value, String>;

@@ -60,7 +60,7 @@ impl Canvas {
     }
 
     /// Fills the remaining space of `ui` with the canvas, drawing `scene` with `layers`.
-    pub fn show(&mut self, ui: &mut Ui, scene: &Scene, layers: &LayerStack) {
+    pub fn show(&mut self, ui: &mut Ui, scene: &Scene, layers: &LayerStack) -> egui::Response {
         let (response, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
         let viewport = response.rect;
         self.viewport = viewport;
@@ -93,6 +93,7 @@ impl Canvas {
         }
 
         self.paint(&painter, viewport, scene, layers);
+        response
     }
 
     fn paint(&mut self, painter: &egui::Painter, viewport: Rect, scene: &Scene, layers: &LayerStack) {

@@ -64,6 +64,16 @@ impl EngineHandle {
         self.lock().specs()
     }
 
+    /// Current shared selection.
+    pub fn selection(&self) -> crate::SelectionSnapshot {
+        self.lock().selection().clone()
+    }
+
+    /// Updates transient selection and wakes listeners outside the engine lock.
+    pub fn set_selection(&self, input: crate::SetSelection, origin: Origin) -> Result<crate::SelectionSnapshot, EngineError> {
+        self.mutate(|engine| engine.set_selection(input, origin))
+    }
+
     /// Runs the command called `name` with JSON `input` as one transaction.
     pub fn execute(&self, name: &str, input: Value, origin: Origin) -> Result<ExecResult, EngineError> {
         self.mutate(|engine| engine.execute(name, input, origin))

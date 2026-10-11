@@ -97,3 +97,13 @@ returned as a tool result with `isError: true` so the agent sees the message.
 raw JSON-RPC over stdio) and `tests/host.rs` (a fake in-memory `CommandHost` served over
 `tokio::io::duplex` to real rmcp clients: tools/list, tools/call, undo/redo, get_design, host
 errors and per-connection agent ids).
+
+## Shared desktop selection
+
+The live desktop engine also exposes `get_selection` and `set_selection`.
+`get_selection` takes `{}` and returns `ids`, `revision`, and the last `origin`.
+`set_selection` takes `{"ids":["<board part UUID>"],"mode":"replace"}`;
+`mode` defaults to `replace`, and can also be `add`, `remove`, or `toggle`.
+An empty replacement clears selection. Unknown IDs reject the entire request.
+These session actions wake the desktop and preserve the document undo/redo stack.
+Deleting a selected part or undoing its creation removes it from the selection.

@@ -34,6 +34,7 @@ pub mod event;
 pub mod handle;
 pub mod log;
 pub mod registry;
+pub mod selection;
 pub mod transaction;
 
 pub use command::{Command, CommandError, CommandSpec, input_schema};
@@ -46,4 +47,5 @@ pub use log::{EventLog, LogError};
 pub use registry::{CommandRegistry, EngineError};
 /// Re-exported so command input types can derive `JsonSchema` with a matching version.
 pub use schemars;
+pub use selection::{SelectionMode, SelectionSnapshot, SetSelection};
 pub use transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo};

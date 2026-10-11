@@ -11,6 +11,7 @@ pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
 pub mod scene;
+pub mod selection;
 
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
@@ -99,6 +100,7 @@ pub struct ViamindApp {
     pub layers: LayerStack,
     pub canvas: Canvas,
     pub stats: FrameStats,
+    pub selection: selection::Selection,
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
     last_frame_time: Option<f64>,
@@ -118,6 +120,7 @@ impl ViamindApp {
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
             stats: FrameStats::default(),
+            selection: selection::Selection::default(),
             design: None,
             last_frame_time: None,
         }
@@ -134,6 +137,7 @@ impl ViamindApp {
             layers: LayerStack::pcb_default(4),
             canvas,
             stats: FrameStats::default(),
+            selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
             last_frame_time: None,
         }
@@ -160,6 +164,7 @@ impl ViamindApp {
         if changed {
             self.scene = design.engine.read(board_scene::scene_from_project);
             self.canvas.scene_changed();
+            self.selection.invalidate();
         }
     }
 
@@ -219,7 +224,11 @@ impl ViamindApp {
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
         egui::Panel::left("layers").default_size(250.0).show(ui, |ui| layer_panel::show(ui, &mut self.layers));
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
-            self.canvas.show(ui, &self.scene, &self.layers);
+            let response = self.canvas.show(ui, &self.scene, &self.layers);
+            if let Some(design) = &self.design {
+                self.selection.sync(&design.engine, &self.layers);
+                self.selection.show(ui, &response, &self.canvas.camera, &design.engine);
+            }
             self.paint_labels(ui);
         });
 
@@ -284,6 +293,23 @@ impl ViamindApp {
                         ui.close();
                     }
                     ui.separator();
+                    ui.label("Selection tool");
+                    ui.radio_value(&mut self.selection.tool, selection::SelectionTool::Box, "Box");
+                    ui.radio_value(&mut self.selection.tool, selection::SelectionTool::Lasso, "Lasso");
+                    ui.label("Shift adds · Ctrl toggles · Ctrl+Shift removes");
+                    if ui.button("Select all visible (Ctrl+A)").clicked() {
+                        if let Some(design) = &self.design {
+                            self.selection.select_all(&design.engine);
+                        }
+                        ui.close();
+                    }
+                    if ui.button("Clear selection (Esc)").clicked() {
+                        if let Some(design) = &self.design {
+                            self.selection.clear(&design.engine);
+                        }
+                        ui.close();
+                    }
+                    ui.separator();
                     if ui.button("Place test resistor").clicked() {
                         self.place_test_resistor();
                         ui.close();
@@ -327,7 +353,7 @@ impl ViamindApp {
             if let Some(design) = &self.design {
                 ui.separator();
                 let parts = design.engine.read(|p| p.board.parts.len());
-                ui.monospace(format!("{parts} parts"));
+                ui.monospace(format!("{parts} parts · {} selected", design.engine.selection().ids.len()));
                 ui.separator();
                 ui.monospace(design.mcp_url.as_deref().map_or_else(|| "MCP off".to_owned(), |url| format!("MCP {url}")));
                 if let Some(last) = &design.last_change {

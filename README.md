@@ -27,3 +27,16 @@ claude mcp add --transport http viamind http://127.0.0.1:7878/mcp
 Ask your agent to place parts (`add_part`, `move_part`, `delete_part`); they appear live in the window.
 Undo anything with Ctrl+Z or the Edit menu; agents undo their own changes with the `undo` tool.
 `viamind --demo` opens the synthetic 10k-object test scene, and `VIAMIND_MCP_PORT` changes the port.
+
+Click a part to select it, or drag a box (left to right encloses, right to left crosses).
+Choose **Edit → Lasso** for freeform selection. Shift adds, Ctrl/Cmd toggles,
+Ctrl/Cmd+Shift removes, Ctrl/Cmd+A selects visible parts, and Esc clears or cancels.
+Middle-drag and Space+drag pan. Entirely hidden parts are excluded from mouse selection.
+Agents share the same selection through `get_selection` and `set_selection`:
+
+```json
+{"ids": ["<part ID from get_design>"], "mode": "replace"}
+```
+
+Selection preserves design undo/redo. The prototype currently draws common built-in
+footprints; schematic capture, routing and library editing are planned features.

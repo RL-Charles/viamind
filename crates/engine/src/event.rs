@@ -87,6 +87,10 @@ impl Notifier {
         self.wake_pending = true;
     }
 
+    pub(crate) fn wake(&mut self) {
+        self.wake_pending = true;
+    }
+
     /// The wakers to run now if anything changed since the last call.
     pub(crate) fn take_due_wakers(&mut self) -> Vec<Waker> {
         if std::mem::take(&mut self.wake_pending) { self.wakers.clone() } else { Vec::new() }
