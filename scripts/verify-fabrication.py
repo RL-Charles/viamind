@@ -79,7 +79,16 @@ def verify(directory, fixture):
                 actual = bbox(match)
                 for a, e in zip(actual[0]+actual[1], expected[0]+expected[1]):
                     near(a,e)
-    checks.append("asymmetric top and mirrored bottom pads match independent rotated corners and mask expansion")
+                # Compare oriented corners, not only a bounding box: ±angle share a box.
+                actual_angle = math.radians(float(match.aperture.rotation))
+                ac, ass = math.cos(actual_angle), math.sin(actual_angle)
+                cx, cy = xy(match.flash_point)
+                aw, ah = mm(match.aperture.x_size)/2, mm(match.aperture.y_size)/2
+                actual_corners = [(cx+dx*aw*ac-dy*ah*ass, cy+dx*aw*ass+dy*ah*ac)
+                                  for dx,dy in ((-1,-1),(-1,1),(1,-1),(1,1))]
+                for actual_corner in actual_corners:
+                    assert min(math.dist(actual_corner, corner) for corner in corners) <= 0.000002, (actual_corner,corners)
+    checks.append("asymmetric top and mirrored bottom pads match independent oriented corners and mask expansion")
     for track in board["tracks"].values():
         lines = [o for o in objects(files[f'{track["layer"]}-copper.gbr']) if isinstance(o, Line)]
         start, end = track["start"], track["end"]
