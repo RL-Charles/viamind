@@ -179,5 +179,19 @@
     },
     "prior_actual_runtime_source_preserved": "6dbbbd6caaa160be0d114c97461ae7a7fbf89bf8",
     "future_T118_guard_requirement": "check_read before prepare admission and before captured-work engine lock"
+  },
+  "inherited_test_followup": {
+    "source_range": "9a28241450969f2cecc9068e15393e515b639b97..1293b30d0b0793cdf3408c8e0abe96b5a4d0ad41",
+    "integrated_head": "930dacf222a9dbc6476dc8d84c83d144aca9ffb0",
+    "scope": "Sidebar test scroll/layout/focus and typed-value assertion; T119 failure/pass receipts and immutable114-tool historical catalog. No product change.",
+    "verification": "T119 three property tests, format and strict workspace lint passed; receipts retained under docs/verification/t0119. No extra broad gate requested.",
+    "previous_ci": {
+      "run": 38180459745,
+      "format": "success",
+      "clippy": "success",
+      "linux_at_integration": "in_progress",
+      "failure_inferred": false
+    },
+    "exact_final_ci_pending": true
   }
 }
