@@ -125,7 +125,7 @@ impl ViamindApp {
         let mut prepare = false;
         let mut apply = None;
         egui::Window::new("Create linked PCB component").open(&mut open).default_width(630.0).vscroll(true).show(ui.ctx(), |ui| {
-            ui.label("Choose one unlinked symbol and an explicit native rectangular SMD footprint. 1 mm = 1000000 nm.");
+            ui.label("Choose one unlinked ordinary symbol and an explicit native rectangular SMD footprint. Complete packages use the separate package action in Synchronize. 1 mm = 1000000 nm.");
             refresh = ui.add_enabled(self.schematic_component.pending.is_none(), egui::Button::new("Refresh symbols")).clicked();
             let mut changed = false;
             ui.add_enabled_ui(self.schematic_component.pending.is_none(), |ui| {
@@ -138,7 +138,7 @@ impl ViamindApp {
                         .schematic
                         .sheets
                         .values()
-                        .flat_map(|sheet| sheet.content.iter().flat_map(move |c| c.symbols.values().map(move |s| (sheet, s))))
+                        .flat_map(|sheet| sheet.content.iter().flat_map(move |c| c.symbols.values().filter(|s|viamind_doc::symbol_package::package_for_symbol(c,s.id).is_none()).map(move |s| (sheet, s))))
                         .filter(|(_, s)| !linked.contains(&s.id))
                         .collect();
                     let selected = symbols.iter().find(|(_, s)| Some(s.id) == self.schematic_component.symbol);

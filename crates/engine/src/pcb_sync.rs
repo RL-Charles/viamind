@@ -71,6 +71,7 @@ impl Command for LinkSchematicSymbol {
 /// Check counts and string sizes before any whole-project synchronization copy.
 pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
     viamind_doc::file::validate_assembly(project).map_err(|e| CommandError::invalid("assembly", e.to_string()))?;
+    let rule_budget = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| CommandError::invalid("net_rules", e))?;
     const MAX_OBJECTS: usize = 10_000;
     const MAX_TEXT: usize = 4 * 1024 * 1024;
     if project.id.as_uuid().is_nil() {
@@ -90,7 +91,7 @@ pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
         }
         Ok(())
     };
-    count_more(0)?;
+    count_more(rule_budget.rows)?;
     for p in project.board.parts.values() {
         count_more(p.pads.as_ref().map_or(0, |p| p.0.len()))?;
     }
@@ -117,6 +118,9 @@ pub(crate) fn sync_budget(project: &Project) -> Result<(), CommandError> {
         Ok(())
     };
     add(&project.name)?;
+    for name in project.board.net_rules.keys() {
+        add(name)?;
+    }
     for p in project.board.parts.values() {
         for s in [&p.designator, &p.value, &p.footprint] {
             add(s)?;

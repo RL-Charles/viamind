@@ -318,3 +318,103 @@ fn complete_package_forward_and_back_are_atomic_preserve_geometry_metadata_and_m
     e.redo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), back_after);
 }
+
+#[test]
+fn missing_package_is_explicit_unresolved_and_refuses_sync_but_can_unlink_without_inference() {
+    use viamind_engine::{ComponentLinkQuery, ComponentLinkStatus, PcbSyncDirection};
+    let creator = fixture();
+    let input = request(&creator);
+    let command = creator.preview_package_pcb_component(input).unwrap().command;
+    let id = creator.execute_typed(command, Origin::User).unwrap().created[0];
+    let mut p = creator.read(Clone::clone);
+    let missing = p.board.parts[&id].schematic_package.unwrap();
+    // Remove the complete group and members, as an explicit package delete would.
+    let content = p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap();
+    let package = content.packages.remove(&missing).unwrap();
+    for unit in package.units {
+        content.symbols.remove(&unit.symbol_id);
+    }
+    let e = EngineHandle::new(p);
+    let before = e.session_state();
+    let row = e.query_linked_components(&ComponentLinkQuery { object_ids: vec![id, missing], ..Default::default() }).unwrap();
+    assert_eq!(row.total, 1);
+    assert_eq!(row.components[0].status, ComponentLinkStatus::UnresolvedPackage);
+    assert_eq!(row.components[0].package_id, Some(missing));
+    assert_eq!(row.unknown_ids, vec![missing]);
+    assert!(e.preview_schematic_pcb_sync(PcbSyncDirection::Forward).is_err());
+    assert_eq!(e.session_state(), before);
+    e.execute_typed(LinkSchematicPackage { expected: before.project, source_cursor: before.cursor, part_id: id, package_id: None }, Origin::User)
+        .unwrap();
+    assert_eq!(e.read(|p| p.board.parts[&id].schematic_package), None);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(|p| p.board.parts[&id].schematic_package), Some(missing));
+}
+
+#[test]
+fn bounded_borrowed_package_membership_policy_and_source_strings_reject_before_capture_without_changes() {
+    let source = fixture();
+    for kind in 0..4 {
+        let mut p = source.read(Clone::clone);
+        match kind {
+            0 => {
+                p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap().packages.values_mut().next().unwrap().template_name =
+                    "x".repeat(4097);
+            }
+            1 => {
+                let c = p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap();
+                let group = c.packages.values_mut().next().unwrap();
+                group.units = vec![group.units[0].clone(); 10001];
+            }
+            2 => {
+                p.board.net_rules.insert(
+                    "x".repeat(1_000_000),
+                    viamind_doc::NamedNetMinima {
+                        minimum_copper_clearance: Nm(0),
+                        minimum_track_width: Nm(1),
+                        minimum_via_drill: Nm(0),
+                        minimum_annular_width: Nm(0),
+                    },
+                );
+            }
+            _ => {
+                p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap().symbols.values_mut().next().unwrap().value =
+                    "x".repeat(4097);
+            }
+        }
+        let e = EngineHandle::new(p);
+        let before = e.session_state();
+        assert!(e.schematic_pcb_snapshot().is_err(), "case{kind}");
+        assert_eq!(e.session_state(), before);
+    }
+}
+
+#[test]
+fn before_only_package_link_log_requires_twelve_and_public_writer_refuses_invalid_links_before_any_bytes() {
+    use viamind_engine::{ChangeEvent, ChangeKind, Delta, TxId};
+    let creator = fixture();
+    let command = creator.preview_package_pcb_component(request(&creator)).unwrap().command;
+    let id = creator.execute_typed(command, Origin::User).unwrap().created[0];
+    let mut base = creator.read(Clone::clone);
+    let linked = base.board.parts[&id].clone();
+    base.board.parts.get_mut(&id).unwrap().schematic_package = None;
+    let event = ChangeEvent {
+        tx: TxId(1),
+        origin: Origin::User,
+        kind: ChangeKind::Applied,
+        deltas: vec![Delta::Part { id, before: Some(linked.clone()), after: Some(base.board.parts[&id].clone()) }],
+    };
+    let bytes = |version| {
+        let mut b = serde_json::to_vec(&json!({"format":"viamind-log","version":version,"base":base})).unwrap();
+        b.push(b'\n');
+        viamind_engine::log::write_entry(&mut b, &event).unwrap();
+        b
+    };
+    assert!(EventLog::read_jsonl(bytes(11).as_slice()).is_err(), "BEFORE-only package association cannot vanish under old header");
+    assert!(EventLog::read_jsonl(bytes(viamind_engine::log::LOG_VERSION).as_slice()).is_ok());
+    let mut invalid = event;
+    let Delta::Part { before: Some(part), .. } = &mut invalid.deltas[0] else { panic!("part") };
+    part.schematic_symbol = Some(ObjectId::new());
+    let mut bytes = vec![];
+    assert!(viamind_engine::log::write_entry(&mut bytes, &invalid).is_err());
+    assert!(bytes.is_empty());
+}

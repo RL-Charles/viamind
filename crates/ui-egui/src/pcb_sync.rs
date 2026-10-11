@@ -126,20 +126,22 @@ impl ViamindApp {
         }
         let mut open = self.pcb_sync.open;
         let mut create_component = false;
+        let mut create_package = false;
         let mut refresh = false;
         let mut prepare = false;
         let mut link = None;
         let mut apply = None;
-        egui::Window::new("Schematic and PCB synchronization").open(&mut open).default_width(740.0).default_height(640.0).show(ui.ctx(), |ui| {
+        egui::Window::new("Schematic and PCB synchronization").open(&mut open).default_width(740.0).default_height(640.0).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Link existing components by identity, then inspect proposed changes. Undo restores the complete update.");
             create_component = ui.button("Create PCB component from symbol…").clicked();
+            create_package = ui.button("Create or link complete package…").clicked();
             ui.collapsing("Component links", |ui| {
                 refresh = ui.add_enabled(self.pcb_sync.pending.is_none(), egui::Button::new("Refresh component links")).clicked();
                 if let Some((project, source)) = &self.pcb_sync.snapshot {
                     let fresh = *source == cursor;
                     if !fresh { ui.label("Component list is stale; refresh component links."); }
                     let parts: Vec<_> = project.board.parts.values().collect();
-                    let symbols: Vec<_> = project.schematic.sheets.values().flat_map(|s| s.content.iter().flat_map(move |c| c.symbols.values().map(move |symbol| (s, symbol)))).collect();
+                    let symbols: Vec<_> = project.schematic.sheets.values().flat_map(|s| s.content.iter().flat_map(move |c| c.symbols.values().filter(|symbol|viamind_doc::symbol_package::package_for_symbol(c,symbol.id).is_none()).map(move |symbol| (s, symbol)))).collect();
                     let selected_part = parts.iter().find(|p| Some(p.id) == self.pcb_sync.part).copied();
                     let selected_symbol = symbols.iter().find(|(_, s)| Some(s.id) == self.pcb_sync.symbol).map(|(_, s)| *s);
                     let label = ui.label("PCB component to link");
@@ -153,7 +155,7 @@ impl ViamindApp {
                     if let Some(part) = selected_part {
                         ui.label(format!("Current symbol link: {}", part.schematic_symbol.map_or_else(|| "unlinked".into(), |id| id.to_string())));
                         let target = selected_symbol.map(|s| SchematicLinkTarget::Symbol { expected: s.clone() });
-                        if ui.add_enabled(fresh && target.is_some() && !self.files.busy() && self.pcb_sync.pending.is_none(), egui::Button::new("Link selected components")).clicked() {
+                        if ui.add_enabled(fresh && part.schematic_package.is_none() && target.is_some() && !self.files.busy() && self.pcb_sync.pending.is_none(), egui::Button::new("Link selected components")).clicked() {
                             link = Some(LinkSchematicSymbol { expected_project: project.id, expected_part: part.clone(), target: target.expect("enabled symbol") });
                         }
                         if ui.add_enabled(fresh && part.schematic_symbol.is_some() && !self.files.busy() && self.pcb_sync.pending.is_none(), egui::Button::new("Unlink PCB component")).clicked() {
@@ -166,7 +168,7 @@ impl ViamindApp {
             ui.radio_value(&mut self.pcb_sync.direction, PcbSyncDirection::Forward, "Schematic to PCB: references, values and pad nets");
             ui.radio_value(&mut self.pcb_sync.direction, PcbSyncDirection::Back, "PCB to schematic: references, values and footprint assignments");
             if self.pcb_sync.direction != old_direction { self.pcb_sync.preview = None; }
-            ui.label("Existing numbered pads must match symbol pins. Footprint geometry, copper, positions and unlinked objects stay unchanged. Routed net reassignment requires separate migration.");
+            ui.label("Existing numbered pads must match all pins of the complete package or ordinary symbol. Back annotation updates every package unit. Footprint geometry, copper, positions and unlinked objects stay unchanged. Routed net reassignment requires separate migration.");
             prepare = ui.add_enabled(self.pcb_sync.pending.is_none(), egui::Button::new("Prepare synchronization")).clicked();
             if self.pcb_sync.pending.is_some() { ui.label("Preparing bounded snapshot; editing remains available."); }
             if let Some(preview) = &self.pcb_sync.preview {
@@ -174,7 +176,7 @@ impl ViamindApp {
                 if !fresh { ui.label("Document changed; prepare synchronization again."); }
                 ui.label(format!("{} proposed changes · {} unlinked symbols · {} unlinked PCB components", preview.changes.len(), preview.unlinked_symbols.len(), preview.unlinked_parts.len()));
                 egui::ScrollArea::vertical().id_salt("sync_changes").max_height(220.0).show_rows(ui, ui.text_style_height(&egui::TextStyle::Body), preview.changes.len(), |ui, rows| {
-                    for row in rows { let change = &preview.changes[row]; let line = format!("{}: {} → {} · part {}", change.field, change.before.as_deref().unwrap_or("unassigned"), change.after.as_deref().unwrap_or("unassigned"), change.part_id); ui.add(egui::Label::new(&line).truncate()).on_hover_text(line); }
+                    for row in rows { let change = &preview.changes[row]; let line = format!("{}{}: {} → {} · part {}", change.unit_key.as_ref().map_or_else(String::new,|u|format!("Unit {u} · ")), change.field, change.before.as_deref().unwrap_or("unassigned"), change.after.as_deref().unwrap_or("unassigned"), change.part_id); ui.add(egui::Label::new(&line).truncate()).on_hover_text(line); }
                 });
                 ui.collapsing("Net identities and label names", |ui| {
                     egui::ScrollArea::vertical().id_salt("sync_nets").max_height(140.0).show(ui, |ui| { for net in &preview.nets { let text = format!("{} · {}", net.canonical_name.as_deref().unwrap_or("unnamed"), net.board_net); ui.add(egui::Label::new(&text).truncate()).on_hover_text(text); } });
@@ -187,6 +189,10 @@ impl ViamindApp {
         if create_component {
             self.pcb_sync.open = false;
             self.begin_schematic_component();
+        }
+        if create_package {
+            self.pcb_sync.open = false;
+            self.begin_package_component();
         }
         if refresh {
             self.pcb_sync.start(engine.clone(), false);
