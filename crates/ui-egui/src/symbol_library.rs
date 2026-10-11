@@ -242,7 +242,7 @@ impl ViamindApp {
                 });
                 ui.horizontal_wrapped(|ui| {
                     for quarter in 0..4 {
-                        ui.radio_value(&mut self.symbol_library.rotation, quarter, format!("{}°", quarter * 90));
+                        ui.radio_value(&mut self.symbol_library.rotation, quarter, format!("{}°", u16::from(quarter) * 90));
                     }
                     ui.checkbox(&mut self.symbol_library.mirrored, "Mirror symbol locally");
                 });

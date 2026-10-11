@@ -52,6 +52,7 @@ fn actual_library_file_transform_placement_and_undo_preserve_original_instances(
     load(&mut h);
     input(&mut h, "Symbol X (mm)", "40.000001");
     input(&mut h, "Symbol Y (mm)", "50.000003");
+    click(&mut h, "270°");
     click(&mut h, "90°");
     click(&mut h, "Mirror symbol locally");
     assert_eq!(e.session_state(), before);
