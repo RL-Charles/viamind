@@ -1,6 +1,18 @@
 //! Readable inspection of the production ViamindApp prepared through actual egui input.
 use egui_kittest::{Harness, kittest::Queryable};
+use viamind_engine::{EngineHandle, SessionSnapshot};
 use viamind_ui_egui::ViamindApp;
+struct Inspect {
+    app: ViamindApp,
+    engine: EngineHandle,
+    before: SessionSnapshot,
+}
+impl eframe::App for Inspect {
+    fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
+        assert_eq!(self.engine.session_state(), self.before, "inspection must preserve the complete session");
+    }
+}
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let project = std::env::args_os().nth(1).ok_or("project path required")?;
     let library = std::env::args().nth(2).ok_or("library path required")?;
@@ -28,9 +40,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     h.get_by_label("Edit loaded definition").click();
     h.run_steps(5);
-    h.get_by_label("Definition name").scroll_to_me();
+    let target = if std::env::args().nth(3).as_deref() == Some("save") { "Save NEW definition file" } else { "Definition height (mm)" };
+    h.get_by_label(target).scroll_to_me();
     h.run_steps(8);
     assert_eq!(engine.session_state(), initial, "inspection preparation is read-only");
+    let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -48,7 +62,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            Ok(Box::new(app))
+            cc.egui_ctx.memory_mut(|m| *m = memory);
+            Ok(Box::new(Inspect { app, engine, before: initial }))
         }),
     )
     .map_err(|e| e.to_string())?;
