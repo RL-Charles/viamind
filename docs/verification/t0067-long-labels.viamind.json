@@ -1,0 +1,88 @@
+{
+  "format": "viamind",
+  "version": 5,
+  "project": {
+    "id": "00000000-0000-0000-0000-000000000065",
+    "name": "ERC narrow inspection",
+    "schematic": {
+      "sheets": {
+        "00000000-0000-0000-0000-000000000066": {
+          "id": "00000000-0000-0000-0000-000000000066",
+          "name": "Long net and two outputs",
+          "content": {
+            "symbols": {
+              "ef12b37b-2682-4b2f-9bb0-7b6df913fc89": {
+                "id": "ef12b37b-2682-4b2f-9bb0-7b6df913fc89",
+                "designator": "U1",
+                "value": "3.3 V regulator",
+                "footprint": null,
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 4000000,
+                "height": 6000000,
+                "pins": [
+                  {
+                    "id": "cfacfef8-944a-439a-91b7-a9532a8760dd",
+                    "number": "LONG_PIN_NUMBER_12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890XY",
+                    "name": "VIN",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              },
+              "7e10d6c9-77f6-4a28-9fbc-7797c7f6a59d": {
+                "id": "7e10d6c9-77f6-4a28-9fbc-7797c7f6a59d",
+                "designator": "U2",
+                "value": "1 uF",
+                "footprint": null,
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "rotation_quarters": 0,
+                "mirrored": false,
+                "width": 2000000,
+                "height": 4000000,
+                "pins": [
+                  {
+                    "id": "249f9f8c-74c4-496a-83d1-47ff3e217068",
+                    "number": "LONG_PIN_NUMBER_12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890XY",
+                    "name": "",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "electrical": "output"
+                  }
+                ]
+              }
+            },
+            "wires": {},
+            "junctions": {},
+            "labels": {
+              "c831d66a-8d4a-4031-93f9-a87fbfbce46a": {
+                "id": "c831d66a-8d4a-4031-93f9-a87fbfbce46a",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                },
+                "name": "VERY_LONG_EXPLICIT_NET_NAME_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_SIGNAL_",
+                "scope": "local"
+              }
+            }
+          }
+        }
+      }
+    },
+    "board": {
+      "parts": {}
+    }
+  }
+}

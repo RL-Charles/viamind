@@ -526,7 +526,7 @@ impl ViamindApp {
         ui.separator();
         self.annotation_panel(ui);
         ui.label("Middle drag / Space+drag pan · wheel zoom · Home fit");
-        ui.label("Electrical connectivity and ERC are not evaluated.");
+        ui.label("Run Electrical rule check to inspect native pin diagnostics.");
     }
     pub(crate) fn schematic_canvas(&mut self, ui: &mut Ui) {
         let sheet = self.design.as_ref().and_then(|d| d.engine.read(|p| self.schematic.sheet.and_then(|id| p.schematic.sheets.get(&id).cloned())));

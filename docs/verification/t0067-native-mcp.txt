@@ -1,0 +1,31 @@
+{
+  "regulator_fixture": "/home/charlesmowbray/Development/viamind-t-0067/fixtures/schematic/regulator.viamind.json",
+  "issues": [
+    {
+      "check": "missing_power",
+      "net": "VIN"
+    },
+    {
+      "check": "missing_power",
+      "net": "GND"
+    }
+  ],
+  "full_erc": false
+}
+{
+  "result": "passed",
+  "native_binary": "/tmp/viamind-t0067-verified-native",
+  "verified": [
+    "headless discovery",
+    "shorted outputs",
+    "unconnected and undriven input",
+    "power labels do not supply power",
+    "66-pair effective matrix",
+    "read-only deterministic snapshot",
+    "severity overrides are per request",
+    "honest result truncation",
+    "undo and redo",
+    "250000 actual pin-pair work limit",
+    "clean exit"
+  ]
+}
