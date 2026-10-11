@@ -1,0 +1,11 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 32570f581bbcc74a94e9c95250d88f5b44dcaebd9ab1f2d4788b58e0b17c5ee3 # shrinks to c = Point { x: Nm(0), y: Nm(0) }, r = 272930, start = 0, sweep = 1, ccw = false
+cc 09ff39f982bb20cfecd6e450fc01423dd4e2776d28323e52431795f3254a00ce # shrinks to c = Point { x: Nm(0), y: Nm(0) }, r = 1, start = 0, sweep = 390, tol = 1
+cc 0f802860738a18dcdc17320f9e339f3c6cb4958962e4c8752c94dfffaeabfbda # shrinks to c = Point { x: Nm(0), y: Nm(0) }, r = 1000, start = 0, sweep = 1, ccw = false
+cc cd172d9edeb8fd9519a6657473989c45a3d48c81c1d1759c324a199420627114 # shrinks to c = Point { x: Nm(0), y: Nm(0) }, r = 75767963, start = 20, sweep = 22, ccw = false
+cc 5c88590090ff6089d2af4ba6084030b9a4ea619bef2f4b4676c5f047104cf1a7 # shrinks to c = Point { x: Nm(0), y: Nm(0) }, r = 306855770, start = 12, sweep = 355, ccw = true
