@@ -1,0 +1,22 @@
+{
+  "format": "viamind-symbol",
+  "version": 1,
+  "symbol": {
+    "name": "Original compact symbol",
+    "value": "",
+    "footprint": null,
+    "width": 10000000,
+    "height": 10000000,
+    "pins": [
+      {
+        "number": "VIN",
+        "name": "Retained input",
+        "position": {
+          "x": 1000003,
+          "y": -2000007
+        },
+        "electrical": "input"
+      }
+    ]
+  }
+}

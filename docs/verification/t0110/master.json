@@ -1,0 +1,334 @@
+{
+  "ticket": "T-0110",
+  "verified_utc": "2026-10-11T17:39:18.330701+00:00",
+  "spec": "docs/specs/compact-symbol-definition.md",
+  "spec_approved_before_code": "26666336aa1850c16a95e6edd6cc49d86fba353c",
+  "product_source": "1b60cc5c1d59e9bee39771370d672a55100fa5b4",
+  "historical_base": "2e40ecca163a565801c8196380ab4c3e593c7436",
+  "full_linux": {
+    "session": 36098,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_tests": {
+      "passed": 761,
+      "failed": 0,
+      "ignored": 1
+    },
+    "workspace_build": true,
+    "inspection_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 88,
+    "canonical_exact_check": true,
+    "workflow_checks": 18
+  },
+  "focused": {
+    "session": 45525,
+    "source": "9fda75d",
+    "new_actual_compact_tests": 2,
+    "existing_actual_symbol_tests": 7,
+    "effective_ancestor_paint_clip_before_pointer_input": true,
+    "large_fixture_pins": 1024,
+    "maximum_rendered_pin_rows": 5,
+    "real_wheel_to_last_and_back": true,
+    "source_note": "Before shared helper extraction; final full gate includes extracted identical helpers and corrected unused import."
+  },
+  "production": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/viamind-1b60cc5c1d59",
+    "sha256": "b1fb52f8134211cac5ffd4c9335380150720a3b98d2e7c12bcbc6fc11aaa897f",
+    "pid": 2095184,
+    "http_port": 7940,
+    "live_exe_sha256": "b1fb52f8134211cac5ffd4c9335380150720a3b98d2e7c12bcbc6fc11aaa897f",
+    "stdio_checks": {
+      "detached": 18,
+      "save_and_export": 17
+    },
+    "actual_two_client_desktop_http_checks": {
+      "detached": 18,
+      "save_and_export": 17
+    },
+    "debug_symbols": "stripped after unique copy under mutex; executable code unchanged"
+  },
+  "inspection": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/inspection-1b60cc5c1d59",
+    "sha256": "46247657d5df7789e6711ebc3d4a114033aa60e38afb465143d11d630c2ca802",
+    "source": "1b60cc5c1d59e9bee39771370d672a55100fa5b4",
+    "source_path": "crates/ui-egui/examples/compact_symbol_inspection.rs",
+    "preparation_helper": "crates/ui-egui/tests/support/symbol_compact.rs",
+    "debug_symbols": "stripped after unique copy under mutex",
+    "captures": [
+      {
+        "name": "row",
+        "png": "row.png",
+        "pixels": [
+          640,
+          400
+        ],
+        "rgb_sha256": "f88ebacd97f65146b814bc17e37fe5879d867cc920c5a785fc9177ce68642e72",
+        "p6_sha256": "b2785443cfe1b0f4a0e32c1ba02b0a209b40f178113d82c2b55d2de12575a99d",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row.ppm",
+        "runtime": [
+          {
+            "complete_row_in_actual_clip": true,
+            "inner_clip": [
+              17.0,
+              128.0,
+              515.0,
+              259.0
+            ],
+            "stable_pin_ids": true
+          },
+          {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              640.0,
+              400.0
+            ],
+            "controls": [
+              [
+                143.71875,
+                128.0,
+                243.71875,
+                147.0
+              ],
+              [
+                143.71875,
+                150.0,
+                243.71875,
+                169.0
+              ],
+              [
+                143.71875,
+                172.0,
+                243.71875,
+                191.0
+              ],
+              [
+                143.71875,
+                194.0,
+                243.71875,
+                213.0
+              ],
+              [
+                143.71875,
+                216.0,
+                243.71875,
+                234.0
+              ],
+              [
+                23.0,
+                237.0,
+                109.625,
+                255.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row.ppm",
+            "pid": 2093703,
+            "pixels": [
+              640,
+              400
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          }
+        ],
+        "launch": {
+          "command": [
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/inspection-1b60cc5c1d59",
+            "row",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row.ppm",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row-definition.json"
+          ],
+          "pid": 2093703,
+          "source_commit": "1b60cc5c1d59",
+          "launched_utc": "2026-10-11T17:37:02.166187+00:00",
+          "scope": "Actual compact640x400 egui input preparation; actual native WGPU Screenshot, no OS input/compositor claim",
+          "exit_code": 0,
+          "exited_utc": "2026-10-11T17:37:05.388675+00:00"
+        },
+        "process_after_capture": "absent; self-closed exit0"
+      },
+      {
+        "name": "completed",
+        "png": "completed.png",
+        "pixels": [
+          640,
+          400
+        ],
+        "rgb_sha256": "e298d145ef90b13735613dcba9b044eb5bc36d33efee24a4edb7403e6e4f92bb",
+        "p6_sha256": "4b8f820eb4618020fd01bfe1bd7b0030efd066a99450ce49238d6917f4770204",
+        "retained_p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/completed.ppm",
+        "runtime": [
+          {
+            "capture": "eframe native WGPU Screenshot event",
+            "content_rect": [
+              0.0,
+              0.0,
+              640.0,
+              400.0
+            ],
+            "controls": [
+              [
+                23.0,
+                338.0,
+                452.65625,
+                383.0
+              ]
+            ],
+            "document_status_unchanged": true,
+            "full_session_unchanged": true,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/completed.ppm",
+            "pid": 2093973,
+            "pixels": [
+              640,
+              400
+            ],
+            "self_close_after_capture": true,
+            "ui_passes": 11
+          }
+        ],
+        "launch": {
+          "command": [
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/inspection-1b60cc5c1d59",
+            "completed",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/completed.ppm",
+            "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/completed-definition.json"
+          ],
+          "pid": 2093973,
+          "source_commit": "1b60cc5c1d59",
+          "launched_utc": "2026-10-11T17:37:05.390729+00:00",
+          "scope": "Actual compact640x400 egui input preparation; actual native WGPU Screenshot, no OS input/compositor claim",
+          "exit_code": 0,
+          "exited_utc": "2026-10-11T17:37:07.308576+00:00"
+        },
+        "process_after_capture": "absent; self-closed exit0"
+      }
+    ]
+  },
+  "scope_limits": [
+    "640x400 logical-point/default-scale reachability; fields need not all appear simultaneously. Smaller/scaled viewports have no new guarantee.",
+    "Real AccessKit ScrollIntoView plus actual wheel reveal parent/child; every pointer target requires effective background paint clip containment.",
+    "Native captures are real WGPU around production ViamindApp with actual local egui preparation; no OS input/compositor claim.",
+    "Metadata above the row view is intentionally scrolled/clipped; complete row and completed-save notices have separate views.",
+    "Existing single-unit rectangular format/model/actions/catalog unchanged; no multi-unit, geometry or manufacturing defaults.",
+    "Failed oracle/OS-message expectations and unused-import gate are retained as excluded history; final full761 run is authoritative."
+  ],
+  "artifacts": {
+    "agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "9176177156428068acdef0d53f7a56bb0578f570ce75ab1fb3fde10955e2ca4d"
+    },
+    "capture-native.py": {
+      "bytes": 1804,
+      "sha256": "39b833b5af6c24cb8fd28d52fc9e07c5dd813b46d70745b4debd50e5ef0089a4"
+    },
+    "catalog-check.json": {
+      "bytes": 367,
+      "sha256": "2ab480a56beea741d30295773925a76f8a1b91d5cfa8123adbb59f80ba1add39"
+    },
+    "catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "2ab480a56beea741d30295773925a76f8a1b91d5cfa8123adbb59f80ba1add39"
+    },
+    "collision-message-oracle-failure.log": {
+      "bytes": 4179,
+      "sha256": "58077a29d39770fb1a988390bdf3f5482d2dcc0e528ce04f38a1cf13a8c403d0"
+    },
+    "completed-launch.json": {
+      "bytes": 598,
+      "sha256": "7199638e56d07a33d6e4503990228a656366cb49c2e20bd222b8bfabd75dc73e"
+    },
+    "completed-native.log": {
+      "bytes": 1274,
+      "sha256": "2dd72b13a3b811e9eeaba1248609c1e8525b1bbffca8f32f36ed6373065804b8"
+    },
+    "completed.png": {
+      "bytes": 37926,
+      "sha256": "dbc283f298adc12f5793ccc7a3b14146f5c3881cdf192476b53ecad036805255"
+    },
+    "completed.viamind-symbol.json": {
+      "bytes": 400,
+      "sha256": "89451edb1393afc16e8e6edbe12ee8d07287a8d246188ca55c11c794d491ca08"
+    },
+    "detached-http.json": {
+      "bytes": 1407,
+      "sha256": "7d85789c4c3a175f75e40ab44254e4b8ace6f54d5b32c2c74178622595a88196"
+    },
+    "detached-stdio.json": {
+      "bytes": 1413,
+      "sha256": "a75750d4f81c4cd8664c5bbc8e65ae534116208833cc81ac8f9c6ec924cbebf0"
+    },
+    "encode-native-ppm.py": {
+      "bytes": 935,
+      "sha256": "e3d439a132ab57a74062e0a096f1ebc530b13196f8de8c389b481fa9a4d56142"
+    },
+    "focused.log": {
+      "bytes": 5564,
+      "sha256": "bad02c6056660fe02b985402f169067305e8337ea312474b9b84cade78453a26"
+    },
+    "focused.sh": {
+      "bytes": 632,
+      "sha256": "1d1998526c04bf9f41ff46acda2c1527fea366d2e5d0a5dd857002902cf6ca1f"
+    },
+    "glyph-clip-oracle-failure.log": {
+      "bytes": 3703,
+      "sha256": "f89b15f24a078b859add9a4b21571036b875989a98e9e14946f542ed6727c3fb"
+    },
+    "initial-compact-oracle-failure.log": {
+      "bytes": 324966,
+      "sha256": "65af0a95a2a148d08a26f8581220ecfe5a4711e63eec686554b4440701d2eef8"
+    },
+    "initial-full-lint-failure.log": {
+      "bytes": 1481,
+      "sha256": "cc21b97394ba13c5b5bb5a33507deb2be0587f70df6c133440f4de25e1f09cf3"
+    },
+    "launch-production": {
+      "bytes": 251,
+      "sha256": "ce41a9cffa556dd5a08705bf8fc530e41e8523987f1e0bcf99e1df0eaed20708"
+    },
+    "linux-full.log": {
+      "bytes": 123364,
+      "sha256": "a404a6ea33e38c6cde6e333256b5f8f910077bc7aa9bf8af1bfca4a1f4236620"
+    },
+    "linux-full.sh": {
+      "bytes": 1977,
+      "sha256": "fc280cc610127a9362a5aac8b6873105531fb2b06844034715269f2e82d174a3"
+    },
+    "production-launch.json": {
+      "bytes": 566,
+      "sha256": "c41e4ece037627701d1d30621a21800ca31b185259b2e6f728b637650d39ccfb"
+    },
+    "publication-http.json": {
+      "bytes": 1367,
+      "sha256": "fb62120269d67c174c03d3ff362a6279f7d19ce0d7735c2b3f6b55bbcc6d2966"
+    },
+    "publication-stdio.json": {
+      "bytes": 1373,
+      "sha256": "51d54cf5e403c2659c623f547e9441aa5503d29bd9ada7a12e1e654392e8ce6e"
+    },
+    "row-centering-oracle-failure.log": {
+      "bytes": 3711,
+      "sha256": "05df1c3e95c8aff7357c986e1214605f9ced414920618db0524ae40d8c2d4ffa"
+    },
+    "row-launch.json": {
+      "bytes": 580,
+      "sha256": "f6df553a6c9653f8f8c3633298ac2b6ebc0b771f4f5f381bd4c6627bba03b1fd"
+    },
+    "row-native.log": {
+      "bytes": 1416,
+      "sha256": "175c5e99f0c128c81ba75efa3aef9f3b3fba2d2ca136219aa266c434d1db8f0d"
+    },
+    "row.png": {
+      "bytes": 31483,
+      "sha256": "d1ef65734a61a6e021c6de5795109449e222903fd14cfbf68cbf41c15427644a"
+    },
+    "verify-artifacts.py": {
+      "bytes": 1687,
+      "sha256": "54e43ab8ea5c1d5085d8cf3e0b86be3d44a84a41e60597e6cf6c0b6b0200cc55"
+    }
+  }
+}

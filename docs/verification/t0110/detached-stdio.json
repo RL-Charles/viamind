@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "native symbol load/save and separate guarded placement advertised",
+    "independent source load preserves dirty session",
+    "NEW definition reports exact explicit name/count/path",
+    "two-client/fresh stdio load retains exact ordered template",
+    "valid write leaves full dirty/native/shared selection unchanged",
+    "borrowed limit precedes malformed decoding 0",
+    "borrowed limit precedes malformed decoding 1",
+    "borrowed limit precedes malformed decoding 2",
+    "borrowed limit precedes malformed decoding 3",
+    "borrowed limit precedes malformed decoding 4",
+    "borrowed limit precedes malformed decoding 5",
+    "strict lifecycle/unknown/typed semantics preserve prior files 11",
+    "strict lifecycle/unknown/typed semantics preserve prior files 12",
+    "strict lifecycle/unknown/typed semantics preserve prior files 13",
+    "strict lifecycle/unknown/typed semantics preserve prior files 14",
+    "original source definition bytes preserved",
+    "all borrowed refusals leave complete session and status intact",
+    "retained production executable unchanged"
+  ],
+  "binary_sha256": "b1fb52f8134211cac5ffd4c9335380150720a3b98d2e7c12bcbc6fc11aaa897f",
+  "transport": "owned production headless stdio",
+  "scope": "Detached single-unit rectangular symbol writer and borrowed predecode limits. No multi-unit, graphics or placed-instance updates."
+}
