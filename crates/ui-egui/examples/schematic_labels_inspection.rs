@@ -117,6 +117,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     h.get_by_label("Fit schematic").click();
     h.run_steps(5);
     if mode != "wide" {
+        // A real canvas zoom event enters manual camera mode before the prepared
+        // state crosses into a native viewport with different DPI/layout.
+        h.event(egui::Event::PointerMoved(h.state().schematic.viewport.center()));
+        h.event(egui::Event::Zoom(1.01));
+        h.run_steps(3);
         let b = plan.iter().map(|l| l.envelope).reduce(label_union).unwrap();
         h.state_mut().schematic.camera.center = WorldPos::new((b.min_x as f64 + b.max_x as f64) / 2e6, (b.min_y as f64 + b.max_y as f64) / 2e6);
         h.state_mut().schematic.camera.zoom = if mode == "low" { 5.0 } else { 10.0 };
