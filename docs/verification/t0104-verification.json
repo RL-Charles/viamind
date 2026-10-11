@@ -87,6 +87,25 @@
     "docs/verification/t0104-inspection-diagnostic-failed.log": "e59717c6a9b6d2ef589ea34597ac5c6cffeeda45501a23aa5b29551570f088bc",
     "docs/verification/t0104-cua-production-metadata.json": "3826e1350d7fd0ffc0a0571913dbbf4db363ca0e088e48dee15b90de6f6b70fc",
     "crates/ui-egui/examples/t0104_inspection.rs": "cd650a1f33ae9087b58d23bf0898af679408cfaf6d6c4957af4f1188dec0e985",
-    "fixtures/assembly/output-job-calibration.viamind.json": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7"
+    "fixtures/assembly/output-job-calibration.viamind.json": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7",
+    "docs/verification/t0104-final-combined.log": "46fdd0b9b7c6c608ad4e2f877eca38f8ed83b10d7a93f0b2b5ef848df7fecdd2",
+    "docs/verification/t0104-final-catalog.json": "28a565859cdf57eaea18f00091c8aef8dd56acfde268d229a98eed4d9fe5b37c",
+    "docs/verification/t0104-final-workflow.json": "36b42bc25a875d1c92cc7423a8732c7c2e229f47c5b01e3301e41e3575bd05c8"
+  },
+  "final_integration": {
+    "source": "4a89748a2057c3fe066b2d154e5af535a2066fe3",
+    "base": "3c52571",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-combined-verified",
+      "sha256": "f8f662c187083ebf71963d30938c1a11b6fcba947302401260609c048f170769"
+    },
+    "focused_tests_passed": 11,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tool_count": 88,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "coverage": "Calibrated checked jobs retain exact native10 via minima; saved zero baselines cannot weaken captured drill/annular floors, one-Nm raises refuse all publication and leave no staging/session changes. Historical production/native sources remain separate."
   }
 }
