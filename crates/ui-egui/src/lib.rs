@@ -11,6 +11,7 @@ pub mod canvas;
 pub mod copper;
 pub mod drc;
 pub mod files;
+mod gpu_tiles;
 pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
@@ -47,7 +48,15 @@ pub fn run() -> eframe::Result {
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
-    eframe::run_native("Viamind", options, Box::new(|_cc| Ok(Box::new(ViamindApp::default()))))
+    eframe::run_native(
+        "Viamind",
+        options,
+        Box::new(|cc| {
+            let mut app = ViamindApp::default();
+            app.configure_renderer(cc);
+            Ok(Box::new(app))
+        }),
+    )
 }
 
 /// Opens the Viamind window on a live design. Agents connected to `mcp_url` edit the same
@@ -68,7 +77,9 @@ pub fn run_design(engine: EngineHandle, mcp_url: Option<String>) -> eframe::Resu
         Box::new(move |cc| {
             let ctx = cc.egui_ctx.clone();
             engine.on_change(move || ctx.request_repaint());
-            Ok(Box::new(ViamindApp::with_design(engine, mcp_url)))
+            let mut app = ViamindApp::with_design(engine, mcp_url);
+            app.configure_renderer(cc);
+            Ok(Box::new(app))
         }),
     )
 }
@@ -128,6 +139,13 @@ impl Default for ViamindApp {
 }
 
 impl ViamindApp {
+    /// Use native persistent GPU tiles when eframe supplies a wgpu renderer.
+    pub fn configure_renderer(&mut self, cc: &eframe::CreationContext<'_>) {
+        if let Some(render) = &cc.wgpu_render_state {
+            self.canvas.cache.enable_gpu(render.target_format);
+        }
+    }
+
     /// An app showing [`Scene::synthetic`] with `n` objects.
     pub fn with_scene_size(n: usize) -> Self {
         Self {

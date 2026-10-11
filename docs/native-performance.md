@@ -54,3 +54,48 @@ Local evidence is retained in `~/.local/state/viamind/recovery/`:
 `native-100k-fixed-window.png`. The first report,
 `native-100k-38c40eb-run1.json`, is also retained: its 19 × 522 canvas was too
 narrow to represent the intended full-board viewport.
+
+## Persistent native GPU tile buffers (T50)
+
+The production CPU stage profile (`cargo run --release -p viamind-ui-egui
+--example cpu_profile`) separates UI construction from egui mesh assembly. At
+1320 × 954 points, panning a 100k scene averaged 1.805 ms UI construction and
+11.802 ms tessellation/mesh assembly, producing 704,834 vertices and 2,274,186
+indices: approximately 23.19 MB copied into the renderer each frame. The profile
+excludes GPU upload/render/present and panning left 99,089 objects visible. It is
+a diagnostic, not a replacement for the native benchmark.
+
+Native launch now explicitly configures a persistent GPU tile path. Existing
+egui-tessellated vertices, indices and geometric font-atlas regions are uploaded
+once per tile generation. A single batched upload supplies camera uniforms;
+layer order, tile culling and the 9% zoom bucket remain the same. Headless tests
+and unconfigured apps retain the egui mesh reference path. `cache.disable_gpu()`
+selects that reference for native screenshot comparisons.
+
+The first isolated persistent-buffer run on the same Linux/Vulkan device and
+1320 × 954 canvas produced:
+
+| Phase | Sustained fps | p95 interval | Mean previous-frame CPU |
+| --- | ---: | ---: | ---: |
+| Fit pan | 60.000 | 16.946 ms | 3.835 ms |
+| Fit pan and zoom | 46.055 | 17.168 ms | 8.524 ms |
+| Zoomed 8× pan | 60.002 | 16.892 ms | 1.380 ms |
+
+**The strict full-board 60fps acceptance remains open.** Fit pan narrowly exceeds
+the 16.9 ms p95 threshold; fit pan-and-zoom still stalls while replacing many GPU
+tile buffers at zoom bucket boundaries. Consolidating those allocations is a
+follow-up optimization. No thresholds, visible objects or phase counts changed.
+Parallel development checks and idle design previews remained running; other
+benchmark windows had completed before this isolated run.
+
+`gpu_parity NEW_REPORT.json` renders four native canvas comparisons against the
+egui mesh reference: fit, pan, layer hide/reorder/opacity and zoom inside a bucket.
+Across 1,068,480 pixels per comparison, maximum channel difference was 2/255,
+zero pixels differed by more than two channel values, and mean channel difference
+was below 0.0007. This includes the same antialiasing and prerasterized discs.
+Run it with `cargo run --release -p viamind-ui-egui --example gpu_parity --
+/tmp/new-parity-report.json`. The fixed-size synthetic window closes itself.
+
+Machine-readable evidence is in [performance/](performance/). Failed exploratory
+runs (per-tile uniform uploads and overlapping benchmark windows) remain in the
+local recovery directory; they are not used to claim acceptance.

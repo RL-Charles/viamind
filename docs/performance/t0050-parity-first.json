@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "case": 0,
+      "drawn": 5000,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.0005397854896675652,
+      "pixels": 1068480,
+      "pixels_over_2_channels": 0
+    },
+    {
+      "case": 1,
+      "drawn": 5000,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.0005456349206349206,
+      "pixels": 1068480,
+      "pixels_over_2_channels": 0
+    },
+    {
+      "case": 2,
+      "drawn": 4663,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.0004333258460616951,
+      "pixels": 1068480,
+      "pixels_over_2_channels": 0
+    },
+    {
+      "case": 3,
+      "drawn": 4662,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.0006874251272836179,
+      "pixels": 1068480,
+      "pixels_over_2_channels": 0
+    }
+  ],
+  "passed": true
+}

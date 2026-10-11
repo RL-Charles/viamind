@@ -130,7 +130,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     eframe::run_native("Viamind benchmark",options,Box::new(move |cc| {
         let adapter=cc.wgpu_render_state.as_ref().map_or(Value::Null, |r| {let info=r.adapter.get_info();json!({"name":info.name,"backend":format!("{:?}",info.backend),"device_type":format!("{:?}",info.device_type),"driver":info.driver,"driver_info":info.driver_info})});
-        Ok(Box::new(Benchmark { app:ViamindApp::with_scene_size(100000), phases:std::array::from_fn(|_|Phase::default()), frame:0, base:None, last_native_frame:None, finished:false, previous:None, adapter, output, result:shared }))
+        let mut app=ViamindApp::with_scene_size(100000);
+        app.configure_renderer(cc);
+        Ok(Box::new(Benchmark { app, phases:std::array::from_fn(|_|Phase::default()), frame:0, base:None, last_native_frame:None, finished:false, previous:None, adapter, output, result:shared }))
     })).map_err(|e|e.to_string())?;
     let status = result.lock().unwrap().take().ok_or("benchmark closed before collecting all samples; output is incomplete")?;
     status.map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
