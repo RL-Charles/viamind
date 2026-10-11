@@ -217,7 +217,7 @@
               },
               "00000000-0000-0000-0000-0000000000c8": {
                 "id": "00000000-0000-0000-0000-0000000000c8",
-                "designator": "U?",
+                "designator": "u?",
                 "value": "Independent five-unit part",
                 "footprint": "ExplicitSOIC",
                 "position": {
@@ -243,7 +243,7 @@
               },
               "00000000-0000-0000-0000-0000000000c9": {
                 "id": "00000000-0000-0000-0000-0000000000c9",
-                "designator": "U?",
+                "designator": "u?",
                 "value": "Independent five-unit part",
                 "footprint": "ExplicitSOIC",
                 "position": {
@@ -269,7 +269,7 @@
               },
               "00000000-0000-0000-0000-0000000000ca": {
                 "id": "00000000-0000-0000-0000-0000000000ca",
-                "designator": "U?",
+                "designator": "u?",
                 "value": "Independent five-unit part",
                 "footprint": "ExplicitSOIC",
                 "position": {
@@ -295,7 +295,7 @@
               },
               "00000000-0000-0000-0000-0000000000cb": {
                 "id": "00000000-0000-0000-0000-0000000000cb",
-                "designator": "U?",
+                "designator": "u?",
                 "value": "Independent five-unit part",
                 "footprint": "ExplicitSOIC",
                 "position": {
@@ -321,7 +321,7 @@
               },
               "00000000-0000-0000-0000-0000000000cc": {
                 "id": "00000000-0000-0000-0000-0000000000cc",
-                "designator": "U?",
+                "designator": "u?",
                 "value": "Independent five-unit part",
                 "footprint": "ExplicitSOIC",
                 "position": {
@@ -347,7 +347,7 @@
               },
               "00000000-0000-0000-0000-00000000012d": {
                 "id": "00000000-0000-0000-0000-00000000012d",
-                "designator": "U?",
+                "designator": "U",
                 "value": "Single unit",
                 "footprint": null,
                 "position": {
@@ -373,7 +373,7 @@
               },
               "00000000-0000-0000-0000-00000000012e": {
                 "id": "00000000-0000-0000-0000-00000000012e",
-                "designator": "U?",
+                "designator": "u",
                 "value": "Single unit",
                 "footprint": null,
                 "position": {

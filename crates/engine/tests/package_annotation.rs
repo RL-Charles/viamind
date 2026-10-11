@@ -35,7 +35,7 @@ fn fixture() -> Project {
     for (base, x) in [(100, 10), (200, 30)] {
         let mut units = vec![];
         for (i, key) in ["P", "D", "C", "B", "A"].into_iter().enumerate() {
-            let symbol = symbol(base + i as u64, "U?", if key == "A" { x } else { -100 }, &(i + 1).to_string());
+            let symbol = symbol(base + i as u64, if base == 100 { "U?" } else { "u?" }, if key == "A" { x } else { -100 }, &(i + 1).to_string());
             units.push(PackageUnit {
                 key: key.into(),
                 name: format!("Unit {key}"),
@@ -47,7 +47,7 @@ fn fixture() -> Project {
         c.packages.insert(id(base + 500), SchematicPackage { id: id(base + 500), template_name: "Independent five-unit fixture".into(), units });
     }
     for (n, x) in [(301, 20), (302, 40)] {
-        c.symbols.insert(id(n), symbol(n, "U?", x, "1"));
+        c.symbols.insert(id(n), symbol(n, if n == 301 { "U" } else { "u" }, x, "1"));
     }
     let mut s = Sheet::new("Complete packages");
     s.id = id(1);
