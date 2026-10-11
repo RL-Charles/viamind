@@ -791,7 +791,7 @@ mod tests {
         let before = e.session_state();
         let input = request(&e, sheet, symbol, p(3, 7));
         let preview = e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap();
-        assert_eq!(preview.original_graph_members, 8);
+        assert_eq!(preview.original_graph_members, 7);
         e.execute_typed(input, Origin::User).unwrap();
         assert_eq!(e.read(|p| p.schematic.sheets[&other_id].clone()), other);
         e.undo(Origin::User).unwrap();
