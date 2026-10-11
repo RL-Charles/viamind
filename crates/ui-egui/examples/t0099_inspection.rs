@@ -28,14 +28,16 @@ impl Drop for Inspection {
 }
 impl eframe::App for Inspection {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
-        self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.));
-        self.ui_passes += 1;
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(std::fs::read(&self.native).unwrap(), self.native_bytes);
         if self.captured {
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
             return;
         }
+        self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.));
+        self.ui_passes += 1;
+        assert_eq!(self.engine.session_state(), self.before);
+        assert_eq!(std::fs::read(&self.native).unwrap(), self.native_bytes);
         assert!(self.started.elapsed() < Duration::from_secs(120) && self.ui_passes < 256, "bounded capture deadline");
         let screenshot = ui.input(|input| {
             input.events.iter().find_map(|event| match event {
