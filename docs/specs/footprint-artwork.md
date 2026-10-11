@@ -37,7 +37,9 @@ fills, keepouts, drills, mask/paste rules and courtyard/silkscreen DRC are separ
    Event writers retain their existing highest-supported-header policy, advanced to13.
 5. Detached footprint library2 is emitted when artwork is Some; library1 otherwise
    remains byte-identical. A library1 input containing an artwork member, including
-   null, rejects; library2 can carry the explicit empty container. Unknown fields reject.
+   null, rejects; library2 requires a non-null artwork object, including an explicit empty
+   container. Missing/null artwork in library2 rejects rather than downgrades. Unknown
+   fields reject.
 6. No new document UUIDs are assigned to artwork rows: whole artwork is a guarded Part
    property. Desktop rows use transient stable UUID widget keys. Segment order is
    retained for deterministic persistence and export.
@@ -63,8 +65,9 @@ fills, keepouts, drills, mask/paste rules and courtyard/silkscreen DRC are separ
     selected-Part queries, placement snapshots, detached export, branch candidate/deltas,
     scene/view capture and fabrication snapshots. New artwork must never evade a
     consumer's pre-copy structural budget. No global native-project file cap is added.
-11. Electrical-only DRC/router/cleanup/continuity captures may explicitly omit artwork
-    before copying unused data. This is a private immutable analysis shell only.
+11. `clone_without_assembly` retains artwork: assembly commands use it to construct
+    committed Part deltas. A separate purpose-named electrical-analysis copy helper for
+    DRC/router/cleanup/continuity may explicitly omit artwork before copying unused data. This is a private immutable analysis shell only.
     Omission must never reach a live committed Part delta, exact expected guard,
     persistent branch candidate, document replacement, native save or exported footprint.
     Add a huge-unused-art regression and exact live-state preservation checks.
@@ -114,8 +117,11 @@ fills, keepouts, drills, mask/paste rules and courtyard/silkscreen DRC are separ
     when present. True emits deterministic top/bottom legend files, including empty
     sides, positive polarity, circular apertures and D02/D01 straight strokes with
     `Legend,Top`/`Legend,Bot` attributes. No automatic silk clipping.
-22. Courtyards are not emitted as copper/profile/production legend. DRC still reports
-    silk/courtyard checks unperformed; artwork creates no electrical net/anchor/obstacle.
+22. Courtyards are not emitted as copper/profile/production legend. Artwork creates no
+    electrical net/anchor/obstacle. Preserve exact existing DRC/report bytes when artwork
+    is absent, including the existing solder-mask/silkscreen exclusion. Explicit courtyard
+    exclusion is conditional on artwork presence, or disclosed in new artwork metadata/UI,
+    without changing old absence-fixture reports. No courtyard/silk checks are inferred.
 23. New checked output job4 requires `include_silkscreen:true`. Existing v1-v3 job bytes,
     defaults, validation and fixed file matrices remain exact. Job4 permits existing
     calibrated/populated companions only under their existing relationships; populated
