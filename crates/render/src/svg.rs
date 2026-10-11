@@ -259,6 +259,15 @@ pub(crate) fn board_svg_for_pixels(project: &Project, options: &SvgOptions) -> i
 
 fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option<(i64, i64)>) -> io::Result<BoardSvg> {
     options.validate()?;
+    // Direct callers receive the same schematic exclusion as engine snapshots.
+    // The normal board-only path borrows without another model copy.
+    let shell;
+    let project = if project.schematic.sheets.is_empty() {
+        project
+    } else {
+        shell = board_view_snapshot(project)?;
+        &shell
+    };
     let origin = raster_origin.unwrap_or((0, 0));
     let x = |n: i64| mm(n - origin.0);
     let y = |n: i64| mm(n - origin.1);

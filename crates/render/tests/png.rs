@@ -110,12 +110,16 @@ fn board_only_capture_excludes_unrelated_schematic_and_bounds_text_before_copy()
     let mut project = sample();
     let mut sheet = viamind_doc::Sheet::new("Unrelated");
     sheet.name = "s".repeat(8 * 1024 * 1024);
-    project.schematic.sheets.insert(sheet.id, sheet);
+    // Deliberately invalid/unrelated sheet identity must not affect board views.
+    project.schematic.sheets.insert(project.id, sheet);
     let snapshot = viamind_render::board_view_snapshot(&project).unwrap();
     assert!(snapshot.schematic.sheets.is_empty());
     assert_eq!(snapshot.id, project.id);
     assert_eq!(snapshot.name, project.name);
     assert_eq!(snapshot.board, project.board);
+    let options = SvgOptions { width_px: 64, height_px: 64, ..Default::default() };
+    assert_eq!(viamind_render::board_svg(&project, &options).unwrap().svg, viamind_render::board_svg(&snapshot, &options).unwrap().svg);
+    assert_eq!(board_png(&project, &options).unwrap().png, board_png(&snapshot, &options).unwrap().png);
     assert_eq!(board_png(&snapshot, &SvgOptions { width_px: 64, height_px: 64, ..Default::default() }).unwrap().metadata.pad_count, 3);
     let mut part = project.board.parts.values().next().unwrap().clone();
     part.pads = None;
