@@ -101,7 +101,7 @@ impl EngineHandle {
             capture(e.project())?;
             // Selector bounds precede owned board/ID capture, including net matches.
             selected(e.project(), &input.tracks)?;
-            Ok(Project { id: e.project().id, name: String::new(), schematic: Default::default(), board: e.project().board.clone() })
+            Ok(Project { id: e.project().id, name: String::new(), schematic: Default::default(), board: e.project().board.clone_without_assembly() })
         })?;
         prepare(&project, input).map(|(plan, _)| plan)
     }
@@ -130,7 +130,7 @@ fn selected(project: &Project, selector: &CleanupTracks) -> Result<BTreeSet<Obje
             Ok(result)
         }
         CleanupTracks::Net { net, layer } => {
-            if net.is_empty() || net.trim() != net || net.chars().count() > 128 || net.chars().any(char::is_control) {
+            if net.is_empty() || net.len() > 512 || net.trim() != net || net.chars().count() > 128 || net.chars().any(char::is_control) {
                 return Err(invalid("exact trimmed nonempty net name of at most128 characters required"));
             }
             let matches = || project.board.tracks.values().filter(|t| t.net.as_ref() == Some(net) && layer.is_none_or(|l| t.layer == l));
@@ -304,7 +304,7 @@ fn prepare(project: &Project, input: &CleanupCardinalTracks) -> Result<(CheckedC
     }
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("explicit substrate outline required for complete scoped cleanup DRC"))?;
     outline.validate().map_err(|e| invalid(e.to_string()))?;
-    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone() };
+    let mut candidate = Project { id: project.id, name: String::new(), schematic: Default::default(), board: project.board.clone_without_assembly() };
     for delta in &deltas {
         delta.apply_to(&mut candidate);
     }

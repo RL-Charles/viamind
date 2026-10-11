@@ -112,6 +112,7 @@ fn pad(project: &mut Project, center: Point, side: Side, rotation: i32) {
     let mut part = Part {
         id: ObjectId::new(),
         schematic_symbol: None,
+        assembly: None,
         designator: format!("J{}", project.board.parts.len()),
         value: String::new(),
         footprint: String::new(),
@@ -257,11 +258,19 @@ fn unrelated_schematic_is_preserved_capture_text_and_net_match_limits_precede_co
     track(&mut project, p(0, 0), p(10_000_000, 0), CopperLayer::Top);
     let sheet = viamind_doc::Sheet::new("unused".repeat(600_000));
     project.schematic.sheets.insert(sheet.id, sheet);
+    pad(&mut project, p(-10_000_000, 0), Side::Top, 0);
+    let part_id = *project.board.parts.keys().next().unwrap();
+    project.board.parts.get_mut(&part_id).unwrap().assembly =
+        Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("\n".repeat(3 * 1024 * 1024)), populate: false, ..Default::default() }));
     let e = EngineHandle::new(project);
     let before = e.read(|p| p.schematic.clone());
     assert_eq!(e.plan_cardinal_track_cleanup(&request(&e)).unwrap().counts.deleted_tracks, 1);
     e.execute_typed(request(&e), Origin::User).unwrap();
     assert_eq!(e.read(|p| p.schematic.clone()), before);
+    assert!(e.read(|p| {
+        let metadata = p.board.parts[&part_id].assembly.as_ref().unwrap();
+        !metadata.populate && metadata.mpn.as_ref().unwrap().len() == 3 * 1024 * 1024
+    }));
     let mut project = fixture();
     pad(&mut project, p(0, 0), Side::Top, 0);
     project.board.parts.values_mut().next().unwrap().value = "x".repeat(2 * 1024 * 1024 + 1);
@@ -293,4 +302,25 @@ fn incomplete_joint_report_refuses_even_with_only_unrelated_existing_violations(
     input.rules.max_violations = 1;
     assert!(e.plan_cardinal_track_cleanup(&input).unwrap_err().to_string().contains("incomplete"));
     reject(&e, input);
+}
+
+#[test]
+fn aggregate_hole_candidate_budget_refuses_before_joint_drc_without_partial_cleanup() {
+    let mut project = fixture();
+    for i in 0..12 {
+        let joint = p(1_000_000 + i * 10_000, 0);
+        track(&mut project, p(-20_000_000, 0), joint, CopperLayer::Top);
+        track(&mut project, joint, p(20_000_000, 0), CopperLayer::Top);
+    }
+    // Together with24 tracks and4 outline vertices this exactly fills the
+    //100000-object capture limit. Each closed hole box touches every chain.
+    for _ in 0..99_972 {
+        let via = Via { id: ObjectId::new(), position: p(0, 150_001), diameter: Nm(600_003), drill: Nm(300_001), net: None };
+        project.board.vias.insert(via.id, via);
+    }
+    let e = EngineHandle::new(project);
+    let before = e.session_state();
+    let error = e.plan_cardinal_track_cleanup(&request(&e)).unwrap_err();
+    assert!(error.to_string().contains("hole candidate limit1000000"), "{error}");
+    assert_eq!(e.session_state(), before);
 }
