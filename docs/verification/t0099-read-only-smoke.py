@@ -99,6 +99,12 @@ def verify(client, label, live):
               "query_named_net_rules" in tools and "set_named_net_rules" in hidden
               and policy["source_cursor"] == initial["cursor"]
               and policy["document_net_rules"] == initial["project"]["board"].get("net_rules", {}))
+    if "load_footprint_definition" in live:
+        library = a.repo / "fixtures/footprints/original-detached-asymmetric.viamind-footprint.json"
+        loaded = client.call("load_footprint_definition", {"path": str(library.resolve())})
+        check(label + " detached footprint load admitted and publication hidden",
+              "load_footprint_definition" in tools and "save_footprint_definition" in hidden
+              and loaded == json.loads(library.read_text())["footprint"])
     client.call("query_parts", {"limit": 1})
     client.call("get_auto_drc_status", {})
     client.call("watch_events", {"after": initial["cursor"], "timeout_ms": 1})

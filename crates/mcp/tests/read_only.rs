@@ -144,6 +144,8 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
     assert!(blocked.iter().any(|n| n == "save_output_job"));
     assert!(blocked.iter().any(|n| n == "set_named_net_rules"));
     assert!(admitted.iter().any(|n| n == "query_named_net_rules"));
+    assert!(admitted.iter().any(|n| n == "load_footprint_definition"));
+    assert!(blocked.iter().any(|n| n == "save_footprint_definition"));
     let server = serve_http(restricted, "127.0.0.1:0".parse().unwrap()).await.unwrap();
     let a = connect(server.url(), "human-admin readOnlyHint=false").await;
     let b = connect(server.url(), "observer-two").await;
@@ -154,6 +156,12 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
         let policy = call(client, "query_named_net_rules", json!({})).await.unwrap().structured_content.unwrap();
         assert_eq!(policy["source_cursor"], serde_json::to_value(before.cursor).unwrap());
         assert_eq!(policy["document_net_rules"], serde_json::to_value(&before.project.board.net_rules).unwrap());
+        let library = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/footprints/original-detached-asymmetric.viamind-footprint.json");
+        let expected: Value = serde_json::from_slice(&std::fs::read(&library).unwrap()).unwrap();
+        let loaded = call(client, "load_footprint_definition", json!({"path":library})).await.unwrap();
+        assert_eq!(loaded.structured_content.unwrap(), expected["footprint"]);
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(engine.document_status(), status);
         for name in &blocked {
             assert!(call(client, name, json!({"path":dir.path().join("forbidden"),"mode":"live","readOnlyHint":true})).await.is_err(), "{name}");
             assert_eq!(engine.session_state(), before);

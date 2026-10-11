@@ -54,6 +54,7 @@ impl CommandHost for EngineHost {
         matches!(
             name,
             "inspect_fabrication_files"
+                | "load_footprint_definition"
                 | "preview_footprint_conversion"
                 | "preview_pcb_import"
                 | "plan_cardinal_track_cleanup"
