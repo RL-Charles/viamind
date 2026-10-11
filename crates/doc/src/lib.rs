@@ -12,6 +12,7 @@ pub mod dxf;
 pub mod fabrication_view;
 pub mod file;
 pub mod footprint;
+pub mod footprint_sexpr;
 pub mod id;
 pub mod outline;
 pub mod pad;

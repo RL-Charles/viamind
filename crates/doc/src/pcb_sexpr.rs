@@ -63,11 +63,11 @@ fn bad(message: impl Into<String>) -> ImportError {
 }
 type Result<T> = std::result::Result<T, ImportError>;
 
-struct Node {
-    id: usize,
-    head: String,
-    args: Vec<String>,
-    children: Vec<Node>,
+pub(crate) struct Node {
+    pub(crate) id: usize,
+    pub(crate) head: String,
+    pub(crate) args: Vec<String>,
+    pub(crate) children: Vec<Node>,
 }
 struct Parser<'a> {
     source: &'a str,
@@ -183,17 +183,17 @@ impl Parser<'_> {
         }
     }
 }
-fn mark(items: &mut [FidelityItem], n: &Node, disposition: Disposition, reason: &str) {
+pub(crate) fn mark(items: &mut [FidelityItem], n: &Node, disposition: Disposition, reason: &str) {
     items[n.id].disposition = disposition;
     items[n.id].reason = reason.into();
 }
-fn subtree(items: &mut [FidelityItem], n: &Node, disposition: Disposition, reason: &str) {
+pub(crate) fn subtree(items: &mut [FidelityItem], n: &Node, disposition: Disposition, reason: &str) {
     mark(items, n, disposition, reason);
     for child in &n.children {
         subtree(items, child, disposition, reason);
     }
 }
-fn child<'a>(n: &'a Node, name: &str) -> Result<Option<&'a Node>> {
+pub(crate) fn child<'a>(n: &'a Node, name: &str) -> Result<Option<&'a Node>> {
     let mut values = n.children.iter().filter(|n| n.head == name);
     let result = values.next();
     if values.next().is_some() {
@@ -201,19 +201,19 @@ fn child<'a>(n: &'a Node, name: &str) -> Result<Option<&'a Node>> {
     }
     Ok(result)
 }
-fn atoms(n: &Node, count: usize) -> Result<&[String]> {
+pub(crate) fn atoms(n: &Node, count: usize) -> Result<&[String]> {
     if n.args.len() != count || !n.children.is_empty() {
         return Err(bad(format!("{} requires exactly {count} scalar values", n.head)));
     }
     Ok(&n.args)
 }
-fn field<'a>(n: &'a Node, name: &str, count: usize, items: &mut [FidelityItem]) -> Result<&'a [String]> {
+pub(crate) fn field<'a>(n: &'a Node, name: &str, count: usize, items: &mut [FidelityItem]) -> Result<&'a [String]> {
     let c = child(n, name)?.ok_or_else(|| bad(format!("missing {name}")))?;
     let a = atoms(c, count)?;
     mark(items, c, Disposition::Imported, "Exact native field.");
     Ok(a)
 }
-fn allowed(n: &Node, fields: &[&str], ignored: &[&str], items: &mut [FidelityItem]) -> Result<()> {
+pub(crate) fn allowed(n: &Node, fields: &[&str], ignored: &[&str], items: &mut [FidelityItem]) -> Result<()> {
     for c in &n.children {
         if ignored.contains(&c.head.as_str()) {
             subtree(items, c, Disposition::Omitted, "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.");
@@ -250,7 +250,7 @@ fn point(n: &Node, name: &str, items: &mut [FidelityItem]) -> Result<Point> {
     let a = field(n, name, 2, items)?;
     Ok(Point::new(decimal_nm(&a[0])?, decimal_nm(&a[1])?))
 }
-fn at_zero(n: &Node, items: &mut [FidelityItem]) -> Result<Point> {
+pub(crate) fn at_zero(n: &Node, items: &mut [FidelityItem]) -> Result<Point> {
     let c = child(n, "at")?.ok_or_else(|| bad("missing at"))?;
     if !c.children.is_empty() || !(2..=3).contains(&c.args.len()) {
         return Err(bad("at requires X Y and optional zero rotation"));
@@ -272,7 +272,7 @@ fn identity(n: &Node, items: &mut [FidelityItem]) -> Result<ObjectId> {
     items[n.id].source_id = Some(id);
     Ok(id)
 }
-fn name(s: &str) -> Result<String> {
+pub(crate) fn name(s: &str) -> Result<String> {
     if s.is_empty() || s.trim() != s || s.chars().count() > 128 || s.chars().any(char::is_control) {
         return Err(bad("name/number must be trimmed, nonempty, control-free and at most 128 characters"));
     }
@@ -541,7 +541,7 @@ fn assemble_outline(edges: &[(Point, Point)]) -> Result<BoardOutline> {
     BoardOutline::new(outer, rings).map_err(|e| bad(e.to_string()))
 }
 
-fn canonical_layer(s: &str) -> bool {
+pub(crate) fn canonical_layer(s: &str) -> bool {
     matches!(
         s,
         "F.Cu"
@@ -567,18 +567,46 @@ fn canonical_layer(s: &str) -> bool {
     ) || s.strip_prefix("User.").is_some_and(|n| matches!(n, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"))
 }
 
-/// Parse without external reads or model mutation. Every source list is classified.
-pub fn parse(source: &str) -> Result<ParsedPcb> {
+/// Shared independent bounded syntax; callers may impose smaller source limits.
+pub(crate) fn parse_tree(source: &str) -> Result<(Node, Vec<FidelityItem>)> {
     if source.len() > MAX_SOURCE_BYTES {
         return Err(bad("source exceeds 8 MiB"));
     }
     let mut parser = Parser { source, at: if source.starts_with('\u{feff}') { 3 } else { 0 }, tokens: 0, text: 0, items: Vec::new() };
     let root = parser.list("root".into(), 1)?;
     parser.skip();
-    if parser.at != parser.source.len() || root.head != "kicad_pcb" || !root.args.is_empty() {
+    if parser.at != parser.source.len() {
+        return Err(bad("expected one S-expression root with no trailing data"));
+    }
+    Ok((root, parser.items))
+}
+
+pub(crate) fn validate_ids(n: &Node, ids: &mut BTreeSet<ObjectId>, items: &mut [FidelityItem]) -> Result<()> {
+    if matches!(n.head.as_str(), "uuid" | "tstamp") {
+        let id = atoms(n, 1)?[0].parse::<ObjectId>().map_err(|_| bad("malformed source UUID"))?;
+        if id.as_uuid().is_nil() || !ids.insert(id) {
+            return Err(bad("source UUIDs must be nonnil and globally unique"));
+        }
+    }
+    let mut identity_fields = n.children.iter().filter(|c| matches!(c.head.as_str(), "uuid" | "tstamp"));
+    if let Some(c) = identity_fields.next() {
+        if identity_fields.next().is_some() {
+            return Err(bad("ambiguous repeated uuid/tstamp identity fields"));
+        }
+        items[n.id].source_id = Some(atoms(c, 1)?[0].parse::<ObjectId>().map_err(|_| bad("malformed source UUID"))?);
+    }
+    for c in &n.children {
+        validate_ids(c, ids, items)?;
+    }
+    Ok(())
+}
+
+/// Parse without external reads or model mutation. Every source list is classified.
+pub fn parse(source: &str) -> Result<ParsedPcb> {
+    let (root, mut items) = parse_tree(source)?;
+    if root.head != "kicad_pcb" || !root.args.is_empty() {
         return Err(bad("expected one kicad_pcb root with no trailing data"));
     }
-    let mut items = parser.items;
     let version = field(&root, "version", 1, &mut items)?[0].clone();
     mark(
         &mut items,
@@ -590,25 +618,6 @@ pub fn parse(source: &str) -> Result<ParsedPcb> {
         return Err(bad("unsupported format date; supported dates: 20221018, 20240108, 20241229"));
     }
     let mut ids = BTreeSet::new();
-    fn validate_ids(n: &Node, ids: &mut BTreeSet<ObjectId>, items: &mut [FidelityItem]) -> Result<()> {
-        if matches!(n.head.as_str(), "uuid" | "tstamp") {
-            let id = atoms(n, 1)?[0].parse::<ObjectId>().map_err(|_| bad("malformed source UUID"))?;
-            if id.as_uuid().is_nil() || !ids.insert(id) {
-                return Err(bad("source UUIDs must be nonnil and globally unique"));
-            }
-        }
-        let mut identity_fields = n.children.iter().filter(|c| matches!(c.head.as_str(), "uuid" | "tstamp"));
-        if let Some(c) = identity_fields.next() {
-            if identity_fields.next().is_some() {
-                return Err(bad("ambiguous repeated uuid/tstamp identity fields"));
-            }
-            items[n.id].source_id = Some(atoms(c, 1)?[0].parse::<ObjectId>().map_err(|_| bad("malformed source UUID"))?);
-        }
-        for c in &n.children {
-            validate_ids(c, ids, items)?;
-        }
-        Ok(())
-    }
     validate_ids(&root, &mut ids, &mut items)?;
     let mut table = BTreeMap::new();
     let mut names = BTreeSet::new();
