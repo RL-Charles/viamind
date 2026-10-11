@@ -55,7 +55,6 @@ ui_actions! {
     SaveSymbolPackage => ("save_symbol_package", input_schema::<viamind_engine::SaveSymbolPackage>(), save_symbol_package),
     QuerySymbolPackages => ("query_symbol_packages", input_schema::<viamind_engine::SymbolPackageQuery>(), query_symbol_packages),
     PlaceSymbolTemplate => (viamind_engine::PlaceSymbolTemplate::NAME, input_schema::<viamind_engine::PlaceSymbolTemplate>(), place_symbol_template),
-    PlaceSymbolPackage => (viamind_engine::PlaceSymbolPackage::NAME, input_schema::<viamind_engine::PlaceSymbolPackage>(), place_symbol_package),
     SnapshotSymbolSheet => ("snapshot_symbol_sheet", input_schema::<viamind_engine::SymbolSheetQuery>(), snapshot_symbol_sheet),
     LoadSymbolTemplate => ("load_symbol_template", input_schema::<viamind_engine::LoadSymbolTemplate>(), load_symbol_template),
     SaveSymbolTemplate => ("save_symbol_template", input_schema::<viamind_engine::SaveSymbolTemplate>(), save_symbol_template),
@@ -309,9 +308,6 @@ fn link_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 fn create_schematic_pcb_component(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::CreateSchematicPcbComponent::NAME, input, Origin::User)?).map_err(encode_error)
-}
-fn place_symbol_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
-    serde_json::to_value(engine.execute(viamind_engine::PlaceSymbolPackage::NAME, input, Origin::User)?).map_err(encode_error)
 }
 fn create_package_pcb_component(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::CreatePackagePcbComponent::NAME, input, Origin::User)?).map_err(encode_error)

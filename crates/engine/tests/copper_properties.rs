@@ -378,6 +378,7 @@ fn real_candidate_text_growth_boundary_preserves_unused_large_metadata() {
         id: ObjectId::new(),
         assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some(huge.clone()), ..Default::default() })),
         schematic_symbol: None,
+        schematic_package: None,
         designator: "L".into(),
         value: "x".repeat(2 * 1024 * 1024 - 4),
         footprint: String::new(),

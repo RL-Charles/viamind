@@ -117,12 +117,20 @@ struct BorrowedPart<'a>(&'a Part);
 impl Serialize for BorrowedPart<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let p = self.0;
-        let mut s = serializer.serialize_struct("Part", 11)?;
+        let fields = 7
+            + usize::from(p.assembly.is_some())
+            + usize::from(p.schematic_symbol.is_some())
+            + usize::from(p.schematic_package.is_some())
+            + usize::from(p.pads.is_some());
+        let mut s = serializer.serialize_struct("Part", fields)?;
         if let Some(assembly) = &p.assembly {
             s.serialize_field("assembly", assembly)?;
         }
         if let Some(symbol) = &p.schematic_symbol {
             s.serialize_field("schematic_symbol", symbol)?;
+        }
+        if let Some(package) = &p.schematic_package {
+            s.serialize_field("schematic_package", package)?;
         }
         if let Some(pads) = &p.pads {
             s.serialize_field("pads", &pads.0)?;
@@ -150,7 +158,8 @@ mod tests {
         let part = Part {
             id: ObjectId::new(),
             assembly: None,
-            schematic_symbol: Some(ObjectId::new()),
+            schematic_symbol: None,
+            schematic_package: None,
             designator: "U1".into(),
             value: "\"\\λ".into(),
             footprint: "original".into(),
@@ -169,11 +178,17 @@ mod tests {
                 .unwrap(),
             ),
         };
-        p.board.parts.insert(part.id, part);
-        let native = serde_json::to_vec(&p).unwrap();
-        let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
-        assert_eq!(borrowed, native);
-        assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
-        assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+        let id = part.id;
+        p.board.parts.insert(id, part);
+        for (symbol, package) in [(None, None), (Some(ObjectId::new()), None), (None, Some(ObjectId::new()))] {
+            let part = p.board.parts.get_mut(&id).unwrap();
+            part.schematic_symbol = symbol;
+            part.schematic_package = package;
+            let native = serde_json::to_vec(&p).unwrap();
+            let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
+            assert_eq!(borrowed, native, "absent/single-symbol/complete-package field order and skips must match native bytes");
+            assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
+            assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+        }
     }
 }

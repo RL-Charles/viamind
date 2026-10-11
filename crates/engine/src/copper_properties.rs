@@ -301,6 +301,7 @@ mod tests {
             id: ObjectId::new(),
             assembly: None,
             schematic_symbol: None,
+            schematic_package: None,
             designator: "L".into(),
             value: "x".repeat(2 * 1024 * 1024 - 2),
             footprint: String::new(),

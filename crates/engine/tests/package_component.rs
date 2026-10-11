@@ -467,3 +467,43 @@ fn package_mapping_refuses_pin_pad_or_copper_identity_in_package_slot_before_cop
         assert_eq!(e.session_state(), before);
     }
 }
+
+#[test]
+fn actual_package_annotation_then_forward_sync_updates_one_owner_and_preserves_geometry_nets_and_undo() {
+    use viamind_engine::{AnnotationMode, AnnotationOptions, PcbSyncDirection};
+    let e = fixture();
+    let preview = e.preview_package_pcb_component(request(&e)).unwrap();
+    let created = e.execute_typed(preview.command, Origin::agent("creator")).unwrap();
+    let part_id = created.created[0];
+    let before = e.session_state();
+    let annotation = e.preview_schematic_annotation(AnnotationOptions { mode: AnnotationMode::ResetAll, start: 17, ..Default::default() }).unwrap();
+    assert_eq!(annotation.packages, 1);
+    assert_eq!(annotation.changes.len(), 5);
+    assert!(annotation.changes.iter().all(|c| c.package_id == before.project.board.parts[&part_id].schematic_package && c.after == "U17"));
+    assert_eq!(e.session_state(), before, "actual annotation preview is immutable");
+    let annotated = e.execute_typed(annotation.command, Origin::agent("annotator")).unwrap();
+    assert_eq!(annotated.deltas.len(), 1);
+    let after_annotation = e.session_state();
+    let mut expected = before.project.clone();
+    for sheet in expected.schematic.sheets.values_mut() {
+        for symbol in sheet.content.as_mut().unwrap().symbols.values_mut() {
+            symbol.designator = "U17".into();
+        }
+    }
+    assert_eq!(after_annotation.project, expected, "annotation changes all units but preserves the entire physical owner and terminal geometry");
+    assert_eq!(after_annotation.selection, before.selection);
+    let forward = e.preview_schematic_pcb_sync(PcbSyncDirection::Forward).unwrap();
+    assert_eq!(e.session_state(), after_annotation);
+    assert_eq!(forward.changes.len(), 1);
+    assert_eq!(forward.changes[0].field, "designator");
+    assert_eq!(forward.changes[0].package_id, before.project.board.parts[&part_id].schematic_package);
+    assert!(forward.unlinked_symbols.is_empty());
+    let synced = e.execute_typed(forward.command, Origin::agent("synchronizer")).unwrap();
+    assert_eq!(synced.deltas.len(), 1, "complete package reconciles exactly one physical owner");
+    expected.board.parts.get_mut(&part_id).unwrap().designator = "U17".into();
+    assert_eq!(e.read(Clone::clone), expected, "Part origin, side, rotation, pad UUIDs, geometry, nets and all unrelated fields stay exact");
+    e.undo_own(Origin::agent("synchronizer")).unwrap();
+    assert_eq!(e.read(Clone::clone), after_annotation.project);
+    e.undo_own(Origin::agent("annotator")).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+}
