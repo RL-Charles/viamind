@@ -229,11 +229,15 @@ severities under **ERC rules**, and navigate a fresh issue to its exact pin.
 Document edits or changed rules visibly stale the result and disable navigation;
 reopening a project clears old results. Incomplete and previous-snapshot results
 never imply a current all-clear. These controls use the same `run_erc` API as MCP;
-rules remain local to each request. Hierarchy, buses and board annotation remain
-separate work. See the
+rules remain local to each request. Hierarchy and buses remain separate work. See the
 [connectivity behavior specification](docs/specs/schematic-connectivity.md) and
 [native ERC policy](docs/specs/schematic-erc.md),
 [desktop workflow](docs/specs/schematic-erc-desktop.md) and
 [desktop verification](docs/schematic-erc-desktop-verification.md).
 
 Selected native schematic sheets also support display-free SVG/PNG export and MCP `render_schematic_view` / `render_schematic_png`, including visible bundled-font labels and exact mirror/quarter-turn geometry. See [schematic view instructions](docs/schematic-views.md) for required sheet IDs, category filters and bounds.
+
+
+### Linked schematic and PCB updates
+
+Open **Synchronize…** in either editor to link existing PCB components and symbols by stable UUID, inspect forward/back changes, and apply one undoable update. Forward synchronization copies references, values and exact pin-to-pad net assignments; back synchronization copies references, values and footprint assignments. Explicit pad numbers must match pins. Stale previews, ambiguous links, footprint mismatches and routed net reassignment reject the whole update. Geometry/copper/unlinked objects remain unchanged. See the [workflow](docs/schematic-pcb-sync.md), [linked regulator example](fixtures/schematic/linked-regulator.viamind.json) and [Linux/native verification](docs/schematic-pcb-sync-verification.md). New component creation and routed-net migration remain open.
