@@ -562,28 +562,40 @@ mod tests {
         )));
         let checked = Arc::new(std::sync::atomic::AtomicBool::new(false));
         let pre_checked = checked.clone();
-        engine.register_pre_command_hook("unrouted_pre".into(), Arc::new(move |_| {
-            // Both slots are occupied: the hook refusal must precede admission.
-            let error = captured.prepare_unrouted_nets(UnroutedNetQuery {}).err().unwrap();
-            assert!(error.to_string().contains("hook"));
-            assert_eq!(ACTIVE.load(Ordering::Acquire), 2);
-            let (typed, value) = held.lock().unwrap().take().unwrap();
-            assert!(typed.run().unwrap_err().to_string().contains("hook"));
-            assert!(value.run_value().unwrap_err().to_string().contains("hook"));
-            assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
-            pre_checked.store(true, Ordering::Release);
-            Ok(())
-        })).unwrap();
+        engine
+            .register_pre_command_hook(
+                "unrouted_pre".into(),
+                Arc::new(move |_| {
+                    // Both slots are occupied: the hook refusal must precede admission.
+                    let error = captured.prepare_unrouted_nets(UnroutedNetQuery {}).err().unwrap();
+                    assert!(error.to_string().contains("hook"));
+                    assert_eq!(ACTIVE.load(Ordering::Acquire), 2);
+                    let (typed, value) = held.lock().unwrap().take().unwrap();
+                    assert!(typed.run().unwrap_err().to_string().contains("hook"));
+                    assert!(value.run_value().unwrap_err().to_string().contains("hook"));
+                    assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
+                    pre_checked.store(true, Ordering::Release);
+                    Ok(())
+                }),
+            )
+            .unwrap();
         let captured = engine.clone();
         let observed = Arc::new(Mutex::new(None));
         let post_observed = observed.clone();
-        engine.register_post_command_hook("unrouted_post".into(), Arc::new(move |fact| {
-            let result = captured.prepare_unrouted_nets(UnroutedNetQuery {}).unwrap().run().unwrap();
-            assert_eq!(result.source_cursor, fact.committed_cursor);
-            *post_observed.lock().unwrap() = Some(result.project_id);
-            Ok(())
-        })).unwrap();
-        let result = engine.execute("add_part", serde_json::json!({"designator":"R1","value":"","footprint":"F","x_mm":0,"y_mm":0}), crate::Origin::User).unwrap();
+        engine
+            .register_post_command_hook(
+                "unrouted_post".into(),
+                Arc::new(move |fact| {
+                    let result = captured.prepare_unrouted_nets(UnroutedNetQuery {}).unwrap().run().unwrap();
+                    assert_eq!(result.source_cursor, fact.committed_cursor);
+                    *post_observed.lock().unwrap() = Some(result.project_id);
+                    Ok(())
+                }),
+            )
+            .unwrap();
+        let result = engine
+            .execute("add_part", serde_json::json!({"designator":"R1","value":"","footprint":"F","x_mm":0,"y_mm":0}), crate::Origin::User)
+            .unwrap();
         assert_eq!(result.tx, crate::TxId(1));
         assert!(checked.load(Ordering::Acquire));
         assert_eq!(*observed.lock().unwrap(), Some(engine.session_state().project.id));
