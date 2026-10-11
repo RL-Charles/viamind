@@ -1,0 +1,216 @@
+20403b8d9d89ea7ac19ea935d1948a0c9bf77a3b
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 24.20s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.26s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 3 tests
+test agent_policy::tests::generation_overflow_preserves_every_policy_field ... ok
+test agent_policy::tests::active_admission_blocks_transition_capacity_and_immutable_startup_survives_clones ... ok
+test agent_policy::tests::real_concurrent_admission_and_restriction_have_one_legal_ordering ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 83 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 10 tests
+test pcb_branches::budget::tests::borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text ... ok
+test pcb_branches::tests::blocked_private_worker_retains_permit_allows_live_edit_and_reopen_refuses_publish ... ok
+test pcb_branches::tests::count_before_malformed_input_and_structural_or_serialized_project_limits ... ok
+test pcb_branches::tests::isolated_commands_coalesce_and_merge_one_transaction_with_exact_undo_redo_ids ... ok
+test pcb_branches::tests::monotonic_expiry_reads_errors_and_four_branch_capacity_do_not_renew ... ok
+test pcb_branches::tests::package_and_member_structural_rows_refuse_before_sandbox_clone_even_with_missing_member_poison ... ok
+test pcb_branches::tests::ownership_atomic_errors_noops_and_exact_private_object_guards ... ok
+test pcb_branches::tests::saved_native_status_and_drc_journal_are_unchanged_until_merge_and_selection_stales_merge ... ok
+test pcb_branches::tests::per_step_candidate_byte_overflow_refuses_whole_private_batch_without_renewal ... ok
+test pcb_branches::tests::stale_live_cursor_and_wrong_merge_guards_preserve_candidate_and_peer_edits ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 76 filtered out; finished in 0.61s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.71s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_mcp-6f2912d9695ce692)
+
+running 10 tests
+test server::tests::info_and_tools_come_from_the_registry ... ok
+test registry::tests::rejects_duplicates_bad_names_and_bad_schemas ... ok
+test registry::tests::only_explicit_trusted_registration_selects_image_output ... ok
+test registry::tests::builtins_are_registered ... ok
+test registry::tests::registers_lists_and_calls ... ok
+test registry::tests::handler_errors_and_unknown_tools ... ok
+test registry::tests::context_reaches_the_handler ... ok
+test registry_admission::approval_clones_and_future_writers_default_deny_and_panics_retire_tokens ... ok
+test registry_admission::every_mixed_view_path_presence_is_retained_writer_and_restricted_prehandler_refusal ... ok
+test registry_admission::canceled_caller_and_destroyed_transport_runtime_keep_actual_publication_admitted ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.85s
+     Running tests/agent_modes.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_modes-42283b437cb05938)
+
+running 2 tests
+test actual_four_render_publications_survive_caller_abort_and_transport_runtime_shutdown ... ok
+test actual_two_clients_refresh_tools_prepare_privately_and_only_human_accepts ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/pcb_branches.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_branches-bda78e6100984f51)
+
+running 1 test
+test actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides_all_writers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/read_only.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-39bdf664a3d494c7)
+
+running 3 tests
+test restriction_survives_clones_and_every_default_registration_without_running_handlers ... ok
+test mixed_view_refuses_every_path_before_handler_and_preserves_live_definition ... ok
+test two_http_observers_preserve_native_and_session_and_follow_undoable_human_edits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/schematic_component.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_component-5f5052100ab2e04d)
+
+running 1 test
+test two_real_agents_preview_shared_creation_stale_conflict_own_undo_and_native_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/symbol_packages.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_packages-5e0d6bf73a9ad5ce)
+
+running 1 test
+test two_clients_share_complete_package_identity_atomic_history_and_safe_detached_files ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.37s
+     Running tests/agent_modes.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_modes-4ffb983fa20c6210)
+
+running 2 tests
+test actual_approval_accept_reject_and_stale_guard_preserve_one_undo_and_peer_work ... ok
+test actual_compact_controls_change_shared_policy_and_busy_or_locked_changes_refuse ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+     Running tests/cross_probe.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/cross_probe-966c14e278a4ab93)
+
+running 5 tests
+test unsupported_selection_and_large_selection_have_explicit_messages ... ok
+test peer_unlink_and_same_id_reopen_clear_counterparts_and_stale_navigation ... ok
+test actual_schematic_select_highlights_hidden_pcb_counterpart_and_navigates_without_shared_selection_changes ... ok
+test actual_board_click_highlights_and_navigates_symbol_without_propagating_selection_or_edits ... ok
+test active_route_preview_is_preserved_when_counterpart_navigation_is_rejected ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+     Running tests/package_compact.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/package_compact-69c265e87c8edfab)
+
+running 3 tests
+test actual_libraries_menu_opens_detached_package_editor ... ok
+test actual_compact_complete_power_pin_row_save_and_atomic_package_place ... ok
+test actual_compact_author_all_five_units_from_scratch_save_place_and_undo ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.74s
+
+     Running tests/pcb_branches.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pcb_branches-427b8aefaac1f30c)
+
+running 3 tests
+test actual_compact_review_toggle_merge_one_undo_and_no_shared_selection ... ok
+test actual_stale_refresh_discard_and_reopen_clear_ghost_without_mutation ... ok
+test opening_existing_copper_properties_clears_private_ghost_without_live_mutation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.84s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 3 tests
+test package_component::tests::retained_hidden_worker_cannot_overlap_and_replaced_stream_drops_completion ... ok
+test package_component::tests::actual_peer_edit_undo_equal_design_still_disables_complete_package_creation ... ok
+test package_component::tests::compact_actual_complete_selection_footprint_failure_preview_create_undo_and_guarded_unlink ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 92 filtered out; finished in 0.97s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 5 tests
+test cross_probe::tests::unsupported_positions_never_become_navigation_highlights ... ok
+test cross_probe::tests::one_receiver_survives_replacement_and_discards_old_completion ... ok
+test cross_probe::tests::stale_or_busy_navigation_does_not_change_view_or_session ... ok
+test cross_probe::tests::changed_source_and_cursor_cannot_publish_old_highlights_and_disconnect_is_actionable ... ok
+test cross_probe::tests::every_package_unit_and_physical_owner_can_inspect_actual_complete_terminals_without_mutating_selection ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 90 filtered out; finished in 0.37s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.94s
+     Running tests/agent_approval.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_approval-6c25dcd3bbbcc5c6)
+
+running 2 tests
+test incompatible_startup_modes_refuse_before_opening_input_or_display ... ok
+test actual_approval_stdio_prepares_private_candidate_without_live_or_file_writes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/read_only.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/read_only-29133465549e37f4)
+
+running 2 tests
+test actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints ... ok
+test contradictory_read_only_invocations_reject_before_open_output_or_endpoint ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.30s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.89s
+ee2ac9a8d7ffec0469c8902544c1e3e2dfec46c2ed41bbb3d8c379e2ae2d0e1d  /home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-verified/viamind
+cb06f1f724d31a4bc10a24c060db8a290d88398b8d2ac2f3c86ecc5263164b92  /home/charlesmowbray/.cache/viamind/native-artifacts/t0117/final-verified/agent-modes-inspection
+{"passed": true, "checks": 152, "tool_counts": {"live": 113, "read_only": 49, "approval": 53}}
+Verified 113 full-application tools (2025-03-26)
+Verified 113 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.540s
+
+OK

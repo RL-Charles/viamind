@@ -1,6 +1,16 @@
 # Agent mode verification
 
-The [usage guide](agent-modes.md), [public contract](specs/agent-approval-modes.md) and [handler inventory](specs/agent-approval-handler-inventory.md) describe the supported behavior. The [evidence index](verification/t0117/master.json) binds each report and image to its original source and executable. Final package-stack integration and exact-head CI remain pending.
+The [usage guide](agent-modes.md), [public contract](specs/agent-approval-modes.md) and [handler inventory](specs/agent-approval-handler-inventory.md) describe the supported behavior. The [evidence index](verification/t0117/master.json) binds each report and image to its original source and executable. Final package-stack verification passed; fresh exact-head CI remains the merge gate.
+
+## Final package-stack verification
+
+Frozen source `20403b8d9d89ea7ac19ea935d1948a0c9bf77a3b` integrates only T117's own commits onto literal T116 proof head `081dbc2a5eb33f632b4e11497379d2b33896ac09`. Both MCP append conflicts retain the package and mode additions. The additive handler audit confirms package save/place/delete/annotation/create/link/sync remain writers and their actual blocking work is awaited. Original package serialization and annotation-to-one-component regression tests remain unchanged.
+
+The [final combined gate](verification/t0117/final-combined.log) passed formatting, strict workspace all-target Clippy, **56 scoped test executions with zero failures or ignored tests**, workspace build and native inspection build. This scoped integration is separate from the original 853-test full gate below. Actual catalog generation and exact recheck found **113 Live tools**; eighteen workflow checks and thirteen Python tooling tests passed. Retained production SHA-256 is `ee2ac9a8d7ffec0469c8902544c1e3e2dfec46c2ed41bbb3d8c379e2ae2d0e1d`; inspection SHA-256 is `cb06f1f724d31a4bc10a24c060db8a290d88398b8d2ac2f3c86ecc5263164b92`.
+
+The final executable passed **152 actual initialized stdio checks** across Live/ReadOnly/Approval, with tool counts **113/49/53**. It also passed **45 two-client desktop HTTP checks** at owned PID 2839714, port 7948. The final HTTP driver verifies the exact `/proc` executable bytes, PID-owned listening socket and expected owned native path before calling MCP. Independent reruns passed all 152 and 45 checks against this executable. Session, history, status, automatic DRC and original native bytes stayed unchanged through refusals and private proposals.
+
+Six fresh native captures cover [wide review](verification/t0117/final-wide.png), [compact review](verification/t0117/final-compact.png), [acceptance](verification/t0117/final-accepted.png), [rejection](verification/t0117/final-rejected.png), [startup lock](verification/t0117/final-locked.png) and [busy refusal](verification/t0117/final-busy.png). All six inspection processes actually exited after their capture. Original P7 RGBA and P6 RGB remain retained; every decoded PNG RGBA byte equals P7, and every RGB byte equals P6. Review controls, result messages and mode/lock/busy text were viewed in the actual images. Scrolling and clipping limit the visible legend rows. Local egui events drive the real production UI; these captures do not claim OS input, compositor pixels, cadence or a production endpoint in the inspection host. Busy inspection holds a trusted permit; actual worker retention remains covered by the original handler tests and final scoped regressions.
 
 ## Original full Linux gate
 
@@ -20,8 +30,8 @@ Six native WGPU Screenshot captures cover [wide review](verification/t0117/histo
 
 Original Color32 RGBA channels remain retained as P7 and identical RGB samples as P6. Root and an independent agent compared every P7 RGB sample with P6 and independently decoded PNG RGB samples. Alpha ranged from 242 to 255 and is omitted only for RGB review. All six native hosts self-closed after invariant-checked capture. Inputs were application-local egui events; no OS input, compositor capture or display cadence is claimed. Busy inspection held a trusted admission token; real worker retention was verified separately by the actual production-handler tests.
 
-## Reproduction and remaining verification
+## Reproduction and merge gate
 
 Use the four Linux gates under `/tmp/viamind-workspace-gates.lock` with a fresh target-proof destination. Historical scripts/logs retain their original paths and must use NEW output paths when replayed. Run `docs/verification/t0117/production-probe.py` against an explicitly chosen executable and a NEW directory. The desktop HTTP helper is restricted to the owned native fixture recorded in its source. Build `agent_modes_inspection` and launch each inspection mode with NEW native/capture paths; retain original channels before conversion.
 
-Before merge, integrate the literal final package stack, audit its additive observation/writer registrations and awaited completion boundaries, regenerate the final default catalog, run the scoped combined gate, capture current native views, obtain independent final review and require exact-head Linux CI. The evidence index explicitly keeps these items pending.
+The final desktop helper is `final-production-http.py`; supply the retained executable, its actual PID, loopback MCP URL, expected owned native file and a NEW report directory. Historical drivers retain their original scope. Require independent final review and fresh exact-head Linux CI before merge; record that gate in Sherpa without relabeling any original source or executable.
