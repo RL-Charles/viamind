@@ -267,7 +267,7 @@ fn ambiguous_mappings_footprints_missing_links_budgets_and_reference_collisions_
         |p: &mut Project| p.board.parts.values_mut().next().unwrap().pads.as_mut().unwrap().0[0].number = "missing".into(),
         |p: &mut Project| {
             p.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap().symbols.values_mut().next().unwrap().footprint =
-                Some("other geometry".into())
+                Some("other geometry".into());
         },
         |p: &mut Project| p.board.parts.values_mut().next().unwrap().schematic_symbol = Some(ObjectId::new()),
         |p: &mut Project| p.name = "x".repeat(4097),

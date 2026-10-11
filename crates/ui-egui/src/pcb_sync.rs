@@ -61,7 +61,13 @@ impl PcbSyncUi {
         }
         match result {
             Ok(Completed::Links(project, cursor)) if Some(cursor.stream_id) == self.stream => self.snapshot = Some((project, cursor)),
-            Ok(Completed::Preview(preview)) if Some(preview.command.source_cursor.stream_id) == self.stream => self.preview = Some(preview),
+            Ok(Completed::Preview(preview)) if Some(preview.command.source_cursor.stream_id) == self.stream => {
+                if preview.command.direction == self.direction {
+                    self.preview = Some(preview);
+                } else {
+                    self.message = Some("Direction changed; prepare synchronization again".into());
+                }
+            }
             Ok(_) => self.message = Some("Document changed; prepare synchronization again".into()),
             Err(error) => self.message = Some(error),
         }
@@ -162,7 +168,7 @@ impl ViamindApp {
             prepare = ui.add_enabled(self.pcb_sync.pending.is_none(), egui::Button::new("Prepare synchronization")).clicked();
             if self.pcb_sync.pending.is_some() { ui.label("Preparing bounded snapshot; editing remains available."); }
             if let Some(preview) = &self.pcb_sync.preview {
-                let fresh = preview.command.source_cursor == cursor;
+                let fresh = preview.command.source_cursor == cursor && preview.command.direction == self.pcb_sync.direction;
                 if !fresh { ui.label("Document changed; prepare synchronization again."); }
                 ui.label(format!("{} proposed changes · {} unlinked symbols · {} unlinked PCB components", preview.changes.len(), preview.unlinked_symbols.len(), preview.unlinked_parts.len()));
                 egui::ScrollArea::vertical().id_salt("sync_changes").max_height(220.0).show_rows(ui, ui.text_style_height(&egui::TextStyle::Body), preview.changes.len(), |ui, rows| {
@@ -201,5 +207,34 @@ impl ViamindApp {
                 Err(error) => self.pcb_sync.message = Some(format!("{error}; prepare synchronization again.")),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use egui_kittest::{Harness, kittest::Queryable};
+    #[test]
+    fn actual_direction_change_during_pending_worker_discards_old_policy_completion() {
+        let engine =
+            EngineHandle::new(viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap());
+        let before = engine.session_state();
+        let preview = engine.preview_schematic_pcb_sync(PcbSyncDirection::Forward).unwrap();
+        let (sender, receiver) = sync_channel(1);
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.pcb_sync.open = true;
+        app.pcb_sync.stream = Some(before.cursor.stream_id);
+        app.pcb_sync.pending = Some(Pending { stream: before.cursor.stream_id, receiver });
+        let mut h = Harness::builder().with_size(egui::vec2(1600.0, 1200.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+        h.run_steps(5);
+        h.get_by_label("PCB to schematic: references, values and footprint assignments").click();
+        h.run_steps(5);
+        assert_eq!(h.state().pcb_sync.direction, PcbSyncDirection::Back);
+        sender.try_send(Ok(Completed::Preview(preview))).unwrap();
+        h.run_steps(5);
+        assert!(h.state().pcb_sync.preview.is_none());
+        assert!(h.query_by_label("Apply synchronization").is_none());
+        assert!(h.query_by_label("Direction changed; prepare synchronization again").is_some());
+        assert_eq!(engine.session_state(), before);
     }
 }
