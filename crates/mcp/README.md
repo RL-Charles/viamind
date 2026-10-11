@@ -434,8 +434,8 @@ entire sheet edit. `delete_schematic_sheet` uses the same exact snapshot guard.
 with `offset`, `limit` (1..100), `total` and `next_offset`. Queries preserve history
 and dirty state. Get exact edit guards from `get_session_state`; restart paging
 when another client edits. New schematic content saves as native schema 5.
-Electrical graph evaluation, ERC, hierarchy and board annotation remain separate
-work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
+Use `query_schematic_connectivity` below for bounded native graph evaluation.
+ERC, hierarchy and board annotation remain separate work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
 
 ## Read-only board SVG snapshot
 
@@ -453,3 +453,7 @@ mirroring. Physical drill holes stay transparent. Legacy previews are omitted
 and counted; schematics, inner copper, pours and product PNG output are excluded.
 Rendering preserves the shared document, selection, history and native dirty
 state. See [the view guide](../../docs/board-views.md) for limits and examples.
+
+## Exact native schematic connectivity
+
+`query_schematic_connectivity {"offset":0,"limit":100}` reads deterministic connected components across all native sheets. It captures schematic data only, calculates outside the engine lock, and returns project ID, source cursor, stable member/symbol/pin IDs, canonical names, aliases and explicit coverage. Restart pages when the cursor changes. Exact wire endpoint/T contacts connect; interior crossings require an explicit junction. Label scopes are literal local/global/power; ambiguous crossing anchors reject with actionable IDs. Limits are 10000 total sheets/symbols/pins/wires/junctions/labels, 2MiB schematic text, and 1000000 spatial candidate contacts. Exceeding a limit returns an error without partial nets. No selection, history, dirty or model mutation. This query does not perform ERC, board annotation, buses, hierarchy or hidden power-pin inference. See [behavior spec](../../docs/specs/schematic-connectivity.md).

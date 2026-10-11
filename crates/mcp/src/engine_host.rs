@@ -44,6 +44,11 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<NewProject>(),
         });
         commands.push(HostCommand {
+            name: "query_schematic_connectivity".into(),
+            description: "Read exact native schematic connected components from a bounded captured snapshot. Wire endpoint/T contacts and explicit junctions connect; interior crossings remain separate. Transformed pin endpoints, literal case-sensitive local/global/power labels; ambiguous crossing labels reject with IDs. Deterministic net/member IDs, aliases and coverage; offset0, limit1..100 default100. Restart pages when source_cursor changes. Max10000 objects including sheets/symbols/pins, 2MiB schematic text and 1000000 spatial candidates. No board annotation, ERC, buses, hierarchy or hidden power-pin inference. Read-only design/history/selection.".into(),
+            input_schema: input_schema::<viamind_engine::SchematicConnectivityQuery>(),
+        });
+        commands.push(HostCommand {
             name:"query_schematic".into(),
             description:"Read UUID-ordered bounded schematic pages. Omit sheet_id for sheet summaries; supply it for tagged symbol/wire/junction/label objects. Integer nanometres. offset defaults0, limit1..100 defaults100. Read-only; restart pages after edits. get_session_state supplies exact complete sheet snapshots before guarded edits. Electrical connectivity is not evaluated.".into(),
             input_schema:input_schema::<viamind_engine::SchematicQuery>(),
@@ -127,6 +132,10 @@ impl CommandHost for EngineHost {
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "query_schematic_connectivity" {
+            let input: viamind_engine::SchematicConnectivityQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.query_schematic_connectivity(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
         if name == "query_schematic" {
             let input: viamind_engine::SchematicQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.query_schematic(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
