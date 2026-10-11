@@ -1,8 +1,5 @@
 //! Authored isolated branch, actual local UI review, native WGPU readback and self-close.
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 use std::{io::Write, path::PathBuf};
 use viamind_doc::Project;
