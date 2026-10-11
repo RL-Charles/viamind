@@ -25,6 +25,8 @@ fn setup() -> (EngineHandle, Harness<'static, ViamindApp>) {
 }
 fn click_track(h: &mut Harness<'_, ViamindApp>, x: f64, modifiers: Modifiers) {
     let pos = h.state().canvas.camera.world_to_screen(WorldPos::new(x, 0.), h.state().canvas.viewport);
+    assert!(h.state().canvas.viewport.contains(pos), "track outside viewport: {pos:?} {:?}", h.state().canvas.viewport);
+    assert!(h.state().selection.pick(p(x as i64, 0), Nm(1)).is_some(), "stored track missing from visible pick index");
     for pressed in [true, false] {
         h.event(Event::ModifiersChanged(modifiers));
         h.event(Event::PointerMoved(pos));
@@ -47,6 +49,7 @@ fn wait(h: &mut Harness<'_, ViamindApp>) {
 fn actual_track_selection_checked_preview_atomic_apply_and_undo() {
     let (e, mut h) = setup();
     click_track(&mut h, -8., Modifiers::NONE);
+    assert_eq!(e.selection().ids.len(), 1, "first actual track click must select a stored track");
     click_track(&mut h, 8., Modifiers::SHIFT);
     assert_eq!(e.selection().ids.len(), 2, "actual pointer selection must select both stored tracks");
     let before = e.session_state();
