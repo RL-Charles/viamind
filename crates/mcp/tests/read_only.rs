@@ -122,10 +122,7 @@ async fn two_http_observers_preserve_native_and_session_and_follow_undoable_huma
     project.schematic = schematic.schematic;
     project.board.net_rules.insert(
         "GND".into(),
-        viamind_doc::NamedNetMinima {
-            minimum_copper_clearance: viamind_geom::Nm(250_000),
-            minimum_track_width: viamind_geom::Nm(200_000),
-        },
+        serde_json::from_value(json!({"minimum_copper_clearance":250_000,"minimum_track_width":200_000})).unwrap(),
     );
     let sheet = *project.schematic.sheets.keys().next().unwrap();
     let dir = tempfile::tempdir().unwrap();
