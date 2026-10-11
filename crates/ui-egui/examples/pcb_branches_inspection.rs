@@ -35,7 +35,10 @@ impl eframe::App for Inspect {
             })
         });
         if let Some(image) = image {
-            assert!(self.passes >= 8 && image.pixels.len() <= 4_194_304);
+            // Bound actual physical pixels independently of the requested logical
+            // viewport: X11 high-DPI screenshots can be four times its area.
+            // At most 16M pixels / 64MiB original RGBA capture data are retained.
+            assert!(self.passes >= 8 && image.pixels.len() <= 16_777_216);
             if !self.merged {
                 let controls = self.app.pcb_branches.control_rects();
                 assert_eq!(controls.len(), 3);
