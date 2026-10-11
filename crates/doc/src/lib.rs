@@ -9,6 +9,7 @@
 pub mod board;
 pub mod dxf;
 pub mod file;
+pub mod footprint;
 pub mod id;
 pub mod outline;
 pub mod pad;

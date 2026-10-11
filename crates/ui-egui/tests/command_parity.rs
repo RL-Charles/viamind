@@ -54,6 +54,7 @@ fn check_source(path: &Path) {
                 "save_project",
                 "new_project",
                 "open_project",
+                "import_footprint",
             ] {
                 assert!(
                     !source.contains(&format!(".{method}(")) && !source.contains(&format!(".{method}::<")),

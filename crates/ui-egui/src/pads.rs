@@ -41,6 +41,7 @@ impl Row {
     }
 }
 struct Draft {
+    project_id: ObjectId,
     original: Part,
     rows: Vec<Row>,
 }
@@ -48,6 +49,7 @@ struct Draft {
 pub struct PadsUi {
     draft: Option<Draft>,
     message: Option<String>,
+    library_path: String,
 }
 impl PadsUi {
     pub(crate) fn editing(&self) -> bool {
@@ -79,7 +81,8 @@ impl ViamindApp {
                 .collect(),
             None => crate::board_scene::preview_pad_inputs(&part),
         };
-        self.pads.draft = Some(Draft { original: part, rows: inputs.into_iter().map(Row::from_input).collect() });
+        let Some(project_id) = self.design.as_ref().map(|d| d.engine.read(|p| p.id)) else { return };
+        self.pads.draft = Some(Draft { project_id, original: part, rows: inputs.into_iter().map(Row::from_input).collect() });
         self.pads.message = None;
     }
     pub(crate) fn pads_dialog(&mut self, ui: &mut egui::Ui) {
@@ -87,6 +90,8 @@ impl ViamindApp {
         let mut apply = false;
         let mut cancel = false;
         let mut reload = false;
+        let mut import = false;
+        let mut export = false;
         let modal = egui::Modal::new(egui::Id::new("electrical_pads")).show(ui.ctx(), |ui| {
             ui.heading(format!("Electrical pads — {}", draft.original.designator));
             ui.label("Rectangular SMD pads; local dimensions in mm. Blank net means unassigned.");
@@ -122,6 +127,15 @@ impl ViamindApp {
                 let number = (1..).map(|i| i.to_string()).find(|n| draft.rows.iter().all(|r| &r.number != n)).unwrap();
                 draft.rows.push(Row::from_input(PadInput { id: None, number, x_mm: 0.0, y_mm: 0.0, width_mm: 1.0, height_mm: 1.0, net: None }));
             }
+            ui.separator();
+            ui.label("Footprint library · rectangular SMD geometry without nets or placement");
+            let label = ui.label("Library file path");
+            ui.add(egui::TextEdit::singleline(&mut self.pads.library_path).desired_width(400.0)).labelled_by(label.id);
+            ui.label("Export uses applied pads. Apply edits first. Import replaces the draft and applied geometry.");
+            ui.horizontal(|ui| {
+                export = ui.button("Export applied footprint").clicked();
+                import = ui.button("Replace pads from library").clicked();
+            });
             if let Some(message) = &self.pads.message {
                 ui.label(message);
             }
@@ -133,6 +147,26 @@ impl ViamindApp {
         });
         if cancel || modal.should_close() {
             self.pads.cancel();
+        } else if import || export {
+            let result = self.design.as_ref().ok_or_else(|| "No active design".to_owned()).and_then(|design| {
+                let action = if import { UiAction::ImportFootprint } else { UiAction::ExportFootprint };
+                action
+                    .run(&design.engine, json!({"expected_project":draft.project_id,"expected":draft.original,"path":self.pads.library_path}))
+                    .map_err(|e| e.to_string())
+            });
+            match result {
+                Ok(_) if import => {
+                    let id = draft.original.id;
+                    let part = self.design.as_ref().and_then(|d| d.engine.read(|p| p.board.part(&id).cloned()));
+                    self.pads.cancel();
+                    if let Some(part) = part {
+                        self.begin_edit_pads(part);
+                    }
+                    self.pads.message = Some("Footprint applied. Matching pad numbers retained their nets; new pads are unassigned.".into());
+                }
+                Ok(_) => self.pads.message = Some("Applied footprint exported to a new library file.".into()),
+                Err(e) => self.pads.message = Some(e),
+            }
         } else if reload {
             let id = draft.original.id;
             let current = self.design.as_ref().and_then(|d| d.engine.read(|p| p.board.part(&id).cloned()));

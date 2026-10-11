@@ -32,6 +32,50 @@ fn resistor(designator: &str, x: f64) -> Value {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn live_footprint_library_has_shared_identity_guards_and_connection_undo() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("reusable.footprint.json");
+    let engine = EngineHandle::new(Project::new("Library live"));
+    let id = engine.execute("add_part", resistor("R1", 10.), Origin::User).unwrap().created[0];
+    let part = engine.read(|p| p.board.part(&id).unwrap().clone());
+    engine
+        .execute(
+            "set_part_pads",
+            json!({"id":id,"expected":part,"pads":[{"number":"1","x_mm":-0.800001,"y_mm":0,"width_mm":0.9,"height_mm":0.95,"net":"GND"}]}),
+            Origin::User,
+        )
+        .unwrap();
+    let snapshot = engine.session_state();
+    let part = snapshot.project.board.part(&id).unwrap();
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let agent = connect(server.url(), "library-agent").await;
+    let other = connect(server.url(), "other-agent").await;
+    let args = json!({"expected_project":snapshot.project.id,"expected":part,"path":path});
+    assert_eq!(call(&agent, "export_footprint", args.clone()).await.is_error, Some(false));
+    assert_eq!(engine.session_state(), snapshot);
+    assert_eq!(call(&agent, "export_footprint", args.clone()).await.is_error, Some(true));
+    let mut f = viamind_doc::footprint::load(&path).unwrap();
+    f.name = "Changed_library".into();
+    f.pads[0].width.0 = 900003;
+    std::fs::write(&path, viamind_doc::footprint::to_vec(&f).unwrap()).unwrap();
+    assert_eq!(call(&agent, "import_footprint", args.clone()).await.is_error, Some(false));
+    let applied = engine.read(Clone::clone);
+    let changed = applied.board.part(&id).unwrap();
+    assert_eq!(changed.pads.as_ref().unwrap().0[0].id, part.pads.as_ref().unwrap().0[0].id);
+    assert_eq!(changed.pads.as_ref().unwrap().0[0].net.as_deref(), Some("GND"));
+    assert_eq!(call(&other, "import_footprint", args).await.is_error, Some(true));
+    assert_eq!(engine.read(Clone::clone), applied);
+    assert_eq!(call(&other, "undo", json!({})).await.is_error, Some(true));
+    assert_eq!(call(&agent, "undo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), snapshot.project);
+    assert_eq!(call(&agent, "redo", json!({})).await.is_error, Some(false));
+    assert_eq!(engine.read(Clone::clone), applied);
+    agent.cancel().await.unwrap();
+    other.cancel().await.unwrap();
+    server.shutdown();
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn agent_places_resistor_live_and_it_can_be_undone() {
     let engine = EngineHandle::new(Project::new("gate"));
     let events = engine.subscribe();

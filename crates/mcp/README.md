@@ -361,3 +361,16 @@ plus `axis: "x"|"y"` and `reference: "minimum"|"centre"|"maximum"`; or
 `distribute` plus `axis`. Alignment and distribution use part origins, not body
 edges. Distribution keeps outermost origins fixed. Rotation and flip act at each
 part's own origin. Selection size is bounded to 10000 unique parts.
+
+## Native footprint libraries
+
+`export_footprint` writes committed explicit rectangular SMD local geometry to a
+new file. `import_footprint` reads a bounded native library and applies it in one
+undoable change attributed to the calling connection. Both require `path`,
+`expected_project` and the exact `expected` part snapshot. Existing destinations
+are preserved. Exports contain no UUIDs, nets or placement.
+
+`apply_footprint` takes inline `footprint: {name,pads}` with the same guards.
+Matching numbers preserve pad identities and nets; new pads get fresh IDs and no
+net. Component placement is retained. See
+[the native library guide](../../docs/footprint-libraries.md).

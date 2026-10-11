@@ -40,6 +40,9 @@ fn no_args() -> Value {
 }
 
 ui_actions! {
+    ApplyFootprint => (viamind_engine::ApplyFootprint::NAME, input_schema::<viamind_engine::ApplyFootprint>(), apply_footprint),
+    ImportFootprint => ("import_footprint", input_schema::<viamind_engine::FootprintFile>(), import_footprint),
+    ExportFootprint => ("export_footprint", input_schema::<viamind_engine::FootprintFile>(), export_footprint),
     RunDrc => ("run_drc", input_schema::<viamind_drc::DrcInput>(), run_drc),
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
@@ -59,6 +62,20 @@ ui_actions! {
     Redo => ("redo", no_args(), redo),
     SetSelection => ("set_selection", input_schema::<SetSelection>(), set_selection),
     SaveProject => ("save_project", input_schema::<SaveProject>(), save_project),
+}
+
+fn apply_footprint(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::ApplyFootprint::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn import_footprint(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(engine.import_footprint(input, Origin::User)?).map_err(encode_error)
+}
+
+fn export_footprint(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    Ok(json!({"path":engine.export_footprint(input)?}))
 }
 
 fn encode_error(error: serde_json::Error) -> EngineError {
