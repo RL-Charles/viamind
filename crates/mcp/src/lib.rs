@@ -51,3 +51,4 @@ pub mod schematic_views;
 pub mod views;
 
 pub mod symbol_libraries;
+pub mod symbol_packages;

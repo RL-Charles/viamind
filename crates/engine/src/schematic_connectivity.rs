@@ -100,10 +100,10 @@ pub struct SchematicConnectivityResult {
 fn invalid(message: impl Into<String>) -> CommandError {
     CommandError::invalid("schematic_connectivity", message.into())
 }
-struct Snapshot {
-    project_id: ObjectId,
-    source_cursor: EventCursor,
-    sheets: Vec<Sheet>,
+pub(crate) struct Snapshot {
+    pub(crate) project_id: ObjectId,
+    pub(crate) source_cursor: EventCursor,
+    pub(crate) sheets: Vec<Sheet>,
 }
 impl EngineHandle {
     /// Capture bounded schematic data only; graph calculation releases the engine lock.
@@ -129,7 +129,7 @@ pub(crate) fn project_schematic_connectivity(
 ) -> Result<SchematicConnectivityResult, CommandError> {
     calculate(capture(project, cursor)?, &SchematicConnectivityQuery { offset: 0, limit: MAX_MEMBERS }, MAX_CANDIDATES)
 }
-fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapshot, CommandError> {
+pub(crate) fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapshot, CommandError> {
     let sheets = &project.schematic.sheets;
     if sheets.len() > 1000 {
         return Err(invalid("query supports at most 1000 sheets"));

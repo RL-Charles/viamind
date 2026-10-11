@@ -179,6 +179,7 @@ pub struct SchematicQuery {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum SchematicObject {
+    Package { package: viamind_doc::symbol_package::SchematicPackage },
     Symbol { symbol: SchematicSymbol },
     Wire { wire: SchematicWire },
     Junction { junction: SchematicJunction },
@@ -187,6 +188,7 @@ pub enum SchematicObject {
 impl SchematicObject {
     pub fn id(&self) -> ObjectId {
         match self {
+            Self::Package { package } => package.id,
             Self::Symbol { symbol } => symbol.id,
             Self::Wire { wire } => wire.id,
             Self::Junction { junction } => junction.id,
@@ -218,15 +220,25 @@ impl SchematicQuery {
         if let Some(id) = self.sheet_id {
             let sheet = project.schematic.sheet(&id).ok_or_else(|| CommandError::not_found("sheet", id))?;
             if let Some(c) = &sheet.content {
-                let ids: std::collections::BTreeSet<_> =
-                    c.symbols.keys().chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()).copied().collect();
+                viamind_doc::symbol_package::membership_budget(c).map_err(|e| CommandError::invalid("packages", e))?;
+                let ids: std::collections::BTreeSet<_> = c
+                    .packages
+                    .keys()
+                    .chain(c.symbols.keys())
+                    .chain(c.wires.keys())
+                    .chain(c.junctions.keys())
+                    .chain(c.labels.keys())
+                    .copied()
+                    .collect();
                 result.total = ids.len();
                 result.objects = ids
                     .into_iter()
                     .skip(self.offset)
                     .take(limit)
                     .map(|id| {
-                        if let Some(symbol) = c.symbols.get(&id) {
+                        if let Some(package) = c.packages.get(&id) {
+                            SchematicObject::Package { package: package.clone() }
+                        } else if let Some(symbol) = c.symbols.get(&id) {
                             SchematicObject::Symbol { symbol: symbol.clone() }
                         } else if let Some(wire) = c.wires.get(&id) {
                             SchematicObject::Wire { wire: wire.clone() }

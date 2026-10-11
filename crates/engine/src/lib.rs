@@ -125,6 +125,12 @@ pub mod cardinal_cleanup;
 pub use cardinal_cleanup::{CardinalTrackReplacement, CheckedCardinalCleanup, CleanupCardinalTracks, CleanupCounts, CleanupTracks};
 mod schematic_budget;
 
+pub mod symbol_package;
+pub use symbol_package::{
+    DeleteSymbolPackage, LoadSymbolPackage, PlaceSymbolPackage, SaveSymbolPackage, SymbolPackageQuery, SymbolPackageResult, SymbolPackageSaved,
+    UnitPose,
+};
+
 pub mod symbol_library;
 pub use symbol_library::{
     ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SaveSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot,

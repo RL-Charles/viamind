@@ -125,6 +125,8 @@ impl CommandRegistry {
             .with::<crate::EditSchematicSheet>()
             .with::<crate::DrawSchematicWirePolyline>()
             .with::<crate::PlaceSymbolTemplate>()
+            .with::<crate::PlaceSymbolPackage>()
+            .with::<crate::DeleteSymbolPackage>()
             .with::<crate::DeleteSchematicSheet>()
             .with::<crate::LinkSchematicSymbol>()
             .with::<crate::SynchronizeSchematicPcb>()
