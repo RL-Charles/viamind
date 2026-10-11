@@ -45,7 +45,7 @@ impl eframe::App for Inspect {
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(self.engine.document_status(), self.status);
         self.ui_passes += 1;
-        let shapes: Vec<_> = ui.ctx().graphics(|g| g.get(ui.layer_id()).unwrap().all_entries().cloned().collect());
+        let shapes: Vec<_> = ui.ctx().graphics(|g| g.clone().drain(&[], &Default::default()));
         assert!(shapes.len() <= 32768);
         let content = ui.ctx().content_rect();
         let controls: Vec<_> =
