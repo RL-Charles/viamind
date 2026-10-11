@@ -46,6 +46,7 @@ pub struct OutputJobUi {
     name: String,
     mask: String,
     checked: bool,
+    calibrated: bool,
     checks: [String; 7],
     job_path: String,
     release_path: String,
@@ -61,6 +62,10 @@ impl OutputJobUi {
     fn config(&self) -> Result<OutputJob, String> {
         let mask = self.mask.parse::<f64>().map_err(|_| "Mask expansion needs a finite value from 0 to 10 mm".to_string())?;
         let mut job = OutputJob::new(self.name.clone(), mask);
+        if self.calibrated {
+            job.version = 2;
+            job.include_calibrated_placement = Some(true);
+        }
         if self.checked {
             let parse =
                 |index: usize| self.checks[index].parse::<f64>().map_err(|_| format!("{} needs a finite number in 0..100 mm", CHECK_LABELS[index]));
@@ -91,6 +96,7 @@ impl OutputJobUi {
                                     self.name = job.name.clone();
                                     self.mask = job.mask_expansion_mm.to_string();
                                     self.checked = job.checks.is_some();
+                                    self.calibrated = job.include_calibrated_placement == Some(true);
                                     if let Some(checks) = &job.checks {
                                         self.checks = [
                                             checks.copper_clearance_mm.to_string(),
@@ -211,6 +217,10 @@ impl ViamindApp {
                     ui.radio_value(&mut self.output_jobs.checked, false, "Generic outer 2-layer");
                     ui.radio_value(&mut self.output_jobs.checked, true, "Checked outer 2-layer");
                 });
+                ui.checkbox(&mut self.output_jobs.calibrated, "Include calibrated placement companion (version 2)");
+                if self.output_jobs.calibrated {
+                    ui.label("Adds a populated-only generic centroid/marker CSV; explicit mounting and calibration are required. Existing BOM/origin placement still inventory all components. No universal vendor zero or manufacturer acceptance.");
+                }
                 if self.output_jobs.checked {
                     ui.label("Refuse release on scoped DRC violations, incomplete coverage or excluded geometry. Saved baselines cannot lower captured exact-net document clearance, track-width, via-drill or radial-annular floors; validation reports both sources.");
                     for (index, label) in CHECK_LABELS.iter().enumerate() {
@@ -260,6 +270,9 @@ impl ViamindApp {
                         result["exported_cursor"]["stream_id"].as_str().unwrap_or(""),
                         result["exported_cursor"]["sequence"]
                     ));
+                    if let Some(count) = result["manifest"]["calibrated_placement"]["component_count"].as_u64() {
+                        ui.label(format!("Calibrated companion: {count} populated components; generic inventories include all components."));
+                    }
                     if result["exported_cursor"] != json!(cursor) {
                         ui.label("The design has changed since this exported snapshot.");
                     }
@@ -333,7 +346,11 @@ mod tests {
         ] {
             assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
         }
-        for label in CHECK_LABELS.iter().copied().chain(["Generic outer 2-layer", "Checked outer 2-layer"]) {
+        for label in CHECK_LABELS.iter().copied().chain([
+            "Generic outer 2-layer",
+            "Checked outer 2-layer",
+            "Include calibrated placement companion (version 2)",
+        ]) {
             assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
         }
         tx.send(Err("controlled failure".into())).unwrap();

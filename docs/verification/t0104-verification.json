@@ -1,0 +1,130 @@
+{
+  "ticket": "T-0104",
+  "passed": true,
+  "production": {
+    "source": "36d610032a51ede45fe2167b978fb574b3aa90a5",
+    "base": "d8a8e573761bc673575a4a76af5d9fb06deccba6",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-verified",
+      "sha256": "7012cc63ff1213bed2cfff573799905d79a40f2ba5c980694644177da58c3f7a"
+    },
+    "pid": 1848445,
+    "http_endpoint": "http://127.0.0.1:7934/mcp",
+    "live_executable_sha256": "7012cc63ff1213bed2cfff573799905d79a40f2ba5c980694644177da58c3f7a",
+    "active_native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-project.json",
+    "native_sha256": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7",
+    "checks": 27,
+    "report": "docs/verification/t0104-production-report.json"
+  },
+  "inspection": {
+    "source": "0056bebd591398a356f60cf282ddd5120d1843ae",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/inspection-final-verified",
+      "sha256": "3e9e36ddc19c8b75f76063070cc7c5ca9789de913fe3384b50aacc3d1377e7d0"
+    },
+    "pid": 1858160,
+    "self_closed": true,
+    "mcp_enabled": false,
+    "route": "Production ViamindApp in inspection-only fixed viewport; local egui pointer checkbox and resize events; native WGPU Screenshot event; NEW fsynced P6 then lossless PNG",
+    "local_checkbox_pointer_events": 2,
+    "local_resize_pointer_events": 3,
+    "complete_session_unchanged": true,
+    "report": "docs/verification/t0104-native-inspection-report.json"
+  },
+  "gates": {
+    "full_source": "36d610032a51ede45fe2167b978fb574b3aa90a5",
+    "workspace_tests_passed": 739,
+    "failed": 0,
+    "ignored": 1,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "inspection_example_build": true,
+    "log": "docs/verification/t0104-full-linux.log",
+    "inspection_refresh_source": "0056bebd591398a356f60cf282ddd5120d1843ae",
+    "inspection_refresh_fmt_strict_workspace_clippy_build": true,
+    "inspection_refresh_log": "docs/verification/t0104-inspection-final.log",
+    "actual_tools": 88,
+    "isolated_workflow_checks": 18,
+    "tooling_tests": 13
+  },
+  "previous_production": {
+    "source": "6bfe004e7a5596aff0d21f0df743fe5676f94eda",
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0100/production-final-combined-verified",
+    "sha256": "dd0f4da5ee49c9abe06aed071b33a38e8cfe2e989c3ddb6d1cb70eff67a9045e",
+    "scope": "Ten version1 config/format payload bytes; session manifest excluded from cross-process comparison"
+  },
+  "historical_failed_inspection": {
+    "initial_binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/inspection-verified",
+      "sha256": "b23ac44b7e529d6b920f83c16b095a4c8fb92d72baf794e9d6ef1b4d0bd7fa3f"
+    },
+    "diagnostic_binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/inspection-diagnostic-verified",
+      "sha256": "d320b90019d4e88fd79943d4b7aa0b1cb693bd7abd71dd95152b499ce4a4f351"
+    },
+    "capture_produced": false,
+    "reason": "Selected checkbox/description were visible; Run was below original420px dialog scroll viewport. Both helpers terminated at200-input bound. Local resize corrected inspection only. Neither failure is counted as capture success."
+  },
+  "scope": [
+    "No native/event schema expansion",
+    "Generic inventories still include all components; optional companion is populated-only",
+    "Explicit local centroid/mounting/generic top-view marker; no universal vendor zero or certification",
+    "One captured board/rules snapshot and retained manufacturing permit; trusted central production DRC for checked profile",
+    "Fresh final-head CI remains merge gate"
+  ],
+  "artifact_sha256": {
+    "docs/verification/t0104-production-report.json": "0fe2acbb3883d9e80cb6839a2f3cb279053364c711c0a0325296320593d965ea",
+    "docs/verification/t0104-companion-smoke.py": "4b1ed2752e09b18a855ca166ba4d532f787ceb9086fa638f5ae3f406bd6cebe8",
+    "docs/verification/t0104-catalog-report.json": "8883f206a090793af65bd5a17e72a0b1fd676a69e69b5cbcbb9f6658606652e8",
+    "docs/verification/t0104-agent-workflow.json": "eb9ae546492ac54da244b9788cc7ea405855a75b69cb24a762d52b52b364dac2",
+    "docs/verification/t0104-full-linux.log": "eab571b68768d64b747e4faab80042f1419fe2335761ee8c7597cbacf30680a3",
+    "docs/verification/t0104-native-framebuffer.png": "e4db54cc4dfd1ea0a0897107cf47cae7b5fe6243cd3f7ebf1673aeb697679d59",
+    "docs/verification/t0104-native-inspection-report.json": "801009871d7d6521d59d22ac7b0a4e1820c709c5808cdd5c83f6d1feb98ebed0",
+    "docs/verification/t0104-capture-conversion.json": "b763caee391cc6778ac5673724f6351711c7590c9ad82aaad169026d12297df0",
+    "docs/verification/t0104-inspection-final.log": "8ecfe93f84cc818ae93b543c87296064f3a8ba24f80fab773bdc6a1762051592",
+    "docs/verification/t0104-inspection-initial-failed.log": "e42027e7a850f39c3638c1260b9e19732506c3574babcd0da98c370189a570fa",
+    "docs/verification/t0104-inspection-diagnostic-failed.log": "e59717c6a9b6d2ef589ea34597ac5c6cffeeda45501a23aa5b29551570f088bc",
+    "docs/verification/t0104-cua-production-metadata.json": "3826e1350d7fd0ffc0a0571913dbbf4db363ca0e088e48dee15b90de6f6b70fc",
+    "crates/ui-egui/examples/t0104_inspection.rs": "cd650a1f33ae9087b58d23bf0898af679408cfaf6d6c4957af4f1188dec0e985",
+    "fixtures/assembly/output-job-calibration.viamind.json": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7",
+    "docs/verification/t0104-final-combined.log": "46fdd0b9b7c6c608ad4e2f877eca38f8ed83b10d7a93f0b2b5ef848df7fecdd2",
+    "docs/verification/t0104-final-catalog.json": "28a565859cdf57eaea18f00091c8aef8dd56acfde268d229a98eed4d9fe5b37c",
+    "docs/verification/t0104-final-workflow.json": "36b42bc25a875d1c92cc7423a8732c7c2e229f47c5b01e3301e41e3575bd05c8",
+    "docs/verification/t0104-latest-combined.log": "b3419cbaf3358a45ad1374c6625e40d2144ce6bdeaf3df6983bad1281b70636a",
+    "docs/verification/t0104-latest-catalog.json": "d0a0c156ef8f8df9d812ba28c9d42c2f3436498c694e85c447bae962f6313ad1",
+    "docs/verification/t0104-latest-workflow.json": "ae67f4bdcedb67d3a7c63f94bd4fd38ed730976ae0c87192b06b87408da2b26f"
+  },
+  "final_integration": {
+    "source": "4a89748a2057c3fe066b2d154e5af535a2066fe3",
+    "base": "3c52571",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-combined-verified",
+      "sha256": "f8f662c187083ebf71963d30938c1a11b6fcba947302401260609c048f170769"
+    },
+    "focused_tests_passed": 11,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tool_count": 88,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "coverage": "Calibrated checked jobs retain exact native10 via minima; saved zero baselines cannot weaken captured drill/annular floors, one-Nm raises refuse all publication and leave no staging/session changes. Historical production/native sources remain separate."
+  },
+  "latest_integration": {
+    "source": "6c09a38b422e5ec53847e8efc369035fa6fb8c29",
+    "base": "adf2d9f",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-latest-verified",
+      "sha256": "82789aebea0a8bb63d917bfcf3bb1f836a7848fbea6e7457881dbecc94c531bf"
+    },
+    "focused_tests_passed": 11,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tool_count": 88,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "coverage": "Clean integration with native symbol-ID editor; original production/native and prior via-minima integration evidence remain separate."
+  }
+}

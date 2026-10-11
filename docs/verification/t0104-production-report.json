@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "checks": [
+    "two initialized HTTP clients share complete native session",
+    "actual production schema exposes strict explicit companion version",
+    "second client loads exact canonical version2 settings",
+    "two clients publish exact twelve-file coherent releases",
+    "manifest declares populated companion and generic coordinate convention",
+    "independent CSV/vector reader verifies transformed centroids and top-view markers",
+    "job companion preserves exact standalone shared CSV bytes",
+    "display-free actual production CLI publishes version2",
+    "CLI and HTTP format/config payloads are byte identical excluding session manifest",
+    "version1 old production ten config/format payload bytes remain identical",
+    "version1 manifest omits optional companion unchanged",
+    "invalid job combination 0 refuses NEW file",
+    "invalid job combination 1 refuses NEW file",
+    "invalid job combination 2 refuses NEW file",
+    "invalid job combination 3 refuses NEW file",
+    "invalid job combination 4 refuses NEW file",
+    "duplicate explicit option is rejected",
+    "NEW collision leaves all release bytes unchanged",
+    "MCP protects current active native path",
+    "CLI protects its own opened native file and existing release",
+    "checked companion uses production DRC on same capture and thirteen files",
+    "all accepted/refused outputs preserve full session and document status",
+    "partial explicit calibration refuses entire release atomically",
+    "complete stale cursor refuses before publication",
+    "population applies only to companion with explicit subset count",
+    "zero saved baselines cannot weaken captured document width minimum",
+    "peer edits and undo restore exact project/native status with advanced cursor"
+  ],
+  "endpoint": "http://127.0.0.1:7934/mcp",
+  "binary_sha256": "7012cc63ff1213bed2cfff573799905d79a40f2ba5c980694644177da58c3f7a",
+  "previous_binary_sha256": "dd0f4da5ee49c9abe06aed071b33a38e8cfe2e989c3ddb6d1cb70eff67a9045e",
+  "fixture_sha256": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7",
+  "initial_cursor": {
+    "sequence": 0,
+    "stream_id": "9dd7fa9b-8e45-413b-abee-8e9633b4e089"
+  },
+  "final_cursor": {
+    "sequence": 6,
+    "stream_id": "9dd7fa9b-8e45-413b-abee-8e9633b4e089"
+  }
+}

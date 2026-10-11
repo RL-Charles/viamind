@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "route": "ImageMagick P6 RGB to PNG then independent PNG decode to raw RGB",
+  "ppm_sha256": "1e2a81fc82bbcfc568d0e3c222abdf8fc2a2d5f941e4900f56b3879abe0ba7dd",
+  "png_sha256": "e4db54cc4dfd1ea0a0897107cf47cae7b5fe6243cd3f7ebf1673aeb697679d59",
+  "pixels": [
+    1600,
+    1000
+  ],
+  "decoded_rgb_exactly_equal": true,
+  "new_png_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/native-framebuffer.png",
+  "tool_version": "Version: ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org"
+}

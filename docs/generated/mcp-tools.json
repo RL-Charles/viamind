@@ -8956,7 +8956,7 @@
       "name": "run_erc"
     },
     {
-      "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
+      "description": "Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Version1 generic profile: 11 files; checked profile: 12 including bounded production DRC validation. Explicit version2/include_calibrated_placement:true adds one populated-only generic calibrated centroid/marker companion (12/13 files), requiring explicit mounting/calibration; old generic inventories still contain all components. No universal vendor zero. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Saved request clearance baselines cannot weaken captured exact named-net document minima; explicit track-width, via-drill and radial-annular floors also apply. Validation reports both requested_rules and report.document_net_rules. 192 MiB total. No vendor certification/inner copper/pours/sourcing strings. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -9088,6 +9088,34 @@
         "properties": {
           "job": {
             "additionalProperties": false,
+            "allOf": [
+              {
+                "oneOf": [
+                  {
+                    "not": {
+                      "required": [
+                        "include_calibrated_placement"
+                      ]
+                    },
+                    "properties": {
+                      "version": {
+                        "const": 1
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "version": {
+                        "const": 2
+                      }
+                    },
+                    "required": [
+                      "include_calibrated_placement"
+                    ]
+                  }
+                ]
+              }
+            ],
             "oneOf": [
               {
                 "not": {
@@ -9166,6 +9194,9 @@
               "format": {
                 "const": "viamind-output-job"
               },
+              "include_calibrated_placement": {
+                "const": true
+              },
               "mask_expansion_mm": {
                 "default": 0,
                 "maximum": 10,
@@ -9184,7 +9215,10 @@
                 ]
               },
               "version": {
-                "const": 1
+                "enum": [
+                  1,
+                  2
+                ]
               }
             },
             "required": [

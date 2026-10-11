@@ -14,7 +14,7 @@ are identified and are not used by Run. To change saved settings, save a new fil
 
 One background worker handles load, save or export. Its bounded controls disable
 while pending; closing the window retains the operation and completion. Results
-show the destination, eleven files and complete stream UUID/sequence cursor. A
+show the destination, actual file count and complete stream UUID/sequence cursor. A
 later design edit displays a newer-edit notice. The window scrolls at 640×400.
 
 ## CLI and MCP
@@ -58,7 +58,7 @@ opened file type. No commands, variables, arbitrary filenames or project/output
 paths are interpreted from configuration. Runtime paths are bounded to 4096 bytes.
 Canonical saves have fixed field order and a trailing newline.
 
-A release contains:
+A default generic version1 release contains:
 
 - `assembly/bom.csv`, `assembly/placement.csv`
 - `fabrication/top-copper.gbr`, `bottom-copper.gbr`, `top-mask.gbr`,
@@ -76,9 +76,9 @@ mirrored. See [assembly conventions](assembly-csv.md) and
 Limits are 100000 components, 200000 fabrication primitives, 4096 bytes per board string,
 2 MiB aggregate board text,32 MiB per CSV,128 MiB fabrication and192 MiB complete
 release. Explicit rectangular pads and polygon outline are required. Legacy
-previews, inner copper/pours, paste/silkscreen/component holes, sourcing/population
-metadata, manufacturer centroids/presets and certification remain unsupported.
-Views, ZIP and automatic validation gates are outside this increment.
+previews, inner copper/pours, paste/silkscreen/component holes, sourcing identifiers,
+manufacturer presets and certification remain unsupported. Optional populated
+calibration and checked validation are described below; views and ZIP are not included.
 
 Job saves require a NEW file; releases require a NEW directory, both in an
 existing parent. Existing files/directories/symlinks and active native paths are
@@ -88,3 +88,48 @@ is cleaned. A process interruption can leave a `.viamind-output-job-*` staging
 directory. Atomic visibility does not promise durability through power loss.
 
 See [Linux and native verification](saved-output-jobs-verification.md) for recorded artifacts, limitations and reproduction.
+
+## Optional calibrated placement (version2)
+
+The desktop **Include calibrated placement companion (version 2)** checkbox is off
+by default. Selecting it and saving to a NEW job file writes this explicit opt-in:
+
+```json
+{
+  "format": "viamind-output-job",
+  "version": 2,
+  "name": "Explicit calibrated release",
+  "profile": "generic_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "include_calibrated_placement": true
+}
+```
+
+Version1 forbids this field; version2 requires true. False, null, unsupported fields
+and missing opt-in reject. Clearing the checkbox emits the unchanged version1
+configuration. Loading restores the saved choice; Run always reads the saved file.
+The same opt-in works with [checked jobs](checked-output-jobs.md) and their required
+numeric checks. Generic releases contain11 files by default or12 with the companion;
+checked releases contain12 by default or13 with it.
+
+The additional fixed `assembly/calibrated-placement.csv` has exact standalone
+[calibrated placement](calibrated-assembly-placement.md) bytes. Every populated
+component requires explicitly entered mounting, local centroid and generic zero-axis
+marker. DNP components are excluded; all explicit mounting technologies are included.
+Incomplete calibration or invalid/colliding included references refuses the whole
+release. Empty population produces a header-only companion. No vendor/package zero,
+polarity, reel orientation or centroid is inferred.
+
+Existing BOM and origin placement continue to inventory **all components** with their
+original bytes. They are not a matched populated assembly set. The optional companion
+uses the separately declared global X-right/Y-up, CCW common top-view marker convention,
+including the explicit bottom reflection. It is not a manufacturer submission guarantee.
+The version2 release manifest records its fixed path, included component count and
+coordinate convention and explains the population distinction. The fabrication manifest
+and supported fabrication bytes remain unchanged.
+
+A single retained manufacturing permit and one board/rules capture supply all files
+and checked DRC. Borrowed geometry/text/policy and calibrated reference/scalar validation
+precede copying. Only fixed population/mounting/calibration values are retained; unused
+sourcing strings and schematic sheets are excluded. Existing32MiB CSV/192MiB release
+bounds and atomic NEW root apply to the entire composition; no partial success exists.
