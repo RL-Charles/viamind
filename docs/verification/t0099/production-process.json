@@ -1,0 +1,9 @@
+{
+  "pid": 1556102,
+  "binary_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/production",
+  "binary_sha256": "eaf680a0fe2e55bea1a1afdfcae4c552572d640ecd4fcde704401f0e359e5bc5",
+  "running_exe_sha256": "eaf680a0fe2e55bea1a1afdfcae4c552572d640ecd4fcde704401f0e359e5bc5",
+  "native_sha256": "623532b51e3a531c84f62b54a94a460518ed7a260d85102b80fb4f137eca73d9",
+  "cmdline": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/production --agent-read-only --open /home/charlesmowbray/.cache/viamind/native-artifacts/t0099/protected.viamind.json ",
+  "socket": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\nLISTEN 0      128        127.0.0.1:7925      0.0.0.0:*    users:((\"production\",pid=1556102,fd=6))\n"
+}

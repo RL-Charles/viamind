@@ -1,0 +1,84 @@
+{
+  "ticket": "T-0099",
+  "production_source_commit": "a286d380cff8b90bf1a236997e36bb5aa3b581e7",
+  "base_main": "f7d73811f5229ff77712014628861f19d6beea4f",
+  "full_linux_gate": {
+    "session": 87922,
+    "exit_code": 0,
+    "fmt": "PASS",
+    "strict_workspace_all_target_clippy": "PASS",
+    "targeted_tests": 7,
+    "workspace_passed": 671,
+    "failed": 0,
+    "ignored": 1,
+    "workspace_build": "PASS",
+    "inspection_build": "PASS",
+    "python_tooling_tests": 13,
+    "actual_catalog_tools": 81,
+    "isolated_agent_workflow_checks": 18,
+    "log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/full-linux.log",
+    "log_sha256": "f8812a9d9286bcd9f55b8a85218469e0ddc1ef55906dfb061b3865ac1470d91f"
+  },
+  "production": {
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/production",
+    "sha256": "eaf680a0fe2e55bea1a1afdfcae4c552572d640ecd4fcde704401f0e359e5bc5",
+    "pid": 1556102,
+    "running_exe_sha256": "eaf680a0fe2e55bea1a1afdfcae4c552572d640ecd4fcde704401f0e359e5bc5",
+    "http": "http://127.0.0.1:7925/mcp",
+    "actual_checks": 45,
+    "report": "production-report.json",
+    "launch": "production-launch.json",
+    "process": "production-process.json",
+    "native": "protected.viamind.json"
+  },
+  "inspection": {
+    "source_commit": "cacdb1f",
+    "production_rust_unchanged_from_full_gate": true,
+    "refresh_gate_session": 27364,
+    "fmt": "PASS",
+    "example_strict_clippy": "PASS",
+    "example_build": "PASS",
+    "refresh_log_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/inspection-refresh.log",
+    "refresh_log_sha256": "2bda707d0a85e1ab4914b429214700ae02981fcd574d49e654c77309f95879e1",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/inspection-cacdb1f",
+    "sha256": "0ea94fbc0ac986d9dbb72b4c11831550728aa622c8dac909022ca6e313bb63d9",
+    "pid": 1561380,
+    "self_close_verified": true,
+    "pixels": [
+      640,
+      400
+    ],
+    "ui_passes": 11,
+    "human_inputs": "Actual local egui Edit/Place test resistor/Ctrl+Z/Ctrl+Shift+Z before native WGPU rendering. Native full SessionSnapshot and protected bytes asserted each UI pass. No OS input/frame-cadence claim.",
+    "capture": "native-framebuffer.png",
+    "report": "native-framebuffer-report.json"
+  },
+  "production_cua": {
+    "snapshot_id": "s0000002a",
+    "capture": "production-cua.png",
+    "metadata": "production-window-metadata.json",
+    "note": "Fresh exact PID/window snapshot returns readable board and Agents read only. AT-SPI unavailable; fallback is discovery/pixel evidence only, no semantic checked-state or OS input claim."
+  },
+  "limitations": [
+    "Process-wide startup policy, no per-client authentication/dynamic approval/OS sandbox.",
+    "Default live definitions remain unchanged. Canonical reference describes live mode; restricted schema path omission is verified through both actual transports.",
+    "Native desktop human-input proof uses explicitly labeled local egui inputs and actual WGPU rendering. No strict frame timing.",
+    "Later clean integration and new observation tools require separate focused build/catalog and exact-head CI; retained historical source evidence is not relabeled."
+  ],
+  "artifacts_sha256": {
+    "build-source.json": "8f6c7807e1b8447ca8f58b0080676127657fb96d715b8a178a9f42a9b2903efe",
+    "capture-conversion.json": "ac0959e3e1757380f64cc83b1e8b9e8127042b66d5c6284994b59898d2895b12",
+    "inspection-build-source.json": "a615321d8d99c8fede2279d5a8a263b3498d3183b6b3a564ec966715f84a9669",
+    "inspection-launch.json": "ae2f839fa97de537ea7e89185a3e9cca8b6ba3315f808ddc8ed446b109769e4a",
+    "native-framebuffer-report.json": "e18d008fe59f56dfdec5e96f7c8aee2213f534782a7369d262d325f220df81b8",
+    "native-framebuffer.png": "19001881aea95922e034f620d2c61392bf07d966e855e40f813162ca8f37395f",
+    "production-cua.png": "ffa7c0f2305f86df550a028ee61d0e34deb840dbc64617132a80a4dccba5b702",
+    "production-launch.json": "877dca00cbcbae6a924f9fa504f90b6854853a6088b31d35d07663ea54389738",
+    "production-process.json": "9a06408d04c7fca2843ed6b47b93fddd91919bf2a8f9ee66f92231b146eb510f",
+    "production-report.json": "244a8b2203f8a65abb67e2382bcf9bf9ae1ff32e40467f42c3781ef4c463fd9c",
+    "production-window-metadata.json": "c6d89fa02b0ef8d4af543a2da9b1584d7140d26868ae62c0a39636699a39a5da",
+    "protected.viamind.json": "623532b51e3a531c84f62b54a94a460518ed7a260d85102b80fb4f137eca73d9",
+    "reference-report.json": "b8e028582e6428ca8b9cc80de4b4cdad302db6da62c87166dfa6c054e653f1a8",
+    "workflow-report.json": "9501eff23823797a3c329bc76d3e692ef0308bd8b0ef5c1e2265244868e11bc6"
+  }
+}

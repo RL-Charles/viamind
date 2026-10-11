@@ -1,0 +1,23 @@
+{
+  "agent_read_only": true,
+  "capture": "actual eframe native WGPU Screenshot event",
+  "full_session_unchanged_during_native_ui": true,
+  "human_local_egui_actions_verified": [
+    "Edit menu",
+    "Place test resistor",
+    "Ctrl+Z",
+    "Ctrl+Shift+Z"
+  ],
+  "input_scope": "local egui test input before native rendering; no OS input or frame-cadence claim",
+  "inspection_only": true,
+  "mcp_enabled": true,
+  "native_bytes_preserved": true,
+  "pid": 1561380,
+  "pixels": [
+    640,
+    400
+  ],
+  "self_closes_after_fsynced_proof": true,
+  "ui_passes": 11,
+  "url": "http://127.0.0.1:39041/mcp"
+}

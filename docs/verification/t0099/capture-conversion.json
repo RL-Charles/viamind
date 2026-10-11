@@ -1,0 +1,12 @@
+{
+  "source": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/native-framebuffer.ppm",
+  "output": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0099/native-framebuffer.png",
+  "pixels": [
+    640,
+    400
+  ],
+  "source_ppm_sha256": "f261ef632eb5814c9a12ace25c10e8cbd5fcf493a913108f2e4dff679fb72074",
+  "rgb_sha256": "e3de3540ef48ad8e81b2e6afa71b26c4a815e34f18c5413f34dfeb4ed91656c1",
+  "png_sha256": "19001881aea95922e034f620d2c61392bf07d966e855e40f813162ca8f37395f",
+  "decompressed_rgb_exact": true
+}
