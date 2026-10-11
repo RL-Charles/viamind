@@ -67,6 +67,8 @@ ui_actions! {
     ConvertFootprintFile => ("convert_footprint_file", input_schema::<viamind_engine::ConvertFootprintFile>(), convert_footprint_file),
     PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
     ImportPcb => ("import_pcb", input_schema::<viamind_engine::ImportPcb>(), import_pcb),
+    PreviewSchematicSymbolDrag => ("preview_schematic_symbol_drag", input_schema::<viamind_engine::DragSchematicSymbol>(), preview_schematic_symbol_drag),
+    DragSchematicSymbol => (viamind_engine::DragSchematicSymbol::NAME, input_schema::<viamind_engine::DragSchematicSymbol>(), drag_schematic_symbol),
     DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
     SnapshotSchematicWireSheet => ("snapshot_schematic_wire_sheet", input_schema::<viamind_engine::SchematicWireSheetQuery>(), snapshot_schematic_wire_sheet),
     QueryLinkedPinPads => ("query_linked_pin_pads", input_schema::<viamind_engine::PinPadLinkQuery>(), query_linked_pin_pads),
@@ -531,4 +533,12 @@ fn get_command_hooks(engine: &EngineHandle, input: Value) -> Result<Value, Engin
 
 fn set_pad_apertures(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::SetPadApertures::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn preview_schematic_symbol_drag(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let request = serde_json::from_value(input).map_err(encode_error)?;
+    engine.prepare_schematic_symbol_drag(request).map_err(branch_error)?.run_value().map_err(branch_error)
+}
+fn drag_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::DragSchematicSymbol::NAME, input, Origin::User)?).map_err(encode_error)
 }
