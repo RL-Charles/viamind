@@ -111,7 +111,8 @@ mod schematic_budget;
 
 pub mod symbol_library;
 pub use symbol_library::{
-    ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot, SymbolTemplateExportResult,
+    ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SaveSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot,
+    SymbolTemplateExportResult, SymbolTemplateSaveResult,
 };
 
 mod pcb_import;

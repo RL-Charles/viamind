@@ -5,7 +5,7 @@ use std::sync::mpsc::{Receiver, TryRecvError, sync_channel};
 use viamind_doc::{ObjectId, schematic::Coordinate, symbol_library::SymbolTemplate};
 use viamind_engine::{
     EngineHandle, EventCursor, ExportSymbolTemplate, LoadSymbolTemplate, PlaceSymbolTemplate, SymbolSheetQuery, SymbolSheetSnapshot,
-    SymbolTemplateExportResult,
+    SymbolTemplateExportResult, SymbolTemplateSaveResult,
 };
 use viamind_geom::Nm;
 
@@ -15,9 +15,11 @@ enum Completed {
     Sheet(SymbolSheetSnapshot),
     Loaded(SymbolTemplate),
     Exported(SymbolTemplateExportResult),
+    Saved(SymbolTemplateSaveResult),
 }
 struct Pending {
-    source: Context,
+    source: Option<Context>,
+    detached_save: bool,
     receiver: Receiver<Result<Completed, String>>,
 }
 pub struct SymbolLibraryUi {
@@ -35,6 +37,7 @@ pub struct SymbolLibraryUi {
     rotation: u8,
     mirrored: bool,
     message: Option<String>,
+    editor: Option<crate::symbol_definition::DefinitionEditor>,
 }
 impl Default for SymbolLibraryUi {
     fn default() -> Self {
@@ -53,6 +56,7 @@ impl Default for SymbolLibraryUi {
             rotation: 0,
             mirrored: false,
             message: None,
+            editor: None,
         }
     }
 }
@@ -63,7 +67,7 @@ fn decode<T: serde::de::DeserializeOwned>(value: serde_json::Value) -> Result<T,
     serde_json::from_value(value).map_err(|e| e.to_string())
 }
 /// Exact decimal millimetres with at most six fractional places (one nanometre).
-fn millimetres(value: &str) -> Result<Nm, String> {
+pub(crate) fn millimetres(value: &str) -> Result<Nm, String> {
     let fail = || "Coordinates require decimal mm with at most six fractional places, within ±10000 mm".to_owned();
     if value.len() > 32 || value.is_empty() {
         return Err(fail());
@@ -98,7 +102,17 @@ impl SymbolLibraryUi {
             Err(TryRecvError::Disconnected) => Err("Symbol library worker stopped; retry the operation".into()),
         };
         let pending = self.pending.take().expect("completed worker");
-        if Some(identity(pending.source)) != context.map(identity) {
+        if pending.detached_save {
+            self.message = Some(match result {
+                Ok(Completed::Saved(result)) => {
+                    format!("Created detached definition {} · {} · {} pins", result.path.display(), result.name, result.pin_count)
+                }
+                Err(error) => error,
+                _ => "Invalid detached definition worker result".into(),
+            });
+            return replaced;
+        }
+        if pending.source.map(identity) != context.map(identity) {
             return replaced;
         }
         match result {
@@ -112,36 +126,51 @@ impl SymbolLibraryUi {
                     if context.is_some_and(|c| c.1 != result.exported_cursor) { " · document has newer edits" } else { "" }
                 ));
             }
-            Ok(_) if Some(pending.source) != context => self.message = Some("Document changed; refresh the sheet and load the template again".into()),
+            Ok(_) if pending.source != context => self.message = Some("Document changed; refresh the sheet and load the template again".into()),
             Ok(Completed::Sheet(sheet)) => {
                 self.source_symbol = sheet.expected.content.as_ref().and_then(|c| c.symbols.values().next().map(|s| s.id));
                 self.guard = Some(sheet);
             }
             Ok(Completed::Loaded(template)) => self.template = Some(template),
+            Ok(Completed::Saved(_)) => self.message = Some("Unexpected detached definition result".into()),
             Err(error) => self.message = Some(error),
         }
         replaced
     }
     fn start(&mut self, engine: EngineHandle, action: UiAction, input: serde_json::Value) {
+        self.start_with(engine, action, input, |job| std::thread::Builder::new().name("viamind-symbol-library".into()).spawn(job).map(|_| ()));
+    }
+    fn start_with(
+        &mut self,
+        engine: EngineHandle,
+        action: UiAction,
+        input: serde_json::Value,
+        spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> std::io::Result<()>,
+    ) {
         if self.pending.is_some() {
             return;
         }
-        let Some(source) = self.context else { return };
+        let source = self.context;
+        let detached_save = action == UiAction::SaveSymbolTemplate;
+        if source.is_none() && !detached_save {
+            return;
+        }
         self.message = None;
         if action == UiAction::LoadSymbolTemplate {
             self.template = None;
         }
         let (sender, receiver) = sync_channel(1);
-        match std::thread::Builder::new().name("viamind-symbol-library".into()).spawn(move || {
+        match spawn(Box::new(move || {
             let result = action.run(&engine, input).map_err(|e| e.to_string()).and_then(|value| match action {
                 UiAction::SnapshotSymbolSheet => decode(value).map(Completed::Sheet),
                 UiAction::LoadSymbolTemplate => decode(value).map(Completed::Loaded),
                 UiAction::ExportSymbolTemplate => decode(value).map(Completed::Exported),
+                UiAction::SaveSymbolTemplate => decode(value).map(Completed::Saved),
                 _ => Err("Unsupported symbol library worker action".into()),
             });
             let _ = sender.try_send(result);
-        }) {
-            Ok(_) => self.pending = Some(Pending { source, receiver }),
+        })) {
+            Ok(_) => self.pending = Some(Pending { source, detached_save, receiver }),
             Err(error) => self.message = Some(format!("Could not start symbol library worker: {error}")),
         }
     }
@@ -201,6 +230,7 @@ impl ViamindApp {
         let mut load = false;
         let mut export = false;
         let mut place = false;
+        let mut editor_decision = None;
         egui::Window::new("Native symbol library").open(&mut open).default_width(500.0).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Reuse one rectangular single-unit symbol. Library files are detached; placing creates fresh pins and one undoable instance.");
             if blocked {
@@ -230,6 +260,16 @@ impl ViamindApp {
                 if let Some(template) = &self.symbol_library.template {
                     ui.label(format!("Loaded {} · {} pins · {}", template.name, template.pins.len(), template.value));
                     ui.label("Original instances and PCB links remain unchanged.");
+                }
+                if self.symbol_library.editor.is_none() {
+                    if ui.button("New detached definition").clicked() {
+                        self.symbol_library.editor = Some(crate::symbol_definition::DefinitionEditor::new());
+                    }
+                    if ui.add_enabled(self.symbol_library.template.is_some(), egui::Button::new("Edit loaded definition")).clicked()
+                        && let Some(template) = &self.symbol_library.template
+                    {
+                        self.symbol_library.editor = Some(crate::symbol_definition::DefinitionEditor::from_template(template));
+                    }
                 }
                 ui.separator();
                 let label = ui.label("New symbol reference");
@@ -287,6 +327,9 @@ impl ViamindApp {
                     )
                     .clicked();
             });
+            if let Some(editor) = &mut self.symbol_library.editor {
+                editor_decision = editor.show(ui, ready);
+            }
             if !ready {
                 ui.label("Working on bounded symbol library data…");
             }
@@ -295,7 +338,19 @@ impl ViamindApp {
             }
         });
         self.symbol_library.open = open;
-        if refresh && let Some((_, _, sheet_id)) = context {
+        let mut save_definition = None;
+        match editor_decision {
+            Some(crate::symbol_definition::Decision::Use(template)) => {
+                self.symbol_library.template = Some(template);
+                self.symbol_library.message = Some("Using edited local definition for explicit fresh placement".into());
+            }
+            Some(crate::symbol_definition::Decision::Save(input)) => save_definition = Some(input),
+            Some(crate::symbol_definition::Decision::Cancel) => self.symbol_library.editor = None,
+            None => (),
+        }
+        if let Some(input) = save_definition {
+            self.symbol_library.start(engine.clone(), UiAction::SaveSymbolTemplate, serde_json::to_value(input).expect("definition save"));
+        } else if refresh && let Some((_, _, sheet_id)) = context {
             self.symbol_library.start(
                 engine.clone(),
                 UiAction::SnapshotSymbolSheet,
@@ -355,7 +410,11 @@ mod tests {
             let sheet = snapshot();
             let context = (sheet.expected_project, sheet.source_cursor, sheet.expected.id);
             let (sender, receiver) = sync_channel(1);
-            let mut state = SymbolLibraryUi { context: Some(context), pending: Some(Pending { source: context, receiver }), ..Default::default() };
+            let mut state = SymbolLibraryUi {
+                context: Some(context),
+                pending: Some(Pending { source: Some(context), detached_save: false, receiver }),
+                ..Default::default()
+            };
             let mut changed = context;
             match replacement {
                 0 => changed.1.sequence += 1,
@@ -373,7 +432,11 @@ mod tests {
         let sheet = snapshot();
         let context = (sheet.expected_project, sheet.source_cursor, sheet.expected.id);
         let (sender, receiver) = sync_channel(1);
-        let mut state = SymbolLibraryUi { context: Some(context), pending: Some(Pending { source: context, receiver }), ..Default::default() };
+        let mut state = SymbolLibraryUi {
+            context: Some(context),
+            pending: Some(Pending { source: Some(context), detached_save: false, receiver }),
+            ..Default::default()
+        };
         drop(sender);
         state.poll(Some(context));
         assert!(state.pending.is_none());
@@ -384,7 +447,11 @@ mod tests {
         let sheet = snapshot();
         let context = (sheet.expected_project, sheet.source_cursor, sheet.expected.id);
         let (sender, receiver) = sync_channel(1);
-        let mut state = SymbolLibraryUi { context: Some(context), pending: Some(Pending { source: context, receiver }), ..Default::default() };
+        let mut state = SymbolLibraryUi {
+            context: Some(context),
+            pending: Some(Pending { source: Some(context), detached_save: false, receiver }),
+            ..Default::default()
+        };
         state.start(EngineHandle::new(viamind_doc::Project::new("unused")), UiAction::LoadSymbolTemplate, serde_json::json!({"path":"/missing"}));
         sender
             .try_send(Ok(Completed::Exported(SymbolTemplateExportResult {
@@ -400,5 +467,42 @@ mod tests {
         let message = state.message.unwrap();
         assert!(message.contains("document has newer edits"));
         assert!(message.contains(&context.1.stream_id.to_string()));
+    }
+    #[test]
+    fn detached_save_stays_retained_hidden_reports_after_reopen_and_recovers_from_failures() {
+        let sheet = snapshot();
+        let context = (sheet.expected_project, sheet.source_cursor, sheet.expected.id);
+        let (sender, receiver) = sync_channel(1);
+        let mut state = SymbolLibraryUi {
+            context: Some(context),
+            editor: Some(crate::symbol_definition::DefinitionEditor::new()),
+            pending: Some(Pending { source: Some(context), detached_save: true, receiver }),
+            ..Default::default()
+        };
+        let engine = EngineHandle::new(viamind_doc::Project::new("no sheet"));
+        state.start_with(engine.clone(), UiAction::SaveSymbolTemplate, serde_json::json!({}), |_| panic!("duplicate must retain worker"));
+        state.poll(None);
+        assert!(state.pending.is_some());
+        assert!(state.editor.is_some());
+        sender.try_send(Ok(Completed::Saved(SymbolTemplateSaveResult { path: "new.json".into(), name: "Detached".into(), pin_count: 1 }))).unwrap();
+        state.poll(None);
+        assert!(state.message.as_ref().unwrap().contains("Created detached definition"));
+        assert!(state.guard.is_none());
+        assert!(state.template.is_none());
+        assert!(state.pending.is_none());
+        state.start_with(engine.clone(), UiAction::SaveSymbolTemplate, serde_json::json!({}), |_| {
+            Err(std::io::Error::other("injected spawn failure"))
+        });
+        assert!(state.message.as_ref().unwrap().contains("injected spawn failure"));
+        assert!(state.pending.is_none());
+        state.start_with(engine, UiAction::SaveSymbolTemplate, serde_json::json!({}), |job| {
+            drop(job);
+            Ok(())
+        });
+        assert!(state.pending.is_some());
+        state.poll(None);
+        assert!(state.message.as_ref().unwrap().contains("worker stopped"));
+        assert!(state.editor.is_some());
+        assert!(state.pending.is_none());
     }
 }

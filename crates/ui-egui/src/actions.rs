@@ -45,6 +45,7 @@ ui_actions! {
     PlaceSymbolTemplate => (viamind_engine::PlaceSymbolTemplate::NAME, input_schema::<viamind_engine::PlaceSymbolTemplate>(), place_symbol_template),
     SnapshotSymbolSheet => ("snapshot_symbol_sheet", input_schema::<viamind_engine::SymbolSheetQuery>(), snapshot_symbol_sheet),
     LoadSymbolTemplate => ("load_symbol_template", input_schema::<viamind_engine::LoadSymbolTemplate>(), load_symbol_template),
+    SaveSymbolTemplate => ("save_symbol_template", input_schema::<viamind_engine::SaveSymbolTemplate>(), save_symbol_template),
     ExportSymbolTemplate => ("export_symbol_template", input_schema::<viamind_engine::ExportSymbolTemplate>(), export_symbol_template),
 
     PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
@@ -329,6 +330,9 @@ fn snapshot_symbol_sheet(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 fn load_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.load_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+fn save_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.save_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
 }
 fn export_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.export_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)

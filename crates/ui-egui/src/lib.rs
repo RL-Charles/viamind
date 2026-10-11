@@ -36,6 +36,7 @@ pub mod schematic;
 pub mod schematic_component;
 pub mod schematic_wires;
 pub mod selection;
+mod symbol_definition;
 pub mod symbol_library;
 pub mod view_export;
 

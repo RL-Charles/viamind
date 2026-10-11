@@ -1,8 +1,17 @@
 //! Bounded native symbol files; all file work runs outside the async executor.
 use crate::{RegistryError, ToolError, ToolRegistry};
-use viamind_engine::{EngineHandle, ExportSymbolTemplate, LoadSymbolTemplate, SymbolSheetQuery, input_schema};
+use viamind_engine::{EngineHandle, ExportSymbolTemplate, LoadSymbolTemplate, SaveSymbolTemplate, SymbolSheetQuery, input_schema};
 
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
+    let save = engine.clone();
+    registry.register("save_symbol_template", "Validate a detached rectangular single-unit definition and save a NEW viamind-symbol version1 file atomically. At most1024 pins/256KiB text/1MiB output. Protects native/existing files. No project, selection, history, library-instance or source-cursor mutation; explicitly load/use and guarded-place to create instances.", input_schema::<SaveSymbolTemplate>(), move |input| {
+        let engine = save.clone();
+        async move {
+            let input = serde_json::from_value(input).map_err(|e| ToolError::InvalidInput(e.to_string()))?;
+            let value = tokio::task::spawn_blocking(move || engine.save_symbol_template(input)).await.map_err(|e| ToolError::Failed(e.to_string()))?.map_err(|e| ToolError::Failed(e.to_string()))?;
+            serde_json::to_value(value).map_err(|e| ToolError::Failed(e.to_string()))
+        }
+    })?;
     let snapshot = engine.clone();
     registry.register("snapshot_symbol_sheet", "Capture one bounded schematic sheet and its project UUID/full source cursor for place_symbol_template. Read-only; no unrelated board/sheet copy. At most10000 objects/10000 pins/4096 bytes per string/2MiB sheet text.", input_schema::<SymbolSheetQuery>(), move |input| {
         let engine = snapshot.clone();
