@@ -30,6 +30,25 @@ impl EngineHost {
     }
 }
 
+/// Bound borrowed request fields before serde allocates typed definition rows.
+fn preflight_footprint_definition(input: &Value, writing: bool) -> Result<(), String> {
+    if input.get("path").and_then(Value::as_str).is_some_and(|path| path.len() > 4096) {
+        return Err("footprint definition paths require at most 4096 UTF-8 bytes".into());
+    }
+    if writing && let Some(footprint) = input.get("footprint") {
+        let pads = footprint.get("pads").and_then(Value::as_array);
+        if pads.is_some_and(|pads| pads.len() > 1024) {
+            return Err("footprint definitions require at most 1024 pads before typed decoding".into());
+        }
+        if footprint.get("name").and_then(Value::as_str).is_some_and(|name| name.len() > 512)
+            || pads.is_some_and(|pads| pads.iter().any(|pad| pad.get("number").and_then(Value::as_str).is_some_and(|number| number.len() > 512)))
+        {
+            return Err("footprint definition name/number fields require at most 512 UTF-8 bytes before typed decoding".into());
+        }
+    }
+    Ok(())
+}
+
 impl CommandHost for EngineHost {
     fn commands(&self) -> Vec<HostCommand> {
         let mut commands: Vec<_> = self
@@ -191,10 +210,12 @@ impl CommandHost for EngineHost {
             return serde_json::to_value(self.engine.inspect_fabrication_files(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "load_footprint_definition" {
+            preflight_footprint_definition(&input, false)?;
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.load_footprint_definition(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "save_footprint_definition" {
+            preflight_footprint_definition(&input, true)?;
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.save_footprint_definition(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
