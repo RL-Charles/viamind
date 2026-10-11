@@ -18,11 +18,21 @@ struct Inspection {
     preview_done: bool,
     created_done: bool,
     visible: Vec<String>,
+    capture_channels: Vec<serde_json::Value>,
 }
 impl Inspection {
     fn capture(&mut self, image: &egui::ColorImage, name: &str) {
         assert_eq!(image.size, [1600, 1000]);
-        assert!(image.pixels.iter().all(|p| p.a() == 255));
+        let rgba: Vec<_> = image.pixels.iter().flat_map(|p| p.to_array()).collect();
+        let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
+        let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+        let nonopaque = image.pixels.iter().filter(|p| p.a() != 255).count();
+        let pam = self.output.join(name).with_extension("pam");
+        let mut raw = std::fs::OpenOptions::new().write(true).create_new(true).open(&pam).expect("NEW P7");
+        raw.write_all(b"P7\nWIDTH 1600\nHEIGHT 1000\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n").unwrap();
+        raw.write_all(&rgba).unwrap();
+        raw.sync_all().unwrap();
+        self.capture_channels.push(serde_json::json!({"capture":name,"rgba_capture":pam,"alpha_min":alpha_min,"alpha_max":alpha_max,"nonopaque_pixels":nonopaque,"channels":"original native Color32 RGBA bytes; no unpremultiplication or alpha flattening"}));
         let path = self.output.join(name);
         let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).expect("NEW P6");
         file.write_all(b"P6\n1600 1000\n255\n").unwrap();
@@ -106,7 +116,7 @@ impl eframe::App for Inspection {
                 self.phase = 7;
             } else {
                 self.created_done = true;
-                let report = serde_json::json!({"passed":true,"route":"production ViamindApp with local egui events and native WGPU Screenshot","preview_full_session_unchanged":true,"created_one_complete_owner":true,"all_schematic_ids_and_geometry_unchanged":true,"shared_selection_unchanged":true,"one_design_transaction":true,"native_path_unchanged":self.engine.document_status().path==self.native_path,"before_cursor":self.before.cursor,"after_cursor":session.cursor,"local_injected_events":self.events,"local_resize_frames":3,"local_resize_pointer_events":5,"frames":self.frames,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"footprint":self.footprint,"preview_capture":"native-preview.ppm","created_capture":"native-created.ppm","visible_final_labels":self.visible,"claims_excluded":["OS input","frame cadence","vendor acceptance","physical copper continuity"]});
+                let report = serde_json::json!({"passed":true,"route":"production ViamindApp with local egui events and native WGPU Screenshot","preview_full_session_unchanged":true,"created_one_complete_owner":true,"all_schematic_ids_and_geometry_unchanged":true,"shared_selection_unchanged":true,"one_design_transaction":true,"native_path_unchanged":self.engine.document_status().path==self.native_path,"before_cursor":self.before.cursor,"after_cursor":session.cursor,"local_injected_events":self.events,"local_resize_frames":3,"local_resize_pointer_events":5,"frames":self.frames,"pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"footprint":self.footprint,"preview_capture":"native-preview.ppm","created_capture":"native-created.ppm","visible_final_labels":self.visible,"capture_channels":self.capture_channels,"claims_excluded":["OS input","frame cadence","vendor acceptance","physical copper continuity"]});
                 let mut f = std::fs::OpenOptions::new().write(true).create_new(true).open(self.output.join("native-report.json")).unwrap();
                 serde_json::to_writer_pretty(&mut f, &report).unwrap();
                 f.sync_all().unwrap();
@@ -149,6 +159,7 @@ impl eframe::App for Inspection {
             input.events.push(egui::Event::MouseWheel {
                 unit: egui::MouseWheelUnit::Point,
                 delta: egui::vec2(0., -200.),
+                phase: egui::TouchPhase::Move,
                 modifiers: egui::Modifiers::NONE,
             });
             self.events += 2;
@@ -219,6 +230,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 preview_done: false,
                 created_done: false,
                 visible: Vec::new(),
+                capture_channels: Vec::new(),
             }))
         }),
     )
