@@ -11,7 +11,7 @@ Specification written before implementation. Public references consulted
 - [Ucamco XNC specification 2021.11](https://www.ucamco.com/files/downloads/file_en/452/xnc-format-specification-revision-2021-11_en.pdf),
   sections 2.3, 2.6 and 3: explicit decimal metric tool diameters and drill hits,
   aligned with fabrication coordinates.
-- [Existing native export behavior](two-layer-fabrication.md) and original
+- [Existing native export behavior](fabrication-gerber.md) and original
   Viamind exporter provide the supported output contract; no external code,
   artwork, parser, application assets or reference-viewer implementation copied.
 
