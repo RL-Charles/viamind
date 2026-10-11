@@ -170,7 +170,7 @@ fn compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and
     assert_eq!(saved.pins[0].electrical, viamind_doc::schematic::PinType::Input);
     let bytes = std::fs::read(&path).unwrap();
     click(&mut h, "Save NEW definition file");
-    wait(&mut h, "already exists");
+    wait(&mut h, "File exists");
     assert_eq!(std::fs::read(&path).unwrap(), bytes);
     click(&mut h, "Cancel definition edits");
     assert!(h.query_by_label("Definition name").is_none());
