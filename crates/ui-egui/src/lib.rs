@@ -261,6 +261,7 @@ impl ViamindApp {
         let mut canvas = Canvas::default();
         canvas.fit_pending = true;
         Self {
+            pcb_branches: pcb_branches::PcbBranchesUi::default(),
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),

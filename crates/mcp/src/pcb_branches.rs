@@ -27,7 +27,14 @@ async fn run(engine: EngineHandle, operation: Operation, input: Value, ctx: Call
     EngineHandle::validate_pcb_branch_input(&input).map_err(failed)?;
     let actor = match operation {
         Operation::List | Operation::Diff => None,
-        _ => Some(BranchActor::agent(ctx.connection.ok_or_else(|| failed("PCB branches require a trusted MCP connection"))?, &ctx.agent.0)),
+        _ => {
+            if ctx.agent.0.len() > 128 || ctx.agent.0.chars().any(char::is_control) {
+                return Err(failed(
+                    "PCB branch creator identity must fit128 UTF-8 bytes including connection suffix, without control characters; reconnect with a shorter client name",
+                ));
+            }
+            Some(BranchActor::agent(ctx.connection.ok_or_else(|| failed("PCB branches require a trusted MCP connection"))?, &ctx.agent.0))
+        }
     };
     // Acquired before spawn: canceling the awaiter cannot admit a second worker.
     let permit = if matches!(operation, Operation::Create | Operation::Apply) { Some(reserve_pcb_branch_work().map_err(failed)?) } else { None };
@@ -118,6 +125,20 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
 mod tests {
     use super::*;
     use std::{sync::mpsc, time::Duration};
+
+    #[tokio::test]
+    async fn oversized_or_control_creator_refuses_instead_of_losing_original_undo_attribution() {
+        for name in ["x".repeat(129), "name\n#1".into()] {
+            let engine = EngineHandle::new(viamind_doc::Project::new("identity"));
+            let before = engine.session_state();
+            let input = json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"label":"guard"});
+            let mut ctx = CallContext::new(name);
+            ctx.connection = Some(1);
+            assert!(run(engine.clone(), Operation::Create, input, ctx).await.unwrap_err().to_string().contains("creator identity"));
+            assert!(engine.list_pcb_branches().is_empty());
+            assert_eq!(engine.session_state(), before);
+        }
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn canceling_real_create_awaiter_does_not_release_its_blocked_worker_permit() {
