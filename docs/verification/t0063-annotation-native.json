@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "checks": [
+    "actual production stdio discovery",
+    "native read-only preview and expected changes",
+    "deterministic repeated preview",
+    "invalid preview preserves complete session",
+    "stale apply preserves complete session",
+    "native references assigned uniquely",
+    "all non-reference model data unchanged",
+    "exact electrical graph preserved",
+    "single native undo restores all references",
+    "native redo restores annotation",
+    "native schema5 persistence",
+    "native same-project reopen refreshes stream",
+    "reopened annotation is saved",
+    "clean production process exit"
+  ],
+  "binary_sha256": "3c89ea000fe76e78bd9aebb5ff47ce1b567861c30d9499c252798713aa278896",
+  "source_commit": "482839b",
+  "platform": "Linux x86_64",
+  "transport": "Production binary headless stdio MCP with DISPLAY and WAYLAND_DISPLAY absent",
+  "workspace_gates": {
+    "format": "passed",
+    "strict_all_target_clippy": "passed",
+    "tests_passed": 339,
+    "tests_failed": 0,
+    "tests_ignored": 1,
+    "build": "passed"
+  },
+  "other_verification": [
+    "Two production ViamindApp egui input regressions for preview/apply, undo, stale rejection and same-project reopen",
+    "Real two-client HTTP MCP regression for immutable preview, stale edit, connection-specific undo and redo",
+    "Independent agent source review including bounds, identity and exact sheet guards"
+  ],
+  "limits": [
+    "Reference annotation only; no PCB synchronization",
+    "Native GUI interaction is covered by production app input regressions; the retained binary was checked through headless stdio"
+  ]
+}

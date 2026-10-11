@@ -37,6 +37,10 @@ the current changes. Board-only edits preserve the preview. Reopening a document
 clears the desktop preview. This operation changes schematic references only;
 PCB synchronization is a separate capability.
 
+The [Linux annotation verification report](verification/t0063-annotation-native.json)
+records the tested production binary, 14 headless MCP checks, full workspace
+gates, desktop input regressions and verification limits.
+
 ## Original regulator example
 
 Open [the native example](../fixtures/schematic/regulator.viamind.json), which
