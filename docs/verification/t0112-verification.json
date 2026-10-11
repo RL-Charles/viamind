@@ -170,6 +170,12 @@
       "path": "docs/verification/t0112-catalog-drift.json",
       "bytes": 367,
       "sha256": "8af41e6f4739f3a6672c1a299ea12fa7b43aad0efd964de92cf9903fc25a8ea6"
+    },
+    {
+      "path": "docs/verification/t0112-independent-production-report.json",
+      "bytes": 8147,
+      "sha256": "dedfe18759e48d4c8edc9d5903b3469a29eff18d64a05fc2fd3fe507837e09ae"
     }
-  ]
+  ],
+  "independent_production_checks": 56
 }

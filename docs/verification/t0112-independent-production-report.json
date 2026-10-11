@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "checks": [
+    "actual startup read-only discovery advertises inspector and hides release writer",
+    "v1-generic current production export",
+    "v1-generic display-free CLI scalar/layout/length facts",
+    "v1-generic actual HTTP client 0 exact CLI parity",
+    "v1-generic actual HTTP client 1 exact CLI parity",
+    "v1-generic historical provenance is separate from current document",
+    "v1-generic prior/current unchanged format and config bytes",
+    "v1-checked current production export",
+    "v1-checked display-free CLI scalar/layout/length facts",
+    "v1-checked actual HTTP client 0 exact CLI parity",
+    "v1-checked actual HTTP client 1 exact CLI parity",
+    "v1-checked historical provenance is separate from current document",
+    "v1-checked prior/current unchanged format and config bytes",
+    "v2-generic current production export",
+    "v2-generic display-free CLI scalar/layout/length facts",
+    "v2-generic actual HTTP client 0 exact CLI parity",
+    "v2-generic actual HTTP client 1 exact CLI parity",
+    "v2-generic historical provenance is separate from current document",
+    "v2-generic prior/current unchanged format and config bytes",
+    "v2-checked current production export",
+    "v2-checked display-free CLI scalar/layout/length facts",
+    "v2-checked actual HTTP client 0 exact CLI parity",
+    "v2-checked actual HTTP client 1 exact CLI parity",
+    "v2-checked historical provenance is separate from current document",
+    "v2-checked prior/current unchanged format and config bytes",
+    "v3-generic current production export",
+    "v3-generic display-free CLI scalar/layout/length facts",
+    "v3-generic actual HTTP client 0 exact CLI parity",
+    "v3-generic actual HTTP client 1 exact CLI parity",
+    "v3-generic historical provenance is separate from current document",
+    "v3-generic prior/current unchanged format and config bytes",
+    "v3-checked current production export",
+    "v3-checked display-free CLI scalar/layout/length facts",
+    "v3-checked actual HTTP client 0 exact CLI parity",
+    "v3-checked actual HTTP client 1 exact CLI parity",
+    "v3-checked historical provenance is separate from current document",
+    "v3-checked prior/current unchanged format and config bytes",
+    "independent CSV UUID/hashlib reader verifies matched set/count/digest",
+    "independent reader preserves escaped Unicode quotes and multiline exact text",
+    "strict inspector request/path refusal 39",
+    "strict inspector request/path refusal 40",
+    "strict inspector request/path refusal 41",
+    "strict inspector request/path refusal 42",
+    "actual reader rejects traversal contradiction",
+    "actual reader rejects length contradiction",
+    "actual reader rejects digest contradiction",
+    "actual reader rejects null contradiction",
+    "same-length unchecked content honestly passes declared checks only",
+    "same-length shared component field mismatch rejects",
+    "final symlink refuses",
+    "FIFO refuses without blocking",
+    "all original release payloads restored exactly",
+    "both observers preserve complete live session/status/native",
+    "actual read-only stdio advertises inspector",
+    "actual stdio and HTTP agree on historical release",
+    "retained current and prior executable identities unchanged"
+  ],
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-46ba551-verified",
+  "binary_sha256": "3c3d9fc74e45977141c466745e58fa2750cca7cf6c5e35c8fb0f84c7e3076c4d",
+  "previous_binary_sha256": "3adbb92ff788b976a002c03ce1aa27a265ceafffd405b12a7e4c7511d05238e3",
+  "endpoint": "http://127.0.0.1:7942/mcp",
+  "scope": "Detached fixed-layout length/assembly identity consistency only. No geometry/DRC recomputation, authenticated file content, source-board equivalence or manufacturer acceptance.",
+  "check_count": 56,
+  "native_sha256": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05",
+  "historical_release": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0112-independent-proof/v3-generic",
+  "observed_report": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0113/t0112-independent-proof/v3-generic",
+    "format": "viamind-output-release",
+    "version": 3,
+    "profile": "generic_outer_2layer",
+    "project_id": "00000000-0000-0000-0000-000000000099",
+    "exported_cursor": {
+      "stream_id": "4c1a5796-96b6-4df1-957f-2fdee38b854f",
+      "sequence": 0
+    },
+    "file_count": 13,
+    "observed_bytes": 7826,
+    "files": [
+      {
+        "path": "assembly/bom.csv",
+        "declared_bytes": 248,
+        "observed_bytes": 248
+      },
+      {
+        "path": "assembly/calibrated-placement.csv",
+        "declared_bytes": 388,
+        "observed_bytes": 388
+      },
+      {
+        "path": "assembly/placement.csv",
+        "declared_bytes": 321,
+        "observed_bytes": 321
+      },
+      {
+        "path": "assembly/populated-bom.csv",
+        "declared_bytes": 407,
+        "observed_bytes": 407
+      },
+      {
+        "path": "fabrication/bottom-copper.gbr",
+        "declared_bytes": 745,
+        "observed_bytes": 745
+      },
+      {
+        "path": "fabrication/bottom-mask.gbr",
+        "declared_bytes": 513,
+        "observed_bytes": 513
+      },
+      {
+        "path": "fabrication/manifest.json",
+        "declared_bytes": 929,
+        "observed_bytes": 929
+      },
+      {
+        "path": "fabrication/plated-through.xnc",
+        "declared_bytes": 166,
+        "observed_bytes": 166
+      },
+      {
+        "path": "fabrication/profile.gbr",
+        "declared_bytes": 734,
+        "observed_bytes": 734
+      },
+      {
+        "path": "fabrication/top-copper.gbr",
+        "declared_bytes": 638,
+        "observed_bytes": 638
+      },
+      {
+        "path": "fabrication/top-mask.gbr",
+        "declared_bytes": 439,
+        "observed_bytes": 439
+      },
+      {
+        "path": "job.json",
+        "declared_bytes": 235,
+        "observed_bytes": 235
+      }
+    ],
+    "calibrated_component_count": 2,
+    "matched_assembly": {
+      "component_count": 2,
+      "component_ids_sha256": "8b08ac1ca98bead3d02a7d357cb77d1154ad244e380bf906a2c0970faba5f1a7"
+    },
+    "release_exclusions": [
+      "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+      "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+      "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+      "Generic bom.csv and placement.csv inventory all components at component origins. populated-bom.csv and calibrated-placement.csv contain the same explicitly populated all-mounting component subset; their stable identity digest is declared separately.",
+      "Sourcing identifiers are exact user-entered values and may be unavailable; no stock, procurement, inferred identifiers or vendor certification. The generic top-view marker does not establish universal vendor zero, polarity, tape orientation or manufacturer-specific mounting filters."
+    ],
+    "checks_performed": [
+      "Strict supported release/job layout and version/profile/summary matrix",
+      "Declared/observed regular file byte lengths and observed path/descriptor identity stability",
+      "Fabrication manifest project/files/mask/coordinate metadata consistency",
+      "When present: calibrated row/count validity and populated shared fields/component membership/identity digest"
+    ],
+    "checks_not_performed": [
+      "No authenticated file-content digest, original-export authenticity or current-board equality",
+      "No geometry/Gerber/XNC/legacy assembly/validation report semantic or DRC recomputation",
+      "No vendor/manufacturing/stock/polarity acceptance",
+      "Unlisted filesystem entries not inspected; per-file inspector caps may refuse otherwise valid larger exports",
+      "Independent file reads are not an atomic cross-file snapshot; same-length unchecked-content edits can pass and files may change after return"
+    ]
+  }
+}

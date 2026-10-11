@@ -56,3 +56,5 @@ The [native report](verification/t0112-native-inspection-report.json) proves pat
 Fresh Cua production [launch](verification/t0112-cua-production-launch.json) and [enumeration](verification/t0112-cua-production-windows.json) returned no enumerated window target, so no Cua screenshot is claimed. The native framebuffer image is explicitly from the separate fixed-size inspection host.
 
 [Master provenance](verification/t0112-verification.json) indexes durable reports, logs, fixture, harness, capture and exact retained executable identities. Final combined integration and exact-head CI are still pending.
+
+Root independently reran the same actual production probe: [all56 checks passed](verification/t0112-independent-production-report.json). It separately verified28 original indexed artifact hashes, all3 retained executable hashes, the live production identity and every one of4,800,000 RGB samples against original P6 pixels, and viewed the readable native result. This review supplements the source audit; final combined T111 integration and exact-head CI remain pending.
