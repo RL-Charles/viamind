@@ -210,3 +210,23 @@ fn virtualized_results_reach_final_diagnostic_after_large_scroll() {
     h.run_steps(30);
     assert!(h.query_all_by_label(&caption).next().is_some(), "Final diagnostic must remain reachable at the end of the virtual list");
 }
+
+#[test]
+fn first_erc_navigation_from_pcb_preserves_exact_pin_center_through_initial_schematic_layout() {
+    let e = EngineHandle::new(viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap());
+    let expected = e.run_erc(&ErcInput::default()).unwrap();
+    let pin = expected.violations[0].pins[0].clone();
+    let mut h = harness(&e);
+    assert!(!h.state().schematic.active);
+    h.state_mut().begin_erc();
+    h.run_steps(5);
+    click(&mut h, "Run ERC");
+    finish(&mut h);
+    let before = e.session_state();
+    let label = format!("Show pin {} · {}", pin.pin_number.as_ref().unwrap(), &pin.id.to_string()[28..]);
+    click(&mut h, &label);
+    assert!(h.state().schematic.active);
+    let at = pin.position.unwrap();
+    assert_eq!(h.state().schematic.camera.center, viamind_ui_egui::camera::WorldPos::new(at.x.to_mm(), at.y.to_mm()));
+    assert_eq!(e.session_state(), before);
+}

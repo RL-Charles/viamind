@@ -10,6 +10,7 @@ pub mod board_scene;
 pub mod camera;
 pub mod canvas;
 pub mod copper;
+pub mod cross_probe;
 pub mod drc;
 pub mod erc;
 pub mod fabrication;
@@ -126,6 +127,7 @@ pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
+    pub cross_probe: cross_probe::CrossProbeUi,
     pub scene: Scene,
     /// How the canvas draws the scene's layers; edited in the layer panel.
     pub layers: LayerStack,
@@ -168,6 +170,7 @@ impl ViamindApp {
             schematic: schematic::SchematicUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
+            cross_probe: cross_probe::CrossProbeUi::default(),
             scene: Scene::synthetic(n),
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
@@ -200,6 +203,7 @@ impl ViamindApp {
             schematic,
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
+            cross_probe: cross_probe::CrossProbeUi::default(),
             scene,
             layers: LayerStack::pcb_default(4),
             canvas,
@@ -317,6 +321,7 @@ impl ViamindApp {
             }
         }
         self.sync_design();
+        self.sync_cross_probe(ui);
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
@@ -324,6 +329,7 @@ impl ViamindApp {
             .default_size(if self.schematic.active { 380.0 } else { 280.0 })
             .show(ui, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
+                    self.cross_probe_panel(ui);
                     if self.schematic.active {
                         self.schematic_panel(ui);
                         return;
@@ -359,6 +365,7 @@ impl ViamindApp {
                     !self.files.busy() && !self.parts.placing() && !self.outlines.editing() && !self.pads.editing() && !self.copper.editing();
                 self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
+            self.paint_cross_probe(ui, response.rect);
             self.paint_labels(ui);
         });
         self.file_dialogs(ui);

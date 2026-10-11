@@ -39,10 +39,12 @@ pub mod engine;
 mod erc;
 pub mod event;
 pub use erc::{ErcCheck, ErcCoverage, ErcInput, ErcReport, ErcSeverity, ErcViolation, PinCompatibilityRule};
+mod component_links;
 pub mod footprint;
 pub mod handle;
 pub mod log;
 pub mod pads;
+pub use component_links::{ComponentLinkQuery, ComponentLinkResult, ComponentLinkStatus, LinkedComponent};
 mod pcb_sync;
 pub use pcb_sync::{
     LinkSchematicSymbol, PcbSyncChange, PcbSyncDirection, PcbSyncNet, PcbSyncPreview, PcbSyncRequest, SchematicLinkTarget, SynchronizeSchematicPcb,
