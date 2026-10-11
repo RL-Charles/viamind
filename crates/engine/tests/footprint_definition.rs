@@ -21,7 +21,7 @@ fn detached_files_preserve_dirty_session_and_separate_reuse_retains_link_assembl
     let path = directory.path().join("new.json");
     let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/linked-regulator.viamind.json")).unwrap();
     project.board.parts.values_mut().next().unwrap().assembly =
-        Some(viamind_doc::AssemblyMetadata { mpn: Some("Explicit retained MPN".into()), populate: false, ..Default::default() });
+        Some(Box::new(viamind_doc::AssemblyMetadata { mpn: Some("Explicit retained MPN".into()), populate: false, ..Default::default() }));
     let engine = EngineHandle::new(project);
     let id = engine.read(|p| *p.board.parts.keys().next().unwrap());
     let old = engine.read(|p| p.board.part(&id).unwrap().clone());
