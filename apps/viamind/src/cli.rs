@@ -166,7 +166,14 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
         if options.open.is_none() || options.output.is_none() {
             return Err("--export-svg requires --open and --output".into());
         }
-        if options.export_gerber || options.export_csv.is_some() || options.overwrite || options.demo || options.headless || options.no_mcp || options.save_as.is_some() {
+        if options.export_gerber
+            || options.export_csv.is_some()
+            || options.overwrite
+            || options.demo
+            || options.headless
+            || options.no_mcp
+            || options.save_as.is_some()
+        {
             return Err("--export-svg is a separate invocation with a NEW output file".into());
         }
         options.svg_options.validate().map_err(|e| e.to_string())?;

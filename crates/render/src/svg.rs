@@ -291,26 +291,26 @@ pub fn board_svg(project: &Project, options: &SvgOptions) -> io::Result<BoardSvg
             }
         }
     }
-    if layers.contains(&ViewLayer::Outline) {
-        if let Some(outline) = &project.board.outline {
-            let mut d = String::new();
-            let mut bounds = None;
-            for ring in outline.rings() {
-                for (i, p) in ring.points.iter().enumerate() {
-                    write!(d, "{}{} {} ", if i == 0 { "M" } else { "L" }, mm(p.x.0), mm(p.y.0)).unwrap();
-                    let b = extent(p.x.0, p.y.0, OUTLINE_HALF_STROKE);
-                    bounds = Some(bounds.map_or(b, |old: ViewBounds| old.union(b)));
-                }
-                d.push_str("Z ");
+    if layers.contains(&ViewLayer::Outline)
+        && let Some(outline) = &project.board.outline
+    {
+        let mut d = String::new();
+        let mut bounds = None;
+        for ring in outline.rings() {
+            for (i, p) in ring.points.iter().enumerate() {
+                write!(d, "{}{} {} ", if i == 0 { "M" } else { "L" }, mm(p.x.0), mm(p.y.0)).unwrap();
+                let b = extent(p.x.0, p.y.0, OUTLINE_HALF_STROKE);
+                bounds = Some(bounds.map_or(b, |old: ViewBounds| old.union(b)));
             }
-            shapes.push(Shape {
+            d.push_str("Z ");
+        }
+        shapes.push(Shape {
                 layer: ViewLayer::Outline,
                 bounds: bounds.unwrap(),
                 xml: format!(
-                    "<path id=\"board-outline\" d=\"{d}\" fill=\"#25302b\" fill-rule=\"evenodd\" stroke=\"#d8ddd9\" stroke-width=\"0.1\"/>\n"
+                    "<path id=\"board-outline\" d=\"{d}\" fill=\"#25302b\" fill-rule=\"evenodd\" stroke=\"#d8ddd9\" stroke-width=\"0.1\" stroke-linejoin=\"round\"/>\n"
                 ),
             });
-        }
     }
     for s in &shapes {
         s.bounds.validate()?;

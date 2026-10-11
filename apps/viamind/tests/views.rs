@@ -56,6 +56,15 @@ fn cli_renders_selected_region_without_display_and_preserves_collisions_native_a
         assert!(!invalid.exists());
     }
     assert!(!run(&["--view-size".as_ref(), "800,600".as_ref()]).status.success());
+    for mode in ["--export-gerber", "--export-csv"] {
+        let mut mixed = args.to_vec();
+        mixed.push(mode.as_ref());
+        if mode == "--export-csv" {
+            mixed.push("bom".as_ref());
+        }
+        assert!(!run(&mixed).status.success());
+        assert_eq!(fs::read_to_string(&out).unwrap(), svg);
+    }
     let mut overwrite = args.to_vec();
     overwrite.push("--overwrite".as_ref());
     assert!(!run(&overwrite).status.success());
