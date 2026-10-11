@@ -17,6 +17,7 @@ pub(crate) struct PinDraft {
     electrical: PinType,
 }
 pub(crate) struct DefinitionEditor {
+    widget: ObjectId,
     name: String,
     value: String,
     footprint: String,
@@ -56,6 +57,7 @@ impl DefinitionEditor {
     }
     pub(crate) fn from_template(template: &SymbolTemplate) -> Self {
         Self {
+            widget: ObjectId::new(),
             name: template.name.clone(),
             value: template.value.clone(),
             footprint: template.footprint.clone().unwrap_or_default(),
@@ -122,11 +124,11 @@ impl DefinitionEditor {
         ui.heading("Local symbol definition");
         ui.label("Edits stay in this form. Use explicitly for new placement, or save a new definition file.");
         ui.add_enabled_ui(ready, |ui| {
-            text(ui, "Definition name", &mut self.name, 128);
-            text(ui, "Definition default value", &mut self.value, 1024);
-            text(ui, "Definition footprint (optional)", &mut self.footprint, 128);
-            text(ui, "Definition width (mm)", &mut self.width, 32);
-            text(ui, "Definition height (mm)", &mut self.height, 32);
+            text(ui, self.widget, "Definition name", &mut self.name, 128);
+            text(ui, self.widget, "Definition default value", &mut self.value, 1024);
+            text(ui, self.widget, "Definition footprint (optional)", &mut self.footprint, 128);
+            text(ui, self.widget, "Definition width (mm)", &mut self.width, 32);
+            text(ui, self.widget, "Definition height (mm)", &mut self.height, 32);
             ui.label(format!("{} / 1024 ordered pins", self.pins.len()));
             let row_height = ui.spacing().interact_size.y * 6.0 + ui.spacing().item_spacing.y * 5.0 + 8.0;
             let mut remove = None;
@@ -134,16 +136,20 @@ impl DefinitionEditor {
                 for i in rows {
                     let pin = &mut self.pins[i];
                     ui.allocate_ui(egui::vec2(ui.available_width(), row_height), |ui| {
-                        ui.push_id(pin.widget, |ui| {
+                        // A root scope also keeps the electrical popup stable through row movement.
+                        ui.scope_builder(egui::UiBuilder::new().id(egui::Id::new(("definition-pin", pin.widget))), |ui| {
                             egui::Grid::new("fields").show(ui, |ui| {
-                                for (label, field, limit) in [
-                                    (format!("Pin {} number", i + 1), &mut pin.number, 128),
-                                    (format!("Pin {} name", i + 1), &mut pin.name, 128),
-                                    (format!("Pin {} X (mm)", i + 1), &mut pin.x, 32),
-                                    (format!("Pin {} Y (mm)", i + 1), &mut pin.y, 32),
+                                for (key, label, field, limit) in [
+                                    ("number", format!("Pin {} number", i + 1), &mut pin.number, 128),
+                                    ("name", format!("Pin {} name", i + 1), &mut pin.name, 128),
+                                    ("x", format!("Pin {} X (mm)", i + 1), &mut pin.x, 32),
+                                    ("y", format!("Pin {} Y (mm)", i + 1), &mut pin.y, 32),
                                 ] {
                                     let label = ui.label(label);
-                                    ui.add(egui::TextEdit::singleline(field).desired_width(150.0).char_limit(limit)).labelled_by(label.id);
+                                    ui.add(
+                                        egui::TextEdit::singleline(field).id(egui::Id::new((pin.widget, key))).desired_width(150.0).char_limit(limit),
+                                    )
+                                    .labelled_by(label.id);
                                     ui.end_row();
                                 }
                                 let label = ui.label(format!("Pin {} electrical type", i + 1));
@@ -184,7 +190,7 @@ impl DefinitionEditor {
             if ui.add_enabled(self.pins.len() < MAX_PINS, egui::Button::new("Add definition pin")).clicked() {
                 self.add_pin();
             }
-            text(ui, "NEW definition file path", &mut self.path, 4096);
+            text(ui, self.widget, "NEW definition file path", &mut self.path, 4096);
             if ui.button("Use edited definition").clicked() {
                 match self.template() {
                     Ok(template) => {
@@ -218,9 +224,10 @@ impl DefinitionEditor {
         decision
     }
 }
-fn text(ui: &mut egui::Ui, label: &str, value: &mut String, limit: usize) {
+fn text(ui: &mut egui::Ui, widget: ObjectId, label: &str, value: &mut String, limit: usize) {
+    let id = egui::Id::new((widget, label));
     let label = ui.label(label);
-    ui.add(egui::TextEdit::singleline(value).char_limit(limit).desired_width(300.0)).labelled_by(label.id);
+    ui.add(egui::TextEdit::singleline(value).id(id).char_limit(limit).desired_width(300.0)).labelled_by(label.id);
 }
 
 #[cfg(test)]

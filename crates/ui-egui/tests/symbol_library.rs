@@ -1,5 +1,8 @@
 use egui::vec2;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use viamind_engine::{EngineHandle, Origin};
 use viamind_ui_egui::ViamindApp;
 fn engine() -> EngineHandle {
@@ -43,6 +46,100 @@ fn load(h: &mut Harness<'_, ViamindApp>) {
     input(h, "Symbol library file path", &path.to_string_lossy());
     click(h, "Load symbol template");
     wait(h, "Loaded Original regulator");
+}
+
+#[test]
+fn actual_definition_field_identity_survives_removal_virtualization_and_fresh_replacement() {
+    let e = engine();
+    let before = e.session_state();
+    let status = e.document_status();
+    let mut h = harness(&e);
+    click(&mut h, "New detached definition");
+    let metadata = [
+        "Definition name",
+        "Definition default value",
+        "Definition footprint (optional)",
+        "Definition width (mm)",
+        "Definition height (mm)",
+        "NEW definition file path",
+    ];
+    let meta_ids: Vec<_> = metadata.iter().map(|label| h.get_by_label(label).accesskit_node().id()).collect();
+    click(&mut h, "Add definition pin");
+    for (label, value) in [("Pin 2 number", "RET2"), ("Pin 2 name", "Retained input"), ("Pin 2 X (mm)", "1.000003"), ("Pin 2 Y (mm)", "-2.000007")] {
+        input(&mut h, label, value);
+    }
+    click(&mut h, "Pin 2 electrical type");
+    click(&mut h, "Input");
+    let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
+    let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
+    let removed = h.get_by_label("Pin 1 name").accesskit_node().id();
+    let distinct: std::collections::BTreeSet<_> = meta_ids.iter().chain(&ids).collect();
+    assert_eq!(distinct.len(), meta_ids.len() + ids.len());
+    h.get_by_label("Pin 2 name").focus();
+    h.run_steps(3);
+    h.event(egui::Event::Key { key: egui::Key::ArrowLeft, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::NONE });
+    h.run_steps(2);
+    h.event(egui::Event::Key { key: egui::Key::ArrowLeft, physical_key: None, pressed: false, repeat: false, modifiers: egui::Modifiers::NONE });
+    h.run_steps(2);
+    let retained_text_id = h.ctx.memory(egui::Memory::focused).unwrap();
+    let cursor = egui::text_edit::TextEditState::load(&h.ctx, retained_text_id).unwrap().cursor.char_range();
+    click(&mut h, "Remove pin 1");
+    for (i, field) in fields.iter().enumerate() {
+        assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
+    }
+    assert_ne!(h.get_by_label("Pin 1 name").accesskit_node().id(), removed);
+    assert_eq!(egui::text_edit::TextEditState::load(&h.ctx, retained_text_id).unwrap().cursor.char_range(), cursor);
+    h.get_by_label("Pin 1 name").focus();
+    h.run_steps(3);
+    assert_eq!(h.ctx.memory(egui::Memory::focused), Some(retained_text_id));
+    for _ in 0..12 {
+        click(&mut h, "Add definition pin");
+    }
+    h.get_by_label("Pin 1 name").scroll_to_me();
+    h.run_steps(5);
+    h.hover_at(h.get_by_label("Pin 1 name").rect().center());
+    h.run_steps(2);
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        phase: egui::TouchPhase::Move,
+        delta: vec2(0.0, -4000.0),
+        modifiers: egui::Modifiers::NONE,
+    });
+    h.run_steps(8);
+    h.get_by_label("Pin 13 name").scroll_to_me();
+    h.run_steps(5);
+    h.hover_at(h.get_by_label("Pin 13 name").rect().center());
+    h.run_steps(2);
+    h.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        phase: egui::TouchPhase::Move,
+        delta: vec2(0.0, 4000.0),
+        modifiers: egui::Modifiers::NONE,
+    });
+    h.run_steps(8);
+    for (i, field) in fields.iter().enumerate() {
+        assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
+    }
+    input(&mut h, "Definition default value", "Changed surrounding metadata");
+    for (i, label) in metadata.iter().enumerate() {
+        assert_eq!(h.get_by_label(label).accesskit_node().id(), meta_ids[i]);
+    }
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("retained-symbol.json");
+    input(&mut h, "NEW definition file path", &path.to_string_lossy());
+    click(&mut h, "Save NEW definition file");
+    wait(&mut h, "Created detached definition");
+    let saved = viamind_doc::symbol_library::load(&path).unwrap();
+    assert_eq!(saved.pins[0].number, "RET2");
+    assert_eq!(saved.pins[0].name, "Retained input");
+    assert_eq!(saved.pins[0].position.x, viamind_geom::Nm(1_000_003));
+    assert_eq!(saved.pins[0].position.y, viamind_geom::Nm(-2_000_007));
+    assert_eq!(saved.pins[0].electrical, viamind_doc::schematic::PinType::Input);
+    assert_eq!(e.session_state(), before);
+    assert_eq!(e.document_status(), status);
+    click(&mut h, "Cancel definition edits");
+    click(&mut h, "New detached definition");
+    assert_ne!(h.get_by_label("Definition name").accesskit_node().id(), meta_ids[0]);
 }
 #[test]
 fn actual_library_file_transform_placement_and_undo_preserve_original_instances() {

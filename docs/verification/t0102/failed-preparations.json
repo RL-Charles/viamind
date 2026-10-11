@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/exact-wide-final-native.log",
+    "sha256": "79b3236a6d689bfbbaa039fe4987a1631bc00d1eb1d5afaffaa0d136b301c57f",
+    "bytes": 385,
+    "preparation_failed_before_native_launch": true,
+    "leading_diagnostic": "{\"independently_loaded_source\":\"Original regulator\",\"preparation_viewport\":[1600,1200]}\n{\"inner_paint_clip\":[17.0,433.0,515.0,435.0],\"remove_button\":[23.0,425.0,109.625,443.0]}\n\nthread 'main' (1815759) panicked at crates/ui-egui/examples/t0102_inspection.rs:135:5:\nactual Remove must reduce two pins to one\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/final-wide-final-native.log",
+    "sha256": "b711af88035560c25fcbcc27912a5adb8c87161e0de318e6a82345d7c90dfc00",
+    "bytes": 208,
+    "preparation_failed_before_native_launch": true,
+    "leading_diagnostic": "\nthread 'main' (1803961) panicked at crates/ui-egui/examples/t0102_inspection.rs:117:5:\nactual Remove must reduce two pins to one\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/retry-wide-final-native.log",
+    "sha256": "574c9386cd0088b76607c223420bf2ce524e5b8e836a0d5bdc217f9c9d4eb8fd",
+    "bytes": 302,
+    "preparation_failed_before_native_launch": true,
+    "leading_diagnostic": "\nthread 'main' (1795682) panicked at crates/ui-egui/examples/t0102_inspection.rs:117:9:\nassertion `left == right` failed\n  left: NodeId(TreeIndex(0), #14611065883723504102)\n right: NodeId(TreeIndex(0), #6320471334716373595)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/wheel-wide-final-native.log",
+    "sha256": "9790ff56715ac087ddecc1f41bd0e361fe3c5e1568ac021fd60a657d8b09322d",
+    "bytes": 208,
+    "preparation_failed_before_native_launch": true,
+    "leading_diagnostic": "\nthread 'main' (1808389) panicked at crates/ui-egui/examples/t0102_inspection.rs:132:5:\nactual Remove must reduce two pins to one\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/wide-final-native.log",
+    "sha256": "757c1d299e8a3935540d364631d1dbcdb367915e80efe79c3116a6cf92af3770",
+    "bytes": 324537,
+    "preparation_failed_before_native_launch": true,
+    "leading_diagnostic": "\nthread 'main' (1786408) panicked at crates/ui-egui/examples/t0102_inspection.rs:64:7:\nNo nodes found matching the query:\nBy {\n    label: \"Input\",\n}\n\nOn node:\nNode {\n    id: NodeId(\n        TreeIndex(\n            0,\n        ),\n        #13826925289788388,\n    ),\n    role: Window,\n    focused: true,\n    hidden: false,\n    disabled: false,\n    children: [\n        Node {\n            id: NodeId(\n                TreeIndex(\n                    0,\n                ),\n                #18356943641707106210,\n            ),\n            role: GenericContainer,\n            focused: false,\n            hidden: false,\n            disabled: false,\n            c"
+  }
+]

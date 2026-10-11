@@ -1,0 +1,22 @@
+{
+  "format": "viamind-symbol",
+  "version": 1,
+  "symbol": {
+    "name": "Original stable symbol fields",
+    "value": "",
+    "footprint": null,
+    "width": 10000000,
+    "height": 10000000,
+    "pins": [
+      {
+        "number": "2",
+        "name": "Retained input",
+        "position": {
+          "x": 1000003,
+          "y": -2000007
+        },
+        "electrical": "input"
+      }
+    ]
+  }
+}

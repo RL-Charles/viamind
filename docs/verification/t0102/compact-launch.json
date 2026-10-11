@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/inspection-b6fc692dde6e",
+    "/home/charlesmowbray/Development/viamind-t-0102/fixtures/symbols/original-regulator.viamind-symbol.json",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-compact-final-new-definition.json",
+    "preview",
+    "640",
+    "400",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/expanded-compact-final.ppm"
+  ],
+  "pid": 1821228,
+  "source_commit": "b6fc692dde6e",
+  "launched_utc": "2026-10-11T16:15:14.818836+00:00",
+  "scope": "Actual egui input preparing production ViamindApp; actual native WGPU Screenshot; no OS input or compositor capture claim",
+  "exit_code": 0,
+  "exited_utc": "2026-10-11T16:15:15.885003+00:00"
+}
