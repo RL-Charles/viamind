@@ -21,7 +21,7 @@ pub enum SelectionMode {
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SetSelection {
-    /// IDs of existing board parts. Empty with replace clears selection.
+    /// IDs of existing board parts, straight tracks or through vias. Empty with replace clears selection.
     pub ids: Vec<ObjectId>,
     /// Defaults to replace; add, remove and toggle are also supported.
     #[serde(default)]
@@ -33,7 +33,7 @@ pub struct SetSelection {
 pub struct SelectionSnapshot {
     /// Selected IDs in stable sorted order.
     pub ids: Vec<ObjectId>,
-    /// Increases whenever the set changes, including removal of deleted parts.
+    /// Increases whenever the set changes, including removal of deleted objects.
     pub revision: u64,
     /// Who last changed the selection.
     pub origin: Option<Origin>,

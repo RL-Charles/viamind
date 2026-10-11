@@ -91,3 +91,84 @@ pub(crate) fn enters_rectangle(rect: &[P; 4], a: P, b: P) -> bool {
     }
     hi > lo
 }
+
+/// Exact elementary planar copper sets. An annulus excludes its open drill.
+#[derive(Clone, Copy)]
+pub(crate) enum Shape {
+    Rectangle([P; 4]),
+    Capsule { a: P, b: P, radius: f64 },
+    Annulus { center: P, inner: f64, outer: f64 },
+}
+impl Shape {
+    pub(crate) fn bbox(self) -> Rect {
+        match self {
+            Self::Rectangle(corners) => bounds(&corners),
+            Self::Capsule { a, b, radius } => {
+                bounds(&[[a[0].min(b[0]) - radius, a[1].min(b[1]) - radius], [a[0].max(b[0]) + radius, a[1].max(b[1]) + radius]])
+            }
+            Self::Annulus { center: c, outer: r, .. } => bounds(&[[c[0] - r, c[1] - r], [c[0] + r, c[1] + r]]),
+        }
+    }
+    /// One point in the connected copper interior for polygon containment.
+    pub(crate) fn sample(self) -> P {
+        match self {
+            Self::Rectangle(c) => [(c[0][0] + c[2][0]) / 2.0, (c[0][1] + c[2][1]) / 2.0],
+            Self::Capsule { a, b, .. } => [(a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0],
+            Self::Annulus { center, inner, outer } => [center[0] + (inner + outer) / 2.0, center[1]],
+        }
+    }
+    /// Radial distances occupied by a connected shape form one closed interval.
+    fn radial_range(self, center: P) -> (f64, f64) {
+        match self {
+            Self::Rectangle(c) => {
+                let min =
+                    if contains(&c, center, true) { 0.0 } else { edges(&c).map(|(a, b)| point_distance(center, a, b)).fold(f64::INFINITY, f64::min) };
+                (min, c.iter().map(|p| length(*p, center)).fold(0.0, f64::max))
+            }
+            Self::Capsule { a, b, radius } => ((point_distance(center, a, b) - radius).max(0.0), length(a, center).max(length(b, center)) + radius),
+            Self::Annulus { center: c, inner, outer } => {
+                let d = length(c, center);
+                ((d - outer).max(inner - d).max(0.0), d + outer)
+            }
+        }
+    }
+    pub(crate) fn distance(self, other: Self) -> f64 {
+        match (self, other) {
+            (Self::Annulus { center, inner, outer }, shape) | (shape, Self::Annulus { center, inner, outer }) => {
+                let (min, max) = shape.radial_range(center);
+                (min - outer).max(inner - max).max(0.0)
+            }
+            (Self::Rectangle(a), Self::Rectangle(b)) => rectangle_distance(&a, &b),
+            (Self::Capsule { a, b, radius }, Self::Rectangle(c)) | (Self::Rectangle(c), Self::Capsule { a, b, radius }) => {
+                (Self::Rectangle(c).segment_distance(a, b) - radius).max(0.0)
+            }
+            (Self::Capsule { a, b, radius: r }, Self::Capsule { a: c, b: d, radius: s }) => (segment_distance(a, b, c, d) - r - s).max(0.0),
+        }
+    }
+    pub(crate) fn segment_distance(self, a: P, b: P) -> f64 {
+        match self {
+            Self::Rectangle(c) => {
+                if contains(&c, a, true) || contains(&c, b, true) {
+                    0.0
+                } else {
+                    edges(&c).map(|(u, v)| segment_distance(a, b, u, v)).fold(f64::INFINITY, f64::min)
+                }
+            }
+            Self::Capsule { a: c, b: d, radius } => (segment_distance(a, b, c, d) - radius).max(0.0),
+            Self::Annulus { center, inner, outer } => {
+                let min = point_distance(center, a, b);
+                let max = length(center, a).max(length(center, b));
+                (min - outer).max(inner - max).max(0.0)
+            }
+        }
+    }
+    pub(crate) fn segment_enters(self, a: P, b: P) -> bool {
+        match self {
+            Self::Rectangle(c) => enters_rectangle(&c, a, b),
+            Self::Capsule { a: c, b: d, radius } => segment_distance(a, b, c, d) + EPS < radius,
+            Self::Annulus { center, inner, outer } => {
+                point_distance(center, a, b) + EPS < outer && length(center, a).max(length(center, b)) > inner + EPS
+            }
+        }
+    }
+}

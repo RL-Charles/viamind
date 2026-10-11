@@ -59,6 +59,10 @@ async fn batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edi
         json!({"edge_clearance_mm":101}),
         json!({"max_violations":0}),
         json!({"unknown":true}),
+        json!({"minimum_via_drill_mm":null}),
+        json!({"minimum_annular_width_mm":-1}),
+        json!({"hole_clearance_mm":101}),
+        json!({"hole_to_copper_clearance_mm":-1}),
     ] {
         assert_eq!(
             a.call_tool(CallToolRequestParams::new("run_drc").with_arguments(bad.as_object().unwrap().clone())).await.unwrap().is_error,
@@ -75,6 +79,45 @@ async fn batch_drc_is_discoverable_read_only_shared_bounded_and_reflects_new_edi
     assert!(reference["part_id"].is_string());
     assert!(reference["pad_id"].is_string());
     assert_ne!(refreshed["report"]["coverage"]["checks_not_performed"], Value::Null);
+    a.call_tool(
+        CallToolRequestParams::new("add_track").with_arguments(
+            json!({"start_x_mm":100,"start_y_mm":100,"end_x_mm":101,"end_y_mm":100,"width_mm":0.2,"layer":"bottom","net":"track-net"})
+                .as_object()
+                .unwrap()
+                .clone(),
+        ),
+    )
+    .await
+    .unwrap();
+    b.call_tool(
+        CallToolRequestParams::new("add_via")
+            .with_arguments(json!({"x_mm":100,"y_mm":100,"diameter_mm":0.6,"drill_mm":0.3,"net":"via-net"}).as_object().unwrap().clone()),
+    )
+    .await
+    .unwrap();
+    let mixed_before = engine.session_state();
+    let input = json!({"minimum_via_drill_mm":0.4});
+    let mixed = a
+        .call_tool(CallToolRequestParams::new("run_drc").with_arguments(input.as_object().unwrap().clone()))
+        .await
+        .unwrap()
+        .structured_content
+        .unwrap();
+    let mixed_other = b
+        .call_tool(CallToolRequestParams::new("run_drc").with_arguments(input.as_object().unwrap().clone()))
+        .await
+        .unwrap()
+        .structured_content
+        .unwrap();
+    assert_eq!(mixed, mixed_other);
+    assert_eq!(engine.session_state(), mixed_before);
+    assert_eq!(mixed["report"]["coverage"]["checked_tracks"], 1);
+    assert_eq!(mixed["report"]["coverage"]["checked_vias"], 1);
+    let issues = mixed["report"]["violations"].as_array().unwrap();
+    assert!(issues.iter().any(|v| v["kind"] == "minimum_via_drill" && v["objects"][0]["kind"] == "via" && v["objects"][0]["via_id"].is_string()));
+    assert!(issues.iter().any(|v| v["kind"] == "copper_clearance"
+        && v["objects"].as_array().unwrap().iter().any(|o| o["kind"] == "track" && o["track_id"].is_string())
+        && v["objects"].as_array().unwrap().iter().any(|o| o["kind"] == "via")));
     a.cancel().await.unwrap();
     b.cancel().await.unwrap();
     server.shutdown();

@@ -67,3 +67,32 @@ fn deleted_and_undone_parts_leave_selection_and_redo_does_not_restore_it() {
     assert!(engine.selection().ids.is_empty());
     assert_eq!(engine.selection().origin, Some(Origin::agent("deleter")));
 }
+
+#[test]
+fn mixed_part_track_via_selection_is_atomic_transient_and_pruned_on_deletion() {
+    let engine = EngineHandle::new(Project::new("mixed selection"));
+    let part = add(&engine, "R1");
+    let track = engine
+        .execute("add_track", json!({"start_x_mm":0,"start_y_mm":0,"end_x_mm":1,"end_y_mm":0,"width_mm":0.2,"layer":"top"}), Origin::User)
+        .unwrap()
+        .created[0];
+    let via = engine.execute("add_via", json!({"x_mm":1,"y_mm":0,"diameter_mm":0.6,"drill_mm":0.3}), Origin::User).unwrap().created[0];
+    let before = engine.read(Clone::clone);
+    engine.set_selection(SetSelection { ids: vec![part, track, via], mode: SelectionMode::Replace }, Origin::User).unwrap();
+    assert_eq!(engine.selection().ids.len(), 3);
+    assert_eq!(engine.read(Clone::clone), before);
+    engine.execute("move_part", json!({"id":part,"x_mm":30,"y_mm":30}), Origin::User).unwrap();
+    assert_eq!(engine.selection().ids.len(), 3, "unrelated edit preserves selected copper IDs");
+    let snapshot = engine.selection();
+    assert!(engine.set_selection(SetSelection { ids: vec![track, ObjectId::new()], mode: SelectionMode::Replace }, Origin::User).is_err());
+    assert_eq!(engine.selection(), snapshot);
+    let expected = engine.read(|p| p.board.tracks[&track].clone());
+    engine.execute("delete_track", json!({"id":track,"expected":expected}), Origin::User).unwrap();
+    assert_eq!(engine.selection().ids.len(), 2);
+    assert!(!engine.selection().ids.contains(&track));
+    engine.undo(Origin::User).unwrap();
+    assert!(!engine.selection().ids.contains(&track), "undo does not restore transient selection");
+    let expected = engine.read(|p| p.board.vias[&via].clone());
+    engine.execute("delete_via", json!({"id":via,"expected":expected}), Origin::User).unwrap();
+    assert_eq!(engine.selection().ids, vec![part]);
+}

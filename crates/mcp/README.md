@@ -210,21 +210,39 @@ It leaves the model, selection, undo/redo and dirty state unchanged. Optional
 finite 0..100 mm. `max_violations` defaults to 1000, limited to 1..10000. These
 example defaults are not fabrication approval.
 
-The initial scope is persisted rectangular SMD pads: same-layer copper separation
-between different named nets or any unassigned pad, and actual polygon board/cutout
-containment and edge clearance. Bottom-side mirroring and arbitrary part rotation
-are included. Results contain stable part/pad IDs, references, nets and measured/
-required Nm distances. Copper contact is flagged even with zero clearance.
+The scope covers persisted rectangular SMD pads, straight round-ended tracks and
+annular through-via copper on the top/bottom layers. Checks use actual rotated
+pad rectangles, track capsules and via copper with open drills removed. Opposite
+copper layers and same assigned nets are exempt from electrical clearance;
+either unassigned net is checked. Copper contact violates even a zero rule.
 
-Read coverage: legacy preview parts and unsupported extreme transforms are excluded
-with part IDs/reasons (first 1000 details, total count and explicit detail truncation);
-absent outline excludes substrate checks. Tracks/vias, pours,
-drills, mask/silkscreen, unrouted-net and full manufacturing checks are excluded.
-`truncated`/`incomplete_reason` report result/work limits. Zero scoped issues does
-not establish fabrication readiness. Run again after edits; compare `source_cursor`
-to your observed session state. The desktop uses the same checker under **Board →
-Design rule check**, exposes coverage, marks stale reports and selects issue parts.
-See [the scoped contract](../../docs/specs/batch-pad-drc.md).
+Additional optional rules (all finite 0..100 mm):
+
+| Input | Default | Meaning |
+| --- | --- | --- |
+| `minimum_via_drill_mm` | 0.2 | Minimum via hole diameter |
+| `minimum_annular_width_mm` | 0.1 | Minimum radial `(diameter-drill)/2` |
+| `hole_clearance_mm` | 0.25 | Physical via-hole spacing, including same nets |
+| `hole_to_copper_clearance_mm` | 0.2 | Via drill to foreign copper; own/same-net copper exempt |
+
+Results carry tagged `pad` (part/pad ID, designator/number), `track` (track ID,
+side/net) and `via` (via ID/net) references, measured/required Nm, actual pad/track/
+via/hole coverage and source cursor. Through vias share both layers, with one
+pair issue rather than duplicate layer issues. New violations distinguish
+minimum drill/annular width, physical hole spacing and foreign hole/copper gap.
+
+Read exclusions: legacy previews and unsupported extreme transforms include
+stable part IDs/reasons (first 1000 details, exact total and truncation flag).
+Absent outline excludes substrate checks. Curved/inner-layer tracks, unsupported
+via types, pours, through-hole footprint pads, nonplated holes, drill-to-edge,
+mask/silkscreen, net continuity and remaining fabrication checks are excluded.
+Total copper shapes are limited to 100000; candidate-pair work to 1000000.
+`truncated`/`incomplete_reason` mark limited results/work. Zero scoped issues is
+not fabrication approval. Run again after edits and compare `source_cursor`.
+Desktop **Board → Design rule check** uses these same typed rules, displays
+coverage/stale state and selects persisted issue objects through shared selection.
+See [pad foundation](../../docs/specs/batch-pad-drc.md) and
+[track/via contract](../../docs/specs/track-via-drc.md).
 
 ## Watch design and selection changes
 

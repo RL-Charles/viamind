@@ -9,6 +9,10 @@ pub struct DrcUi {
     open: bool,
     copper: String,
     edge: String,
+    drill: String,
+    annular: String,
+    holes: String,
+    hole_copper: String,
     limit: usize,
     report: Option<DrcReport>,
     source_cursor: Option<EventCursor>,
@@ -21,6 +25,10 @@ impl Default for DrcUi {
             open: false,
             copper: "0.2".into(),
             edge: "0.25".into(),
+            drill: "0.2".into(),
+            annular: "0.1".into(),
+            holes: "0.25".into(),
+            hole_copper: "0.2".into(),
             limit: 1000,
             report: None,
             source_cursor: None,
@@ -40,8 +48,7 @@ impl ViamindApp {
         let result = (|| {
             let parse =
                 |text: &str| text.parse::<f64>().ok().filter(|v| v.is_finite()).ok_or_else(|| "Clearances need finite numbers in mm".to_owned());
-            let input =
-                json!({"copper_clearance_mm":parse(&self.drc.copper)?,"edge_clearance_mm":parse(&self.drc.edge)?,"max_violations":self.drc.limit});
+            let input = json!({"copper_clearance_mm":parse(&self.drc.copper)?,"edge_clearance_mm":parse(&self.drc.edge)?,"max_violations":self.drc.limit,"minimum_via_drill_mm":parse(&self.drc.drill)?,"minimum_annular_width_mm":parse(&self.drc.annular)?,"hole_clearance_mm":parse(&self.drc.holes)?,"hole_to_copper_clearance_mm":parse(&self.drc.hole_copper)?});
             let value = UiAction::RunDrc.run(&design.engine, input).map_err(|e| e.to_string())?;
             let report = serde_json::from_value(value["report"].clone()).map_err(|e| format!("Could not read DRC report: {e}"))?;
             let cursor = serde_json::from_value(value["source_cursor"].clone()).map_err(|e| format!("Could not read DRC cursor: {e}"))?;
@@ -71,7 +78,7 @@ impl ViamindApp {
         let mut select = None;
         egui::Window::new("Design rule check").open(&mut self.drc.open).default_width(570.0).default_height(600.0).show(ui.ctx(), |ui| {
             egui::ScrollArea::vertical().id_salt("drc_contents").show(ui, |ui| {
-                ui.label("Batch checks: explicit rectangular SMD pads and polygon board boundaries.");
+                ui.label("Batch checks: SMD pads, straight tracks, through vias and polygon board boundaries.");
                 ui.label("This report covers the listed checks. Additional fabrication checks remain.");
                 ui.horizontal(|ui| {
                     let copper = ui.label("Copper clearance (mm)");
@@ -79,6 +86,17 @@ impl ViamindApp {
                     let edge = ui.label("Board edge clearance (mm)");
                     ui.add(egui::TextEdit::singleline(&mut self.drc.edge).desired_width(70.0)).labelled_by(edge.id);
                 });
+                for (label, value) in [
+                    ("Minimum via drill (mm)", &mut self.drc.drill),
+                    ("Minimum annular width (mm)", &mut self.drc.annular),
+                    ("Hole spacing (mm)", &mut self.drc.holes),
+                    ("Foreign hole to copper (mm)", &mut self.drc.hole_copper),
+                ] {
+                    ui.horizontal(|ui| {
+                        let caption = ui.label(label);
+                        ui.add(egui::TextEdit::singleline(value).desired_width(70.0)).labelled_by(caption.id);
+                    });
+                }
                 ui.horizontal(|ui| {
                     ui.label("Maximum issues");
                     ui.add(egui::DragValue::new(&mut self.drc.limit).range(1..=10000));
@@ -98,6 +116,10 @@ impl ViamindApp {
                         coverage.checked_pads,
                         coverage.unassigned_pads,
                         coverage.excluded_part_count
+                    ));
+                    ui.label(format!(
+                        "{} tracks · {} through vias · {} drilled holes",
+                        coverage.checked_tracks, coverage.checked_vias, coverage.checked_holes
                     ));
                     if let Some(reason) = &report.incomplete_reason {
                         ui.label(format!("Incomplete: {reason}"));
@@ -125,17 +147,19 @@ impl ViamindApp {
                             ViolationKind::CopperClearance => "Copper clearance",
                             ViolationKind::OutsideSubstrate => "Outside board / inside cutout",
                             ViolationKind::BoardEdgeClearance => "Board edge clearance",
+                            ViolationKind::MinimumViaDrill => "Minimum via drill",
+                            ViolationKind::MinimumAnnularWidth => "Minimum annular width",
+                            ViolationKind::HoleClearance => "Drilled hole spacing",
+                            ViolationKind::HoleToCopperClearance => "Foreign hole to copper clearance",
                         };
                         ui.label(format!("{title}: {}", issue.message));
                         ui.label(format!("Measured {:.6} mm; required {:.6} mm", issue.measured_clearance.to_mm(), issue.required_clearance.to_mm()));
                         for object in &issue.objects {
-                            ui.monospace(format!(
-                                "{} pad {} · {:?} · {:?}\npart {}\npad {}",
-                                object.designator, object.pad_number, object.side, object.net, object.part_id, object.pad_id
-                            ));
+                            ui.monospace(object.label());
                         }
                         if ui.add_enabled(!stale, egui::Button::new(format!("Select issue {}", i + 1))).clicked() {
-                            select = Some(issue.objects.iter().map(|p| p.part_id).collect::<std::collections::BTreeSet<_>>());
+                            select =
+                                Some(issue.objects.iter().map(viamind_drc::CopperReference::selection_id).collect::<std::collections::BTreeSet<_>>());
                         }
                     }
                 }
