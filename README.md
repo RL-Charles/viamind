@@ -285,6 +285,8 @@ Saved manufacturing settings: [desktop, CLI and MCP output jobs](docs/saved-outp
 
 Explicit [component sourcing and population](docs/component-sourcing.md) is undoable
 and available in a generic sourcing BOM; existing assembly inventories remain unchanged.
+Restricted [populated assembly BOM templates](docs/assembly-bom-templates.md) use
+explicit catalog or manufacturer identifiers without inferring placement data.
 
 Native symbol definition editing: [create reusable symbols](docs/native-symbol-definition-editor.md).
 
