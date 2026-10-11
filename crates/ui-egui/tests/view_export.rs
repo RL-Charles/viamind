@@ -10,10 +10,14 @@ fn engine() -> EngineHandle {
     EngineHandle::new(p)
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).click();
     h.run_steps(3);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
     h.get_by_label(label).focus();
     h.event(Event::Key { key: Key::A, physical_key: None, pressed: true, repeat: false, modifiers: Modifiers::COMMAND });
     h.run_steps(2);
@@ -179,4 +183,46 @@ fn catalog_actions_reject_stale_cursor_missing_sheet_and_native_destination_atom
     assert_eq!(std::fs::read_to_string(native).unwrap(), fixture);
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
+}
+
+#[test]
+fn compact_viewport_scrolls_to_schematic_crop_export_and_result() {
+    let e = engine();
+    let before = e.session_state();
+    let mut app = ViamindApp::with_design(e.clone(), None);
+    app.begin_view_export();
+    let mut h = Harness::builder().with_size(vec2(640.0, 400.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(5);
+    click(&mut h, "Schematic sheet");
+    click(&mut h, "Schematic sheet to export");
+    let choice = e.read(|p| {
+        let s = p.schematic.sheets.values().next().unwrap();
+        format!("{} ({})", s.name, s.id)
+    });
+    click(&mut h, &choice);
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("compact.svg");
+    input(&mut h, "New output file", path.to_str().unwrap());
+    click(&mut h, "Explicit crop (mm, X right / Y down)");
+    input(&mut h, "Minimum X (mm)", "-1");
+    input(&mut h, "Maximum X (mm)", "40");
+    h.get_by_label("Export snapshot to NEW file").scroll_to_me();
+    h.run_steps(10);
+    let button = h.get_by_label("Export snapshot to NEW file").rect();
+    assert!(
+        button.min.y >= 0.0 && button.max.y <= 400.0 && button.min.x >= 0.0 && button.max.x <= 640.0,
+        "export button outside compact viewport: {button:?}"
+    );
+    click(&mut h, "Export snapshot to NEW file");
+    wait(&mut h);
+    assert!(path.exists());
+    let result = format!("Exported {}", path.display());
+    h.get_by_label(&result).scroll_to_me();
+    h.run_steps(10);
+    let rect = h.get_by_label(&result).rect();
+    assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0, "completion outside compact viewport: {rect:?}");
+    click(&mut h, "Export snapshot to NEW file");
+    wait(&mut h);
+    assert!(h.query_all_by_label_contains("Export failed:").next().is_some());
+    assert_eq!(e.session_state(), before);
 }

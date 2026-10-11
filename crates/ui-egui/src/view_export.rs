@@ -259,7 +259,7 @@ impl ViamindApp {
         let state = &mut self.view_export;
         let mut open = state.open;
         let mut start = false;
-        egui::Window::new("Export rendered view").open(&mut open).default_width(620.0).show(ui.ctx(), |ui| {
+        egui::Window::new("Export rendered view").open(&mut open).default_width(620.0).vscroll(true).show(ui.ctx(), |ui| {
             ui.label("Read-only inspection image • NEW file required • existing files are preserved.");
             ui.add_enabled_ui(!state.busy(), |ui| {
                 ui.horizontal(|ui| { ui.selectable_value(&mut state.target, Target::Board, "Board view"); ui.selectable_value(&mut state.target, Target::Schematic, "Schematic sheet"); });
