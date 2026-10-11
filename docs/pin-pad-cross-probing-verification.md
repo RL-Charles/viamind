@@ -30,6 +30,14 @@ one existing ignored test**, and the workspace build passed. The preliminary fou
 actual desktop tests are excluded from that workspace total. The entire sequence
 and binary copies ran under the shared cache mutex with source mtimes refreshed.
 
+The final feature branch is rebased onto main `ef03274` (assembly CSV and pad-route
+posture integration). Additive action and documentation append conflicts retain
+all three features. Range-diff confirms unchanged terminal-probing logic and
+unchanged tests; post-rebase formatting and whitespace checks passed. Fresh CI
+checks the combined branch. Native reports retain the original verified source
+revision and exact binary hashes rather than attributing those binaries to the
+rebased commit.
+
 Production binary SHA256:
 `a4da8deb0717d747aba961e67cd0d39240accccc9bb37add96851d16d73e869f`.
 
