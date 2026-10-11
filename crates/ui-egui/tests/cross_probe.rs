@@ -146,3 +146,20 @@ fn unsupported_selection_and_large_selection_have_explicit_messages() {
     settle(&mut h, "Cross-probing supports at most 100 selected objects; reduce the selection.");
     assert!(h.state().cross_probe.highlighted_symbols().is_empty());
 }
+
+#[test]
+fn active_placement_is_preserved_when_explicit_counterpart_navigation_is_rejected() {
+    let e = engine();
+    let row = e.query_linked_components(&ComponentLinkQuery::default()).unwrap().components.remove(0);
+    let mut h = harness(&e);
+    select_board(&mut h, row.board_position.unwrap());
+    settle(&mut h, "Show schematic counterpart");
+    let before = e.session_state();
+    h.state_mut().begin_place_part();
+    h.run_steps(5);
+    click(&mut h, "Show schematic counterpart");
+    assert!(!h.state().schematic.active);
+    assert!(h.query_by_label("Finish the active edit before navigating to a counterpart.").is_some());
+    assert!(h.query_by_label("Place component").is_some(), "placement form is retained");
+    assert_eq!(e.session_state(), before);
+}
