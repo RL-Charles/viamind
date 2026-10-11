@@ -19,6 +19,10 @@ The checks object declares all six current distance baselines in millimetres (co
 
 Existing 64 KiB config, 256-byte name and 4096-byte path bounds remain. Safe Linux load uses NOFOLLOW|NONBLOCK and opened-fd regular-file checking. Config remains detached: save/load/run do not change project, native dirty state, selection, history or event cursor.
 
+The current T-0095 model has no persisted named-net policy. No such policy is
+inferred or claimed by this increment; the policy integration contract above
+belongs to the later rules feature and must preserve this same-snapshot boundary.
+
 ## One immutable snapshot and worker
 
 Load/validate bounded settings outside the engine mutex. Under one engine lock: validate full expected stream/sequence first, preflight borrowed primitive/header/net/rule budgets before copying strings, acquire one nonblocking manufacturing permit, capture one board-only owned project together with project ID, full cursor and native source path. Ignore unrelated schematic and unused sourcing strings. Retain bounded document rules used by DRC; no second board clone or admission permit.

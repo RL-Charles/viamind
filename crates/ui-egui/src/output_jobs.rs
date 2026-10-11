@@ -212,7 +212,7 @@ impl ViamindApp {
                     ui.radio_value(&mut self.output_jobs.checked, true, "Checked outer 2-layer");
                 });
                 if self.output_jobs.checked {
-                    ui.label("Refuse release on scoped DRC violations, incomplete coverage or excluded geometry. Document minima cannot be weakened.");
+                    ui.label("Refuse release on scoped DRC violations, incomplete coverage or excluded geometry. Uses the explicit saved check baselines.");
                     for (index, label) in CHECK_LABELS.iter().enumerate() {
                         let label = ui.label(*label);
                         ui.add(egui::TextEdit::singleline(&mut self.output_jobs.checks[index]).char_limit(32)).labelled_by(label.id);

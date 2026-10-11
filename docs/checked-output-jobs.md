@@ -28,7 +28,9 @@ explicit request baselines:
 
 Choose baselines for the actual manufacturing process. All distances must be
 finite from 0 to 100 mm; the violation result cap must be 1 to 10000. Saved settings
-remain detached from the native project. Save them through `save_output_job` or
+remain detached from the native project. This increment adds request baselines; it
+does not add persisted named-net policies. Future document policies must be
+enforced by the same central DRC on the retained snapshot. Save them through `save_output_job` or
 **File → Saved output jobs**, selecting **Checked outer 2-layer**. Run reads the
 saved descriptor, including external edits; unsaved form edits are identified.
 
