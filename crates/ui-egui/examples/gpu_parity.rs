@@ -6,7 +6,12 @@ use std::{
     io::Write,
     sync::{Arc, Mutex},
 };
-use viamind_ui_egui::{ViamindApp, layers::LayerId};
+use viamind_ui_egui::{
+    ViamindApp,
+    camera::WorldPos,
+    layers::LayerId,
+    scene::{Item, Prim},
+};
 struct Check {
     app: ViamindApp,
     format: eframe::wgpu::TextureFormat,
@@ -107,8 +112,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Viamind GPU parity",
         options,
         Box::new(move |cc| {
+            let mut app = ViamindApp::with_scene_size(5000);
+            app.scene.items.push(Item::new(Prim::Via { center: WorldPos::new(150.0, 100.0), radius: 8.0, drill_radius: 3.0 }, LayerId::VIAS));
+            app.scene.items.push(Item::new(
+                Prim::Quad([WorldPos::new(160.0, 100.0), WorldPos::new(166.0, 104.0), WorldPos::new(163.0, 108.0), WorldPos::new(157.0, 104.0)]),
+                LayerId::F_CU,
+            ));
+            app.scene.ratsnest = vec![[WorldPos::new(150.0, 100.0), WorldPos::new(165.0, 108.0)]];
             Ok(Box::new(Check {
-                app: ViamindApp::with_scene_size(5000),
+                app,
                 format: cc.wgpu_render_state.as_ref().unwrap().target_format,
                 step: 0,
                 frames: 0,

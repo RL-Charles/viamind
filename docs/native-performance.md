@@ -7,6 +7,10 @@ synthetic objects:
 cargo run --release -p viamind-ui-egui --example native_benchmark -- /tmp/viamind-native-report.json
 ```
 
+Append `--reference` to measure the egui mesh tile path with exactly the same
+scene, phases and acceptance thresholds as the native GPU tile path. Reports
+identify the selected `canvas_renderer`.
+
 Use a new output filename. The example refuses debug builds and existing files,
 automatically pans/zooms through three phases, and closes when its JSON report is
 complete. It operates on a synthetic scene independently of open design sessions.
@@ -64,6 +68,10 @@ The production CPU stage profile (`cargo run --release -p viamind-ui-egui
 indices: approximately 23.19 MB copied into the renderer each frame. The profile
 excludes GPU upload/render/present and panning left 99,089 objects visible. It is
 a diagnostic, not a replacement for the native benchmark.
+
+The initial stage profile and isolated results below precede the merged T45
+round track caps; they are retained as historical evidence. Final comparisons
+use `--reference` on the same integrated binary.
 
 Native launch now explicitly configures a persistent GPU tile path. Existing
 egui-tessellated vertices, indices and geometric font-atlas regions are uploaded

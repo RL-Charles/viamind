@@ -9,7 +9,7 @@ Public sources: [egui-wgpu 0.36.2 callback lifecycle](https://docs.rs/egui-wgpu/
 - Preserve tile culling, visible layers, order, colour, premultiplied blending, anti-alias fringe, prerasterized discs, board/grid background and overlays. No geometry or objects may be hidden to meet the benchmark. Texture data for geometric white/disc atlas regions comes from the public font image API.
 - Only enable custom callbacks when the native wgpu target format is supplied. Headless tests and other renderers keep the existing egui mesh path. Cached and immediate rendering remain available as references.
 - Resources belong to one canvas and are dropped when tiles are replaced; scene edits must not grow GPU memory indefinitely. Native callback geometry must remain immutable through egui layout passes and concurrent renderer preparation.
-- Verify the camera transform and invalidation rules plus native/reference image parity. Run the existing unmodified three-phase native benchmark after optimization, preserving cadence thresholds and full visible-object counts.
+- Verify the camera transform and invalidation rules plus native/reference image parity. Run the existing three-phase native benchmark after optimization, adding only an optional mesh-reference selector for identical-geometry comparison, preserving cadence thresholds and full visible-object counts.
 
 ## Limits
 

@@ -34,6 +34,7 @@ struct Benchmark {
     finished: bool,
     previous: Option<(Instant, usize, bool, usize)>,
     adapter: Value,
+    persistent_gpu: bool,
     output: std::fs::File,
     result: Arc<Mutex<Option<Result<(), String>>>>,
 }
@@ -69,7 +70,7 @@ impl eframe::App for Benchmark {
                 json!({"name":PHASES[i],"frame_interval":intervals,"egui_cpu":if p.cpu.is_empty(){Value::Null}else{stats(&p.cpu)},"drawn_min":p.drawn.iter().min(),"drawn_max":p.drawn.iter().max(),"meets_60fps":intervals["throughput_fps"].as_f64().unwrap()>=59.5 && intervals["p95_ms"].as_f64().unwrap()<=16.9})
             }).collect();
             let viewport = self.app.canvas.viewport;
-            let report = json!({"objects":100000,"completed_native_frames":self.frame,"egui_passes":ui.ctx().cumulative_pass_nr(),"build":"release","renderer":"wgpu","adapter":self.adapter,"warmup_frames_per_phase":WARMUP,"sample_frames_per_phase":SAMPLES,"canvas_points":[viewport.width(),viewport.height()],"pixels_per_point":ui.ctx().pixels_per_point(),"phases":phases,"measurement":"native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout"});
+            let report = json!({"objects":100000,"completed_native_frames":self.frame,"egui_passes":ui.ctx().cumulative_pass_nr(),"build":"release","renderer":"wgpu","canvas_renderer":if self.persistent_gpu{"persistent_gpu_tiles"}else{"egui_mesh_tiles"},"adapter":self.adapter,"warmup_frames_per_phase":WARMUP,"sample_frames_per_phase":SAMPLES,"canvas_points":[viewport.width(),viewport.height()],"pixels_per_point":ui.ctx().pixels_per_point(),"phases":phases,"measurement":"native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout"});
             let result = serde_json::to_writer_pretty(&mut self.output, &report)
                 .map_err(|e| e.to_string())
                 .and_then(|()| self.output.write_all(b"\n").map_err(|e| e.to_string()))
@@ -110,8 +111,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut args = std::env::args_os().skip(1);
     let path = PathBuf::from(args.next().ok_or("usage: native_benchmark OUTPUT.json (new file)")?);
+    let persistent_gpu = match args.next() {
+        None => true,
+        Some(flag) if flag == "--reference" => false,
+        Some(_) => return Err("usage: native_benchmark OUTPUT.json [--reference]".into()),
+    };
     if args.next().is_some() {
-        return Err("expected exactly one output path".into());
+        return Err("unexpected extra arguments".into());
     }
     let output = OpenOptions::new().write(true).create_new(true).open(&path)?;
     let result = Arc::new(Mutex::new(None));
@@ -131,8 +137,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eframe::run_native("Viamind benchmark",options,Box::new(move |cc| {
         let adapter=cc.wgpu_render_state.as_ref().map_or(Value::Null, |r| {let info=r.adapter.get_info();json!({"name":info.name,"backend":format!("{:?}",info.backend),"device_type":format!("{:?}",info.device_type),"driver":info.driver,"driver_info":info.driver_info})});
         let mut app=ViamindApp::with_scene_size(100000);
-        app.configure_renderer(cc);
-        Ok(Box::new(Benchmark { app, phases:std::array::from_fn(|_|Phase::default()), frame:0, base:None, last_native_frame:None, finished:false, previous:None, adapter, output, result:shared }))
+        if persistent_gpu {app.configure_renderer(cc); }
+        Ok(Box::new(Benchmark { app, phases:std::array::from_fn(|_|Phase::default()), frame:0, base:None, last_native_frame:None, finished:false, previous:None, adapter, persistent_gpu, output, result:shared }))
     })).map_err(|e|e.to_string())?;
     let status = result.lock().unwrap().take().ok_or("benchmark closed before collecting all samples; output is incomplete")?;
     status.map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
