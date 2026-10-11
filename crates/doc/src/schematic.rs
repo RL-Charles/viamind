@@ -267,6 +267,7 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
     let mut references = BTreeSet::new();
     let mut objects = 0usize;
     let mut pins = 0usize;
+    let mut symbols = BTreeSet::new();
     for sheet in sheets {
         if sheet.content.is_some() {
             insert(&mut ids, sheet.id)?;
@@ -286,12 +287,24 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
             keyed(&mut ids, &content.junctions, |v| v.id)?;
             keyed(&mut ids, &content.labels, |v| v.id)?;
             for s in content.symbols.values() {
+                symbols.insert(s.id);
                 if !references.insert(&s.designator) {
                     return Err(format!("duplicate schematic reference {}", s.designator));
                 }
                 for p in &s.pins {
                     insert(&mut ids, p.id)?;
                 }
+            }
+        }
+    }
+    let mut linked = BTreeSet::new();
+    for part in project.board.parts.values() {
+        if let Some(symbol) = part.schematic_symbol {
+            if symbol.as_uuid().is_nil() || !linked.insert(symbol) {
+                return Err(format!("nil or multiply linked schematic symbol {symbol}"));
+            }
+            if ids.contains(&symbol) && !symbols.contains(&symbol) {
+                return Err(format!("schematic link {symbol} refers to another object kind"));
             }
         }
     }

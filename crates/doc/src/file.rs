@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 5;
+pub const VERSION: u32 = 6;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -154,7 +154,9 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
-    if project.schematic.sheets.values().any(|s| s.content.is_some()) {
+    if project.board.parts.values().any(|p| p.schematic_symbol.is_some()) {
+        6
+    } else if project.schematic.sheets.values().any(|s| s.content.is_some()) {
         5
     } else if !project.board.tracks.is_empty() || !project.board.vias.is_empty() {
         4

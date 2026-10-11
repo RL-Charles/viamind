@@ -39,6 +39,9 @@ impl Board {
 /// A component placed on the board.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct Part {
+    /// Stable schematic symbol identity; missing symbols remain explicit unresolved links.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub schematic_symbol: Option<ObjectId>,
     /// Explicit electrical pads; None retains the legacy graphical preview.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pads: Option<crate::Pads>,
@@ -99,6 +102,7 @@ mod tests {
         project.schematic.sheets.insert(sheet.id, sheet);
         for (i, side) in [Side::Top, Side::Bottom].into_iter().enumerate() {
             let part = Part {
+                schematic_symbol: None,
                 pads: None,
                 id: ObjectId::new(),
                 designator: format!("R{}", i + 1),

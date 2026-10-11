@@ -6,6 +6,7 @@ use viamind_geom::{Nm, Point};
 
 fn part(i: usize, x: f64, y: f64, net: Option<&str>) -> Part {
     Part {
+        schematic_symbol: None,
         id: ObjectId::new(),
         designator: format!("R{i}"),
         value: "1k".into(),
