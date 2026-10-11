@@ -423,6 +423,10 @@ mod tests {
         h.get_by_label(label).scroll_to_me();
         h.run_steps(8);
         let rect = h.get_by_label(label).rect();
+        h.hover_at(rect.center());
+        h.run_steps(2);
+        let rect = h.get_by_label(label).rect();
+        eprintln!("REVEAL {label}: {rect:?}");
         let clip = h
             .output()
             .shapes
@@ -435,7 +439,7 @@ mod tests {
                     .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
             })
             .min_by(|a, b| a.area().total_cmp(&b.area()))
-            .expect("actual painted control");
+            .unwrap_or_else(|| panic!("actual painted control missing for {label}: {rect:?}"));
         assert!(clip.contains_rect(rect), "{label}: {rect:?} clipped by {clip:?}");
     }
     fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {

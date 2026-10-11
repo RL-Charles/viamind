@@ -418,3 +418,52 @@ fn before_only_package_link_log_requires_twelve_and_public_writer_refuses_invali
     assert!(viamind_engine::log::write_entry(&mut bytes, &invalid).is_err());
     assert!(bytes.is_empty());
 }
+
+#[test]
+fn explicit_unlink_requires_present_null_and_partial_native_terminal_coverage_refuses_both_sync_directions() {
+    use viamind_engine::PcbSyncDirection;
+    let creator = fixture();
+    let command = creator.preview_package_pcb_component(request(&creator)).unwrap().command;
+    let id = creator.execute_typed(command, Origin::User).unwrap().created[0];
+    let before = creator.session_state();
+    let omitted = json!({"expected":before.project,"source_cursor":before.cursor,"part_id":id});
+    assert!(creator.execute(LinkSchematicPackage::NAME, omitted, Origin::User).is_err());
+    assert_eq!(creator.session_state(), before);
+    for direction in [PcbSyncDirection::Forward, PcbSyncDirection::Back] {
+        let mut p = before.project.clone();
+        p.board.parts.get_mut(&id).unwrap().pads.as_mut().unwrap().0.pop();
+        let e = EngineHandle::new(p);
+        let checkpoint = e.session_state();
+        assert!(e.preview_schematic_pcb_sync(direction).unwrap_err().to_string().contains("bijection"));
+        assert_eq!(e.session_state(), checkpoint);
+    }
+}
+#[test]
+fn package_mapping_refuses_pin_pad_or_copper_identity_in_package_slot_before_copying_rows() {
+    use viamind_engine::{ComponentLinkQuery, PinPadLinkQuery};
+    let creator = fixture();
+    let command = creator.preview_package_pcb_component(request(&creator)).unwrap().command;
+    let id = creator.execute_typed(command, Origin::User).unwrap().created[0];
+    let mut p = creator.read(Clone::clone);
+    let track = viamind_doc::Track {
+        id: ObjectId::new(),
+        start: Point::new(Nm(0), Nm(0)),
+        end: Point::new(Nm(1000000), Nm(0)),
+        width: Nm(250000),
+        layer: viamind_doc::CopperLayer::Top,
+        net: None,
+    };
+    let track_id = track.id;
+    p.board.tracks.insert(track_id, track);
+    let pin = p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().symbols.values().next().unwrap().pins[0].id;
+    let pad = p.board.parts[&id].pads.as_ref().unwrap().0[0].id;
+    for wrong in [pin, pad, track_id] {
+        let mut bad = p.clone();
+        bad.board.parts.get_mut(&id).unwrap().schematic_package = Some(wrong);
+        let e = EngineHandle::new(bad);
+        let before = e.session_state();
+        assert!(e.query_linked_components(&ComponentLinkQuery::default()).is_err());
+        assert!(e.query_linked_pin_pads(&PinPadLinkQuery { component_id: id, offset: 0, limit: None }).is_err());
+        assert_eq!(e.session_state(), before);
+    }
+}

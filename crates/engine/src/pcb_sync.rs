@@ -289,6 +289,9 @@ fn calculate_sync(project: &Project, direction: PcbSyncDirection, cursor: crate:
     let mut sources = BTreeMap::new();
     for part in project.board.parts.values() {
         if let Some(source) = crate::package_component::component_source(project, part)? {
+            if source.package_id.is_some() {
+                crate::package_component::validate_component_terminals(&source, part)?;
+            }
             sources.insert(part.id, source);
         }
     }

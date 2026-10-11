@@ -168,6 +168,12 @@ pub(crate) fn mapping(
             }
         }
     }
+    if !linked_packages.is_empty() {
+        // Validate new scalar associations against every existing object kind,
+        // including pins/pads/wires, before copying any returned rows. This
+        // borrowed validator has a separate bounded global identity scan.
+        viamind_doc::schematic::validate_project(project, None).map_err(invalid)?;
+    }
     let mut known: BTreeSet<_> = packages.keys().copied().collect();
     let mut rows = BTreeMap::new();
     for part in project.board.parts.values() {

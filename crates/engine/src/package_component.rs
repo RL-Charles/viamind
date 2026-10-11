@@ -42,6 +42,17 @@ pub(crate) fn component_source<'a>(project: &'a Project, part: &Part) -> Result<
     }
     Ok(None)
 }
+/// Package associations require all physical terminals before synchronization.
+pub(crate) fn validate_component_terminals(source: &ComponentSource<'_>, part: &Part) -> Result<(), CommandError> {
+    let pins: BTreeSet<_> = source.members.iter().flat_map(|(_, s)| s.pins.iter().map(|p| p.number.as_str())).collect();
+    let count: usize = source.members.iter().map(|(_, s)| s.pins.len()).sum();
+    let pads = part.pads.as_ref().ok_or_else(|| CommandError::conflict("complete package synchronization requires explicit numbered pads"))?;
+    let numbers: BTreeSet<_> = pads.0.iter().map(|p| p.number.as_str()).collect();
+    if pins.is_empty() || pins != numbers || pins.len() != count || numbers.len() != pads.0.len() {
+        return Err(CommandError::conflict("complete package synchronization requires all unit pins and pads in an exact unique bijection"));
+    }
+    Ok(())
+}
 pub(crate) fn package_source(project: &Project, id: ObjectId) -> Result<PackageSource<'_>, CommandError> {
     let (sheet, content, package) = project
         .schematic
@@ -220,6 +231,8 @@ pub struct LinkSchematicPackage {
     pub source_cursor: EventCursor,
     pub part_id: ObjectId,
     /// None explicitly unlinks a complete package; symbol links are a separate operation.
+    #[serde(deserialize_with = "Option::deserialize")]
+    #[schemars(required)]
     pub package_id: Option<ObjectId>,
 }
 impl Command for LinkSchematicPackage {
