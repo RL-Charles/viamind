@@ -7,7 +7,6 @@ use rmcp::{
 use serde_json::{Value, json};
 use viamind_doc::{Project, Sheet, schematic::SchematicContent};
 use viamind_engine::{EngineHandle, PlaceSymbolPackage, UnitPose};
-use viamind_geom::Nm;
 use viamind_mcp::{engine_registry, serve_http};
 type Client = RunningService<RoleClient, ClientConfig>;
 async fn connect(url: String, name: &str) -> Client {
@@ -68,7 +67,7 @@ async fn two_clients_share_complete_package_identity_atomic_history_and_safe_det
         .enumerate()
         .map(|(i, u)| UnitPose {
             key: u.key.clone(),
-            position: viamind_doc::schematic::Coordinate { x: Nm(i as i64 * 20_000_000 + 1), y: Nm(3) },
+            position: serde_json::from_value(json!({"x":i as i64 * 20_000_000 + 1,"y":3})).unwrap(),
             rotation_quarters: (i % 4) as u8,
             mirrored: i % 2 == 1,
         })
