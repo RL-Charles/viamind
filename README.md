@@ -225,3 +225,5 @@ power labels name nets without supplying power. Desktop ERC results, hierarchy,
 buses and board annotation remain separate work. See the
 [connectivity behavior specification](docs/specs/schematic-connectivity.md) and
 [native ERC policy](docs/specs/schematic-erc.md).
+
+Selected native schematic sheets also support display-free SVG/PNG export and MCP `render_schematic_view` / `render_schematic_png`, including visible bundled-font labels and exact mirror/quarter-turn geometry. See [schematic view instructions](docs/schematic-views.md) for required sheet IDs, category filters and bounds.
