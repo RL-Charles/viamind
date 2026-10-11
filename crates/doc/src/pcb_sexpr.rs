@@ -218,7 +218,7 @@ fn allowed(n: &Node, fields: &[&str], ignored: &[&str], items: &mut [FidelityIte
         if ignored.contains(&c.head.as_str()) {
             subtree(items, c, Disposition::Omitted, "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.");
         } else if !fields.contains(&c.head.as_str()) {
-            return Err(bad(format!("unsupported {} attribute {}", n.head, c.head)));
+            return Err(bad(format!("unsupported semantic attribute at {}; export the documented supported subset", items[c.id].path)));
         }
     }
     Ok(())
@@ -732,7 +732,7 @@ pub fn parse(source: &str) -> Result<ParsedPcb> {
                     Err(bad("unsupported copper/outline or unknown graphic geometry"))
                 }
             }
-            _ => Err(bad(format!("unsupported board object {}", n.head))),
+            _ => Err(bad("unsupported board object; inspect its source token/path and export the documented supported subset")),
         };
         if let Err(e) = result {
             subtree(&mut items, n, Disposition::Blocked, &e.0);

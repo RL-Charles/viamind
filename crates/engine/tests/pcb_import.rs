@@ -112,3 +112,32 @@ fn nonregular_long_path_invalid_utf8_and_large_sources_reject_read_only() {
     }
     assert_eq!(engine.session_state(), before);
 }
+
+#[test]
+fn externally_replaced_active_native_source_and_canonical_alias_reject_without_mutation() {
+    let directory = tempfile::tempdir().unwrap();
+    let native = directory.path().join("active.viamind.json");
+    let engine = EngineHandle::new(Project::new("saved native"));
+    engine.save_project(SaveProject { path: Some(native.clone()), overwrite: false }).unwrap();
+    engine
+        .open_project(OpenProject { path: native.clone(), discard_dirty: false, expected_cursor: Some(engine.event_cursor()) }, Origin::User)
+        .unwrap();
+    let before = engine.session_state();
+    let status = engine.document_status();
+    // External modification is deliberately adversarial; extension/parser failure
+    // must not be the active-native-path guard.
+    std::fs::write(&native, SOURCE).unwrap();
+    let preview = engine.preview_pcb_import(PreviewPcbImport { path: native.clone() }).unwrap();
+    assert!(preview.can_import);
+    assert!(engine.import_pcb(input(&preview), Origin::User).unwrap_err().to_string().contains("active native save path"));
+    #[cfg(target_os = "linux")]
+    {
+        let alias = directory.path().join("alias.kicad_pcb");
+        std::os::unix::fs::symlink(&native, &alias).unwrap();
+        let preview = engine.preview_pcb_import(PreviewPcbImport { path: alias }).unwrap();
+        assert!(engine.import_pcb(input(&preview), Origin::User).unwrap_err().to_string().contains("active native save path"));
+    }
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
+    assert_eq!(std::fs::read_to_string(&native).unwrap(), SOURCE);
+}

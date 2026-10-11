@@ -20,7 +20,7 @@ Save existing native changes and finish or cancel active editing drafts before
 **Apply PCB import as unsaved native document**. Apply rereads and reparses the
 file and checks the exact preview source SHA256, current project UUID and full
 event cursor. Changed source bytes, peer edits, same-project reopening, unsupported
-data and unsaved native work reject without replacing the document.
+data and unsaved native work reject without replacing the document. Apply also rejects the active native save path and canonical aliases as a source, even after external byte changes.
 
 Successful Apply starts a new unsaved native document with a fresh project UUID
 and event stream, clears old history/selection and keeps the external source out

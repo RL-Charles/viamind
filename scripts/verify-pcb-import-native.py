@@ -117,6 +117,12 @@ try:
     keep=directory/'keep.viamind.json'
     call('save_project',{'path':str(keep)},peer=bool(args.url))
     keep_bytes=keep.read_bytes()
+    saved_state=call('get_session_state')
+    keep.write_bytes(source_bytes)
+    active_preview=call('preview_pcb_import',{'path':str(keep)})
+    call('import_pcb',apply(active_preview),error=True)
+    check('active native path rejects even after external bytes become supported PCB data',active_preview['can_import'] and call('get_session_state')==saved_state and not call('get_document_status')['dirty'] and keep.read_bytes()==source_bytes)
+    keep.write_bytes(keep_bytes)
     imported=call('import_pcb',apply(dirty_preview),peer=bool(args.url))
     project=call('get_design')
     check('guarded replacement starts new unsaved native stream without source path',imported['project_id']!=dirty['project']['id'] and imported['cursor']['stream_id']!=dirty['cursor']['stream_id'] and imported['document']=={'path':None,'dirty':True} and not call('get_selection')['ids'])

@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rect = h.get_by_label("Apply PCB import as unsaved native document").rect();
         assert!(rect.min.x >= 0.0 && rect.max.x <= width && rect.min.y >= 0.0 && rect.max.y <= height);
     }
-    let memory = h.ctx.memory(|m| m.clone());
+    let memory = h.ctx.memory(Clone::clone);
     let before = engine.session_state();
     let mut app = if mode == "imported" { ViamindApp::with_design(engine.clone(), None) } else { h.into_state() };
     let options = eframe::NativeOptions {

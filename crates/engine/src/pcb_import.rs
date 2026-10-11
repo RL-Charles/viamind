@@ -48,7 +48,7 @@ fn invalid(message: impl Into<String>) -> EngineError {
 fn read_source(path: &Path) -> Result<(PathBuf, Vec<u8>), EngineError> {
     read_source_with_before_open(path, || {})
 }
-fn read_source_with_before_open(path: &Path, before_open: impl FnOnce()) -> Result<(PathBuf, Vec<u8>), EngineError> {
+fn source_absolute_path(path: &Path) -> Result<PathBuf, EngineError> {
     if path.as_os_str().as_encoded_bytes().len() > 4096 {
         return Err(invalid("source path exceeds 4096 encoded bytes"));
     }
@@ -59,6 +59,10 @@ fn read_source_with_before_open(path: &Path, before_open: impl FnOnce()) -> Resu
     if path.as_os_str().as_encoded_bytes().len() > 4096 {
         return Err(invalid("absolute source path exceeds 4096 encoded bytes"));
     }
+    Ok(path)
+}
+fn read_source_with_before_open(path: &Path, before_open: impl FnOnce()) -> Result<(PathBuf, Vec<u8>), EngineError> {
+    let path = source_absolute_path(path)?;
     let before = std::fs::metadata(&path).map_err(|e| invalid(format!("cannot inspect source: {e}")))?;
     if !before.is_file() || before.len() > MAX_SOURCE_BYTES as u64 {
         return Err(invalid("source must be a regular file at most 8 MiB; FIFOs/devices/directories are unsupported"));
@@ -110,7 +114,19 @@ impl EngineHandle {
         }
         let mut report = None;
         let snapshot = self.replace_imported_project(input.expected_project, input.expected_cursor, origin, || {
-            let (_, bytes) = read_source(&input.path)?;
+            let source_path = source_absolute_path(&input.path)?;
+            // The lifecycle save mutex is already held here; obtain only the path under
+            // the engine lock, then perform filesystem resolution outside that lock.
+            if let Some(active) = self.document_status().path {
+                let same_canonical = match (std::fs::canonicalize(&source_path), std::fs::canonicalize(&active)) {
+                    (Ok(source), Ok(native)) => source == native,
+                    _ => false,
+                };
+                if source_path == active || same_canonical {
+                    return Err(invalid("source is the active native save path; use a separate PCB source file"));
+                }
+            }
+            let (_, bytes) = read_source(&source_path)?;
             if digest(&bytes) != input.expected_source_sha256 {
                 return Err(invalid("source bytes changed; preview again"));
             }

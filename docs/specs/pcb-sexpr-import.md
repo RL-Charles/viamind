@@ -111,7 +111,7 @@ Its report is attached to current project UUID/full cursor and source digest.
 
 Apply requires those exact UUID/cursor/digest values, rereads and reparses the
 bounded source, rejects any changed bytes or blocker, and rechecks project/cursor
-inside replacement. Dirty native work rejects: save first. There is no discard
+inside replacement. Apply rejects a source equal to the active native save path by absolute/canonical path, even if external changes made that file parse as PCB data. Path resolution occurs outside the engine lock while the lifecycle save mutex is held. Dirty native work rejects: save first. There is no discard
 checkbox in this increment. Parse failures and peer edits leave the complete
 current session and active save path unchanged. Success is an explicit new-document
 lifecycle replacement: new stream, cleared shared selection/history, imported

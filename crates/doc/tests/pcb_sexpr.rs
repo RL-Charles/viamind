@@ -154,3 +154,16 @@ fn exact_line_loops_connect_but_open_duplicate_and_crossed_boundaries_block() {
     let outside = SOURCE.replace("(start 10 10)", "(start 30 30)").replace("(end 11 11)", "(end 31 31)");
     assert!(!pcb_sexpr::parse(&outside).unwrap().report.can_import());
 }
+
+#[test]
+fn long_unknown_tokens_do_not_amplify_each_descendant_diagnostic() {
+    let token = "x".repeat(4096);
+    let unknown = format!("({token} {})", "(metadata)".repeat(1000));
+    for source in [SOURCE.replacen("(generator", &format!("{unknown} (generator"), 1), SOURCE.replace("(attr smd)", &format!("(attr smd) {unknown}"))]
+    {
+        let parsed = pcb_sexpr::parse(&source).unwrap();
+        assert!(!parsed.report.can_import());
+        assert!(parsed.report.items.iter().any(|item| item.token == token && item.disposition == Disposition::Blocked));
+        assert!(parsed.report.items.iter().map(|item| item.reason.len()).sum::<usize>() < 512 * 1024);
+    }
+}
