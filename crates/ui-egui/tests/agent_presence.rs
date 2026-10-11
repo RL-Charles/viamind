@@ -27,6 +27,7 @@ fn compact_colored_attention_is_clipped_and_human_edit_undo_stays_live() {
                 index as u64 + 1,
                 ["Routing agent", "Assembly agent"][index],
                 SetAgentPresence {
+                    surface: viamind_engine::PresenceSurface::Pcb,
                     expected_project: project.id,
                     expected_stream: before.cursor.stream_id,
                     cursor: PresencePoint { x: part.position.x, y: part.position.y },
