@@ -1,0 +1,80 @@
+{
+  "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+  "source_base": "0fb27a1fe3d35fdaa2a42b0d0e6fac2104921aa3",
+  "platform": "Linux x86_64 Wayland/Hyprland",
+  "date": "2026-10-11",
+  "profile": "unoptimized debug, copied with debug information stripped under entire-sequence mutex",
+  "fmt": "pass",
+  "clippy_workspace_all_targets_deny_warnings": "pass",
+  "workspace_build": "pass",
+  "inspection_build": "pass",
+  "workspace_tests": {
+    "passed": 602,
+    "failed": 0,
+    "ignored": 1
+  },
+  "mutex": "/tmp/viamind-workspace-gates.lock",
+  "environment": {
+    "CARGO_TARGET_DIR": "/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target",
+    "TMPDIR": "/home/charlesmowbray/.cache/viamind/tmp",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "preflight": "Touch all own crates/apps Rust sources before gates under flock; retain exact binary copies before releasing mutex.",
+  "gate_commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline",
+    "cargo build -p viamind-ui-egui --example footprint_conversion_inspection --locked --offline"
+  ],
+  "gate_log_sha256": "10b93ea483b99163cba78180b16f8f66cee05b6102d88e0f36ca97183c59de63",
+  "production": {
+    "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+    "binary_sha256": "9cf92dc6462ce75ab4440db0c10d0b036a50710a6392e6f4c2ad059f3f6ea043",
+    "pid": 1026091,
+    "mcp_port": 7917,
+    "window_id": 110379543321456,
+    "stdio_checks": 17,
+    "actual_desktop_two_client_http_checks": 16,
+    "production_window": "Compositor 16x22 window is provenance only; readable native proof uses actual-input prepared production UI in separate fixed-size wrapper."
+  },
+  "initial_inspection": {
+    "source_commit": "ce71d1ac7473a6d035094937e932fd05bf63e10b",
+    "binary_sha256": "5b1882dd8051fab5620c48f69e741f2c4ee2b55f6e7bacaa25f7eaf1c46ce38e",
+    "operating_system_input_claim": false,
+    "actual_egui_input_preparation": true,
+    "complete_session_unchanged_every_native_frame": true,
+    "preview": {
+      "pid": 1027237,
+      "window_id": 110379543868944,
+      "viewport": [
+        1600,
+        1000
+      ],
+      "capture": "t0089-initial-preview-wide.png",
+      "scope": "Expanded report initial view; outer scrolling reaches Create."
+    },
+    "compact": {
+      "pid": 1028339,
+      "window_id": 110379544206144,
+      "viewport": [
+        640,
+        400
+      ],
+      "capture": "t0089-initial-preview-compact.png",
+      "actual_create_bounds_asserted": true
+    },
+    "completed": {
+      "pid": 1029902,
+      "window_id": 110379544671776,
+      "viewport": [
+        1600,
+        1000
+      ],
+      "capture": "t0089-initial-completed-wide.png",
+      "new_native_library_pads": 2
+    },
+    "known_display_issue": "Introductory Unicode arrow displays as missing glyph. Plain-text correction and final fresh capture follow; these initial captures retain exact historical provenance."
+  }
+}
