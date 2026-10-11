@@ -178,3 +178,47 @@ fn synchronized_new_package_files_preserve_native_aliases_and_racing_destination
     }
     assert!(package::load(std::path::Path::new(&"x".repeat(4097))).unwrap_err().contains("4096"));
 }
+
+#[test]
+fn odd_nm_body_corners_and_transformed_pins_have_independent_exact_boundary_oracles() {
+    let mut unit = definition().units.remove(0);
+    unit.width = Nm(3);
+    unit.height = Nm(7);
+    unit.pins.clear();
+    for quarters in 0..4 {
+        for mirrored in [false, true] {
+            // An odd centered width needs ceil(width/2) clearance at an integer
+            // center. Swapping axes changes that ceiling independently of pins.
+            let half_up = if quarters % 2 == 0 { 2 } else { 4 };
+            let admitted = Coordinate { x: Nm(10_000_000_000 - half_up), y: Nm(0) };
+            assert!(SymbolPackageTemplate::validate_unit_pose(&unit, admitted, quarters, mirrored).is_ok());
+            let refused = Coordinate { x: Nm(admitted.x.0 + 1), y: Nm(0) };
+            assert!(SymbolPackageTemplate::validate_unit_pose(&unit, refused, quarters, mirrored).unwrap_err().contains("doubled-Nm"));
+        }
+    }
+    unit.pins.push(TemplatePin {
+        number: "1".into(),
+        name: String::new(),
+        position: Coordinate { x: Nm(-10_000_000_000), y: Nm(0) },
+        electrical: PinType::Input,
+    });
+    assert!(
+        SymbolPackageTemplate::validate_unit_pose(&unit, Coordinate { x: Nm(1), y: Nm(0) }, 0, true).is_err(),
+        "mirrored endpoint exceeds positive bound"
+    );
+    let (mut p, sid, id) = project();
+    let c = p.schematic.sheets.get_mut(&sid).unwrap().content.as_mut().unwrap();
+    let symbol = c.packages[&id].units[0].symbol_id;
+    let s = c.symbols.get_mut(&symbol).unwrap();
+    s.position.x = Nm(10_000_000_000);
+    s.pins.clear();
+    // Preserve a nonempty locally valid pin so the body-only failure is isolated.
+    s.pins.push(viamind_doc::schematic::SymbolPin {
+        id: ObjectId::new(),
+        number: "1".into(),
+        name: String::new(),
+        position: Coordinate { x: Nm(0), y: Nm(0) },
+        electrical: PinType::Passive,
+    });
+    assert!(viamind_doc::schematic::validate_project(&p, None).unwrap_err().contains("body"));
+}
