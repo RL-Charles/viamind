@@ -74,6 +74,19 @@ impl Engine {
         self.notifier.wake();
     }
 
+    pub(crate) fn replace_document(&mut self, project: Project, path: Option<std::path::PathBuf>, origin: Origin) {
+        self.document = crate::document::DocumentState::new(project.clone());
+        self.document.path = path;
+        self.log = EventLog::new(project.clone());
+        self.project = project;
+        self.undo.clear();
+        self.redo.clear();
+        self.next_tx = 1;
+        self.selection = crate::SelectionSnapshot::default();
+        self.session = crate::session::SessionJournal::default();
+        self.notifier.send(ChangeEvent { tx: TxId(0), origin, kind: ChangeKind::Replaced, deltas: Vec::new() });
+    }
+
     /// Current transient selection, shared by all clients.
     pub fn selection(&self) -> &crate::SelectionSnapshot {
         &self.selection

@@ -101,6 +101,80 @@ impl EngineHandle {
         Ok(crate::SaveResult { path, dirty, saved_cursor: snapshot.cursor })
     }
 
+    /// Creates an unnamed document without replacing the shared handle or its listeners.
+    pub fn new_project(&self, input: crate::NewProject, origin: Origin) -> Result<crate::SessionSnapshot, EngineError> {
+        if input.name.trim().is_empty() {
+            return Err(EngineError::InvalidInput { command: "new_project".into(), message: "name must not be blank".into() });
+        }
+        self.replace_project(
+            "new_project",
+            crate::ReplaceGuard { discard_dirty: input.discard_dirty, expected_cursor: input.expected_cursor },
+            origin,
+            || Ok((Project::new(input.name), None)),
+        )
+    }
+
+    /// Validates a native file before replacing the document; concurrent edits reject the replacement.
+    pub fn open_project(&self, input: crate::OpenProject, origin: Origin) -> Result<crate::SessionSnapshot, EngineError> {
+        if input.path.as_os_str().is_empty() {
+            return Err(EngineError::InvalidInput { command: "open_project".into(), message: "path must not be empty".into() });
+        }
+        self.replace_project(
+            "open_project",
+            crate::ReplaceGuard { discard_dirty: input.discard_dirty, expected_cursor: input.expected_cursor },
+            origin,
+            || {
+                let path = std::path::absolute(input.path).map_err(|e| EngineError::File { message: e.to_string() })?;
+                let project = viamind_doc::file::load(&path).map_err(|e| EngineError::File { message: e.to_string() })?;
+                Ok((project, Some(path)))
+            },
+        )
+    }
+
+    /// Read-only lifecycle guard used before closing the desktop window.
+    pub fn check_document_guard(&self, guard: &crate::ReplaceGuard) -> Result<(), EngineError> {
+        Self::check_replace(&self.lock(), guard, "close_project")
+    }
+
+    fn check_replace(engine: &Engine, guard: &crate::ReplaceGuard, command: &str) -> Result<(), EngineError> {
+        let invalid = |message: &str| EngineError::InvalidInput { command: command.into(), message: message.into() };
+        if guard.expected_cursor.is_some_and(|cursor| cursor != engine.event_cursor()) {
+            return Err(invalid("document changed; call get_session_state and confirm again"));
+        }
+        if engine.document_status().dirty && (!guard.discard_dirty || guard.expected_cursor.is_none()) {
+            return Err(invalid("unsaved changes; save first or supply discard_dirty and current expected_cursor from get_session_state"));
+        }
+        Ok(())
+    }
+
+    fn replace_project(
+        &self,
+        command: &str,
+        guard: crate::ReplaceGuard,
+        origin: Origin,
+        load: impl FnOnce() -> Result<(Project, Option<std::path::PathBuf>), EngineError>,
+    ) -> Result<crate::SessionSnapshot, EngineError> {
+        let files = self.saves.lock().unwrap_or_else(PoisonError::into_inner);
+        let before = {
+            let engine = self.lock();
+            Self::check_replace(&engine, &guard, command)?;
+            engine.event_cursor()
+        };
+        let (project, path) = load()?;
+        let (snapshot, wakers) = {
+            let mut engine = self.lock();
+            Self::check_replace(&engine, &crate::ReplaceGuard { expected_cursor: Some(before), ..guard }, command)?;
+            engine.replace_document(project, path, origin);
+            (engine.session_state(), engine.take_due_wakers())
+        };
+        drop(files);
+        self.session_changed.notify_all();
+        for waker in wakers {
+            waker();
+        }
+        Ok(snapshot)
+    }
+
     /// Locks the engine. A panic inside a command poisons the mutex; the engine
     /// is still usable afterwards, so the poison is ignored.
     fn lock(&self) -> MutexGuard<'_, Engine> {
@@ -281,6 +355,24 @@ mod save_tests {
     use std::sync::atomic::{AtomicBool, Ordering};
 
     use super::*;
+
+    #[test]
+    fn concurrent_edit_during_open_rejects_the_loaded_document() {
+        let engine = EngineHandle::new(Project::new("Keep"));
+        let result = engine.replace_project("open_project", Default::default(), Origin::User, || {
+            engine.execute(
+                "add_part",
+                serde_json::json!({ "designator": "R1", "value": "", "footprint": "F", "x_mm": 0, "y_mm": 0 }),
+                Origin::agent("writer"),
+            )?;
+            Ok((Project::new("Should not load"), None))
+        });
+        assert!(result.unwrap_err().to_string().contains("document changed"));
+        assert_eq!(engine.read(|p| p.name.clone()), "Keep");
+        assert_eq!(engine.read(|p| p.board.parts.len()), 1);
+        assert!(engine.document_status().dirty);
+        assert!(engine.can_undo());
+    }
 
     #[test]
     fn edits_during_file_io_remain_dirty_and_are_not_in_the_saved_snapshot() {

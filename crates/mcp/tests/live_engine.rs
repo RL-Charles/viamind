@@ -272,3 +272,45 @@ async fn agents_share_save_path_dirty_state_and_preserve_unapproved_files() {
     b.cancel().await.unwrap();
     server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn agents_replace_shared_documents_and_wake_observers_for_resynchronization() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("lifecycle.viamind.json");
+    let engine = EngineHandle::new(Project::new("original"));
+    let server = serve_http(engine_registry(engine.clone()).unwrap(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = connect(server.url(), "lifecycle-a").await;
+    let b = connect(server.url(), "lifecycle-b").await;
+    call(&a, "add_part", resistor("R1", 10.0)).await;
+    let before = call(&b, "get_session_state", json!({})).await.structured_content.unwrap();
+    assert_eq!(call(&a, "new_project", json!({})).await.is_error, Some(true));
+    assert_eq!(call(&a, "new_project", json!({ "discard_dirty": true })).await.is_error, Some(true));
+    assert_eq!(call(&b, "get_session_state", json!({})).await.structured_content.unwrap(), before);
+    let next = call(&a, "new_project", json!({ "name": "New board", "discard_dirty": true, "expected_cursor": before["cursor"] })).await;
+    assert_eq!(next.is_error, Some(false), "{next:?}");
+    let next = next.structured_content.unwrap();
+    assert_eq!(next["project"]["name"], "New board");
+    assert_eq!(call(&b, "get_design", json!({})).await.structured_content.unwrap(), next["project"]);
+    assert_ne!(before["cursor"]["stream_id"], next["cursor"]["stream_id"]);
+    assert_eq!(call(&a, "undo", json!({})).await.is_error, Some(true));
+    assert_eq!(call(&a, "save_project", json!({ "path": path })).await.is_error, Some(false));
+    // A pending observer wakes immediately when Open changes the stream epoch.
+    let watch = call(&b, "watch_events", json!({ "after": next["cursor"], "timeout_ms": 3000 }));
+    let open = async {
+        tokio::time::sleep(Duration::from_millis(30)).await;
+        call(&a, "open_project", json!({ "path": path, "expected_cursor": next["cursor"] })).await
+    };
+    let (observed, opened) =
+        tokio::time::timeout(Duration::from_secs(2), async { tokio::join!(watch, open) }).await.expect("replacement wakes observer");
+    assert_eq!(opened.is_error, Some(false), "{opened:?}");
+    assert_eq!(observed.is_error, Some(true), "{observed:?}");
+    assert!(format!("{:?}", observed.content).contains("resynchronize"));
+    let current = call(&b, "get_session_state", json!({})).await.structured_content.unwrap();
+    assert_eq!(current["project"], next["project"]);
+    assert_eq!(call(&b, "get_document_status", json!({})).await.structured_content.unwrap()["path"], json!(path));
+    assert_eq!(call(&a, "open_project", json!({ "path": path, "expected_cursor": next["cursor"] })).await.is_error, Some(true));
+    assert_eq!(call(&a, "new_project", json!({ "unexpected": true })).await.is_error, Some(true));
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    server.shutdown();
+}

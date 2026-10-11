@@ -33,6 +33,11 @@ unsaved changes, including agent edits. Agents use `save_project` with a native
 path, or omit the path to save the active file; `get_document_status` reads its
 path and dirty state. A supplied existing destination requires `overwrite: true`.
 See [the native save contract](docs/specs/project-saving.md).
+Use **File → New** (Ctrl+N) or **Open** (Ctrl+O) to switch projects. New/Open and
+closing offer Save, Discard, or Cancel for unsaved changes. Agents use `new_project`
+and `open_project`; discarding unsaved work requires `discard_dirty: true` with the
+current `expected_cursor` from `get_session_state`. Document replacement resets
+history and selection, and observers resynchronize with a new session snapshot.
 Undo anything with Ctrl+Z or the Edit menu; agents undo their own changes with the `undo` tool.
 `viamind --demo` opens the synthetic 10k-object test scene, and `VIAMIND_MCP_PORT` changes the port.
 

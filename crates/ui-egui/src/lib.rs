@@ -157,6 +157,10 @@ impl ViamindApp {
             changed = true;
             design.change_count += 1;
             let kind = match event.kind {
+                ChangeKind::Replaced => {
+                    self.canvas.fit_pending = true;
+                    "opened document"
+                }
                 ChangeKind::Applied => "applied",
                 ChangeKind::Undone => "undid",
                 ChangeKind::Redone => "redid",
@@ -218,7 +222,7 @@ impl ViamindApp {
         let start = Instant::now();
         self.update_stats(ui, cpu_ms);
         self.file_shortcuts(ui);
-        if self.design.is_some() && !self.files.save_as && !ui.ctx().egui_wants_keyboard_input() {
+        if self.design.is_some() && !self.files.busy() && !ui.ctx().egui_wants_keyboard_input() {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
                 self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
@@ -290,6 +294,15 @@ impl ViamindApp {
         egui::MenuBar::new().ui(ui, |ui| {
             ui.menu_button("File", |ui| {
                 if self.design.is_some() {
+                    if ui.add(egui::Button::new("New…").shortcut_text(ui.ctx().format_shortcut(&files::NEW))).clicked() {
+                        self.begin_document(true);
+                        ui.close();
+                    }
+                    if ui.add(egui::Button::new("Open…").shortcut_text(ui.ctx().format_shortcut(&files::OPEN))).clicked() {
+                        self.begin_document(false);
+                        ui.close();
+                    }
+                    ui.separator();
                     if ui.add(egui::Button::new("Save").shortcut_text(ui.ctx().format_shortcut(&files::SAVE))).clicked() {
                         self.save_design();
                         ui.close();
@@ -301,7 +314,8 @@ impl ViamindApp {
                     ui.separator();
                 }
                 if ui.button("Quit").clicked() {
-                    ui.send_viewport_cmd(egui::ViewportCommand::Close);
+                    self.request_close(ui.ctx());
+                    ui.close();
                 }
             });
             if self.design.is_some() {

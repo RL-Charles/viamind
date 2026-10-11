@@ -13,6 +13,8 @@ use crate::transaction::{Origin, TxId};
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ChangeKind {
+    /// A different document replaced this session; rebuild from the shared handle.
+    Replaced,
     /// The transaction was committed.
     Applied,
     /// The transaction was undone.
