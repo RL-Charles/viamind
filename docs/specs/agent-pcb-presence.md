@@ -74,8 +74,8 @@ selected visible board objects. Stable palette assignment depends on trusted
 connection identity; colors may repeat and labels disambiguate. Use the existing
 board camera transform, visible layers and clipped canvas painter. Bound rendering
 to the 32 leases and 64 selections each; avoid cloning or scanning the full board.
-Selected parts use visible part bounds, tracks their visible segment/width, vias
-their visible circular bounds. Missing/hidden/offscreen geometry is skipped.
+Selected parts, tracks and vias use their cached visible selection bounds as
+colored axis-aligned rectangles. Missing/hidden/offscreen geometry is skipped.
 
 The overlay accepts no pointer/keyboard focus, changes no camera or human
 selection, and paints above copper. Clip labels within the PCB canvas at 640x400

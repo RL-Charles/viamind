@@ -115,22 +115,29 @@ fn display_name(name: &str) -> String {
 impl EngineHandle {
     /// Read bounded live attention without cloning the project or renewing leases.
     pub fn query_agent_presence(&self) -> AgentPresenceSnapshot {
-        self.presence_at(Instant::now())
+        self.presence_with_clock(Instant::now)
     }
 
-    fn presence_at(&self, now: Instant) -> AgentPresenceSnapshot {
+    fn presence_with_clock(&self, clock: impl FnOnce() -> Instant) -> AgentPresenceSnapshot {
         let engine = self.engine.lock().unwrap_or_else(PoisonError::into_inner);
         let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
+        let now = clock();
         store.refresh(engine.event_cursor().stream_id, now);
         store.snapshot(engine.project(), engine.event_cursor(), now)
     }
 
     /// `connection` is supplied by the trusted transport, never by tool input.
     pub fn set_agent_presence(&self, connection: u64, name: &str, input: SetAgentPresence) -> Result<AgentPresenceSnapshot, String> {
-        self.set_presence_at(connection, name, input, Instant::now())
+        self.set_presence_with_clock(connection, name, input, Instant::now)
     }
 
-    fn set_presence_at(&self, connection: u64, name: &str, input: SetAgentPresence, now: Instant) -> Result<AgentPresenceSnapshot, String> {
+    fn set_presence_with_clock(
+        &self,
+        connection: u64,
+        name: &str,
+        input: SetAgentPresence,
+        clock: impl FnOnce() -> Instant,
+    ) -> Result<AgentPresenceSnapshot, String> {
         if connection == 0 {
             return Err("presence requires a trusted connection".into());
         }
@@ -157,6 +164,7 @@ impl EngineHandle {
                 return Err("presence selection requires distinct existing board part/track/via IDs".into());
             }
             let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
+            let now = clock();
             store.refresh(engine.event_cursor().stream_id, now);
             if !store.leases.contains_key(&connection) && store.leases.len() >= AGENT_PRESENCE_CAPACITY {
                 return Err("presence has 32 active leases; wait for expiry or clear your own marker".into());
@@ -190,13 +198,13 @@ impl EngineHandle {
         if connection == 0 {
             return Err("presence requires a trusted connection".into());
         }
-        let now = Instant::now();
         let (snapshot, wakers) = {
             let mut engine = self.engine.lock().unwrap_or_else(PoisonError::into_inner);
             if input.expected_project != engine.project().id || input.expected_stream != engine.event_cursor().stream_id {
                 return Err("project or stream changed; refresh presence context".into());
             }
             let mut store = self.agent_presence.lock().unwrap_or_else(PoisonError::into_inner);
+            let now = Instant::now();
             store.refresh(engine.event_cursor().stream_id, now);
             let removed = store.leases.remove(&connection).is_some();
             let snapshot = store.snapshot(engine.project(), engine.event_cursor(), now);
@@ -235,25 +243,47 @@ mod tests {
         let status = engine.document_status();
         let now = Instant::now();
         for connection in 1..=32 {
-            engine.set_presence_at(connection, "same name", input(&engine), now).unwrap();
+            engine.set_presence_with_clock(connection, "same name", input(&engine), || now).unwrap();
         }
-        assert_eq!(engine.presence_at(now).agents.len(), 32);
-        assert!(engine.set_presence_at(33, "peer", input(&engine), now).unwrap_err().contains("32 active"));
+        assert_eq!(engine.presence_with_clock(|| now).agents.len(), 32);
+        assert!(engine.set_presence_with_clock(33, "peer", input(&engine), || now).unwrap_err().contains("32 active"));
         let mut invalid = input(&engine);
         invalid.selection = vec![ObjectId::new()];
-        assert!(engine.set_presence_at(1, "changed", invalid, now + Duration::from_secs(20)).is_err());
-        assert_eq!(engine.presence_at(now).agents[0].remaining_lease_ms, 30_000);
-        assert_eq!(engine.presence_at(now).agents[0].display_name, "same name");
-        assert_eq!(engine.presence_at(now + AGENT_PRESENCE_LEASE - Duration::from_nanos(1)).agents.len(), 32);
-        engine.set_presence_at(1, "renewed", input(&engine), now + Duration::from_secs(1)).unwrap();
-        let at_deadline = engine.presence_at(now + AGENT_PRESENCE_LEASE);
+        assert!(engine.set_presence_with_clock(1, "changed", invalid, || now + Duration::from_secs(20)).is_err());
+        assert_eq!(engine.presence_with_clock(|| now).agents[0].remaining_lease_ms, 30_000);
+        assert_eq!(engine.presence_with_clock(|| now).agents[0].display_name, "same name");
+        assert_eq!(engine.presence_with_clock(|| now + AGENT_PRESENCE_LEASE - Duration::from_nanos(1)).agents.len(), 32);
+        engine.set_presence_with_clock(1, "renewed", input(&engine), || now + Duration::from_secs(1)).unwrap();
+        let at_deadline = engine.presence_with_clock(|| now + AGENT_PRESENCE_LEASE);
         assert_eq!(at_deadline.agents.len(), 1);
         assert_eq!(at_deadline.agents[0].connection, 1);
         assert_eq!(at_deadline.agents[0].remaining_lease_ms, 1000);
-        assert!(engine.presence_at(now + Duration::from_secs(31)).agents.is_empty());
-        engine.set_presence_at(33, "admitted after expiry", input(&engine), now + Duration::from_secs(31)).unwrap();
+        assert!(engine.presence_with_clock(|| now + Duration::from_secs(31)).agents.is_empty());
+        engine.set_presence_with_clock(33, "admitted after expiry", input(&engine), || now + Duration::from_secs(31)).unwrap();
         assert_eq!(engine.session_state(), before);
         assert_eq!(engine.document_status(), status);
+    }
+
+    #[test]
+    fn lease_clock_is_sampled_after_both_locks_for_query_and_admission() {
+        let engine = EngineHandle::new(Project::new("attention"));
+        let now = Instant::now();
+        let check_locks = || {
+            assert!(engine.engine.try_lock().is_err());
+            assert!(engine.agent_presence.try_lock().is_err());
+            now
+        };
+        engine.set_presence_with_clock(1, "agent", input(&engine), check_locks).unwrap();
+        assert_eq!(engine.presence_with_clock(check_locks).agents[0].remaining_lease_ms, 30_000);
+        assert!(
+            engine
+                .presence_with_clock(|| {
+                    check_locks();
+                    now + AGENT_PRESENCE_LEASE
+                })
+                .agents
+                .is_empty()
+        );
     }
 
     #[test]
