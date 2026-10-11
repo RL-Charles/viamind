@@ -4348,6 +4348,7 @@ dependencies = [
  "tokio",
  "viamind-doc",
  "viamind-engine",
+ "viamind-fab",
  "viamind-mcp",
  "viamind-ui-egui",
 ]
@@ -4392,6 +4393,9 @@ dependencies = [
 name = "viamind-fab"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
+ "tempfile",
  "viamind-doc",
  "viamind-geom",
 ]
@@ -4417,6 +4421,7 @@ dependencies = [
  "anyhow",
  "axum",
  "rmcp",
+ "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
@@ -4424,6 +4429,7 @@ dependencies = [
  "tokio-util",
  "viamind-doc",
  "viamind-engine",
+ "viamind-fab",
 ]
 
 [[package]]
