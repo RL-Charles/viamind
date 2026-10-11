@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/inspection-1b60cc5c1d59",
+    "row",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row.ppm",
+    "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/row-definition.json"
+  ],
+  "pid": 2093703,
+  "source_commit": "1b60cc5c1d59",
+  "launched_utc": "2026-10-11T17:37:02.166187+00:00",
+  "scope": "Actual compact640x400 egui input preparation; actual native WGPU Screenshot, no OS input/compositor claim",
+  "exit_code": 0,
+  "exited_utc": "2026-10-11T17:37:05.388675+00:00"
+}

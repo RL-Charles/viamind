@@ -1,0 +1,72 @@
+95f89be79282e277cec46f32fbf3b3b9d6b8b54d
+Sun Oct 11 17:23:42 UTC 2026
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0110/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.69s
+     Running tests/symbol_compact.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/symbol_compact-720fdda20bee6037)
+
+running 2 tests
+test compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and_exact ... REVEAL New detached definition
+RECT New detached definition [[23.0 174.0] - [174.0 192.0]]
+REVEAL Definition name
+RECT Definition name [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition default value
+RECT Definition default value [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition footprint (optional)
+RECT Definition footprint (optional) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition width (mm)
+RECT Definition width (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Definition height (mm)
+RECT Definition height (mm) [[23.0 202.0] - [323.0 221.0]]
+REVEAL Add definition pin
+RECT Add definition pin [[23.0 262.0] - [134.7 280.0]]
+REVEAL Pin 2 number
+RECT Pin 2 number [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 name
+RECT Pin 2 name [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 X (mm)
+RECT Pin 2 X (mm) [[143.7 184.0] - [243.7 203.0]]
+REVEAL Pin 2 Y (mm)
+RECT Pin 2 Y (mm) [[143.7 190.0] - [243.7 209.0]]
+REVEAL Pin 2 electrical type
+RECT Pin 2 electrical type [[143.7 212.0] - [243.7 230.0]]
+REVEAL Input
+RECT Input [[251.0 65.0] - [344.0 83.0]]
+REVEAL Remove pin 2
+RECT Remove pin 2 [[23.0 233.0] - [109.6 251.0]]
+
+thread 'compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and_exact' (2054833) panicked at crates/ui-egui/tests/symbol_compact.rs:118:5:
+complete pin row must fit one actual compact clip: [[23.0 124.0] - [243.7 251.0]]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test compact_large_pin_list_scrolls_real_wheel_with_bounded_rows_and_stable_fields ... REVEAL Symbol library file path
+RECT Symbol library file path [[23.0 131.0] - [303.0 150.0]]
+REVEAL Load symbol template
+RECT Load symbol template [[23.0 153.0] - [159.7 171.0]]
+REVEAL Edit loaded definition
+RECT Edit loaded definition [[23.0 203.0] - [155.7 221.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 150.0] - [243.7 169.0]]
+REVEAL Pin 1024 name
+RECT Pin 1024 name [[165.7 180.0] - [265.7 199.0]]
+REVEAL Pin 1024 electrical type
+RECT Pin 1024 electrical type [[165.7 212.0] - [265.7 230.0]]
+REVEAL Pin 1 name
+RECT Pin 1 name [[143.7 150.0] - [243.7 169.0]]
+ok
+
+failures:
+
+failures:
+    compact_complete_pin_row_metadata_actions_errors_and_new_save_are_painted_and_exact
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.76s
+
+error: test failed, to rerun pass `-p viamind-ui-egui --test symbol_compact`
