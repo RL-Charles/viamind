@@ -59,8 +59,9 @@ verification.
 Rows group exact value, footprint and all sourcing fields. References sort
 lexically and split after 200 components per row. Assembly BOM quantities count
 that row's references; item numbers start at one. No UUID columns are added. The
-assembly sample's Type and Instructions cells stay empty: this preserved template does not read mounting metadata or infer it from
-inferred from visible pads or footprint names. A header-only file represents an
+assembly sample's Type and Instructions cells stay empty: this preserved template
+does not read mounting metadata or infer technology from visible pads or footprint
+names. A header-only file represents an
 empty populated set.
 
 The exact public sample headers are preserved, including full-width parentheses
