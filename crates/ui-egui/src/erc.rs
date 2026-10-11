@@ -220,49 +220,58 @@ impl ViamindApp {
                         }
                     });
                 });
-                egui::ScrollArea::vertical().id_salt("erc_results").max_height(340.0).show_rows(ui, 180.0, report.violations.len(), |ui, rows| {
-                    for row in rows {
-                        let issue = &report.violations[row];
-                        ui.push_id(&issue.id, |ui| {
-                            let summary = format!("{:?}: {}", issue.severity, issue.message);
-                            ui.add(egui::Label::new(&summary).truncate()).on_hover_text(&summary);
-                            let net = format!("Net {} · {}", issue.net_name.as_deref().unwrap_or("unnamed"), issue.net_id);
-                            ui.add(egui::Label::new(&net).truncate()).on_hover_text(&net);
-                            ui.horizontal_wrapped(|ui| {
-                                for (n, pin) in issue.pins.iter().enumerate() {
-                                    if ui
-                                        .add_enabled(
-                                            fresh,
-                                            egui::Button::new(format!(
-                                                "Show pin {} · {}",
-                                                {
-                                                    let number = pin.pin_number.as_deref().unwrap_or("?");
-                                                    let mut short: String = number.chars().take(24).collect();
-                                                    if number.chars().count() > 24 {
-                                                        short.push('…');
-                                                    }
-                                                    short
-                                                },
-                                                &pin.id.to_string()[28..]
-                                            )),
-                                        )
-                                        .on_hover_text(format!(
-                                            "Pin number {}\nPin {}\nSheet {}\nSymbol {}",
-                                            pin.pin_number.as_deref().unwrap_or("?"),
-                                            pin.id,
-                                            pin.sheet_id,
-                                            pin.symbol_id.map_or_else(|| "absent".into(), |id| id.to_string())
-                                        ))
-                                        .clicked()
-                                    {
-                                        navigate = Some((report.project_id, report.source_cursor, issue.pins[n].clone()));
+                let row_height = ui.text_style_height(&egui::TextStyle::Body) * 8.0 + ui.spacing().item_spacing.y * 4.0;
+                egui::ScrollArea::vertical().id_salt("erc_results").max_height(340.0).show_rows(
+                    ui,
+                    row_height,
+                    report.violations.len(),
+                    |ui, rows| {
+                        for row in rows {
+                            let issue = &report.violations[row];
+                            ui.push_id(&issue.id, |ui| {
+                                // Match show_rows' allocation exactly so the final page cannot be blank.
+                                ui.set_min_height(row_height);
+                                let summary = format!("{:?}: {}", issue.severity, issue.message);
+                                ui.add(egui::Label::new(&summary).truncate()).on_hover_text(&summary);
+                                let net = format!("Net {} · {}", issue.net_name.as_deref().unwrap_or("unnamed"), issue.net_id);
+                                ui.add(egui::Label::new(&net).truncate()).on_hover_text(&net);
+                                ui.horizontal_wrapped(|ui| {
+                                    for (n, pin) in issue.pins.iter().enumerate() {
+                                        if ui
+                                            .add_enabled(
+                                                fresh,
+                                                egui::Button::new(format!(
+                                                    "Show pin {} · {}",
+                                                    {
+                                                        let number = pin.pin_number.as_deref().unwrap_or("?");
+                                                        let mut short: String = number.chars().take(24).collect();
+                                                        if number.chars().count() > 24 {
+                                                            short.push('…');
+                                                        }
+                                                        short
+                                                    },
+                                                    &pin.id.to_string()[28..]
+                                                ))
+                                                .truncate(),
+                                            )
+                                            .on_hover_text(format!(
+                                                "Pin number {}\nPin {}\nSheet {}\nSymbol {}",
+                                                pin.pin_number.as_deref().unwrap_or("?"),
+                                                pin.id,
+                                                pin.sheet_id,
+                                                pin.symbol_id.map_or_else(|| "absent".into(), |id| id.to_string())
+                                            ))
+                                            .clicked()
+                                        {
+                                            navigate = Some((report.project_id, report.source_cursor, issue.pins[n].clone()));
+                                        }
                                     }
-                                }
+                                });
+                                ui.separator();
                             });
-                            ui.separator();
-                        });
-                    }
-                });
+                        }
+                    },
+                );
             }
         });
         self.erc.open = open;

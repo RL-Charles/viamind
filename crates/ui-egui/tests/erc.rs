@@ -163,3 +163,45 @@ fn actual_matrix_override_in_narrow_layout_changes_two_output_conflict_severity(
     assert!(h.query_by_label_contains("0 errors · 1 warnings").is_some());
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn virtualized_results_reach_final_diagnostic_after_large_scroll() {
+    use viamind_doc::{
+        ObjectId,
+        schematic::{Coordinate, PinType},
+    };
+    let mut project = engine().read(Clone::clone);
+    let sheet = project.schematic.sheets.values_mut().next().unwrap();
+    let content = sheet.content.as_mut().unwrap();
+    let seed = content.symbols.values().next().unwrap().clone();
+    content.symbols.clear();
+    content.wires.clear();
+    content.junctions.clear();
+    content.labels.clear();
+    for i in 0..20 {
+        let mut symbol = seed.clone();
+        symbol.id = ObjectId::new();
+        symbol.designator = format!("U{i}");
+        symbol.position = Coordinate { x: viamind_geom::Nm(i * 1_000_000), y: viamind_geom::Nm(0) };
+        symbol.pins.truncate(1);
+        symbol.pins[0].id = ObjectId::new();
+        symbol.pins[0].position = Coordinate::default();
+        symbol.pins[0].electrical = PinType::Input;
+        content.symbols.insert(symbol.id, symbol);
+    }
+    let e = EngineHandle::new(project);
+    let report = e.run_erc(&ErcInput::default()).unwrap();
+    assert_eq!(report.violations.len(), 40);
+    let pin = &report.violations.last().unwrap().pins[0];
+    let caption = format!("Show pin {} · {}", pin.pin_number.as_ref().unwrap(), &pin.id.to_string()[28..]);
+    let mut h = harness(&e);
+    h.state_mut().begin_erc();
+    h.run_steps(5);
+    click(&mut h, "Run ERC");
+    finish(&mut h);
+    assert!(h.query_all_by_label(&caption).next().is_none());
+    h.event(egui::Event::PointerMoved(egui::pos2(300.0, 300.0)));
+    h.event(egui::Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, -100000.0), modifiers: Default::default() });
+    h.run_steps(30);
+    assert!(h.query_all_by_label(&caption).next().is_some(), "Final diagnostic must remain reachable at the end of the virtual list");
+}
