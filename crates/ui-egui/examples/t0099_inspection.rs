@@ -46,7 +46,7 @@ impl eframe::App for Inspection {
             let rgb: Vec<_> = image.pixels.iter().flat_map(|p| [p.r(), p.g(), p.b()]).collect();
             file.write_all(&rgb).unwrap();
             file.sync_all().unwrap();
-            let report = serde_json::json!({"inspection_only":true,"mcp_enabled":true,"agent_read_only":true,
+            let report = serde_json::json!({"inspection_only":true,"mcp_enabled":true,"agent_read_only":true,"pid":std::process::id(),
                 "url":self.server.url(),"capture":"actual eframe native WGPU Screenshot event","pixels":image.size,
                 "ui_passes":self.ui_passes,"full_session_unchanged_during_native_ui":true,"native_bytes_preserved":true,
                 "human_local_egui_actions_verified":["Edit menu","Place test resistor","Ctrl+Z","Ctrl+Shift+Z"],
