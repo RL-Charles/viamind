@@ -1,27 +1,7 @@
 //! A synthetic board scene for exercising the canvas before the real document model exists.
 
 use crate::camera::{WorldPos, WorldRect};
-
-/// Which (placeholder) layer an item is drawn on; picks its colour and draw order.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum Layer {
-    BottomCopper,
-    TopCopper,
-    Via,
-}
-
-impl Layer {
-    /// Bottom to top, the order layers are painted in.
-    pub const ALL: [Self; 3] = [Self::BottomCopper, Self::TopCopper, Self::Via];
-
-    pub fn name(self) -> &'static str {
-        match self {
-            Self::BottomCopper => "Bottom copper",
-            Self::TopCopper => "Top copper",
-            Self::Via => "Vias",
-        }
-    }
-}
+use crate::layers::LayerId;
 
 /// A drawable primitive in world millimetres.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -51,12 +31,12 @@ impl Prim {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Item {
     pub prim: Prim,
-    pub layer: Layer,
+    pub layer: LayerId,
     pub bounds: WorldRect,
 }
 
 impl Item {
-    pub fn new(prim: Prim, layer: Layer) -> Self {
+    pub fn new(prim: Prim, layer: LayerId) -> Self {
         Self { prim, layer, bounds: prim.bounds() }
     }
 }
@@ -69,39 +49,54 @@ pub struct Scene {
 }
 
 impl Scene {
-    /// A deterministic pseudo-random board with `n` items: about 40 % rectangular pads, 15 % vias
-    /// and 45 % track segments on top and bottom copper. The board grows with `n` so density stays
-    /// roughly constant (about 1 item per mm²; 100k items is a 316 × 221 mm board).
+    /// A deterministic pseudo-random four-layer board with `n` items (the layers of
+    /// [`crate::layers::LayerStack::pcb_default`]): the board outline on Edge.Cuts, then about 40 %
+    /// rectangles (pads on F.Cu or B.Cu, half of them with a solder mask opening), 13 % vias,
+    /// 35 % tracks on all four copper layers and 13 % silkscreen strokes. The board grows with `n`
+    /// so density stays roughly constant (about 1 item per mm²; 100k items is a 316 × 221 mm board).
     pub fn synthetic(n: usize) -> Self {
         let width = (n as f64).sqrt().max(40.0);
         let height = (width * 0.7).round();
         let board = WorldRect::new(WorldPos::new(0.0, 0.0), WorldPos::new(width, height));
         let mut rng = SplitMix64(0x05EE_D0FB_0A2D);
         let mut items = Vec::with_capacity(n);
+        let corners = [WorldPos::new(0.0, 0.0), WorldPos::new(width, 0.0), WorldPos::new(width, height), WorldPos::new(0.0, height)];
+        for (i, a) in corners.iter().enumerate().take(n) {
+            items.push(Item::new(Prim::Segment { a: *a, b: corners[(i + 1) % 4], width: 0.2 }, LayerId::EDGE_CUTS));
+        }
         let inset = 1.0;
-        for _ in 0..n {
+        while items.len() < n {
             let x = rng.range(inset, width - inset);
             let y = rng.range(inset, height - inset);
-            let copper = if rng.next_f64() < 0.6 { Layer::TopCopper } else { Layer::BottomCopper };
+            let front = rng.next_f64() < 0.6;
             let kind = rng.next_f64();
-            let item = if kind < 0.40 {
+            if kind < 0.30 {
                 let hw = rng.range(0.15, 1.0);
                 let hh = rng.range(0.15, 1.0);
-                Item::new(Prim::Rect(WorldRect::new(WorldPos::new(x - hw, y - hh), WorldPos::new(x + hw, y + hh))), copper)
-            } else if kind < 0.55 {
-                Item::new(Prim::Circle { center: WorldPos::new(x, y), radius: rng.range(0.2, 0.45) }, Layer::Via)
+                let pad = WorldRect::new(WorldPos::new(x - hw, y - hh), WorldPos::new(x + hw, y + hh));
+                items.push(Item::new(Prim::Rect(pad), if front { LayerId::F_CU } else { LayerId::B_CU }));
+                if rng.next_f64() < 0.5 && items.len() < n {
+                    let mask = if front { LayerId::F_MASK } else { LayerId::B_MASK };
+                    items.push(Item::new(Prim::Rect(pad.expand(0.05)), mask));
+                }
+            } else if kind < 0.45 {
+                items.push(Item::new(Prim::Circle { center: WorldPos::new(x, y), radius: rng.range(0.2, 0.45) }, LayerId::VIAS));
             } else {
-                // Tracks run in one of eight directions, as routed copper usually does.
+                // Tracks and silkscreen run in one of eight directions, as routed copper usually does.
+                let silk = kind >= 0.85;
                 let dir = (rng.next_u64() % 8) as f64 * std::f64::consts::FRAC_PI_4;
-                let len = rng.range(0.5, 8.0);
+                let len = if silk { rng.range(0.5, 3.0) } else { rng.range(0.5, 8.0) };
                 let bx = (x + len * dir.cos()).clamp(inset, width - inset);
                 let by = (y + len * dir.sin()).clamp(inset, height - inset);
-                Item::new(Prim::Segment { a: WorldPos::new(x, y), b: WorldPos::new(bx, by), width: rng.range(0.1, 0.5) }, copper)
-            };
-            items.push(item);
+                let (layer, w) = if silk {
+                    (if front { LayerId::F_SILKS } else { LayerId::B_SILKS }, 0.15)
+                } else {
+                    let copper = [LayerId::F_CU, LayerId::F_CU, LayerId::IN1_CU, LayerId::IN2_CU, LayerId::B_CU];
+                    (copper[(rng.next_u64() % 5) as usize], rng.range(0.1, 0.5))
+                };
+                items.push(Item::new(Prim::Segment { a: WorldPos::new(x, y), b: WorldPos::new(bx, by), width: w }, layer));
+            }
         }
-        // Paint order: bottom copper, then top copper, then vias.
-        items.sort_by_key(|item| Layer::ALL.iter().position(|l| *l == item.layer));
         Self { board, items }
     }
 
@@ -165,9 +160,13 @@ mod tests {
     }
 
     #[test]
-    fn items_are_sorted_by_paint_order() {
-        let scene = Scene::synthetic(1_000);
-        let order: Vec<usize> = scene.items.iter().map(|i| Layer::ALL.iter().position(|l| *l == i.layer).unwrap_or(0)).collect();
-        assert!(order.windows(2).all(|w| w[0] <= w[1]));
+    fn synthetic_uses_every_default_layer() {
+        let scene = Scene::synthetic(5_000);
+        let stack = crate::layers::LayerStack::pcb_default(4);
+        assert!(scene.items.iter().all(|i| stack.get(i.layer).is_some()));
+        for layer in stack.layers() {
+            let count = scene.items.iter().filter(|i| i.layer == layer.id).count();
+            assert!(count >= 4, "{} has {count} items", layer.name);
+        }
     }
 }

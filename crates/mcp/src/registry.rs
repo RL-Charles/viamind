@@ -9,6 +9,8 @@ use std::{collections::BTreeMap, fmt, future::Future, pin::Pin, sync::Arc};
 
 use serde_json::Value;
 
+use crate::agent::CallContext;
+
 /// Error returned by a tool handler. The message is shown to the calling agent.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ToolError {
@@ -48,8 +50,8 @@ pub enum CallError {
 /// Boxed future returned by a [`ToolHandler`].
 pub type ToolFuture = Pin<Box<dyn Future<Output = Result<Value, ToolError>> + Send>>;
 
-/// Type-erased async tool handler: JSON input to JSON output.
-pub type ToolHandler = Arc<dyn Fn(Value) -> ToolFuture + Send + Sync>;
+/// Type-erased async tool handler: JSON input (plus who is calling) to JSON output.
+pub type ToolHandler = Arc<dyn Fn(Value, CallContext) -> ToolFuture + Send + Sync>;
 
 /// Static description of a tool, as advertised to clients.
 #[derive(Debug, Clone, PartialEq)]
@@ -93,7 +95,7 @@ impl ToolRegistry {
         registry
     }
 
-    /// Register a tool with an async handler.
+    /// Register a tool with an async handler that does not need to know who is calling.
     pub fn register<F, Fut>(
         &mut self,
         name: impl Into<String>,
@@ -105,8 +107,24 @@ impl ToolRegistry {
         F: Fn(Value) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
     {
+        self.register_with_context(name, description, input_schema, move |input, _ctx| handler(input))
+    }
+
+    /// Register a tool whose async handler also receives the [`CallContext`]
+    /// (e.g. the calling [`crate::AgentId`]).
+    pub fn register_with_context<F, Fut>(
+        &mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+        input_schema: Value,
+        handler: F,
+    ) -> Result<(), RegistryError>
+    where
+        F: Fn(Value, CallContext) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = Result<Value, ToolError>> + Send + 'static,
+    {
         let def = ToolDef { name: name.into(), description: description.into(), input_schema };
-        let handler: ToolHandler = Arc::new(move |input| Box::pin(handler(input)) as ToolFuture);
+        let handler: ToolHandler = Arc::new(move |input, ctx| Box::pin(handler(input, ctx)) as ToolFuture);
         self.register_def(def, handler)
     }
 
@@ -145,10 +163,10 @@ impl ToolRegistry {
         self.tools.is_empty()
     }
 
-    /// Call the tool called `name` with `input`.
-    pub async fn call(&self, name: &str, input: Value) -> Result<Value, CallError> {
+    /// Call the tool called `name` with `input` on behalf of `ctx.agent`.
+    pub async fn call(&self, name: &str, input: Value, ctx: CallContext) -> Result<Value, CallError> {
         let handler = self.tools.get(name).map(|entry| entry.handler.clone()).ok_or_else(|| CallError::UnknownTool(name.to_owned()))?;
-        Ok(handler(input).await?)
+        Ok(handler(input, ctx).await?)
     }
 }
 
@@ -183,7 +201,7 @@ mod tests {
         assert_eq!(names, ["a_first", "double"]);
         assert_eq!(registry.get("double").unwrap().description, "Doubles n");
 
-        let out = registry.call("double", json!({ "n": 21 })).await.unwrap();
+        let out = registry.call("double", json!({ "n": 21 }), CallContext::default()).await.unwrap();
         assert_eq!(out, json!({ "n": 42 }));
     }
 
@@ -192,8 +210,8 @@ mod tests {
         let mut registry = ToolRegistry::new();
         registry.register("fail", "Always fails", object_schema(), |_| async { Err(ToolError::Failed("boom".into())) }).unwrap();
 
-        assert_eq!(registry.call("fail", json!({})).await, Err(CallError::Tool(ToolError::Failed("boom".into()))));
-        assert_eq!(registry.call("missing", json!({})).await, Err(CallError::UnknownTool("missing".into())));
+        assert_eq!(registry.call("fail", json!({}), CallContext::default()).await, Err(CallError::Tool(ToolError::Failed("boom".into()))));
+        assert_eq!(registry.call("missing", json!({}), CallContext::default()).await, Err(CallError::UnknownTool("missing".into())));
     }
 
     #[test]
@@ -209,15 +227,23 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn context_reaches_the_handler() {
+        let mut registry = ToolRegistry::new();
+        registry.register_with_context("whoami", "", object_schema(), |_, ctx| async move { Ok(json!(ctx.agent.0)) }).unwrap();
+        assert_eq!(registry.call("whoami", json!({}), CallContext::new("bob#1")).await.unwrap(), json!("bob#1"));
+        assert_eq!(registry.call("whoami", json!({}), CallContext::default()).await.unwrap(), json!(crate::AgentId::LOCAL));
+    }
+
+    #[tokio::test]
     async fn builtins_are_registered() {
         let registry = ToolRegistry::with_builtins();
         let names: Vec<_> = registry.tools().map(|t| t.name.as_str()).collect();
         assert_eq!(names, ["echo", "viamind_version"]);
 
         let input = json!({ "hello": [1, 2, 3] });
-        assert_eq!(registry.call("echo", input.clone()).await.unwrap(), input);
+        assert_eq!(registry.call("echo", input.clone(), CallContext::default()).await.unwrap(), input);
 
-        let version = registry.call("viamind_version", json!({})).await.unwrap();
+        let version = registry.call("viamind_version", json!({}), CallContext::default()).await.unwrap();
         assert_eq!(version["name"], "viamind");
         assert_eq!(version["version"], env!("CARGO_PKG_VERSION"));
     }
