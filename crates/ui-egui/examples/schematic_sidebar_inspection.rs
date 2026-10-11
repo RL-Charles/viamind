@@ -21,12 +21,15 @@ fn control(shapes: &[egui::epaint::ClippedShape], label: &str, content: egui::Re
         let egui::Shape::Text(text) = &s.shape else { return None };
         (text.galley.job.text == label).then_some(text.visual_bounding_rect())
     })?;
-    let (rect, clip) = shapes.iter().filter_map(|s| {
-        let egui::Shape::Rect(r) = &s.shape else { return None };
-        (r.rect.contains_rect(text) && r.rect.width() <= text.width() + 24.0 && r.rect.height() <= text.height() + 24.0)
-            .then_some((r.rect, s.clip_rect.intersect(content)))
-    }).min_by(|a,b| a.0.area().total_cmp(&b.0.area()))?;
-    clip.contains_rect(rect).then_some((rect,clip))
+    let (rect, clip) = shapes
+        .iter()
+        .filter_map(|s| {
+            let egui::Shape::Rect(r) = &s.shape else { return None };
+            (r.rect.contains_rect(text) && r.rect.width() <= text.width() + 24.0 && r.rect.height() <= text.height() + 24.0)
+                .then_some((r.rect, s.clip_rect.intersect(content)))
+        })
+        .min_by(|a, b| a.0.area().total_cmp(&b.0.area()))?;
+    clip.contains_rect(rect).then_some((rect, clip))
 }
 
 impl eframe::App for Inspect {
@@ -44,8 +47,12 @@ impl eframe::App for Inspect {
         let shapes: Vec<_> = ui.ctx().graphics(|g| g.clone().drain(&[], &Default::default()));
         assert!(shapes.len() <= 32768);
         let content = ui.ctx().content_rect();
-        let controls: Vec<_> = self.labels.iter().filter_map(|label| control(&shapes, label, content).map(|bounds| (label,bounds))).collect();
-        if controls.len() == self.labels.len() { self.stable_visible_passes += 1; } else { self.stable_visible_passes = 0; }
+        let controls: Vec<_> = self.labels.iter().filter_map(|label| control(&shapes, label, content).map(|bounds| (label, bounds))).collect();
+        if controls.len() == self.labels.len() {
+            self.stable_visible_passes += 1;
+        } else {
+            self.stable_visible_passes = 0;
+        }
         let image = ui.ctx().input(|i| {
             i.events.iter().find_map(|e| match e {
                 egui::Event::Screenshot { image, .. } => Some(image.clone()),
@@ -87,8 +94,13 @@ impl eframe::App for Inspect {
         raw.focused = true;
         raw.events.retain(|e| !matches!(e, egui::Event::WindowFocused(false)));
         if self.capture.is_some() && self.stable_visible_passes == 0 && self.ui_passes.is_multiple_of(4) {
-            raw.events.push(egui::Event::PointerMoved(egui::pos2(100.0,120.0)));
-            raw.events.push(egui::Event::MouseWheel { unit:egui::MouseWheelUnit::Point, delta:egui::vec2(0.0,-80.0), phase:egui::TouchPhase::Move, modifiers:egui::Modifiers::NONE });
+            raw.events.push(egui::Event::PointerMoved(egui::pos2(100.0, 120.0)));
+            raw.events.push(egui::Event::MouseWheel {
+                unit: egui::MouseWheelUnit::Point,
+                delta: egui::vec2(0.0, -80.0),
+                phase: egui::TouchPhase::Move,
+                modifiers: egui::Modifiers::NONE,
+            });
             self.injected_wheel_events += 1;
         }
     }
@@ -145,7 +157,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before, status, labels, capture: Some(path), ui_passes: 0, stable_visible_passes: 0, screenshot_requested: false, injected_wheel_events: 0 }))
+            Ok(Box::new(Inspect {
+                app,
+                engine,
+                before,
+                status,
+                labels,
+                capture: Some(path),
+                ui_passes: 0,
+                stable_visible_passes: 0,
+                screenshot_requested: false,
+                injected_wheel_events: 0,
+            }))
         }),
     )
     .map_err(|e| e.to_string())?;
