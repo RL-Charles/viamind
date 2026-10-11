@@ -29,3 +29,9 @@ release where possible, and keep the asset's licence file next to it in the repo
 
 | Asset | Author | Source URL | Licence | Files |
 | --- | --- | --- | --- | --- |
+
+## Shader conventions
+
+| Asset | Author | Source URL | Licence | Files |
+| --- | --- | --- | --- | --- |
+| egui-wgpu 0.36.2 colour conversion, premultiplied blending and dithering conventions | Emil Ernerfeldt and egui contributors | [Pinned shader source](https://github.com/emilk/egui/blob/0.36.2/crates/egui-wgpu/src/egui.wgsl), [upstream MIT licence](https://github.com/emilk/egui/blob/0.36.2/LICENSE-MIT) | MIT; complete notice retained at the top of the adapted shader | `crates/ui-egui/src/gpu_tiles.wgsl` |

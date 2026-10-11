@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             app.canvas.camera.pan_by_screen(vec2(0.25, 0.125));
         }
         let start = Instant::now();
-        let output = ctx.run_ui(
+        let mut output = ctx.run_ui(
             RawInput {
                 screen_rect: Some(Rect::from_min_size(pos2(0.0, 0.0), vec2(1600.0, 1000.0))),
                 time: Some(f64::from(frame) / 60.0),
@@ -26,6 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
             |ui| app.show(ui, None),
         );
+        output.textures_delta.clear(); // Stage profile deliberately excludes texture upload.
         let ui_elapsed = start.elapsed().as_secs_f64() * 1000.0;
         let start = Instant::now();
         let primitives = ctx.tessellate(output.shapes, output.pixels_per_point);

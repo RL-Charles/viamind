@@ -14,3 +14,5 @@ Public sources: [egui-wgpu 0.36.2 callback lifecycle](https://docs.rs/egui-wgpu/
 ## Limits
 
 The existing tessellation cache permits at most 9% anti-alias fringe scaling inside a zoom bucket. The optimization retains that policy. Frame-start cadence includes OS scheduling/presentation and is not a GPU timestamp measurement. CPU profile stage timings exclude GPU execution.
+
+Native evidence in this increment uses 1 pixel/point, the default single-sample target, no depth attachment and egui's default linear atlas filtering/dithering. The pipeline retains these native application defaults. Non-default MSAA/depth, alternate filtering/dithering policies and different DPI have not been verified; headless/default constructors continue to use egui meshes.

@@ -359,10 +359,11 @@ mod tests {
         let viewport = Rect::from_min_max(egui::pos2(200.0, 30.0), egui::pos2(1280.0, 770.0));
         camera.zoom_to_fit(scene.bounds(), viewport, 24.0);
         let paint = |cache: &mut MeshCache, camera: &Camera, layers: &LayerStack| {
-            let output = ctx.run_ui(egui::RawInput::default(), |ui| {
+            let mut output = ctx.run_ui(egui::RawInput::default(), |ui| {
                 let painter = ui.painter().with_clip_rect(viewport);
                 assert!(cache.paint(&painter, &scene, layers, camera, viewport) > 0);
             });
+            output.textures_delta.clear(); // This headless geometry test deliberately does not upload textures.
             let primitives = ctx.tessellate(output.shapes, output.pixels_per_point);
             assert_eq!(primitives.iter().filter(|p| matches!(p.primitive, Primitive::Callback(_))).count(), 1);
             assert!(!primitives.iter().any(|p| matches!(p.primitive, Primitive::Mesh(_))), "board geometry bypasses egui per-frame mesh assembly");
