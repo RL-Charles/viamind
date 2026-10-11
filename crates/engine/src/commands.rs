@@ -123,7 +123,7 @@ impl Command for DeletePart {
 }
 
 /// Converts a millimetre position to nanometres, rejecting non-finite or out-of-range values.
-fn position_mm(x_field: &str, x: f64, y_field: &str, y: f64) -> Result<Point, CommandError> {
+pub(crate) fn position_mm(x_field: &str, x: f64, y_field: &str, y: f64) -> Result<Point, CommandError> {
     for (field, value) in [(x_field, x), (y_field, y)] {
         if !value.is_finite() || value.abs() > MAX_COORD_MM {
             return Err(CommandError::invalid(field, format!("must be a finite number of millimetres within ±{MAX_COORD_MM}, got {value}")));

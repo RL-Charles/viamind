@@ -30,6 +30,6 @@ pub const INSTRUCTIONS: &str = "Viamind is an open-source, agent-driven PCB desi
 Agents are first-class users: every action available in the Viamind UI is exposed as an MCP \
 tool that takes and returns JSON, and your edits apply live in the open Viamind UI. Use \
 `viamind_version` to identify the server and `echo` to check the connection. When a design is \
-open, call `get_design` to read the whole design as JSON before and after editing, and `undo` / \
+open, use `query_parts` for filtered, paginated part records or `get_design` for the whole design as JSON, and `undo` / \
 `redo` to step through your own changes (changes made by the human or other agents are not \
 affected).";

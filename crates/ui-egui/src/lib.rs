@@ -4,6 +4,7 @@
 //! with eframe's wgpu backend. The eframe/egui-wgpu setup follows the ArtCraft Craft apps
 //! (CADCraft, MIT/Apache-2.0): `default-features = false` plus only the features we use.
 
+pub mod actions;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
@@ -11,10 +12,12 @@ pub mod layer_panel;
 pub mod layers;
 pub mod mesh_cache;
 pub mod scene;
+pub mod selection;
 
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
+use crate::actions::UiAction;
 use egui::{Key, KeyboardShortcut, Modifiers, Ui};
 use serde_json::json;
 use viamind_engine::{ChangeEvent, ChangeKind, EngineHandle, Origin};
@@ -99,6 +102,7 @@ pub struct ViamindApp {
     pub layers: LayerStack,
     pub canvas: Canvas,
     pub stats: FrameStats,
+    pub selection: selection::Selection,
     /// The live design, when the app was opened on one (otherwise the synthetic test scene is shown).
     pub design: Option<Design>,
     last_frame_time: Option<f64>,
@@ -118,6 +122,7 @@ impl ViamindApp {
             layers: LayerStack::pcb_default(4),
             canvas: Canvas::default(),
             stats: FrameStats::default(),
+            selection: selection::Selection::default(),
             design: None,
             last_frame_time: None,
         }
@@ -134,6 +139,7 @@ impl ViamindApp {
             layers: LayerStack::pcb_default(4),
             canvas,
             stats: FrameStats::default(),
+            selection: selection::Selection::default(),
             design: Some(Design { engine, changes, mcp_url, last_change: None, change_count: 0 }),
             last_frame_time: None,
         }
@@ -160,20 +166,21 @@ impl ViamindApp {
         if changed {
             self.scene = design.engine.read(board_scene::scene_from_project);
             self.canvas.scene_changed();
+            self.selection.invalidate();
         }
     }
 
     /// Undo the latest change from anyone (the human can undo agent edits).
-    pub fn undo(&mut self) {
+    pub fn undo_design(&mut self) {
         if let Some(design) = &self.design {
-            let _ = design.engine.undo(Origin::User);
+            let _ = UiAction::Undo.run(&design.engine, json!({}));
         }
     }
 
     /// Redo the latest undone change.
-    pub fn redo(&mut self) {
+    pub fn redo_design(&mut self) {
         if let Some(design) = &self.design {
-            let _ = design.engine.redo(Origin::User);
+            let _ = UiAction::Redo.run(&design.engine, json!({}));
         }
     }
 
@@ -184,7 +191,7 @@ impl ViamindApp {
         let x = 20.0 + f64::from((n - 1) % 10) * 6.0;
         let y = 20.0 + f64::from((n - 1) / 10) * 6.0;
         let input = json!({ "designator": format!("R{n}"), "value": "10k", "footprint": "R_0603", "x_mm": x, "y_mm": y });
-        if let Err(e) = design.engine.execute("add_part", input, Origin::User)
+        if let Err(e) = UiAction::PlacePart.run(&design.engine, input)
             && let Some(design) = &mut self.design
         {
             design.last_change = Some(format!("place failed: {e}"));
@@ -208,9 +215,9 @@ impl ViamindApp {
         self.update_stats(ui, cpu_ms);
         if self.design.is_some() {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
-                self.redo();
+                self.redo_design();
             } else if ui.input_mut(|i| i.consume_shortcut(&UNDO)) {
-                self.undo();
+                self.undo_design();
             }
         }
         self.sync_design();
@@ -219,7 +226,11 @@ impl ViamindApp {
         egui::Panel::bottom("status_bar").show(ui, |ui| self.status_bar(ui));
         egui::Panel::left("layers").default_size(250.0).show(ui, |ui| layer_panel::show(ui, &mut self.layers));
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
-            self.canvas.show(ui, &self.scene, &self.layers);
+            let response = self.canvas.show(ui, &self.scene, &self.layers);
+            if let Some(design) = &self.design {
+                self.selection.sync(&design.engine, &self.layers);
+                self.selection.show(ui, &response, &self.canvas.camera, &design.engine);
+            }
             self.paint_labels(ui);
         });
 
@@ -275,12 +286,29 @@ impl ViamindApp {
                     let (can_undo, can_redo) = self.design.as_ref().map_or((false, false), |d| (d.engine.can_undo(), d.engine.can_redo()));
                     let undo = egui::Button::new("Undo").shortcut_text(ui.ctx().format_shortcut(&UNDO));
                     if ui.add_enabled(can_undo, undo).clicked() {
-                        self.undo();
+                        self.undo_design();
                         ui.close();
                     }
                     let redo = egui::Button::new("Redo").shortcut_text(ui.ctx().format_shortcut(&REDO));
                     if ui.add_enabled(can_redo, redo).clicked() {
-                        self.redo();
+                        self.redo_design();
+                        ui.close();
+                    }
+                    ui.separator();
+                    ui.label("Selection tool");
+                    ui.radio_value(&mut self.selection.tool, selection::SelectionTool::Box, "Box");
+                    ui.radio_value(&mut self.selection.tool, selection::SelectionTool::Lasso, "Lasso");
+                    ui.label("Shift adds · Ctrl toggles · Ctrl+Shift removes");
+                    if ui.button("Select all visible (Ctrl+A)").clicked() {
+                        if let Some(design) = &self.design {
+                            self.selection.select_all(&design.engine);
+                        }
+                        ui.close();
+                    }
+                    if ui.button("Clear selection (Esc)").clicked() {
+                        if let Some(design) = &self.design {
+                            self.selection.clear(&design.engine);
+                        }
                         ui.close();
                     }
                     ui.separator();
@@ -327,7 +355,7 @@ impl ViamindApp {
             if let Some(design) = &self.design {
                 ui.separator();
                 let parts = design.engine.read(|p| p.board.parts.len());
-                ui.monospace(format!("{parts} parts"));
+                ui.monospace(format!("{parts} parts · {} selected", design.engine.selection().ids.len()));
                 ui.separator();
                 ui.monospace(design.mcp_url.as_deref().map_or_else(|| "MCP off".to_owned(), |url| format!("MCP {url}")));
                 if let Some(last) = &design.last_change {

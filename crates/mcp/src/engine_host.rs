@@ -1,7 +1,7 @@
 //! The design engine as a [`CommandHost`], so every engine command is an MCP tool.
 
 use serde_json::{Value, json};
-use viamind_engine::{EngineHandle, Origin};
+use viamind_engine::{EngineHandle, Origin, PartQuery, SetSelection, WatchEvents, input_schema};
 
 use crate::{
     agent::AgentId,
@@ -30,14 +30,68 @@ impl EngineHost {
 
 impl CommandHost for EngineHost {
     fn commands(&self) -> Vec<HostCommand> {
-        self.engine
+        let mut commands: Vec<_> = self
+            .engine
             .specs()
             .into_iter()
             .map(|spec| HostCommand { name: spec.name, description: spec.description, input_schema: spec.input_schema })
-            .collect()
+            .collect();
+        commands.push(HostCommand {
+            name: "get_session_state".into(),
+            description: "Read an atomic project, selection and event cursor snapshot. Initialize or resynchronize your local view here, then call watch_events after this cursor to receive every subsequent change.".into(),
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        });
+        commands.push(HostCommand {
+            name: "watch_events".into(),
+            description: "Read design and selection changes in session order. Pass the last cursor as after, including after reconnecting. Omitted after starts at current tail. limit defaults to 100 (1–1000); timeout_ms defaults to 0 (0–30000), waiting only if no events are available. Returns events, cursor and has_more. History retains 1024 records; on expired/future/restarted cursor errors call get_session_state to resynchronize. Read-only; use one outstanding watch per observer.".into(),
+            input_schema: input_schema::<WatchEvents>(),
+        });
+        commands.push(HostCommand {
+            name: "query_parts".into(),
+            description: "Read a bounded page of board parts using combined filters (IDs, exact fields, text, side, origin bounds in mm). Read-only. UUID order; limit defaults to 100 (max 1000). Repeat filters with next_after as after for the next page; restart if the design changes. Returns parts, total matches and next_after; positions are integer nanometres.".into(),
+            input_schema: input_schema::<PartQuery>(),
+        });
+        commands.push(HostCommand {
+            name: "set_selection".into(),
+            description: "Select board part IDs in the shared desktop session. Modes: replace (default), add, remove, toggle. Empty replace clears selection. Transient: preserves design undo and redo history.".into(),
+            input_schema: input_schema::<SetSelection>(),
+        });
+        commands.push(HostCommand {
+            name: "get_selection".into(),
+            description: "Read the shared selection: sorted part IDs, revision and last origin.".into(),
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        });
+        commands
     }
 
     fn execute(&self, name: &str, input: Value, agent: &AgentId) -> Result<Value, String> {
+        if name == "get_session_state" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_session_state takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.session_state()).map_err(|e| e.to_string());
+        }
+        if name == "watch_events" {
+            let input: WatchEvents = serde_json::from_value(input).map_err(|e| format!("invalid watch_events input: {e}"))?;
+            let result = self.engine.watch_events(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "query_parts" {
+            let query: PartQuery = serde_json::from_value(input).map_err(|e| format!("invalid query_parts input: {e}"))?;
+            let result = self.engine.query_parts(&query).map_err(|e| e.to_string())?;
+            return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "get_selection" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_selection takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.selection()).map_err(|e| e.to_string());
+        }
+        if name == "set_selection" {
+            let input: SetSelection = serde_json::from_value(input).map_err(|e| format!("invalid set_selection input: {e}"))?;
+            let selection = self.engine.set_selection(input, Self::origin(agent)).map_err(|e| e.to_string())?;
+            return serde_json::to_value(selection).map_err(|e| e.to_string());
+        }
         let result = self.engine.execute(name, input, Self::origin(agent)).map_err(|e| e.to_string())?;
         serde_json::to_value(result).map_err(|e| format!("internal error: could not encode the result ({e})"))
     }

@@ -97,3 +97,86 @@ returned as a tool result with `isError: true` so the agent sees the message.
 raw JSON-RPC over stdio) and `tests/host.rs` (a fake in-memory `CommandHost` served over
 `tokio::io::duplex` to real rmcp clients: tools/list, tools/call, undo/redo, get_design, host
 errors and per-connection agent ids).
+
+## Shared desktop selection
+
+The live desktop engine also exposes `get_selection` and `set_selection`.
+`get_selection` takes `{}` and returns `ids`, `revision`, and the last `origin`.
+`set_selection` takes `{"ids":["<board part UUID>"],"mode":"replace"}`;
+`mode` defaults to `replace`, and can also be `add`, `remove`, or `toggle`.
+An empty replacement clears selection. Unknown IDs reject the entire request.
+These session actions wake the desktop and preserve the document undo/redo stack.
+Deleting a selected part or undoing its creation removes it from the selection.
+
+## Verify a running desktop
+
+The desktop serves streamable HTTP at `http://127.0.0.1:7878/mcp` by default.
+Set `VIAMIND_MCP_PORT` when launching the desktop to use another port. Connect an
+agent client to that URL; the standalone `viamind-mcp` binary above serves only
+identification/echo tools, so use the desktop endpoint to edit the open design.
+
+From the repository root, with the desktop running:
+
+```sh
+python3 scripts/mcp-smoke.py --url http://127.0.0.1:7878/mcp --report /tmp/viamind-mcp-smoke.json
+```
+
+This standard-library client performs the MCP handshake, discovers tools, and
+uses two distinct editing agent sessions to place, move, select, delete, undo, and redo
+temporary parts. It checks useful validation errors, exact nanometre positions,
+selective undo isolation, and conflicts on overlapping edits. It returns a JSON
+report and exits nonzero on failure. `--observe-seconds 15` pauses with the test
+parts selected so you can see their appearance in the desktop.
+
+Run while the design is otherwise idle: the test compares the full document
+before and after. Cleanup deletes only the parts it created and restores the
+previous selection if another user or agent has not changed it. The document
+returns to its initial state; the edit audit history retains the test operations.
+An observer also checks atomic snapshots, event attribution, reconnect cursors, wait timeouts,
+and selection pruning order. The HTTP client handles JSON responses and SSE responses, including the empty
+priming event and heartbeat frames permitted by the transport.
+
+## Query board parts
+
+`query_parts` reads the live board without editing it. Combine filters with AND:
+
+```json
+{
+  "text": "10k",
+  "side": "top",
+  "bounds": {"min_x_mm": 0, "min_y_mm": 0, "max_x_mm": 50, "max_y_mm": 50},
+  "limit": 100
+}
+```
+
+Use `designator`, `value`, or `footprint` for exact case-sensitive matches, `text`
+for a case-insensitive substring across those fields, and `ids` for known UUIDs.
+Bounds include their edges and test the part's origin. The response contains
+`parts` (full part records with integer nanometre positions), `total` (all
+matches), and `next_after` (null when done). Results are in UUID order. For the
+next page, repeat the same filters and pass `next_after` as `after`. `limit`
+defaults to 100, maximum 1000. Restart pagination after design edits.
+See [the complete query contract](../../docs/specs/part-queries.md).
+
+## Watch design and selection changes
+
+Call `get_session_state {}` for an atomic `project`, `selection` and `cursor` snapshot.
+Then call `watch_events` with that cursor:
+
+```json
+{"after": {"stream_id": "<session UUID>", "sequence": 0}, "limit": 100, "timeout_ms": 30000}
+```
+
+The result contains ordered `events`, the next `cursor`, and `has_more`. Records have a
+`sequence` and an `event` with `kind` (`design` or `selection`) and `data`. Design data is
+the transaction change (including deltas and origin); selection data is the complete shared
+selection. Apply events in order and retain the returned cursor. Drain remaining pages when
+`has_more` is true, then wait again. Both stdio and HTTP support this tool.
+
+`limit` accepts 1–1000 (default 100); `timeout_ms` accepts 0–30000 (default 0, immediate).
+Without `after`, watching starts at the current tail. On timeout the page is empty and its
+cursor is unchanged. Use one pending watch per observer; a cancelled call may occupy a worker
+until its timeout. Cursors survive client reconnects to the same engine. They expire when
+more than 1024 newer records arrive, or when the engine restarts. On a cursor error, call
+`get_session_state` to resynchronize. Reading events preserves undo ownership and history.
+See [the full session event contract](../../docs/specs/session-events.md).

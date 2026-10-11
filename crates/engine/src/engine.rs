@@ -1,6 +1,6 @@
 //! The engine: one project, its command registry and its undo/redo history.
 
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 use std::sync::Arc;
 
 use serde_json::Value;
@@ -30,6 +30,8 @@ pub struct Engine {
     next_tx: u64,
     notifier: Notifier,
     log: EventLog,
+    selection: crate::SelectionSnapshot,
+    session: crate::session::SessionJournal,
 }
 
 impl Engine {
@@ -42,6 +44,8 @@ impl Engine {
     pub fn with_registry(project: Project, registry: CommandRegistry) -> Engine {
         Engine {
             registry,
+            selection: crate::SelectionSnapshot::default(),
+            session: crate::session::SessionJournal::default(),
             undo: Vec::new(),
             redo: Vec::new(),
             next_tx: 1,
@@ -54,6 +58,61 @@ impl Engine {
     /// The current project.
     pub fn project(&self) -> &Project {
         &self.project
+    }
+
+    /// Current transient selection, shared by all clients.
+    pub fn selection(&self) -> &crate::SelectionSnapshot {
+        &self.selection
+    }
+
+    /// Current project and selection paired with their session cursor.
+    pub fn session_state(&self) -> crate::SessionSnapshot {
+        crate::SessionSnapshot { project: self.project.clone(), selection: self.selection.clone(), cursor: self.event_cursor() }
+    }
+
+    /// The current session tail, independent of document transaction IDs.
+    pub fn event_cursor(&self) -> crate::EventCursor {
+        self.session.cursor()
+    }
+
+    /// Read one immediate session event page. Use the shared handle for long polling.
+    pub fn events_after(&self, after: crate::EventCursor, limit: usize) -> Result<crate::EventBatch, crate::SessionError> {
+        crate::WatchEvents { limit, ..Default::default() }.validate()?;
+        self.session.read(after, limit)
+    }
+
+    /// Updates selection atomically, validates IDs, and wakes repaint listeners.
+    /// Does not add a design transaction or clear redo history.
+    pub fn set_selection(&mut self, input: crate::SetSelection, origin: Origin) -> Result<crate::SelectionSnapshot, EngineError> {
+        if let Some(id) = input.ids.iter().find(|id| !self.project.board.parts.contains_key(id)) {
+            return Err(EngineError::InvalidInput {
+                command: "set_selection".into(),
+                message: format!("unknown board part {id}; call get_design for current IDs"),
+            });
+        }
+        let mut ids: BTreeSet<_> = self.selection.ids.iter().copied().collect();
+        let supplied: BTreeSet<_> = input.ids.into_iter().collect();
+        match input.mode {
+            crate::SelectionMode::Replace => ids = supplied,
+            crate::SelectionMode::Add => ids.extend(supplied),
+            crate::SelectionMode::Remove => ids.retain(|id| !supplied.contains(id)),
+            crate::SelectionMode::Toggle => {
+                for id in supplied {
+                    if !ids.remove(&id) {
+                        ids.insert(id);
+                    }
+                }
+            }
+        }
+        let ids: Vec<_> = ids.into_iter().collect();
+        if self.selection.ids != ids {
+            self.selection.ids = ids;
+            self.selection.revision += 1;
+            self.selection.origin = Some(origin);
+            self.session.push(crate::SessionEvent::Selection(self.selection.clone()));
+            self.notifier.wake();
+        }
+        Ok(self.selection.clone())
     }
 
     /// The command registry.
@@ -238,7 +297,17 @@ impl Engine {
 
     /// Logs `event` and sends it to subscribers.
     fn emit(&mut self, event: ChangeEvent) {
+        let before = self.selection.ids.len();
+        self.selection.ids.retain(|id| self.project.board.parts.contains_key(id));
+        if self.selection.ids.len() != before {
+            self.selection.revision += 1;
+            self.selection.origin = Some(event.origin.clone());
+        }
         self.log.append(event.clone());
+        self.session.push(crate::SessionEvent::Design(event.clone()));
+        if self.selection.ids.len() != before {
+            self.session.push(crate::SessionEvent::Selection(self.selection.clone()));
+        }
         self.notifier.send(event);
     }
 

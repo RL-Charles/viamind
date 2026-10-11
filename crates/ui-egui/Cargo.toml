@@ -21,4 +21,6 @@ egui.workspace = true
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }
 
 [dev-dependencies]
+viamind-mcp.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 egui_kittest.workspace = true
