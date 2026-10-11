@@ -88,6 +88,21 @@ its tooltip/JSON, and actual compact scrolling reaches the final member.
 
 ## Final integration
 
-The original proof source above remains fixed. Final transplant onto the literal
-T114 evidence head, actual combined tool catalog generation and fresh exact-head
-CI are pending; no final combined native/source claim is inferred.
+The original proof source above remains fixed. Only T115's 13 commits were
+transplanted onto literal T114 evidence head
+`95faf8245a65d05cb2ef0c01ef38cdb3e374e020`. Twelve commits have equal range-diffs;
+one drops the identical inherited closure type annotation already upstream.
+Final additive prose enables whole-package annotation in the package editor and
+precisely describes the existing structural and serialization bounds.
+
+Combined source `14ba5353c75c7ccdd037bdebf48d3e99cbe703aa` passed session 35811:
+fmt, strict workspace all-target Clippy, **38 focused checks**, workspace build,
+actual **109-tool** catalog generation/exact drift check and **18 isolated agent
+workflow checks**. The focused checks include legacy annotation, grouped owners,
+byte bounds, actual MCP clients, compact annotation and all three inherited
+complete-package desktop workflows. Retained combined executable SHA256:
+`5385a45f3fe7527cbfa39b0d0c07d82e227cd82cd8d51d105fb2dbd9e75c9312`.
+
+Fresh exact artifact-head CI remains the merge gate. No new native or full
+workspace claim is inferred from the scoped integration gate; the original
+819-test and actual/native proofs retain their historical source identities.

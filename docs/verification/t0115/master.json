@@ -108,11 +108,26 @@
     }
   ],
   "integration": {
-    "stack_base": "9521f02",
-    "pending_parent_ticket": "T-0114",
-    "final_transplant": "pending literal frozen T114 evidence boundary; only own ticket commits transplant",
-    "canonical_tool_regeneration": "pending final combined binary",
-    "exact_head_ci": "pending final integration/artifact head"
+    "stack_base": "95faf8245a65d05cb2ef0c01ef38cdb3e374e020",
+    "parent_ticket": "T-0114",
+    "source": "14ba5353c75c7ccdd037bdebf48d3e99cbe703aa",
+    "final_transplant": "Own13commits only;12range-diff equal, one drops inherited identical Option type annotation already upstream. Additive integration prose corrections only.",
+    "gate_session": 35811,
+    "exit_code": 0,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "focused_checks": 38,
+    "workspace_build": true,
+    "combined_binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/viamind-combined",
+    "combined_binary_sha256": "5385a45f3fe7527cbfa39b0d0c07d82e227cd82cd8d51d105fb2dbd9e75c9312",
+    "actual_tool_catalog": {
+      "tool_count": 109,
+      "generated_and_exact_checked": true,
+      "report": "docs/verification/t0115/combined-catalog.json"
+    },
+    "isolated_agent_workflow_checks": 18,
+    "exact_head_ci": "pending final integration/artifact head",
+    "scope": "Final combined source tested by scoped gate; original819full Linux and actual/native proofs remain historical272d5d2 and are not relabeled."
   },
   "limits": [
     "Annotation validates the existing schematic identity namespace seeded by project ID, without rechecking unrelated PCB identity or cloning unused assembly data.",
@@ -175,6 +190,26 @@
       "path": "docs/verification/t0115/client.py",
       "bytes": 1391,
       "sha256": "fbc9a7a5e272956def55802bdeba2a8ad4c5db1fb634e74b3f3c704fa4484ea6"
+    },
+    {
+      "path": "docs/verification/t0115/combined-catalog.json",
+      "bytes": 368,
+      "sha256": "243f030536fba9858e3759804feb11ce6a4e6302224067b56d8b6552c99ae3c8"
+    },
+    {
+      "path": "docs/verification/t0115/combined-source.txt",
+      "bytes": 41,
+      "sha256": "5cd68bf7912e28010df63e9f58e5943043bc4bae531c85f4da96b4e161561467"
+    },
+    {
+      "path": "docs/verification/t0115/combined.log",
+      "bytes": 9934,
+      "sha256": "934eb515e2b7062a4b6b96e4048d314849954a99a97d16d8b0a7885024ec6dd9"
+    },
+    {
+      "path": "docs/verification/t0115/combined.sh",
+      "bytes": 1859,
+      "sha256": "da1d6c7347932e1dedf6b26ab0db3d9955dc6fc988859e57a09584c4f37939bf"
     },
     {
       "path": "docs/verification/t0115/encode-native-ppm.py",
