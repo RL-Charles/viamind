@@ -62,6 +62,7 @@ impl CommandHost for EngineHost {
                 | "plan_pad_via_walkaround"
                 | "query_route_endpoints"
                 | "query_route_terminals"
+                | "query_copper_properties"
                 | "query_linked_pin_pads"
                 | "query_linked_components"
                 | "run_erc"
@@ -122,6 +123,7 @@ impl CommandHost for EngineHost {
         commands.push(HostCommand { name: "plan_pad_walkaround".into(), description: "Read-only bounded static cardinal walkaround plan with complete shared scoped joint DRC on the captured board snapshot. Same input as route_pad_walkaround: exact project/full cursor, same-net same-side quarter-turn explicit pad IDs, positive grid/width Nm and optional rules. Rectangular outer outline and rectangular cutouts only; cutout exclusions use route half-width plus board-edge clearance plus1Nm, separately from copper rules; combined conservative cutout/foreign copper/ALL via-hole boxes share existing limits; explicit obstacle/graph/work budgets and busy refusal. Result includes exact points/stubs, work counters, derived net/layer and source_cursor. No document/history/selection changes; commit recomputes. No shove or physical certification.".into(), input_schema: input_schema::<viamind_engine::RoutePadWalkaround>() });
         commands.push(HostCommand { name: "plan_pad_via_walkaround".into(), description: "Read-only checked two-side static cardinal walkaround through one explicit fixed grid-aligned new through via. Same typed input as route_pad_via_walkaround. One bounded board snapshot and retained admission; aggregate obstacle/graph/intersection/result budgets cover both legs. Rectangular outer outline/cutouts, exact quarter-turn opposite-side same-net pad endpoints. Success requires complete joint DRC of BOTH paths plus via, including annular/drill/edge/hole spacing. Returns exact paths, derived sides/net, full cursor and aggregate work; no mutation or automatic via relocation. Commit recomputes atomically.".into(), input_schema: input_schema::<viamind_engine::RoutePadViaWalkaround>() });
         commands.push(HostCommand { name:"query_route_endpoints".into(),description:"Read bounded immutable UUID-ordered explicit pad routing endpoints with exact quarter-turn integer centers, derived net/outer side, rendering corners and unsupported reasons. Legacy previews omitted; arbitrary rotations/unassigned nets cannot attach. offset 0, limit 1..1000 default 100, optional exact net. Max 100000 board structural objects / 2 MiB text / 512-byte labels (route net at most 256 bytes); no unrelated schematic capture. Preserve model/selection/history; source_cursor changes require restarting pages. No continuity or guide-completion claim.".into(),input_schema:input_schema::<viamind_engine::RouteEndpointQuery>() });
+        commands.push(HostCommand {name:"query_copper_properties".into(), description:"Read one exact persisted track/via property object, project/full source cursor and bounded document net minima. Strict target is track {id} or via {id}. Selected-object net must fit128characters/256UTF-8bytes. No selection/history/status mutation or board/schematic/assembly clone; read-only observation. Use guarded set_track_properties/set_via_properties to edit explicit sizes/net/layer; no geometry movement or certification.".into(),input_schema:input_schema::<viamind_engine::CopperPropertyQuery>()});
         commands.push(HostCommand { name: "query_route_terminals".into(), description: "Read immutable stable explicit pad, existing track start/end and through-via center terminal identities. Via has one row per outer layer; exact stored Nm centers, derived net/layer, bounded labels and unsupported reasons. Optional exact net/layer filter; offset0, limit1..1000 default100; deterministic identity/layer ordering and full source cursor. Reject over100000 terminal rows before filtering/allocation; existing board structural/text/document-policy bounds apply. No schematic/assembly capture, mutation or continuity claim.".into(), input_schema: input_schema::<viamind_engine::RouteTerminalQuery>() });
         commands.push(HostCommand {
             name: "query_linked_pin_pads".into(),
@@ -321,6 +323,10 @@ impl CommandHost for EngineHost {
         if name == "query_route_endpoints" {
             let input = serde_json::from_value(input).map_err(|e| format!("invalid endpoint query: {e}"))?;
             return serde_json::to_value(self.engine.query_route_endpoints(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "query_copper_properties" {
+            let input: viamind_engine::CopperPropertyQuery = serde_json::from_value(input).map_err(|e| e.to_string())?;
+            return serde_json::to_value(self.engine.query_copper_properties(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "query_route_terminals" {
             if input.get("net").and_then(Value::as_str).is_some_and(|n| n.len() > 256) {

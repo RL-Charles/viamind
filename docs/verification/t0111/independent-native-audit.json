@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "reviewer": "root independent",
+  "captures": [
+    {
+      "name": "track-wide",
+      "passed": true,
+      "pixels": [
+        2667,
+        1667
+      ],
+      "all_rgb_samples_equal": 13337667,
+      "p6_sha256": "12fe7fe555d9248f4e9188469a079e8d7cc300a7d9405c53c4999346b87b4c58",
+      "original_rgba_alpha_stats_checked": true,
+      "source": "d04bd2e8e273402b59484d92ef98574891bf888a"
+    },
+    {
+      "name": "via-wide",
+      "passed": true,
+      "pixels": [
+        2667,
+        1667
+      ],
+      "all_rgb_samples_equal": 13337667,
+      "p6_sha256": "6666fbe5cd565f2365abc09bb630d7b0b5d91340d7492e08df14c886733400b4",
+      "original_rgba_alpha_stats_checked": true,
+      "source": "d04bd2e8e273402b59484d92ef98574891bf888a"
+    },
+    {
+      "name": "via-compact",
+      "passed": true,
+      "pixels": [
+        1067,
+        667
+      ],
+      "all_rgb_samples_equal": 2135067,
+      "p6_sha256": "6ae317a24e723b117a046ffb6711a6411ff98c79c2a22f180cba8d1fa675c24d",
+      "original_rgba_alpha_stats_checked": true,
+      "source": "d04bd2e8e273402b59484d92ef98574891bf888a"
+    }
+  ],
+  "scope": "Actual native original RGBA retention, all RGB samples exact, alpha facts and reported session invariants; all3images independently viewed readable; final indexed master/exact CI pending",
+  "all_three_images_visually_reviewed_readable": true
+}

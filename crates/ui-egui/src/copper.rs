@@ -22,13 +22,15 @@ struct Draft {
 #[derive(Default)]
 pub struct CopperUi {
     draft: Option<Draft>,
+    pub(crate) properties: Option<crate::copper_properties::PropertyDraft>,
 }
 impl CopperUi {
     pub(crate) fn editing(&self) -> bool {
-        self.draft.is_some()
+        self.draft.is_some() || self.properties.is_some()
     }
     pub(crate) fn cancel(&mut self) {
         self.draft = None;
+        self.properties = None;
     }
 }
 impl ViamindApp {
@@ -62,6 +64,10 @@ impl ViamindApp {
         });
     }
     pub(crate) fn copper_dialog(&mut self, ui: &mut Ui) {
+        if self.copper.properties.is_some() {
+            self.copper_property_dialog(ui);
+            return;
+        }
         let Some(draft) = &mut self.copper.draft else { return };
         let Some(design) = &self.design else { return };
         let (track_count, via_count, page, tracks, vias) = design.engine.read(|p| {
@@ -77,6 +83,7 @@ impl ViamindApp {
         let mut add = false;
         let mut close = false;
         let mut deletion: Option<(UiAction, Value)> = None;
+        let mut edit = None;
         let modal = egui::Modal::new(egui::Id::new("copper_dialog")).show(ui.ctx(), |ui| {
             ui.heading("Copper tracks and vias");
             ui.label("Coordinates and sizes in mm; Y increases down the board.");
@@ -126,7 +133,7 @@ impl ViamindApp {
                 for track in &tracks {
                     ui.horizontal(|ui| {
                         ui.label(format!(
-                            "Track {:?}: ({}, {}) → ({}, {}) mm, width {} mm",
+                            "Track {:?}: ({}, {}) to ({}, {}) mm, width {} mm",
                             track.layer,
                             track.start.x.to_mm(),
                             track.start.y.to_mm(),
@@ -134,6 +141,9 @@ impl ViamindApp {
                             track.end.y.to_mm(),
                             track.width.to_mm()
                         ));
+                        if ui.button(format!("Edit track {}", track.id)).clicked() {
+                            edit = Some(viamind_engine::CopperPropertyId::Track { id: track.id });
+                        }
                         if ui.button(format!("Delete track {}", track.id)).clicked() {
                             deletion = Some((UiAction::DeleteTrack, json!({"id":track.id,"expected":track,"expected_project":draft.project})));
                         }
@@ -148,6 +158,9 @@ impl ViamindApp {
                             via.diameter.to_mm(),
                             via.drill.to_mm()
                         ));
+                        if ui.button(format!("Edit via {}", via.id)).clicked() {
+                            edit = Some(viamind_engine::CopperPropertyId::Via { id: via.id });
+                        }
                         if ui.button(format!("Delete via {}", via.id)).clicked() {
                             deletion = Some((UiAction::DeleteVia, json!({"id":via.id,"expected":via,"expected_project":draft.project})));
                         }
@@ -157,6 +170,11 @@ impl ViamindApp {
         });
         if close || modal.should_close() {
             self.copper.cancel();
+            return;
+        }
+        if let Some(target) = edit {
+            self.copper.draft = None;
+            self.begin_copper_properties_for(Some(target));
             return;
         }
         let result = if let Some((action, input)) = deletion {

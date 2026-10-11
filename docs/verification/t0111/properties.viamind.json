@@ -1,0 +1,122 @@
+{
+  "format": "viamind",
+  "version": 10,
+  "project": {
+    "id": "43a0bf2c-2e08-4e27-8c48-f19954fe6b38",
+    "name": "Existing copper properties HTTP proof",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "net_rules": {
+        "N": {
+          "minimum_copper_clearance": 100001,
+          "minimum_track_width": 250001,
+          "minimum_via_drill": 300001,
+          "minimum_annular_width": 150001
+        }
+      },
+      "tracks": {
+        "6b129c87-ac70-4877-b61e-095709abc14e": {
+          "id": "6b129c87-ac70-4877-b61e-095709abc14e",
+          "start": {
+            "x": 5000003,
+            "y": 10000007
+          },
+          "end": {
+            "x": 15000001,
+            "y": 10000007
+          },
+          "width": 250000,
+          "layer": "top",
+          "net": "N"
+        }
+      },
+      "vias": {
+        "5f0e3933-0189-4b8a-9391-c7dd2e8774c4": {
+          "id": "5f0e3933-0189-4b8a-9391-c7dd2e8774c4",
+          "position": {
+            "x": 30000001,
+            "y": 25000003
+          },
+          "diameter": 1000000,
+          "drill": 300000,
+          "net": "N"
+        }
+      },
+      "outline": {
+        "outer": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 50000000,
+            "y": 0
+          },
+          {
+            "x": 50000000,
+            "y": 50000000
+          },
+          {
+            "x": 0,
+            "y": 50000000
+          }
+        ],
+        "cutouts": []
+      },
+      "parts": {
+        "34bd79b2-f4e7-4ff1-9d90-9ad11e375512": {
+          "pads": [
+            {
+              "id": "0f4ca71a-1684-46a9-a623-afbfdaa1a9c6",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "34bd79b2-f4e7-4ff1-9d90-9ad11e375512",
+          "designator": "J2",
+          "value": "Exact pad anchor",
+          "footprint": "explicit",
+          "position": {
+            "x": 15000001,
+            "y": 10000007
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "6de0195e-ef65-4f8b-bb49-0414377f0a79": {
+          "pads": [
+            {
+              "id": "ce9af403-240a-407b-aa17-2d398c359384",
+              "number": "1",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1000000,
+              "height": 1000000,
+              "net": "N"
+            }
+          ],
+          "id": "6de0195e-ef65-4f8b-bb49-0414377f0a79",
+          "designator": "J1",
+          "value": "Exact pad anchor",
+          "footprint": "explicit",
+          "position": {
+            "x": 5000003,
+            "y": 10000007
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        }
+      }
+    }
+  }
+}

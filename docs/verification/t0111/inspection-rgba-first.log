@@ -1,0 +1,32 @@
+9fd3443d2afafb43abefc47978373074d0b45366
+Sun Oct 11 18:11:22 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0111/apps/viamind)
+error: redundant closure
+  --> crates/ui-egui/examples/copper_properties_inspection.rs:45:53
+   |
+45 |             let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
+   |                                                     ^^^^^^^^^ help: replace the closure with the method itself: `egui::Color32::a`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+   = note: `-D clippy::redundant-closure-for-method-calls` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::redundant_closure_for_method_calls)]`
+
+error: redundant closure
+  --> crates/ui-egui/examples/copper_properties_inspection.rs:46:53
+   |
+46 |             let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+   |                                                     ^^^^^^^^^ help: replace the closure with the method itself: `egui::Color32::a`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_closure_for_method_calls
+
+error: could not compile `viamind-ui-egui` (example "copper_properties_inspection") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

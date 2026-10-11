@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0111/launch-via-wide-capture",
+  "pid": 2277199,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-copper-properties-inspection",
+      "bounds": {
+        "height": 1667,
+        "width": 2667,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 1667,
+      "is_on_screen": true,
+      "pid": 2277199,
+      "title": "Untitled \u2014 Viamind",
+      "width": 2667,
+      "window_id": 110379509526736,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}

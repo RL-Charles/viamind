@@ -53,6 +53,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [preview\_schematic\_pcb\_sync](#tool-707265766965775f736368656d617469635f7063625f73796e63)
 - [query\_agent\_presence](#tool-71756572795f6167656e745f70726573656e6365)
 - [query\_connectivity](#tool-71756572795f636f6e6e6563746976697479)
+- [query\_copper\_properties](#tool-71756572795f636f707065725f70726f70657274696573)
 - [query\_linked\_components](#tool-71756572795f6c696e6b65645f636f6d706f6e656e7473)
 - [query\_linked\_pin\_pads](#tool-71756572795f6c696e6b65645f70696e5f70616473)
 - [query\_named\_net\_rules](#tool-71756572795f6e616d65645f6e65745f72756c6573)
@@ -88,6 +89,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [set\_part\_assembly](#tool-7365745f706172745f617373656d626c79)
 - [set\_part\_pads](#tool-7365745f706172745f70616473)
 - [set\_selection](#tool-7365745f73656c656374696f6e)
+- [set\_track\_properties](#tool-7365745f747261636b5f70726f70657274696573)
+- [set\_via\_properties](#tool-7365745f7669615f70726f70657274696573)
 - [snapshot\_schematic\_wire\_sheet](#tool-736e617073686f745f736368656d617469635f776972655f7368656574)
 - [snapshot\_symbol\_sheet](#tool-736e617073686f745f73796d626f6c5f7368656574)
 - [synchronize\_schematic\_pcb](#tool-73796e6368726f6e697a655f736368656d617469635f706362)
@@ -7210,6 +7213,70 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-71756572795f636f707065725f70726f70657274696573"></a>
+
+## query\_copper\_properties
+
+```json
+{
+  "description": "Read one exact persisted track/via property object, project/full source cursor and bounded document net minima. Strict target is track {id} or via {id}. Selected-object net must fit128characters/256UTF-8bytes. No selection/history/status mutation or board/schematic/assembly clone; read-only observation. Use guarded set_track_properties/set_via_properties to edit explicit sizes/net/layer; no geometry movement or certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "target": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "kind": {
+                "const": "track",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "kind": {
+                "const": "via",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "id"
+            ],
+            "type": "object"
+          }
+        ]
+      }
+    },
+    "required": [
+      "target"
+    ],
+    "title": "CopperPropertyQuery",
+    "type": "object"
+  },
+  "name": "query_copper_properties"
+}
+```
+
 <a id="tool-71756572795f6c696e6b65645f636f6d706f6e656e7473"></a>
 
 ## query\_linked\_components
@@ -11818,6 +11885,431 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "set_selection"
+}
+```
+
+<a id="tool-7365745f747261636b5f70726f70657274696573"></a>
+
+## set\_track\_properties
+
+```json
+{
+  "description": "Change one existing track's explicit integer-Nm width, top/bottom layer and optional exact net while retaining ID/start/end. Requires expected_project, full initial expected_cursor and exact expected original Track. Net labels are null or trimmed/control-free,128 characters / 256 UTF-8 bytes. Exact document track-width minimum applies; clearance uses max(request baseline,document minima). Explicit outline and bounded complete shared candidate DRC required; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, implicit sizing, repair or shove.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected": {
+        "additionalProperties": false,
+        "description": "One round-ended straight copper segment.",
+        "properties": {
+          "end": {
+            "description": "A position on the board, in nanometres.",
+            "properties": {
+              "x": {
+                "description": "Horizontal coordinate.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "y": {
+                "description": "Vertical coordinate.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "layer": {
+            "description": "Supported copper surfaces; inner layer routing is not represented yet.",
+            "enum": [
+              "top",
+              "bottom"
+            ],
+            "type": "string"
+          },
+          "net": {
+            "description": "Required explicit net: null means unassigned; assigned labels fit128 characters / 256 UTF-8 bytes and are trimmed/control-free/nonempty.",
+            "maxLength": 128,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start": {
+            "description": "A position on the board, in nanometres.",
+            "properties": {
+              "x": {
+                "description": "Horizontal coordinate.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "y": {
+                "description": "Vertical coordinate.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "width": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end",
+          "width",
+          "layer",
+          "net"
+        ],
+        "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "layer": {
+        "description": "Supported copper surfaces; inner layer routing is not represented yet.",
+        "enum": [
+          "top",
+          "bottom"
+        ],
+        "type": "string"
+      },
+      "net": {
+        "description": "Required explicit net: null means unassigned; assigned labels fit128 characters / 256 UTF-8 bytes and are trimmed/control-free/nonempty.",
+        "maxLength": 128,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "rules": {
+        "additionalProperties": false,
+        "default": {
+          "copper_clearance_mm": 0.2,
+          "edge_clearance_mm": 0.25,
+          "hole_clearance_mm": 0.25,
+          "hole_to_copper_clearance_mm": 0.2,
+          "max_violations": 1000,
+          "minimum_annular_width_mm": 0.1,
+          "minimum_via_drill_mm": 0.2
+        },
+        "properties": {
+          "copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "edge_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_to_copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "max_violations": {
+            "default": 1000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minimum_annular_width_mm": {
+            "default": 0.1,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "minimum_via_drill_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "width": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "id",
+      "expected",
+      "width",
+      "layer",
+      "net"
+    ],
+    "title": "SetTrackProperties",
+    "type": "object"
+  },
+  "name": "set_track_properties"
+}
+```
+
+<a id="tool-7365745f7669615f70726f70657274696573"></a>
+
+## set\_via\_properties
+
+```json
+{
+  "description": "Change one existing through via's explicit integer-Nm copper diameter, drill diameter and optional exact net while retaining ID/position/through span. Requires expected_project, full initial expected_cursor and exact expected original Via. Net labels null or trimmed/control-free,128 characters / 256 UTF-8 bytes. Drill and exact doubled-annulus floors max request baselines with document minima; no resizing. Explicit outline and bounded complete shared candidate DRC required, including hole spacing and foreign copper/edge checks; candidate violations or incomplete reports reject unchanged. Legacy/scoped exclusions and existing unrelated violations are not certified. One stable-ID undo/redo; exact no-op refuses. No movement, new via, implicit sizing, repair or shove.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "diameter": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      },
+      "drill": {
+        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+        "format": "int64",
+        "type": "integer"
+      },
+      "expected": {
+        "additionalProperties": false,
+        "description": "A circular plated through via spanning the top and bottom copper surfaces.",
+        "properties": {
+          "diameter": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "drill": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "net": {
+            "description": "Required explicit net: null means unassigned; assigned labels fit128 characters / 256 UTF-8 bytes and are trimmed/control-free/nonempty.",
+            "maxLength": 128,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position": {
+            "description": "A position on the board, in nanometres.",
+            "properties": {
+              "x": {
+                "description": "Horizontal coordinate.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "y": {
+                "description": "Vertical coordinate.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "position",
+          "diameter",
+          "drill",
+          "net"
+        ],
+        "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "net": {
+        "description": "Required explicit net: null means unassigned; assigned labels fit128 characters / 256 UTF-8 bytes and are trimmed/control-free/nonempty.",
+        "maxLength": 128,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "rules": {
+        "additionalProperties": false,
+        "default": {
+          "copper_clearance_mm": 0.2,
+          "edge_clearance_mm": 0.25,
+          "hole_clearance_mm": 0.25,
+          "hole_to_copper_clearance_mm": 0.2,
+          "max_violations": 1000,
+          "minimum_annular_width_mm": 0.1,
+          "minimum_via_drill_mm": 0.2
+        },
+        "properties": {
+          "copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "edge_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_clearance_mm": {
+            "default": 0.25,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "hole_to_copper_clearance_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "max_violations": {
+            "default": 1000,
+            "format": "uint",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minimum_annular_width_mm": {
+            "default": 0.1,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "minimum_via_drill_mm": {
+            "default": 0.2,
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "id",
+      "expected",
+      "diameter",
+      "drill",
+      "net"
+    ],
+    "title": "SetViaProperties",
+    "type": "object"
+  },
+  "name": "set_via_properties"
 }
 ```
 

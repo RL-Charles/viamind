@@ -307,11 +307,15 @@ fn worker(engine: Weak<Mutex<Engine>>, shared: Arc<Shared>, checker: Arc<Checker
 }
 /// Check cheap lengths before cloning. Iterate only after structural counts fit.
 pub(crate) fn snapshot_budget(project: &Project, limit: usize) -> Result<(), String> {
+    snapshot_budget_with_text_growth(project, limit, 0)
+}
+/// Reserve a replacement's positive net-text growth before cloning bounded geometry.
+pub(crate) fn snapshot_budget_with_text_growth(project: &Project, limit: usize, growth: usize) -> Result<(), String> {
     let board = &project.board;
     let mut objects = board.parts.len().saturating_add(board.tracks.len()).saturating_add(board.vias.len());
     let policy = viamind_doc::named_net_rule_budget(&board.net_rules).map_err(|e| format!("Automatic DRC skipped: {e}"))?;
     objects = objects.saturating_add(policy.rows);
-    let mut text = policy.text_bytes;
+    let mut text = policy.text_bytes.saturating_add(growth);
     let check = |objects: usize, text: usize| {
         if objects > limit {
             Err(format!("Automatic DRC skipped: snapshot exceeds {limit} structural objects; use batch DRC or raise the bounded limit"))
