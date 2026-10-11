@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "scope": "Original full Linux/production/native proof plus final T112 scoped integration. Independent final production rerun and exact-head CI remain merge requirements.",
+  "scope": "Original full Linux/production/native proof plus final T112 scoped integration and independent source/native/final production review. Fresh exact-head CI remains the merge gate.",
   "source": "032740a386c47f5adf98d91bbe954d26b947deaf",
   "precode_source": "116dcf9",
   "workspace_tests": {
@@ -129,6 +129,16 @@
       "sha256": "764391c05fba1a6a4d5e0462415c09042c56e5bd728ee1d935f4c986b6b97301"
     },
     {
+      "path": "docs/verification/t0113/independent-final-stdio.json",
+      "bytes": 1707,
+      "sha256": "3f38c3a4d2d4bc26d128fd5b592636cc51108b12d609de50975e9e4ea13d427f"
+    },
+    {
+      "path": "docs/verification/t0113/independent-native-audit.json",
+      "bytes": 716,
+      "sha256": "2a01c8335d5c142d1373cba541101139049faceda22042fa617170388872ddef"
+    },
+    {
       "path": "docs/verification/t0113/merged-launch.json",
       "bytes": 598,
       "sha256": "f8e49b5c76782a2d70c3f72a94a3d1cda9912f2cbd8b48f031f058bef76b2bcb"
@@ -243,5 +253,6 @@
     "stdio_checks": 23,
     "read_only_checks": 8,
     "python_reference_tests": 13
-  }
+  },
+  "independent_final_stdio_checks": 23
 }
