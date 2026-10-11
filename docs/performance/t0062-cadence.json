@@ -1,0 +1,98 @@
+{
+  "adapter": {
+    "backend": "Vulkan",
+    "device_type": "IntegratedGpu",
+    "driver": "Intel open-source Mesa driver",
+    "driver_info": "Mesa 26.2.2-arch1.1",
+    "name": "Intel(R) Graphics (ARL)"
+  },
+  "build": "release",
+  "canvas_points": [
+    1320.0,
+    954.0
+  ],
+  "canvas_renderer": "persistent_gpu_layer_uniforms",
+  "completed_native_frames": 1260,
+  "egui_passes": 1261,
+  "gpu_timestamp_instrumentation": false,
+  "measurement": "native frame-start intervals; includes render/present waits and OS scheduling; not GPU timestamps or display scanout",
+  "objects": 100000,
+  "phases": [
+    {
+      "drawn_max": 100000,
+      "drawn_min": 100000,
+      "egui_cpu": {
+        "mean_ms": 1.8413153619298503,
+        "median_ms": 1.4491949696093798,
+        "p95_ms": 3.827627981081605,
+        "samples": 360,
+        "throughput_fps": 543.090021772217
+      },
+      "frame_interval": {
+        "mean_ms": 56.206123252777786,
+        "median_ms": 50.747187,
+        "p95_ms": 80.413789,
+        "samples": 360,
+        "throughput_fps": 17.791655821958482
+      },
+      "gpu_draw_calls_max": 10,
+      "gpu_draw_calls_min": 10,
+      "gpu_layers_max": 10,
+      "meets_60fps": false,
+      "name": "fit_pan",
+      "tiles_built_max": 0
+    },
+    {
+      "drawn_max": 100000,
+      "drawn_min": 80311,
+      "egui_cpu": {
+        "mean_ms": 3.2940904231509194,
+        "median_ms": 1.9332749070599675,
+        "p95_ms": 4.65701287612319,
+        "samples": 360,
+        "throughput_fps": 303.57393742806335
+      },
+      "frame_interval": {
+        "mean_ms": 61.01341785277774,
+        "median_ms": 50.655913,
+        "p95_ms": 86.373757,
+        "samples": 360,
+        "throughput_fps": 16.389837435643237
+      },
+      "gpu_draw_calls_max": 110,
+      "gpu_draw_calls_min": 9,
+      "gpu_layers_max": 10,
+      "meets_60fps": false,
+      "name": "fit_pan_zoom",
+      "tiles_built_max": 1729
+    },
+    {
+      "drawn_max": 1965,
+      "drawn_min": 1928,
+      "egui_cpu": {
+        "mean_ms": 1.4796921619563363,
+        "median_ms": 1.354156993329525,
+        "p95_ms": 2.2585680708289146,
+        "samples": 360,
+        "throughput_fps": 675.8162445612174
+      },
+      "frame_interval": {
+        "mean_ms": 48.516625880555594,
+        "median_ms": 49.955905,
+        "p95_ms": 51.722815999999995,
+        "samples": 360,
+        "throughput_fps": 20.611491047665336
+      },
+      "gpu_draw_calls_max": 24,
+      "gpu_draw_calls_min": 22,
+      "gpu_layers_max": 9,
+      "meets_60fps": false,
+      "name": "zoomed_8x_pan",
+      "tiles_built_max": 0
+    }
+  ],
+  "pixels_per_point": 1.0,
+  "renderer": "wgpu",
+  "sample_frames_per_phase": 360,
+  "warmup_frames_per_phase": 60
+}

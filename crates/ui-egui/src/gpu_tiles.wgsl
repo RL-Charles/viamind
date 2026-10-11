@@ -27,9 +27,8 @@
 
 // Geometry-only renderer; egui 0.36.2 colour/texture conventions (MIT OR Apache-2.0).
 // Camera mapping is relative to the callback viewport, retaining cached pixel snapping.
-struct Camera { viewport: vec4<f32> };
+struct Camera { viewport: vec4<f32>, transform: vec4<f32> };
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(0) @binding(1) var<storage, read> transforms: array<vec4<f32>>;
 @group(1) @binding(0) var atlas: texture_2d<f32>;
 @group(1) @binding(1) var atlas_sampler: sampler;
 struct Output {
@@ -37,9 +36,9 @@ struct Output {
     @location(0) uv: vec2<f32>,
     @location(1) color: vec4<f32>,
 };
-@vertex fn vertex(@location(0) position: vec2<f32>, @location(1) uv: vec2<f32>, @location(2) color: vec4<f32>, @location(3) slot: u32) -> Output {
+@vertex fn vertex(@location(0) position: vec2<f32>, @location(1) uv: vec2<f32>, @location(2) color: vec4<f32>) -> Output {
     var result: Output;
-    let transform = transforms[slot];
+    let transform = camera.transform;
     let screen = position * transform.x + transform.yz;
     let local = (screen - camera.viewport.zw) / camera.viewport.xy;
     result.position = vec4<f32>(local.x * 2.0 - 1.0, 1.0 - local.y * 2.0, 0.0, 1.0);

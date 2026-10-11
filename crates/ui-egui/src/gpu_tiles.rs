@@ -1,4 +1,4 @@
-//! Native persistent layer buffers. Tile geometry is immutable; packed camera transforms change
+//! Native persistent layer buffers. Tile geometry is immutable; one uniform camera per layer changes
 //! each frame. Layer-owned handles release buffers when the cache replaces their geometry.
 use eframe::{
     egui_wgpu::{Callback, CallbackResources, CallbackTrait, ScreenDescriptor},
@@ -22,17 +22,43 @@ struct ReadyPipeline {
     pipeline: wgpu::RenderPipeline,
     uniform_layout: wgpu::BindGroupLayout,
     atlas: wgpu::BindGroup,
-    viewport: wgpu::Buffer,
-    transforms: wgpu::Buffer,
+    uniforms: wgpu::Buffer,
+    stride: usize,
     camera: wgpu::BindGroup,
     capacity: usize,
 }
+/// A camera basis uses a nearby world center, avoiding cancellation of a large world origin.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct Basis {
+    pub zoom: f64,
+    pub center: [f64; 2],
+    pub screen: [f64; 2],
+}
+impl Basis {
+    pub fn transform(self, target: Self) -> [f32; 3] {
+        let scale = target.zoom / self.zoom;
+        [
+            scale as f32,
+            (target.screen[0] - self.screen[0] * scale + (self.center[0] - target.center[0]) * target.zoom) as f32,
+            (target.screen[1] - self.screen[1] * scale + (self.center[1] - target.center[1]) * target.zoom) as f32,
+        ]
+    }
+    /// Keep visible screen bases nearby; rebasing always starts from immutable tile geometry.
+    pub fn stale(self, target: Self) -> bool {
+        let [_, x, y] = self.transform(target);
+        !(1.0 / crate::mesh_cache::ZOOM_BUCKET..=crate::mesh_cache::ZOOM_BUCKET).contains(&(target.zoom / self.zoom))
+            || x.abs() > 1024.0
+            || y.abs() > 1024.0
+    }
+}
 pub(crate) struct Tile {
     pub(crate) mesh: Arc<Mesh>,
+    basis: Basis,
 }
 /// One immutable generation of every resident tile in a layer.
 pub(crate) struct Layer {
     tiles: Vec<(u32, Arc<Tile>)>,
+    pub basis: Basis,
     ranges: BTreeMap<u32, Range<u32>>,
     ready: Mutex<Option<ReadyLayer>>,
 }
@@ -46,12 +72,12 @@ impl Pipeline {
     }
 }
 impl Tile {
-    pub fn new(mesh: Arc<Mesh>) -> Arc<Self> {
-        Arc::new(Self { mesh })
+    pub fn new(mesh: Arc<Mesh>, basis: Basis) -> Arc<Self> {
+        Arc::new(Self { mesh, basis })
     }
 }
 impl Layer {
-    pub fn new(tiles: Vec<(u32, Arc<Tile>)>) -> Arc<Self> {
+    pub fn new(tiles: Vec<(u32, Arc<Tile>)>, basis: Basis) -> Arc<Self> {
         let mut end = 0;
         let ranges = tiles
             .iter()
@@ -61,7 +87,7 @@ impl Layer {
                 (*slot, start..end)
             })
             .collect();
-        Arc::new(Self { tiles, ranges, ready: Mutex::new(None) })
+        Arc::new(Self { tiles, basis, ranges, ready: Mutex::new(None) })
     }
 
     /// Preserve visible tile order and gaps: hidden indices are never included.
@@ -82,25 +108,19 @@ impl Layer {
 pub(crate) struct Draw {
     pub layer: Arc<Layer>,
     pub ranges: Vec<Range<u32>>,
+    pub transform: [f32; 3],
 }
 struct Frame {
     pipeline: Arc<Pipeline>,
     draws: Vec<Draw>,
-    transforms: Vec<[f32; 4]>,
     viewport: Rect,
     probe: Option<Arc<crate::gpu_timing::GpuTiming>>,
     timing: Mutex<Option<crate::gpu_timing::DrawTiming>>,
     tag: crate::gpu_timing::FrameTag,
 }
-pub(crate) fn shape(
-    pipeline: Arc<Pipeline>,
-    draws: Vec<Draw>,
-    transforms: Vec<[f32; 4]>,
-    viewport: Rect,
-    probe: Option<Arc<crate::gpu_timing::GpuTiming>>,
-) -> Shape {
+pub(crate) fn shape(pipeline: Arc<Pipeline>, draws: Vec<Draw>, viewport: Rect, probe: Option<Arc<crate::gpu_timing::GpuTiming>>) -> Shape {
     let tag = probe.as_ref().map(|p| p.frame_tag()).unwrap_or_default();
-    Callback::new_paint_callback(viewport, Frame { pipeline, draws, transforms, viewport, probe, timing: Mutex::new(None), tag }).into()
+    Callback::new_paint_callback(viewport, Frame { pipeline, draws, viewport, probe, timing: Mutex::new(None), tag }).into()
 }
 impl CallbackTrait for Frame {
     fn prepare(
@@ -116,11 +136,11 @@ impl CallbackTrait for Frame {
         }
         let mut pipeline = self.pipeline.ready.lock().unwrap();
         let pipeline = pipeline.get_or_insert_with(|| build_pipeline(device, queue, &self.pipeline));
-        if pipeline.capacity < self.transforms.len() {
-            let capacity = self.transforms.len().next_power_of_two();
-            let (viewport, transforms, camera) = camera_buffer(device, &pipeline.uniform_layout, capacity);
-            pipeline.viewport = viewport;
-            pipeline.transforms = transforms;
+        if pipeline.capacity < self.draws.len() {
+            let capacity = self.draws.len().next_power_of_two();
+            let (uniforms, camera, stride) = camera_buffer(device, &pipeline.uniform_layout, capacity);
+            pipeline.uniforms = uniforms;
+            pipeline.stride = stride;
             pipeline.camera = camera;
             pipeline.capacity = capacity;
         }
@@ -128,15 +148,10 @@ impl CallbackTrait for Frame {
             let mut ready = draw.layer.ready.lock().unwrap();
             ready.get_or_insert_with(|| build_layer(device, &draw.layer));
         }
-        let transforms: Vec<_> = self.transforms.iter().flatten().flat_map(|value| value.to_le_bytes()).collect();
-        if !transforms.is_empty() {
-            queue.write_buffer(&pipeline.transforms, 0, &transforms);
+        let uniforms = pack_uniforms(&self.draws, self.viewport, pipeline.stride);
+        if !uniforms.is_empty() {
+            queue.write_buffer(&pipeline.uniforms, 0, &uniforms);
         }
-        let viewport: Vec<_> = [self.viewport.width(), self.viewport.height(), self.viewport.min.x, self.viewport.min.y]
-            .into_iter()
-            .flat_map(f32::to_le_bytes)
-            .collect();
-        queue.write_buffer(&pipeline.viewport, 0, &viewport);
         Vec::new()
     }
     fn paint(&self, _: PaintCallbackInfo, pass: &mut wgpu::RenderPass<'static>, _: &CallbackResources) {
@@ -146,8 +161,8 @@ impl CallbackTrait for Frame {
         let started = timing.as_ref().is_some_and(|t| t.start(pass));
         pass.set_pipeline(&pipeline.pipeline);
         pass.set_bind_group(1, &pipeline.atlas, &[]);
-        pass.set_bind_group(0, &pipeline.camera, &[]);
-        for draw in &self.draws {
+        for (index, draw) in self.draws.iter().enumerate() {
+            pass.set_bind_group(0, &pipeline.camera, &[(index * pipeline.stride) as u32]);
             let ready = draw.layer.ready.lock().unwrap();
             let Some(ready) = ready.as_ref() else { continue };
             pass.set_vertex_buffer(0, ready.vertices.slice(..));
@@ -161,20 +176,33 @@ impl CallbackTrait for Frame {
         }
     }
 }
-/// Serialize the exact egui attributes plus the tile's transform slot, rebasing indices.
+/// One padded record per layer, uploaded together rather than issuing a queue write per draw.
+fn pack_uniforms(draws: &[Draw], viewport: Rect, stride: usize) -> Vec<u8> {
+    let mut bytes = vec![0; draws.len() * stride];
+    for (draw, record) in draws.iter().zip(bytes.chunks_mut(stride)) {
+        let [scale, x, y] = draw.transform;
+        for (value, target) in
+            [viewport.width(), viewport.height(), viewport.min.x, viewport.min.y, scale, x, y, 0.0].into_iter().zip(record.chunks_mut(4))
+        {
+            target.copy_from_slice(&value.to_le_bytes());
+        }
+    }
+    bytes
+}
+/// Serialize egui attributes into the common layer basis, rebasing only triangle indices.
 fn pack_layer(layer: &Layer) -> (Vec<u8>, Vec<u8>) {
     let vertex_count: usize = layer.tiles.iter().map(|(_, t)| t.mesh.vertices.len()).sum();
     let index_count: usize = layer.tiles.iter().map(|(_, t)| t.mesh.indices.len()).sum();
-    let mut vertices = Vec::with_capacity(vertex_count * 24);
+    let mut vertices = Vec::with_capacity(vertex_count * 20);
     let mut indices = Vec::with_capacity(index_count * 4);
     let mut base = 0;
-    for (slot, tile) in &layer.tiles {
+    for (_, tile) in &layer.tiles {
+        let [scale, x, y] = tile.basis.transform(layer.basis);
         for v in &tile.mesh.vertices {
-            for n in [v.pos.x, v.pos.y, v.uv.x, v.uv.y] {
+            for n in [v.pos.x * scale + x, v.pos.y * scale + y, v.uv.x, v.uv.y] {
                 vertices.extend_from_slice(&n.to_le_bytes());
             }
             vertices.extend_from_slice(&v.color.to_array());
-            vertices.extend_from_slice(&slot.to_le_bytes());
         }
         for index in &tile.mesh.indices {
             indices.extend_from_slice(&(index + base).to_le_bytes());
@@ -197,51 +225,39 @@ fn build_layer(device: &wgpu::Device, layer: &Layer) -> ReadyLayer {
     });
     ReadyLayer { vertices, indices }
 }
-fn camera_buffer(device: &wgpu::Device, layout: &wgpu::BindGroupLayout, capacity: usize) -> (wgpu::Buffer, wgpu::Buffer, wgpu::BindGroup) {
-    let viewport = device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some("board viewport"),
-        size: 16,
+fn camera_buffer(device: &wgpu::Device, layout: &wgpu::BindGroupLayout, capacity: usize) -> (wgpu::Buffer, wgpu::BindGroup, usize) {
+    let alignment = device.limits().min_uniform_buffer_offset_alignment as usize;
+    let stride = 32usize.div_ceil(alignment) * alignment;
+    let uniforms = device.create_buffer(&wgpu::BufferDescriptor {
+        label: Some("board layer cameras"),
+        size: (capacity * stride) as u64,
         usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         mapped_at_creation: false,
     });
-    let transforms = device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some("board tile transforms"),
-        size: (capacity * 16) as u64,
-        usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
-        mapped_at_creation: false,
-    });
     let camera = device.create_bind_group(&wgpu::BindGroupDescriptor {
-        label: Some("board cameras"),
+        label: Some("board camera records"),
         layout,
-        entries: &[
-            wgpu::BindGroupEntry { binding: 0, resource: viewport.as_entire_binding() },
-            wgpu::BindGroupEntry { binding: 1, resource: transforms.as_entire_binding() },
-        ],
+        entries: &[wgpu::BindGroupEntry {
+            binding: 0,
+            resource: wgpu::BindingResource::Buffer(wgpu::BufferBinding { buffer: &uniforms, offset: 0, size: wgpu::BufferSize::new(32) }),
+        }],
     });
-    (viewport, transforms, camera)
+    (uniforms, camera, stride)
 }
 
 fn build_pipeline(device: &wgpu::Device, queue: &wgpu::Queue, config: &Pipeline) -> ReadyPipeline {
     let uniform_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
         label: Some("board camera layout"),
-        entries: &[
-            wgpu::BindGroupLayoutEntry {
-                binding: 0,
-                visibility: wgpu::ShaderStages::VERTEX,
-                ty: wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform, has_dynamic_offset: false, min_binding_size: None },
-                count: None,
+        entries: &[wgpu::BindGroupLayoutEntry {
+            binding: 0,
+            visibility: wgpu::ShaderStages::VERTEX,
+            ty: wgpu::BindingType::Buffer {
+                ty: wgpu::BufferBindingType::Uniform,
+                has_dynamic_offset: true,
+                min_binding_size: wgpu::BufferSize::new(32),
             },
-            wgpu::BindGroupLayoutEntry {
-                binding: 1,
-                visibility: wgpu::ShaderStages::VERTEX,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: true },
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            },
-        ],
+            count: None,
+        }],
     });
     let texture_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
         label: Some("board atlas layout"),
@@ -314,9 +330,9 @@ fn build_pipeline(device: &wgpu::Device, queue: &wgpu::Queue, config: &Pipeline)
             module: &module,
             entry_point: Some("vertex"),
             buffers: &[Some(wgpu::VertexBufferLayout {
-                array_stride: 24,
+                array_stride: 20,
                 step_mode: wgpu::VertexStepMode::Vertex,
-                attributes: &wgpu::vertex_attr_array![0=>Float32x2,1=>Float32x2,2=>Unorm8x4,3=>Uint32],
+                attributes: &wgpu::vertex_attr_array![0=>Float32x2,1=>Float32x2,2=>Unorm8x4],
             })],
             compilation_options: Default::default(),
         },
@@ -347,13 +363,15 @@ fn build_pipeline(device: &wgpu::Device, queue: &wgpu::Queue, config: &Pipeline)
         multiview_mask: None,
         cache: None,
     });
-    let (viewport, transforms, camera) = camera_buffer(device, &uniform_layout, 1);
-    ReadyPipeline { pipeline, uniform_layout, atlas, viewport, transforms, camera, capacity: 1 }
+    let (uniforms, camera, stride) = camera_buffer(device, &uniform_layout, 1);
+    ReadyPipeline { pipeline, uniform_layout, atlas, uniforms, camera, stride, capacity: 1 }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const BASIS: Basis = Basis { zoom: 10.0, center: [0.0, 0.0], screen: [800.0, 500.0] };
 
     fn triangle(x: f32) -> Arc<Tile> {
         let vertices = (0..3)
@@ -363,23 +381,20 @@ mod tests {
                 color: egui::Color32::from_rgba_premultiplied(12, 34, 56, 78),
             })
             .collect();
-        Tile::new(Arc::new(Mesh { vertices, indices: vec![2, 0, 1], ..Default::default() }))
+        Tile::new(Arc::new(Mesh { vertices, indices: vec![2, 0, 1], ..Default::default() }), BASIS)
     }
 
     #[test]
-    fn packed_layers_keep_every_attribute_slot_and_triangle_order() {
+    fn packed_layers_keep_every_attribute_and_triangle_order() {
         let a = triangle(-12.25);
         let b = triangle(3.0);
-        let layer = Layer::new(vec![(7, Arc::clone(&a)), (19, Arc::clone(&b))]);
+        let layer = Layer::new(vec![(7, Arc::clone(&a)), (19, Arc::clone(&b))], BASIS);
         let (vertices, indices) = pack_layer(&layer);
-        assert_eq!(vertices.len(), 6 * 24);
-        for (bytes, (vertex, slot)) in
-            vertices.as_chunks::<24>().0.iter().zip(a.mesh.vertices.iter().map(|v| (v, 7u32)).chain(b.mesh.vertices.iter().map(|v| (v, 19u32))))
-        {
+        assert_eq!(vertices.len(), 6 * 20);
+        for (bytes, vertex) in vertices.as_chunks::<20>().0.iter().zip(a.mesh.vertices.iter().chain(&b.mesh.vertices)) {
             let floats: Vec<_> = bytes[..16].as_chunks::<4>().0.iter().map(|b| f32::from_le_bytes(*b)).collect();
             assert_eq!(floats, [vertex.pos.x, vertex.pos.y, vertex.uv.x, vertex.uv.y]);
             assert_eq!(&bytes[16..20], &vertex.color.to_array());
-            assert_eq!(u32::from_le_bytes(bytes[20..24].try_into().unwrap()), slot);
         }
         let indices: Vec<_> = indices.as_chunks::<4>().0.iter().map(|b| u32::from_le_bytes(*b)).collect();
         assert_eq!(indices, [2, 0, 1, 5, 3, 4]);
@@ -388,11 +403,69 @@ mod tests {
     #[test]
     fn visible_ranges_merge_adjacent_tiles_without_bridging_hidden_indices() {
         let tile = triangle(0.0);
-        let layer = Layer::new((0..5).map(|i| (i, Arc::clone(&tile))).collect());
+        let layer = Layer::new((0..5).map(|i| (i, Arc::clone(&tile))).collect(), BASIS);
         assert_eq!(layer.visible_ranges(&[0, 1, 2, 3, 4]), vec![0..15]);
         assert_eq!(layer.visible_ranges(&[0, 2, 3]), vec![0..3, 6..12]);
         assert_eq!(layer.visible_ranges(&[4, 0]), vec![12..15, 0..3], "caller order is retained");
         assert!(layer.visible_ranges(&[]).is_empty());
         assert!(layer.visible_ranges(&[99]).is_empty());
+    }
+    #[test]
+    fn shared_basis_matches_direct_tile_camera_at_large_world_origins() {
+        // Model coordinates reach approximately +/-9e12 mm. Differences use nearby centers,
+        // avoiding the loss from subtracting world_origin * zoom values around 1e18 pixels.
+        for zoom in [0.1, 10.0, 100_000.0] {
+            let source = Basis { zoom, center: [8e12, -8e12], ..BASIS };
+            let common = Basis { zoom: zoom * 1.03, center: [source.center[0] + 7.0 / zoom, source.center[1] - 5.0 / zoom], screen: [805.0, 495.0] };
+            let vertices = [-512.0, 0.0, 512.0, 1536.0, 3072.0]
+                .into_iter()
+                .map(|x| egui::epaint::Vertex { pos: egui::pos2(x, x * 0.7), uv: egui::pos2(0.25, 0.75), color: egui::Color32::WHITE })
+                .collect();
+            let tile = Tile::new(Arc::new(Mesh { vertices, indices: vec![0, 1, 2], ..Default::default() }), source);
+            let layer = Layer::new(vec![(0, Arc::clone(&tile))], common);
+            let (packed, _) = pack_layer(&layer);
+            let original = tile.mesh.vertices.iter().map(|v| v.pos).collect::<Vec<_>>();
+            for frame in 0..1000 {
+                let target = Basis {
+                    zoom: zoom * (1.0 + 0.04 * (f64::from(frame) * 0.031).sin()),
+                    screen: [800.0 + (f64::from(frame) * 0.07).sin() * 300.0, 500.0 + (f64::from(frame) * 0.09).cos() * 200.0],
+                    center: [source.center[0] + 19.0 / zoom, source.center[1] - 11.0 / zoom],
+                };
+                let [s, x, y] = common.transform(target);
+                let [direct_s, direct_x, direct_y] = source.transform(target);
+                for (bytes, base) in packed.as_chunks::<20>().0.iter().zip(&original) {
+                    let px = f32::from_le_bytes(bytes[..4].try_into().unwrap());
+                    let py = f32::from_le_bytes(bytes[4..8].try_into().unwrap());
+                    let actual = egui::pos2(px * s + x, py * s + y);
+                    let expected = egui::pos2(base.x * direct_s + direct_x, base.y * direct_s + direct_y);
+                    assert!((actual - expected).length() < 0.001, "zoom={zoom}, frame={frame}: {actual:?} vs {expected:?}");
+                }
+            }
+            assert_eq!(tile.mesh.vertices.iter().map(|v| v.pos).collect::<Vec<_>>(), original, "rebasing never mutates source vertices");
+        }
+        assert!(!BASIS.stale(Basis { screen: [BASIS.screen[0] + 1024.0, BASIS.screen[1]], ..BASIS }));
+        assert!(BASIS.stale(Basis { screen: [BASIS.screen[0] + 1024.25, BASIS.screen[1]], ..BASIS }));
+        assert!(BASIS.stale(Basis { zoom: BASIS.zoom * 1.1, ..BASIS }));
+        assert!(!BASIS.stale(Basis { zoom: BASIS.zoom * 1.04, ..BASIS }));
+    }
+
+    #[test]
+    fn dynamic_uniform_records_preserve_viewport_camera_and_padding() {
+        let layer = Layer::new(vec![(0, triangle(0.0))], BASIS);
+        let draws = vec![
+            Draw { layer: Arc::clone(&layer), ranges: std::iter::once(0..3).collect(), transform: [1.02, -19.0, 27.0] },
+            Draw { layer, ranges: std::iter::once(0..3).collect(), transform: [0.99, 11.0, -13.0] },
+        ];
+        let viewport = Rect::from_min_size(egui::pos2(200.0, 30.0), egui::vec2(1080.0, 740.0));
+        for stride in [32, 64, 256] {
+            let bytes = pack_uniforms(&draws, viewport, stride);
+            assert_eq!(bytes.len(), stride * 2);
+            for (record, draw) in bytes.chunks(stride).zip(&draws) {
+                let values: Vec<_> = record[..32].as_chunks::<4>().0.iter().map(|b| f32::from_le_bytes(*b)).collect();
+                assert_eq!(values, [1080.0, 740.0, 200.0, 30.0, draw.transform[0], draw.transform[1], draw.transform[2], 0.0]);
+                assert!(record[32..].iter().all(|b| *b == 0));
+            }
+        }
+        assert!(pack_uniforms(&[], viewport, 256).is_empty());
     }
 }

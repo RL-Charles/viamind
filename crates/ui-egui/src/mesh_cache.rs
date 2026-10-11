@@ -26,6 +26,7 @@ use egui::{Color32, Painter, Pos2, Rect, Shape};
 
 use crate::camera::{Camera, WorldPos, WorldRect};
 use crate::canvas::item_shape;
+use crate::gpu_tiles::Basis;
 use crate::layers::{LayerId, LayerStack};
 use crate::scene::Scene;
 
@@ -48,10 +49,8 @@ struct TessKey {
 
 /// A tessellated tile and the camera it was built for.
 struct Built {
-    /// Zoom at build time.
-    zoom: f64,
-    /// Screen position of the world origin at build time (screen = origin + world * zoom).
-    origin: [f64; 2],
+    /// Camera at build time, retaining a nearby world center for precise differences.
+    basis: Basis,
     /// Vertex positions as tessellated, so transforms never accumulate rounding error.
     base: Vec<Pos2>,
     /// The mesh handed to egui; positions are `base * scale + offset`.
@@ -76,7 +75,7 @@ struct LayerTiles {
     /// The fill colour the built meshes have; they are rebuilt when the layer's colour differs.
     color: Option<Color32>,
     tiles: Vec<Tile>,
-    /// Stable transform slots, independent of layer draw order and visibility.
+    /// Stable tile IDs, independent of layer draw order and visibility.
     slot_offset: usize,
     gpu: Option<Arc<crate::gpu_tiles::Layer>>,
 }
@@ -177,16 +176,9 @@ impl MeshCache {
                 Some(crate::gpu_tiles::Pipeline::new(format, ctx.fonts(|f: &egui::epaint::FontsView<'_>| -> egui::ColorImage { f.image() })));
         }
         let mut gpu_draws = Vec::new();
-        let tile_count: usize = self.layers.iter().map(|l| l.tiles.len()).sum();
-        let mut transforms = vec![[0.0; 4]; if self.gpu_pipeline.is_some() { tile_count } else { 0 }];
         let visible = cam.visible_world_rect(viewport).expand(2.0 / cam.zoom);
-        let stale = |b: &Built| {
-            let ratio = cam.zoom / b.zoom;
-            !(1.0 / ZOOM_BUCKET..=ZOOM_BUCKET).contains(&ratio)
-        };
-        // Current mapping: screen = origin + world * zoom.
-        let c = viewport.center();
-        let origin = [f64::from(c.x) - cam.center.x * cam.zoom, f64::from(c.y) - cam.center.y * cam.zoom];
+        let basis = camera_basis(cam, viewport);
+        let stale = |b: &Built| b.basis.stale(basis);
 
         let mut drawn = 0;
         let mut stats = CacheStats { tiles: self.layers.iter().map(|l| l.tiles.len()).sum(), ..CacheStats::default() };
@@ -218,14 +210,12 @@ impl MeshCache {
                             }
                             Arc::new(mesh)
                         };
-                        crate::gpu_tiles::Tile::new(mesh)
+                        crate::gpu_tiles::Tile::new(mesh, built.basis)
                     });
                     let slot = group.slot_offset + index;
-                    let [scale, x, y] = built.transform(cam.zoom, origin);
-                    transforms[slot] = [scale, x, y, 0.0];
                     visible_slots.push(slot as u32);
                 } else if self.gpu_pipeline.is_none() {
-                    built.apply(cam.zoom, origin);
+                    built.apply(basis);
                     painter.add(Shape::Mesh(Arc::clone(&built.mesh)));
                 }
                 stats.tiles_drawn += 1;
@@ -237,7 +227,7 @@ impl MeshCache {
                 };
             }
             if self.gpu_pipeline.is_some() && !visible_slots.is_empty() {
-                if dirty_layer || group.gpu.is_none() {
+                if dirty_layer || group.gpu.as_ref().is_none_or(|g| g.basis.stale(basis)) {
                     let tiles = group
                         .tiles
                         .iter()
@@ -247,17 +237,18 @@ impl MeshCache {
                             Some(((group.slot_offset + index) as u32, Arc::clone(gpu)))
                         })
                         .collect();
-                    group.gpu = Some(crate::gpu_tiles::Layer::new(tiles));
+                    group.gpu = Some(crate::gpu_tiles::Layer::new(tiles, basis));
                 }
                 let batch = Arc::clone(group.gpu.as_ref().unwrap());
                 let ranges = batch.visible_ranges(&visible_slots);
                 stats.gpu_layers += 1;
                 stats.gpu_draw_calls += ranges.len();
-                gpu_draws.push(crate::gpu_tiles::Draw { layer: batch, ranges });
+                let transform = batch.basis.transform(basis);
+                gpu_draws.push(crate::gpu_tiles::Draw { layer: batch, ranges, transform });
             }
         }
         if let Some(pipeline) = &self.gpu_pipeline {
-            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, transforms, viewport, self.gpu_timing.clone()));
+            painter.add(crate::gpu_tiles::shape(Arc::clone(pipeline), gpu_draws, viewport, self.gpu_timing.clone()));
         }
         self.stats = stats;
         drawn
@@ -275,21 +266,19 @@ impl LayerTiles {
     }
 }
 
+fn camera_basis(camera: &Camera, viewport: Rect) -> Basis {
+    let center = viewport.center();
+    Basis { zoom: camera.zoom, center: [camera.center.x, camera.center.y], screen: [f64::from(center.x), f64::from(center.y)] }
+}
+
 impl Built {
-    fn transform(&self, zoom: f64, origin: [f64; 2]) -> [f32; 3] {
-        let scale = zoom / self.zoom;
-        [scale as f32, (origin[0] - self.origin[0] * scale) as f32, (origin[1] - self.origin[1] * scale) as f32]
-    }
-    /// Moves the vertices to where the current camera puts them.
-    fn apply(&mut self, zoom: f64, origin: [f64; 2]) {
-        // screen = origin + world * zoom and base = self.origin + world * self.zoom, so
-        // screen = base * scale + (origin - self.origin * scale).
-        let target = self.transform(zoom, origin);
+    /// Move immutable base vertices to the current camera; never compound previous transforms.
+    fn apply(&mut self, basis: Basis) {
+        let target = self.basis.transform(basis);
         if target == self.applied {
             return;
         }
         let [s, tx, ty] = target;
-        // egui has dropped last frame's shapes by now, so this does not copy the mesh.
         let mesh = Arc::make_mut(&mut self.mesh);
         for (v, b) in mesh.vertices.iter_mut().zip(&self.base) {
             v.pos = Pos2::new(b.x * s + tx, b.y * s + ty);
@@ -356,10 +345,8 @@ fn build_tile(tile: &Tile, color: Color32, scene: &Scene, cam: &Camera, viewport
             mesh.append(m);
         }
     }
-    let c = viewport.center();
-    let origin = [f64::from(c.x) - cam.center.x * cam.zoom, f64::from(c.y) - cam.center.y * cam.zoom];
     let base = mesh.vertices.iter().map(|v| v.pos).collect();
-    Built { zoom: cam.zoom, origin, base, mesh: Arc::new(mesh), applied: [1.0, 0.0, 0.0], gpu: None }
+    Built { basis: camera_basis(cam, viewport), base, mesh: Arc::new(mesh), applied: [1.0, 0.0, 0.0], gpu: None }
 }
 
 #[cfg(test)]
@@ -436,11 +423,12 @@ mod tests {
             let gpu = built.gpu.as_ref().unwrap();
             assert!(snapshots.iter().any(|s| s.ptr_eq(&Arc::downgrade(gpu))));
             assert_eq!(gpu.mesh.vertices.iter().map(|v| v.pos).collect::<Vec<_>>(), built.base);
-            let center = viewport.center();
-            let origin = [f64::from(center.x) - camera.center.x * camera.zoom, f64::from(center.y) - camera.center.y * camera.zoom];
-            let [scale, x, y] = built.transform(camera.zoom, origin);
+            let [scale, x, y] = built.basis.transform(camera_basis(&camera, viewport));
             for base in &built.base {
-                let world = [(f64::from(base.x) - built.origin[0]) / built.zoom, (f64::from(base.y) - built.origin[1]) / built.zoom];
+                let world = [
+                    built.basis.center[0] + (f64::from(base.x) - built.basis.screen[0]) / built.basis.zoom,
+                    built.basis.center[1] + (f64::from(base.y) - built.basis.screen[1]) / built.basis.zoom,
+                ];
                 let expected = camera.world_to_screen(WorldPos::new(world[0], world[1]), viewport);
                 assert!((expected - egui::pos2(base.x * scale + x, base.y * scale + y)).length() < 0.001);
             }
@@ -456,5 +444,53 @@ mod tests {
         drop(ctx);
         assert!(layer_snapshots.iter().all(|s| s.upgrade().is_none()), "old layer generations release after callbacks/cache");
         assert!(snapshots.iter().all(|s| s.upgrade().is_none()), "replaced tile handles do not remain in a global GPU resource map");
+    }
+    #[test]
+    fn distant_pan_rebases_visible_tiles_and_releases_old_layer_generations() {
+        let ctx = egui::Context::default();
+        let scene = Scene::synthetic(20_000);
+        let layers = LayerStack::pcb_default(4);
+        let mut cache = MeshCache::default();
+        cache.enable_gpu(eframe::wgpu::TextureFormat::Bgra8Unorm);
+        let viewport = Rect::from_min_size(egui::pos2(200.0, 30.0), egui::vec2(1080.0, 740.0));
+        let mut camera = Camera::default();
+        camera.zoom_to_fit(scene.bounds(), viewport, 24.0);
+        camera.zoom *= 8.0;
+        let paint = |cache: &mut MeshCache, camera: &Camera| {
+            let mut output = ctx.run_ui(egui::RawInput::default(), |ui| {
+                let drawn = cache.paint(ui.painter(), &scene, &layers, camera, viewport);
+                let visible = camera.visible_world_rect(viewport).expand(2.0 / camera.zoom);
+                let expected = scene.items.iter().filter(|i| i.bounds.intersects(&visible) && layers.get(i.layer).is_some_and(|l| l.visible)).count();
+                assert_eq!(drawn, expected, "cached culling retains the direct geometry count");
+                assert!(drawn > 0);
+            });
+            output.textures_delta.clear();
+        };
+        for _ in 0..3 {
+            paint(&mut cache, &camera);
+        }
+        let first_basis = camera_basis(&camera, viewport);
+        let old: Vec<_> = cache.layers.iter().filter_map(|l| l.gpu.as_ref()).map(Arc::downgrade).collect();
+        camera.pan_by_screen(egui::vec2(1300.0, 0.0));
+        paint(&mut cache, &camera);
+        assert!(cache.stats.tiles_built > 0);
+        for group in &cache.layers {
+            if let Some(gpu) = &group.gpu {
+                assert_ne!(gpu.basis, first_basis);
+                assert!(!gpu.basis.stale(camera_basis(&camera, viewport)));
+            }
+        }
+        camera.pan_by_screen(egui::vec2(-1300.0, 0.0));
+        paint(&mut cache, &camera);
+        assert!(cache.stats.tiles_built > 0, "returning resident tiles rebase from fresh tessellation, never previous packed vertices");
+        for tile in cache.layers.iter().flat_map(|l| &l.tiles).filter(|t| t.bounds.intersects(&camera.visible_world_rect(viewport))) {
+            if let Some(built) = &tile.built {
+                assert!(!built.basis.stale(first_basis));
+                assert_eq!(built.gpu.as_ref().unwrap().mesh.vertices.iter().map(|v| v.pos).collect::<Vec<_>>(), built.base);
+            }
+        }
+        drop(cache);
+        drop(ctx);
+        assert!(old.iter().all(|l| l.upgrade().is_none()));
     }
 }
