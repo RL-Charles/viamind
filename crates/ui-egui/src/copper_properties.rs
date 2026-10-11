@@ -140,21 +140,24 @@ impl ViamindApp {
             return;
         }
         let Some(design) = &self.design else { return };
-        let target = target.map(Ok).unwrap_or_else(|| {
-            design.engine.with_engine(|e| {
-                if e.selection().ids.len() != 1 {
-                    return Err("Select exactly one existing track or through via, or use its copper-row Edit button".into());
-                }
-                let id = e.selection().ids[0];
-                if e.project().board.tracks.contains_key(&id) {
-                    Ok(CopperPropertyId::Track { id })
-                } else if e.project().board.vias.contains_key(&id) {
-                    Ok(CopperPropertyId::Via { id })
-                } else {
-                    Err("Selected object is not a straight track or through via".into())
-                }
-            })
-        });
+        let target = target.map_or_else(
+            || {
+                design.engine.with_engine(|e| {
+                    if e.selection().ids.len() != 1 {
+                        return Err("Select exactly one existing track or through via, or use its copper-row Edit button".into());
+                    }
+                    let id = e.selection().ids[0];
+                    if e.project().board.tracks.contains_key(&id) {
+                        Ok(CopperPropertyId::Track { id })
+                    } else if e.project().board.vias.contains_key(&id) {
+                        Ok(CopperPropertyId::Via { id })
+                    } else {
+                        Err("Selected object is not a straight track or through via".into())
+                    }
+                })
+            },
+            Ok,
+        );
         self.selection.cancel_gestures();
         self.copper.properties = Some(PropertyDraft::new(&design.engine, target));
     }
