@@ -3,15 +3,20 @@
 use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::{EngineHandle, SessionSnapshot};
 use viamind_ui_egui::ViamindApp;
+#[path = "support/native_capture.rs"]
+mod native_capture;
 struct Inspect {
     app: ViamindApp,
     engine: EngineHandle,
     before: SessionSnapshot,
+    capture: native_capture::NativeCapture,
+    control_bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
         assert_eq!(self.engine.session_state(), self.before, "inspection must preserve full prepared session");
+        self.capture.poll(ui.ctx(), &self.control_bounds);
     }
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
@@ -34,6 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mode = std::env::args().nth(2).unwrap_or_else(|| "preview".into());
     let width = std::env::args().nth(3).map_or(Ok(1600.0), |s| s.parse::<f32>())?;
     let height = std::env::args().nth(4).map_or(Ok(1000.0), |s| s.parse::<f32>())?;
+    let capture = std::env::args_os().nth(5).map(std::path::PathBuf::from);
     let engine = EngineHandle::new(viamind_doc::Project::new("Import inspection"));
     let original = engine.session_state();
     let mut app = ViamindApp::with_design(engine.clone(), None);
@@ -62,6 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rect = h.get_by_label("Apply PCB import as unsaved native document").rect();
         assert!(rect.min.x >= 0.0 && rect.max.x <= width && rect.min.y >= 0.0 && rect.max.y <= height);
     }
+    let control_bounds = if mode == "compact" { vec![h.get_by_label("Apply PCB import as unsaved native document").rect()] } else { Vec::new() };
     let memory = h.ctx.memory(Clone::clone);
     let before = engine.session_state();
     let mut app = if mode == "imported" { ViamindApp::with_design(engine.clone(), None) } else { h.into_state() };
@@ -82,7 +89,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before }))
+            Ok(Box::new(Inspect { app, engine, before, capture: native_capture::NativeCapture::new(capture), control_bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;

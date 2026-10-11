@@ -3,15 +3,20 @@
 use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::{EngineHandle, SessionSnapshot};
 use viamind_ui_egui::{ViamindApp, actions::UiAction};
+#[path = "support/native_capture.rs"]
+mod native_capture;
 struct Inspect {
     app: ViamindApp,
     engine: EngineHandle,
     before: SessionSnapshot,
+    capture: native_capture::NativeCapture,
+    control_bounds: Vec<egui::Rect>,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.show(ui, frame.info().cpu_usage.map(|s| s * 1000.0));
         assert_eq!(self.engine.session_state(), self.before, "inspection preserves complete native session");
+        self.capture.poll(ui.ctx(), &self.control_bounds);
     }
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
@@ -35,6 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mode = std::env::args().nth(3).unwrap_or_else(|| "preview".into());
     let width = std::env::args().nth(4).map_or(Ok(1600.0), |s| s.parse::<f32>())?;
     let height = std::env::args().nth(5).map_or(Ok(1000.0), |s| s.parse::<f32>())?;
+    let capture = std::env::args_os().nth(6).map(std::path::PathBuf::from);
     let engine = EngineHandle::new(viamind_doc::Project::new("Detached conversion inspection"));
     UiAction::PlacePart
         .run(&engine, serde_json::json!({"designator":"KEEP1","value":"dirty native work preserved","footprint":"Original","x_mm":0,"y_mm":0}))?;
@@ -92,6 +98,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rect = h.get_by_label("Create new native footprint file").rect();
         assert!(rect.min.x >= 0.0 && rect.min.y >= 0.0 && rect.max.x <= width && rect.max.y <= height);
     }
+    let control_bounds = match mode.as_str() {
+        "compact" => vec![h.get_by_label("Create new native footprint file").rect()],
+        "normalization" => vec![h.get_by_label_contains("source angle 90 degrees, canonical 90 degrees").rect()],
+        _ => Vec::new(),
+    };
     let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
@@ -111,7 +122,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before }))
+            Ok(Box::new(Inspect { app, engine, before, capture: native_capture::NativeCapture::new(capture), control_bounds }))
         }),
     )
     .map_err(|e| e.to_string())?;
