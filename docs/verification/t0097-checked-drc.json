@@ -1,0 +1,68 @@
+{
+  "format": "viamind-output-validation",
+  "version": 1,
+  "profile": "checked_outer_2layer",
+  "status": "passed_for_scoped_checks",
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "exported_cursor": {
+    "stream_id": "1df8bff3-44d8-4899-a826-22fbf2ba08a4",
+    "sequence": 0
+  },
+  "requested_rules": {
+    "copper_clearance_mm": 0.0,
+    "edge_clearance_mm": 0.0,
+    "max_violations": 1000,
+    "minimum_via_drill_mm": 0.0,
+    "minimum_annular_width_mm": 0.0,
+    "hole_clearance_mm": 0.0,
+    "hole_to_copper_clearance_mm": 0.0
+  },
+  "exported_geometry": {
+    "pads": 3,
+    "tracks": 2,
+    "vias": 2,
+    "holes": 2
+  },
+  "report": {
+    "project_id": "00000000-0000-0000-0000-000000000001",
+    "rules": {
+      "copper_clearance": 0,
+      "edge_clearance": 0,
+      "minimum_via_drill": 0,
+      "minimum_annular_width": 0,
+      "hole_clearance": 0,
+      "hole_to_copper_clearance": 0
+    },
+    "document_net_rules": {
+      "GND": {
+        "minimum_copper_clearance": 0,
+        "minimum_track_width": 250000
+      }
+    },
+    "violations": [],
+    "coverage": {
+      "checked_pads": 3,
+      "unassigned_pads": 0,
+      "checked_tracks": 2,
+      "checked_vias": 2,
+      "checked_holes": 2,
+      "unassigned_tracks": 0,
+      "unassigned_vias": 0,
+      "excluded_parts": [],
+      "excluded_part_count": 0,
+      "excluded_details_truncated": false,
+      "explicit_outline_checked": true,
+      "examined_candidate_pairs": 3,
+      "checks_not_performed": [
+        "curved tracks, blind/buried vias and inner copper layers",
+        "copper pours",
+        "through-hole footprint pads, nonplated holes and drill-to-edge clearance",
+        "solder mask and silkscreen",
+        "schematic/net connectivity and unrouted connections",
+        "manufacturing constraints"
+      ]
+    },
+    "truncated": false,
+    "incomplete_reason": null
+  }
+}

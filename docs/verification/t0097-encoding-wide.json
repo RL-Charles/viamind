@@ -1,0 +1,10 @@
+{
+  "encoding": "lossless RGB P6 to PNG; no image transformations",
+  "pixels": [
+    1600,
+    1000
+  ],
+  "source_sha256": "f1a145d85d88aabebd7707629dbbc21b1fb8df10fe88d00108ad4b842646bd08",
+  "png_sha256": "3323ce6b0bf993e3e345901597cf9d259ae011d6cd7cdfaaf3b15720e642276c",
+  "exact_rgb_readback": true
+}

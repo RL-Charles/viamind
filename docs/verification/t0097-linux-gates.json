@@ -1,0 +1,21 @@
+{
+  "source_commit": "6566e8066e8ccfcb7ba2d6ff04be462ef7fc4f35",
+  "fmt": "pass",
+  "clippy": "workspace/all-targets/-Dwarnings pass",
+  "targeted": {
+    "passed": 38,
+    "failed": 0
+  },
+  "workspace": {
+    "passed": 696,
+    "failed": 0,
+    "ignored": 1
+  },
+  "build": "workspace pass",
+  "catalog_unit_tests": 13,
+  "discovered_tools": 83,
+  "agent_workflow_checks": 18,
+  "production_sha256": "0d356ea32eaafb2fe581d6458f2d327d58ac968551c7918c7d1c75ef8e38b504",
+  "inspection_initial_sha256": "28c32608910253ccb7a3c4f5b4174cb9950e48bce65195f466b44f4db49d80e8",
+  "log_sha256": "80a038a464635c67c50fc510acf454fcf3a9b8c43dbb1da428ffdce62dda1b4b"
+}

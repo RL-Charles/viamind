@@ -1,0 +1,18 @@
+{
+  "_note": "Prefer `elements` \u2014 `tree_markdown` will continue to work but new fields will only be added to the structured side. Use `max_elements` / `max_depth` to bound the AT-SPI walk on apps with very large trees.",
+  "degraded": true,
+  "degraded_reason": "x11_property_fallback_partial: AT-SPI was unavailable and Cua Driver only recovered window metadata. Treat it as discovery evidence; it cannot prove checked state.",
+  "pid": 1590343,
+  "screenshot_height": 980,
+  "screenshot_width": 1568,
+  "window_bounds": {
+    "height": 1200,
+    "width": 1920,
+    "x": 1920,
+    "y": 1152
+  },
+  "window_id": 110379494710448,
+  "window_title": "*checked-rules.viamind.json \u2014 Viamind",
+  "screenshot_returned": true,
+  "retained_full_state_sha256": "71fdb486e2e5208fb995e01e459067d2d7ca418e648754737c8f5966453df43f"
+}
