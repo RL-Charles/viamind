@@ -1,0 +1,16 @@
+{
+  "result": "passed",
+  "native_binary": "/tmp/viamind-t0070-verified-native",
+  "fixture": "/home/charlesmowbray/Development/viamind-t-0070/fixtures/schematic/linked-regulator.viamind.json",
+  "verified": [
+    "tool discovery",
+    "three explicit regulator links",
+    "stable project/cursor and repeated immutable report",
+    "dual-ID filtering without duplicate rows",
+    "deterministic pagination",
+    "shared selection preserved",
+    "renamed references retain UUID link",
+    "explicit unlink and own undo",
+    "clean exit"
+  ]
+}

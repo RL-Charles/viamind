@@ -21,3 +21,5 @@ Omit `object_ids` to page all components. `limit` is 1..100 (default100); at mos
 Restart pagination after `source_cursor` changes. Mapping rejects more than 10000 combined sheets/symbols/parts,4096 bytes per reference,2 MiB aggregate references or ambiguous relevant identities. It does not evaluate electrical connectivity, infer links, propagate selections or cross-probe pins/nets. Camera and highlights are local view preferences; agents can use returned stable identities with existing selection/query tools.
 
 See the [behavior specification](specs/component-cross-probing.md) for ownership, bounds and guarded navigation.
+
+[Linux, native MCP and desktop verification](component-cross-probing-verification.md) records the supported checks and native inspection.
