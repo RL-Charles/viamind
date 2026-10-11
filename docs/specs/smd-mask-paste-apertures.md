@@ -160,7 +160,11 @@ choices. No proprietary assets, code or binary inspection is used.
     container before output publication. Their old absent-feature defaults/bytes/fixed
     file matrices remain exact. Job5 requires an explicit Some policy for every SMD pad:
     deliberate null shapes satisfy intent; Legacy does not. This avoids treating an
-    unconfigured paste pad as an intentional omission in a saved release.
+    unconfigured paste pad as an intentional omission in a saved release. Borrowed
+    preflight also rejects any Part with `pads:None`: legacy preview components have
+    unknown pad membership and cannot satisfy complete explicit paste intent. Known
+    empty membership `pads:Some([])` is allowed. Unassigned through vias are unaffected;
+    their existing mask/drill behavior does not imply an SMD paste policy.
 27. Job5's exact file matrix adds both paste files, optional T119 Legend pair, old
     companion relationships and optional checked DRC report. Choose version5 when paste
     is requested,4 when only Legend is requested, otherwise preserve1..3 selection.
@@ -185,7 +189,8 @@ choices. No proprietary assets, code or binary inspection is used.
   stable-ID effective-clip input; readable native wide/compact self-closing captures.
 - Native/SVG/independently parsed mask/paste Gerber agreement for explicit shapes,
   selected-layer isolation and Legacy provenance; job5 complete explicit policies,
-  all exact versioned matrices/companions, empty sides, inspector malformed inputs,
+  rejection of unknown `pads:None` versus allowed `pads:Some([])` and unaffected
+  unassigned through vias; all exact versioned matrices/companions, empty sides, inspector malformed inputs,
   snapshot/row/result bounds and atomic no-staging failure behavior.
 - Linux fmt/strict workspace all-target Clippy/workspace test/build, actual generated
   catalog/workflow and retained runtime/framebuffer/source hashes; independent review
