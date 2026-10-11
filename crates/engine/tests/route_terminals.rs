@@ -208,7 +208,12 @@ fn discovery_terminal_row_boundary_precedes_filter_allocation() {
     }
     let e = EngineHandle::new(project);
     assert_eq!(e.route_terminal_snapshot().unwrap().terminals.len(), 100_000);
-    e.execute("add_track", serde_json::json!({"start":{"x":0,"y":0},"end":{"x":2,"y":0},"width":1,"layer":"top","net":"N"}), Origin::User).unwrap();
+    e.execute(
+        "add_track",
+        serde_json::json!({"start_x_mm":0,"start_y_mm":0,"end_x_mm":0.000002,"end_y_mm":0,"width_mm":0.000001,"layer":"top","net":"N"}),
+        Origin::User,
+    )
+    .unwrap();
     let before = e.session_state();
     let q = RouteTerminalQuery { net: Some("absent".into()), layer: None, offset: usize::MAX, limit: 1 };
     assert!(e.query_route_terminals(&q).unwrap_err().to_string().contains("100000rows"));
@@ -306,6 +311,8 @@ fn unused_assembly_and_unrelated_schematic_text_never_enter_terminal_capture_or_
     project.board.parts.values_mut().next().unwrap().assembly =
         Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some(huge.clone()), ..Default::default() }));
     project.name = huge.clone();
+    let sheet = viamind_doc::Sheet::new(huge.clone());
+    project.schematic.sheets.insert(sheet.id, sheet);
     let sheet = viamind_doc::Sheet::new(huge.clone());
     project.schematic.sheets.insert(sheet.id, sheet);
     let e = EngineHandle::new(project);
