@@ -19,9 +19,9 @@ const MAX_COORDINATE: i64 = 10_000_000_000;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct PresencePoint {
-    #[schemars(range(min = -10000000000, max = 10000000000))]
+    #[schemars(range(min = -10000000000_i64, max = 10000000000_i64))]
     pub x: Nm,
-    #[schemars(range(min = -10000000000, max = 10000000000))]
+    #[schemars(range(min = -10000000000_i64, max = 10000000000_i64))]
     pub y: Nm,
 }
 
