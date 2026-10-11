@@ -16,6 +16,9 @@ fn canceled_caller_and_destroyed_transport_runtime_keep_actual_publication_admit
     let (entered_tx, entered_rx) = mpsc::channel();
     let (release_tx, release_rx) = mpsc::channel();
     let release_rx = Arc::new(Mutex::new(release_rx));
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("actual-publication");
+    let handler_output = output.clone();
     let published = Arc::new(AtomicBool::new(false));
     let handler_published = Arc::clone(&published);
     registry
@@ -24,10 +27,12 @@ fn canceled_caller_and_destroyed_transport_runtime_keep_actual_publication_admit
             let entered_tx = entered_tx.clone();
             let release_rx = Arc::clone(&release_rx);
             let published = Arc::clone(&handler_published);
+            let output = handler_output.clone();
             async move {
                 tokio::task::spawn_blocking(move || {
                     entered_tx.send(()).unwrap();
                     release_rx.lock().unwrap().recv().unwrap();
+                    std::fs::write(output, b"retained actual writer").unwrap();
                     published.store(true, Ordering::SeqCst);
                 })
                 .await
@@ -55,6 +60,7 @@ fn canceled_caller_and_destroyed_transport_runtime_keep_actual_publication_admit
     shutdown_rx.recv_timeout(Duration::from_secs(5)).unwrap();
     transport.join().unwrap();
     assert!(!published.load(Ordering::SeqCst));
+    assert!(!output.exists());
     assert_eq!(policy.set_mode(AgentMode::Approval), Err(AgentPolicyError::Busy(1)));
     release_tx.send(()).unwrap();
     let deadline = std::time::Instant::now() + Duration::from_secs(5);
@@ -63,6 +69,7 @@ fn canceled_caller_and_destroyed_transport_runtime_keep_actual_publication_admit
         std::thread::sleep(Duration::from_millis(1));
     }
     assert!(published.load(Ordering::SeqCst));
+    assert_eq!(std::fs::read(&output).unwrap(), b"retained actual writer");
     assert_eq!(policy.set_mode(AgentMode::ReadOnly).unwrap().mode, AgentMode::ReadOnly);
 }
 

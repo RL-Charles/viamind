@@ -288,7 +288,7 @@ impl ViamindApp {
                         let response=ui.add_enabled(!b.stale && !b.busy && b.changed_objects>0,egui::Button::new(if engine.agent_policy().status().mode == viamind_engine::agent_policy::AgentMode::Approval { "Accept proposal" } else { "Merge branch" }));
                         self.pcb_branches.controls.push((response.rect,ui.clip_rect()));
                         if response.clicked() {action=Some((UiAction::MergePcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision,"expected_project":b.project_id,"expected_cursor":b.source_cursor})));}
-                        let response=ui.add_enabled(!b.busy,egui::Button::new("Discard branch"));
+                        let response=ui.add_enabled(!b.busy,egui::Button::new(if engine.agent_policy().status().mode == viamind_engine::agent_policy::AgentMode::Approval { "Reject proposal" } else { "Discard branch" }));
                         self.pcb_branches.controls.push((response.rect,ui.clip_rect()));
                         if response.clicked() {action=Some((UiAction::DiscardPcbBranch,json!({"branch_id":b.branch_id,"expected_revision":b.revision})));}
                     });
