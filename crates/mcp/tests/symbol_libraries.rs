@@ -33,6 +33,25 @@ async fn two_real_clients_share_detached_files_guarded_placement_and_scoped_undo
         viamind_engine::input_schema::<viamind_engine::LoadSymbolTemplate>()
     );
     let before = engine.session_state();
+    let status = engine.document_status();
+    let scratch = tempfile::tempdir().unwrap();
+    let no_output = scratch.path().join("never.json");
+    let mut aggregate = vec![json!({"number":"","name":"a".repeat(4096)}); 64];
+    aggregate.push(Value::Null);
+    for (args, expected) in [
+        (json!({"path":no_output,"template":{"name":"Explicit","pins":vec![Value::Null;1025]}}), "1024 pins before typed decoding"),
+        (json!({"path":no_output,"template":{"name":"a".repeat(4097),"pins":[null]}}), "4096 UTF-8 bytes per field"),
+        (json!({"path":no_output,"template":{"name":"Explicit","pins":[{"number":"a".repeat(4097)}]}}), "4096 UTF-8 bytes per field"),
+        (json!({"path":no_output,"template":{"name":"x","pins":aggregate}}), "256 KiB aggregate"),
+        (json!({"path":"a".repeat(4097)}), "4096 UTF-8 bytes before typed decoding"),
+    ] {
+        let result = call(&b, "save_symbol_template", args).await;
+        assert_eq!(result.is_error, Some(true));
+        assert!(serde_json::to_string(&result).unwrap().contains(expected), "{result:?}");
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(engine.document_status(), status);
+        assert!(!no_output.exists());
+    }
     let sheet = before.project.schematic.sheets.values().next().unwrap();
     let symbol = sheet.content.as_ref().unwrap().symbols.values().find(|s| s.designator == "U1").unwrap();
     let dir = tempfile::tempdir().unwrap();
