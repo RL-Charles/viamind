@@ -46,7 +46,7 @@ fn parse_ring(lines: &[&str]) -> Result<Value, String> {
 }
 impl ViamindApp {
     pub fn begin_board_outline(&mut self) {
-        if self.files.busy() || self.parts.placing() || self.pads.editing() || self.outlines.editing() {
+        if self.files.busy() || self.copper.editing() || self.parts.placing() || self.pads.editing() || self.outlines.editing() {
             return;
         }
         let Some(design) = &self.design else { return };

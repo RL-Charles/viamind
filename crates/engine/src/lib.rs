@@ -59,3 +59,6 @@ pub use schemars;
 pub use selection::{SelectionMode, SelectionSnapshot, SetSelection};
 pub use session::{EventBatch, EventCursor, SESSION_EVENT_CAPACITY, SessionError, SessionEvent, SessionEventRecord, SessionSnapshot, WatchEvents};
 pub use transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxInfo};
+
+pub mod copper;
+pub use copper::{AddTrack, AddVia, DeleteTrack, DeleteVia};

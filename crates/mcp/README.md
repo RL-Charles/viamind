@@ -308,3 +308,23 @@ The desktop draws the same cyan guides and updates them after placement, pad/net
 editing and undo. Guide count estimates routing work: no copper continuity
 analysis exists yet, and touching same-net pads may already conduct. Guides may
 cross or pass through obstacles; they are neither copper nor a DRC result.
+
+## Straight tracks and through vias
+
+The shared command catalog includes `add_track`, `delete_track`, `add_via` and
+`delete_via`. For example:
+
+```json
+{"start_x_mm":10,"start_y_mm":10,"end_x_mm":20,"end_y_mm":10,"width_mm":0.25,"layer":"top","net":"GND"}
+```
+
+```json
+{"x_mm":20,"y_mm":10,"diameter_mm":0.6,"drill_mm":0.3,"net":"GND"}
+```
+
+Creation returns a stable ID in `created`. Deletion takes that `id` and optional
+exact `expected` snapshot; all four commands accept optional `expected_project`.
+Coordinates use the document's Y-down frame. New copper is persistent, undoable
+and replayable, but electrical continuity/clearance checking and automatic routing
+are separate features. Only straight top/bottom tracks and through vias are
+supported; blind/buried/microvias and inner-layer tracks reject unsupported input.

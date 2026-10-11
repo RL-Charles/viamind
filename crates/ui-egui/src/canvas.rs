@@ -176,6 +176,10 @@ pub(crate) fn item_shape(item: &Item, color: Color32, cam: &Camera, viewport: Re
         Prim::Rect(r) => Shape::rect_filled(Rect::from_min_max(to_screen(r.min), to_screen(r.max)), CornerRadius::ZERO, color),
         Prim::Circle { center, radius } => Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
         Prim::Segment { a, b, width } => Shape::line_segment([to_screen(a), to_screen(b)], Stroke::new(width as f32 * zoom, color)),
+        Prim::Via { center, radius, drill_radius } => Shape::Vec(vec![
+            Shape::circle_filled(to_screen(center), radius as f32 * zoom, color),
+            Shape::circle_filled(to_screen(center), drill_radius as f32 * zoom, CANVAS_BG.gamma_multiply(f32::from(color.a()) / 255.0)),
+        ]),
     }
 }
 

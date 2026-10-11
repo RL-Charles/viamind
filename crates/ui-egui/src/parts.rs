@@ -84,7 +84,7 @@ impl PartUi {
 impl ViamindApp {
     /// Place an arbitrary part using the same command available to agents.
     pub fn begin_place_part(&mut self) {
-        if self.files.busy() || self.parts.placing() || self.outlines.editing() || self.pads.editing() {
+        if self.files.busy() || self.copper.editing() || self.parts.placing() || self.outlines.editing() || self.pads.editing() {
             return;
         }
         let Some(design) = &self.design else { return };

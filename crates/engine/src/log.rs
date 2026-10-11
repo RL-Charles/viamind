@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 3 to preserve electrical pads in appended snapshots.
-pub const LOG_VERSION: u32 = 3;
+/// New logs use version 4 to preserve independent copper in appended snapshots.
+pub const LOG_VERSION: u32 = 4;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -116,6 +116,7 @@ impl EventLog {
             || header.version > LOG_VERSION
             || (header.version < viamind_doc::file::minimum_version(&header.base))
             || viamind_doc::file::validate_pads(&header.base).is_err()
+            || viamind_doc::file::validate_copper(&header.base).is_err()
         {
             return Err(LogError::BadHeader);
         }
@@ -125,7 +126,23 @@ impl EventLog {
             if header.version < 3 && event.deltas.iter().any(|d| matches!(d, crate::Delta::Part { before, after, .. } if before.as_ref().is_some_and(|p| p.pads.is_some()) || after.as_ref().is_some_and(|p| p.pads.is_some()))) {
                 return Err(LogError::BadHeader);
             }
+            if header.version < 4 && event.deltas.iter().any(|d| matches!(d, crate::Delta::Track { .. } | crate::Delta::Via { .. })) {
+                return Err(LogError::BadHeader);
+            }
+            for delta in &event.deltas {
+                let valid_id = match delta {
+                    crate::Delta::Track { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
+                    crate::Delta::Via { id, before, after } => before.iter().chain(after).all(|v| v.id == *id),
+                    _ => true,
+                };
+                if !valid_id {
+                    return Err(LogError::BadHeader);
+                }
+            }
             log.append(event);
+        }
+        if viamind_doc::file::validate_copper(&log.replay()).is_err() {
+            return Err(LogError::BadHeader);
         }
         Ok(log)
     }

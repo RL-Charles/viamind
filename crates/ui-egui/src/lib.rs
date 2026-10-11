@@ -8,6 +8,7 @@ pub mod actions;
 pub mod board_scene;
 pub mod camera;
 pub mod canvas;
+pub mod copper;
 pub mod drc;
 pub mod files;
 pub mod layer_panel;
@@ -113,6 +114,7 @@ pub struct ViamindApp {
     pub files: files::FileUi,
     pub parts: parts::PartUi,
     pub outlines: outlines::OutlineUi,
+    pub copper: copper::CopperUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
     last_frame_time: Option<f64>,
@@ -137,6 +139,7 @@ impl ViamindApp {
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
+            copper: copper::CopperUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             last_frame_time: None,
@@ -159,6 +162,7 @@ impl ViamindApp {
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
             outlines: outlines::OutlineUi::default(),
+            copper: copper::CopperUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
             last_frame_time: None,
@@ -243,6 +247,7 @@ impl ViamindApp {
             && !self.parts.placing()
             && !self.outlines.editing()
             && !self.pads.editing()
+            && !self.copper.editing()
             && !ui.ctx().egui_wants_keyboard_input()
         {
             if ui.input_mut(|i| i.consume_shortcut(&REDO)) {
@@ -276,6 +281,7 @@ impl ViamindApp {
         self.placement_dialog(ui);
         self.pads_dialog(ui);
         self.outline_dialog(ui);
+        self.copper_dialog(ui);
         self.drc_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
@@ -397,6 +403,10 @@ impl ViamindApp {
                 ui.menu_button("Board", |ui| {
                     if ui.button("Design rule check…").clicked() {
                         self.begin_drc();
+                        ui.close();
+                    }
+                    if ui.button("Copper tracks and vias…").clicked() {
+                        self.begin_copper();
                         ui.close();
                     }
                     if ui.button("Board outline…").clicked() {

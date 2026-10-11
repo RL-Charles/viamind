@@ -49,7 +49,7 @@ fn pad_identities_history_versioning_and_atomic_guards() {
     let mut bytes = Vec::new();
     engine.with_engine(|e| e.log().write_jsonl(&mut bytes)).unwrap();
     assert_eq!(EventLog::read_jsonl(bytes.as_slice()).unwrap().replay(), after);
-    let old_log = String::from_utf8(bytes).unwrap().replace("\"version\":3", "\"version\":2");
+    let old_log = String::from_utf8(bytes).unwrap().replace("\"version\":4", "\"version\":2");
     assert!(EventLog::read_jsonl(old_log.as_bytes()).is_err(), "old log header must not hide appended pads");
     let mut bad: Value = serde_json::from_str(&text).unwrap();
     bad["project"]["board"]["parts"][id.to_string()]["pads"][0]["id"] = json!(id);

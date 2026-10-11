@@ -132,6 +132,28 @@ pub fn scene_from_project(project: &Project) -> Scene {
     for part in project.board.parts.values() {
         items.extend(part_items(part));
     }
+    for track in project.board.tracks.values() {
+        let world = |p: viamind_geom::Point| WorldPos::new(p.x.to_mm(), p.y.to_mm());
+        let (a, b, width) = (world(track.start), world(track.end), track.width.to_mm());
+        let layer = match track.layer {
+            viamind_doc::CopperLayer::Top => LayerId::F_CU,
+            viamind_doc::CopperLayer::Bottom => LayerId::B_CU,
+        };
+        items.push(Item::new(Prim::Segment { a, b, width }, layer));
+        for center in [a, b] {
+            items.push(Item::new(Prim::Circle { center, radius: width / 2.0 }, layer));
+        }
+    }
+    for via in project.board.vias.values() {
+        items.push(Item::new(
+            Prim::Via {
+                center: WorldPos::new(via.position.x.to_mm(), via.position.y.to_mm()),
+                radius: via.diameter.to_mm() / 2.0,
+                drill_radius: via.drill.to_mm() / 2.0,
+            },
+            LayerId::VIAS,
+        ));
+    }
     let ratsnest = viamind_engine::connection_guides(project)
         .into_iter()
         .map(|edge| [WorldPos::new(edge.from.x_mm, edge.from.y_mm), WorldPos::new(edge.to.x_mm, edge.to.y_mm)])

@@ -127,3 +127,17 @@ Existing destinations require `--overwrite`. Agents export unsaved shared design
 with `export_assembly_csv`; exports preserve native dirty state and undo history.
 See [assembly export conventions](docs/assembly-exports.md) for exact units,
 bottom-side transforms, grouping, file publication and manufacturer limitations.
+
+## Straight copper and through vias
+
+Use **Board → Copper tracks and vias** for coordinate-based placement and deletion.
+Track endpoints/width and via position/diameter/drill are in millimetres; optional
+net labels are shared with agents. Supported tracks are straight segments on top
+or bottom copper. Supported vias are circular through vias; their drill must be
+smaller than their outer diameter. Undo restores exact geometry and identity.
+Agents use `add_track`, `delete_track`, `add_via` and `delete_via`; optional expected
+project/object snapshots guard stale edits. Native files containing copper require
+schema version 4. Older outline/pad-only files keep their existing schema version.
+Copper continuity, interactive routing, curved tracks, inner layers and other via
+types remain subsequent work. Pad-only connection guides do not yet account for
+tracks or vias. See [the copper contract](docs/specs/copper-tracks-vias.md).
