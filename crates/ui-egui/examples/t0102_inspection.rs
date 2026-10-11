@@ -110,14 +110,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     input(&mut h, "Pin 2 name", "Retained input");
     input(&mut h, "Pin 2 X (mm)", "1.000003");
     input(&mut h, "Pin 2 Y (mm)", "-2.000007");
-    click(&mut h, "Pin 2 electrical type");
-    click(&mut h, "Input");
     let fields = ["number", "name", "X (mm)", "Y (mm)", "electrical type"];
     let ids: Vec<_> = fields.iter().map(|field| h.get_by_label(&format!("Pin 2 {field}")).accesskit_node().id()).collect();
     click(&mut h, "Remove pin 1");
     for (i, field) in fields.iter().enumerate() {
         assert_eq!(h.get_by_label(&format!("Pin 1 {field}")).accesskit_node().id(), ids[i]);
     }
+    click(&mut h, "Pin 1 electrical type");
+    click(&mut h, "Input");
     input(&mut h, "NEW definition file path", &output);
     if height >= 800.0 {
         let id = egui::Id::new(Some(std::borrow::Cow::Borrowed("Native symbol library")));
