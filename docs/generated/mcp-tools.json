@@ -1069,6 +1069,32 @@
       "name": "cleanup_cardinal_tracks"
     },
     {
+      "description": "Clear only this trusted MCP connection's PCB attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "expected_stream": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expected_project",
+          "expected_stream"
+        ],
+        "title": "ClearAgentPresence",
+        "type": "object"
+      },
+      "name": "clear_agent_presence"
+    },
+    {
       "description": "Configure transient shared automatic scoped DRC. One debounced worker checks bounded snapshots outside the engine lock; edits supersede old results. Does not modify design, dirty state or history. Snapshot limits may skip checks; reports retain fabrication coverage exclusions. Worker timings are not desktop edit-to-visible latency.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -6681,6 +6707,15 @@
       "name": "preview_schematic_pcb_sync"
     },
     {
+      "description": "Read bounded ephemeral PCB agent cursors, selected board IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "name": "query_agent_presence"
+    },
+    {
       "description": "Read exact named-net terminal membership and unrouted connection guides. Explicit pads only; bounded exact same-net/side track endpoints and through-via bridges suppress proven connected islands. copper_proof reports whole-board coverage/fallback. Unsupported transforms, contacts and excessive inputs retain conservative extra guides; no full physical connectivity certification. Coordinates are transformed pad centres in mm. Exact dense_prim for <=256 terminals, approximate coordinate_chain for larger nets. Guides are not copper or DRC. Arrays share offset and limit (default100,max1000); repeat pages only while unchanged.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -9295,6 +9330,72 @@
         "type": "object"
       },
       "name": "save_symbol_template"
+    },
+    {
+      "description": "Publish or renew only this MCP connection's ephemeral PCB cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; at most64 distinct existing board part/track/via IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                "format": "int64",
+                "maximum": 10000000000,
+                "minimum": -10000000000,
+                "type": "integer"
+              },
+              "y": {
+                "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                "format": "int64",
+                "maximum": 10000000000,
+                "minimum": -10000000000,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "expected_stream": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "selection": {
+            "items": {
+              "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "type": "array"
+          },
+          "working_on": {
+            "maxLength": 80,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expected_project",
+          "expected_stream",
+          "cursor",
+          "selection",
+          "working_on"
+        ],
+        "title": "SetAgentPresence",
+        "type": "object"
+      },
+      "name": "set_agent_presence"
     },
     {
       "description": "Set a fixed board outer polygon and internal cutouts. Vertices are x_mm/y_mm, rings close implicitly. Rejects crossings, overlaps, degenerate rings and cutouts outside the board. Max 2048 vertices/64 cutouts. Null outline restores legacy preview. Optional expected contains project_id and exact current model outline (integer nm), guarding stale drafts. One undoable change; native saves use version 2 when geometry is present.",

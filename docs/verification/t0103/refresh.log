@@ -1,0 +1,82 @@
+Sun Oct 11 16:02:48 UTC 2026
+a1a3df58797bd9898d13e0c2f2360dc2de244b0e
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.29s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.83s
+     Running unittests src/lib.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/viamind_engine-4c5f957892260a85)
+
+running 3 tests
+test agent_presence::tests::lease_clock_is_sampled_after_both_locks_for_query_and_admission ... ok
+test agent_presence::tests::shared_clone_own_clear_lifecycle_bounds_and_wakers_leave_session_untouched ... ok
+test agent_presence::tests::exact_deadline_capacity_renewal_and_failed_update_preserve_prior_lease ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 0.01s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.70s
+     Running tests/agent_presence.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/agent_presence-6990e7144a897218)
+
+running 1 test
+test actual_same_named_clients_own_distinct_markers_and_cannot_spoof_peers_or_edit_read_only_presence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/fab)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.99s
+     Running tests/agent_presence.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/agent_presence-d0a21919f9702cc5)
+
+running 1 test
+test compact_colored_attention_is_clipped_and_human_edit_undo_stays_live ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.30s
+     Running tests/read_only.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/read_only-db4cccaf67f4e0f0)
+
+running 2 tests
+test contradictory_read_only_invocations_reject_before_open_output_or_endpoint ... ok
+test actual_read_only_stdio_filters_and_refuses_writes_with_forged_hints ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.43s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0103/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.96s
+Verified 88 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+3c92a975faae8740caa8ef49c19f48a38a8aa899bf35a5860b7e09b70a02be17  /home/charlesmowbray/.cache/viamind/native-artifacts/t0103/production-combined
+799aa2f5cc99db5c90b81e80426e844bad97c51ec65ca59c2b739370946148a2  /home/charlesmowbray/.cache/viamind/native-artifacts/t0103/inspection-combined
+Sun Oct 11 16:04:04 UTC 2026
