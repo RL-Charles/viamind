@@ -16,7 +16,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
                 let snapshot=viamind_fab::FabricationSnapshot::capture(e.project()).map_err(|e|ToolError::Failed(e.to_string()))?;
                 Ok((snapshot,cursor,e.document_status().path))
             })?;
-            let (path,manifest)=tokio::task::spawn_blocking(move || snapshot.write(FabricationOptions { mask_expansion_mm:input.mask_expansion_mm, include_silkscreen:input.include_silkscreen },&input.path,native.as_deref())).await.map_err(|e|ToolError::Failed(e.to_string()))?.map_err(|e|ToolError::Failed(format!("could not export fabrication: {e}")))?;
+            let (path,manifest)=tokio::task::spawn_blocking(move || snapshot.write(FabricationOptions { mask_expansion_mm:input.mask_expansion_mm, include_silkscreen:input.include_silkscreen , include_paste: input.include_paste},&input.path,native.as_deref())).await.map_err(|e|ToolError::Failed(e.to_string()))?.map_err(|e|ToolError::Failed(format!("could not export fabrication: {e}")))?;
             Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor}))
         }
     })

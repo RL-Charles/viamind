@@ -152,6 +152,8 @@ fn color(layer: Layer) -> Color32 {
         Layer::BottomCopper => Color32::from_rgba_unmultiplied(90, 150, 255, 150),
         Layer::TopMaskOpenings => Color32::from_rgba_unmultiplied(235, 80, 230, 115),
         Layer::BottomMaskOpenings => Color32::from_rgba_unmultiplied(80, 235, 170, 115),
+        Layer::TopPaste => Color32::from_rgba_unmultiplied(140, 180, 200, 180),
+        Layer::BottomPaste => Color32::from_rgba_unmultiplied(80, 140, 180, 180),
         Layer::TopSilkscreen => Color32::from_rgb(245, 235, 170),
         Layer::BottomSilkscreen => Color32::from_rgb(200, 220, 255),
         Layer::Profile => Color32::YELLOW,

@@ -83,6 +83,11 @@ impl FabricationSnapshot {
             }
             if let Some(pads) = &part.pads {
                 for pad in &pads.0 {
+                    if let Some(a) = &pad.apertures {
+                        count = count.saturating_add(a.structural_rows());
+                        check(count)?;
+                        a.validate_at(pad.position).map_err(invalid)?;
+                    }
                     text.add(&pad.number)?;
                     if let Some(net) = &pad.net {
                         text.add(net)?;

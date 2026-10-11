@@ -95,6 +95,8 @@ fn nonnull<'de, T: Deserialize<'de>, D: serde::Deserializer<'de>>(d: D) -> Resul
 #[serde(deny_unknown_fields)]
 struct Manifest {
     #[serde(default, deserialize_with = "nonnull")]
+    pad_apertures: Option<crate::PadApertureSummary>,
+    #[serde(default, deserialize_with = "nonnull")]
     footprint_artwork: Option<crate::FootprintArtworkSummary>,
     format: String,
     version: u32,
@@ -136,6 +138,8 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
 #[serde(deny_unknown_fields)]
 struct FabManifest {
     #[serde(default, deserialize_with = "nonnull")]
+    pad_apertures: Option<crate::PadApertureSummary>,
+    #[serde(default, deserialize_with = "nonnull")]
     footprint_artwork: Option<crate::FootprintArtworkSummary>,
     project_id: ObjectId,
     units: String,
@@ -176,6 +180,10 @@ impl Manifest {
         if job.include_silkscreen == Some(true) {
             expected.extend(["fabrication/top-silkscreen.gbr", "fabrication/bottom-silkscreen.gbr"]);
         }
+        if job.include_paste == Some(true) {
+            expected.extend(["fabrication/top-paste.gbr", "fabrication/bottom-paste.gbr"]);
+        }
+        validate_aperture_summary(self.pad_apertures.as_ref(), job)?;
         validate_artwork_summary(self.footprint_artwork.as_ref(), job)?;
         if job.profile == crate::CHECKED_PROFILE {
             expected.push(VALIDATION);
@@ -226,20 +234,43 @@ fn validate_artwork_summary(summary: Option<&crate::FootprintArtworkSummary>, jo
         _ => Err(invalid("artwork summary contradicts job flag or bounded captured counts")),
     }
 }
+fn validate_aperture_summary(summary: Option<&crate::PadApertureSummary>, job: &crate::OutputJob) -> io::Result<()> {
+    match (summary, job.include_paste == Some(true)) {
+        (None, false) => Ok(()),
+        (Some(s), true)
+            if s.include_paste
+                && s.explicit_coverage_complete
+                && s.legacy_pads == 0
+                && s.explicit_pads <= 200_000
+                && s.mask_rectangles.checked_add(s.mask_omissions) == Some(s.explicit_pads)
+                && s.paste_rectangles.checked_add(s.paste_omissions) == Some(s.explicit_pads)
+                && s.top_mask_rectangles.checked_add(s.bottom_mask_rectangles) == Some(s.mask_rectangles)
+                && s.top_paste_rectangles.checked_add(s.bottom_paste_rectangles) == Some(s.paste_rectangles) =>
+        {
+            Ok(())
+        }
+        _ => Err(invalid("aperture summary contradicts job5 complete explicit pad coverage")),
+    }
+}
 fn validate_fabrication(fab: &FabManifest, manifest: &Manifest, job: &crate::OutputJob) -> io::Result<()> {
     let mut expected = BASE_FILES.iter().filter_map(|p| p.strip_prefix("fabrication/")).collect::<Vec<_>>();
     if job.include_silkscreen == Some(true) {
         expected.extend(["top-silkscreen.gbr", "bottom-silkscreen.gbr"]);
     }
+    if job.include_paste == Some(true) {
+        expected.extend(["top-paste.gbr", "bottom-paste.gbr"]);
+    }
     expected.sort_unstable();
     let mut actual = fab.files.iter().map(String::as_str).collect::<Vec<_>>();
     actual.sort_unstable();
-    if fab.footprint_artwork != manifest.footprint_artwork
+    if fab.pad_apertures != manifest.pad_apertures
+        || fab.footprint_artwork != manifest.footprint_artwork
         || fab.project_id != manifest.project_id
         || actual != expected
         || fab.units != "mm (Gerber 5.6, 1 nm; XNC explicit decimals)"
         || fab.coordinate_system != "Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored"
         || fab.mask_expansion_nm != (job.mask_expansion_mm * 1_000_000.).round() as i64
+        || fab.pad_apertures.as_ref().is_some_and(|s| s.explicit_pads != fab.smd_pad_count)
         || fab.smd_pad_count > 200_000
         || fab.track_count > 200_000
         || fab.through_via_count > 100_000

@@ -105,6 +105,7 @@ ui_actions! {
     NewProject => ("new_project", input_schema::<NewProject>(), new_project),
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
+    SetPadApertures => (viamind_engine::SetPadApertures::NAME, input_schema::<viamind_engine::SetPadApertures>(), set_pad_apertures),
     SetFootprintArtwork => (viamind_engine::SetFootprintArtwork::NAME, input_schema::<viamind_engine::SetFootprintArtwork>(), set_footprint_artwork),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
@@ -528,6 +529,10 @@ fn get_command_hooks(engine: &EngineHandle, input: Value) -> Result<Value, Engin
         return Err(EngineError::InvalidInput { command: "get_command_hooks".into(), message: "expected an empty object".into() });
     }
     serde_json::to_value(engine.command_hook_status()).map_err(encode_error)
+}
+
+fn set_pad_apertures(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetPadApertures::NAME, input, Origin::User)?).map_err(encode_error)
 }
 
 fn preview_schematic_symbol_drag(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {

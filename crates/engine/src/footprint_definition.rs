@@ -1,7 +1,7 @@
 //! Detached native definition files; publication never changes the design.
 use crate::{EngineError, EngineHandle};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::path::PathBuf;
 use viamind_doc::footprint::Footprint;
 
@@ -11,11 +11,31 @@ pub struct LoadFootprintDefinition {
     pub path: PathBuf,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SaveFootprintDefinition {
     pub footprint: Footprint,
     pub path: PathBuf,
+}
+
+impl<'de> Deserialize<'de> for SaveFootprintDefinition {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let v = crate::pad_apertures::StrictValue::deserialize(d)?.0;
+        if v.get("path").and_then(serde_json::Value::as_str).is_some_and(|s| s.len() > 4096) {
+            return Err(serde::de::Error::custom("definition path exceeds4096 bytes before typed decoding"));
+        }
+        if let Some(f) = v.get("footprint") {
+            preflight_definition(f).map_err(serde::de::Error::custom)?;
+        }
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Input {
+            footprint: Footprint,
+            path: PathBuf,
+        }
+        let input: Input = serde_json::from_value(v).map_err(serde::de::Error::custom)?;
+        Ok(Self { footprint: input.footprint, path: input.path })
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -23,6 +43,37 @@ pub struct FootprintDefinitionSaved {
     pub path: PathBuf,
     pub name: String,
     pub pad_count: usize,
+}
+
+/// Borrowed transport admission before constructing owned pad/artwork rows.
+pub fn preflight_definition(value: &serde_json::Value) -> Result<(), String> {
+    use serde_json::Value;
+    let pads = value.get("pads").and_then(Value::as_array);
+    if pads.is_some_and(|p| p.len() > 1024) {
+        return Err("footprint definitions support at most 1024 pads before typed decoding".into());
+    }
+    if value.get("name").and_then(Value::as_str).is_some_and(|s| s.len() > 512)
+        || pads.is_some_and(|p| p.iter().any(|p| p.get("number").and_then(Value::as_str).is_some_and(|s| s.len() > 512)))
+    {
+        return Err("footprint name/number exceeds512 UTF-8 bytes before typed decoding".into());
+    }
+    if value.get("artwork").and_then(|a| a.get("silkscreen")).and_then(Value::as_array).is_some_and(|a| a.len() > 256) {
+        return Err("footprint artwork supports at most256 segments before typed decoding".into());
+    }
+    struct Counter(usize);
+    impl std::io::Write for Counter {
+        fn write(&mut self, b: &[u8]) -> std::io::Result<usize> {
+            self.0 = self.0.saturating_add(b.len());
+            if self.0 > 1024 * 1024 {
+                return Err(std::io::Error::other("footprint definition exceeds1MiB before typed decoding"));
+            }
+            Ok(b.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    serde_json::to_writer(&mut Counter(0), value).map_err(|e| e.to_string())
 }
 
 /// Bound borrowed text/counts before native serialization clones geometry.

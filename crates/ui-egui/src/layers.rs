@@ -15,6 +15,8 @@ impl LayerId {
     pub const IN1_CU: Self = Self(1);
     pub const IN2_CU: Self = Self(2);
     pub const B_CU: Self = Self(31);
+    pub const B_PASTE: Self = Self(34);
+    pub const F_PASTE: Self = Self(35);
     pub const B_SILKS: Self = Self(36);
     pub const F_SILKS: Self = Self(37);
     pub const B_MASK: Self = Self(38);
@@ -39,6 +41,7 @@ pub enum LayerKind {
     Silkscreen,
     Courtyard,
     SolderMask,
+    Paste,
     EdgeCuts,
     Vias,
 }
@@ -116,14 +119,16 @@ impl LayerStack {
     /// Optional artwork layers exist only for explicit stored courtyards.
     /// Legacy/demonstration stacks retain their exact original order and count.
     pub(crate) fn sync_courtyards(&mut self, scene: &crate::scene::Scene) {
-        for (id, name, color) in [
-            (LayerId::B_COURTYARD, "B.Courtyard", Color32::from_rgb(120, 160, 210)),
-            (LayerId::F_COURTYARD, "F.Courtyard", Color32::from_rgb(200, 120, 210)),
+        for (id, name, color, kind) in [
+            (LayerId::B_COURTYARD, "B.Courtyard", Color32::from_rgb(120, 160, 210), LayerKind::Courtyard),
+            (LayerId::F_COURTYARD, "F.Courtyard", Color32::from_rgb(200, 120, 210), LayerKind::Courtyard),
+            (LayerId::B_PASTE, "B.Paste", Color32::from_rgb(80, 140, 180), LayerKind::Paste),
+            (LayerId::F_PASTE, "F.Paste", Color32::from_rgb(140, 180, 200), LayerKind::Paste),
         ] {
             let present = scene.items.iter().any(|item| item.layer == id);
             if present && self.get(id).is_none() {
                 let at = self.layers.iter().position(|layer| layer.id == LayerId::EDGE_CUTS).unwrap_or(self.layers.len());
-                self.layers.insert(at, Layer::new(id, name, LayerKind::Courtyard, color, 0.8));
+                self.layers.insert(at, Layer::new(id, name, kind, color, 0.8));
             } else if !present {
                 self.layers.retain(|layer| layer.id != id);
                 if self.active == id {

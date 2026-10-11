@@ -16,6 +16,8 @@ pub enum FabricationLayer {
     BottomCopper,
     TopMaskOpenings,
     BottomMaskOpenings,
+    TopPaste,
+    BottomPaste,
     TopSilkscreen,
     BottomSilkscreen,
     Profile,
@@ -110,6 +112,8 @@ fn layer(value: &str) -> Result<FabricationLayer, String> {
         "Copper,L2,Bot" => FabricationLayer::BottomCopper,
         "Soldermask,Top" => FabricationLayer::TopMaskOpenings,
         "Soldermask,Bot" => FabricationLayer::BottomMaskOpenings,
+        "Paste,Top" => FabricationLayer::TopPaste,
+        "Paste,Bot" => FabricationLayer::BottomPaste,
         "Legend,Top" => FabricationLayer::TopSilkscreen,
         "Legend,Bot" => FabricationLayer::BottomSilkscreen,
         "Profile,NP" => FabricationLayer::Profile,
@@ -247,6 +251,11 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
                 && operation == "03"
             {
                 return Err("profile/Legend inspection supports linear centerlines only".into());
+            }
+            if matches!(file_layer, Some(FabricationLayer::TopPaste | FabricationLayer::BottomPaste))
+                && !matches!((operation, aperture), ("03", Aperture::Rectangle(_, _)))
+            {
+                return Err("paste inspection supports rectangular flashes only".into());
             }
             graphics = true;
             let primitive = match (operation, aperture) {

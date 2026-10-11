@@ -49,6 +49,7 @@ pub struct OutputJobUi {
     calibrated: bool,
     populated_bom: bool,
     silkscreen: bool,
+    paste: bool,
     checks: [String; 7],
     job_path: String,
     release_path: String,
@@ -75,6 +76,10 @@ impl OutputJobUi {
         if self.silkscreen {
             job.version = 4;
             job.include_silkscreen = Some(true);
+        }
+        if self.paste {
+            job.version = 5;
+            job.include_paste = Some(true);
         }
         if self.checked {
             let parse =
@@ -109,6 +114,7 @@ impl OutputJobUi {
                                     self.calibrated = job.include_calibrated_placement == Some(true);
                                     self.populated_bom = job.include_populated_bom == Some(true);
                                     self.silkscreen = job.include_silkscreen == Some(true);
+                                    self.paste = job.include_paste == Some(true);
                                     if let Some(checks) = &job.checks {
                                         self.checks = [
                                             checks.copper_clearance_mm.to_string(),
@@ -235,6 +241,8 @@ impl ViamindApp {
                     ui.checkbox(&mut self.output_jobs.populated_bom, "Include matched populated BOM (version 3)");
                 });
                 ui.checkbox(&mut self.output_jobs.silkscreen, "Include stored silkscreen Legend (version 4)");
+                ui.checkbox(&mut self.output_jobs.paste,"Include explicit pad paste (version 5)");
+                if self.output_jobs.paste {ui.label("Every component must have known explicit pad membership and every SMD pad an explicit opening policy. Both Paste files are emitted, even empty; no stencil suitability claim.");}
                 if self.output_jobs.silkscreen { ui.label("Adds both mounted-side Legend files; stored straight strokes only. No clipping, courtyard or silk clearance checks."); }
                 if self.output_jobs.populated_bom {
                     ui.label("Adds a per-component generic BOM matching the calibrated populated subset, with exact optional sourcing identifiers. Missing identifiers stay blank; no procurement or vendor acceptance.");
