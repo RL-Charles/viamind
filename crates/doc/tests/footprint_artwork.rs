@@ -29,6 +29,15 @@ fn strict_library_versions_explicit_empty_and_legacy_bytes() {
         input["footprint"]["artwork"] = artwork;
         assert!(footprint::from_slice(&serde_json::to_vec(&input).unwrap()).unwrap_err().contains("missing"));
     }
+    for duplicate in [
+        r#"{"format":"viamind-footprint","version":1,"version":1,"footprint":{"name":"Legacy","pads":[]}}"#,
+        r#"{"format":"viamind-footprint","version":1,"footprint":{"name":"Legacy","name":"Lost","pads":[]}}"#,
+        r#"{"format":"viamind-footprint","version":2,"footprint":{"name":"Art","pads":[],"artwork":{"silkscreen":[],"silkscreen":[]}}}"#,
+        r#"{"format":"viamind-footprint","version":2,"footprint":{"name":"Art","pads":[],"artwork":{"silkscreen":[{"start":{"x":1,"x":3,"y":5},"end":{"x":7,"y":11},"width":3}]}}}"#,
+        r#"{"format":"viamind-footprint","version":2,"footprint":{"name":"Art","pads":[],"artwork":{"silkscreen":[{"start":{"x":3,"y":5},"end":{"x":7,"y":11},"width":1,"width":3}]}}}"#,
+    ] {
+        assert!(footprint::from_slice(duplicate.as_bytes()).unwrap_err().contains("duplicate field"));
+    }
     let empty: FootprintArtwork = serde_json::from_value(json!({})).unwrap();
     assert_eq!(empty, FootprintArtwork::default());
     let unknown = json!({"silkscreen":[{"start":{"x":0,"y":0,"unknown":1},"end":{"x":3,"y":4},"width":1}]});

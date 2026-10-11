@@ -109,7 +109,9 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     if (version == Some(1) && artwork.is_some()) || (version == Some(2) && !artwork.is_some_and(serde_json::Value::is_object)) {
         return Err("library1 requires artwork missing; library2 requires non-null artwork object".into());
     }
-    let envelope: Envelope = serde_json::from_value(raw).map_err(|e| e.to_string())?;
+    // Decode the original bounded bytes so duplicate fields remain visible to serde.
+    // The presence preflight must never become a lossy Value-to-typed roundtrip.
+    let envelope: Envelope = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
     if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1 | 2) {
         return Err("expected viamind-footprint version1 or2".into());
     }
