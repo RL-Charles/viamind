@@ -587,3 +587,32 @@ identity/reference validation to 100000 combined identities, 1000 sheets and
 unrelated board or sheet; no latency threshold is claimed. No symbol movement,
 board mutation, automatic junctions, buses or hierarchy. See the
 [desktop and agent workflow](../../docs/interactive-schematic-wires.md).
+
+## Explicit cardinal and 45-degree pad route posture
+
+`route_pad_posture` and desktop pad routing's **Cardinal corners** or
+**45-degree corners** choice share the same bounded integer planner. Existing
+manual segments remain the default. Choose same-side, distinct, same-net explicit
+quarter-turn pad IDs from `query_route_endpoints` and pass its project/cursor:
+
+```json
+{"expected_project":"<project UUID>","expected_cursor":{"stream_id":"<session UUID>","sequence":0},"start":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"target":{"part_id":"<part UUID>","pad_id":"<pad UUID>"},"waypoints":[],"grid":250000,"width":250000,"mode":"octilinear","posture":"alternate"}
+```
+
+Modes are `cardinal` (horizontal/vertical) and `octilinear`
+(horizontal/vertical/45-degree). `posture` defaults to `primary`: horizontal-first
+in cardinal mode, straight-first in octilinear mode. `alternate` means
+vertical-first or diagonal-first, respectively. Waypoints default to empty and
+must already be grid aligned, with at most 510 supplied points and 1024 generated
+segments. The desktop snaps clicked waypoints and previews the same generated
+path; its posture button recalculates geometry locally. Backspace removes one
+confirmed waypoint, Escape cancels, Enter/Finish commits.
+
+Exact off-grid pad centers remain unchanged. Short explicit stubs connect them
+to their nearest grid anchors; these stubs may have arbitrary angles and are
+included in the complete scoped DRC candidate. Net/layer derive from persisted
+pad IDs. The same project/cursor guards, bounded board capture, outline, incomplete
+report rejection and one undo/redo apply to the entire plan. No obstacle avoidance,
+walkaround/shove, automatic pad-edge inference, rounded corners or via transitions.
+Existing free/manual/via commands and connectivity proof APIs retain their own
+behavior. See [the posture contract](../../docs/specs/pad-routing-postures.md).

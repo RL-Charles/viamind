@@ -68,6 +68,7 @@ ui_actions! {
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    RoutePadPosture => (viamind_engine::RoutePadPosture::NAME,input_schema::<viamind_engine::RoutePadPosture>(),route_pad_posture),
     RoutePadViaPolyline => (viamind_engine::RoutePadViaPolyline::NAME,input_schema::<viamind_engine::RoutePadViaPolyline>(),route_pad_via_polyline),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
     RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
@@ -274,4 +275,8 @@ fn snapshot_schematic_wire_sheet(engine: &EngineHandle, input: Value) -> Result<
             .map_err(|error| EngineError::Command { command: "snapshot_schematic_wire_sheet".into(), error })?,
     )
     .map_err(encode_error)
+}
+
+fn route_pad_posture(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RoutePadPosture::NAME, input, Origin::User)?).map_err(encode_error)
 }

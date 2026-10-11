@@ -10,6 +10,7 @@ use std::time::Instant;
 use viamind_doc::CopperLayer;
 use viamind_engine::{EngineHandle, PadEndpointId, RoutePolyline};
 use viamind_geom::{Nm, Point};
+use viamind_router::CornerMode;
 
 #[derive(Debug)]
 struct Settings {
@@ -23,6 +24,7 @@ struct Settings {
     via_mode: bool,
     via_diameter: String,
     via_drill: String,
+    corner_mode: Option<CornerMode>,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -37,6 +39,7 @@ impl Default for Settings {
             via_mode: false,
             via_diameter: "0.6".into(),
             via_drill: "0.3".into(),
+            corner_mode: None,
         }
     }
 }
@@ -68,6 +71,9 @@ impl RoutingUi {
     }
     pub fn pad_endpoints(&self) -> (Option<PadEndpointId>, Option<PadEndpointId>) {
         self.pad_draft.as_ref().map_or((None, None), PadDraft::endpoints)
+    }
+    pub fn pad_planned_points(&self) -> Vec<Point> {
+        self.pad_draft.as_ref().and_then(|d| d.planned_path().ok().flatten()).map_or_else(Vec::new, |plan| plan.points)
     }
     pub fn pad_via(&self) -> Option<Point> {
         self.pad_draft.as_ref().and_then(PadDraft::via)
@@ -227,6 +233,15 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_posture_route(&mut self, mode: CornerMode) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_pad_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.corner_mode = Some(mode);
+        }
+    }
     pub fn begin_via_route(&mut self) {
         if self.routing.editing() {
             return;
@@ -280,6 +295,14 @@ impl ViamindApp {
                 if settings.via_mode {for (label,value) in [("Via copper diameter (mm)",&mut settings.via_diameter),("Via drill diameter (mm)",&mut settings.via_drill)] {let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();}}
                 if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
+            if settings.pad_mode && !settings.via_mode {
+                ui.horizontal(|ui| {
+                    ui.radio_value(&mut settings.corner_mode, None, "Manual segments");
+                    ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Cardinal), "Cardinal corners");
+                    ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Octilinear), "45-degree corners");
+                });
+                if settings.corner_mode.is_some() {ui.label("Generated corners follow the selected posture. Exact off-grid pad attachments use short arbitrary-angle stubs, checked with the whole route.");}
+            }
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
             ui.label(if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or electrical continuity verification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. No electrical continuity verification or guide suppression."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
@@ -291,6 +314,7 @@ impl ViamindApp {
         }
         if start {
             let pad_mode = settings.pad_mode;
+            let corner_mode = settings.corner_mode;
             let result = (|| {
                 let width = mm(&settings.width, true)?;
                 let grid = mm(&settings.grid, true)?;
@@ -337,6 +361,8 @@ impl ViamindApp {
                                 let mut draft = PadDraft::new(snapshot, input.width, input.grid, input.rules);
                                 if let Some((diameter, drill)) = via_sizes {
                                     draft = draft.with_via(diameter, drill);
+                                } else if let Some(mode) = corner_mode {
+                                    draft = draft.with_posture(mode);
                                 }
                                 self.routing.pad_draft = Some(draft);
                             }
