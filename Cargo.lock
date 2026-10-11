@@ -4445,8 +4445,10 @@ dependencies = [
 name = "viamind-render"
 version = "0.1.0"
 dependencies = [
+ "quick-xml",
  "schemars",
  "serde",
+ "serde_json",
  "tempfile",
  "viamind-doc",
  "viamind-geom",
