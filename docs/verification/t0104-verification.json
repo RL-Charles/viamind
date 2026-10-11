@@ -90,7 +90,10 @@
     "fixtures/assembly/output-job-calibration.viamind.json": "ecb5e73947cd1dc4a78b2b6b0614a9b913b0a117dbf3e8e4eb0ea53674cd9ec7",
     "docs/verification/t0104-final-combined.log": "46fdd0b9b7c6c608ad4e2f877eca38f8ed83b10d7a93f0b2b5ef848df7fecdd2",
     "docs/verification/t0104-final-catalog.json": "28a565859cdf57eaea18f00091c8aef8dd56acfde268d229a98eed4d9fe5b37c",
-    "docs/verification/t0104-final-workflow.json": "36b42bc25a875d1c92cc7423a8732c7c2e229f47c5b01e3301e41e3575bd05c8"
+    "docs/verification/t0104-final-workflow.json": "36b42bc25a875d1c92cc7423a8732c7c2e229f47c5b01e3301e41e3575bd05c8",
+    "docs/verification/t0104-latest-combined.log": "b3419cbaf3358a45ad1374c6625e40d2144ce6bdeaf3df6983bad1281b70636a",
+    "docs/verification/t0104-latest-catalog.json": "d0a0c156ef8f8df9d812ba28c9d42c2f3436498c694e85c447bae962f6313ad1",
+    "docs/verification/t0104-latest-workflow.json": "ae67f4bdcedb67d3a7c63f94bd4fd38ed730976ae0c87192b06b87408da2b26f"
   },
   "final_integration": {
     "source": "4a89748a2057c3fe066b2d154e5af535a2066fe3",
@@ -107,5 +110,21 @@
     "isolated_agent_workflow_checks": 18,
     "tooling_tests": 13,
     "coverage": "Calibrated checked jobs retain exact native10 via minima; saved zero baselines cannot weaken captured drill/annular floors, one-Nm raises refuse all publication and leave no staging/session changes. Historical production/native sources remain separate."
+  },
+  "latest_integration": {
+    "source": "6c09a38b422e5ec53847e8efc369035fa6fb8c29",
+    "base": "adf2d9f",
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0104/production-latest-verified",
+      "sha256": "82789aebea0a8bb63d917bfcf3bb1f836a7848fbea6e7457881dbecc94c531bf"
+    },
+    "focused_tests_passed": 11,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tool_count": 88,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "coverage": "Clean integration with native symbol-ID editor; original production/native and prior via-minima integration evidence remain separate."
   }
 }
