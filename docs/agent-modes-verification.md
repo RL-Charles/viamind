@@ -1,0 +1,27 @@
+# Agent mode verification
+
+The [usage guide](agent-modes.md), [public contract](specs/agent-approval-modes.md) and [handler inventory](specs/agent-approval-handler-inventory.md) describe the supported behavior. The [evidence index](verification/t0117/master.json) binds each report and image to its original source and executable. Final package-stack integration and exact-head CI remain pending.
+
+## Original full Linux gate
+
+Source `efb4490` passed formatting, strict workspace all-target Clippy, **853 workspace tests with zero failures and one existing ignored test**, workspace build and native inspection build. Its retained CLI SHA-256 is `6234d2ee256d7da5f4f403a7e1297d250489a0d42d17b03de421311e18bf2bf5`; the inspection host is `f490d784ef43933c9675f3cb82f7226a0b9280cae9e75c4d85b91408ac6c5020`. The complete Cargo sequence and executable copies held the shared build mutex.
+
+The retained CLI passed **142 actual initialized stdio checks** across default Live, immutable startup Read only and Approval. Tool counts were 105, 46 and 50 respectively. Every hidden writer was directly called with forged mode/human/annotation fields and refused with full session, document status, automatic DRC and protected native bytes preserved. Every supplied path, including null or malformed values, was rejected for all four SVG/PNG views in restricted modes. Private creation/application/diff/discard preserved live state and exact odd-Nm proposed geometry. Actual discovery and an exact fresh recheck found 105 default tools; eighteen agent workflow checks and thirteen Python reference-tool tests also passed.
+
+Workspace regressions exercised shared admission/transition ordering, sixteen-writer nonwaiting capacity, immutable endpoint ceilings, future default-denied writers, preserved caller identity, panic retirement and actual publication after caller cancellation and endpoint runtime destruction. All four production render publication handlers retained their actual unfinished work. Real two-client HTTP tests checked initialized tool-list notifications, guarded human acceptance, generated IDs and one-event undo/redo. Compact UI tests exercised actual mode choices, busy refusal and retry, startup locking, human editing, accept/reject and stale-peer preservation.
+
+## Historical desktop and native evidence
+
+Source `7e376ce9abe17211e1e809debb37882622ea1f17` produced the earlier retained CLI and inspection executables. That full gate stopped at a final test-only stderr expectation after the actual CLI approval workflow and clean EOF completed. The later source corrected that assertion and replaced an unsupported arrow glyph in menu guidance with plain text. No full-workspace success is attributed to the historical source.
+
+The historical CLI passed 142 stdio checks and **45 checks on two actual initialized same-name desktop HTTP connections** on owned port 7947. Independent agents reran all 142 and 45 checks against the exact retained executable. These checks established startup Approval, private creator ownership, hidden/direct writer refusal, unchanged live/native state and rejection. Dynamic human mode choice and acceptance were tested separately through the real HTTP server and shared desktop controls. Production window discovery was degraded X11 metadata and is not painted-control or checked-state evidence.
+
+Six native WGPU Screenshot captures cover [wide review](verification/t0117/historical-wide.png), [compact review](verification/t0117/historical-compact.png), [acceptance](verification/t0117/historical-accepted.png), [rejection](verification/t0117/historical-rejected.png), [startup lock](verification/t0117/historical-locked.png) and [busy refusal](verification/t0117/historical-busy.png). Review controls, completion messages and mode status were read from the actual images. The review views scroll to controls; they do not establish that every legend row is simultaneously visible. The historical mode prose has the unsupported glyph corrected in the later source.
+
+Original Color32 RGBA channels remain retained as P7 and identical RGB samples as P6. Root and an independent agent compared every P7 RGB sample with P6 and independently decoded PNG RGB samples. Alpha ranged from 242 to 255 and is omitted only for RGB review. All six native hosts self-closed after invariant-checked capture. Inputs were application-local egui events; no OS input, compositor capture or display cadence is claimed. Busy inspection held a trusted admission token; real worker retention was verified separately by the actual production-handler tests.
+
+## Reproduction and remaining verification
+
+Use the four Linux gates under `/tmp/viamind-workspace-gates.lock` with a fresh target-proof destination. Historical scripts/logs retain their original paths and must use NEW output paths when replayed. Run `docs/verification/t0117/production-probe.py` against an explicitly chosen executable and a NEW directory. The desktop HTTP helper is restricted to the owned native fixture recorded in its source. Build `agent_modes_inspection` and launch each inspection mode with NEW native/capture paths; retain original channels before conversion.
+
+Before merge, integrate the literal final package stack, audit its additive observation/writer registrations and awaited completion boundaries, regenerate the final default catalog, run the scoped combined gate, capture current native views, obtain independent final review and require exact-head Linux CI. The evidence index explicitly keeps these items pending.

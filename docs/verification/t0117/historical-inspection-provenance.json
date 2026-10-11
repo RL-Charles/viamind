@@ -1,0 +1,6 @@
+{
+  "source": "7e376ce9abe17211e1e809debb37882622ea1f17",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/cli-source-7e376ce/agent-modes-inspection",
+  "sha256": "3c90c6713928dd8bf04b3c625544602c6d4e607926352699f5838e3ebc7dac5f",
+  "scope": "Actual native example compiled by workspace test before test-only CLI banner failure; no full-workspace success claim; source stat unchanged throughout stripped copy"
+}

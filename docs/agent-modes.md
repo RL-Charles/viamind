@@ -11,3 +11,7 @@ A mode change can refuse while an admitted agent operation is unfinished. Retry 
 Start desktop HTTP or headless stdio with `--agent-approval` to begin in Approval. A headless process can prepare proposals but has no human desktop acceptance control. Start with `--agent-read-only` for an immutable restriction that the selector cannot lift; restart without that flag to allow agent edits. The two flags are mutually exclusive and reject incompatible save/demo/no-MCP/CLI export options before input or output is opened.
 
 These controls govern this application's MCP tools. They do not authenticate clients or restrict trusted EngineHandle callers or other processes.
+
+## Verification
+
+The [verification record](agent-modes-verification.md) separates the full Linux gate from historical desktop/native captures and final stack verification.

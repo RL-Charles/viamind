@@ -1,0 +1,50 @@
+7e376ce9abe17211e1e809debb37882622ea1f17
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 42.18s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0117/apps/viamind)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7m 02s
+     Running unittests src/main.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind-386aa1d656d0a661)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/agent_approval.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/agent_approval-66c27843b7774e66)
+
+running 2 tests
+test incompatible_startup_modes_refuse_before_opening_input_or_display ... ok
+test actual_approval_stdio_prepares_private_candidate_without_live_or_file_writes ... FAILED
+
+failures:
+
+---- actual_approval_stdio_prepares_private_candidate_without_live_or_file_writes stdout ----
+
+thread 'actual_approval_stdio_prepares_private_candidate_without_live_or_file_writes' (2535654) panicked at apps/viamind/tests/agent_approval.rs:83:5:
+assertion failed: String::from_utf8(finished.stderr).unwrap().contains("approval")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    actual_approval_stdio_prepares_private_candidate_without_live_or_file_writes
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+error: test failed, to rerun pass `-p viamind --test agent_approval`

@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0117/launch-wide",
+  "pid": 2547261,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-agent-approval-inspection",
+      "bounds": {
+        "height": 1667,
+        "width": 2667,
+        "x": 1920,
+        "y": 1152
+      },
+      "height": 1667,
+      "is_on_screen": true,
+      "pid": 2547261,
+      "title": "wide.viamind.json — Viamind",
+      "width": 2667,
+      "window_id": 110379493160960,
+      "x": 1920,
+      "y": 1152,
+      "z_index": null
+    }
+  ]
+}
