@@ -15,7 +15,7 @@ pub const LABEL_PAD_NM: i64 = 200_000;
 const ADVANCE_NM: i64 = 700_000;
 const DISPLAY_LIMIT: usize = 32;
 const DISPLAY_GLYPHS: usize = 32_768;
-pub const LABEL_POLICY: &str = "shared upright outside-geometry labels;32 Unicode scalars plus explicit ...;full text retained;native labels require10 logical points and cap32;exports retain labels at world size";
+pub const LABEL_POLICY: &str = "shared upright outside-geometry labels; 32 Unicode scalars plus explicit ...; full text retained; native labels require 10 logical points and cap 32; exports retain labels at world size";
 
 #[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -154,7 +154,7 @@ pub fn schematic_label_layout(sheet: &Sheet) -> io::Result<Vec<SymbolLabel>> {
             glyphs = glyphs.saturating_add(displayed_len(pin.number.chars().count() + pin.name.chars().count() + 1));
         }
         if glyphs > DISPLAY_GLYPHS {
-            return Err(invalid("schematic label display exceeds32768 glyphs including qualification and abbreviation suffixes"));
+            return Err(invalid("schematic label display exceeds 32768 glyphs including qualification and abbreviation suffixes"));
         }
     }
     let mut result = Vec::new();

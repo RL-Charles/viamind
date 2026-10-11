@@ -82,9 +82,10 @@ mod tests {
         }
         let viewport = Rect::from_min_size(Pos2::ZERO, egui::vec2(1600.0, 1000.0));
         let mut result = None;
-        let _ = ctx.run_ui(egui::RawInput { screen_rect: Some(viewport), ..Default::default() }, |ui| {
+        let mut output = ctx.run_ui(egui::RawInput { screen_rect: Some(viewport), ..Default::default() }, |ui| {
             result = Some(prepare(ui.ctx(), &labels, Camera { center: WorldPos::default(), zoom }, viewport, Color32::WHITE).map(|g| g.len()));
         });
+        output.textures_delta.clear(); // Actual font measurement intentionally performs no GPU upload.
         result.unwrap()
     }
     #[test]
