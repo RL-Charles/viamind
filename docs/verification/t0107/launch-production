@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec env VIAMIND_MCP_PORT=7937 TMPDIR=/home/charlesmowbray/.cache/viamind/tmp /home/charlesmowbray/.cache/viamind/native-artifacts/t0107/viamind-3921f3c797cd > /home/charlesmowbray/.cache/viamind/native-artifacts/t0107/production.log 2>&1
