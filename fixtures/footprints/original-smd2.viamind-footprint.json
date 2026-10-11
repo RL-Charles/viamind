@@ -1,0 +1,27 @@
+{
+  "format": "viamind-footprint",
+  "version": 1,
+  "footprint": {
+    "name": "Original SMD2",
+    "pads": [
+      {
+        "number": "1",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 800000,
+        "height": 1000000
+      },
+      {
+        "number": "2",
+        "position": {
+          "x": 2000000,
+          "y": 0
+        },
+        "width": 800000,
+        "height": 1000000
+      }
+    ]
+  }
+}

@@ -117,6 +117,7 @@ impl CommandRegistry {
             .with::<crate::DeleteSchematicSheet>()
             .with::<crate::LinkSchematicSymbol>()
             .with::<crate::SynchronizeSchematicPcb>()
+            .with::<crate::CreateSchematicPcbComponent>()
     }
 
     /// Adds command type `C`.

@@ -27,7 +27,7 @@ not certify clearances, placement legality, fabrication readiness or continuity.
 A read-only preview captures the same bounded project/cursor used by synchronization,
 then validates and computes outside the engine mutex. It returns an explicit
 command and inspectable reference, value, footprint, placement and numbered net
-assignments. New part/pad UUIDs are allocated only when applying a valid command.
+assignments. The preview exposes no new part/pad UUIDs; application allocates fresh identities.
 A duplicate board reference or existing symbol association rejects; links are
 never inferred from reference text. Existing model data remains byte-for-byte
 equal except the addition of one fully linked Part.
