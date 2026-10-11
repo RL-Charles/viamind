@@ -239,7 +239,10 @@ impl ViamindApp {
                     });
                 }
                 let label = ui.label("Native package footprint path");
-                changed |= ui.add(egui::TextEdit::singleline(&mut self.package_component.path).char_limit(4096)).labelled_by(label.id).changed();
+                changed |= ui
+                    .add(egui::TextEdit::singleline(&mut self.package_component.path).id(egui::Id::new("package_component_path")).char_limit(4096))
+                    .labelled_by(label.id)
+                    .changed();
                 ui.horizontal_wrapped(|ui| {
                     let label = ui.label("Package X (integer nm)");
                     changed |= ui

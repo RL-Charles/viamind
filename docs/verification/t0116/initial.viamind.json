@@ -1,0 +1,25 @@
+{
+  "format": "viamind",
+  "version": 5,
+  "project": {
+    "id": "00000000-0000-0000-0000-000000001160",
+    "name": "T116 complete package owned proof",
+    "schematic": {
+      "sheets": {
+        "00000000-0000-0000-0000-000000001161": {
+          "id": "00000000-0000-0000-0000-000000001161",
+          "name": "Authored five-unit package",
+          "content": {
+            "symbols": {},
+            "wires": {},
+            "junctions": {},
+            "labels": {}
+          }
+        }
+      }
+    },
+    "board": {
+      "parts": {}
+    }
+  }
+}

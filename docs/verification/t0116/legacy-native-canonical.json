@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "source": "3ec6ccb80d742c3b626eda306099955a137b8932",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-final-combined-verified",
+  "binary_sha256": "a651c4e982727e642f0b7a92562c3a1542ab3e2de068a0e5f59a966ce4fbb12b",
+  "canonical_native_sha256": "1874f6db42cf29c5eed2b30c9bf46965c5b6bd5a4995e40b3f7b93c0f2ad744f",
+  "method": "Initialized actual retained production headless open then NEW native save; exact project unchanged. Authored input field order deliberately differs from canonical serialization."
+}
