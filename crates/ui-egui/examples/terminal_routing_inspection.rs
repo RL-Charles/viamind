@@ -30,6 +30,11 @@ impl eframe::App for Inspect {
         assert_eq!(self.engine.session_state(), self.before);
         assert_eq!(self.engine.document_status(), self.status);
         self.ui_passes += 1;
+        let window = ui
+            .ctx()
+            .memory(|m| m.area_rect(egui::Id::new(Some(std::borrow::Cow::Borrowed("Existing copper route")))))
+            .expect("native production terminal window exists");
+        assert!(ui.ctx().content_rect().contains_rect(window), "actual native terminal window fits viewport: {window:?}");
         let content = ui.ctx().content_rect();
         assert!(self.controls.iter().all(|r| content.contains_rect(*r)), "prepared controls must fit actual native viewport");
         let image = ui.ctx().input(|i| {
@@ -107,7 +112,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "{}",
         serde_json::json!({"actual_egui_pointer_preparation":true,"local_preview_unchecked":true,"points_nm":points,"logical_focus_retained_only_in_inspection":true,"os_input":false})
     );
-    let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -125,7 +129,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         options,
         Box::new(move |cc| {
             app.configure_renderer(cc);
-            cc.egui_ctx.memory_mut(|m| *m = memory);
             Ok(Box::new(Inspect { app, engine, before, status, capture: Some(capture), ui_passes: 0, controls, points }))
         }),
     )
