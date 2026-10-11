@@ -1,0 +1,44 @@
+[
+  {
+    "name": "annotation-wide",
+    "png": "annotation-wide.png",
+    "pixels": [
+      2667,
+      1667
+    ],
+    "rgb_sha256": "d38f0ec29fddf95ae97fc8d3ef996e41acb24585630764ebd0e7596fa03e7d3f",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-wide.p6",
+    "p6_sha256": "63f6ec7fb5eb240082b0449962c319417795feacc95d0adba34685150982bff9",
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-wide.p7",
+    "p7_sha256": "3dedbc555b88b1d08b60b287e109acbc8bd3696fd2f9d52b1a1679068a056e19",
+    "rgba_sha256": "b413a2194b4ac90731a328d7387afc77dcd40c9b2bdc8a0566544b26ded3ec60",
+    "rgba_bytes": 17783556,
+    "alpha_min": 242,
+    "alpha_max": 255,
+    "nonopaque_alpha_pixels": 6384,
+    "all_rgba_bytes_retained": true,
+    "every_rgb_sample_matches_png": true,
+    "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+  },
+  {
+    "name": "annotation-compact",
+    "png": "annotation-compact.png",
+    "pixels": [
+      1067,
+      667
+    ],
+    "rgb_sha256": "a8b334c107b69c9f3fabdfaa26fc6a428032c042e705b550466d76bdea1a4549",
+    "p6_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p6",
+    "p6_sha256": "27193ebe7e5d91b2fea0f2c394b92075d0c2ff48b73123e1fcd3a612091b3fa9",
+    "p7_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/annotation-compact.p7",
+    "p7_sha256": "db380d0a351108500a6984bfed6bfc46e656467e03095c7aa6779658639c2a7b",
+    "rgba_sha256": "581a3bf6c908bae342f0cbbdb7651466a3b676ba2a640873d855b59642459ba0",
+    "rgba_bytes": 2846756,
+    "alpha_min": 242,
+    "alpha_max": 255,
+    "nonopaque_alpha_pixels": 1276,
+    "all_rgba_bytes_retained": true,
+    "every_rgb_sample_matches_png": true,
+    "scope": "Original Screenshot Color32 RGBA channels retained; PNG omits alpha and preserves the identical RGB samples. No opacity/compositor/OS-input claim."
+  }
+]

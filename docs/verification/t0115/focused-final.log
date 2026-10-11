@@ -1,0 +1,30 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.32s
+     Running tests/annotation.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/annotation-c68c243d278b46bd)
+
+running 5 tests
+test board_only_edits_do_not_invalidate_annotation_or_enter_its_undo ... FAILED
+test keep_existing_reserves_gaps_case_and_numeric_aliases_and_exhaustion_are_atomic ... ok
+test deterministic_explicit_sheet_position_ties_and_one_undo_preserve_every_other_field ... ok
+test stale_sheets_invalid_formats_orders_and_budgets_leave_whole_session_unchanged ... ok
+test valid_large_text_and_symbol_snapshots_are_bounded_before_copy_and_project_ids_cannot_collide ... ok
+
+failures:
+
+---- board_only_edits_do_not_invalidate_annotation_or_enter_its_undo stdout ----
+
+thread 'board_only_edits_do_not_invalidate_annotation_or_enter_its_undo' (2365803) panicked at crates/engine/tests/annotation.rs:167:90:
+called `Result::unwrap()` on an `Err` value: Command { command: "annotate_schematic", error: Conflict { message: "session changed; read get_session_state and rebuild this command" } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    board_only_edits_do_not_invalidate_annotation_or_enter_its_undo
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `-p viamind-engine --test annotation`

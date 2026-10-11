@@ -1,0 +1,73 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0115/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 42.15s
+     Running tests/annotation.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/annotation-c68c243d278b46bd)
+
+running 5 tests
+test legacy_ungrouped_cursor_omission_preserves_board_only_edits_and_scoped_undo ... ok
+test keep_existing_reserves_gaps_case_and_numeric_aliases_and_exhaustion_are_atomic ... ok
+test deterministic_explicit_sheet_position_ties_and_one_undo_preserve_every_other_field ... ok
+test valid_large_text_and_symbol_snapshots_are_bounded_before_copy_and_project_ids_cannot_collide ... ok
+test stale_sheets_invalid_formats_orders_and_budgets_leave_whole_session_unchanged ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/package_annotation.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/package_annotation-c40fd2dd5985f9ef)
+
+running 7 tests
+test retained_package_reference_reserved_once_and_alias_conflicts_across_owners_only ... FAILED
+test malformed_excess_known_raw_rows_refuse_before_poison_and_leave_state_unchanged ... FAILED
+test package_owners_use_key_anchor_and_one_number_with_atomic_native_log_undo ... FAILED
+test axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_deterministic ... FAILED
+test missing_stale_sequence_reopen_and_exact_membership_guards_refuse_unchanged ... FAILED
+test both_commands_in_batch_use_initial_cursor_and_one_undo ... FAILED
+test legacy_ungrouped_omission_preserves_native_bytes_and_absent_group_row_fields ... ok
+
+failures:
+
+---- retained_package_reference_reserved_once_and_alias_conflicts_across_owners_only stdout ----
+
+thread 'retained_package_reference_reserved_once_and_alias_conflicts_across_owners_only' (2374000) panicked at crates/engine/tests/package_annotation.rs:128:80:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- malformed_excess_known_raw_rows_refuse_before_poison_and_leave_state_unchanged stdout ----
+
+thread 'malformed_excess_known_raw_rows_refuse_before_poison_and_leave_state_unchanged' (2373997) panicked at crates/engine/tests/package_annotation.rs:196:68:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+
+---- package_owners_use_key_anchor_and_one_number_with_atomic_native_log_undo stdout ----
+
+thread 'package_owners_use_key_anchor_and_one_number_with_atomic_native_log_undo' (2373999) panicked at crates/engine/tests/package_annotation.rs:77:60:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+
+---- axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_deterministic stdout ----
+
+thread 'axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_deterministic' (2373994) panicked at crates/engine/tests/package_annotation.rs:234:116:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+
+---- missing_stale_sequence_reopen_and_exact_membership_guards_refuse_unchanged stdout ----
+
+thread 'missing_stale_sequence_reopen_and_exact_membership_guards_refuse_unchanged' (2373998) panicked at crates/engine/tests/package_annotation.rs:145:60:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+
+---- both_commands_in_batch_use_initial_cursor_and_one_undo stdout ----
+
+thread 'both_commands_in_batch_use_initial_cursor_and_one_undo' (2373995) panicked at crates/engine/tests/package_annotation.rs:175:58:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_annotation", message: "duplicate schematic designator" }
+
+
+failures:
+    axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_deterministic
+    both_commands_in_batch_use_initial_cursor_and_one_undo
+    malformed_excess_known_raw_rows_refuse_before_poison_and_leave_state_unchanged
+    missing_stale_sequence_reopen_and_exact_membership_guards_refuse_unchanged
+    package_owners_use_key_anchor_and_one_number_with_atomic_native_log_undo
+    retained_package_reference_reserved_once_and_alias_conflicts_across_owners_only
+
+test result: FAILED. 1 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `-p viamind-engine --test package_annotation`

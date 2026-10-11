@@ -1,0 +1,465 @@
+{
+  "passed": true,
+  "source_commit": "272d5d2f39dc6cb8feecd9aad5d00d0fe8bc36a9",
+  "binary_sha256": "0ccd0d0e75ee3ed0718e71473994da8919225d6634c35731c151830cfc509a93",
+  "port": 7945,
+  "checks": [
+    "independent clients discover immutable preview and guarded annotation",
+    "both previews exactly agree with complete cursor and unchanged session status",
+    "twelve actual symbols and two packages produce twelve member rows",
+    "first package ordered explicit A B C D P including power unit",
+    "ordinary symbol rows omit package metadata",
+    "both packages each consume one number while singles interleave",
+    "all member identities pins roles keys package maps and board unchanged",
+    "one sheet delta and one design event",
+    "peer reads exact committed whole package project",
+    "stale sequence refuses without changes",
+    "one undo restores all units and original complete project",
+    "one redo restores all units and original identities",
+    "already current package plan has no changes",
+    "no-op creates no event history or status change",
+    "grouped legacy cursor omission refuses",
+    "exact expected sheet still guarded alongside cursor",
+    "malformed excess symbols counted before secondary typed decode",
+    "malformed excess member rows counted before typed decode",
+    "raw package strings charged before secondary typed copy",
+    "unrelated board edit invalidates full cursor despite equal expected sheets",
+    "same UUID reopen replaces stream",
+    "same UUID reopened stream refuses old proposal",
+    "retained package number reserved once with exact original spelling",
+    "whole retained package preserves exact spelling",
+    "numeric alias conflict across distinct owners refuses immutable preview",
+    "native save uses schema11 preserving explicit membership",
+    "old native header rejects package data unchanged",
+    "native roundtrip preserves complete committed project",
+    "final peer and original fixture exactly preserved"
+  ],
+  "latency_ms": {
+    "whole_package_apply": 20.3253229992697
+  },
+  "assertion_count": 29,
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "f145284f-6f72-4c3f-ba33-64f23d12388c"
+    },
+    "project": {
+      "board": {
+        "parts": {}
+      },
+      "id": "00000000-0000-0000-0000-000000015f90",
+      "name": "Explicit package annotation proof",
+      "schematic": {
+        "sheets": {
+          "00000000-0000-0000-0000-000000000001": {
+            "content": {
+              "junctions": {},
+              "labels": {},
+              "packages": {
+                "00000000-0000-0000-0000-000000000258": {
+                  "id": "00000000-0000-0000-0000-000000000258",
+                  "template_name": "Independent five-unit fixture",
+                  "units": [
+                    {
+                      "key": "P",
+                      "name": "Power unit",
+                      "role": "power",
+                      "symbol_id": "00000000-0000-0000-0000-000000000064"
+                    },
+                    {
+                      "key": "D",
+                      "name": "Functional D",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-000000000065"
+                    },
+                    {
+                      "key": "C",
+                      "name": "Functional C",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-000000000066"
+                    },
+                    {
+                      "key": "B",
+                      "name": "Functional B",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-000000000067"
+                    },
+                    {
+                      "key": "A",
+                      "name": "Functional A",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-000000000068"
+                    }
+                  ]
+                },
+                "00000000-0000-0000-0000-0000000002bc": {
+                  "id": "00000000-0000-0000-0000-0000000002bc",
+                  "template_name": "Independent five-unit fixture",
+                  "units": [
+                    {
+                      "key": "P",
+                      "name": "Power unit",
+                      "role": "power",
+                      "symbol_id": "00000000-0000-0000-0000-0000000000c8"
+                    },
+                    {
+                      "key": "D",
+                      "name": "Functional D",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-0000000000c9"
+                    },
+                    {
+                      "key": "C",
+                      "name": "Functional C",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-0000000000ca"
+                    },
+                    {
+                      "key": "B",
+                      "name": "Functional B",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-0000000000cb"
+                    },
+                    {
+                      "key": "A",
+                      "name": "Functional A",
+                      "role": "functional",
+                      "symbol_id": "00000000-0000-0000-0000-0000000000cc"
+                    }
+                  ]
+                }
+              },
+              "symbols": {
+                "00000000-0000-0000-0000-000000000064": {
+                  "designator": "U?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-000000000064",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "power_input",
+                      "id": "00000000-0000-0000-0000-000000002774",
+                      "name": "PWR",
+                      "number": "1",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 58000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-000000000065": {
+                  "designator": "U?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-000000000065",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-000000002775",
+                      "name": "PIN",
+                      "number": "2",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 46000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-000000000066": {
+                  "designator": "U?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-000000000066",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-000000002776",
+                      "name": "PIN",
+                      "number": "3",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 34000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-000000000067": {
+                  "designator": "U?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-000000000067",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-000000002777",
+                      "name": "PIN",
+                      "number": "4",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 22000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-000000000068": {
+                  "designator": "U?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-000000000068",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-000000002778",
+                      "name": "PIN",
+                      "number": "5",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 10000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-0000000000c8": {
+                  "designator": "u?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-0000000000c8",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "power_input",
+                      "id": "00000000-0000-0000-0000-0000000027d8",
+                      "name": "PWR",
+                      "number": "1",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 58000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-0000000000c9": {
+                  "designator": "u?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-0000000000c9",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-0000000027d9",
+                      "name": "PIN",
+                      "number": "2",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 46000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-0000000000ca": {
+                  "designator": "u?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-0000000000ca",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-0000000027da",
+                      "name": "PIN",
+                      "number": "3",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 34000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-0000000000cb": {
+                  "designator": "u?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-0000000000cb",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-0000000027db",
+                      "name": "PIN",
+                      "number": "4",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 22000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-0000000000cc": {
+                  "designator": "u?",
+                  "footprint": "ExplicitSOIC",
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-0000000000cc",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-0000000027dc",
+                      "name": "PIN",
+                      "number": "5",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 40000000,
+                    "y": 10000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Independent five-unit part",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-00000000012d": {
+                  "designator": "U",
+                  "footprint": null,
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-00000000012d",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-00000000283d",
+                      "name": "PIN",
+                      "number": "1",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 25000000,
+                    "y": 10000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Single unit",
+                  "width": 4000001
+                },
+                "00000000-0000-0000-0000-00000000012e": {
+                  "designator": "u",
+                  "footprint": null,
+                  "height": 6000003,
+                  "id": "00000000-0000-0000-0000-00000000012e",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-00000000283e",
+                      "name": "PIN",
+                      "number": "1",
+                      "position": {
+                        "x": -3000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 55000000,
+                    "y": 10000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "Single unit",
+                  "width": 4000001
+                }
+              },
+              "wires": {}
+            },
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "Whole package owners"
+          }
+        }
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0115/packages.viamind.json"
+  }
+}
