@@ -1,4 +1,5 @@
 //! Bounded read-only selected-sheet views, with bundled glyph outlines.
+use crate::schematic_labels::{LABEL_FONT_NM, LABEL_POLICY, LabelRole, SymbolLabel, schematic_label_layout};
 use crate::{MAX_PNG_PIXELS, SvgOptions, ViewBounds};
 use resvg::usvg;
 use schemars::JsonSchema;
@@ -113,7 +114,7 @@ pub fn schematic_view_snapshot(project: &Project, sheet_id: ObjectId) -> io::Res
     }
     Ok(SchematicSnapshot { project_id: project.id, project_name: project.name.clone(), sheet: sheet.clone() })
 }
-fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
+pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<()> {
     if let Some(c) = &sheet.content
         && (c.object_count() > 10_000 || c.pin_count() > 100_000)
     {
@@ -196,6 +197,8 @@ pub struct SchematicMetadata {
     pub label_count: usize,
     pub legacy_empty_sheet: bool,
     pub exclusions: Vec<&'static str>,
+    pub symbol_label_policy: &'static str,
+    pub symbol_labels: Vec<SymbolLabel>,
 }
 #[derive(Debug, Serialize)]
 pub struct SchematicSvg {
@@ -230,9 +233,11 @@ fn check_glyphs(text: &str) -> io::Result<()> {
 #[derive(Clone)]
 enum Geometry {
     Line((i64, i64), (i64, i64), i64),
+    Leader((i64, i64), (i64, i64)),
     Circle((i64, i64), i64, bool),
     Polygon(Vec<(i64, i64)>),
     Text((i64, i64), String, bool),
+    SymbolLabel(Box<SymbolLabel>),
 }
 struct Shape {
     layer: SchematicLayer,
@@ -266,7 +271,7 @@ fn text_shape(layer: SchematicLayer, id: String, color: &'static str, at: (i64, 
         geometry: Geometry::Text(at, text, center),
     })
 }
-fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> io::Result<Vec<Shape>> {
+fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>, labels: &[SymbolLabel]) -> io::Result<Vec<Shape>> {
     let mut shapes = Vec::new();
     let Some(c) = &snapshot.sheet.content else {
         return Ok(shapes);
@@ -286,7 +291,6 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
             });
         }
     }
-    let units: std::collections::BTreeMap<_, _> = c.packages.values().flat_map(|g| g.units.iter().map(|u| (u.symbol_id, u))).collect();
     for s in c.symbols.values() {
         if selected.contains(&SchematicLayer::Symbols) {
             let (x, y) = (s.width.0 / 2, s.height.0 / 2);
@@ -302,18 +306,6 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
                 bounds: b,
                 geometry: Geometry::Polygon(corners),
             });
-            let at = point(s.position);
-            shapes.push(text_shape(
-                SchematicLayer::Symbols,
-                format!("reference-{}", s.id),
-                symbol,
-                (at.0, at.1 - 300_000),
-                units.get(&s.id).map_or_else(|| s.designator.clone(), |u| format!("{}:{} ({})", s.designator, u.key, u.name)),
-                true,
-            )?);
-            if !s.value.is_empty() {
-                shapes.push(text_shape(SchematicLayer::Symbols, format!("value-{}", s.id), symbol, (at.0, at.1 + 1_000_000), s.value.clone(), true)?);
-            }
         }
         if selected.contains(&SchematicLayer::Pins) {
             for p in &s.pins {
@@ -337,16 +329,28 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
                     bounds: bounds(at, at, 200_000),
                     geometry: Geometry::Circle(at, 150_000, false),
                 });
-                shapes.push(text_shape(
-                    SchematicLayer::Pins,
-                    format!("pin-text-{}", p.id),
-                    symbol,
-                    (at.0 + 250_000, at.1 - 300_000),
-                    format!("{} {}", p.number, p.name),
-                    false,
-                )?);
             }
         }
+    }
+    for label in labels {
+        check_glyphs(&label.text)?;
+        let layer = if label.role == LabelRole::Pin { SchematicLayer::Pins } else { SchematicLayer::Symbols };
+        if let Some([start, end]) = label.leader {
+            shapes.push(Shape {
+                layer,
+                id: format!("pin-leader-{}", label.object_id),
+                color: symbol,
+                bounds: bounds(point(start), point(end), 50_000),
+                geometry: Geometry::Leader(point(start), point(end)),
+            });
+        }
+        shapes.push(Shape {
+            layer,
+            id: label.id.clone(),
+            color: symbol,
+            bounds: label.envelope,
+            geometry: Geometry::SymbolLabel(Box::new(label.clone())),
+        });
     }
     if selected.contains(&SchematicLayer::Junctions) {
         for j in c.junctions.values() {
@@ -391,7 +395,15 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>) -> 
 pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOptions) -> io::Result<SchematicSvg> {
     options.validate()?;
     let selected: BTreeSet<_> = options.layers.iter().copied().collect();
-    let shapes = shapes(snapshot, &selected)?;
+    let labels: Vec<_> = if selected.contains(&SchematicLayer::Symbols) || selected.contains(&SchematicLayer::Pins) {
+        schematic_label_layout(&snapshot.sheet)?
+            .into_iter()
+            .filter(|label| selected.contains(&if label.role == LabelRole::Pin { SchematicLayer::Pins } else { SchematicLayer::Symbols }))
+            .collect()
+    } else {
+        vec![]
+    };
+    let shapes = shapes(snapshot, &selected, &labels)?;
     let region = options.region_nm.unwrap_or_else(|| {
         let b = shapes.iter().map(|s| s.bounds).reduce(union).unwrap_or(ViewBounds {
             min_x: -5_000_000,
@@ -441,6 +453,21 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         let id = &s.id;
         let color = s.color;
         match s.geometry {
+            Geometry::Leader(a, b) => {
+                let (a, b) = (pos(a), pos(b));
+                write!(
+                    source,
+                    "<path id=\"{id}\" d=\"M {} {} L {} {}\" fill=\"none\" stroke=\"{color}\" stroke-width=\"{}\" stroke-dasharray=\"{} {}\"/>",
+                    a.0,
+                    a.1,
+                    b.0,
+                    b.1,
+                    50_000.0 * scale,
+                    200_000.0 * scale,
+                    150_000.0 * scale
+                )
+                .unwrap();
+            }
             Geometry::Line(a, b, w) => {
                 let (a, b) = (pos(a), pos(b));
                 write!(
@@ -489,6 +516,19 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
                 .unwrap();
                 semantic.push(serde_json::json!({"id":id,"text":text}));
             }
+            Geometry::SymbolLabel(label) => {
+                let p = pos((label.anchor.x.0, label.anchor.y.0 + LABEL_FONT_NM));
+                write!(
+                    source,
+                    "<text id=\"{id}\" x=\"{}\" y=\"{}\" font-family=\"Hack\" font-size=\"{}\" text-anchor=\"start\" fill=\"{color}\">{}</text>",
+                    p.0,
+                    p.1,
+                    LABEL_FONT_NM as f64 * scale,
+                    xml(&label.display_text)
+                )
+                .unwrap();
+                semantic.push(serde_json::to_value(label).map_err(io::Error::other)?);
+            }
         }
         if source.len() > MAX_SVG {
             return Err(invalid("schematic SVG exceeds 16 MiB"));
@@ -523,7 +563,16 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         junction_count: c.map_or(0, |c| c.junctions.len()),
         label_count: c.map_or(0, |c| c.labels.len()),
         legacy_empty_sheet: c.is_none(),
-        exclusions: vec!["board geometry", "other sheets", "hierarchy", "custom symbol artwork", "electrical certification"],
+        exclusions: vec![
+            "board geometry",
+            "other sheets",
+            "hierarchy",
+            "custom symbol artwork",
+            "electrical certification",
+            "global label collision avoidance",
+        ],
+        symbol_label_policy: LABEL_POLICY,
+        symbol_labels: labels,
     };
     let info = serde_json::json!({"view":metadata,"project_name":snapshot.project_name,"visible_text":semantic,"font_notice":FONT_NOTICE});
     let at = svg.find('>').ok_or_else(|| io::Error::other("outlined SVG root missing"))? + 1;
