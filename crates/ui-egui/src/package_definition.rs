@@ -279,7 +279,7 @@ fn preview(ui: &mut egui::Ui, t: &SymbolTemplate) {
         .iter()
         .fold(t.width.to_mm().max(t.height.to_mm()) / 2., |n, p| n.max(p.position.x.to_mm().abs()).max(p.position.y.to_mm().abs()))
         .max(0.000001);
-    let scale = (rect.width().min(rect.height()) as f64 - 40.) / (2. * extent);
+    let scale = (f64::from(rect.width().min(rect.height())) - 40.) / (2. * extent);
     let point = |p: Coordinate| center + egui::vec2((p.x.to_mm() * scale) as f32, (p.y.to_mm() * scale) as f32);
     painter.rect_stroke(
         egui::Rect::from_center_size(center, egui::vec2((t.width.to_mm() * scale) as f32, (t.height.to_mm() * scale) as f32)),

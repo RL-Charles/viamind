@@ -12,7 +12,7 @@ enum Completed {
     Sheet(SymbolSheetSnapshot),
     Loaded(SymbolPackageTemplate),
     Saved(SymbolPackageSaved),
-    Changed,
+    Changed(String),
 }
 struct Pending {
     source: Option<Context>,
@@ -51,7 +51,31 @@ impl Default for PackageLibraryUi {
 fn identity(c: Context) -> (ObjectId, ObjectId, ObjectId) {
     (c.0, c.1.stream_id, c.2)
 }
+fn committed(value: serde_json::Value) -> Result<Completed, String> {
+    let result: viamind_engine::ExecResult = serde_json::from_value(value).map_err(|e| e.to_string())?;
+    let mut message = "Complete package command applied in one undoable sheet transaction; refresh the target before another edit".to_string();
+    for delta in &result.deltas {
+        if let viamind_engine::Delta::Sheet { before, after: Some(after), .. } = delta {
+            let before = before.as_ref().and_then(|s| s.content.as_ref());
+            if let Some(content) = &after.content {
+                for package in content.packages.values().filter(|p| !before.is_some_and(|c| c.packages.contains_key(&p.id))) {
+                    use std::fmt::Write as _;
+                    let _ = write!(message, "\nCommitted package {}", package.id);
+                    for unit in &package.units {
+                        let _ = write!(message, "\nUnit {}: {}", unit.key, unit.symbol_id);
+                    }
+                }
+            }
+        }
+    }
+    Ok(Completed::Changed(message))
+}
 impl PackageLibraryUi {
+    /// Close this local form while retaining the draft and pending worker.
+    pub fn close(&mut self) {
+        self.open = false;
+    }
+
     fn fresh(&self) -> bool {
         self.guard.as_ref().is_some_and(|g| Some((g.expected_project, g.source_cursor, g.expected.id)) == self.context)
     }
@@ -89,19 +113,18 @@ impl PackageLibraryUi {
                     saved.path.display(),
                     saved.unit_count,
                     saved.pin_count
-                ))
+                ));
             }
-            Ok(Completed::Changed) => {
+            Ok(Completed::Changed(message)) => {
                 self.guard = None;
                 self.delete_id = None;
-                self.message =
-                    Some("Complete package command applied in one undoable sheet transaction; refresh the target before another edit".into());
+                self.message = Some(message);
             }
             Err(error) => self.message = Some(error),
         }
     }
     fn start(&mut self, engine: EngineHandle, action: UiAction, input: serde_json::Value) {
-        self.start_with(engine, action, input, |job| std::thread::Builder::new().name("viamind-symbol-package".into()).spawn(job).map(|_| ()))
+        self.start_with(engine, action, input, |job| std::thread::Builder::new().name("viamind-symbol-package".into()).spawn(job).map(|_| ()));
     }
     fn start_with(
         &mut self,
@@ -123,7 +146,7 @@ impl PackageLibraryUi {
                 UiAction::SnapshotSymbolSheet => serde_json::from_value(v).map(Completed::Sheet).map_err(|e| e.to_string()),
                 UiAction::LoadSymbolPackage => serde_json::from_value(v).map(Completed::Loaded).map_err(|e| e.to_string()),
                 UiAction::SaveSymbolPackage => serde_json::from_value(v).map(Completed::Saved).map_err(|e| e.to_string()),
-                UiAction::PlaceSymbolPackage | UiAction::DeleteSymbolPackage => Ok(Completed::Changed),
+                UiAction::PlaceSymbolPackage | UiAction::DeleteSymbolPackage => committed(v),
                 _ => Err("Unsupported complete package action".into()),
             });
             let _ = sender.try_send(result);

@@ -735,6 +735,10 @@ impl ViamindApp {
             }
             if self.design.is_some() {
                 ui.menu_button("Libraries", |ui| {
+                    if ui.button("Multi-unit package definitions…").clicked() {
+                        self.begin_package_library();
+                        ui.close();
+                    }
                     if ui.button("Footprint definitions…").clicked() {
                         self.begin_footprint_definition();
                         ui.close();
