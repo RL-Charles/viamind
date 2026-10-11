@@ -593,6 +593,7 @@ mod contract_tests {
     }
     #[test]
     fn captured_native_lifecycle_presence_branch_policy_and_read_paths_refuse_before_locks() {
+        let _serial = crate::pcb_branches::PCB_BRANCH_TEST_LOCK.lock().unwrap();
         let e = EngineHandle::new(Project::new("inventory"));
         let captured = e.clone();
         let policy = e.agent_policy();
@@ -653,6 +654,7 @@ mod contract_tests {
     }
     #[test]
     fn branch_veto_preserves_private_candidate_revision_and_live_session() {
+        let _serial = crate::pcb_branches::PCB_BRANCH_TEST_LOCK.lock().unwrap();
         let e = EngineHandle::new(Project::new("branch veto"));
         let actor = BranchActor::human();
         let before = e.session_state();

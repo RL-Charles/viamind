@@ -480,3 +480,7 @@ impl EngineHandle {
         })
     }
 }
+
+// One retained process-wide worker is shared by all engine test modules.
+#[cfg(test)]
+pub(crate) static PCB_BRANCH_TEST_LOCK: Mutex<()> = Mutex::new(());

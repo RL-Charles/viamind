@@ -5,7 +5,7 @@ use viamind_doc::{CopperLayer, Track};
 use viamind_geom::{Nm, Point};
 
 // The retained permit is process-wide, so these tests deliberately serialize.
-static TEST_LOCK: Mutex<()> = Mutex::new(());
+use super::PCB_BRANCH_TEST_LOCK as TEST_LOCK;
 
 #[test]
 fn saved_native_status_and_drc_journal_are_unchanged_until_merge_and_selection_stales_merge() {
