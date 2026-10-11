@@ -330,7 +330,15 @@ fn borrowed_label_policy_and_incomplete_check_refusals_preserve_full_state() {
         match variant {
             0 => project.board.parts.values_mut().next().unwrap().designator = "x".repeat(513),
             1 => {
-                project.board.net_rules.insert("x".repeat(257), Default::default());
+                project.board.net_rules.insert(
+                    "x".repeat(257),
+                    viamind_doc::NamedNetMinima {
+                        minimum_copper_clearance: Nm(0),
+                        minimum_track_width: Nm(1),
+                        minimum_via_drill: Nm(0),
+                        minimum_annular_width: Nm(0),
+                    },
+                );
             }
             _ => {
                 for x in [0, 5_000_000] {
