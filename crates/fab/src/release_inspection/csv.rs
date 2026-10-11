@@ -220,6 +220,21 @@ mod tests {
         assert!(decimal("360", 3, 0, 359_999).is_err());
     }
     #[test]
+    fn row_and_field_limits_reject_before_unbounded_collection() {
+        let oversized = format!("A\r\n{}\r\n", "x".repeat(4097));
+        assert!(rows(oversized.as_bytes(), &["A"], |_| Ok(())).is_err());
+        let many = format!("A\r\n{}", "x\r\n".repeat(100001));
+        let mut accepted = 0;
+        assert!(
+            rows(many.as_bytes(), &["A"], |_| {
+                accepted += 1;
+                Ok(())
+            })
+            .is_err()
+        );
+        assert_eq!(accepted, 100000);
+    }
+    #[test]
     fn quoted_unicode_crlf_and_multiline_fields_are_preserved() {
         let mut observed = Vec::new();
         rows("A,B\r\n\"µ, \"\"q\"\"\r\nline\",x\r\n".as_bytes(), &["A", "B"], |row| {

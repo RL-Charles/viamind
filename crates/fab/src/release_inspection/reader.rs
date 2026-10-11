@@ -272,6 +272,29 @@ mod tests {
         }
     }
     #[test]
+    fn inspector_caps_refuse_large_exportable_tables_and_empty_population_is_valid() {
+        use sha2::{Digest, Sha256};
+        let _serial = SERIAL.lock().unwrap();
+        let temp = tempfile::tempdir().unwrap();
+        let path = release(temp.path(), "empty", 3, false);
+        for name in [CALIBRATED, POPULATED] {
+            change_csv(&path, name, |s| format!("{}\r\n", s.split_once("\r\n").unwrap().0));
+        }
+        let digest = Sha256::digest(b"viamind-populated-components-v1\0").iter().map(|b| format!("{b:02x}")).collect::<String>();
+        patch_manifest(&path, |m| {
+            m["calibrated_placement"]["component_count"] = serde_json::json!(0);
+            m["populated_assembly"]["component_count"] = serde_json::json!(0);
+            m["populated_assembly"]["component_ids_sha256"] = serde_json::json!(digest);
+        });
+        assert_eq!(inspect_path(&path).unwrap().matched_assembly.unwrap().component_count, 0);
+        let file = path.join("assembly/bom.csv");
+        fs::OpenOptions::new().write(true).open(&file).unwrap().set_len((CSV_LIMIT + 1) as u64).unwrap();
+        patch_manifest(&path, |m| m["files"]["assembly/bom.csv"] = serde_json::json!(CSV_LIMIT + 1));
+        assert!(inspect_path(&path).unwrap_err().to_string().contains("cap"));
+        fs::OpenOptions::new().write(true).open(path.join("release-manifest.json")).unwrap().set_len((JSON_LIMIT + 1) as u64).unwrap();
+        assert!(inspect_path(&path).is_err());
+    }
+    #[test]
     fn strict_layout_lengths_and_matched_csv_errors_reject_without_partial_result() {
         let _serial = SERIAL.lock().unwrap();
         let temp = tempfile::tempdir().unwrap();
