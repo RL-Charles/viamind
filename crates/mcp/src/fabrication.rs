@@ -15,7 +15,7 @@ struct Export {
     expected_cursor: Option<EventCursor>,
 }
 pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(), RegistryError> {
-    registry.register("export_fabrication", "Export an immutable snapshot to a NEW directory: two outer Gerber X2 copper layers, mask openings, explicit polygon profile/cutouts and XNC Excellon-subset through-via drill. All files metric, common model origin, X right/Y up, top view, bottom files not mirrored. Requires explicit pads and outline; no legacy preview inference, inner copper/pours, routing or fabrication certification. Existing destinations always reject. mask_expansion_mm defaults0 (0–10); all vias untented. Optional expected_cursor guards snapshot. Returns exported_cursor and manifest; preserves design/history/dirty state.", viamind_fab::fabrication_schema(), move |input| {
+    registry.register("export_fabrication", "Export an immutable snapshot to a NEW directory: two outer Gerber X2 copper layers, mask openings, explicit polygon profile/cutouts and XNC Excellon-subset through-via drill. All files metric, common model origin, X right/Y up, top view, bottom files not mirrored. Requires explicit pads and outline; no legacy preview inference, inner copper/pours, routing or fabrication certification. Existing destinations always reject. mask_expansion_mm defaults to 0 mm (0–10); all vias untented. Optional expected_cursor guards snapshot. Returns exported_cursor and manifest; preserves design/history/dirty state.", viamind_fab::fabrication_schema(), move |input| {
         let engine=engine.clone();
         async move {
             let input: Export=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;

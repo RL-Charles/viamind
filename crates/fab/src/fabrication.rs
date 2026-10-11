@@ -189,6 +189,9 @@ pub fn fabrication(project: &Project, options: FabricationOptions) -> io::Result
         }
         drills.entry(via.drill.0).or_default().push(center);
     }
+    if drills.len() > 99 {
+        return Err(invalid("XNC supports at most 99 distinct through-via drill diameters"));
+    }
     let mut profile = Vec::new();
     for ring in outline.rings() {
         for edge in ring.edges() {
@@ -208,11 +211,11 @@ pub fn fabrication(project: &Project, options: FabricationOptions) -> io::Result
     }
     let mut drill = String::from("; Viamind plated through vias, finished diameters, aligned top view\nM48\nMETRIC\n");
     for (i, (diameter, _)) in drills.iter().enumerate() {
-        writeln!(drill, "T{}C{}", i + 1, decimal(*diameter, 6)).unwrap();
+        writeln!(drill, "T{:02}C{}", i + 1, decimal(*diameter, 6)).unwrap();
     }
     drill.push_str("%\nG05\n");
     for (i, (_, positions)) in drills.iter().enumerate() {
-        writeln!(drill, "T{}", i + 1).unwrap();
+        writeln!(drill, "T{:02}", i + 1).unwrap();
         for &(x, y) in positions {
             writeln!(drill, "X{}Y{}", decimal(x, 6), decimal(y, 6)).unwrap();
         }

@@ -23,7 +23,7 @@ fn exact_geometry_attributes_units_and_deterministic_output() {
     assert!(package.files["top-mask.gbr"].contains("%TF.FilePolarity,Negative*%"));
     assert!(package.files["bottom-mask.gbr"].contains("R,4.100002X1.100002*%"));
     let drill = &package.files["plated-through.xnc"];
-    assert!(drill.contains("M48\nMETRIC\nT1C0.300000\nT2C0.500000\n%\nG05\n"));
+    assert!(drill.contains("M48\nMETRIC\nT01C0.300000\nT02C0.500000\n%\nG05\n"));
     assert!(drill.contains("X18.000000Y-12.000000"));
     assert_eq!(package.files["profile.gbr"].matches("D01*").count(), 8);
     assert_eq!(package.files.len(), 7);
@@ -110,4 +110,33 @@ fn export_primitive_bound_rejects_before_any_files_are_created() {
     let error = write_fabrication(&project, FabricationOptions::default(), &dir.path().join("large"), None).unwrap_err();
     assert!(error.to_string().contains("200000 primitives"));
     assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 0);
+}
+
+#[test]
+fn empty_geometry_and_xnc_two_digit_tool_boundary_are_explicit() {
+    let mut project = sample();
+    project.board.parts.clear();
+    project.board.tracks.clear();
+    project.board.vias.clear();
+    let empty = fabrication(&project, FabricationOptions::default()).unwrap();
+    assert_eq!(empty.manifest.smd_pad_count, 0);
+    assert_eq!(empty.manifest.through_via_count, 0);
+    assert!(empty.files["plated-through.xnc"].ends_with("%\nG05\nM30\n"));
+    let template = sample().board.vias.values().next().unwrap().clone();
+    for i in 1..=99 {
+        let mut via = template.clone();
+        via.id = viamind_doc::ObjectId::new();
+        via.drill.0 = i * 1000;
+        project.board.vias.insert(via.id, via);
+    }
+    let maximum = fabrication(&project, FabricationOptions::default()).unwrap();
+    assert!(maximum.files["plated-through.xnc"].contains("T99C0.099000"));
+    let mut via = template;
+    via.id = viamind_doc::ObjectId::new();
+    via.drill.0 = 100_000;
+    project.board.vias.insert(via.id, via);
+    let directory = tempfile::tempdir().unwrap();
+    let error = write_fabrication(&project, FabricationOptions::default(), &directory.path().join("too-many-tools"), None).unwrap_err();
+    assert!(error.to_string().contains("99 distinct"));
+    assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 0);
 }
