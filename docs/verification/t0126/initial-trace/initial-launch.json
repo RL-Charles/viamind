@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/launch-initial-trace",
+  "pid": 3504424,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-gpu-parity",
+      "bounds": {
+        "height": 1000,
+        "width": 1400,
+        "x": 2180,
+        "y": 1265
+      },
+      "height": 1000,
+      "is_on_screen": true,
+      "pid": 3504424,
+      "title": "Viamind GPU parity",
+      "width": 1400,
+      "window_id": 110379542976336,
+      "x": 2180,
+      "y": 1265,
+      "z_index": null
+    }
+  ]
+}

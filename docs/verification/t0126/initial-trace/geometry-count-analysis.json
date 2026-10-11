@@ -1,0 +1,86 @@
+{
+  "scope": "Independent deterministic synthetic bounds/culling analysis only; not original camera provenance",
+  "current_count": 606,
+  "candidate_variations": [
+    {
+      "zoom_factor": 0.9615384615384615,
+      "mode": "same_center",
+      "camera": [
+        33.8096233769221,
+        25.375284784012628,
+        51.63154726068633
+      ],
+      "count": 648
+    },
+    {
+      "zoom_factor": 0.9615384615384615,
+      "mode": "pan83at_newzoom",
+      "camera": [
+        33.74779474962588,
+        25.410296175373134,
+        51.63154726068633
+      ],
+      "count": 645
+    },
+    {
+      "zoom_factor": 1,
+      "mode": "same_center",
+      "camera": [
+        33.8096233769221,
+        25.375284784012628,
+        53.69680915111379
+      ],
+      "count": 606
+    },
+    {
+      "zoom_factor": 1,
+      "mode": "pan83at_newzoom",
+      "camera": [
+        33.8096233769221,
+        25.375284784012628,
+        53.69680915111379
+      ],
+      "count": 606
+    },
+    {
+      "zoom_factor": 1.04,
+      "mode": "same_center",
+      "camera": [
+        33.8096233769221,
+        25.375284784012628,
+        55.84468151715834
+      ],
+      "count": 565
+    },
+    {
+      "zoom_factor": 1.04,
+      "mode": "pan83at_newzoom",
+      "camera": [
+        33.86907398009153,
+        25.341619984627528,
+        55.84468151715834
+      ],
+      "count": 567
+    },
+    {
+      "zoom_factor": 1.0816000000000001,
+      "mode": "same_center",
+      "camera": [
+        33.8096233769221,
+        25.375284784012628,
+        58.078468777844684
+      ],
+      "count": 531
+    },
+    {
+      "zoom_factor": 1.0816000000000001,
+      "mode": "pan83at_newzoom",
+      "camera": [
+        33.926238021600604,
+        25.309249985218777,
+        58.078468777844684
+      ],
+      "count": 529
+    }
+  ]
+}
