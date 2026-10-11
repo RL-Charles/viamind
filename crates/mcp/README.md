@@ -435,7 +435,7 @@ with `offset`, `limit` (1..100), `total` and `next_offset`. Queries preserve his
 and dirty state. Get exact edit guards from `get_session_state`; restart paging
 when another client edits. New schematic content saves as native schema 5.
 Use `query_schematic_connectivity` below for bounded native graph evaluation.
-ERC, hierarchy and board annotation remain separate work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
+Use `run_erc` below for scoped native pin checks. Hierarchy and board annotation remain separate work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
 
 ## Read-only board SVG snapshot
 
@@ -470,3 +470,9 @@ layer support and exclusions match SVG.
 ## Exact native schematic connectivity
 
 `query_schematic_connectivity {"offset":0,"limit":100}` reads deterministic connected components across all native sheets. It captures schematic data only, calculates outside the engine lock, and returns project ID, source cursor, stable member/symbol/pin IDs, canonical names, aliases and explicit coverage. Restart pages when the cursor changes. Exact wire endpoint/T contacts connect; interior crossings require an explicit junction. Label scopes are literal local/global/power; ambiguous crossing anchors reject with actionable IDs. Limits are 10000 total sheets/symbols/pins/wires/junctions/labels, 2MiB schematic text, and 1000000 spatial candidate contacts. Exceeding a limit returns an error without partial nets. No selection, history, dirty or model mutation. This query does not perform ERC, board annotation, buses, hierarchy or hidden power-pin inference. See [behavior spec](../../docs/specs/schematic-connectivity.md).
+
+## Scoped native pin ERC
+
+`run_erc {}` checks a single exact schematic snapshot with a documented default symmetric pin matrix, unconnected/undriven inputs, missing power-output sources and attached no-connect pins. `compatibility` overrides unordered pairs using `{"a":"output","b":"output","severity":"warning"}`; severities are `allow`, `warning` or `error`. Duplicate/reversed pairs reject. Single checks have independent severity fields. Policy is per request and never modifies model/history/selection/dirty state.
+
+The report returns the effective 66-pair matrix, stable pin/symbol/sheet/net IDs, source cursor, deterministic issues and explicit coverage. `complete` applies only to the selected checks; `coverage.full_erc` is always false. Graph errors/limits reject without a report. The 250000 pin-pair limit and `max_violations` (default1000, 1..10000) return an explicitly incomplete prefix with a stop reason. Power labels do not supply power; native power_output pins do. No hierarchy, buses, hidden power-pin inference, absent native markers/power flags or full ERC certification. See [the native ERC policy](../../docs/specs/schematic-erc.md).

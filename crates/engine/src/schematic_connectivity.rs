@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use viamind_doc::{
     ObjectId, Sheet,
-    schematic::{Coordinate, LabelScope, validate_sheet},
+    schematic::{Coordinate, LabelScope, PinType, validate_sheet},
 };
 use viamind_geom::{Nm, Point, Rect, SpatialIndex};
 
@@ -49,6 +49,8 @@ pub struct SchematicNetMember {
     pub symbol_id: Option<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pin_number: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub electrical: Option<PinType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub position: Option<Coordinate>,
 }
@@ -105,6 +107,13 @@ impl EngineHandle {
         if !(1..=100).contains(&query.limit) {
             return Err(CommandError::invalid("limit", "must be within 1..100"));
         }
+        self.schematic_graph(query)
+    }
+    /// Internal whole-graph result from one capture, bounded by the same 10000-object cap.
+    pub(crate) fn all_schematic_connectivity(&self) -> Result<SchematicConnectivityResult, CommandError> {
+        self.schematic_graph(&SchematicConnectivityQuery { offset: 0, limit: MAX_MEMBERS })
+    }
+    fn schematic_graph(&self, query: &SchematicConnectivityQuery) -> Result<SchematicConnectivityResult, CommandError> {
         let snapshot = self.with_engine(|engine| {
             let project = engine.project();
             let sheets = &project.schematic.sheets;
@@ -240,20 +249,21 @@ fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_l
             coverage.legacy_empty_sheets += 1;
             continue;
         };
-        let mut push = |id, kind, position, wire, symbol_id, pin_number, name| {
-            nodes.push(Node { member: SchematicNetMember { sheet_id: sheet.id, id, kind, position, symbol_id, pin_number }, wire, name });
+        let mut push = |id, kind, position, wire, symbol_id, pin_number, electrical, name| {
+            nodes.push(Node { member: SchematicNetMember { sheet_id: sheet.id, id, kind, position, symbol_id, pin_number, electrical }, wire, name });
         };
         for w in c.wires.values() {
-            push(w.id, SchematicMemberKind::Wire, None, Some((w.start, w.end)), None, None, None);
+            push(w.id, SchematicMemberKind::Wire, None, Some((w.start, w.end)), None, None, None, None);
         }
         for j in c.junctions.values() {
-            push(j.id, SchematicMemberKind::Junction, Some(j.position), None, None, None, None);
+            push(j.id, SchematicMemberKind::Junction, Some(j.position), None, None, None, None, None);
         }
         for l in c.labels.values() {
             push(
                 l.id,
                 SchematicMemberKind::Label,
                 Some(l.position),
+                None,
                 None,
                 None,
                 None,
@@ -271,6 +281,7 @@ fn calculate(snapshot: Snapshot, query: &SchematicConnectivityQuery, candidate_l
                     None,
                     Some(s.id),
                     Some(p.number.clone()),
+                    Some(p.electrical),
                     None,
                 );
             }
