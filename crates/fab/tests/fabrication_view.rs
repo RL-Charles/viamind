@@ -3,8 +3,11 @@ use viamind_geom::{Nm, Point};
 #[test]
 fn all_native_export_layers_parse_independently_with_exact_profile_tracks_drills_and_rotated_pads() {
     let project = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
-    let package =
-        viamind_fab::fabrication(&project, viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false }).unwrap();
+    let package = viamind_fab::fabrication(
+        &project,
+        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false },
+    )
+    .unwrap();
     let mut budget = FabricationReadBudget::default();
     let mut layers = Vec::new();
     for (name, text) in &package.files {

@@ -300,6 +300,8 @@ impl ViamindApp {
         }
         let edit_pads = ui.button("Edit electrical pads…").clicked();
         let edit_artwork = ui.button("Edit footprint artwork").clicked();
+        let edit_apertures =
+            ui.add_enabled(part.pads.as_ref().is_some_and(|p| !p.0.is_empty()), egui::Button::new("Edit pad mask and paste openings")).clicked();
         let mut apply = false;
         let mut reload = false;
         let mut delete = false;
@@ -313,6 +315,10 @@ impl ViamindApp {
             apply_sourcing = ui.button("Apply assembly metadata").clicked();
             clear_sourcing = ui.button("Clear assembly metadata").clicked();
         });
+        if edit_apertures {
+            self.begin_edit_pad_apertures(part.clone());
+            return;
+        }
         if edit_artwork {
             self.begin_edit_footprint_artwork(part.clone());
             return;

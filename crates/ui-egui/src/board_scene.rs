@@ -71,8 +71,17 @@ pub fn part_items(part: &Part) -> Vec<Item> {
     if let Some(pads) = &part.pads {
         for p in &pads.0 {
             let (x, y, w, h) = (p.position.x.to_mm(), p.position.y.to_mm(), p.width.to_mm(), p.height.to_mm());
-            for (margin, layer) in [(0.0, copper), (0.05, mask)] {
-                let (hw, hh) = (w / 2.0 + margin, h / 2.0 + margin);
+            let paste = if part.side == Side::Bottom { LayerId::B_PASTE } else { LayerId::F_PASTE };
+            let mut rectangles = vec![(w, h, copper)];
+            for (kind, layer) in [(viamind_doc::ApertureKind::Mask, mask), (viamind_doc::ApertureKind::Paste, paste)] {
+                match viamind_doc::resolve_aperture(p.apertures.as_ref(), kind) {
+                    viamind_doc::ApertureResolution::Legacy if kind == viamind_doc::ApertureKind::Mask => rectangles.push((w + 0.1, h + 0.1, layer)),
+                    viamind_doc::ApertureResolution::Rectangle(r) => rectangles.push((r.width.to_mm(), r.height.to_mm(), layer)),
+                    _ => {}
+                }
+            }
+            for (w, h, layer) in rectangles {
+                let (hw, hh) = (w / 2.0, h / 2.0);
                 let corners = [place(part, x - hw, y - hh), place(part, x + hw, y - hh), place(part, x + hw, y + hh), place(part, x - hw, y + hh)];
                 items.push(Item::new(Prim::Quad(corners), layer));
             }

@@ -74,6 +74,7 @@ fn main() -> anyhow::Result<()> {
                 viamind_fab::FabricationOptions {
                     mask_expansion_mm: options.mask_expansion_mm.unwrap_or(0.0),
                     include_silkscreen: options.include_silkscreen,
+                    include_paste: options.include_paste,
                 },
                 output,
                 native.as_deref(),

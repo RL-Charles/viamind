@@ -86,3 +86,78 @@ fn copper_resize_retains_absolute_policy_and_invalid_moved_extents_are_atomic() 
     assert!(e.execute_typed(SetPartPads { id: part.id, expected: changed.clone(), pads: inputs }, Origin::User).is_err());
     assert_eq!(e.session_state(), after);
 }
+#[test]
+fn single_pad_guarded_policy_is_atomic_nullable_noop_and_identity_preserving() {
+    use viamind_engine::SetPadApertures;
+    let e = engine();
+    let before = e.session_state();
+    let part = before.project.board.parts.values().next().unwrap().clone();
+    let pad_id = part.pads.as_ref().unwrap().0[0].id;
+    let policy = Some(PadApertures { mask: Some(ApertureRect { width: Nm(3), height: Nm(5) }), paste: None });
+    let request = SetPadApertures {
+        expected_project: before.project.id,
+        expected_cursor: before.cursor,
+        expected: part.clone(),
+        pad_id,
+        apertures: policy.clone(),
+    };
+    e.execute_typed(request.clone(), Origin::User).unwrap();
+    let after = e.session_state();
+    let mut expected = part.clone();
+    expected.pads.as_mut().unwrap().0[0].apertures = policy;
+    assert_eq!(after.project.board.parts[&part.id], expected);
+    assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
+    assert!(e.execute_typed(request, Origin::User).is_err());
+    assert_eq!(e.session_state(), after);
+    let noop = SetPadApertures {
+        expected_project: after.project.id,
+        expected_cursor: after.cursor,
+        expected: expected.clone(),
+        pad_id,
+        apertures: expected.pads.as_ref().unwrap().0[0].apertures.clone(),
+    };
+    e.execute_typed(noop.clone(), Origin::User).unwrap();
+    assert_eq!(e.session_state(), after);
+    let mut bad = noop.clone();
+    bad.apertures = Some(PadApertures { mask: Some(ApertureRect { width: Nm(0), height: Nm(5) }), paste: None });
+    assert!(e.execute_typed(bad, Origin::User).is_err());
+    assert_eq!(e.session_state(), after);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    e.redo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), after.project);
+    let now = e.session_state();
+    e.execute_typed(SetPadApertures { expected_cursor: now.cursor, apertures: None, ..noop.clone() }, Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    let mut raw = serde_json::to_value(noop).unwrap();
+    raw.as_object_mut().unwrap().remove("apertures");
+    assert!(serde_json::from_value::<SetPadApertures>(raw.clone()).unwrap_err().to_string().contains("missing field"));
+    raw["apertures"] = serde_json::Value::Null;
+    raw["expected"]["pads"] = serde_json::json!(vec![serde_json::Value::Null; 1025]);
+    assert!(serde_json::from_value::<SetPadApertures>(raw).unwrap_err().to_string().contains("1024"));
+    let text = serde_json::to_string(
+        &serde_json::json!({"expected_project":before.project.id,"expected_cursor":before.cursor,"expected":part,"pad_id":pad_id}),
+    )
+    .unwrap();
+    let dup = format!("{},\"apertures\":{{\"mask\":null,\"mask\":null,\"paste\":null}}}}", text.trim_end_matches('}'));
+    assert!(serde_json::from_str::<SetPadApertures>(&dup).unwrap_err().to_string().contains("duplicate"));
+}
+#[test]
+fn raw_apply_preserves_duplicate_refusal_before_secondary_geometry_ownership() {
+    let e = engine();
+    let s = e.session_state();
+    let part = s.project.board.parts.values().next().unwrap().clone();
+    let mut f = Footprint::from_part(&part).unwrap();
+    f.pads[0].apertures = Some(PadApertures { mask: None, paste: None });
+    let edit = ApplyFootprint { expected_project: s.project.id, expected_cursor: Some(s.cursor), expected: part, footprint: f };
+    let raw = serde_json::to_string(&edit).unwrap();
+    for bad in [
+        raw.replace("\"mask\":null", "\"mask\":null,\"mask\":null"),
+        raw.replacen("\"footprint\":{", "\"expected_project\":null,\"footprint\":{", 1),
+        raw.replacen("\"paste\":null", "\"paste\":null,\"paste\":null", 1),
+    ] {
+        assert!(serde_json::from_str::<ApplyFootprint>(&bad).unwrap_err().to_string().contains("duplicate"));
+    }
+    assert!(serde_json::from_str::<ApplyFootprint>(&raw).is_ok());
+    assert_eq!(e.session_state(), s);
+}

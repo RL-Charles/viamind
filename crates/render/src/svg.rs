@@ -17,6 +17,10 @@ const OUTLINE_HALF_STROKE: i64 = 50_000;
 pub enum ViewLayer {
     BottomCopper,
     TopCopper,
+    BottomMask,
+    TopMask,
+    BottomPaste,
+    TopPaste,
     Outline,
     BottomSilkscreen,
     TopSilkscreen,
@@ -106,6 +110,8 @@ impl SvgOptions {
 #[derive(Clone, Debug, Serialize)]
 pub struct SvgMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub pad_apertures: Option<ApertureViewMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub artwork: Option<ArtworkViewMetadata>,
     pub region_nm: ViewBounds,
     pub width_px: u32,
@@ -126,6 +132,18 @@ pub struct ArtworkViewMetadata {
     pub courtyards: usize,
     pub rendered_segments: usize,
     pub checks_not_performed: &'static str,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct ApertureViewMetadata {
+    pub pads: Vec<PadOpeningView>,
+    pub legacy_mask_policy: &'static str,
+    pub checks_not_performed: &'static str,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct PadOpeningView {
+    pub pad_id: viamind_doc::ObjectId,
+    pub mask: &'static str,
+    pub paste: &'static str,
 }
 #[derive(Debug, Serialize)]
 pub struct BoardSvg {
@@ -207,6 +225,14 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
             count = count.saturating_add(artwork.primitive_count());
         }
         count = count.saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()));
+        if let Some(pads) = &part.pads {
+            for p in &pads.0 {
+                if let Some(a) = &p.apertures {
+                    count = count.saturating_add(a.structural_rows());
+                    a.validate_at(p.position).map_err(invalid)?;
+                }
+            }
+        }
         if count > 100_000 {
             return Err(invalid("SVG view supports at most 100000 primitives"));
         }
@@ -297,6 +323,49 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
         outline.validate().map_err(|e| invalid(e.to_string()))?;
     }
     let layers: BTreeSet<_> = options.layers.iter().copied().collect();
+    let aperture_requested =
+        layers.iter().any(|l| matches!(l, ViewLayer::TopMask | ViewLayer::BottomMask | ViewLayer::TopPaste | ViewLayer::BottomPaste));
+    let mut aperture_rows = Vec::new();
+    let via_shapes = 1 + [ViewLayer::TopCopper, ViewLayer::BottomCopper, ViewLayer::TopMask, ViewLayer::BottomMask]
+        .into_iter()
+        .filter(|l| layers.contains(l))
+        .count();
+    let mut emitted = project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(via_shapes));
+    emitted = emitted.saturating_add(project.board.parts.values().filter_map(|p| p.artwork.as_ref()).map(|a| a.primitive_count()).sum::<usize>());
+    if layers.contains(&ViewLayer::Outline) {
+        emitted = emitted.saturating_add(project.board.outline.as_ref().map_or(0, |o| o.rings().map(|r| r.points.len()).sum::<usize>()));
+    }
+    for part in project.board.parts.values() {
+        let (cu, mask, paste) = if part.side == Side::Top {
+            (ViewLayer::TopCopper, ViewLayer::TopMask, ViewLayer::TopPaste)
+        } else {
+            (ViewLayer::BottomCopper, ViewLayer::BottomMask, ViewLayer::BottomPaste)
+        };
+        if let Some(pads) = &part.pads {
+            for p in &pads.0 {
+                emitted = emitted
+                    .saturating_add(usize::from(layers.contains(&cu)))
+                    .saturating_add(usize::from(
+                        layers.contains(&mask)
+                            && !matches!(
+                                viamind_doc::resolve_aperture(p.apertures.as_ref(), viamind_doc::ApertureKind::Mask),
+                                viamind_doc::ApertureResolution::IntentionalOmit
+                            ),
+                    ))
+                    .saturating_add(usize::from(
+                        layers.contains(&paste)
+                            && matches!(
+                                viamind_doc::resolve_aperture(p.apertures.as_ref(), viamind_doc::ApertureKind::Paste),
+                                viamind_doc::ApertureResolution::Rectangle(_)
+                            ),
+                    ));
+            }
+        }
+    }
+    if emitted > 100_000 {
+        return Err(invalid("selected board view exceeds100000 emitted primitives before allocation"));
+    }
+
     let mut replaced = false;
     let name = xml(&project.name, &mut replaced)?;
     let mut shapes = Vec::new();
@@ -362,42 +431,83 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
             omitted += 1;
             continue;
         };
-        let layer = if part.side == Side::Bottom { ViewLayer::BottomCopper } else { ViewLayer::TopCopper };
-        if !layers.contains(&layer) {
-            continue;
-        }
+        let (copper, mask, paste) = if part.side == Side::Bottom {
+            (ViewLayer::BottomCopper, ViewLayer::BottomMask, ViewLayer::BottomPaste)
+        } else {
+            (ViewLayer::TopCopper, ViewLayer::TopMask, ViewLayer::TopPaste)
+        };
         for pad in &explicit.0 {
-            let (wx, wy) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
-            let (cx, cy) = center(wx, wy)?;
-            let angle = -(f64::from(part.rotation_mdeg) / 1000.0);
-            let (s, c) = angle.to_radians().sin_cos();
-            let rx = (pad.width.0 as f64 * c.abs() + pad.height.0 as f64 * s.abs()) / 2.0;
-            let ry = (pad.width.0 as f64 * s.abs() + pad.height.0 as f64 * c.abs()) / 2.0;
-            let bounds = ViewBounds {
-                min_x: (cx as f64 - rx).floor() as i64,
-                min_y: (cy as f64 - ry).floor() as i64,
-                max_x: (cx as f64 + rx).ceil() as i64,
-                max_y: (cy as f64 + ry).ceil() as i64,
-            };
-            let title = xml(
-                &format!("{} pad {} · {} · {}", part.designator, pad.number, part.value, pad.net.as_deref().unwrap_or("unassigned")),
-                &mut replaced,
-            )?;
-            let shape = format!(
-                "<g id=\"pad-{}\" transform=\"translate({} {}) rotate({angle:.3})\"><title>{title}</title><rect x=\"-{}\" y=\"-{}\" width=\"{}\" height=\"{}\"/></g>\n",
-                pad.id,
-                x(cx),
-                y(cy),
-                half(pad.width.0),
-                half(pad.height.0),
-                mm(pad.width.0),
-                mm(pad.height.0)
-            );
-            size += shape.len();
-            shapes.push(Shape { layer, bounds, xml: shape });
-            pads += 1;
-            if size > MAX_BYTES {
-                return Err(invalid("SVG view exceeds 16 MiB"));
+            if aperture_requested && (layers.contains(&mask) || layers.contains(&paste)) {
+                let state = |kind| match viamind_doc::resolve_aperture(pad.apertures.as_ref(), kind) {
+                    viamind_doc::ApertureResolution::Legacy => "legacy",
+                    viamind_doc::ApertureResolution::IntentionalOmit => "intentional_omit",
+                    viamind_doc::ApertureResolution::Rectangle(_) => "explicit_rectangle",
+                };
+                aperture_rows.push(PadOpeningView {
+                    pad_id: pad.id,
+                    mask: state(viamind_doc::ApertureKind::Mask),
+                    paste: state(viamind_doc::ApertureKind::Paste),
+                });
+            }
+            for (layer, width, height, role) in [
+                (copper, Some(pad.width.0), Some(pad.height.0), "copper"),
+                {
+                    let r = viamind_doc::resolve_aperture(pad.apertures.as_ref(), viamind_doc::ApertureKind::Mask);
+                    let d = match r {
+                        viamind_doc::ApertureResolution::Legacy => Some((pad.width.0, pad.height.0)),
+                        viamind_doc::ApertureResolution::Rectangle(r) => Some((r.width.0, r.height.0)),
+                        _ => None,
+                    };
+                    (mask, d.map(|r| r.0), d.map(|r| r.1), "mask")
+                },
+                {
+                    let r = viamind_doc::resolve_aperture(pad.apertures.as_ref(), viamind_doc::ApertureKind::Paste);
+                    let d = match r {
+                        viamind_doc::ApertureResolution::Rectangle(r) => Some((r.width.0, r.height.0)),
+                        _ => None,
+                    };
+                    (paste, d.map(|r| r.0), d.map(|r| r.1), "paste")
+                },
+            ] {
+                if !layers.contains(&layer) {
+                    continue;
+                }
+                let (Some(width), Some(height)) = (width, height) else {
+                    continue;
+                };
+                let (wx, wy) = part.local_to_world_mm(pad.position.x.to_mm(), pad.position.y.to_mm());
+                let (cx, cy) = center(wx, wy)?;
+                let angle = -(f64::from(part.rotation_mdeg) / 1000.0);
+                let (s, c) = angle.to_radians().sin_cos();
+                let rx = (width as f64 * c.abs() + height as f64 * s.abs()) / 2.0;
+                let ry = (width as f64 * s.abs() + height as f64 * c.abs()) / 2.0;
+                let bounds = ViewBounds {
+                    min_x: (cx as f64 - rx).floor() as i64,
+                    min_y: (cy as f64 - ry).floor() as i64,
+                    max_x: (cx as f64 + rx).ceil() as i64,
+                    max_y: (cy as f64 + ry).ceil() as i64,
+                };
+                let title = xml(
+                    &format!("{} pad {} · {} · {}", part.designator, pad.number, part.value, pad.net.as_deref().unwrap_or("unassigned")),
+                    &mut replaced,
+                )?;
+                let identity = if role == "copper" { format!("pad-{}", pad.id) } else { format!("pad-{}-{role}", pad.id) };
+                let shape = format!(
+                    "<g id=\"{}\" transform=\"translate({} {}) rotate({angle:.3})\"><title>{title}</title><rect x=\"-{}\" y=\"-{}\" width=\"{}\" height=\"{}\"/></g>\n",
+                    identity,
+                    x(cx),
+                    y(cy),
+                    half(width),
+                    half(height),
+                    mm(width),
+                    mm(height)
+                );
+                size += shape.len();
+                shapes.push(Shape { layer, bounds, xml: shape });
+                pads += usize::from(role == "copper");
+                if size > MAX_BYTES {
+                    return Err(invalid("SVG view exceeds 16 MiB"));
+                }
             }
         }
     }
@@ -425,7 +535,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
         }
     }
     for v in project.board.vias.values() {
-        for layer in [ViewLayer::BottomCopper, ViewLayer::TopCopper] {
+        for layer in [ViewLayer::BottomCopper, ViewLayer::TopCopper, ViewLayer::BottomMask, ViewLayer::TopMask] {
             if !layers.contains(&layer) {
                 continue;
             }
@@ -515,7 +625,15 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     }
     svg.push_str("</mask></defs>\n<g clip-path=\"url(#view-clip)\"><g mask=\"url(#through-holes)\">\n");
     // Substrate first; top copper last. Request order does not affect stacking.
-    for (layer, color) in [(ViewLayer::Outline, "#d8ddd9"), (ViewLayer::BottomCopper, "#4773dc"), (ViewLayer::TopCopper, "#d65348")] {
+    for (layer, color) in [
+        (ViewLayer::Outline, "#d8ddd9"),
+        (ViewLayer::BottomCopper, "#4773dc"),
+        (ViewLayer::TopCopper, "#d65348"),
+        (ViewLayer::BottomMask, "#02ffee"),
+        (ViewLayer::TopMask, "#d864ff"),
+        (ViewLayer::BottomPaste, "#508cb4"),
+        (ViewLayer::TopPaste, "#8cb4c8"),
+    ] {
         if !layers.contains(&layer) {
             continue;
         }
@@ -555,6 +673,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     Ok(BoardSvg {
         svg,
         metadata: SvgMetadata {
+            pad_apertures: aperture_requested.then_some(ApertureViewMetadata{pads:aperture_rows,legacy_mask_policy:"Nominal copper-sized openings with zero expansion; native desktop legacy preview instead uses0.05mm border. No legacy paste inferred.",checks_not_performed:"No stencil, manufacturer, mask-sliver, silk-to-mask or fabrication suitability checks"}),
             artwork: artwork_metadata,
             region_nm: region,
             width_px: options.width_px,

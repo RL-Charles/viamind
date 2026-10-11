@@ -9,7 +9,7 @@ Usage: viamind [--open PATH] [--no-mcp | --agent-read-only | --agent-approval]
        viamind --export-csv bom|placement|sourcing_bom|catalog_bom|assembly_bom|assembly_placement --open PATH --output PATH [--overwrite]
        viamind --run-output-job JOB --open PATH --output NEW_RELEASE_DIRECTORY
        viamind --inspect-output-release DIRECTORY
-       viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N] [--include-silkscreen]
+       viamind --export-gerber --open PATH --output NEW_DIRECTORY [--mask-expansion-mm N] [--include-silkscreen] [--include-paste]
        viamind --export-svg --open PATH --output NEW_FILE [--view-layers top_copper,bottom_copper,outline]
        viamind --export-png --open PATH --output NEW_FILE [--view-size 1600,1000]
        viamind --export-schematic-svg|--export-schematic-png --sheet UUID --open PATH --output NEW_FILE
@@ -68,6 +68,7 @@ pub struct Options {
     pub overwrite: bool,
     pub export_gerber: bool,
     pub include_silkscreen: bool,
+    pub include_paste: bool,
     pub run_output_job: Option<PathBuf>,
     pub inspect_output_release: Option<PathBuf>,
     pub mask_expansion_mm: Option<f64>,
@@ -102,6 +103,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             Some("--overwrite") => options.overwrite = true,
             Some("--export-gerber") => options.export_gerber = true,
             Some("--include-silkscreen") => options.include_silkscreen = true,
+            Some("--include-paste") => options.include_paste = true,
             Some("--mask-expansion-mm") => {
                 options.mask_expansion_mm = Some(
                     args.next()
@@ -144,6 +146,10 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                         options.svg_options.layers = value
                             .split(',')
                             .map(|s| match s {
+                                "top_mask" => Ok(viamind_render::ViewLayer::TopMask),
+                                "bottom_mask" => Ok(viamind_render::ViewLayer::BottomMask),
+                                "top_paste" => Ok(viamind_render::ViewLayer::TopPaste),
+                                "bottom_paste" => Ok(viamind_render::ViewLayer::BottomPaste),
                                 "top_copper" => Ok(viamind_render::ViewLayer::TopCopper),
                                 "bottom_copper" => Ok(viamind_render::ViewLayer::BottomCopper),
                                 "top_silkscreen" => Ok(viamind_render::ViewLayer::TopSilkscreen),
@@ -204,6 +210,9 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
             }
             _ => return Err(format!("unknown option: {}; use --help for usage", arg.to_string_lossy())),
         }
+    }
+    if options.include_paste && !options.export_gerber {
+        return Err("--include-paste requires --export-gerber".into());
     }
     if options.include_silkscreen && !options.export_gerber {
         return Err("--include-silkscreen requires --export-gerber".into());

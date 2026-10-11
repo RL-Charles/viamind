@@ -36,15 +36,7 @@ fn preflight_footprint_definition(input: &Value, writing: bool) -> Result<(), St
         return Err("footprint definition paths require at most 4096 UTF-8 bytes".into());
     }
     if writing && let Some(footprint) = input.get("footprint") {
-        let pads = footprint.get("pads").and_then(Value::as_array);
-        if pads.is_some_and(|pads| pads.len() > 1024) {
-            return Err("footprint definitions require at most 1024 pads before typed decoding".into());
-        }
-        if footprint.get("name").and_then(Value::as_str).is_some_and(|name| name.len() > 512)
-            || pads.is_some_and(|pads| pads.iter().any(|pad| pad.get("number").and_then(Value::as_str).is_some_and(|number| number.len() > 512)))
-        {
-            return Err("footprint definition name/number fields require at most 512 UTF-8 bytes before typed decoding".into());
-        }
+        viamind_engine::preflight_definition(footprint)?;
     }
     Ok(())
 }

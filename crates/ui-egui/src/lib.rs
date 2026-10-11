@@ -35,6 +35,7 @@ pub mod output_jobs;
 pub mod package_component;
 mod package_definition;
 pub mod package_library;
+mod pad_apertures;
 mod pad_routing;
 pub mod pads;
 pub mod parts;
