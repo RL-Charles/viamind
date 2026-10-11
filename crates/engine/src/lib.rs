@@ -33,6 +33,8 @@ pub use auto_drc::{AutoDrcConfig, AutoDrcPhase, AutoDrcStatus};
 pub mod command;
 pub mod commands;
 pub mod connectivity;
+mod copper_connectivity;
+pub use copper_connectivity::CopperConnectivityCoverage;
 pub mod delta;
 pub mod document;
 pub mod engine;

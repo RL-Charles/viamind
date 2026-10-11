@@ -1,11 +1,12 @@
-//! Read-only explicit-pad net membership and deterministic required connection guides.
-use std::collections::BTreeMap;
+//! Read-only explicit-pad membership and conservative remaining connection guides.
+use std::collections::{BTreeMap, BTreeSet};
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use viamind_doc::{ObjectId, Project};
 
 use crate::CommandError;
+use crate::copper_connectivity::{CopperProof, Forest};
 
 const fn default_limit() -> usize {
     100
@@ -23,7 +24,7 @@ pub struct NetQuery {
     #[schemars(range(min = 1, max = 1000))]
     pub limit: usize,
 }
-/// One named net. Guide counts are conservative estimates, without copper continuity analysis.
+/// One named net. Guides use conservative exact-endpoint copper proofs.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct NetSummary {
     pub name: String,
@@ -33,6 +34,7 @@ pub struct NetSummary {
 /// Bounded net summary page in case-sensitive name order.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct NetQueryResult {
+    pub copper_proof: crate::CopperConnectivityCoverage,
     pub nets: Vec<NetSummary>,
     pub total: usize,
     pub next_after: Option<String>,
@@ -71,6 +73,7 @@ pub struct ConnectivityQuery {
 /// One consistent snapshot. Terminal order is (part UUID, pad UUID); guides are deterministic.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct ConnectivityResult {
+    pub copper_proof: crate::CopperConnectivityCoverage,
     pub net: String,
     /// dense_prim for <=256 terminals; coordinate_chain is an approximation for larger nets.
     pub algorithm: &'static str,
@@ -117,12 +120,21 @@ fn terminals(project: &Project, filter: Option<&str>) -> BTreeMap<String, Vec<Te
 impl NetQuery {
     pub fn run(&self, project: &Project) -> Result<NetQueryResult, CommandError> {
         validate_limit(self.limit)?;
-        let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
+        let proof = CopperProof::analyze(project);
+        // Count islands with borrowed names; a summary never clones every terminal.
+        let mut counts: BTreeMap<&str, (usize, usize, BTreeSet<usize>)> = BTreeMap::new();
         for part in project.board.parts.values() {
             if let Some(pads) = &part.pads {
                 for pad in &pads.0 {
-                    if let Some(net) = &pad.net {
-                        *counts.entry(net).or_default() += 1;
+                    if let Some(net) = pad.net.as_deref() {
+                        let (terminals, unbound, roots) = counts.entry(net).or_default();
+                        *terminals += 1;
+                        let id = crate::PadEndpointId { part_id: part.id, pad_id: pad.id };
+                        if let Some(&root) = proof.pads.get(&id) {
+                            roots.insert(root);
+                        } else {
+                            *unbound += 1;
+                        }
                     }
                 }
             }
@@ -132,10 +144,14 @@ impl NetQuery {
         let nets: Vec<_> = matching
             .by_ref()
             .take(self.limit)
-            .map(|(name, terminals)| NetSummary { name: name.into(), terminals, guide_count: terminals.saturating_sub(1) })
+            .map(|(name, (terminals, unbound, roots))| NetSummary {
+                name: name.into(),
+                terminals,
+                guide_count: (unbound + roots.len()).saturating_sub(1),
+            })
             .collect();
         let next_after = matching.next().and_then(|_| nets.last().map(|n| n.name.clone()));
-        Ok(NetQueryResult { nets, total, next_after })
+        Ok(NetQueryResult { copper_proof: proof.coverage, nets, total, next_after })
     }
 }
 impl ConnectivityQuery {
@@ -144,35 +160,60 @@ impl ConnectivityQuery {
         let mut members = terminals(project, Some(&self.net)).remove(&self.net).unwrap_or_default();
         let terminal_count = members.len();
         let algorithm = if terminal_count <= EXACT_LIMIT { "dense_prim" } else { "coordinate_chain" };
-        let edges = tree(&members);
+        let proof = CopperProof::analyze(project);
+        let edges = remaining_tree(&members, &proof);
         let guide_count = edges.len();
         let guides = edges.into_iter().skip(self.offset).take(self.limit).map(|(a, b)| guide(&self.net, &members[a], &members[b])).collect();
         let end = self.offset.saturating_add(self.limit);
         let next_offset = (end < terminal_count).then_some(end);
         let terminals = members.drain(..).skip(self.offset).take(self.limit).collect();
-        Ok(ConnectivityResult { net: self.net.clone(), algorithm, terminal_count, guide_count, terminals, guides, next_offset })
+        Ok(ConnectivityResult {
+            copper_proof: proof.coverage,
+            net: self.net.clone(),
+            algorithm,
+            terminal_count,
+            guide_count,
+            terminals,
+            guides,
+            next_offset,
+        })
     }
 }
 /// All live guides; O(N) storage and O(N logN) time apart from bounded small-net exact trees.
 /// Legacy preview pads and pads without a net never enter this result.
 pub fn connection_guides(project: &Project) -> Vec<ConnectionGuide> {
+    let proof = CopperProof::analyze(project);
     terminals(project, None)
         .into_iter()
-        .flat_map(|(net, members)| tree(&members).into_iter().map(move |(a, b)| guide(&net, &members[a], &members[b])))
+        .flat_map(|(net, members)| remaining_tree(&members, &proof).into_iter().map(move |(a, b)| guide(&net, &members[a], &members[b])))
         .collect()
 }
 /// Same deterministic trees as visible guides, without cloning per-edge labels.
 pub(crate) fn connection_guide_ids(project: &Project) -> Vec<[crate::PadEndpointId; 2]> {
+    let proof = CopperProof::analyze(project);
     terminals(project, None)
         .into_values()
         .flat_map(|members| {
-            tree(&members).into_iter().map(move |(a, b)| {
+            remaining_tree(&members, &proof).into_iter().map(move |(a, b)| {
                 let mut pair = [a, b].map(|i| crate::PadEndpointId { part_id: members[i].part_id, pad_id: members[i].pad_id });
                 pair.sort();
                 pair
             })
         })
         .collect()
+}
+fn remaining_tree(members: &[Terminal], proof: &CopperProof) -> Vec<(usize, usize)> {
+    let mut forest = Forest::with_size(members.len());
+    let mut islands = BTreeMap::new();
+    for (i, terminal) in members.iter().enumerate() {
+        let id = crate::PadEndpointId { part_id: terminal.part_id, pad_id: terminal.pad_id };
+        if let Some(root) = proof.pads.get(&id) {
+            if let Some(previous) = islands.insert(root, i) {
+                forest.join(previous, i);
+            }
+        }
+    }
+    tree(members).into_iter().filter(|&(a, b)| forest.join(a, b)).collect()
 }
 fn distance2(a: &Terminal, b: &Terminal) -> f64 {
     (a.x_mm - b.x_mm).powi(2) + (a.y_mm - b.y_mm).powi(2)

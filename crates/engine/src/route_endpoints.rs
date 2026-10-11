@@ -34,7 +34,7 @@ pub struct RouteEndpointSnapshot {
     pub endpoints: Vec<RouteEndpoint>,
     pub omitted_legacy_parts: usize,
     pub unsupported_endpoints: usize,
-    /// Conservative guide identities, independent of electrical continuity.
+    /// Conservative remaining guide identities after bounded exact-endpoint copper proofs.
     pub guide_endpoints: Vec<[PadEndpointId; 2]>,
 }
 fn limit() -> usize {
@@ -177,7 +177,7 @@ pub struct RoutePadPolyline {
 }
 impl Command for RoutePadPolyline {
     const NAME: &'static str = "route_pad_polyline";
-    const DESCRIPTION: &'static str = "Atomically route between persisted explicit SMD pad IDs using exact integer quarter-turn centers, preserving off-grid endpoints and requiring grid-aligned supplied interior vertices. Resolve net/outer side from both pads; same assigned net/side required. Exact expected_project/initial expected_cursor required; stale, missing, arbitrary-angle or invalid endpoints reject all segments. Shared bounded scoped explicit-copper/outline preflight and one undo. No via routing, shove/walkaround, electrical continuity verification or conservative guide suppression.";
+    const DESCRIPTION: &'static str = "Atomically route between persisted explicit SMD pad IDs using exact integer quarter-turn centers, preserving off-grid endpoints and requiring grid-aligned supplied interior vertices. Resolve net/outer side from both pads; same assigned net/side required. Exact expected_project/initial expected_cursor required; stale, missing, arbitrary-angle or invalid endpoints reject all segments. Shared bounded scoped explicit-copper/outline preflight and one undo. No via routing, shove/walkaround, electrical continuity verification or full electrical connectivity certification.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.expected_cursor)
     }

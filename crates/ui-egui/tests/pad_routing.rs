@@ -87,12 +87,15 @@ fn pad_picking_retains_exact_off_grid_centers_and_snaps_only_interior_one_undo()
     assert!(!h.state().routing.editing(), "{:?}", h.state().routing.error);
     let after = e.read(Clone::clone);
     assert_eq!(after.board.tracks.len(), 2);
+    assert!(viamind_ui_egui::board_scene::scene_from_project(&after).ratsnest.is_empty());
+    assert!(e.route_endpoint_snapshot().unwrap().guide_endpoints.is_empty());
     assert!(after.board.tracks.values().any(|t| t.start == p(10_000_123, 10_000_129)));
     assert!(after.board.tracks.values().any(|t| t.end == p(30_000_257, 10_000_129)));
     assert_eq!(e.event_cursor().sequence, before.cursor.sequence + 1);
     h.state_mut().undo_design();
     h.run_steps(3);
     assert_eq!(e.read(Clone::clone), before.project);
+    assert_eq!(viamind_ui_egui::board_scene::scene_from_project(&before.project).ratsnest.len(), 1);
     h.state_mut().redo_design();
     h.run_steps(3);
     assert_eq!(e.read(Clone::clone), after);
