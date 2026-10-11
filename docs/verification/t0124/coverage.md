@@ -2,8 +2,8 @@
 
 The baseline and five original compact tests establish the narrow production defect
 and unchanged existing reachability. Two follow-up compact tests strengthen evidence
-for effective text-input clips and actual electrical-popup ownership; their result
-will be recorded separately from the original 983-test product/native source.
+for effective text-input clips and actual electrical-popup ownership; their seven-test passing result
+is recorded separately from the original 983-test product/native source.
 
 | Requirement | Actual evidence | Boundary |
 | --- | --- | --- |
@@ -21,6 +21,4 @@ will be recorded separately from the original 983-test product/native source.
 | Fit/pick/low zoom | `tests/schematic_labels.rs` three actual tests and `tests/schematic.rs::view_fit_and_status_follow_the_visible_schematic_camera` | Original viewport/detail policy remains; no new label or picking geometry |
 | Existing limits/virtualized object list | Existing bounded schematic snapshot/engine tests in full workspace | No T124 layout/virtualization change; no new last1024-pin/last-object interaction claim |
 
-The reviewed baseline-informed spec amendment is required before final submission.
-Follow-up test results and source are recorded in the final guide/master after the
-focused gate. Original/full/native source identities remain unchanged.
+Root independently approved the baseline-informed amendment at `4877b4ef0d417a6bdd80e3a4da04209ec94f6d70`. Follow-up source `6dc7e40ba6fdd02caae34641aec956d1bf78bb6c` passes formatting, strict workspace/all-target Clippy and all seven compact tests; commands and results are retained in `focused-coverage.sh`/`.log`. Original/full/native source identities remain unchanged.

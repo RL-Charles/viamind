@@ -1,0 +1,280 @@
+{
+  "passed": true,
+  "source": "33981e0532b7d0bba317d577d67d05bd017cb905",
+  "endpoint": "http://127.0.0.1:7960/mcp",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/viamind-33981e0532b7",
+  "binary_sha256": "5d6142be8e632fea273c41d905dabea4e0056c7b4d95d41501ba8c90ee5db2ea",
+  "checks": [
+    "discover exact current schematic command and observation tools",
+    "verify isolated owned fixture before edits",
+    "two clients agree on complete initial session",
+    "read-only observations preserve full session and document status",
+    "exact Nm schematic edit changes only selected symbol position",
+    "one sheet delta and one event",
+    "pin UUIDs, electrical fields and board all preserved",
+    "peer immediately sees full exact changed session",
+    "edit_schematic_sheet refuses atomically",
+    "edit_schematic_sheet refuses atomically",
+    "edit_schematic_sheet refuses atomically",
+    "one creator undo restores exact project",
+    "one creator redo restores exact changed project",
+    "exact snapshot no-op emits no event",
+    "creator selective undo preserves unrelated peer board edit",
+    "creator redo preserves peer board edit and exact schematic",
+    "peer can undo only its board edit",
+    "final creator undo restores exact original project",
+    "final shared read-only snapshot and status preserved",
+    "original scratch native bytes never overwritten"
+  ],
+  "scope": "Real desktop HTTP command parity and snapshot preservation; local draft/caret checks are actual egui tests, not MCP or OS input",
+  "tool_count": 117,
+  "commit_latency_ms": 14.142653992166743,
+  "check_count": 20,
+  "final_state": {
+    "cursor": {
+      "sequence": 8,
+      "stream_id": "f35c9998-0660-433b-aa46-e625dd51b88b"
+    },
+    "project": {
+      "board": {
+        "parts": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000065",
+      "name": "T124 compact sidebar owned proof",
+      "schematic": {
+        "sheets": {
+          "00000000-0000-0000-0000-000000000066": {
+            "content": {
+              "junctions": {
+                "00000000-0000-0000-0000-000000000076": {
+                  "id": "00000000-0000-0000-0000-000000000076",
+                  "position": {
+                    "x": 20000000,
+                    "y": 28000000
+                  }
+                }
+              },
+              "labels": {
+                "00000000-0000-0000-0000-000000000077": {
+                  "id": "00000000-0000-0000-0000-000000000077",
+                  "name": "VIN",
+                  "position": {
+                    "x": 10000000,
+                    "y": 20000000
+                  },
+                  "scope": "local"
+                },
+                "00000000-0000-0000-0000-000000000078": {
+                  "id": "00000000-0000-0000-0000-000000000078",
+                  "name": "3V3",
+                  "position": {
+                    "x": 30000000,
+                    "y": 20000000
+                  },
+                  "scope": "local"
+                },
+                "00000000-0000-0000-0000-000000000079": {
+                  "id": "00000000-0000-0000-0000-000000000079",
+                  "name": "GND",
+                  "position": {
+                    "x": 20000000,
+                    "y": 28000000
+                  },
+                  "scope": "power"
+                }
+              },
+              "symbols": {
+                "00000000-0000-0000-0000-000000000067": {
+                  "designator": "U1",
+                  "footprint": null,
+                  "height": 6000000,
+                  "id": "00000000-0000-0000-0000-000000000067",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "power_input",
+                      "id": "00000000-0000-0000-0000-000000000068",
+                      "name": "VIN",
+                      "number": "1",
+                      "position": {
+                        "x": -4000000,
+                        "y": 0
+                      }
+                    },
+                    {
+                      "electrical": "power_input",
+                      "id": "00000000-0000-0000-0000-000000000069",
+                      "name": "GND",
+                      "number": "2",
+                      "position": {
+                        "x": 0,
+                        "y": 4000000
+                      }
+                    },
+                    {
+                      "electrical": "power_output",
+                      "id": "00000000-0000-0000-0000-00000000006a",
+                      "name": "VOUT",
+                      "number": "3",
+                      "position": {
+                        "x": 4000000,
+                        "y": 0
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 20000000,
+                    "y": 20000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "3.3 V regulator",
+                  "width": 4000000
+                },
+                "00000000-0000-0000-0000-00000000006b": {
+                  "designator": "C1",
+                  "footprint": null,
+                  "height": 4000000,
+                  "id": "00000000-0000-0000-0000-00000000006b",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-00000000006c",
+                      "name": "",
+                      "number": "1",
+                      "position": {
+                        "x": 0,
+                        "y": -4000000
+                      }
+                    },
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-00000000006d",
+                      "name": "",
+                      "number": "2",
+                      "position": {
+                        "x": 0,
+                        "y": 4000000
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 10000000,
+                    "y": 24000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "1 uF",
+                  "width": 2000000
+                },
+                "00000000-0000-0000-0000-00000000006e": {
+                  "designator": "C2",
+                  "footprint": null,
+                  "height": 4000000,
+                  "id": "00000000-0000-0000-0000-00000000006e",
+                  "mirrored": false,
+                  "pins": [
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-00000000006f",
+                      "name": "",
+                      "number": "1",
+                      "position": {
+                        "x": 0,
+                        "y": -4000000
+                      }
+                    },
+                    {
+                      "electrical": "passive",
+                      "id": "00000000-0000-0000-0000-000000000070",
+                      "name": "",
+                      "number": "2",
+                      "position": {
+                        "x": 0,
+                        "y": 4000000
+                      }
+                    }
+                  ],
+                  "position": {
+                    "x": 30000000,
+                    "y": 24000000
+                  },
+                  "rotation_quarters": 0,
+                  "value": "1 uF",
+                  "width": 2000000
+                }
+              },
+              "wires": {
+                "00000000-0000-0000-0000-000000000071": {
+                  "end": {
+                    "x": 16000000,
+                    "y": 20000000
+                  },
+                  "id": "00000000-0000-0000-0000-000000000071",
+                  "start": {
+                    "x": 10000000,
+                    "y": 20000000
+                  }
+                },
+                "00000000-0000-0000-0000-000000000072": {
+                  "end": {
+                    "x": 30000000,
+                    "y": 20000000
+                  },
+                  "id": "00000000-0000-0000-0000-000000000072",
+                  "start": {
+                    "x": 24000000,
+                    "y": 20000000
+                  }
+                },
+                "00000000-0000-0000-0000-000000000073": {
+                  "end": {
+                    "x": 20000000,
+                    "y": 28000000
+                  },
+                  "id": "00000000-0000-0000-0000-000000000073",
+                  "start": {
+                    "x": 10000000,
+                    "y": 28000000
+                  }
+                },
+                "00000000-0000-0000-0000-000000000074": {
+                  "end": {
+                    "x": 30000000,
+                    "y": 28000000
+                  },
+                  "id": "00000000-0000-0000-0000-000000000074",
+                  "start": {
+                    "x": 20000000,
+                    "y": 28000000
+                  }
+                },
+                "00000000-0000-0000-0000-000000000075": {
+                  "end": {
+                    "x": 20000000,
+                    "y": 28000000
+                  },
+                  "id": "00000000-0000-0000-0000-000000000075",
+                  "start": {
+                    "x": 20000000,
+                    "y": 24000000
+                  }
+                }
+              }
+            },
+            "id": "00000000-0000-0000-0000-000000000066",
+            "name": "Power regulator"
+          }
+        }
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0124/owned-production.viamind.json"
+  }
+}
