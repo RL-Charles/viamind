@@ -68,7 +68,7 @@
     "Digest declares component identity only,not file content or vendor acceptance;existing manifest maps filenames to byte lengths and complete source cursor",
     "One bounded board/rules/needed-metadata capture and one retained manufacturing permit;same-snapshot central checked DRC",
     "NEW staged no-replace root;existing scoped fabrication/DRC exclusions remain",
-    "Final combined integration/reference and exact-head CI pending"
+    "Final combined integration/reference passed; exact-head CI pending"
   ],
   "artifact_sha256": {
     "docs/verification/t0108-production-report.json": "30f3671bd066349ae8ce2af56dcaf4d6f7401310fff4616df972c4b75256fbc0",
@@ -87,6 +87,23 @@
     "docs/verification/t0108-cua-production-metadata.json": "60ce7225632ef4513ee374b0a5d0e63f0093c8f272be951c9815ccc24bbcabbe",
     "docs/verification/t0108-population-smoke.py": "a8fbf7f5485dc2733cff7fb8f34da7db996fb0e7b06c5e6de7e16158e59a7376",
     "fixtures/assembly/output-job-population.viamind.json": "0ab32c85813871f005167b6110ea497383e826bb6ad16cc124f5bef812d98c05",
-    "crates/ui-egui/examples/t0108_inspection.rs": "b804787984bfda537be186ff615286fcfbb076eb12649fd80519a1d44cd74f48"
+    "crates/ui-egui/examples/t0108_inspection.rs": "b804787984bfda537be186ff615286fcfbb076eb12649fd80519a1d44cd74f48",
+    "docs/verification/t0108-final-combined-linux.log": "5cb98967306995a05e7d741f3ca78989c5103001043f1755c95f85876abf81f1",
+    "docs/verification/t0108-final-combined-catalog.json": "b74fcebc604ba42531511efa4118be0563f9d78fe8e2caf170898ff42146ab9a",
+    "docs/verification/t0108-final-combined-workflow.json": "2924fa0e7d997fa0d63eb5680f9a19d74ad3314c178abac1a37a152205a309f2"
+  },
+  "final_integration": {
+    "source": "c781570e94b9a4f5472122d8ca02b49f18d6aaa1",
+    "stack_base": "7178e7d7edf94f3e50cbaf06c1c7aefcaa74d5d5",
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/production-final-combined-verified",
+    "sha256": "3adbb92ff788b976a002c03ce1aa27a265ceafffd405b12a7e4c7511d05238e3",
+    "focused_tests_passed": 17,
+    "fmt": true,
+    "strict_all_target_workspace_clippy": true,
+    "workspace_build": true,
+    "actual_tool_count": 91,
+    "isolated_agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "scope": "Combined focused integration; original 756-test full gate and original 35-check native production proof remain separately identified above. Exact-head CI pending."
   }
 }

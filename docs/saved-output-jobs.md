@@ -76,8 +76,9 @@ mirrored. See [assembly conventions](assembly-csv.md) and
 Limits are 100000 components, 200000 fabrication primitives, 4096 bytes per board string,
 2 MiB aggregate board text,32 MiB per CSV,128 MiB fabrication and192 MiB complete
 release. Explicit rectangular pads and polygon outline are required. Legacy
-previews, inner copper/pours, paste/silkscreen/component holes, sourcing identifiers,
-manufacturer presets and certification remain unsupported. Optional populated
+previews, inner copper/pours, paste/silkscreen/component holes, manufacturer presets
+and certification remain unsupported. Default versions 1/2 omit sourcing identifiers;
+version 3 adds explicit populated sourcing as described below. Optional populated
 calibration and checked validation are described below; views and ZIP are not included.
 
 Job saves require a NEW file; releases require a NEW directory, both in an
@@ -133,3 +134,65 @@ and checked DRC. Borrowed geometry/text/policy and calibrated reference/scalar v
 precede copying. Only fixed population/mounting/calibration values are retained; unused
 sourcing strings and schematic sheets are excluded. Existing32MiB CSV/192MiB release
 bounds and atomic NEW root apply to the entire composition; no partial success exists.
+
+## Matched populated generic BOM (version 3)
+
+Select both **Include calibrated placement companion (version 2)** and
+**Include matched populated BOM (version 3)**, then save to a NEW job file. The
+matched option requires calibration; clearing calibration also clears the local
+matched choice. Load restores both saved options. The explicit descriptor is:
+
+```json
+{
+  "format": "viamind-output-job",
+  "version": 3,
+  "name": "Matched populated release",
+  "profile": "generic_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "include_calibrated_placement": true,
+  "include_populated_bom": true
+}
+```
+
+Version 3 requires both flags present and true. Versions 1/2 forbid
+`include_populated_bom`; false, null, missing/duplicate fields and unsupported
+combinations reject. Both existing profiles support this opt-in, including all
+required numeric checks for the checked profile. Generic releases contain 13 files;
+checked releases contain 14.
+
+The additional `assembly/populated-bom.csv` contains exactly the component-ID set
+in `assembly/calibrated-placement.csv`. Every populated component requires explicit
+mounting and calibration. All mounting types are included; no manufacturer-specific
+SMT filter is applied. DNP components are excluded from both companions. Older generic
+BOM/origin-placement inventories still include all components with unchanged bytes.
+
+The BOM has one component per row, quantity 1, in ascending stable UUID order:
+
+```csv
+Designator,Quantity,Value,Footprint,Mounting,Manufacturer,MPN,Supplier,Supplier SKU,Component ID
+```
+
+Values and optional identifiers are exact user-entered fields with standard CSV
+escaping, UTF-8 and CRLF rows. Missing identifiers remain blank; no fallback or
+procurement lookup occurs. Placement keeps its existing reference ordering and
+calibrated top-view convention. Shared membership does not imply shared row order.
+Empty population produces headers only in both companions.
+
+The version 3 manifest adds `populated_assembly` with both fixed paths, included count
+and `component_ids_sha256`. The digest streams ASCII
+`viamind-populated-components-v1`, a zero byte, then each included UUID's 16 network-order
+bytes in ascending UUID order. It identifies the component set, not CSV content or
+manufacturer acceptance. Existing manifest file entries still record byte lengths
+and the complete source cursor. Versions 1/2 omit this summary and preserve their bytes.
+
+Borrowed included-only sourcing validation precedes calibration-reference allocation
+and the single geometry capture. Each present identifier is 1–512 UTF-8 bytes without
+controls or edge whitespace. Included sourcing has an additional 2 MiB aggregate limit;
+DNP sourcing is excluded. Version 3 retains only needed included sourcing plus fixed
+population/mounting/calibration values, under the same single manufacturing permit.
+The existing CSV/release limits, same-snapshot checked DRC and atomic NEW root apply.
+No centroid, polarity, stock, vendor zero or submission acceptance is inferred.
+
+See [production/native verification](matched-populated-output-job-verification.md)
+for independent CSV/digest parsing, prior version 1/2 byte comparisons and reproducible
+shared CLI/MCP/desktop proof.
