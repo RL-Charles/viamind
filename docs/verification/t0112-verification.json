@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "scope": "Original full gate and native evidence; final combined T111 integration/catalog/CI pending. Verification hashes are not release content-authentication fields.",
+  "scope": "Original full/native proof plus final combined T111 scoped strict build/catalog gate. Exact-head CI is the independent merge gate. Verification hashes are not release content-authentication fields.",
   "source": "46ba5513e845855f50e83b0119e3315b39eb8450",
   "workspace_tests": {
     "passed": 798,
@@ -25,6 +25,10 @@
     {
       "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0108/production-final-combined-verified",
       "sha256": "3adbb92ff788b976a002c03ce1aa27a265ceafffd405b12a7e4c7511d05238e3"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-final-combined-verified",
+      "sha256": "a651c4e982727e642f0b7a92562c3a1542ab3e2de068a0e5f59a966ce4fbb12b"
     }
   ],
   "native_ppm_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/native-framebuffer.ppm",
@@ -199,6 +203,31 @@
       "path": "docs/verification/t0112-production-native.log",
       "bytes": 191,
       "sha256": "8f114801f57b466b5366d1c38712aaa9b79f2aa55f9381f8eea2f5e7b6255de5"
+    },
+    {
+      "path": "docs/verification/t0112-final-combined.log",
+      "bytes": 10694,
+      "sha256": "9fc4f19bf807dac476529d2a810afb7dca9388a875d1144dd6a8e3234304b19f"
+    },
+    {
+      "path": "docs/verification/t0112-final-combined.sh",
+      "bytes": 1683,
+      "sha256": "fe76dd441292a0bea2ef8ebe44663f2cdfe44c6a06ad267b76538a0cc90f5081"
+    },
+    {
+      "path": "docs/verification/t0112-final-catalog-report.json",
+      "bytes": 367,
+      "sha256": "e4e5c1b319448ff4ba17cd363268d00445b7334c53996767f7827705d29233ae"
+    },
+    {
+      "path": "docs/verification/t0112-final-catalog-drift.json",
+      "bytes": 367,
+      "sha256": "e4e5c1b319448ff4ba17cd363268d00445b7334c53996767f7827705d29233ae"
+    },
+    {
+      "path": "docs/verification/t0112-final-agent-workflow.json",
+      "bytes": 1264,
+      "sha256": "7b28d9319b81354bef2bd063bd5f751a81a09315888014f83c044c196b74eab8"
     }
   ],
   "independent_production_checks": 56,
@@ -209,5 +238,30 @@
     "observed_live_utc": "2026-10-11T18:38:22Z",
     "binary_sha256": "3c3d9fc74e45977141c466745e58fa2750cca7cf6c5e35c8fb0f84c7e3076c4d",
     "health_report": "docs/verification/t0112-production-restored-health.json"
+  },
+  "final_combined": {
+    "source": "3ec6ccb80d742c3b626eda306099955a137b8932",
+    "literal_stack_parent": "bdfd94f61aa45257e2c4951a6c50a4f82320cf5b",
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_build": true,
+    "focused_tests_passed": 24,
+    "focused_test_groups": [
+      15,
+      2,
+      1,
+      4,
+      1,
+      1
+    ],
+    "tool_count": 97,
+    "canonical_drift": true,
+    "agent_workflow_checks": 18,
+    "tooling_tests": 13,
+    "binary": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-final-combined-verified",
+      "sha256": "a651c4e982727e642f0b7a92562c3a1542ab3e2de068a0e5f59a966ce4fbb12b"
+    },
+    "historical_native_source_unchanged": "46ba5513e845855f50e83b0119e3315b39eb8450"
   }
 }

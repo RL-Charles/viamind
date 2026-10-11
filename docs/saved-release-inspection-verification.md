@@ -43,7 +43,7 @@ The prior exporter is retained T108 combined source `c781570e94b9a4f5472122d8ca0
 
 An initial [probe attempt](verification/t0112-historical-probe-failure.json) passed53 checks then stopped because the full-catalog discovery helper intentionally required writable tools inside a read-only stdio process. Its [trace](verification/t0112-historical-probe-failure.log) and [original harness](verification/t0112-historical-probe.py) are retained separately. The corrected probe uses initialized raw tools/list for that read-only check. No production Rust changed and every scratch payload had already been restored. This failed attempt is excluded from success claims.
 
-The [actual92-tool catalog](verification/t0112-catalog-report.json), [18 isolated agent workflow checks](verification/t0112-agent-workflow.json) and [13 tooling tests](verification/t0112-tooling.log) passed. These identify the original base before the final T111 integration; final combined catalog/CI remain required.
+The [actual92-tool catalog](verification/t0112-catalog-report.json), [18 isolated agent workflow checks](verification/t0112-agent-workflow.json) and [13 tooling tests](verification/t0112-tooling.log) passed. These identify the original base before the final T111 integration; the final combined gate is recorded below.
 
 ## Native desktop evidence
 
@@ -55,12 +55,18 @@ The [native report](verification/t0112-native-inspection-report.json) proves pat
 
 Fresh Cua production [launch](verification/t0112-cua-production-launch.json) and [enumeration](verification/t0112-cua-production-windows.json) returned no enumerated window target, so no Cua screenshot is claimed. The native framebuffer image is explicitly from the separate fixed-size inspection host.
 
-[Master provenance](verification/t0112-verification.json) indexes durable reports, logs, fixture, harness, capture and exact retained executable identities. Final combined integration and exact-head CI are still pending.
+[Master provenance](verification/t0112-verification.json) indexes durable reports, logs, fixture, harness, capture and exact retained executable identities. The final combined integration is recorded below; exact-head CI is the merge gate.
 
-Root independently reran the same actual production probe: [all56 checks passed](verification/t0112-independent-production-report.json). It separately verified28 original indexed artifact hashes, all3 retained executable hashes, the live production identity and every one of4,800,000 RGB samples against original P6 pixels, and viewed the readable native result. This review supplements the source audit; final combined T111 integration and exact-head CI remain pending.
+Root independently reran the same actual production probe: [all56 checks passed](verification/t0112-independent-production-report.json). It separately verified28 original indexed artifact hashes, all3 retained executable hashes, the live production identity and every one of4,800,000 RGB samples against original P6 pixels, and viewed the readable native result. This review supplements the source audit; the combined T111 gate is recorded below and exact-head CI remains the merge gate.
 
 ## Production preview lifecycle
 
 After the original and independent proofs, PID2242966 was observed absent. Its final application log had no exit diagnostic. Root found no matching coredump or kernel OOM/segfault/reset evidence; no cause was established. The original report/capture remain historical verification and no continued-process claim is made for that PID.
 
 Only this lane's verified preview was restored, on the same unoccupied7942 endpoint, using [the explicit launcher](verification/t0112-launch-production-restored.sh). As of2026-10-11T18:38:22Z, PID2287238 had the same exact retained executable SHA256. Two initialized read-only clients discovered the inspector, observed equal full session/status/native state, and successfully read the historical release; [health report](verification/t0112-production-restored-health.json). The fresh cursor is a new stream, not relabeled as the original proof stream. Cua [launch](verification/t0112-cua-production-restored-launch.json) and [metadata snapshot](verification/t0112-cua-production-restored-state.json) found the actual1920×1200 production window. Its degraded AT-SPI fallback proves only window metadata, not inspection checked state; the separate native framebuffer remains the visual proof. No other preview process was stopped or relaunched.
+
+## Final combined integration
+
+Only T112's own commits were transplanted onto frozen T111 `bdfd94f61aa45257e2c4951a6c50a4f82320cf5b`. Frozen combined Rust source `3ec6ccb80d742c3b626eda306099955a137b8932` passed [the final scoped gate](verification/t0112-final-combined.log): formatting, strict workspace/all-target Clippy, **24 focused tests**, workspace build, [actual 97-tool canonical catalog](verification/t0112-final-catalog-report.json), [exact committed reference drift check](verification/t0112-final-catalog-drift.json), [18 isolated workflow checks](verification/t0112-final-agent-workflow.json) and 13 tooling tests. This supplements the original 798-test full gate; no second full/native claim is inferred from the clean unrelated integration.
+
+Unique combined production binary `/home/charlesmowbray/.cache/viamind/native-artifacts/t0112/production-final-combined-verified`, SHA256 `a651c4e982727e642f0b7a92562c3a1542ab3e2de068a0e5f59a966ce4fbb12b`, is retained separately. The original native/56-check production and independent rerun binaries retain source `46ba551`; none is relabeled as this later combined build. Subsequent committed reference/evidence updates contain no Rust changes. Fresh exact-head CI is required before merge.
