@@ -35,15 +35,12 @@ fn headless_cli_exports_real_package_and_refuses_overwrite_or_invalid_invocation
 
 #[test]
 fn actual_cli_legend_opt_in_and_explicit_artwork_view_layers() {
-    use viamind_doc::{FootprintArtwork, SilkscreenSegment, file};
-    use viamind_geom::{Nm, Point};
+    use serde_json::json;
+    use viamind_doc::file;
     let temp = tempfile::tempdir().unwrap();
     let mut p = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
     let part = p.board.parts.values_mut().next().unwrap();
-    part.artwork = Some(Box::new(FootprintArtwork {
-        silkscreen: vec![SilkscreenSegment { start: Point::new(Nm(-3), Nm(5)), end: Point::new(Nm(7), Nm(11)), width: Nm(3) }],
-        courtyard: None,
-    }));
+    part.artwork = Some(Box::new(serde_json::from_value(json!({"silkscreen":[{"start":{"x":-3,"y":5},"end":{"x":7,"y":11},"width":3}]})).unwrap()));
     let native = temp.path().join("art.viamind.json");
     file::save_new(&p, &native).unwrap();
     let out = temp.path().join("Legend");
