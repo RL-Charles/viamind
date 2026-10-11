@@ -118,6 +118,7 @@ impl eframe::App for Inspection {
             input.events.push(egui::Event::MouseWheel {
                 unit: egui::MouseWheelUnit::Point,
                 delta: egui::vec2(0., -600.),
+                phase: egui::TouchPhase::Move,
                 modifiers: egui::Modifiers::NONE,
             });
         }
