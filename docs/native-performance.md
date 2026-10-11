@@ -195,3 +195,45 @@ during the reference run; no input or screenshot actions occurred during either
 GPU timing run. These sequential desktop observations are not a controlled
 hardware ceiling or a GPU timestamp measurement. Host load varied between runs,
 so the fps differences must not be interpreted as an isolated causal estimate.
+
+## Optional native GPU command timing (T59)
+
+The native benchmark accepts `--gpu-profile NEW_GPU_REPORT.json` after its
+ordinary cadence output path. This explicitly requests timestamp-query features
+when supported, leaving ordinary application/benchmark device requests unchanged.
+Unsupported devices write an unavailable diagnostic. GPU durations remain
+separate from the unchanged strict frame-cadence criterion:
+
+```sh
+cargo run --release -p viamind-ui-egui --example native_benchmark --   /tmp/new-cadence.json --gpu-profile /tmp/new-gpu.json
+```
+
+Four reusable query/resolve/readback slots provide asynchronous previous-frame
+readback during measurement; no blocking GPU wait runs inside measured frames.
+A final drain waits at most 10 seconds after cadence collection ends. Callbacks
+capture frame/phase tags, discarded reservations release their slots, and stale
+completions cannot release newer generations. Raw history is bounded to 4,096
+samples; busy, discarded, invalid/readback and overflow counters remain visible.
+
+The native Intel Graphics (ARL), Vulkan/Mesa 26.2.2 diagnostic completed with all
+1,260 tagged GPU samples and 360 sampled durations per phase. Every expected
+frame ID appears once. Busy/discarded/readback/overflow counters, final errors
+and pending slots are zero; the final drain succeeded. Queue timestamp period
+was 52.083332 ns. Evidence is in `performance/t0059-*.json`.
+
+| Phase | GPU mean | GPU median | GPU p95 | Instrumented native fps |
+| --- | ---: | ---: | ---: | ---: |
+| Fit pan | 23.471 ms | 21.952 ms | 31.388 ms | 25.654 |
+| Fit pan and zoom | 25.718 ms | 22.084 ms | 45.827 ms | 22.315 |
+| Zoomed 8× pan | 9.277 ms | 6.876 ms | 18.628 ms | 29.510 |
+
+These are elapsed GPU timestamps immediately around the production board draw
+commands. They exclude UI/background/overlays, uploads, presentation and queue
+waiting before the first timestamp. GPU context interference between timestamps
+and diagnostic overhead can affect durations. Observed host load increased from
+13.53 to 16.48; other CPU workloads and existing native previews remained active.
+Viamind builds had finished, and no screenshot/input actions occurred during
+measurement. This is evidence of remaining GPU cost under those conditions, not
+an isolated shader or hardware ceiling. Instrumented cadence is diagnostic;
+uninstrumented T55 cadence remains the acceptance evidence. All strict cadence
+checks still fail, and the original 100k/60fps acceptance remains open.
