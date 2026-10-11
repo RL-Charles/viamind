@@ -696,3 +696,22 @@ Only equivalent assigned-net cardinal chains merge; branches, exact pad/via
 anchors and all-net drill-hole AABB contacts remain. Finite capture/selection/
 merge/work/admission limits refuse unchanged. No bend optimization, shove or
 physical certification. See [desktop workflow and limits](../../docs/cardinal-track-cleanup.md).
+
+## Exact named-net minima
+
+`query_named_net_rules {}` returns the bounded document map, project ID and full
+source cursor. `set_named_net_rules` atomically replaces the map using
+`expected_project`, `expected_cursor` and at most128 distinct rule rows. Each row
+contains exact `net`, integer-Nm `minimum_copper_clearance` (0..100000000) and
+`minimum_track_width` (1..100000000). Empty rows clear the policy; nonempty native
+files require schema8. One undo restores the previous map. The Board menu's
+**Exact named-net minima** editor uses the same command and exact decimal mm input.
+
+Shared scoped DRC resolves the greater request baseline and both matching net
+clearances; reports retain `rules` and optional `document_net_rules` separately.
+Global maximum inflation only broadens candidate discovery. Routing widths stay
+explicit: below-minimum requests refuse without widening. Checked same-side,
+fixed-via and cleanup previews retain the captured rules; commits recompute under
+the current guarded cursor. Rules match exact case-sensitive names; no patterns,
+class hierarchy, preferred sizes, region priorities or physical certification.
+See the [public specification](../../docs/specs/named-net-minima.md).

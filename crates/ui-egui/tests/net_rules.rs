@@ -1,6 +1,9 @@
 //! Actual exact-decimal editing, compact controls and stale-session refusal.
 use egui::{Event, Key, Modifiers, vec2};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use viamind_doc::Project;
 use viamind_engine::{EngineHandle, Origin};
 use viamind_geom::Nm;

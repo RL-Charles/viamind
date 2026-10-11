@@ -15,7 +15,9 @@ const MAX_MINIMUM_NM: i64 = 100_000_000;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct NamedNetMinima {
+    #[schemars(range(min = 0, max = 100000000))]
     pub minimum_copper_clearance: Nm,
+    #[schemars(range(min = 1, max = 100000000))]
     pub minimum_track_width: Nm,
 }
 pub type NamedNetRules = BTreeMap<String, NamedNetMinima>;

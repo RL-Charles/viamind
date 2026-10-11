@@ -9,8 +9,11 @@ use viamind_doc::{NamedNetMinima, NamedNetRules, ObjectId, Project};
 #[serde(deny_unknown_fields)]
 pub struct NamedNetRuleRow {
     #[serde(deserialize_with = "viamind_doc::net_rules::deserialize_net_rule_name")]
+    #[schemars(length(min = 1, max = 128))]
     pub net: String,
+    #[schemars(range(min = 0, max = 100000000))]
     pub minimum_copper_clearance: viamind_geom::Nm,
+    #[schemars(range(min = 1, max = 100000000))]
     pub minimum_track_width: viamind_geom::Nm,
 }
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]

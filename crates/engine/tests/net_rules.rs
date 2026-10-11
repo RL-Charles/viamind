@@ -93,3 +93,42 @@ fn raw_request_row_count_and_name_bounds_refuse_before_row_materialization() {
     let bad_name = raw.replacen("\"net\":\"N\"", &format!("\"net\":\"{}\"", "x".repeat(257)), 1);
     assert!(serde_json::from_str::<SetNamedNetRules>(&bad_name).unwrap_err().to_string().contains("256"));
 }
+
+#[test]
+fn grouped_rule_edits_share_initial_cursor_coalesce_and_undo_as_one_map() {
+    let e = EngineHandle::new(Project::new("Grouped exact rules"));
+    let before = e.session_state();
+    let first = edit(&e, 300_001);
+    let second = edit(&e, 300_002);
+    let result = e
+        .execute_batch(
+            vec![
+                CommandCall::new(SetNamedNetRules::NAME, serde_json::to_value(first).unwrap()),
+                CommandCall::new(SetNamedNetRules::NAME, serde_json::to_value(second).unwrap()),
+            ],
+            Origin::User,
+            None,
+        )
+        .unwrap();
+    assert_eq!(result.deltas.len(), 1);
+    assert_eq!(e.event_cursor().sequence, before.cursor.sequence + 1);
+    assert_eq!(e.read(|p| p.board.net_rules["A"].minimum_track_width), Nm(300_002));
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+    e.redo(Origin::User).unwrap();
+    let applied = e.session_state();
+    let original = edit(&e, 300_002);
+    let changed = edit(&e, 300_003);
+    let result = e
+        .execute_batch(
+            vec![
+                CommandCall::new(SetNamedNetRules::NAME, serde_json::to_value(changed).unwrap()),
+                CommandCall::new(SetNamedNetRules::NAME, serde_json::to_value(original).unwrap()),
+            ],
+            Origin::User,
+            None,
+        )
+        .unwrap();
+    assert!(result.deltas.is_empty());
+    assert_eq!(e.session_state(), applied);
+}
