@@ -123,6 +123,7 @@ fn actual_posture_backspace_pan_zoom_and_escape_keep_entire_model_unchanged() {
     assert_eq!(points[1], Coordinate { x: ends[0].x, y: ends[1].y });
     key(&mut h, Key::Backspace);
     assert_eq!(h.state().schematic_wires.confirmed_vertices(), vec![ends[0]]);
+    let before_camera = h.state().schematic.camera;
     let pos = h.state().schematic.viewport.center();
     h.event(Event::PointerMoved(pos));
     h.event(Event::PointerButton { pos, button: PointerButton::Middle, pressed: true, modifiers: Modifiers::NONE });
@@ -131,8 +132,15 @@ fn actual_posture_backspace_pan_zoom_and_escape_keep_entire_model_unchanged() {
     h.run_steps(3);
     h.event(Event::PointerButton { pos: pos + vec2(35.0, 20.0), button: PointerButton::Middle, pressed: false, modifiers: Modifiers::NONE });
     h.run_steps(2);
-    h.event(Event::MouseWheel { unit: egui::MouseWheelUnit::Point, delta: vec2(0.0, 30.0), modifiers: Modifiers::NONE });
+    h.event(Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: vec2(0.0, 30.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: Modifiers::NONE,
+    });
     h.run_steps(5);
+    assert_ne!(h.state().schematic.camera.center, before_camera.center);
+    assert!(h.state().schematic.camera.zoom > before_camera.zoom);
     assert_eq!(h.state().schematic_wires.confirmed_vertices(), vec![ends[0]]);
     key(&mut h, Key::Escape);
     assert!(!h.state().schematic_wires.active());

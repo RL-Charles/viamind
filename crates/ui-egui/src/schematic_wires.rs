@@ -394,4 +394,25 @@ mod tests {
         let pointer = camera.world_to_screen(world(at), viewport);
         assert_eq!(d.target(camera, viewport, pointer, 1_000_000).unwrap(), (at, true));
     }
+    #[test]
+    fn active_wire_draft_blocks_erc_navigation_and_repeated_activation() {
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/regulator.viamind.json")).unwrap();
+        let engine = EngineHandle::new(project);
+        let graph = engine.query_schematic_connectivity(&Default::default()).unwrap();
+        let pin = graph.nets.iter().flat_map(|n| &n.members).find(|m| m.kind == viamind_engine::SchematicMemberKind::Pin).unwrap();
+        let snapshot = engine.snapshot_schematic_wire_sheet(&SchematicWireSheetQuery { sheet_id: pin.sheet_id }).unwrap();
+        let mut draft = WireDraft::new(snapshot).unwrap();
+        draft.confirm(pin.position.unwrap(), true).unwrap();
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.set_schematic_mode(true);
+        app.schematic_wires.draft = Some(draft);
+        let before = engine.session_state();
+        let camera = app.schematic.camera;
+        let points = app.schematic_wires.confirmed_vertices();
+        assert!(app.navigate_erc_pin(before.project.id, before.cursor, pin).unwrap_err().contains("wire drawing"));
+        app.begin_schematic_wires();
+        assert_eq!(app.schematic_wires.confirmed_vertices(), points);
+        assert_eq!(app.schematic.camera, camera);
+        assert_eq!(engine.session_state(), before);
+    }
 }
