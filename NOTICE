@@ -1,0 +1,38 @@
+Viamind
+Copyright (c) 2026 Charles Mowbray and the Viamind contributors
+
+Licensed under the MIT License (see LICENSE).
+
+Third-party components
+
+The components below are adopted when used: each entry applies from the first release that
+compiles in or bundles that component. Their upstream copyright and notice text is reproduced
+verbatim. Bundled assets (fonts, icons, images, datasets) are listed per file, with author,
+source and licence, in ATTRIBUTION.md.
+
+----------------------------------------------------------------------------------------------
+craft-libs  (https://github.com/storytold/craft-libs)
+Licence: MIT OR Apache-2.0 (upstream LICENSE-MIT, LICENSE-APACHE)
+Status: adopted when used
+Upstream NOTICE, reproduced verbatim:
+
+  craft-libs
+  Copyright (c) 2026 ArtCraft Team and the craft-libs contributors.
+  Licensed under the MIT License or the Apache License, Version 2.0, at your option
+  (LICENSE-MIT, LICENSE-APACHE).
+
+  Third-party material
+
+  This product bundles third-party material under its own licenses, listed below. The per-file
+  list (author, source, license) is in ATTRIBUTION.md.
+
+  None: every bundled asset is original to craft-libs.
+
+----------------------------------------------------------------------------------------------
+craft-fonts  (https://github.com/storytold/craft-fonts)
+Licence: MIT OR Apache-2.0 for code (upstream LICENSE-MIT, LICENSE-APACHE);
+         each font keeps its own licence (OFL-1.1, see ATTRIBUTION.md)
+Status: adopted when used
+Upstream has no NOTICE file; copyright line from its LICENSE-MIT:
+
+  Copyright (c) 2026 ArtCraft Team and the craft-fonts contributors
