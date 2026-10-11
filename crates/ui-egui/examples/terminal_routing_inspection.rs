@@ -104,7 +104,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(h.state().routing.terminal_planned_points(), points);
     h.set_size(vec2(width, height));
     h.run_steps(8);
-    let controls = ["Finish terminal route", "Cancel terminal route"].into_iter().map(|label| h.get_by_label(label).rect()).collect::<Vec<_>>();
+    let controls = ["Unchecked local preview; Finish runs scoped checks.", "Finish terminal route", "Cancel terminal route"]
+        .into_iter()
+        .map(|label| h.get_by_label(label).rect())
+        .collect::<Vec<_>>();
     assert!(controls.iter().all(|r| r.min.x >= 0.0 && r.min.y >= 0.0 && r.max.x <= width && r.max.y <= height));
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);

@@ -141,6 +141,7 @@ impl TerminalDraft {
      if let Some(e)=error{ui.colored_label(Color32::LIGHT_RED,e);}
     });
     ui.separator();
+    ui.label("Unchecked local preview; Finish runs scoped checks.");
     ui.horizontal(|ui|{finish=ui.add_enabled(current&&self.start.is_some()&&self.target.is_some()&&self.points().is_ok(),egui::Button::new("Finish terminal route")).clicked();cancel=ui.button("Cancel terminal route").clicked();});
    });
         (finish, cancel || !open)

@@ -117,7 +117,7 @@ fn compact_persistent_footer_fits_after_scroll_and_cancel_preserves_full_session
     let before = e.session_state();
     h.set_size(vec2(640.0, 400.0));
     h.run_steps(6);
-    for label in ["Finish terminal route", "Cancel terminal route"] {
+    for label in ["Unchecked local preview; Finish runs scoped checks.", "Finish terminal route", "Cancel terminal route"] {
         let r = h.get_by_label(label).rect();
         assert!(r.min.x >= 0.0 && r.min.y >= 0.0 && r.max.x <= 640.0 && r.max.y <= 400.0, "{label}:{r:?}");
     }
@@ -130,7 +130,7 @@ fn compact_persistent_footer_fits_after_scroll_and_cancel_preserves_full_session
         modifiers: Modifiers::NONE,
     });
     h.run_steps(5);
-    for label in ["Finish terminal route", "Cancel terminal route"] {
+    for label in ["Unchecked local preview; Finish runs scoped checks.", "Finish terminal route", "Cancel terminal route"] {
         let r = h.get_by_label(label).rect();
         assert!(r.max.x <= 640.0 && r.max.y <= 400.0, "{label}:{r:?}");
     }
