@@ -55,7 +55,7 @@ fn decimal(text: &str, scale: u32, min: i64, max: i64) -> io::Result<i64> {
 
 /// Process one row at a time. Field growth and number of rows/columns are charged first.
 fn rows(bytes: &[u8], headers: &[&str], mut consume: impl FnMut(Vec<String>) -> io::Result<()>) -> io::Result<()> {
-    let text = std::str::from_utf8(bytes).map_err(|_| invalid("assembly CSV must be UTF-8"))?;
+    std::str::from_utf8(bytes).map_err(|_| invalid("assembly CSV must be UTF-8"))?;
     let mut index = 0;
     let mut count = 0;
     while index < bytes.len() {
@@ -128,7 +128,6 @@ fn rows(bytes: &[u8], headers: &[&str], mut consume: impl FnMut(Vec<String>) -> 
         }
         count += 1;
     }
-    let _ = text;
     if count == 0 {
         return Err(invalid("assembly CSV missing header"));
     }
