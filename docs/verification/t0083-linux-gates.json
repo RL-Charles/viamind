@@ -1,0 +1,25 @@
+{
+  "source_revision": "06422509241c65579a459329141e6484472c95dc",
+  "base_revision": "8d77b23",
+  "fmt": true,
+  "clippy_workspace_all_targets_strict": true,
+  "workspace_tests_passed": 574,
+  "workspace_tests_failed": 0,
+  "workspace_tests_ignored_existing": 1,
+  "workspace_build": true,
+  "inspection_example_build": true,
+  "production_binary_sha256": "76f4b3ccb4e48d6dbc17681949fa929338e32c255972f04468d6faa03f5e93b9",
+  "inspection_binary_sha256": "3488c1e5e75221dc3ecbaba6635f9627882572bfbbdafcd3fa933e5eb7fd4ab8",
+  "gate_log_sha256": "9f9fd6bdc3206fdb0577d0cbbf45eff0469538bd6a1b0167ec9ecde12ccb02ff",
+  "commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline",
+    "cargo build -p viamind-ui-egui --example pcb_import_inspection --locked --offline"
+  ],
+  "cache_safety": "Entire sequence including doctests and binary copies under flock /tmp/viamind-workspace-gates.lock; own workspace source mtimes refreshed first; CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=2",
+  "integration_revision": "1b00c5adce161793d9ba6e4b3ce1384ab3bfac75",
+  "integration_base": "51e5c87a7c8aac95ed5542d612d9671e1483c40a",
+  "integration_evidence": "Clean rebase; all seven range-diff commits identical; formatting and whitespace checks pass. Fresh combined CI validates latest routing integration."
+}

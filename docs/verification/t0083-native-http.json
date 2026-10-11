@@ -1,0 +1,669 @@
+{
+  "passed": true,
+  "checks": [
+    "bounded preview and guarded import tools discovered",
+    "repeat source preview deterministic and entire session read-only",
+    "exact supported geometry with explicit incomplete fidelity",
+    "outline source identity report-only while native object identity retained",
+    "invalid input and wrong project reject unchanged",
+    "unsupported pad blocks whole conversion with actionable report",
+    "changed exact source bytes reject before replacement",
+    "both stale and fresh dirty-native requests preserve peer work",
+    "active native path rejects even after external bytes become supported PCB data",
+    "guarded replacement starts new unsaved native stream without source path",
+    "native exact odd-Nm geometry and original IDs/nets preserved",
+    "native bounded DRC checks imported objects without source-rule equivalence claim",
+    "import cannot silently discard unsaved conversion or save to source",
+    "subsequent native edits undo exactly while import remains dirty",
+    "native save and same-project reopen preserve all imported model data",
+    "source and previous saved native bytes remain unchanged"
+  ],
+  "binary_sha256": "76f4b3ccb4e48d6dbc17681949fa929338e32c255972f04468d6faa03f5e93b9",
+  "transport": "http://127.0.0.1:7909/mcp",
+  "fixture_sha256": "0c44f03ed9c8332557dda5319ee8fe948b578e189622258f721225ef746a0853",
+  "native_drc": {
+    "coverage": {
+      "checked_holes": 1,
+      "checked_pads": 2,
+      "checked_tracks": 2,
+      "checked_vias": 1,
+      "checks_not_performed": [
+        "curved tracks, blind/buried vias and inner copper layers",
+        "copper pours",
+        "through-hole footprint pads, nonplated holes and drill-to-edge clearance",
+        "solder mask and silkscreen",
+        "schematic/net connectivity and unrouted connections",
+        "manufacturing constraints"
+      ],
+      "examined_candidate_pairs": 5,
+      "excluded_details_truncated": false,
+      "excluded_part_count": 0,
+      "excluded_parts": [],
+      "explicit_outline_checked": true,
+      "unassigned_pads": 0,
+      "unassigned_tracks": 0,
+      "unassigned_vias": 0
+    },
+    "incomplete_reason": null,
+    "project_id": "b8a19711-ea6c-4f20-ab01-1af46b904a41",
+    "rules": {
+      "copper_clearance": 200000,
+      "edge_clearance": 250000,
+      "hole_clearance": 250000,
+      "hole_to_copper_clearance": 200000,
+      "minimum_annular_width": 100000,
+      "minimum_via_drill": 200000
+    },
+    "truncated": false,
+    "violations": []
+  },
+  "saved_path": "/home/charlesmowbray/.cache/viamind/tmp/viamind-t0083-native-490bpiep/imported.viamind.json",
+  "fidelity_report": {
+    "blocked_lists": 0,
+    "format_version": "20241229",
+    "full_fidelity": false,
+    "imported": {
+      "outline_vertices": 8,
+      "pads": 2,
+      "parts": 1,
+      "tracks": 2,
+      "vias": 1
+    },
+    "items": [
+      {
+        "byte_offset": 0,
+        "disposition": "imported",
+        "path": "root",
+        "reason": "Supported standalone board geometry converted; no project/schematic or fabrication equivalence claim.",
+        "source_id": null,
+        "token": "kicad_pcb"
+      },
+      {
+        "byte_offset": 13,
+        "disposition": "omitted",
+        "path": "root/0",
+        "reason": "Source format date retained in fidelity report only; native format has its own schema version.",
+        "source_id": null,
+        "token": "version"
+      },
+      {
+        "byte_offset": 34,
+        "disposition": "omitted",
+        "path": "root/1",
+        "reason": "Project/presentation/setup metadata and design constraints are not persisted; native defaults are not source rules.",
+        "source_id": null,
+        "token": "generator"
+      },
+      {
+        "byte_offset": 72,
+        "disposition": "omitted",
+        "path": "root/2",
+        "reason": "Project/presentation/setup metadata and design constraints are not persisted; native defaults are not source rules.",
+        "source_id": null,
+        "token": "general"
+      },
+      {
+        "byte_offset": 81,
+        "disposition": "omitted",
+        "path": "root/2/0",
+        "reason": "Project/presentation/setup metadata and design constraints are not persisted; native defaults are not source rules.",
+        "source_id": null,
+        "token": "thickness"
+      },
+      {
+        "byte_offset": 100,
+        "disposition": "omitted",
+        "path": "root/3",
+        "reason": "Canonical outer layers map to native surfaces; display names/stack metadata are not persisted.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 108,
+        "disposition": "omitted",
+        "path": "root/3/0",
+        "reason": "Canonical outer layers map to native surfaces; display names/stack metadata are not persisted.",
+        "source_id": null,
+        "token": "0"
+      },
+      {
+        "byte_offset": 126,
+        "disposition": "omitted",
+        "path": "root/3/1",
+        "reason": "Canonical outer layers map to native surfaces; display names/stack metadata are not persisted.",
+        "source_id": null,
+        "token": "31"
+      },
+      {
+        "byte_offset": 145,
+        "disposition": "omitted",
+        "path": "root/3/2",
+        "reason": "Canonical outer layers map to native surfaces; display names/stack metadata are not persisted.",
+        "source_id": null,
+        "token": "44"
+      },
+      {
+        "byte_offset": 170,
+        "disposition": "omitted",
+        "path": "root/4",
+        "reason": "Net table resolves exact object assignments; unused net registry entries are not persisted.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 181,
+        "disposition": "omitted",
+        "path": "root/5",
+        "reason": "Net table resolves exact object assignments; unused net registry entries are not persisted.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 195,
+        "disposition": "omitted",
+        "path": "root/6",
+        "reason": "Net table resolves exact object assignments; unused net registry entries are not persisted.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 211,
+        "disposition": "imported",
+        "path": "root/7",
+        "reason": "Exact outline edges represented by validated native polygon.",
+        "source_id": "10000000-0000-4000-8000-000000000001",
+        "token": "gr_rect"
+      },
+      {
+        "byte_offset": 220,
+        "disposition": "imported",
+        "path": "root/7/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "start"
+      },
+      {
+        "byte_offset": 248,
+        "disposition": "imported",
+        "path": "root/7/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "end"
+      },
+      {
+        "byte_offset": 264,
+        "disposition": "omitted",
+        "path": "root/7/2",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "stroke"
+      },
+      {
+        "byte_offset": 272,
+        "disposition": "omitted",
+        "path": "root/7/2/0",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "width"
+      },
+      {
+        "byte_offset": 285,
+        "disposition": "omitted",
+        "path": "root/7/2/1",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "type"
+      },
+      {
+        "byte_offset": 301,
+        "disposition": "omitted",
+        "path": "root/7/3",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "fill"
+      },
+      {
+        "byte_offset": 313,
+        "disposition": "imported",
+        "path": "root/7/4",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 337,
+        "disposition": "omitted",
+        "path": "root/7/5",
+        "reason": "Source edge identity retained in report only; native outline has no per-edge identity.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 386,
+        "disposition": "imported",
+        "path": "root/8",
+        "reason": "Exact outline edges represented by validated native polygon.",
+        "source_id": "10000000-0000-4000-8000-000000000002",
+        "token": "gr_rect"
+      },
+      {
+        "byte_offset": 395,
+        "disposition": "imported",
+        "path": "root/8/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "start"
+      },
+      {
+        "byte_offset": 409,
+        "disposition": "imported",
+        "path": "root/8/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "end"
+      },
+      {
+        "byte_offset": 425,
+        "disposition": "omitted",
+        "path": "root/8/2",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "stroke"
+      },
+      {
+        "byte_offset": 433,
+        "disposition": "omitted",
+        "path": "root/8/2/0",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "width"
+      },
+      {
+        "byte_offset": 446,
+        "disposition": "omitted",
+        "path": "root/8/2/1",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "type"
+      },
+      {
+        "byte_offset": 462,
+        "disposition": "omitted",
+        "path": "root/8/3",
+        "reason": "Presentation/metadata attribute is not persisted; no manufacturing equivalence implied.",
+        "source_id": null,
+        "token": "fill"
+      },
+      {
+        "byte_offset": 474,
+        "disposition": "imported",
+        "path": "root/8/4",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 498,
+        "disposition": "omitted",
+        "path": "root/8/5",
+        "reason": "Source edge identity retained in report only; native outline has no per-edge identity.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 547,
+        "disposition": "imported",
+        "path": "root/9",
+        "reason": "Exact front-side zero-angle native SMD component; no schematic link inferred.",
+        "source_id": "20000000-0000-4000-8000-000000000001",
+        "token": "footprint"
+      },
+      {
+        "byte_offset": 575,
+        "disposition": "imported",
+        "path": "root/9/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 590,
+        "disposition": "imported",
+        "path": "root/9/1",
+        "reason": "Exact zero-angle containing-object coordinates.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 617,
+        "disposition": "imported",
+        "path": "root/9/2",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 667,
+        "disposition": "omitted",
+        "path": "root/9/3",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "property"
+      },
+      {
+        "byte_offset": 694,
+        "disposition": "omitted",
+        "path": "root/9/3/0",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 704,
+        "disposition": "omitted",
+        "path": "root/9/3/1",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 727,
+        "disposition": "omitted",
+        "path": "root/9/4",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "property"
+      },
+      {
+        "byte_offset": 773,
+        "disposition": "omitted",
+        "path": "root/9/4/0",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 782,
+        "disposition": "omitted",
+        "path": "root/9/4/1",
+        "reason": "Reference/value text content retained when recognized; presentation and other properties are not persisted.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 803,
+        "disposition": "imported",
+        "path": "root/9/5",
+        "reason": "SMD component type represented by explicit native pads.",
+        "source_id": null,
+        "token": "attr"
+      },
+      {
+        "byte_offset": 818,
+        "disposition": "imported",
+        "path": "root/9/6",
+        "reason": "Exact rectangular native SMD pad.",
+        "source_id": "30000000-0000-4000-8000-000000000001",
+        "token": "pad"
+      },
+      {
+        "byte_offset": 836,
+        "disposition": "imported",
+        "path": "root/9/6/0",
+        "reason": "Exact zero-angle containing-object coordinates.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 860,
+        "disposition": "imported",
+        "path": "root/9/6/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 881,
+        "disposition": "omitted",
+        "path": "root/9/6/2",
+        "reason": "Front copper imported; mask/paste layers are not represented by the native pad model.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 916,
+        "disposition": "imported",
+        "path": "root/9/6/3",
+        "reason": "Exact net-table assignment; ordinal zero is unassigned.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 936,
+        "disposition": "imported",
+        "path": "root/9/6/4",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 987,
+        "disposition": "imported",
+        "path": "root/9/7",
+        "reason": "Exact rectangular native SMD pad.",
+        "source_id": "30000000-0000-4000-8000-000000000002",
+        "token": "pad"
+      },
+      {
+        "byte_offset": 1005,
+        "disposition": "imported",
+        "path": "root/9/7/0",
+        "reason": "Exact zero-angle containing-object coordinates.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 1028,
+        "disposition": "imported",
+        "path": "root/9/7/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 1049,
+        "disposition": "omitted",
+        "path": "root/9/7/2",
+        "reason": "Front copper imported; mask/paste layers are not represented by the native pad model.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 1084,
+        "disposition": "imported",
+        "path": "root/9/7/3",
+        "reason": "Exact net-table assignment; ordinal zero is unassigned.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 1104,
+        "disposition": "imported",
+        "path": "root/9/7/4",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 1154,
+        "disposition": "imported",
+        "path": "root/10",
+        "reason": "Exact straight outer-layer native track.",
+        "source_id": "40000000-0000-4000-8000-000000000001",
+        "token": "segment"
+      },
+      {
+        "byte_offset": 1163,
+        "disposition": "imported",
+        "path": "root/10/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "start"
+      },
+      {
+        "byte_offset": 1189,
+        "disposition": "imported",
+        "path": "root/10/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "end"
+      },
+      {
+        "byte_offset": 1208,
+        "disposition": "imported",
+        "path": "root/10/2",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "width"
+      },
+      {
+        "byte_offset": 1224,
+        "disposition": "imported",
+        "path": "root/10/3",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 1239,
+        "disposition": "imported",
+        "path": "root/10/4",
+        "reason": "Exact net-table assignment; ordinal zero is unassigned.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 1247,
+        "disposition": "imported",
+        "path": "root/10/5",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 1296,
+        "disposition": "imported",
+        "path": "root/11",
+        "reason": "Exact circular native through via.",
+        "source_id": "50000000-0000-4000-8000-000000000001",
+        "token": "via"
+      },
+      {
+        "byte_offset": 1301,
+        "disposition": "imported",
+        "path": "root/11/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "at"
+      },
+      {
+        "byte_offset": 1319,
+        "disposition": "imported",
+        "path": "root/11/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "size"
+      },
+      {
+        "byte_offset": 1330,
+        "disposition": "imported",
+        "path": "root/11/2",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "drill"
+      },
+      {
+        "byte_offset": 1342,
+        "disposition": "imported",
+        "path": "root/11/3",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layers"
+      },
+      {
+        "byte_offset": 1369,
+        "disposition": "imported",
+        "path": "root/11/4",
+        "reason": "Exact net-table assignment; ordinal zero is unassigned.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 1377,
+        "disposition": "imported",
+        "path": "root/11/5",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      },
+      {
+        "byte_offset": 1426,
+        "disposition": "imported",
+        "path": "root/12",
+        "reason": "Exact straight outer-layer native track.",
+        "source_id": "40000000-0000-4000-8000-000000000002",
+        "token": "segment"
+      },
+      {
+        "byte_offset": 1435,
+        "disposition": "imported",
+        "path": "root/12/0",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "start"
+      },
+      {
+        "byte_offset": 1456,
+        "disposition": "imported",
+        "path": "root/12/1",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "end"
+      },
+      {
+        "byte_offset": 1468,
+        "disposition": "imported",
+        "path": "root/12/2",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "width"
+      },
+      {
+        "byte_offset": 1484,
+        "disposition": "imported",
+        "path": "root/12/3",
+        "reason": "Exact native field.",
+        "source_id": null,
+        "token": "layer"
+      },
+      {
+        "byte_offset": 1499,
+        "disposition": "imported",
+        "path": "root/12/4",
+        "reason": "Exact net-table assignment; ordinal zero is unassigned.",
+        "source_id": null,
+        "token": "net"
+      },
+      {
+        "byte_offset": 1507,
+        "disposition": "imported",
+        "path": "root/12/5",
+        "reason": "Stable source identity retained in native object.",
+        "source_id": null,
+        "token": "uuid"
+      }
+    ],
+    "omitted_lists": 29
+  },
+  "source_revision": "06422509241c65579a459329141e6484472c95dc"
+}
