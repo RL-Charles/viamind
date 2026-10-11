@@ -16,7 +16,7 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version 4 to preserve independent copper in appended snapshots.
+/// New logs use version 5 to preserve schematic geometry in appended snapshots.
 pub const LOG_VERSION: u32 = 5;
 
 /// Why a log could not be read.

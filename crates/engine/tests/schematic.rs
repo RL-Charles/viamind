@@ -116,3 +116,14 @@ fn selective_undo_distinguishes_sheets_and_detects_same_sheet_conflict() {
         .unwrap();
     assert!(engine.undo_own(a).is_err());
 }
+
+#[test]
+fn log_base_rejects_sheet_identity_key_mismatch() {
+    let engine = EngineHandle::new(Project::new("Bad base"));
+    let id = create(&engine, Origin::User);
+    let mut project = engine.session_state().project;
+    project.schematic.sheets.get_mut(&id).unwrap().id = ObjectId::new();
+    let mut bytes = vec![];
+    EventLog::new(project).write_jsonl(&mut bytes).unwrap();
+    assert!(EventLog::read_jsonl(bytes.as_slice()).is_err());
+}

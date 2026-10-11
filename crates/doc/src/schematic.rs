@@ -242,6 +242,9 @@ pub fn validate_sheet(sheet: &Sheet) -> Result<(), String> {
 
 /// Validate all sheet geometry and global identities. A replacement is checked before commit.
 pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Result<(), String> {
+    if project.schematic.sheets.iter().any(|(key, sheet)| *key != sheet.id) {
+        return Err("schematic sheet map key must match ID".into());
+    }
     let replacing = replacement.map(|s| s.id);
     let mut sheets: Vec<_> = project.schematic.sheets.values().filter(|s| Some(s.id) != replacing).collect();
     if let Some(sheet) = replacement {
