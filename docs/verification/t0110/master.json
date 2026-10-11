@@ -329,6 +329,38 @@
     "verify-artifacts.py": {
       "bytes": 1687,
       "sha256": "54e43ab8ea5c1d5085d8cf3e0b86be3d44a84a41e60597e6cf6c0b6b0200cc55"
+    },
+    "combined.sh": {
+      "bytes": 2469,
+      "sha256": "6eee28ada587aac81c98ed56bbced63f69c942a5edc324bd67acbb1fcfbfc3b5"
+    },
+    "combined.log": {
+      "bytes": 12783,
+      "sha256": "c0d17755eb7989b64e2e50e63eebb0c2070279c20eeb320e3f2b04eac07d007a"
+    },
+    "combined-range-diff.txt": {
+      "bytes": 919,
+      "sha256": "e7d21c6bbed722085d6d31521d1e04c36222bf7d8a9771eed1c01eb08cdad0bf"
+    },
+    "combined-catalog-discovery.json": {
+      "bytes": 367,
+      "sha256": "4ff75b03fbbd0b969f6b2d4ba2c2248e0f92d3e403e9e13b4d5f79897ce96436"
+    },
+    "combined-catalog-check.json": {
+      "bytes": 367,
+      "sha256": "4ff75b03fbbd0b969f6b2d4ba2c2248e0f92d3e403e9e13b4d5f79897ce96436"
+    },
+    "combined-agent-workflow.json": {
+      "bytes": 1264,
+      "sha256": "b3e4e6b102cafa70a94e031c835a9d01d47295fb1d8dbd91e96409b01aa5e189"
+    },
+    "combined-detached-stdio.json": {
+      "bytes": 1413,
+      "sha256": "ccccbfe76c5adf22dccbc22f293a8ba7172df9d00335a06108e64e9a4c305cfb"
+    },
+    "combined-publication-stdio.json": {
+      "bytes": 1373,
+      "sha256": "4df318674c6849204961f4e95d8ee42c8aea750e6d0da113a3c0a80c4fbe2caf"
     }
   },
   "historical_source_retention": {
@@ -336,5 +368,29 @@
     "native_source_tag_target": "e55db5b",
     "pre_code_spec_tag": "verification/t0110/pre-code-spec",
     "github_exact_product_and_spec_commit_resolution": true
+  },
+  "combined_integration": {
+    "source": "062eeb6da37877cb74293a2740108ddb0f3ee39b",
+    "stack_boundary": "b396c6fd93463084100a90e78af4bfd59ac7c09e",
+    "predecessor": "T-0109 / PR107",
+    "own_commits_range_diff": "All11 equal; historical2e40ecca..018231f vs b396c6f..062eeb6",
+    "session": 44407,
+    "exit_code": 0,
+    "focused_tests_passed": 22,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "workspace_build": true,
+    "tooling_tests": 13,
+    "actual_tools": 93,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "detached_stdio_checks": 18,
+    "publication_stdio_checks": 17,
+    "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0110/combined-viamind-062eeb6da378",
+    "binary_sha256": "c42749af9f85fe4e2461e1d75cf1e92a7695998c686bf31f0a1edd7cb8aa37a5",
+    "debug_symbols": "stripped after unique copy under whole gate mutex",
+    "historical_full_and_native_unchanged": true,
+    "exact_head_ci_and_independent_review": "required before merge",
+    "prospective_main_plus_head_tree_must_equal_tested_head_tree": true
   }
 }

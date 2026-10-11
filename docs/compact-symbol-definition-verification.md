@@ -26,8 +26,14 @@ The row view shows all five pin fields and Remove within a measured 131-point in
 
 ![Completed compact NEW save](verification/t0110/completed.png)
 
-The [master](verification/t0110/master.json) indexes 28 durable artifacts with exact source, binary, capture and process provenance. Run `python3 docs/verification/t0110/verify-artifacts.py` for 28 hashes and two full native RGB checks. The retained production and old previews remain running/preserved; both owned inspection hosts exited.
+The [master](verification/t0110/master.json) indexes 36 durable artifacts with exact source, binary, capture and process provenance. Run `python3 docs/verification/t0110/verify-artifacts.py` for 36 hashes and two full native RGB checks. The retained production and old previews remain running/preserved; both owned inspection hosts exited.
 
 Final stacked integration on T109, fresh exact-head CI and independent review remain gates. After predecessors merge, prospective main-plus-HEAD tree must equal the tested combined tree; content differences require fresh verification. Smaller/scaled viewports and multi-unit symbols remain separate work.
 
 Historical product/evidence ancestry is retained publicly under `verification/t0110/native-source`; the original independently approved specification is retained under `verification/t0110/pre-code-spec`. GitHub resolves both exact historical source IDs.
+
+## Final combined verification
+
+Only this ticket's eleven commits were transplanted onto the frozen reviewed T109 head `b396c6fd93463084100a90e78af4bfd59ac7c09e`; all eleven [range-diff entries](verification/t0110/combined-range-diff.txt) are equal. No product or native-proof content changed. Combined source `062eeb6da37877cb74293a2740108ddb0f3ee39b` passed [22 focused tests, formatting, strict workspace/all-target Clippy and workspace build](verification/t0110/combined.log), 13 tooling tests, [93 exact full-application tools](verification/t0110/combined-catalog-check.json), [18 isolated agent workflows](verification/t0110/combined-agent-workflow.json), [18 detached writer](verification/t0110/combined-detached-stdio.json) and [17 publication](verification/t0110/combined-publication-stdio.json) fresh stdio checks. The unique combined executable SHA-256 is `c42749af9f85fe4e2461e1d75cf1e92a7695998c686bf31f0a1edd7cb8aa37a5`.
+
+Historical full Linux and actual native/HTTP proof remain attributed to their original source and retained binaries. Independent source/evidence review and exact final-head CI are required before merge. After preceding stacked tickets merge, the prospective main-plus-HEAD tree must equal this tested HEAD tree; a content difference requires refreshed verification.
