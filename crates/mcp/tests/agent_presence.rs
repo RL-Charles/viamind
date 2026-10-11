@@ -118,3 +118,94 @@ async fn actual_same_named_clients_own_distinct_markers_and_cannot_spoof_peers_o
     server.shutdown();
     observer_server.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn actual_sheet_scoped_clients_switch_and_reject_foreign_ids_without_design_changes() {
+    let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+    project.board = viamind_doc::file::from_str(include_str!("../../../fixtures/views/asymmetric.viamind.json")).unwrap().board;
+    let sheet = project.schematic.sheets.values().next().unwrap().clone();
+    let content = sheet.content.as_ref().unwrap();
+    let symbol = content.symbols.values().next().unwrap();
+    let ids =
+        vec![symbol.id, *content.wires.keys().next().unwrap(), *content.junctions.keys().next().unwrap(), *content.labels.keys().next().unwrap()];
+    let board_id = *project.board.parts.keys().next().unwrap();
+    let empty = viamind_doc::Sheet { id: viamind_doc::ObjectId::new(), name: "Empty attention".into(), content: None };
+    project.schematic.sheets.insert(empty.id, empty.clone());
+    let directory = tempfile::tempdir().unwrap();
+    let native = directory.path().join("protected.json");
+    viamind_doc::file::save(&project, &native).unwrap();
+    let bytes = std::fs::read(&native).unwrap();
+    let engine = EngineHandle::load(&native).unwrap();
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let registry = engine_registry(engine.clone()).unwrap();
+    let server = serve_http(registry.clone(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let a = client(server.url()).await;
+    let b = client(server.url()).await;
+    let pcb = json!({"expected_project":project.id,"expected_stream":before.cursor.stream_id,"cursor":{"x":0,"y":0},"selection":[board_id],"working_on":"PCB attention"});
+    let mut sch = pcb.clone();
+    sch["surface"] = json!({"kind":"schematic","sheet":sheet.id});
+    sch["selection"] = json!(ids);
+    sch["working_on"] = json!("Schematic attention");
+    let first = call(&a, "set_agent_presence", pcb.clone()).await.structured_content.unwrap();
+    assert!(first["agents"][0].get("surface").is_none());
+    let pair = call(&b, "set_agent_presence", sch.clone()).await.structured_content.unwrap();
+    assert_eq!(pair["agents"].as_array().unwrap().len(), 2);
+    let b_owner = pair["agents"].as_array().unwrap().iter().find(|v| v.get("surface").is_some()).unwrap()["connection"].as_u64().unwrap();
+    let prior = engine.query_agent_presence();
+    for (index, mut invalid) in [sch.clone(), sch.clone(), sch.clone(), sch.clone(), sch.clone(), sch.clone(), sch.clone()].into_iter().enumerate() {
+        match index {
+            0 => invalid["surface"] = Value::Null,
+            1 => invalid["surface"] = json!({"kind":"pcb","sheet":sheet.id}),
+            2 => invalid["surface"] = json!({"kind":"schematic","sheet":sheet.id,"extra":true}),
+            3 => invalid["selection"] = json!([board_id]),
+            4 => invalid["selection"] = json!([symbol.pins[0].id]),
+            5 => invalid["surface"] = json!({"kind":"schematic","sheet":empty.id}),
+            _ => invalid["selection"] = json!(vec![Value::Null; 65]),
+        }
+        assert_eq!(call(&b, "set_agent_presence", invalid).await.is_error, Some(true));
+        let after = engine.query_agent_presence();
+        for (old, new) in prior.agents.iter().zip(&after.agents) {
+            assert_eq!(old.surface, new.surface);
+            assert_eq!(old.selection, new.selection);
+            assert_eq!(old.cursor, new.cursor);
+            assert!(new.remaining_lease_ms <= old.remaining_lease_ms);
+        }
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(engine.document_status(), status);
+    }
+    let mut empty_attention = sch.clone();
+    empty_attention["surface"] = json!({"kind":"schematic","sheet":empty.id});
+    empty_attention["selection"] = json!([]);
+    assert_eq!(call(&a, "set_agent_presence", empty_attention).await.is_error, Some(false));
+    assert_eq!(engine.query_agent_presence().agents.len(), 2);
+    assert!(engine.query_agent_presence().agents.iter().all(|v| matches!(v.surface, viamind_engine::PresenceSurface::Schematic { .. })));
+    let observer_server = serve_http(registry.read_only(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let observer = client(observer_server.url()).await;
+    let observed = call(&observer, "query_agent_presence", json!({})).await.structured_content.unwrap();
+    assert_eq!(observed["agents"].as_array().unwrap().len(), 2);
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(std::fs::read(&native).unwrap(), bytes);
+    engine
+        .execute(
+            "edit_schematic_sheet",
+            json!({"expected_project":project.id,"sheet_id":sheet.id,"expected":sheet,"name":sheet.name,"edits":[{"kind":"delete","id":symbol.id}]}),
+            Origin::User,
+        )
+        .unwrap();
+    assert!(!engine.query_agent_presence().agents.iter().find(|v| v.connection == b_owner).unwrap().selection.contains(&symbol.id));
+    engine.undo(Origin::User).unwrap();
+    assert_eq!(engine.query_agent_presence().agents.iter().find(|v| v.connection == b_owner).unwrap().selection, ids);
+    engine.execute("delete_schematic_sheet", json!({"expected_project":project.id,"expected":empty}), Origin::User).unwrap();
+    assert_eq!(engine.query_agent_presence().agents.len(), 1);
+    engine.undo(Origin::User).unwrap();
+    assert_eq!(engine.query_agent_presence().agents.len(), 1);
+    assert_eq!(engine.read(Clone::clone), project);
+    assert_eq!(engine.document_status(), status);
+    assert_eq!(std::fs::read(&native).unwrap(), bytes);
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+    observer.cancel().await.unwrap();
+    server.shutdown();
+    observer_server.shutdown();
+}

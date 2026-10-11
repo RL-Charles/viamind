@@ -90,7 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             1001 + i as u64,
             ["Routing agent", "Assembly agent"][i],
             SetAgentPresence {
-                surface: viamind_engine::PresenceSurface::Pcb,
+                surface: viamind_engine::PresenceSurface::Pcb {},
                 expected_project: before.project.id,
                 expected_stream: before.cursor.stream_id,
                 cursor: PresencePoint { x: part.position.x, y: part.position.y },

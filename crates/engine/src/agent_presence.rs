@@ -26,28 +26,30 @@ pub struct PresencePoint {
 }
 
 /// One connection attends to either PCB or one explicitly identified sheet.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum PresenceSurface {
-    #[default]
-    Pcb,
-    Schematic {
-        sheet: ObjectId,
-    },
+    Pcb {},
+    Schematic { sheet: ObjectId },
+}
+impl Default for PresenceSurface {
+    fn default() -> Self {
+        Self::Pcb {}
+    }
 }
 impl PresenceSurface {
     fn is_pcb(&self) -> bool {
-        matches!(self, Self::Pcb)
+        matches!(self, Self::Pcb {})
     }
     fn exists(self, project: &Project) -> bool {
         match self {
-            Self::Pcb => true,
+            Self::Pcb {} => true,
             Self::Schematic { sheet } => project.schematic.sheets.contains_key(&sheet),
         }
     }
     fn contains(self, project: &Project, id: &ObjectId) -> bool {
         match self {
-            Self::Pcb => board_object(project, id),
+            Self::Pcb {} => board_object(project, id),
             Self::Schematic { sheet } => project.schematic.sheets.get(&sheet).and_then(|sheet| sheet.content.as_ref()).is_some_and(|content| {
                 content.symbols.contains_key(id)
                     || content.wires.contains_key(id)
@@ -271,7 +273,7 @@ mod tests {
         SetAgentPresence {
             expected_project: engine.read(|p| p.id),
             expected_stream: engine.event_cursor().stream_id,
-            surface: PresenceSurface::Pcb,
+            surface: PresenceSurface::Pcb {},
             cursor: PresencePoint { x: Nm(1), y: Nm(-3) },
             selection: vec![],
             working_on: "Checking route".into(),
@@ -284,7 +286,7 @@ mod tests {
         let engine = EngineHandle::new(Project::new("attention"));
         let old = serde_json::to_value(input(&engine)).unwrap();
         assert!(old.get("surface").is_none());
-        assert_eq!(serde_json::from_value::<SetAgentPresence>(old.clone()).unwrap().surface, PresenceSurface::Pcb);
+        assert_eq!(serde_json::from_value::<SetAgentPresence>(old.clone()).unwrap().surface, PresenceSurface::Pcb {});
         for surface in [
             json!(null),
             json!({"kind":"other"}),
