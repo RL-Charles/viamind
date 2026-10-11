@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/launch-gpu_parity",
+  "pid": 3359197,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind-gpu-parity",
+      "bounds": {
+        "height": 1000,
+        "width": 1400,
+        "x": 2180,
+        "y": 1265
+      },
+      "height": 1000,
+      "is_on_screen": true,
+      "pid": 3359197,
+      "title": "Viamind GPU parity",
+      "width": 1400,
+      "window_id": 110379507585168,
+      "x": 2180,
+      "y": 1265,
+      "z_index": null
+    }
+  ]
+}

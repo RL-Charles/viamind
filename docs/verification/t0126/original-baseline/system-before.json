@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-11T23:04:05.245987+00:00",
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 255U",
+  "logical_cpus": 14,
+  "loadavg": "3.80 5.65 7.73 3/2659 3359167",
+  "meminfo": {
+    "MemTotal": "       65307892 kB",
+    "MemAvailable": "   40135836 kB",
+    "SwapTotal": "      130616288 kB",
+    "SwapFree": "       98272304 kB"
+  },
+  "kernel": "Linux 7.2.5-3-omarchy x86_64 GNU/Linux",
+  "display_environment": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "XDG_SESSION_TYPE": "wayland",
+    "WGPU_BACKEND": null
+  },
+  "monitors": [
+    {
+      "name": "eDP-1",
+      "description": "BOE 0x0C3F",
+      "width": 1920,
+      "height": 1200,
+      "refreshRate": 60.002,
+      "x": 1920,
+      "y": 1152,
+      "scale": 1,
+      "transform": 0,
+      "focused": true
+    }
+  ],
+  "cpu_processes": [
+    "COMMAND         %CPU %MEM",
+    "ps               300  0.0",
+    "python3          125  0.0",
+    "viamind-33981e0 18.2  0.2",
+    "viamind         17.8  0.1",
+    "sherpa          13.0  0.0",
+    "viamind          9.9  0.2",
+    "python3          8.8  0.0",
+    "viamind          8.7  0.1",
+    "ghostty          8.4  0.0",
+    "Hyprland         7.3  0.1",
+    "viamind          5.6  0.1",
+    "codex            4.8  0.9"
+  ]
+}
