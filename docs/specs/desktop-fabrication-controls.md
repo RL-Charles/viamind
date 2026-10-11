@@ -5,7 +5,7 @@
 - [Rust thread Builder::spawn](https://doc.rust-lang.org/std/thread/struct.Builder.html#method.spawn): named thread creation returns an I/O result when the OS cannot create the worker; the unconfigured free function panics on that failure.
 - [egui0.36.2 Window::vscroll](https://docs.rs/egui/0.36.2/egui/struct.Window.html#method.vscroll): vertical scrolling keeps a long window accessible in compact viewports.
 - [egui0.36.2 Context::request_repaint](https://docs.rs/egui/0.36.2/egui/struct.Context.html#method.request_repaint): a worker may request a repaint on completion; scheduled polling handles a retained worker while its form is hidden.
-- Existing supported format behavior remains specified in [fabrication-gerber-xnc.md](fabrication-gerber-xnc.md), using public Ucamco/XNC references. This increment changes controls and request sharing, not the format or geometry.
+- Existing supported format behavior remains specified in [fabrication-gerber.md](fabrication-gerber.md), using public Ucamco/XNC references. This increment changes controls and request sharing, not the format or geometry.
 
 ## Behavior
 
