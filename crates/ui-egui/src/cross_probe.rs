@@ -325,6 +325,7 @@ impl ViamindApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::UiAction;
     use egui_kittest::{Harness, kittest::Queryable};
     use std::collections::BTreeSet;
     #[test]
