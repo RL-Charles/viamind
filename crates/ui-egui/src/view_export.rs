@@ -154,7 +154,7 @@ impl ViewExportUi {
         }
         let width_px = self.width.trim().parse().map_err(|_| "Width needs a whole number of pixels.")?;
         let height_px = self.height.trim().parse().map_err(|_| "Height needs a whole number of pixels.")?;
-        let padding_nm = mm(&self.padding)?;
+        let padding_nm = if self.crop { 0 } else { mm(&self.padding)? };
         let region_nm = if self.crop {
             Some(ViewBounds { min_x: mm(&self.region[0])?, min_y: mm(&self.region[1])?, max_x: mm(&self.region[2])?, max_y: mm(&self.region[3])? })
         } else {

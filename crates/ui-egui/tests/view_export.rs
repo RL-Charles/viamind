@@ -135,7 +135,6 @@ fn cropped_layers_dimensions_and_decimal_padding_are_validated_in_the_form() {
     input(&mut h, "Auto-fit padding (mm)", "0.0000001");
     click(&mut h, "Export snapshot to NEW file");
     assert!(!path.exists());
-    input(&mut h, "Auto-fit padding (mm)", "0.000001");
     click(&mut h, "Explicit crop (mm, X right / Y down)");
     input(&mut h, "Minimum X (mm)", "-0.000001");
     input(&mut h, "Maximum X (mm)", "30.000001");
@@ -148,7 +147,7 @@ fn cropped_layers_dimensions_and_decimal_padding_are_validated_in_the_form() {
                 layers: vec![viamind_render::ViewLayer::Outline],
                 width_px: 320,
                 height_px: 200,
-                padding_nm: 1,
+                padding_nm: 0,
                 region_nm: Some(viamind_render::ViewBounds { min_x: -1, min_y: 0, max_x: 30_000_001, max_y: 20_000_000 }),
             },
         )
