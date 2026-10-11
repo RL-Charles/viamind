@@ -203,7 +203,7 @@ impl ViamindApp {
                 if pending { ui.label("Checking captured board…"); }
                 if let Some(plan) = &draft.checked {
                     let c = &plan.counts;
-                    ui.label(format!("Checked: {} tracks → {} chains, {} redundant segments removed", c.selected_tracks, c.merged_chains, c.deleted_tracks));
+                    ui.label(format!("Checked: {} tracks to {} chains, {} redundant segments removed", c.selected_tracks, c.merged_chains, c.deleted_tracks));
                     ui.label(format!("Retained: {} anchors, {} branches, {} mismatches, {} hole chains, {} duplicates; {} diagonals, {} unassigned", c.retained_anchor_joints, c.retained_branch_joints, c.retained_mismatch_joints, c.retained_hole_chains, c.retained_duplicate_chains, c.unsupported_diagonal_tracks, c.unsupported_unassigned_tracks));
                     ui.label("Complete scoped joint DRC; existing unrelated violations and checker exclusions may remain. Apply recomputes with the full cursor guard.");
                     ui.label(format!("Actual coverage: {} pads, {} tracks, {} vias; {} excluded parts; {} existing unrelated violations", plan.coverage.checked_pads, plan.coverage.checked_tracks, plan.coverage.checked_vias, plan.coverage.excluded_part_count, plan.existing_unrelated_violations));
