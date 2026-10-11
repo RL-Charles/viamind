@@ -18,7 +18,7 @@ Single-unit rectangular body/pins only. Multi-unit symbols, arbitrary graphics a
 
 ## Linux, real MCP and native renderer evidence
 
-The [master](verification/t0102/master.json) indexes27 durable artifacts. Product source`87a940c23015c77eb0c5f6c53f2331e264115fda` on merged T99 passed the whole Linux gate50387: formatting, strict workspace/all-target Clippy, **716workspace tests,0failures,1existing ignored**, workspace build and inspection build. One additional identity-only prefilter test passed separately; it is not counted twice. The mutex remained held through doctests and unique binary copies, using refreshed workspace Rust mtimes, canonical shared target, two jobs and no incremental build.
+The [master](verification/t0102/master.json) indexes34 durable artifacts. Product source`87a940c23015c77eb0c5f6c53f2331e264115fda` on merged T99 passed the whole Linux gate50387: formatting, strict workspace/all-target Clippy, **716workspace tests,0failures,1existing ignored**, workspace build and inspection build. One additional identity-only prefilter test passed separately; it is not counted twice. The mutex remained held through doctests and unique binary copies, using refreshed workspace Rust mtimes, canonical shared target, two jobs and no incremental build.
 
 All13 adversarial tooling tests,85-tool discovery, exact canonical catalog check and18 isolated workflow checks passed. The retained production executable SHA-256 is`c570aebf3e8d48562ce8e7004b2d325969aac9cc321d679c3681a07c9cd52cd6`. It passed **18stdio checks** in a fresh owned headless process and **18actual desktop HTTP checks** through two independent clients at7933, Cua-launched PID1785279. Both transports verify exact ordered odd-Nm pin geometry/type after detached NEW save/read, dirty full-session/status preservation, six borrowed count/text/aggregate/path refusals before malformed typed decoding, strict unknown/wrong types and collision/captured-native-file protection. Live `/proc` executable SHA and socket ownership were checked separately.
 
@@ -40,6 +40,10 @@ The exact Cua production snapshot was degraded AT-SPI discovery with223×135pixe
 
 Repeat `scripts/verify-symbol-definition-native.py --binary RETAINED_APP --report NEW_REPORT` for fresh isolated stdio; add `--url http://127.0.0.1:OWNED_PORT/mcp` only for an explicitly owned scratch desktop engine. The HTTP verifier starts a new scratch document. Native driver and encoder are retained in the artifact directory; all output destinations must be NEW. `verify-artifacts.py` checks the durable master and three complete PNG RGB readbacks.
 
-Final integration and exact-head CI remain merge gates; historical product/helper identities above remain fixed.
+Exact-head CI and independent final review remain merge gates; historical product/helper identities above remain fixed.
 
 Historical product and inspection ancestry is retained by annotated tag`verification/t0102/native-source` at18f60b2. Both original source IDs resolve through the GitHub commits API. Clean integration onto merged T103 main`d8a8e57` had no conflicts or T102 implementation changes; final combined catalog/gates and CI are recorded separately.
+
+## Final combined integration
+
+Clean rebase onto merged T101 main`3c52571` produced source`c322e806bb997e345285768871fa55219e3dc87a` with zero conflicts and all13 range-diff entries equal. Combined gate38358 exited0: fmt, strict workspace/all-target Clippy,1borrowed boundary unit,1real two-client HTTP workflow,7actual desktop input tests, and workspace build passed. The unique combined app SHA-256 is`355e99383a9acc5c910fee070841ce0668ef345d4c54cfea9cff6155beefb56a`. Full discovery and exact committed catalog comparison both passed for88tools;18isolated workflow checks and18fresh production stdio checks passed. No T102 implementation or catalog bytes changed during integration. This targeted combined gate complements the historical716/0/1 full suite and three native captures; it does not recount or relabel those proofs. Final exact-head CI remains required.

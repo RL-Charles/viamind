@@ -429,11 +429,64 @@
     "wide.png": {
       "bytes": 96515,
       "sha256": "ba145b32c8eebedff401d38166b39c60909782c67a4db7b85f0a61016777bea7"
+    },
+    "combined.log": {
+      "bytes": 5530,
+      "sha256": "a9a7aa07d09547d817df2cbbc3c8913c699f8c8a7d88b3a02cf8235861594520"
+    },
+    "combined.sh": {
+      "bytes": 1712,
+      "sha256": "7ea9908b7f6d5c1015a055427eedf2ae4b073105643f7c37032c80c21850ec83"
+    },
+    "combined-catalog.json": {
+      "bytes": 367,
+      "sha256": "2a80e91f6fa86bd4fa5dfa237f2fa2661e1988847aa8cbbc478fc2dccaccf782"
+    },
+    "combined-catalog-check.json": {
+      "bytes": 367,
+      "sha256": "2a80e91f6fa86bd4fa5dfa237f2fa2661e1988847aa8cbbc478fc2dccaccf782"
+    },
+    "combined-workflow.json": {
+      "bytes": 1264,
+      "sha256": "c5f2a65f83aae98d915bdd72cf3cfa4ecee51b8095afbd8dae6d47199e8b32cd"
+    },
+    "combined-stdio.json": {
+      "bytes": 1413,
+      "sha256": "a4f7201d69f1904a6a14733ab75f6bd70c7b2d739de5d380d408db2be38abcbc"
+    },
+    "combined-range-diff.txt": {
+      "bytes": 1148,
+      "sha256": "1ded873b908bec0d17361ec8a3a4c6950be64997cb785c8f9656a268f8a83b49"
     }
   },
   "source_retention": {
     "annotated_tag": "verification/t0102/native-source",
     "tag_target": "18f60b2",
     "historical_product_and_inspection_github_resolvable": true
+  },
+  "final_combined": {
+    "base": "3c52571",
+    "source": "c322e806bb997e345285768871fa55219e3dc87a",
+    "session": 38358,
+    "exit_code": 0,
+    "rebase_conflicts": 0,
+    "range_diff_all_13_equal": true,
+    "fmt": true,
+    "strict_workspace_all_target_clippy": true,
+    "targeted_tests": {
+      "borrowed_unit": 1,
+      "real_two_client_http": 1,
+      "actual_desktop_input": 7,
+      "failed": 0
+    },
+    "workspace_build": true,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0102/combined-viamind-c322e806bb99",
+    "sha256": "355e99383a9acc5c910fee070841ce0668ef345d4c54cfea9cff6155beefb56a",
+    "actual_tools": 88,
+    "canonical_exact_check": true,
+    "workflow_checks": 18,
+    "stdio_checks": 18,
+    "native_repeat_required": false,
+    "historical_native_provenance_unchanged": true
   }
 }

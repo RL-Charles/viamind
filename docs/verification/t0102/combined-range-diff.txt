@@ -1,0 +1,13 @@
+ 1:  6b5874c =  1:  373cf15 Specify stable symbol definition controls and bounded writer decoding
+ 2:  a3cc807 =  2:  74b314b Keep symbol editor fields stable and bound detached writer decoding
+ 3:  ea43903 =  3:  8d2e9c1 Correct symbol inspection inputs and add production writer probe
+ 4:  7245a57 =  4:  af81de6 Use direct focus accessor in identity regression
+ 5:  d1b873c =  5:  d5b361e Clarify captured symbol writer native-path protection
+ 6:  a9e62a5 =  6:  8671f06 Target visible virtual pin row before scroll return
+ 7:  a5ee319 =  7:  3327462 Prepare surviving electrical popup after pin row removal
+ 8:  931fb44 =  8:  a93a7aa Match native inspection to verified two-pin input workflow
+ 9:  445b31b =  9:  b8ceace Return inner pin viewport before actual Remove input
+10:  f6dbc43 = 10:  c6d9225 Verify painted Remove clip in exact passing preparation viewport
+11:  3c680ee = 11:  7af3c68 Expand native inspection dialog before clipped pin input
+12:  2d48a53 = 12:  42fa71c Retain symbol field identity bounds and native verification evidence
+13:  7490538 = 13:  c322e80 Record clean latest-main integration and retained source ancestry
