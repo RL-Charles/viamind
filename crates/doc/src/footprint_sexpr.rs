@@ -8,6 +8,14 @@ use crate::{
 };
 use std::collections::BTreeSet;
 
+#[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
+#[error("Footprint conversion: {0}")]
+pub struct FootprintConversionError(pub String);
+impl From<ImportError> for FootprintConversionError {
+    fn from(error: ImportError) -> Self {
+        Self(error.0)
+    }
+}
 pub const MAX_SOURCE_BYTES: usize = 1024 * 1024;
 #[derive(Clone, Debug)]
 pub struct ParsedFootprint {
@@ -15,9 +23,9 @@ pub struct ParsedFootprint {
     pub footprint: Option<Footprint>,
     pub report: FidelityReport,
 }
-type Result<T> = std::result::Result<T, ImportError>;
-fn bad(message: impl Into<String>) -> ImportError {
-    ImportError(message.into())
+type Result<T> = std::result::Result<T, FootprintConversionError>;
+fn bad(message: impl Into<String>) -> FootprintConversionError {
+    FootprintConversionError(message.into())
 }
 fn detached_ids(n: &Node, items: &mut [FidelityItem]) {
     if matches!(n.head.as_str(), "uuid" | "tstamp") {
