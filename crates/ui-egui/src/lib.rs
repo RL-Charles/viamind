@@ -31,6 +31,7 @@ pub mod output_jobs;
 mod pad_routing;
 pub mod pads;
 pub mod parts;
+mod pcb_branches;
 pub mod pcb_import;
 pub mod pcb_sync;
 pub mod pin_pad_probe;
@@ -147,6 +148,7 @@ pub struct FrameStats {
 
 /// The Viamind application state.
 pub struct ViamindApp {
+    pub pcb_branches: pcb_branches::PcbBranchesUi,
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
     pub symbol_library: symbol_library::SymbolLibraryUi,
@@ -203,6 +205,7 @@ impl ViamindApp {
     /// An app showing [`Scene::synthetic`] with `n` objects.
     pub fn with_scene_size(n: usize) -> Self {
         Self {
+            pcb_branches: pcb_branches::PcbBranchesUi::default(),
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
@@ -394,6 +397,7 @@ impl ViamindApp {
         self.sync_design();
         self.sync_schematic_wires(ui.ctx());
         self.sync_track_cleanup(ui.ctx());
+        self.sync_pcb_branches(ui.ctx());
         if let Some(design) = &self.design {
             self.routing.sync_walkaround(ui.ctx(), &design.engine);
         }
@@ -426,6 +430,7 @@ impl ViamindApp {
         self.symbol_library_window(ui);
         self.track_cleanup_window(ui);
         self.named_net_rules_window(ui);
+        self.pcb_branches_window(ui);
         egui::CentralPanel::default().frame(egui::Frame::NONE).show(ui, |ui| {
             if self.schematic.active {
                 self.schematic_canvas(ui);
@@ -459,6 +464,7 @@ impl ViamindApp {
             self.paint_track_cleanup(ui, response.rect);
             self.paint_labels(ui);
             self.paint_agent_presence(ui, response.rect);
+            self.paint_pcb_branch(ui, response.rect);
         });
         self.file_dialogs(ui);
         self.placement_dialog(ui);
@@ -656,6 +662,10 @@ impl ViamindApp {
             }
             if self.design.is_some() && !self.schematic.active {
                 ui.menu_button("Board", |ui| {
+                    if ui.button("Agent branches…").clicked() {
+                        self.begin_pcb_branches();
+                        ui.close();
+                    }
                     if ui.button("Exact named-net minima…").clicked() {
                         self.begin_named_net_rules();
                         ui.close();

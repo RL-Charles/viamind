@@ -16,6 +16,7 @@ pub mod fabrication;
 pub mod host;
 pub mod http;
 pub mod output_jobs;
+pub mod pcb_branches;
 pub mod registry;
 pub mod server;
 
