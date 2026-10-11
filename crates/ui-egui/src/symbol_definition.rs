@@ -32,7 +32,7 @@ pub(crate) enum Decision {
     Save(SaveSymbolTemplate),
     Cancel,
 }
-fn decimal(value: Nm) -> String {
+pub(crate) fn decimal(value: Nm) -> String {
     let n = i128::from(value.0);
     let magnitude = n.abs();
     let fraction = format!("{:06}", magnitude % 1_000_000);
@@ -79,7 +79,7 @@ impl DefinitionEditor {
             error: None,
         }
     }
-    fn template(&self) -> Result<SymbolTemplate, String> {
+    pub(crate) fn template(&self) -> Result<SymbolTemplate, String> {
         if self.pins.len() > MAX_PINS {
             return Err("At most 1024 pins per definition".into());
         }
@@ -118,6 +118,85 @@ impl DefinitionEditor {
         let number = (1..=MAX_PINS + 1).map(|n| n.to_string()).find(|n| !self.pins.iter().any(|p| &p.number == n)).expect("bounded free pin number");
         self.pins.push(PinDraft { widget: ObjectId::new(), number, name: String::new(), x: "0".into(), y: "0".into(), electrical: PinType::Passive });
     }
+    pub(crate) fn pin_count(&self) -> usize {
+        self.pins.len()
+    }
+    pub(crate) fn pin_text(&self) -> impl Iterator<Item = &str> {
+        self.pins.iter().flat_map(|p| [p.number.as_str(), p.name.as_str()])
+    }
+    pub(crate) fn show_geometry(&mut self, ui: &mut egui::Ui, max_pins: usize) {
+        text(ui, self.widget, "Definition width (mm)", &mut self.width, 32);
+        text(ui, self.widget, "Definition height (mm)", &mut self.height, 32);
+        ui.label(format!("{} / 1024 ordered pins", self.pins.len()));
+        let row_height = ui.spacing().interact_size.y * 6.0 + ui.spacing().item_spacing.y * 5.0 + 8.0;
+        let mut remove = None;
+        // Reserve one complete row even when preceding outer-window content
+        // extends beyond the screen. The outer scroll area can then reveal
+        // this region instead of collapsing its inner clip to a few points.
+        egui::ScrollArea::vertical().id_salt("definition_pins").min_scrolled_height(row_height).max_height(280.0).show_rows(
+            ui,
+            row_height,
+            self.pins.len(),
+            |ui, rows| {
+                for i in rows {
+                    let pin = &mut self.pins[i];
+                    ui.allocate_ui(egui::vec2(ui.available_width(), row_height), |ui| {
+                        // A root scope also keeps the electrical popup stable through row movement.
+                        ui.scope_builder(egui::UiBuilder::new().id(egui::Id::new(("definition-pin", pin.widget))), |ui| {
+                            egui::Grid::new("fields").show(ui, |ui| {
+                                for (key, label, field, limit) in [
+                                    ("number", format!("Pin {} number", i + 1), &mut pin.number, 128),
+                                    ("name", format!("Pin {} name", i + 1), &mut pin.name, 128),
+                                    ("x", format!("Pin {} X (mm)", i + 1), &mut pin.x, 32),
+                                    ("y", format!("Pin {} Y (mm)", i + 1), &mut pin.y, 32),
+                                ] {
+                                    let label = ui.label(label);
+                                    ui.add(
+                                        egui::TextEdit::singleline(field).id(egui::Id::new((pin.widget, key))).desired_width(150.0).char_limit(limit),
+                                    )
+                                    .labelled_by(label.id);
+                                    ui.end_row();
+                                }
+                                let label = ui.label(format!("Pin {} electrical type", i + 1));
+                                egui::ComboBox::from_id_salt("type")
+                                    .selected_text(format!("{:?}", pin.electrical))
+                                    .show_ui(ui, |ui| {
+                                        for kind in [
+                                            PinType::Unspecified,
+                                            PinType::Passive,
+                                            PinType::Input,
+                                            PinType::Output,
+                                            PinType::Bidirectional,
+                                            PinType::TriState,
+                                            PinType::OpenCollector,
+                                            PinType::OpenEmitter,
+                                            PinType::PowerInput,
+                                            PinType::PowerOutput,
+                                            PinType::NoConnect,
+                                        ] {
+                                            ui.selectable_value(&mut pin.electrical, kind, format!("{kind:?}"));
+                                        }
+                                    })
+                                    .response
+                                    .labelled_by(label.id);
+                                ui.end_row();
+                                if ui.button(format!("Remove pin {}", i + 1)).clicked() {
+                                    remove = Some(i);
+                                }
+                                ui.end_row();
+                            });
+                        });
+                    });
+                }
+            },
+        );
+        if let Some(i) = remove {
+            self.pins.remove(i);
+        }
+        if ui.add_enabled(self.pins.len() < max_pins, egui::Button::new("Add definition pin")).clicked() {
+            self.add_pin();
+        }
+    }
     pub(crate) fn show(&mut self, ui: &mut egui::Ui, ready: bool) -> Option<Decision> {
         let mut decision = None;
         ui.separator();
@@ -127,80 +206,7 @@ impl DefinitionEditor {
             text(ui, self.widget, "Definition name", &mut self.name, 128);
             text(ui, self.widget, "Definition default value", &mut self.value, 1024);
             text(ui, self.widget, "Definition footprint (optional)", &mut self.footprint, 128);
-            text(ui, self.widget, "Definition width (mm)", &mut self.width, 32);
-            text(ui, self.widget, "Definition height (mm)", &mut self.height, 32);
-            ui.label(format!("{} / 1024 ordered pins", self.pins.len()));
-            let row_height = ui.spacing().interact_size.y * 6.0 + ui.spacing().item_spacing.y * 5.0 + 8.0;
-            let mut remove = None;
-            // Reserve one complete row even when preceding outer-window content
-            // extends beyond the screen. The outer scroll area can then reveal
-            // this region instead of collapsing its inner clip to a few points.
-            egui::ScrollArea::vertical().id_salt("definition_pins").min_scrolled_height(row_height).max_height(280.0).show_rows(
-                ui,
-                row_height,
-                self.pins.len(),
-                |ui, rows| {
-                    for i in rows {
-                        let pin = &mut self.pins[i];
-                        ui.allocate_ui(egui::vec2(ui.available_width(), row_height), |ui| {
-                            // A root scope also keeps the electrical popup stable through row movement.
-                            ui.scope_builder(egui::UiBuilder::new().id(egui::Id::new(("definition-pin", pin.widget))), |ui| {
-                                egui::Grid::new("fields").show(ui, |ui| {
-                                    for (key, label, field, limit) in [
-                                        ("number", format!("Pin {} number", i + 1), &mut pin.number, 128),
-                                        ("name", format!("Pin {} name", i + 1), &mut pin.name, 128),
-                                        ("x", format!("Pin {} X (mm)", i + 1), &mut pin.x, 32),
-                                        ("y", format!("Pin {} Y (mm)", i + 1), &mut pin.y, 32),
-                                    ] {
-                                        let label = ui.label(label);
-                                        ui.add(
-                                            egui::TextEdit::singleline(field)
-                                                .id(egui::Id::new((pin.widget, key)))
-                                                .desired_width(150.0)
-                                                .char_limit(limit),
-                                        )
-                                        .labelled_by(label.id);
-                                        ui.end_row();
-                                    }
-                                    let label = ui.label(format!("Pin {} electrical type", i + 1));
-                                    egui::ComboBox::from_id_salt("type")
-                                        .selected_text(format!("{:?}", pin.electrical))
-                                        .show_ui(ui, |ui| {
-                                            for kind in [
-                                                PinType::Unspecified,
-                                                PinType::Passive,
-                                                PinType::Input,
-                                                PinType::Output,
-                                                PinType::Bidirectional,
-                                                PinType::TriState,
-                                                PinType::OpenCollector,
-                                                PinType::OpenEmitter,
-                                                PinType::PowerInput,
-                                                PinType::PowerOutput,
-                                                PinType::NoConnect,
-                                            ] {
-                                                ui.selectable_value(&mut pin.electrical, kind, format!("{kind:?}"));
-                                            }
-                                        })
-                                        .response
-                                        .labelled_by(label.id);
-                                    ui.end_row();
-                                    if ui.button(format!("Remove pin {}", i + 1)).clicked() {
-                                        remove = Some(i);
-                                    }
-                                    ui.end_row();
-                                });
-                            });
-                        });
-                    }
-                },
-            );
-            if let Some(i) = remove {
-                self.pins.remove(i);
-            }
-            if ui.add_enabled(self.pins.len() < MAX_PINS, egui::Button::new("Add definition pin")).clicked() {
-                self.add_pin();
-            }
+            self.show_geometry(ui, MAX_PINS);
             text(ui, self.widget, "NEW definition file path", &mut self.path, 4096);
             if ui.button("Use edited definition").clicked() {
                 match self.template() {

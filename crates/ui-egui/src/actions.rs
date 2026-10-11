@@ -49,6 +49,11 @@ ui_actions! {
     DiscardPcbBranch => ("discard_pcb_branch", input_schema::<viamind_engine::pcb_branches::PcbBranchRevision>(), discard_pcb_branch),
     QueryNamedNetRules => ("query_named_net_rules", no_args(), query_named_net_rules),
     SetNamedNetRules => (viamind_engine::SetNamedNetRules::NAME, input_schema::<viamind_engine::SetNamedNetRules>(), set_named_net_rules),
+    PlaceSymbolPackage => (viamind_engine::PlaceSymbolPackage::NAME, input_schema::<viamind_engine::PlaceSymbolPackage>(), place_symbol_package),
+    DeleteSymbolPackage => (viamind_engine::DeleteSymbolPackage::NAME, input_schema::<viamind_engine::DeleteSymbolPackage>(), delete_symbol_package),
+    LoadSymbolPackage => ("load_symbol_package", input_schema::<viamind_engine::LoadSymbolPackage>(), load_symbol_package),
+    SaveSymbolPackage => ("save_symbol_package", input_schema::<viamind_engine::SaveSymbolPackage>(), save_symbol_package),
+    QuerySymbolPackages => ("query_symbol_packages", input_schema::<viamind_engine::SymbolPackageQuery>(), query_symbol_packages),
     PlaceSymbolTemplate => (viamind_engine::PlaceSymbolTemplate::NAME, input_schema::<viamind_engine::PlaceSymbolTemplate>(), place_symbol_template),
     SnapshotSymbolSheet => ("snapshot_symbol_sheet", input_schema::<viamind_engine::SymbolSheetQuery>(), snapshot_symbol_sheet),
     LoadSymbolTemplate => ("load_symbol_template", input_schema::<viamind_engine::LoadSymbolTemplate>(), load_symbol_template),
@@ -464,4 +469,30 @@ fn set_track_properties(engine: &EngineHandle, input: Value) -> Result<Value, En
 }
 fn set_via_properties(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute("set_via_properties", input, Origin::User)?).map_err(encode_error)
+}
+
+fn place_symbol_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::PlaceSymbolPackage::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn delete_symbol_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::DeleteSymbolPackage::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn load_symbol_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.load_symbol_package(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+fn save_symbol_package(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let invalid = |message| EngineError::InvalidInput { command: "save_symbol_package".into(), message };
+    if input.get("path").and_then(Value::as_str).is_none_or(|path| path.is_empty() || path.len() > 4096) {
+        return Err(invalid("Package path requires1..4096 UTF8 bytes".into()));
+    }
+    viamind_doc::symbol_package::predecode(input.get("template").ok_or_else(|| invalid("template is required".into()))?).map_err(invalid)?;
+    serde_json::to_value(engine.save_symbol_package(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+fn query_symbol_packages(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(
+        engine
+            .query_symbol_packages(&serde_json::from_value(input).map_err(encode_error)?)
+            .map_err(|error| EngineError::Command { command: "query_symbol_packages".into(), error })?,
+    )
+    .map_err(encode_error)
 }

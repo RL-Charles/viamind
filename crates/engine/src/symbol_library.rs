@@ -178,6 +178,9 @@ impl EngineHandle {
                 .get(&input.sheet_id)
                 .filter(|s| s.id == input.sheet_id && !s.id.as_uuid().is_nil())
                 .ok_or_else(|| EngineError::File { message: "source sheet identity is invalid".into() })?;
+            if let Some(content) = &sheet.content {
+                viamind_doc::symbol_package::membership_budget(content).map_err(|message| EngineError::File { message })?;
+            }
             let symbol = sheet
                 .content
                 .as_ref()
