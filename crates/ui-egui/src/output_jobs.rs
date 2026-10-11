@@ -3,7 +3,16 @@ use crate::{ViamindApp, actions::UiAction};
 use serde_json::{Value, json};
 use std::sync::mpsc::{self, Receiver};
 use viamind_engine::{EngineError, EngineHandle, EventCursor};
-use viamind_fab::{OutputJob, OutputJobFileRequest, OutputJobSnapshot, RunOutputJobRequest, SaveOutputJobRequest};
+const CHECK_LABELS: [&str; 7] = [
+    "Copper clearance baseline (mm)",
+    "Edge clearance (mm)",
+    "Minimum via drill (mm)",
+    "Minimum annular width (mm)",
+    "Hole clearance (mm)",
+    "Hole to copper clearance (mm)",
+    "Maximum DRC violations",
+];
+use viamind_fab::{OutputJob, OutputJobChecks, OutputJobFileRequest, OutputJobSnapshot, RunOutputJobRequest, SaveOutputJobRequest};
 fn invalid(error: impl std::fmt::Display) -> EngineError {
     EngineError::InvalidInput { command: "output_job".into(), message: error.to_string() }
 }
@@ -27,14 +36,17 @@ pub(crate) fn run(engine: &EngineHandle, input: Value) -> Result<Value, EngineEr
         }
         Ok((OutputJobSnapshot::capture(e.project(), job).map_err(invalid)?, cursor, e.document_status().path))
     })?;
-    let (path, manifest) = snapshot.write(cursor, &input.path, native.as_deref()).map_err(invalid)?;
-    Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor,"file_count":11}))
+    let (path, manifest) =
+        snapshot.write_with_validation(cursor, &input.path, native.as_deref(), viamind_engine::checked_output_job_report).map_err(invalid)?;
+    Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor,"file_count":manifest.files.len()+1}))
 }
 #[derive(Default)]
 pub struct OutputJobUi {
     open: bool,
     name: String,
     mask: String,
+    checked: bool,
+    checks: [String; 7],
     job_path: String,
     release_path: String,
     worker: Option<Receiver<Result<Value, String>>>,
@@ -48,7 +60,21 @@ impl OutputJobUi {
     }
     fn config(&self) -> Result<OutputJob, String> {
         let mask = self.mask.parse::<f64>().map_err(|_| "Mask expansion needs a finite value from 0 to 10 mm".to_string())?;
-        let job = OutputJob::new(self.name.clone(), mask);
+        let mut job = OutputJob::new(self.name.clone(), mask);
+        if self.checked {
+            let parse =
+                |index: usize| self.checks[index].parse::<f64>().map_err(|_| format!("{} needs a finite number in0..100mm", CHECK_LABELS[index]));
+            job.profile = viamind_fab::CHECKED_PROFILE.into();
+            job.checks = Some(OutputJobChecks {
+                copper_clearance_mm: parse(0)?,
+                edge_clearance_mm: parse(1)?,
+                minimum_via_drill_mm: parse(2)?,
+                minimum_annular_width_mm: parse(3)?,
+                hole_clearance_mm: parse(4)?,
+                hole_to_copper_clearance_mm: parse(5)?,
+                max_violations: self.checks[6].parse().map_err(|_| "Maximum DRC violations needs an integer in1..10000".to_string())?,
+            });
+        }
         job.validate().map_err(|e| e.to_string())?;
         Ok(job)
     }
@@ -64,6 +90,18 @@ impl OutputJobUi {
                                 Ok(job) => {
                                     self.name = job.name.clone();
                                     self.mask = job.mask_expansion_mm.to_string();
+                                    self.checked = job.checks.is_some();
+                                    if let Some(checks) = &job.checks {
+                                        self.checks = [
+                                            checks.copper_clearance_mm.to_string(),
+                                            checks.edge_clearance_mm.to_string(),
+                                            checks.minimum_via_drill_mm.to_string(),
+                                            checks.minimum_annular_width_mm.to_string(),
+                                            checks.hole_clearance_mm.to_string(),
+                                            checks.hole_to_copper_clearance_mm.to_string(),
+                                            checks.max_violations.to_string(),
+                                        ];
+                                    }
                                     self.loaded = Some(job);
                                 }
                                 Err(e) => {
@@ -146,6 +184,7 @@ impl ViamindApp {
             if self.output_jobs.name.is_empty() {
                 self.output_jobs.name = "Manufacturing release".into();
                 self.output_jobs.mask = "0".into();
+                self.output_jobs.checks = ["0.2", "0.25", "0.2", "0.1", "0.25", "0.2", "1000"].map(str::to_owned);
             }
         }
     }
@@ -168,6 +207,17 @@ impl ViamindApp {
                 ui.add(egui::TextEdit::singleline(&mut self.output_jobs.name).char_limit(256).desired_width(500.)).labelled_by(label.id);
                 let label = ui.label("Mask expansion (mm)");
                 ui.add(egui::TextEdit::singleline(&mut self.output_jobs.mask).char_limit(32)).labelled_by(label.id);
+                ui.horizontal_wrapped(|ui| {
+                    ui.radio_value(&mut self.output_jobs.checked, false, "Generic outer 2-layer");
+                    ui.radio_value(&mut self.output_jobs.checked, true, "Checked outer 2-layer");
+                });
+                if self.output_jobs.checked {
+                    ui.label("Refuse release on scoped DRC violations, incomplete coverage or excluded geometry. Document minima cannot be weakened.");
+                    for (index, label) in CHECK_LABELS.iter().enumerate() {
+                        let label = ui.label(*label);
+                        ui.add(egui::TextEdit::singleline(&mut self.output_jobs.checks[index]).char_limit(32)).labelled_by(label.id);
+                    }
+                }
                 let label = ui.label("Saved job file");
                 ui.add(egui::TextEdit::singleline(&mut self.output_jobs.job_path).char_limit(4096).desired_width(500.)).labelled_by(label.id);
                 ui.horizontal(|ui| {
@@ -184,7 +234,7 @@ impl ViamindApp {
                 let label = ui.label("NEW release directory");
                 ui.add(egui::TextEdit::singleline(&mut self.output_jobs.release_path).char_limit(4096).desired_width(500.)).labelled_by(label.id);
                 ui.label("Existing files and directories are preserved. At most 100000 components, 200000 board primitives and 192 MiB release.");
-                ui.label("Requires explicit pads and outline. No inner copper, pours, sourcing metadata or fabrication certification.");
+                ui.label("Requires explicit pads and outline. Scoped checks exclude connectivity, mask, silk and complete DFM. No inner copper, pours, sourcing metadata or fabrication certification.");
                 if ui.button("Run saved job to NEW directory").clicked() {
                     action = Some(UiAction::RunOutputJob);
                 }

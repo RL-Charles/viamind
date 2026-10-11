@@ -105,3 +105,81 @@ fn compact_real_input_save_load_run_and_live_mcp_byte_parity() {
     h.run_steps(3);
     assert!(h.query_by_label("The design has changed since this exported snapshot.").is_some());
 }
+
+#[test]
+fn compact_checked_settings_save_load_run_real_input_and_live_mcp_byte_parity() {
+    let _guard = TEST.lock().unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let engine = EngineHandle::new(viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap());
+    let before = engine.session_state();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_output_jobs();
+    let mut h = Harness::builder().with_size(vec2(640., 400.)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(5);
+    click(&mut h, "Checked outer 2-layer");
+    for label in [
+        "Copper clearance baseline (mm)",
+        "Edge clearance (mm)",
+        "Minimum via drill (mm)",
+        "Minimum annular width (mm)",
+        "Hole clearance (mm)",
+        "Hole to copper clearance (mm)",
+    ] {
+        input(&mut h, label, "0");
+    }
+    input(&mut h, "Maximum DRC violations", "0");
+    let settings = temp.path().join("checked.json");
+    input(&mut h, "Saved job file", settings.to_str().unwrap());
+    click(&mut h, "Save NEW job file");
+    assert!(!settings.exists());
+    input(&mut h, "Maximum DRC violations", "1000");
+    click(&mut h, "Save NEW job file");
+    wait(&mut h);
+    let saved = viamind_fab::load_output_job(&settings).unwrap();
+    assert_eq!(saved.profile, viamind_fab::CHECKED_PROFILE);
+    assert_eq!(saved.checks.unwrap().max_violations, 1000);
+    click(&mut h, "Generic outer 2-layer");
+    click(&mut h, "Load job");
+    wait(&mut h);
+    assert!(h.query_by_label("Copper clearance baseline (mm)").is_some());
+    let output = temp.path().join("ui");
+    input(&mut h, "NEW release directory", output.to_str().unwrap());
+    h.get_by_label("Run saved job to NEW directory").scroll_to_me();
+    h.run_steps(5);
+    let rect = h.get_by_label("Run saved job to NEW directory").rect();
+    assert!(rect.max.y <= 400. && rect.max.x <= 640., "{rect:?}");
+    click(&mut h, "Run saved job to NEW directory");
+    wait(&mut h);
+    assert!(output.join("validation/drc.json").is_file());
+    let label = format!("12 files · snapshot {} / {}", before.cursor.stream_id, before.cursor.sequence);
+    h.get_by_label(&label).scroll_to_me();
+    h.run_steps(5);
+    assert!(h.get_by_label(&label).rect().max.y <= 400.);
+    let tools = viamind_mcp::engine_registry(engine.clone()).unwrap();
+    let mcp = temp.path().join("mcp");
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(tools.call(
+            "run_output_job",
+            serde_json::json!({"job_path":settings,"path":mcp,"expected_cursor":before.cursor}),
+            Default::default(),
+        ))
+        .unwrap();
+    for folder in ["assembly", "fabrication", "validation", ""] {
+        for entry in std::fs::read_dir(output.join(folder)).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_file() {
+                assert_eq!(std::fs::read(&path).unwrap(), std::fs::read(mcp.join(folder).join(path.file_name().unwrap())).unwrap());
+            }
+        }
+    }
+    click(&mut h, "Run saved job to NEW directory");
+    wait(&mut h);
+    assert!(h.query_all_by_label_contains("already exists").next().is_some());
+    let next = temp.path().join("after-collision");
+    input(&mut h, "NEW release directory", next.to_str().unwrap());
+    click(&mut h, "Run saved job to NEW directory");
+    wait(&mut h);
+    assert!(next.join("validation/drc.json").exists());
+    assert_eq!(engine.session_state(), before);
+}

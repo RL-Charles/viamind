@@ -27,7 +27,7 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
             }).await.map_err(failed)?
         }
     })?;
-    registry.register("run_output_job","Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Fixed 11 files, 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",viamind_fab::output_job_schema("run"),move |input| {
+    registry.register("run_output_job","Read saved bounded job settings and export one guarded board snapshot to a NEW release directory: generic BOM/placement, supported outer Gerber X2/XNC and manifests. Generic profile11 files; checked profile12 including bounded production DRC validation. Checked jobs refuse violations, incomplete/excluded/missing geometry coverage on the same immutable board. Request baselines never weaken captured document minima. 192 MiB total. No vendor certification/inner copper/pours/source metadata. Shared at-most-two manufacturing admission; cancellation retains slot until worker ends. Returns complete exported_cursor; unrelated schematics excluded and design unchanged.",viamind_fab::output_job_schema("run"),move |input| {
         let engine=engine.clone();async move {
             let input:RunOutputJobRequest<EventCursor>=serde_json::from_value(input).map_err(|e|ToolError::InvalidInput(e.to_string()))?;
             tokio::task::spawn_blocking(move || {
@@ -37,8 +37,8 @@ pub fn register(registry: &mut ToolRegistry, engine: EngineHandle) -> Result<(),
                     if input.expected_cursor.is_some_and(|c|c!=cursor) {return Err(failed("document changed; obtain a fresh cursor and retry output job"));}
                     Ok((OutputJobSnapshot::capture(e.project(),job).map_err(failed)?,cursor,e.document_status().path))
                 })?;
-                let (path,manifest)=snapshot.write(cursor,&input.path,native.as_deref()).map_err(failed)?;
-                Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor,"file_count":11}))
+                let (path,manifest)=snapshot.write_with_validation(cursor,&input.path,native.as_deref(), viamind_engine::checked_output_job_report).map_err(failed)?;
+                Ok(json!({"path":path,"manifest":manifest,"exported_cursor":cursor,"file_count":manifest.files.len()+1}))
             }).await.map_err(failed)?
         }
     })

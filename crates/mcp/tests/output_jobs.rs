@@ -1,8 +1,10 @@
 use serde_json::json;
 use viamind_engine::{EngineHandle, Origin};
 use viamind_fab::{OutputJob, save_output_job};
+static TEST: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn saved_jobs_roundtrip_guard_admission_and_preserve_full_session() {
+    let _guard = TEST.lock().await;
     let p = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
     let engine = EngineHandle::new(p);
     let tools = viamind_mcp::engine_registry(engine.clone()).unwrap();
@@ -76,4 +78,63 @@ async fn saved_jobs_roundtrip_guard_admission_and_preserve_full_session() {
     let fab: serde_json::Value = serde_json::from_slice(&std::fs::read(output.join("fabrication/manifest.json")).unwrap()).unwrap();
     assert_eq!(fab["mask_expansion_nm"], 100000);
     assert!(tools.call("load_output_job", json!({"path":newer,"extra":true}), Default::default()).await.is_err());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn checked_job_uses_production_drc_without_report_override_and_refuses_atomic_failures() {
+    let _guard = TEST.lock().await;
+    let project = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+    let engine = EngineHandle::new(project);
+    let tools = viamind_mcp::engine_registry(engine.clone()).unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let before = engine.session_state();
+    let mut job = OutputJob::new("Checked agents".into(), 0.);
+    job.profile = viamind_fab::CHECKED_PROFILE.into();
+    job.checks = Some(viamind_fab::OutputJobChecks {
+        copper_clearance_mm: 0.,
+        edge_clearance_mm: 0.,
+        minimum_via_drill_mm: 0.,
+        minimum_annular_width_mm: 0.,
+        hole_clearance_mm: 0.,
+        hole_to_copper_clearance_mm: 0.,
+        max_violations: 1000,
+    });
+    let job_path = temp.path().join("checked.json");
+    save_output_job(&job, &job_path, None).unwrap();
+    let output = temp.path().join("checked-release");
+    let value =
+        tools.call("run_output_job", json!({"job_path":job_path,"path":output,"expected_cursor":before.cursor}), Default::default()).await.unwrap();
+    assert_eq!(value["file_count"], 12);
+    let report: serde_json::Value = serde_json::from_slice(&std::fs::read(output.join("validation/drc.json")).unwrap()).unwrap();
+    assert_eq!(report["exported_cursor"], json!(before.cursor));
+    assert_eq!(report["report"]["violations"], json!([]));
+    assert_eq!(report["report"]["coverage"]["checked_tracks"], before.project.board.tracks.len());
+    assert_eq!(engine.session_state(), before);
+    let failure = temp.path().join("refused");
+    assert!(
+        tools
+            .call("run_output_job", json!({"job_path":job_path,"path":failure,"validation_report":{"pass":true}}), Default::default())
+            .await
+            .is_err()
+    );
+    assert!(!failure.exists());
+    job.checks.as_mut().unwrap().edge_clearance_mm = 100.;
+    let strict = temp.path().join("strict.json");
+    save_output_job(&job, &strict, None).unwrap();
+    let error = tools.call("run_output_job", json!({"job_path":strict,"path":failure}), Default::default()).await.unwrap_err();
+    assert!(error.to_string().contains("violations"), "{error}");
+    assert!(!failure.exists());
+    assert!(!std::fs::read_dir(temp.path()).unwrap().any(|e| e.unwrap().file_name().to_string_lossy().starts_with(".viamind-output-job-")));
+    engine.execute("add_via", json!({"x_mm":1,"y_mm":1,"diameter_mm":0.6,"drill_mm":0.3}), Origin::agent("peer")).unwrap();
+    let a = engine.read(viamind_fab::FabricationSnapshot::capture).unwrap();
+    let b = engine.read(viamind_fab::AssemblySnapshot::capture).unwrap();
+    let error = tools
+        .call("run_output_job", json!({"job_path":job_path,"path":failure,"expected_cursor":before.cursor}), Default::default())
+        .await
+        .unwrap_err();
+    assert!(error.to_string().contains("document changed"));
+    drop((a, b));
+    engine.undo(Origin::User).unwrap();
+    assert_eq!(engine.session_state().project, before.project);
+    assert!(!failure.exists());
 }

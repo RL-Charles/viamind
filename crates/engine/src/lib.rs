@@ -129,3 +129,6 @@ pub use fabrication_view::{FabricationInspection, InspectFabricationFiles, Inspe
 
 mod footprint_conversion;
 pub use footprint_conversion::{ConvertFootprintFile, ConvertedFootprintFile, FootprintConversionPreview, PreviewFootprintConversion};
+
+mod checked_output_job;
+pub use checked_output_job::checked_output_job_report;

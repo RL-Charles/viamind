@@ -31,7 +31,12 @@ fn main() -> anyhow::Result<()> {
         let job = viamind_fab::load_output_job(&job_path)?;
         let (snapshot, cursor, native) = engine
             .with_engine(|e| viamind_fab::OutputJobSnapshot::capture(e.project(), job).map(|s| (s, e.event_cursor(), e.document_status().path)))?;
-        let (path, manifest) = snapshot.write(cursor, options.output.as_deref().expect("validated output"), native.as_deref())?;
+        let (path, manifest) = snapshot.write_with_validation(
+            cursor,
+            options.output.as_deref().expect("validated output"),
+            native.as_deref(),
+            viamind_engine::checked_output_job_report,
+        )?;
         eprintln!("Exported {} files to {} (snapshot {} / {})", manifest.files.len() + 1, path.display(), cursor.stream_id, cursor.sequence);
         return Ok(());
     }
