@@ -522,12 +522,41 @@ mod tests {
     #[test]
     fn actual_compact_window_scroll_reaches_preview_apply_result_and_cancel() {
         use egui_kittest::{Harness, kittest::Queryable};
+        fn reveal(h: &mut Harness<'_, SchematicDragUi>, label: &str) {
+            h.get_by_label(label).scroll_to_me();
+            h.run_steps(8);
+            h.hover_at(h.get_by_label(label).rect().center());
+            h.run_steps(2);
+            let rect = h.get_by_label(label).rect();
+            let clip = h
+                .output()
+                .shapes
+                .iter()
+                .filter_map(|shape| {
+                    let egui::Shape::Rect(background) = &shape.shape else { return None };
+                    let bounds = background.rect;
+                    (bounds.contains(rect.center()) && (bounds.width() - rect.width()).abs() <= 4.0 && (bounds.height() - rect.height()).abs() <= 4.0)
+                        .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+                })
+                .min_by(|a, b| a.area().total_cmp(&b.area()))
+                .expect("painted actual control");
+            assert!(clip.contains_rect(rect), "{label}: {rect:?} exceeds actual ancestor paint clip {clip:?}");
+        }
+        fn input(h: &mut Harness<'_, SchematicDragUi>, label: &str, text: &str) {
+            reveal(h, label);
+            h.get_by_label(label).focus();
+            h.run_steps(2);
+            for pressed in [true, false] {
+                h.event(egui::Event::Key { key: Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+                h.run_steps(2);
+            }
+            h.get_by_label(label).type_text(text);
+            h.run_steps(3);
+        }
         let (engine, sheet, symbol) = fixture();
         let before = engine.session_state();
         let mut state = SchematicDragUi::default();
         state.begin(&engine, sheet, symbol);
-        state.dx_mm = "3".into();
-        state.dy_mm = "5".into();
         let worker = engine.clone();
         let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(
             move |ui, s: &mut SchematicDragUi| {
@@ -537,10 +566,11 @@ mod tests {
             state,
         );
         h.run_steps(5);
-        h.get_by_label("Preview connected move").scroll_to_me();
-        h.run_steps(8);
-        let rect = h.get_by_label("Preview connected move").rect();
-        assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0 && rect.min.x >= 0.0 && rect.max.x <= 640.0, "{rect:?}");
+        input(&mut h, "Delta X mm", "3");
+        input(&mut h, "Delta Y mm", "5");
+        input(&mut h, "Grid mm", "1");
+        assert_eq!((h.state().dx_mm.as_str(), h.state().dy_mm.as_str(), h.state().grid_mm.as_str()), ("3", "5", "1"));
+        reveal(&mut h, "Preview connected move");
         h.get_by_label("Preview connected move").click();
         h.run_steps(3);
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
@@ -549,16 +579,23 @@ mod tests {
             std::thread::sleep(std::time::Duration::from_millis(5));
             h.run_steps(3);
         }
-        assert!(h.state().report().is_some());
-        h.get_by_label("Apply connected move").scroll_to_me();
-        h.run_steps(8);
-        let rect = h.get_by_label("Apply connected move").rect();
-        assert!(rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+        assert_eq!(h.state().report().unwrap().target_position, Coordinate { x: Nm(23_000_000), y: Nm(25_000_000) });
+        reveal(&mut h, "Apply connected move");
         h.get_by_label_contains("Native graph preserved").scroll_to_me();
         h.run_steps(8);
-        assert!(h.get_by_label_contains("Native graph preserved").rect().max.y <= 400.0);
-        h.get_by_label("Cancel connected move").scroll_to_me();
-        h.run_steps(8);
+        let label = h.get_by_label_contains("Native graph preserved");
+        let rect = label.rect();
+        let clip = h
+            .output()
+            .shapes
+            .iter()
+            .find_map(|shape| {
+                let egui::Shape::Text(text) = &shape.shape else { return None };
+                text.galley.text().starts_with("Native graph preserved").then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+            })
+            .expect("actual painted result text");
+        assert!(clip.contains_rect(rect), "result {rect:?} exceeds actual clip {clip:?}");
+        reveal(&mut h, "Cancel connected move");
         h.get_by_label("Cancel connected move").click();
         h.run_steps(3);
         assert!(!h.state().active());

@@ -16,7 +16,7 @@ fn input(e: &EngineHandle) -> Value {
     let s = e.session_state();
     json!({"expected_project":s.project.id,"source_cursor":s.cursor,"sheet_id":"00000000-0000-0000-0000-0000000001f6","symbol_id":"00000000-0000-0000-0000-0000000001f7","delta":{"x":3000000,"y":5000000}})
 }
-async fn call(c: &Client, name: &str, args: Value) -> rmcp::model::CallToolResult {
+async fn call(c: &Client, name: &'static str, args: Value) -> rmcp::model::CallToolResult {
     c.call_tool(CallToolRequestParams::new(name).with_arguments(args.as_object().unwrap().clone())).await.unwrap()
 }
 #[tokio::test(flavor = "multi_thread")]
