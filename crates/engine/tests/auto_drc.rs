@@ -124,7 +124,7 @@ fn via_policy_edit_and_undo_refresh_exact_automatic_sources_and_geometry() {
     let report = status.report.unwrap();
     assert_eq!(report.document_net_rules, e.read(|p| p.board.net_rules.clone()));
     assert_eq!(
-        report.violations.iter().map(|v| v.kind.clone()).collect::<Vec<_>>(),
+        report.violations.iter().map(|v| v.kind).collect::<Vec<_>>(),
         vec![viamind_drc::ViolationKind::MinimumViaDrill, viamind_drc::ViolationKind::MinimumAnnularWidth]
     );
     assert_eq!(e.read(|p| p.board.vias[&via.id].clone()), via);
