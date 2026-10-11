@@ -333,6 +333,7 @@ impl ViamindApp {
             }
         }
         self.sync_design();
+        self.sync_schematic_wires(ui.ctx());
         self.sync_cross_probe(ui);
 
         egui::Panel::top("menu_bar").show(ui, |ui| self.menu_bar(ui));

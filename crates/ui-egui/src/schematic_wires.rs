@@ -126,6 +126,10 @@ impl SchematicWiresUi {
     pub fn active(&self) -> bool {
         self.draft.is_some() || self.pending.as_ref().is_some_and(|p| !p.cancelled)
     }
+    /// Whether attachment preparation has completed and canvas points can be added.
+    pub fn previewing(&self) -> bool {
+        self.draft.is_some()
+    }
     pub fn confirmed_vertices(&self) -> Vec<Coordinate> {
         self.draft.as_ref().map_or_else(Vec::new, |d| d.points.clone())
     }
@@ -200,14 +204,23 @@ impl ViamindApp {
             self.schematic_wires.start(design.engine.clone(), sheet);
         }
     }
-    pub(crate) fn schematic_wire_toolbar(&mut self, ui: &mut Ui) {
+    pub(crate) fn sync_schematic_wires(&mut self, ctx: &egui::Context) {
         let context = self.design.as_ref().and_then(|d| {
             self.schematic
                 .active
                 .then_some(d)
-                .and_then(|d| self.schematic.active_sheet_id().map(|s| (d.engine.read(|p| p.id), d.engine.event_cursor(), s)))
+                .and_then(|d| self.schematic.active_sheet_id().map(|s| d.engine.with_engine(|e| (e.project().id, e.event_cursor(), s))))
         });
         self.schematic_wires.poll(context);
+        if self.schematic_wires.pending.is_some() {
+            ctx.request_repaint_after(std::time::Duration::from_millis(20));
+        }
+    }
+    pub(crate) fn schematic_wire_toolbar(&mut self, ui: &mut Ui) {
+        let context = self
+            .design
+            .as_ref()
+            .and_then(|d| self.schematic.active_sheet_id().map(|s| d.engine.with_engine(|e| (e.project().id, e.event_cursor(), s))));
         if self.schematic_wires.pending.is_some() {
             ui.ctx().request_repaint_after(std::time::Duration::from_millis(20));
             ui.label("Preparing bounded wire attachment snapshot…");

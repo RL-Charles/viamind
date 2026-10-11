@@ -33,6 +33,16 @@ copying, require at most 10000 sheet objects, 10000 pins, 4096 bytes per string 
 index construction is bounded to 30000 entries (pins, wire endpoints, junctions
 and label anchors), with a local spatial broadphase for pointer snapping.
 
+Committing also invokes the existing whole-project identity/reference validator.
+Before it allocates global identity sets, preflight at most 100000 combined
+project, sheet, part, pad, track, via, schematic-object and pin identities,
+including proposed wires; at most 1000 sheets; and 4096 bytes per string /
+4 MiB aggregate schematic text across all sheets. The preflight walks bounded
+counts/text under the engine lock without copying the project. An unrelated
+oversized board or sheet rejects the commit unchanged, even if the selected
+sheet snapshot succeeds. This is bounded synchronous commit work; no interactive
+latency threshold is claimed.
+
 ## Desktop tool
 
 An explicit Draw wires action requires an active current sheet and no object
@@ -63,7 +73,8 @@ shared action catalog and MCP expose the mutation; UI preview remains local.
 
 Test exact odd-Nm mirrored/rotated endpoint attachment, graph-confirmed pin/T joins
 and interior nonjoins, full-session stale/reopen/batch rejection, result budgets,
-atomic undo/redo/native/log persistence and real two-client MCP. Actual egui input
+atomic undo/redo/native/log persistence and real two-client MCP. Include large
+unrelated-board and unrelated-sheet validation-budget rejection regressions. Actual egui input
 must draw/finish, change posture, backspace/cancel, pan/zoom and reject conflicting
 object drafts. Inspect a readable retained Linux native preview and complete fmt,
 strict all-target Clippy, workspace tests/doctests and build before submission.

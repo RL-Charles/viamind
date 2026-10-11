@@ -50,6 +50,13 @@ segments. Sheet capture/result limits are 10000 objects, 10000 pins, 4096 bytes
 per string and 2 MiB aggregate text; pointer attachment uses at most 30000 indexed
 anchors. The available grids are 0.1, 0.25, 0.5, 1 and 1.27 mm.
 
+Commit also validates project-wide identities and references. Before that work,
+it requires at most 100000 combined project/sheet/part/pad/copper/schematic/pin
+identities including the new wires, 1000 sheets, and 4 MiB aggregate schematic
+text with 4096 bytes per string. An oversized unrelated board or sheet can reject
+a commit even when the selected sheet snapshot succeeds. This bounded commit
+validation runs synchronously; no latency threshold is claimed.
+
 This tool supports cardinal wire creation. Wire dragging, connection-preserving
 symbol movement, implicit junction insertion, buses and hierarchy are separate
 work. A successful wire transaction is not an ERC or fabrication certificate.

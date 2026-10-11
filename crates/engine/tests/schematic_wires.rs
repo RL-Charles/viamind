@@ -129,3 +129,39 @@ fn result_and_snapshot_budgets_reject_before_copy_or_commit() {
     assert!(e.snapshot_schematic_wire_sheet(&SchematicWireSheetQuery { sheet_id }).is_err());
     assert_eq!(before, e.session_state());
 }
+
+#[test]
+fn unrelated_global_validator_work_is_bounded_before_identity_set_allocation() {
+    let mut project = fixture().read(Clone::clone);
+    for _ in 0..100_000 {
+        let id = ObjectId::new();
+        project
+            .board
+            .vias
+            .insert(id, viamind_doc::Via { id, position: viamind_geom::Point::ORIGIN, diameter: Nm(600_000), drill: Nm(300_000), net: None });
+    }
+    let e = EngineHandle::new(project);
+    let cmd = command(&e, vec![p(0, 0), p(1, 0)]);
+    let cursor = e.event_cursor();
+    let status = e.document_status();
+    assert!(e.execute_typed(cmd, Origin::User).unwrap_err().to_string().contains("100000 combined"));
+    assert_eq!(e.event_cursor(), cursor);
+    assert_eq!(e.document_status(), status);
+    assert_eq!(e.read(|p| p.board.vias.len()), 100_000);
+    let mut project = fixture().read(Clone::clone);
+    let mut unrelated = Sheet::new("unrelated");
+    unrelated.name = "x".repeat(4097);
+    project.schematic.sheets.insert(unrelated.id, unrelated);
+    let e = EngineHandle::new(project);
+    let sheet_id = e.read(|p| p.schematic.sheets.values().find(|s| s.name == "wire sheet").unwrap().id);
+    let snap = e.snapshot_schematic_wire_sheet(&SchematicWireSheetQuery { sheet_id }).unwrap();
+    let before = e.session_state();
+    let cmd = DrawSchematicWirePolyline {
+        expected_project: snap.expected_project,
+        source_cursor: snap.source_cursor,
+        expected: snap.expected,
+        vertices: vec![p(0, 0), p(1, 0)],
+    };
+    assert!(e.execute_typed(cmd, Origin::User).unwrap_err().to_string().contains("global wire validation text"));
+    assert_eq!(e.session_state(), before);
+}

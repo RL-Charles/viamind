@@ -65,6 +65,62 @@ fn budget(sheet: &Sheet) -> Result<(), CommandError> {
     }
     viamind_doc::schematic::validate_sheet(sheet).map_err(invalid)
 }
+// The inherited global identity/reference validator allocates a global set. Bound
+// all data it visits before calling it; no board strings or geometry are copied.
+fn global_validation_budget(project: &Project, added: usize) -> Result<(), CommandError> {
+    let mut count = 1usize
+        .saturating_add(added)
+        .saturating_add(project.board.parts.len())
+        .saturating_add(project.board.tracks.len())
+        .saturating_add(project.board.vias.len())
+        .saturating_add(project.schematic.sheets.len());
+    let mut more = |n: usize| {
+        count = count.saturating_add(n);
+        if count > 100_000 {
+            Err(invalid(
+                "global wire validation supports at most 100000 combined project/sheet/part/pad/copper/schematic/pin identities including new wires",
+            ))
+        } else {
+            Ok(())
+        }
+    };
+    more(0)?;
+    if project.schematic.sheets.len() > 1000 {
+        return Err(invalid("global wire validation supports at most 1000 sheets"));
+    }
+    for p in project.board.parts.values() {
+        more(p.pads.as_ref().map_or(0, |p| p.0.len()))?;
+    }
+    let mut bytes = 0usize;
+    let mut text = |s: &str| {
+        bytes = bytes.saturating_add(s.len());
+        if s.len() > 4096 || bytes > 4 * 1024 * 1024 {
+            Err(invalid("global wire validation text exceeds 4096 bytes per string or 4 MiB schematic text"))
+        } else {
+            Ok(())
+        }
+    };
+    for sheet in project.schematic.sheets.values() {
+        text(&sheet.name)?;
+        if let Some(c) = &sheet.content {
+            more(c.object_count())?;
+            for s in c.symbols.values() {
+                more(s.pins.len())?;
+                for value in [s.designator.as_str(), &s.value, s.footprint.as_deref().unwrap_or("")] {
+                    text(value)?;
+                }
+                for pin in &s.pins {
+                    text(&pin.number)?;
+                    text(&pin.name)?;
+                }
+            }
+            for label in c.labels.values() {
+                text(&label.name)?;
+            }
+        }
+    }
+    Ok(())
+}
 impl crate::EngineHandle {
     /// Validate limits before cloning just one sheet; never copy the whole project.
     pub fn snapshot_schematic_wire_sheet(&self, input: &SchematicWireSheetQuery) -> Result<SchematicWireSnapshot, CommandError> {
@@ -84,17 +140,18 @@ impl crate::EngineHandle {
 }
 impl Command for DrawSchematicWirePolyline {
     const NAME: &'static str = "draw_schematic_wire_polyline";
-    const DESCRIPTION: &'static str = "Atomically add 1..255 horizontal/vertical schematic wire segments from 2..256 exact integer Nm vertices. Requires full initial event cursor, project UUID and exact expected sheet. Endpoint/T contacts join by native graph semantics; interior crossings do not join and no junctions are inserted. Snapshot with snapshot_schematic_wire_sheet first. One transaction/undo, no board changes. Bounded10000objects/10000pins/2MiBsheettext; stale, malformed, noncardinal or oversized result rejects unchanged.";
+    const DESCRIPTION: &'static str = "Atomically add 1..255 horizontal/vertical schematic wire segments from 2..256 exact integer Nm vertices. Requires full initial event cursor, project UUID and exact expected sheet. Endpoint/T contacts join by native graph semantics; interior crossings do not join and no junctions are inserted. Snapshot with snapshot_schematic_wire_sheet first. One transaction/undo, no board changes. Selected sheet bounded to 10000 objects/10000 pins/2 MiB text. Commit global validation bounded to 100000 combined identities/1000 sheets/4 MiB schematic text; stale, malformed, noncardinal or oversized result rejects unchanged.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.source_cursor)
     }
     fn apply(self, project: &mut Project) -> Result<Vec<Delta>, CommandError> {
-        if project.id != self.expected_project || project.schematic.sheets.get(&self.expected.id) != Some(&self.expected) {
-            return Err(CommandError::conflict("project or sheet changed; cancel and restart wire drawing"));
-        }
         budget(&self.expected)?;
         if !(2..=256).contains(&self.vertices.len()) {
             return Err(invalid("supply 2..256 confirmed vertices"));
+        }
+        global_validation_budget(project, self.vertices.len() - 1)?;
+        if project.id != self.expected_project || project.schematic.sheets.get(&self.expected.id) != Some(&self.expected) {
+            return Err(CommandError::conflict("project or sheet changed; cancel and restart wire drawing"));
         }
         let object_count = self.expected.content.as_ref().map_or(0, viamind_doc::schematic::SchematicContent::object_count);
         if object_count + self.vertices.len() - 1 > 10_000 {
