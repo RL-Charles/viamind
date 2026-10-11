@@ -38,6 +38,7 @@ too_many_arguments = "allow"
 type_complexity = "allow"
 
 [workspace.dependencies]
+quick-xml = "0.41"
 viamind-geom = { path = "crates/geom" }
 viamind-doc = { path = "crates/doc" }
 viamind-engine = { path = "crates/engine" }

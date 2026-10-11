@@ -12,3 +12,10 @@ workspace = true
 [dependencies]
 viamind-geom.workspace = true
 viamind-doc.workspace = true
+serde.workspace = true
+schemars.workspace = true
+tempfile.workspace = true
+
+[dev-dependencies]
+quick-xml.workspace = true
+serde_json.workspace = true

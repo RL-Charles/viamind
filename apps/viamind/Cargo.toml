@@ -15,6 +15,7 @@ viamind-mcp.workspace = true
 viamind-engine.workspace = true
 viamind-doc.workspace = true
 viamind-fab.workspace = true
+viamind-render.workspace = true
 eframe.workspace = true
 
 anyhow.workspace = true

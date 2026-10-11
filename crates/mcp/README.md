@@ -436,3 +436,20 @@ and dirty state. Get exact edit guards from `get_session_state`; restart paging
 when another client edits. New schematic content saves as native schema 5.
 Electrical graph evaluation, ERC, hierarchy and board annotation remain separate
 work. See [the foundation specification](../../docs/specs/schematic-foundation.md).
+
+## Read-only board SVG snapshot
+
+`render_board_view` returns `media_type: "image/svg+xml"`, `svg`, `metadata`,
+`source_cursor` and optional output `path`. Optional `options` selects outer
+copper/outline layers, exact integer-nm `region_nm`, auto-fit `padding_nm` and
+`width_px`/`height_px`. Defaults select all supported layers, auto-fit with 1 mm
+padding and a 1600×1000 viewport. An empty view uses a 10 mm square at the origin.
+Optional exact `expected_cursor` rejects stale snapshots. Optional `path` must
+be a NEW file and cannot replace the active native project.
+
+Explicit SMD pads, straight tracks, through vias and polygon cutouts are rendered
+in model X-right/Y-down coordinates, viewed from above without whole-bottom-side
+mirroring. Physical drill holes stay transparent. Legacy previews are omitted
+and counted; schematics, inner copper, pours and product PNG output are excluded.
+Rendering preserves the shared document, selection, history and native dirty
+state. See [the view guide](../../docs/board-views.md) for limits and examples.
