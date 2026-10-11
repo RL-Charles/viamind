@@ -23,9 +23,9 @@ struct Inspection {
 impl Inspection {
     fn capture(&mut self, image: &egui::ColorImage, name: &str) {
         assert_eq!(image.size, [1600, 1000]);
-        let rgba: Vec<_> = image.pixels.iter().flat_map(|p| p.to_array()).collect();
-        let alpha_min = image.pixels.iter().map(|p| p.a()).min().unwrap();
-        let alpha_max = image.pixels.iter().map(|p| p.a()).max().unwrap();
+        let rgba: Vec<_> = image.pixels.iter().flat_map(egui::Color32::to_array).collect();
+        let alpha_min = image.pixels.iter().map(egui::Color32::a).min().unwrap();
+        let alpha_max = image.pixels.iter().map(egui::Color32::a).max().unwrap();
         let nonopaque = image.pixels.iter().filter(|p| p.a() != 255).count();
         let pam = self.output.join(name).with_extension("pam");
         let mut raw = std::fs::OpenOptions::new().write(true).create_new(true).open(&pam).expect("NEW P7");
