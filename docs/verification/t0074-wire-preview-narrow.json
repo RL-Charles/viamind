@@ -1,0 +1,20 @@
+{
+  "app_name": "viamind-wire-inspection",
+  "pid": 390939,
+  "screenshot_file_path": "/home/charlesmowbray/Development/viamind-t-0074/docs/verification/t0074-wire-preview-narrow.png",
+  "screenshot_height": 1000,
+  "screenshot_mime_type": "image/png",
+  "screenshot_width": 1000,
+  "window_bounds": {
+    "height": 1000,
+    "width": 1000,
+    "x": 2380,
+    "y": 1265
+  },
+  "window_id": 110379506715376,
+  "window_title": "Untitled \u2014 Viamind",
+  "source_revision": "d87826d05d4f102f4603fdda87e47f1f56aecfdb",
+  "inspection_binary_sha256": "5c34bbb03719765584da5db022e3333bd6bb60dda7aa374032a31874dbedeb56",
+  "capture_kind": "fixed-size production ViamindApp wrapper with egui pointer-event injection",
+  "runtime_assertions": "three confirmed vertices; entire project unchanged"
+}

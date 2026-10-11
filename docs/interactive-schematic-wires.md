@@ -60,3 +60,6 @@ validation runs synchronously; no latency threshold is claimed.
 This tool supports cardinal wire creation. Wire dragging, connection-preserving
 symbol movement, implicit junction insertion, buses and hierarchy are separate
 work. A successful wire transaction is not an ERC or fabrication certificate.
+
+See the [Linux/native verification](interactive-schematic-wires-verification.md)
+for source/binary provenance, actual input tests and retained preview captures.

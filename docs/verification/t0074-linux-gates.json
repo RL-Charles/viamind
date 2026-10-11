@@ -1,0 +1,22 @@
+{
+  "source_revision": "d87826d05d4f102f4603fdda87e47f1f56aecfdb",
+  "base_revision": "c55dc7c",
+  "commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --workspace --all-targets --locked --offline -- -D warnings",
+    "cargo test --workspace --locked --offline",
+    "cargo build --workspace --locked --offline",
+    "cargo build -p viamind-ui-egui --example wire_inspection --locked --offline"
+  ],
+  "all_passed": true,
+  "tests": {
+    "passed": 465,
+    "failed": 0,
+    "ignored": 1
+  },
+  "production_binary_sha256": "e3de89dc114cfca8da04e021f224673605b3c42ea9e4590462cfba71aeeb1f1f",
+  "inspection_binary_sha256": "5c34bbb03719765584da5db022e3333bd6bb60dda7aa374032a31874dbedeb56",
+  "inspection_source_sha256": "a2f9e66ec4352c006e09bf9485a377ed18147df5c015b8eeddd62df31f88d9dc",
+  "inspection_source": "docs/verification/t0074-wire-inspection.rs",
+  "temporary_example_matches_retained_source": true
+}
