@@ -237,3 +237,32 @@ measurement. This is evidence of remaining GPU cost under those conditions, not
 an isolated shader or hardware ceiling. Instrumented cadence is diagnostic;
 uninstrumented T55 cadence remains the acceptance evidence. All strict cadence
 checks still fail, and the original 100k/60fps acceptance remains open.
+
+
+## T62 — shared uniform camera basis
+
+Verified implementation source `3d0ca54dcb1817652c15832a5ac7a9f6facab491` packs immutable tiles into one camera basis per layer. Vertices now occupy 20 bytes instead of 24: the tile-slot attribute and vertex storage-buffer fetch are removed. One aligned, batched uniform upload supplies all visible layer transforms, selected with dynamic offsets. Camera differences use nearby world centers; translations beyond 1,024 points and the unchanged zoom bucket rebase from original tessellation. Old generations retain their existing cache/callback ownership. The renderer no longer requires vertex storage support; the headless/default CPU reference remains available.
+
+The actual native five-case image comparison passed: 1,068,480 pixels/case, maximum channel delta 2/255, zero pixels above 2 and populated 8x culling (606 drawn objects). Precision checks compare the composed and direct tile CPU transforms within 0.001 point over the documented tested range; they do not guarantee nanometre accuracy at extreme world coordinates through the existing f64 scene boundary.
+
+The saved T59 baseline and new T62 GPU diagnostics ran sequentially on the same Intel Vulkan adapter, followed by ordinary T62 GPU cadence and the same binary's CPU reference. Both diagnostic reports are complete: 1,260 unique frame tags, 360 sampled durations/phase, four bounded query slots and zero errors, counters or pending slots after drain.
+
+| Phase | T59 GPU mean / p95 ms | T62 GPU mean / p95 ms |
+| --- | ---: | ---: |
+| fit_pan | 34.938 / 36.587 | 33.601 / 36.338 |
+| fit_pan_zoom | 39.940 / 65.026 | 42.137 / 79.841 |
+| zoomed_8x_pan | 17.519 / 32.011 | 14.472 / 19.482 |
+
+GPU results are mixed. The full-pan mean is slightly lower and the 8x mean lower, while pan/zoom is higher. These sequential measurements under varying host activity do not establish a general or isolated causal speedup. GPU elapsed durations can include context interference between timestamps and query overhead; instrumented cadence does not replace ordinary acceptance evidence.
+
+| Phase | CPU reference fps / p95 ms | T62 GPU fps / p95 ms | CPU reference / T62 frame CPU mean ms | Strict native gate |
+| --- | ---: | ---: | ---: | --- |
+| fit_pan | 11.502 / 101.260 | 17.792 / 80.414 | 31.226 / 1.841 | fail |
+| fit_pan_zoom | 10.965 / 115.680 | 16.390 / 86.374 | 35.503 / 3.294 | fail |
+| zoomed_8x_pan | 22.155 / 51.894 | 20.611 / 51.723 | 4.007 / 1.480 | fail |
+
+All strict checks remain false: the unchanged criterion is >=59.5 fps **and** p95 <=16.9 ms. Original native 100k/60fps acceptance remains open. Every run retained 60 warmup plus 360 sampled frames per phase, 1,260 native frames, a 1,320x954 canvas at one pixel/point, fit-pan count 100,000, pan/zoom 80,311..100,000 and 8x 1,928..1,965. The GPU full-fit path still uses ten layer draws; pan/zoom 9..110 ranges and 8x 22..24 ranges preserve culling gaps. Full pan/8x have no warm tile rebuilds, pan/zoom peaks at 1,729 as before.
+
+Observed one-minute loads ranged 8.32..15.29. Other CPU workloads and existing native previews remained active. Own builds finished before timing; no screenshots or input actions occurred during the four timing runs. Verification covers native Intel Vulkan at default DPI/single sample; other adapters, backends and settings remain unverified. Geometry changes and precision rebases still repack resident layers, and enormous layers still require subdivision to satisfy device buffer limits.
+
+[Raw metadata](performance/t0062-metadata.json), [image parity](performance/t0062-parity.json), [ordinary GPU cadence](performance/t0062-cadence.json), [CPU reference](performance/t0062-reference.json), [baseline GPU diagnostics](performance/t0062-baseline-gpu.json), [new GPU diagnostics](performance/t0062-profile-gpu.json), [baseline instrumented cadence](performance/t0062-baseline-cadence.json), [new instrumented cadence](performance/t0062-profile-cadence.json). All Linux local gates passed: fmt, strict all-target clippy, 315 tests, 0 failed, 1 existing ignored, workspace build and release examples; source CI also passed.

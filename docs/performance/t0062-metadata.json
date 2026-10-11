@@ -1,0 +1,63 @@
+{
+  "ticket": "T-0062",
+  "source": "3d0ca54dcb1817652c15832a5ac7a9f6facab491",
+  "base": "f420d71",
+  "binary_sha256": "0b02fe73f463a3b1483b7d68431d3470d5acbca5915c2ffe60bd004b0039eebf",
+  "parity_binary_sha256": "01cbaebd9e4c89a511371858aa128efe488eabc1736942ee16f0b6430512fce3",
+  "baseline_source": "b677611c26f25a318b696e420e2ba6bd8a123194",
+  "baseline_binary_sha256": "24cde1117375d2aa2c4cbcd1f277aa30acf2cb2d7d3793e5805021b1b376a55a",
+  "sequence": [
+    {
+      "report": "t0062-baseline-gpu.json",
+      "start_utc": "2026-10-11T06:50:51Z",
+      "complete_by_utc": "2026-10-11T06:51:59Z",
+      "instrumented": true
+    },
+    {
+      "report": "t0062-profile-gpu.json",
+      "start_utc": "2026-10-11T06:52:07Z",
+      "complete_by_utc": "2026-10-11T06:53:22Z",
+      "instrumented": true
+    },
+    {
+      "report": "t0062-cadence.json",
+      "start_utc": "2026-10-11T06:53:22Z",
+      "complete_by_utc": "2026-10-11T06:54:48Z",
+      "instrumented": false
+    },
+    {
+      "report": "t0062-reference.json",
+      "start_utc": "2026-10-11T06:54:54Z",
+      "complete_by_utc": "2026-10-11T06:57:06Z",
+      "instrumented": false
+    }
+  ],
+  "observed_1minute_load_averages": [
+    15.29,
+    10.38,
+    9.76,
+    9.15,
+    8.32,
+    9.65
+  ],
+  "concurrent_activity": "Other CPU workloads and existing native previews remained active. Own builds finished before timing. No screenshot/input actions during the four sequential timing runs.",
+  "local_gates": {
+    "fmt": "pass",
+    "strict_all_target_clippy": "pass",
+    "workspace_tests_passed": 315,
+    "workspace_tests_failed": 0,
+    "existing_ignored": 1,
+    "workspace_build": "pass",
+    "release_examples": "pass"
+  },
+  "source_ci": "https://github.com/RL-Charles/viamind/actions/runs/38119315442",
+  "validation": "Five populated image cases; max channel delta 2/255 and zero pixels over 2. All benchmark reports 1260 native frames, 360 samples/phase, 1320x954 canvas, 1 pixel/point and identical drawn counts. Both GPU profiles have 1260 unique frame tags, 4 bounded slots and zero errors/counters/pending.",
+  "limits": [
+    "Strict 59.5 fps plus p95 <=16.9ms fails in every phase; original 60fps acceptance remains open.",
+    "Mixed GPU diagnostics and sequential variable-load measurements do not establish a general or isolated causal speedup.",
+    "GPU elapsed timestamps can include interference between timestamps and instrumentation overhead; instrumented cadence is diagnostic only.",
+    "Relative precision unit bound <0.001 point covers tested base vertices -512..3072 points and 1000 updates at zoom 0.1/10/100000 around world centers +/-8e12 mm. It does not guarantee nanometre model accuracy through the existing f64 scene boundary or arbitrary enormous primitive extents.",
+    "Native verification covers Intel Vulkan, default DPI (1 pixel/point) and single sample. Removing the storage-only gate allows baseline uniform-capable wgpu devices, but other adapters/backends/settings were not natively tested.",
+    "Layer generations still repack/upload resident geometry on changes or precision rebasing, and layers must fit device buffer limits."
+  ]
+}
