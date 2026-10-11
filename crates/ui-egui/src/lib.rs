@@ -15,6 +15,7 @@ pub mod cross_probe;
 pub mod drc;
 pub mod erc;
 pub mod fabrication;
+pub mod fabrication_view;
 pub mod files;
 mod gpu_tiles;
 pub mod gpu_timing;
@@ -153,6 +154,7 @@ pub struct ViamindApp {
     pub assembly_export: assembly_export::AssemblyExportUi,
     pub pcb_import: pcb_import::PcbImportUi,
     pub fabrication: fabrication::FabricationUi,
+    pub fabrication_view: fabrication_view::FabricationViewUi,
     pub output_jobs: output_jobs::OutputJobUi,
     pub files: files::FileUi,
     pub parts: parts::PartUi,
@@ -202,6 +204,7 @@ impl ViamindApp {
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
+            fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -243,6 +246,7 @@ impl ViamindApp {
             assembly_export: assembly_export::AssemblyExportUi::default(),
             pcb_import: pcb_import::PcbImportUi::default(),
             fabrication: fabrication::FabricationUi::default(),
+            fabrication_view: fabrication_view::FabricationViewUi::default(),
             output_jobs: output_jobs::OutputJobUi::default(),
             files: files::FileUi::default(),
             parts: parts::PartUi::default(),
@@ -406,6 +410,7 @@ impl ViamindApp {
                 self.routing.canvas(ui, &response, &self.canvas.camera, &design.engine, &self.layers, routing_enabled);
             }
             self.paint_cross_probe(ui, response.rect);
+            self.paint_fabrication_overlay(ui, response.rect);
             self.paint_pin_pad_probe(ui, response.rect);
             self.paint_labels(ui);
         });
@@ -418,6 +423,7 @@ impl ViamindApp {
         self.drc_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);
+        self.fabrication_inspection_window(ui);
         self.output_jobs_window(ui);
         self.view_export_window(ui);
         self.assembly_export_window(ui);
@@ -501,6 +507,10 @@ impl ViamindApp {
                     }
                     if ui.button("Export assembly CSV…").clicked() {
                         self.begin_assembly_export();
+                        ui.close();
+                    }
+                    if ui.button("Inspect fabrication files…").clicked() {
+                        self.begin_fabrication_inspection();
                         ui.close();
                     }
                     if ui.button("Export rendered view…").clicked() {

@@ -20,7 +20,7 @@ fn original_odd_signed_coordinates_rectangles_and_linear_strokes_preserve_native
         ]
     );
     assert!(!geometry.negative_file_polarity);
-    assert!(!geometry.unverified_common_origin);
+    assert!(geometry.unverified_common_origin);
 }
 #[test]
 fn mask_openings_profile_zero_centerlines_and_xnc_exact_hits_are_distinct() {

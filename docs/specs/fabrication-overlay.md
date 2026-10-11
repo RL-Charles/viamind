@@ -46,6 +46,8 @@ Profile and TD reset are recognized. Duplicate/conflicting headers, undefined or
 redefined apertures, premature graphics, missing end marker or trailing commands
 reject. Comments remain comments. Unknown semantic commands/attributes reject
 the entire request, without publishing a partial picture.
+Idempotent repetitions of the supported modal LPD/LMN/LS1/G01/G05 commands are
+accepted; unique format/unit/file-identity declarations remain singleton headers.
 
 XNC accepts printable ASCII comments, M48, METRIC, unique T01..T99 positive
 decimal diameter declarations, header end %, G05, declared tool selection,
@@ -76,7 +78,8 @@ historical contents; they prevent the desktop from displaying it on a changed
 document. Per-file reports include absolute path, exact source SHA256, kind,
 file polarity, optional SameCoordinates UUID and primitive counts. A declared
 UUID different from the requested project rejects, preventing a misleading
-overlay. XNC has an explicit unverified-common-origin flag. File identity is not
+overlay. XNC and Gerber without SameCoordinates have an explicit
+unverified-common-origin flag. File identity is not
 a claim that bytes still match the current board or remain unchanged afterward.
 
 Result geometry uses exact integer-Nm centers/endpoints/dimensions and exact

@@ -267,7 +267,13 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
     {
         return Err(invalid());
     }
-    Ok(FabricationGeometry { layer: file_layer, negative_file_polarity: negative, same_coordinates, unverified_common_origin: false, primitives })
+    Ok(FabricationGeometry {
+        layer: file_layer,
+        negative_file_polarity: negative,
+        same_coordinates,
+        unverified_common_origin: same_coordinates.is_none(),
+        primitives,
+    })
 }
 
 pub fn parse_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<FabricationGeometry, String> {

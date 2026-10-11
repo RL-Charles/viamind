@@ -157,6 +157,33 @@ mod tests {
         };
         assert!(engine.inspect_fabrication_files(input).is_err());
         drop(Permit::acquire().unwrap());
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("historical.gbr");
+        std::fs::write(&path, "%FSLAX56Y56*%%MOMM*%%TF.FileFunction,Copper,L1,Top*%%TF.FilePolarity,Positive*%%LPD*%%LMN*%%LS1*%G01*M02*").unwrap();
+        let input = InspectFabricationFiles { paths: vec![path], expected_project: engine.read(|p| p.id), expected_cursor: engine.event_cursor() };
+        let captured = input.expected_cursor;
+        let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+        let worker_engine = engine.clone();
+        let waiter = std::thread::spawn(move || {
+            let result = worker_engine.inspect_fabrication_files_with(input, || {
+                entered_tx.send(()).unwrap();
+                release_rx.recv().unwrap();
+            });
+            done_tx.send(result).unwrap();
+        });
+        entered_rx.recv_timeout(std::time::Duration::from_secs(5)).unwrap();
+        drop(waiter); // A canceled/detached caller does not release the reader's admission.
+        assert!(Permit::acquire().is_err());
+        engine
+            .execute("add_part", serde_json::json!({"designator":"PEER","value":"","footprint":"f","x_mm":0,"y_mm":0}), crate::Origin::agent("peer"))
+            .unwrap();
+        release_tx.send(()).unwrap();
+        let historical = done_rx.recv_timeout(std::time::Duration::from_secs(5)).unwrap().unwrap();
+        assert_eq!(historical.source_cursor, captured);
+        assert_ne!(historical.source_cursor, engine.event_cursor());
+        drop(Permit::acquire().unwrap());
     }
     #[cfg(target_os = "linux")]
     #[test]
