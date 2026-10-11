@@ -88,9 +88,19 @@ struct Frame {
     draws: Vec<Draw>,
     transforms: Vec<[f32; 4]>,
     viewport: Rect,
+    probe: Option<Arc<crate::gpu_timing::GpuTiming>>,
+    timing: Mutex<Option<crate::gpu_timing::DrawTiming>>,
+    tag: crate::gpu_timing::FrameTag,
 }
-pub(crate) fn shape(pipeline: Arc<Pipeline>, draws: Vec<Draw>, transforms: Vec<[f32; 4]>, viewport: Rect) -> Shape {
-    Callback::new_paint_callback(viewport, Frame { pipeline, draws, transforms, viewport }).into()
+pub(crate) fn shape(
+    pipeline: Arc<Pipeline>,
+    draws: Vec<Draw>,
+    transforms: Vec<[f32; 4]>,
+    viewport: Rect,
+    probe: Option<Arc<crate::gpu_timing::GpuTiming>>,
+) -> Shape {
+    let tag = probe.as_ref().map(|p| p.frame_tag()).unwrap_or_default();
+    Callback::new_paint_callback(viewport, Frame { pipeline, draws, transforms, viewport, probe, timing: Mutex::new(None), tag }).into()
 }
 impl CallbackTrait for Frame {
     fn prepare(
@@ -98,9 +108,12 @@ impl CallbackTrait for Frame {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         _: &ScreenDescriptor,
-        _: &mut wgpu::CommandEncoder,
+        encoder: &mut wgpu::CommandEncoder,
         _: &mut CallbackResources,
     ) -> Vec<wgpu::CommandBuffer> {
+        if let Some(probe) = &self.probe {
+            *self.timing.lock().unwrap() = probe.begin(encoder, self.tag);
+        }
         let mut pipeline = self.pipeline.ready.lock().unwrap();
         let pipeline = pipeline.get_or_insert_with(|| build_pipeline(device, queue, &self.pipeline));
         if pipeline.capacity < self.transforms.len() {
@@ -129,6 +142,8 @@ impl CallbackTrait for Frame {
     fn paint(&self, _: PaintCallbackInfo, pass: &mut wgpu::RenderPass<'static>, _: &CallbackResources) {
         let pipeline = self.pipeline.ready.lock().unwrap();
         let Some(pipeline) = pipeline.as_ref() else { return };
+        let timing = self.timing.lock().unwrap();
+        let started = timing.as_ref().is_some_and(|t| t.start(pass));
         pass.set_pipeline(&pipeline.pipeline);
         pass.set_bind_group(1, &pipeline.atlas, &[]);
         pass.set_bind_group(0, &pipeline.camera, &[]);
@@ -140,6 +155,9 @@ impl CallbackTrait for Frame {
             for range in &draw.ranges {
                 pass.draw_indexed(range.clone(), 0, 0..1);
             }
+        }
+        if started {
+            timing.as_ref().unwrap().end(pass);
         }
     }
 }

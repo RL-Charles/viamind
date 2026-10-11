@@ -1,0 +1,29 @@
+{
+  "ticket": "T-0059",
+  "source": "b677611c26f25a318b696e420e2ba6bd8a123194",
+  "base": "c5dc21a0a548d3e000f681254beb7088fd89b20e",
+  "binary_sha256": "24cde1117375d2aa2c4cbcd1f277aa30acf2cb2d7d3793e5805021b1b376a55a",
+  "observed_start_utc": "2026-10-11T06:31:34Z",
+  "observed_complete_by_utc": "2026-10-11T06:32:48Z",
+  "load_average_observed": [
+    13.53,
+    16.48
+  ],
+  "concurrent_activity": "Other CPU workloads and existing native previews. Viamind builds completed before measurement. No screenshot/input actions during timing.",
+  "local_gates": {
+    "fmt": "pass",
+    "strict_all_target_clippy": "pass",
+    "workspace_tests_passed": 289,
+    "workspace_tests_failed": 0,
+    "existing_ignored": 1,
+    "workspace_build": "pass",
+    "release_example": "pass"
+  },
+  "validation": "GPU report complete; every frame 0..1259 appears once; 360 sampled GPU durations per phase; four reusable query slots; zero counters/errors/pending; final bounded drain successful.",
+  "limitations": [
+    "Instrumented native cadence is diagnostic, not replacement acceptance evidence",
+    "GPU context interference and query overhead can affect elapsed durations",
+    "Supported native Intel Vulkan configuration tested; unsupported-device branch returns unavailable",
+    "Original strict 100k/60fps acceptance remains open"
+  ]
+}

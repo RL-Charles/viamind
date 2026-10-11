@@ -1,0 +1,12 @@
+# Optional native board GPU timing
+
+Public sources: [wgpu render-pass timestamps](https://docs.rs/wgpu/30.0.1/wgpu/struct.RenderPass.html#method.write_timestamp), [timestamp features](https://docs.rs/wgpu/30.0.1/wgpu/struct.Features.html#associatedconstant.TIMESTAMP_QUERY_INSIDE_PASSES), [query resolution](https://docs.rs/wgpu/30.0.1/wgpu/struct.CommandEncoder.html#method.resolve_query_set), [map after submission](https://docs.rs/wgpu/30.0.1/wgpu/struct.CommandEncoder.html#method.map_buffer_on_submit), and [egui-wgpu device setup](https://docs.rs/egui-wgpu/0.36.2/egui_wgpu/struct.WgpuSetupCreateNew.html).
+
+## Behaviour
+
+- Enable GPU queries only through an explicit diagnostic benchmark option. Request timestamp features only if the adapter supports them; ordinary application and benchmark device requests stay unchanged. Unsupported devices produce an explicit unavailable report.
+- Timestamp immediately before and after the production persistent board callback's draw commands. Durations describe those GPU commands, excluding egui UI/background/overlays, uploads, presentation, queue waiting before the first timestamp and OS frame scheduling. They must remain separate from native cadence and previous-frame CPU.
+- Use a bounded ring of query/resolve/readback resources. Resolve a recorded previous frame before reusing its query slots, map after submission, and recycle only after unmapping. Tag samples with their actual benchmark frame and phase; skipped/busy/invalid/error cases must be counted. Discarded callbacks must release reservations without fabricating samples.
+- During measured frames, use asynchronous submission/readback and no blocking GPU waits. After the native benchmark closes, permit a bounded final drain outside its cadence measurement. Bound sample history as well as GPU resource count.
+- Preserve the benchmark's existing 100,000-object scene, phases, warmup/sample counts, visible geometry and strict 60fps checks. Write a separate new diagnostic JSON file with per-phase available GPU samples, counters, device/source identity and limitations. Instrumented cadence is identified as diagnostic; retain uninstrumented cadence as the acceptance evidence.
+- Test reservation, discarded callback release, delayed completion, generation safety, backpressure, bounded history and timestamp conversion. Run all Linux gates and real native diagnostics on the supported host; report unsupported hardware honestly.
