@@ -616,6 +616,7 @@ mod tests {
             net: Some(name.into()),
         };
         let part = Part {
+            holes: None,
             assembly: None,
             artwork: None,
             schematic_symbol: None,
