@@ -156,7 +156,7 @@ impl SchematicWiresUi {
         }
         match result {
             Ok(draft) if context == Some((draft.snapshot.expected_project, draft.snapshot.source_cursor, draft.snapshot.expected.id)) => {
-                self.draft = Some(draft)
+                self.draft = Some(draft);
             }
             Ok(_) => self.message = Some("Document changed while preparing wires; restart drawing".into()),
             Err(error) => self.message = Some(error),
@@ -181,6 +181,9 @@ impl SchematicWiresUi {
 }
 impl ViamindApp {
     pub fn begin_schematic_wires(&mut self) {
+        if self.schematic_wires.active() {
+            return;
+        }
         if !self.schematic.active
             || self.schematic_object_draft_active()
             || self.files.busy()
@@ -212,7 +215,10 @@ impl ViamindApp {
                 self.schematic_wires.cancel();
             }
         }
-        if ui.button("Draw wires on canvas").clicked() {
+        if ui
+            .add_enabled(!self.schematic_wires.active() && self.schematic_wires.pending.is_none(), egui::Button::new("Draw wires on canvas"))
+            .clicked()
+        {
             self.begin_schematic_wires();
         }
         if self.schematic_wires.draft.is_some() {
