@@ -1,6 +1,7 @@
 use egui_kittest::{Harness, kittest::Queryable};
 use viamind_engine::{EngineHandle, Origin};
 use viamind_ui_egui::ViamindApp;
+static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 fn engine() -> EngineHandle {
     EngineHandle::new(viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap())
 }
@@ -20,6 +21,10 @@ fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
     h.run_steps(3);
     h.get_by_label(label).focus();
     h.run_steps(3);
+    for pressed in [true, false] {
+        h.event(egui::Event::Key { key: egui::Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+        h.run_steps(2);
+    }
     h.get_by_label(label).type_text(value);
     h.run_steps(5);
 }
@@ -33,6 +38,7 @@ fn wait(h: &mut Harness<'_, ViamindApp>, label: &str) {
 }
 #[test]
 fn actual_file_menu_inspection_visibility_and_peer_edit_keep_overlay_current_and_read_only() {
+    let _guard = SERIAL.lock().unwrap();
     let engine = engine();
     let before = engine.session_state();
     let status = engine.document_status();
@@ -70,14 +76,30 @@ fn actual_file_menu_inspection_visibility_and_peer_edit_keep_overlay_current_and
 }
 #[test]
 fn actual_compact_inspect_and_unsupported_error_are_reachable_and_preserve_fields() {
+    let _guard = SERIAL.lock().unwrap();
     let engine = engine();
     let before = engine.session_state();
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("unsupported.gbr");
     std::fs::write(&path, "G36*M02*").unwrap();
+    let good = dir.path().join("top.gbr");
+    std::fs::write(&good, source(before.project.id)).unwrap();
     let mut app = ViamindApp::with_design(engine.clone(), None);
     app.begin_fabrication_inspection();
     let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    input(&mut h, "Fabrication file 1 path", good.to_str().unwrap());
+    h.get_by_label("Inspect selected fabrication files").scroll_to_me();
+    h.run_steps(5);
+    let rect = h.get_by_label("Inspect selected fabrication files").rect();
+    assert!(rect.min.x >= 0.0 && rect.max.x <= 640.0 && rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+    click(&mut h, "Inspect selected fabrication files");
+    wait(&mut h, "Inspected 1 files / 1 primitives");
+    h.get_by_label("Show fabrication overlay").scroll_to_me();
+    h.run_steps(5);
+    let rect = h.get_by_label("Show fabrication overlay").rect();
+    assert!(rect.min.x >= 0.0 && rect.max.x <= 640.0 && rect.min.y >= 0.0 && rect.max.y <= 400.0, "{rect:?}");
+    click(&mut h, "Show fabrication overlay");
+    assert_eq!(h.state().fabrication_view.painted_primitives(), 1);
     input(&mut h, "Fabrication file 1 path", path.to_str().unwrap());
     click(&mut h, "Inspect selected fabrication files");
     wait(&mut h, "Inspection failed");

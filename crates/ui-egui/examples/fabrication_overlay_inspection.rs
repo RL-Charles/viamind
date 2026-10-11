@@ -50,6 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     click(&mut h, "Show fabrication overlay");
     h.get_by_label("Show fabrication overlay").scroll_to_me();
     h.run_steps(8);
+    let control = h.get_by_label("Show fabrication overlay").rect();
+    assert!(control.min.x >= 0.0 && control.min.y >= 0.0 && control.max.x <= width && control.max.y <= height, "{control:?}");
     assert!(h.state().fabrication_view.painted_primitives() > 0);
     assert_eq!(engine.session_state(), before);
     let memory = h.ctx.memory(Clone::clone);

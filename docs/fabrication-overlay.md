@@ -9,6 +9,9 @@ document cursor. Enable **Show fabrication overlay** and choose individual files
 to compare their geometry with the PCB. Pan, zoom and Home use the same camera
 for the design and overlay. Circular boundaries, rectangular apertures, linear
 strokes, profile centerlines and drill boundaries have distinct layer colors.
+Circular-aperture strokes use one prepared capsule with rounded ends; a
+zero-length stroke displays its circular aperture boundary. Screen drawing
+approximates the curves; exact integer file geometry remains in the MCP report.
 All sides remain in top view; file upward-Y coordinates become native downward-Y.
 
 Negative solder-mask files display their openings. Drill files and Gerber files

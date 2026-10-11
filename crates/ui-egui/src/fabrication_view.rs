@@ -16,7 +16,7 @@ pub struct FabricationViewUi {
     paths: [String; 6],
     worker: Option<Receiver<Result<FabricationInspection, String>>>,
     result: Option<FabricationInspection>,
-    prepared: Vec<Vec<Prim>>,
+    prepared: Vec<Vec<PreparedPrimitive>>,
     visible: [bool; 6],
     overlay: bool,
     message: Option<String>,
@@ -106,10 +106,29 @@ impl FabricationViewUi {
         self.sync(engine);
     }
 }
-fn primitive(p: &Primitive) -> Prim {
+struct PreparedPrimitive {
+    shape: Prim,
+    capsule: Option<Vec<WorldPos>>,
+}
+fn capsule(a: WorldPos, b: WorldPos, radius: f64) -> Vec<WorldPos> {
+    let angle = (b.y - a.y).atan2(b.x - a.x);
+    // One convex shape avoids alpha overlap at the two circular end caps.
+    [b, a]
+        .into_iter()
+        .enumerate()
+        .flat_map(|(end, center)| {
+            (0..=16).map(move |i| {
+                let angle = angle - std::f64::consts::FRAC_PI_2 + (end as f64 + f64::from(i) / 16.0) * std::f64::consts::PI;
+                WorldPos::new(center.x + radius * angle.cos(), center.y + radius * angle.sin())
+            })
+        })
+        .collect()
+}
+fn primitive(p: &Primitive) -> PreparedPrimitive {
     let at = |p: viamind_geom::Point| WorldPos::new(p.x.to_mm(), p.y.to_mm());
-    match *p {
+    let shape = match *p {
         Primitive::Circle { center, diameter } => Prim::Circle { center: at(center), radius: diameter.to_mm() / 2.0 },
+        Primitive::Segment { start, end, width } if start == end && width.0 > 0 => Prim::Circle { center: at(start), radius: width.to_mm() / 2.0 },
         Primitive::Segment { start, end, width } => Prim::Segment { a: at(start), b: at(end), width: width.to_mm() },
         Primitive::Rectangle { center, width, height, rotation_mdeg } => {
             let (s, c) = (f64::from(rotation_mdeg) / 1000.0).to_radians().sin_cos();
@@ -120,7 +139,12 @@ fn primitive(p: &Primitive) -> Prim {
                 WorldPos::new(center.x + x * c + y * s, center.y - x * s + y * c)
             }))
         }
-    }
+    };
+    let capsule = match shape {
+        Prim::Segment { a, b, width } if width > 0.0 => Some(capsule(a, b, width / 2.0)),
+        _ => None,
+    };
+    PreparedPrimitive { shape, capsule }
 }
 fn color(layer: Layer) -> Color32 {
     match layer {
@@ -220,11 +244,16 @@ impl ViamindApp {
             }
             let color = color(file.geometry.layer);
             for prim in &state.prepared[i] {
-                if !prim.bounds().intersects(&visible) {
+                if !prim.shape.bounds().intersects(&visible) {
                     continue;
                 }
                 let screen = |p| camera.world_to_screen(p, viewport);
-                match *prim {
+                if let Some(points) = &prim.capsule {
+                    painter.add(egui::Shape::convex_polygon(points.iter().copied().map(screen).collect(), color, Stroke::new(1.0, color)));
+                    state.painted += 1;
+                    continue;
+                }
+                match prim.shape {
                     Prim::Circle { center, radius } => {
                         painter.circle_stroke(screen(center), (radius * camera.zoom) as f32, Stroke::new(2.0, color));
                     }
@@ -246,6 +275,34 @@ impl ViamindApp {
 mod tests {
     use super::*;
     #[test]
+    fn circular_strokes_include_round_endpoint_envelopes_and_zero_length_disks() {
+        use viamind_geom::{Nm, Point};
+        let point = |x, y| Point::new(Nm(x), Nm(y));
+        let horizontal =
+            primitive(&Primitive::Segment { start: point(2_000_000, 3_000_000), end: point(8_000_000, 3_000_000), width: Nm(4_000_000) });
+        let points = horizontal.capsule.unwrap();
+        assert_eq!(points.len(), 34);
+        for expected in [WorldPos::new(0.0, 3.0), WorldPos::new(10.0, 3.0), WorldPos::new(2.0, 1.0), WorldPos::new(8.0, 5.0)] {
+            assert!(points.iter().any(|p| (p.x - expected.x).abs() < 1e-12 && (p.y - expected.y).abs() < 1e-12));
+        }
+        let diagonal =
+            primitive(&Primitive::Segment { start: point(-2_000_000, -3_000_000), end: point(2_000_000, 1_000_000), width: Nm(2_000_000) });
+        for p in diagonal.capsule.unwrap() {
+            // Independent distance-to-segment boundary: every cap vertex is one mm out.
+            let t = (((p.x + 2.0) * 4.0 + (p.y + 3.0) * 4.0) / 32.0).clamp(0.0, 1.0);
+            let distance = (p.x - (-2.0 + 4.0 * t)).hypot(p.y - (-3.0 + 4.0 * t));
+            assert!((distance - 1.0).abs() < 1e-12, "{distance}");
+        }
+        let zero = primitive(&Primitive::Segment { start: point(-2_000_000, 3_000_000), end: point(-2_000_000, 3_000_000), width: Nm(4_000_000) });
+        let Prim::Circle { center, radius } = zero.shape else { panic!("zero-length stroke must show its aperture disk") };
+        assert_eq!(center, WorldPos::new(-2.0, 3.0));
+        assert!((radius - 2.0).abs() < 1e-12);
+        assert!(zero.capsule.is_none());
+        let profile = primitive(&Primitive::Segment { start: point(0, 0), end: point(1_000_000, 0), width: Nm(0) });
+        assert!(matches!(profile.shape, Prim::Segment { width: 0.0, .. }));
+        assert!(profile.capsule.is_none());
+    }
+    #[test]
     fn exact_odd_rectangles_use_file_ccw_rotation_in_native_downward_y() {
         let prim = primitive(&Primitive::Rectangle {
             center: viamind_geom::Point::new(viamind_geom::Nm(-1234567), viamind_geom::Nm(-2000003)),
@@ -253,7 +310,7 @@ mod tests {
             height: viamind_geom::Nm(1000003),
             rotation_mdeg: 90000,
         });
-        let Prim::Quad(points) = prim else { panic!("rectangle required") };
+        let Prim::Quad(points) = prim.shape else { panic!("rectangle required") };
         for (actual, (x, y)) in
             points.iter().zip([(-1.7345685, -1.0000025), (-1.7345685, -3.0000035), (-0.7345655, -3.0000035), (-0.7345655, -1.0000025)])
         {
