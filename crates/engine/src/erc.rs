@@ -142,6 +142,17 @@ fn default_pair(a: PinType, b: PinType) -> ErcSeverity {
     }
 }
 impl ErcInput {
+    /// Effective symmetric native policy, ordered by the supported unordered pin pairs.
+    pub fn effective_matrix(&self) -> Result<Vec<PinCompatibilityRule>, CommandError> {
+        let matrix = self.matrix()?;
+        let mut rules = Vec::with_capacity(66);
+        for (a, &kind_a) in TYPES.iter().enumerate() {
+            for (b, &kind_b) in TYPES.iter().enumerate().skip(a) {
+                rules.push(PinCompatibilityRule { a: kind_a, b: kind_b, severity: matrix[a][b] });
+            }
+        }
+        Ok(rules)
+    }
     fn matrix(&self) -> Result<[[ErcSeverity; 11]; 11], CommandError> {
         if !(1..=10_000).contains(&self.max_violations) {
             return Err(CommandError::invalid("max_violations", "must be within 1..10000"));
@@ -171,12 +182,7 @@ impl EngineHandle {
     pub fn run_erc(&self, input: &ErcInput) -> Result<ErcReport, CommandError> {
         let matrix = input.matrix()?;
         let graph = self.all_schematic_connectivity()?;
-        let mut effective_matrix = Vec::with_capacity(66);
-        for (a, &kind_a) in TYPES.iter().enumerate() {
-            for (b, &kind_b) in TYPES.iter().enumerate().skip(a) {
-                effective_matrix.push(PinCompatibilityRule { a: kind_a, b: kind_b, severity: matrix[a][b] });
-            }
-        }
+        let effective_matrix = input.effective_matrix()?;
         let unspecified_pins = graph.nets.iter().flat_map(|n| &n.members).filter(|m| m.electrical == Some(PinType::Unspecified)).count();
         let mut report = ErcReport {
             project_id: graph.project_id,

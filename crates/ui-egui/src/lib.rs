@@ -11,6 +11,7 @@ pub mod camera;
 pub mod canvas;
 pub mod copper;
 pub mod drc;
+pub mod erc;
 pub mod fabrication;
 pub mod files;
 mod gpu_tiles;
@@ -138,6 +139,7 @@ pub struct ViamindApp {
     pub routing: routing::RoutingUi,
     pub pads: pads::PadsUi,
     pub drc: drc::DrcUi,
+    pub erc: erc::ErcUi,
     last_frame_time: Option<f64>,
 }
 
@@ -176,6 +178,7 @@ impl ViamindApp {
             routing: routing::RoutingUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
+            erc: erc::ErcUi::default(),
             last_frame_time: None,
         }
     }
@@ -206,6 +209,7 @@ impl ViamindApp {
             routing: routing::RoutingUi::default(),
             pads: pads::PadsUi::default(),
             drc: drc::DrcUi::default(),
+            erc: erc::ErcUi::default(),
             last_frame_time: None,
         }
     }
@@ -358,6 +362,7 @@ impl ViamindApp {
         self.copper_dialog(ui);
         self.route_dialog(ui);
         self.drc_window(ui);
+        self.erc_window(ui);
         self.fabrication_window(ui);
         if let Some(design) = &self.design {
             let status = design.engine.document_status();
@@ -495,6 +500,14 @@ impl ViamindApp {
                     }
                     if ui.button("Place test resistor").clicked() {
                         self.place_test_resistor();
+                        ui.close();
+                    }
+                });
+            }
+            if self.design.is_some() {
+                ui.menu_button("Inspect", |ui| {
+                    if ui.button("Electrical rule check…").clicked() {
+                        self.begin_erc();
                         ui.close();
                     }
                 });
