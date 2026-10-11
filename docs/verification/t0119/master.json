@@ -565,12 +565,12 @@
       "sha256": "e94c208cd536d8169709e7af4b4984e40e89813fd745c8a21950142f50257013"
     },
     {
-      "path": "docs/generated/mcp-tools.json",
+      "path": "docs/verification/t0119/catalog-final/mcp-tools.json",
       "storage": "repository",
       "sha256": "ea7e04e135ad3cfaf965d3b3917eb71ff9016d1b991881f9e0c75c70e6acc659"
     },
     {
-      "path": "docs/generated/mcp-tools.md",
+      "path": "docs/verification/t0119/catalog-final/mcp-tools.md",
       "storage": "repository",
       "sha256": "22eedb4c6d28fed3f7e83f3d1c6263d82a8c6d89e0d8194f4bf0d0f8924e2f90"
     },
