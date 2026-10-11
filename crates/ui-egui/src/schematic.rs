@@ -670,6 +670,9 @@ impl ViamindApp {
         let Some(c) = content else {
             painter.text(viewport.center(), Align2::CENTER_CENTER, "Create or choose a schematic sheet", FontId::proportional(18.0), Color32::WHITE);
             self.schematic_wire_canvas(ui, &response, &painter);
+            if let Some(sheet) = sheet.as_ref() {
+                self.paint_schematic_agent_presence(ui, viewport, sheet.id, content);
+            }
             return;
         };
         let cam = self.schematic.camera;
@@ -729,6 +732,9 @@ impl ViamindApp {
             // Keep attached net labels above the pin-number/name row at the same anchor.
             painter.text(at + egui::vec2(6.0, -20.0), Align2::LEFT_BOTTOM, format!("{} ({:?})", l.name, l.scope), FontId::proportional(13.0), tint);
         }
+        if let Some(sheet) = sheet.as_ref() {
+            self.paint_schematic_agent_presence(ui, viewport, sheet.id, content);
+        }
         let drawing_wires = self.schematic_wire_canvas(ui, &response, &painter);
         if !drawing_wires
             && response.clicked()
@@ -754,7 +760,7 @@ impl ViamindApp {
 fn world(p: Coordinate) -> WorldPos {
     WorldPos::new(p.x.to_mm(), p.y.to_mm())
 }
-fn body_corners(s: &SchematicSymbol) -> [Coordinate; 4] {
+pub(crate) fn body_corners(s: &SchematicSymbol) -> [Coordinate; 4] {
     let x = s.width.0 / 2;
     let y = s.height.0 / 2;
     [(-x, -y), (s.width.0 - x, -y), (s.width.0 - x, s.height.0 - y), (-x, s.height.0 - y)].map(|(mut x, mut y)| {

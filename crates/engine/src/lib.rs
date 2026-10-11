@@ -141,5 +141,6 @@ pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition
 
 mod agent_presence;
 pub use agent_presence::{
-    AGENT_PRESENCE_CAPACITY, AGENT_PRESENCE_LEASE, AgentPresence, AgentPresenceSnapshot, ClearAgentPresence, PresencePoint, SetAgentPresence,
+    AGENT_PRESENCE_CAPACITY, AGENT_PRESENCE_LEASE, AgentPresence, AgentPresenceSnapshot, ClearAgentPresence, PresencePoint, PresenceSurface,
+    SetAgentPresence,
 };

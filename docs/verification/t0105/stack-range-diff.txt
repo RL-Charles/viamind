@@ -1,0 +1,9 @@
+ 1:  a4a15b3 =  1:  5a7e08e Specify bounded explicit schematic sheet attention
+ 2:  32cf828 =  2:  aee153e Extend bounded agent attention to explicit schematic sheets
+ 3:  c4c6627 =  3:  0af4495 Verify schematic attention boundaries across transport and desktop
+ 4:  74d1763 =  4:  bed20c0 Observe sheet choice through visible UI controls
+ 5:  1a7cbf8 =  5:  f6f20d9 Target accessible sheet combo by role and selected value
+ 6:  92f3c6b =  6:  1e60817 Import UI node observation trait
+ 7:  a996fc5 =  7:  df0a5dd Compare observed sheet value as borrowed string
+ 8:  6710a3e =  8:  8af0902 Keep schematic highlights idiomatic and describe surface-neutral bounds
+ 9:  4861a99 =  9:  66acf6c Retain schematic agent attention transport and native verification

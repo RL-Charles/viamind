@@ -1069,7 +1069,7 @@
       "name": "cleanup_cardinal_tracks"
     },
     {
-      "description": "Clear only this trusted MCP connection's PCB attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.",
+      "description": "Clear only this trusted MCP connection's PCB or schematic attention marker. Required project/stream guards reject New/Open/reopen; missing own marker succeeds. Cannot clear a peer by forging a client name or input owner. No document/history/human selection/native-file change; blocked in startup read-only mode.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false,
@@ -6721,7 +6721,7 @@
       "name": "preview_schematic_pcb_sync"
     },
     {
-      "description": "Read bounded ephemeral PCB agent cursors, selected board IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.",
+      "description": "Read bounded ephemeral PCB or explicit-sheet schematic agent cursors, selected surface IDs and working labels, paired with current project/full cursor. At most32 session-owned30second leases; observing never renews leases. No design/history/human selection/native-file change. Presence is attention, not an object lock. Takes an empty object.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {},
@@ -9380,7 +9380,7 @@
       "name": "save_symbol_template"
     },
     {
-      "description": "Publish or renew only this MCP connection's ephemeral PCB cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; at most64 distinct existing board part/track/via IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.",
+      "description": "Publish or renew only this MCP connection's ephemeral PCB or explicit schematic-sheet cursor/selection/working label for30seconds. Requires current expected_project and expected_stream; ordinary edits do not stale attention. Integer Nm cursor within +/-10000mm; Optional strict surface {kind:pcb} (default/omitted) or {kind:schematic,sheet:UUID}; at most64 distinct existing board part/track/via IDs or chosen-sheet symbol/wire/junction/label IDs; trimmed control-free working_on within80characters/256UTF8bytes. Maximum32 participants; no peer eviction. Identity comes from transport, never client names/arguments. No project/history/human selection/native-file mutation; blocked in startup read-only mode.",
       "inputSchema": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false,
@@ -9427,6 +9427,43 @@
             },
             "maxItems": 64,
             "type": "array"
+          },
+          "surface": {
+            "description": "One connection attends to either PCB or one explicitly identified sheet.",
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "pcb",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "schematic",
+                    "type": "string"
+                  },
+                  "sheet": {
+                    "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                    "format": "uuid",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "sheet"
+                ],
+                "type": "object"
+              }
+            ]
           },
           "working_on": {
             "maxLength": 80,

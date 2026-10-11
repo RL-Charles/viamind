@@ -1,0 +1,46 @@
+Sun Oct 11 16:37:11 UTC 2026
+458830eb3bd08eea8707b9accb9d0de02ca7c95b
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.20s
+     Running tests/agent_presence.rs (/tmp/claude-1000/-home-charlesmowbray-Development-opensource-altium/c7e09c2c-0a14-48ab-b987-697c122c1f03/scratchpad/stack/target/debug/deps/agent_presence-d0a21919f9702cc5)
+
+running 2 tests
+test schematic_attention_filters_views_and_sheets_draws_exact_bounds_and_preserves_human_undo ... ok
+test compact_colored_attention_is_clipped_and_human_edit_undo_stays_live ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0105/crates/ui-egui)
+error: manual implementation of `Option::map`
+  --> crates/ui-egui/src/agent_presence.rs:94:28
+   |
+94 |                       } else if let Some(wire) = content.wires.get(id) {
+   |  ____________________________^
+95 | |                         Some(Rect::from_two_pos(screen(wire.start), screen(wire.end)))
+96 | |                     } else {
+97 | |                         None
+98 | |                     };
+   | |_____________________^ help: try: `{ content.wires.get(id).map(|wire| Rect::from_two_pos(screen(wire.start), screen(wire.end))) }`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_map
+   = note: `-D clippy::manual-map` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::manual_map)]`
+
+error: could not compile `viamind-ui-egui` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
