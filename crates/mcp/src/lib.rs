@@ -53,3 +53,6 @@ pub mod views;
 
 pub mod symbol_libraries;
 pub mod symbol_packages;
+
+#[cfg(test)]
+mod registry_admission;

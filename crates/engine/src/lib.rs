@@ -26,6 +26,7 @@
 //! assert!(engine.read(|p| p.board.parts.is_empty()));
 //! ```
 
+pub mod agent_policy;
 pub mod assembly;
 pub mod package_component;
 pub use assembly::SetPartAssembly;
