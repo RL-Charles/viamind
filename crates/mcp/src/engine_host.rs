@@ -311,6 +311,9 @@ impl CommandHost for EngineHost {
             return serde_json::to_value(self.engine.query_route_endpoints(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }
         if name == "query_route_terminals" {
+            if input.get("net").and_then(Value::as_str).is_some_and(|n| n.len() > 256) {
+                return Err("terminal query net requires at most256bytes before typed decoding".into());
+            }
             let input = serde_json::from_value(input).map_err(|e| format!("invalid terminal query: {e}"))?;
             return serde_json::to_value(self.engine.query_route_terminals(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
         }

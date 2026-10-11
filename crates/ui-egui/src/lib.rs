@@ -43,6 +43,7 @@ pub mod schematic_wires;
 pub mod selection;
 mod symbol_definition;
 pub mod symbol_library;
+mod terminal_routing;
 pub mod track_cleanup;
 pub mod view_export;
 
@@ -677,6 +678,10 @@ impl ViamindApp {
                     }
                     if ui.button("Walkaround through fixed via…").clicked() {
                         self.begin_via_walkaround_route();
+                        ui.close();
+                    }
+                    if ui.button("Route existing copper terminals…").clicked() {
+                        self.begin_terminal_route();
                         ui.close();
                     }
                     if ui.button("Route pad connection…").clicked() {

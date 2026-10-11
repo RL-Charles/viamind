@@ -4,7 +4,7 @@ use crate::{
     actions::UiAction,
     camera::{Camera, WorldPos},
 };
-use crate::{layers::LayerStack, pad_routing::PadDraft};
+use crate::{layers::LayerStack, pad_routing::PadDraft, terminal_routing::TerminalDraft};
 use egui::{Color32, Key, PointerButton, Response, Stroke, Ui};
 use std::time::Instant;
 use viamind_doc::CopperLayer;
@@ -21,6 +21,7 @@ struct Settings {
     edge: String,
     layer: CopperLayer,
     pad_mode: bool,
+    terminal_mode: bool,
     via_mode: bool,
     via_diameter: String,
     via_drill: String,
@@ -37,6 +38,7 @@ impl Default for Settings {
             edge: "0.25".into(),
             layer: CopperLayer::Top,
             pad_mode: false,
+            terminal_mode: false,
             via_mode: false,
             via_diameter: "0.6".into(),
             via_drill: "0.3".into(),
@@ -86,6 +88,7 @@ pub struct RoutingUi {
     settings: Option<Settings>,
     draft: Option<Draft>,
     pad_draft: Option<PadDraft>,
+    terminal_draft: Option<TerminalDraft>,
     pub error: Option<String>,
     pub last_commit_ms: Option<f64>,
     walkaround_worker: Option<WalkaroundWorker>,
@@ -119,10 +122,10 @@ impl RoutingUi {
         self.walkaround_worker = None;
     }
     pub fn editing(&self) -> bool {
-        self.settings.is_some() || self.draft.is_some() || self.pad_draft.is_some()
+        self.settings.is_some() || self.draft.is_some() || self.pad_draft.is_some() || self.terminal_draft.is_some()
     }
     pub fn previewing(&self) -> bool {
-        self.draft.is_some() || self.pad_draft.is_some()
+        self.draft.is_some() || self.pad_draft.is_some() || self.terminal_draft.is_some()
     }
     pub fn points(&self) -> &[Point] {
         self.draft.as_ref().map_or(&[], |d| d.input.points.as_slice())
@@ -145,10 +148,31 @@ impl RoutingUi {
     pub fn pad_interior(&self) -> &[Point] {
         self.pad_draft.as_ref().map_or(&[], PadDraft::interior)
     }
+    pub fn terminal_endpoints(&self) -> (Option<viamind_engine::RouteTerminalId>, Option<viamind_engine::RouteTerminalId>) {
+        self.terminal_draft.as_ref().map_or((None, None), TerminalDraft::endpoints)
+    }
+    pub fn terminal_interior(&self) -> &[Point] {
+        self.terminal_draft.as_ref().map_or(&[], TerminalDraft::interior)
+    }
+    pub fn terminal_planned_points(&self) -> Vec<Point> {
+        self.terminal_draft.as_ref().and_then(|d| d.points().ok()).unwrap_or_default()
+    }
+    fn finish_terminal(&mut self, engine: &EngineHandle) {
+        let Some(draft) = &self.terminal_draft else { return };
+        match draft.finish(engine) {
+            Ok(ms) => {
+                self.last_commit_ms = Some(ms);
+                self.terminal_draft = None;
+                self.error = None;
+            }
+            Err(e) => self.error = Some(e),
+        }
+    }
     pub fn cancel(&mut self) {
         self.settings = None;
         self.draft = None;
         self.pad_draft = None;
+        self.terminal_draft = None;
     }
     fn finish_pad(&mut self, engine: &EngineHandle) {
         let Some(draft) = &self.pad_draft else { return };
@@ -245,6 +269,15 @@ impl RoutingUi {
         }
     }
     pub(crate) fn canvas(&mut self, ui: &Ui, response: &Response, camera: &Camera, engine: &EngineHandle, layers: &LayerStack, enabled: bool) {
+        if let Some(draft) = &mut self.terminal_draft {
+            let (cancel, finish) = draft.canvas(ui, response, camera, engine, layers, enabled, &mut self.error);
+            if cancel {
+                self.cancel();
+            } else if finish {
+                self.finish_terminal(engine);
+            }
+            return;
+        }
         if let Some(draft) = &mut self.pad_draft {
             let (cancel, finish) = draft.canvas(ui, response, camera, engine, layers, enabled, &mut self.error);
             if cancel {
@@ -318,6 +351,25 @@ fn mm(text: &str, positive: bool) -> Result<Nm, String> {
     Ok(nm)
 }
 impl ViamindApp {
+    pub fn begin_terminal_route(&mut self) {
+        if self.routing.editing() {
+            return;
+        }
+        self.begin_route();
+        if let Some(settings) = &mut self.routing.settings {
+            settings.terminal_mode = true;
+        }
+    }
+    fn terminal_route_window(&mut self, ui: &Ui) {
+        let Some(engine) = self.design.as_ref().map(|d| d.engine.clone()) else { return };
+        let Some(draft) = &mut self.routing.terminal_draft else { return };
+        let (finish, cancel) = draft.window(ui, &engine, self.routing.error.as_deref());
+        if cancel {
+            self.routing.cancel();
+        } else if finish {
+            self.routing.finish_terminal(&engine);
+        }
+    }
     pub fn begin_via_walkaround_route(&mut self) {
         if self.routing.editing() {
             return;
@@ -387,22 +439,23 @@ impl ViamindApp {
         self.routing.settings = Some(Settings::default());
     }
     pub(crate) fn route_dialog(&mut self, ui: &mut Ui) {
+        self.terminal_route_window(ui);
         let Some(settings) = &mut self.routing.settings else { return };
         let policy = self.design.as_ref().and_then(|d| d.engine.query_named_net_rules().ok());
         let mut start = false;
         let mut cancel = false;
         let modal=egui::Modal::new(egui::Id::new("route_settings")).show(ui.ctx(),|ui|{
-            ui.heading(if settings.via_mode {"Route pads through via"} else if settings.pad_mode {"Route pad connection"} else {"Route PCB polyline"});
+            ui.heading(if settings.terminal_mode {"Route existing copper terminals"} else if settings.via_mode {"Route pads through via"} else if settings.pad_mode {"Route pad connection"} else {"Route PCB polyline"});
             egui::Grid::new("route_fields").num_columns(2).show(ui,|ui|{
-                if !settings.pad_mode {let label=ui.label("Route net");ui.add(egui::TextEdit::singleline(&mut settings.net).id_salt("Route net")).labelled_by(label.id);ui.end_row();}
+                if !settings.pad_mode && !settings.terminal_mode {let label=ui.label("Route net");ui.add(egui::TextEdit::singleline(&mut settings.net).id_salt("Route net")).labelled_by(label.id);ui.end_row();}
                 for (label,value) in [("Route width (mm)",&mut settings.width),("Route grid (mm)",&mut settings.grid),("Route copper clearance (mm)",&mut settings.clearance),("Route edge clearance (mm)",&mut settings.edge)] {
                     let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();
                 }
                 if settings.via_mode {for (label,value) in [("Via copper diameter (mm)",&mut settings.via_diameter),("Via drill diameter (mm)",&mut settings.via_drill)] {let label_response=ui.label(label);ui.add(egui::TextEdit::singleline(value).id_salt(label)).labelled_by(label_response.id);ui.end_row();}}
-                if !settings.pad_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
+                if !settings.pad_mode || settings.terminal_mode {ui.label("Route layer");ui.horizontal(|ui|{ui.radio_value(&mut settings.layer,CopperLayer::Top,"Top copper");ui.radio_value(&mut settings.layer,CopperLayer::Bottom,"Bottom copper");});ui.end_row();}
             });
-            if settings.pad_mode {
-                ui.checkbox(&mut settings.walkaround, "Static cardinal walkaround");
+            if settings.pad_mode || settings.terminal_mode {
+                if !settings.terminal_mode {ui.checkbox(&mut settings.walkaround, "Static cardinal walkaround");}
                 if !settings.via_mode {ui.add_enabled_ui(!settings.walkaround, |ui| {
                     ui.radio_value(&mut settings.corner_mode, None, "Manual segments");
                     ui.radio_value(&mut settings.corner_mode, Some(CornerMode::Cardinal), "Cardinal corners");
@@ -412,7 +465,7 @@ impl ViamindApp {
             }
             if let Some(policy)=&policy {crate::net_rules::show_document_minima(ui,&policy.document_net_rules);}
             ui.label("Commit checks explicit pads, tracks, through vias and outline/cutouts. Parts without explicit pads and other scoped DRC exclusions remain unchecked.");
-            ui.label(if settings.via_mode && settings.walkaround {"Choose opposite-side same-net pads and one fixed snapped via. Request a joint checked two-side plan; commit recomputes both legs and via atomically. Rectangular board/cutouts only; no automatic via relocation or shove."} else if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or physical continuity certification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
+            ui.label(if settings.terminal_mode {"Pick persisted pads, track endpoints or existing via centers on the selected layer. Exact attachment and assigned net are resolved again at commit. Explicit width only; no midsegment splitting or new via. Orange local preview is unchecked until commit."} else if settings.via_mode && settings.walkaround {"Choose opposite-side same-net pads and one fixed snapped via. Request a joint checked two-side plan; commit recomputes both legs and via atomically. Rectangular board/cutouts only; no automatic via relocation or shove."} else if settings.via_mode {"Choose opposite-side same-net explicit pads and one snapped through via. Both legs and via commit atomically after scoped checks. No automatic obstacle avoidance or physical continuity certification."} else if settings.pad_mode {"Pick explicit pad identities or a connection guide. Quarter-turn transforms only; exact off-grid pad centers, snapped interior vertices. Conservative stored-endpoint copper proofs may suppress guides; no physical continuity certification."} else {"Preview is local. No push/shove, obstacle avoidance, automatic pad attachment or electrical continuity verification."});
             if let Some(error)=&self.routing.error {ui.colored_label(Color32::LIGHT_RED,error);}
             ui.horizontal(|ui|{start=ui.button("Start route").clicked();cancel=ui.button("Cancel route settings").clicked();});
         });
@@ -422,6 +475,7 @@ impl ViamindApp {
         }
         if start {
             let pad_mode = settings.pad_mode;
+            let terminal_mode = settings.terminal_mode;
             let corner_mode = settings.corner_mode;
             let walkaround = settings.walkaround;
             let result = (|| {
@@ -433,7 +487,7 @@ impl ViamindApp {
                     ..Default::default()
                 };
                 let net = settings.net.trim().to_owned();
-                if net.is_empty() {
+                if !settings.pad_mode && !settings.terminal_mode && net.is_empty() {
                     return Err("Enter a nonempty route net".into());
                 }
                 let (project, cursor) =
@@ -464,7 +518,18 @@ impl ViamindApp {
             })();
             match result {
                 Ok((input, via_sizes)) => {
-                    if pad_mode {
+                    if terminal_mode {
+                        match self.design.as_ref().unwrap().engine.route_terminal_snapshot() {
+                            Ok(snapshot) => {
+                                self.routing.terminal_draft =
+                                    Some(TerminalDraft::new(snapshot, input.layer, input.width, input.grid, input.rules, corner_mode))
+                            }
+                            Err(e) => {
+                                self.routing.error = Some(e.to_string());
+                                return;
+                            }
+                        }
+                    } else if pad_mode {
                         match self.design.as_ref().unwrap().engine.route_endpoint_snapshot() {
                             Ok(snapshot) => {
                                 let mut draft = PadDraft::new(snapshot, input.width, input.grid, input.rules);
