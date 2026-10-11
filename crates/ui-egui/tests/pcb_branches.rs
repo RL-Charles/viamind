@@ -120,3 +120,25 @@ fn actual_stale_refresh_discard_and_reopen_clear_ghost_without_mutation() {
     assert_eq!(h.state().pcb_branches.ghost_items(), 0);
     assert_eq!(e.session_state(), replaced);
 }
+
+#[test]
+fn opening_existing_copper_properties_clears_private_ghost_without_live_mutation() {
+    let _lock = TEST_LOCK.lock().unwrap();
+    let e = EngineHandle::new(Project::new("incompatible editor branch"));
+    proposal(&e);
+    let before = e.session_state();
+    let mut app = ViamindApp::with_design(e.clone(), None);
+    app.begin_pcb_branches();
+    let mut h = Harness::builder().with_size(vec2(640., 400.)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+    h.run_steps(5);
+    click(&mut h, "Inspect diff");
+    assert!(h.state().pcb_branches.visible());
+    assert!(h.state().pcb_branches.ghost_items() > 4);
+    h.state_mut().begin_copper_properties();
+    h.run_steps(5);
+    assert!(h.state().copper.editing());
+    assert!(!h.state().pcb_branches.visible());
+    assert_eq!(h.state().pcb_branches.ghost_items(), 0);
+    assert_eq!(e.session_state(), before);
+    assert_eq!(e.list_pcb_branches().len(), 1);
+}

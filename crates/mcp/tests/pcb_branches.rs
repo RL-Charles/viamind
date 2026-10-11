@@ -50,6 +50,26 @@ async fn actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides
     assert_eq!(e.session_state(), before);
     assert_eq!(e.document_status(), status);
     assert_eq!(std::fs::read(&path).unwrap(), native);
+    // Observe a nonempty private candidate through the actual restricted transport.
+    let restricted = serve_http(registry.read_only(), "127.0.0.1:0".parse().unwrap()).await.unwrap();
+    let read = client(restricted.url()).await;
+    let tools = read.list_all_tools().await.unwrap();
+    for allowed in ["list_pcb_branches", "get_pcb_branch_diff"] {
+        assert!(tools.iter().any(|t| t.name == allowed));
+    }
+    assert_eq!(value(call(&read, "get_pcb_branch_diff", json!({"branch_id":id})).await), diff);
+    let listed = call(&read, "list_pcb_branches", json!({})).await;
+    assert_eq!(listed.is_error, Some(false));
+    let listed: Value = serde_json::from_str(&listed.content[0].as_text().unwrap().text).unwrap();
+    assert_eq!(listed.as_array().unwrap().len(), 1);
+    assert_eq!(listed[0]["branch_id"], id);
+    for blocked in ["create_pcb_branch", "apply_pcb_branch", "inspect_pcb_branch", "merge_pcb_branch", "discard_pcb_branch"] {
+        assert!(!tools.iter().any(|t| t.name == blocked));
+        assert!(read.call_tool(CallToolRequestParams::new(blocked.to_owned()).with_arguments(serde_json::Map::new())).await.is_err());
+    }
+    assert_eq!(e.session_state(), before);
+    assert_eq!(e.document_status(), status);
+    assert_eq!(std::fs::read(&path).unwrap(), native);
     let merging = json!({"branch_id":id,"expected_revision":1,"expected_project":before.project.id,"expected_cursor":before.cursor});
     assert_eq!(call(&b, "merge_pcb_branch", merging.clone()).await.is_error, Some(true));
     value(call(&a, "merge_pcb_branch", merging.clone()).await);
@@ -61,17 +81,6 @@ async fn actual_two_connections_own_branches_merge_exact_ids_and_read_only_hides
     value(call(&a, "redo", json!({})).await);
     assert!(e.read(|p| p.board.parts.contains_key(&created)));
     let after = e.session_state();
-    let restricted = registry.read_only();
-    let restricted = serve_http(restricted, "127.0.0.1:0".parse().unwrap()).await.unwrap();
-    let read = client(restricted.url()).await;
-    let tools = read.list_all_tools().await.unwrap();
-    for allowed in ["list_pcb_branches", "get_pcb_branch_diff"] {
-        assert!(tools.iter().any(|t| t.name == allowed));
-    }
-    for blocked in ["create_pcb_branch", "apply_pcb_branch", "inspect_pcb_branch", "merge_pcb_branch", "discard_pcb_branch"] {
-        assert!(!tools.iter().any(|t| t.name == blocked));
-        assert!(read.call_tool(CallToolRequestParams::new(blocked.to_owned()).with_arguments(serde_json::Map::new())).await.is_err());
-    }
     assert_eq!(e.session_state(), after);
     assert_eq!(std::fs::read(&path).unwrap(), native);
     a.cancel().await.unwrap();
