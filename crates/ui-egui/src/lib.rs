@@ -29,6 +29,8 @@ pub mod mesh_cache;
 pub mod net_rules;
 pub mod outlines;
 pub mod output_jobs;
+mod package_definition;
+pub mod package_library;
 mod pad_routing;
 pub mod pads;
 pub mod parts;
@@ -154,6 +156,7 @@ pub struct ViamindApp {
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
     pub symbol_library: symbol_library::SymbolLibraryUi,
+    pub package_library: package_library::PackageLibraryUi,
     pub annotation: annotation::AnnotationUi,
     pub pcb_sync: pcb_sync::PcbSyncUi,
     pub cross_probe: cross_probe::CrossProbeUi,
@@ -212,6 +215,7 @@ impl ViamindApp {
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
+            package_library: package_library::PackageLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -265,6 +269,7 @@ impl ViamindApp {
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
+            package_library: package_library::PackageLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
             pcb_sync: pcb_sync::PcbSyncUi::default(),
             cross_probe: cross_probe::CrossProbeUi::default(),
@@ -434,6 +439,7 @@ impl ViamindApp {
         self.pcb_sync_window(ui);
         self.schematic_component_window(ui);
         self.symbol_library_window(ui);
+        self.package_library_window(ui);
         self.track_cleanup_window(ui);
         self.named_net_rules_window(ui);
         self.pcb_branches_window(ui);
