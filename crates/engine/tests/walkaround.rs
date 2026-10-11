@@ -2,6 +2,9 @@
 use viamind_doc::{BoardOutline, CopperLayer, ObjectId, Pad, Pads, Part, Project, Side, Track, Via};
 use viamind_engine::{Command, EngineHandle, Origin, PadEndpointId, RoutePadWalkaround};
 use viamind_geom::{Nm, Point, Polygon};
+// Geometry expectations are independent of the separately tested process-wide
+// two-operation admission. Prevent fixture tests from consuming each other's slots.
+static TEST: std::sync::Mutex<()> = std::sync::Mutex::new(());
 fn p(x: i64, y: i64) -> Point {
     Point::new(Nm(x), Nm(y))
 }
@@ -60,6 +63,7 @@ fn barrier(project: &mut Project, net: Option<&str>, layer: CopperLayer) {
 }
 #[test]
 fn plans_and_checked_candidate_geometry_exclude_unused_sourcing() {
+    let _guard = TEST.lock().unwrap();
     let (project, ids) = fixture();
     let clean = EngineHandle::new(project.clone());
     let expected = clean.plan_pad_walkaround(&input(&clean, ids)).unwrap();
@@ -76,6 +80,7 @@ fn plans_and_checked_candidate_geometry_exclude_unused_sourcing() {
 }
 #[test]
 fn immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage() {
+    let _guard = TEST.lock().unwrap();
     for (typed, side) in [(true, Side::Top), (false, Side::Bottom)] {
         let layer = if side == Side::Top { CopperLayer::Top } else { CopperLayer::Bottom };
         let (mut project, ids) = fixture();
@@ -163,6 +168,7 @@ fn immutable_checked_plans_atomic_commits_and_conservative_obstacle_coverage() {
 }
 #[test]
 fn failures_are_unchanged_with_complete_preflight_and_bounded_unrelated_content() {
+    let _guard = TEST.lock().unwrap();
     // Sequentially exercise refusal variants to avoid concurrent global worker admission in this test.
     let (mut project, ids) = fixture();
     barrier(&mut project, Some("FOREIGN"), CopperLayer::Top);
@@ -280,6 +286,7 @@ fn failures_are_unchanged_with_complete_preflight_and_bounded_unrelated_content(
 
 #[test]
 fn named_pair_clearance_inflates_only_matching_obstacles_and_width_floor_refuses() {
+    let _guard = TEST.lock().unwrap();
     let (mut project, ids) = fixture();
     barrier(&mut project, Some("FOREIGN"), CopperLayer::Top);
     for (name, clearance, width) in [("N", 1_100_001, 300_001), ("FOREIGN", 1_500_000, 1), ("UNUSED", 10_000_000, 1)] {
