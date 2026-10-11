@@ -97,6 +97,8 @@ ui_actions! {
     CleanupCardinalTracks => (viamind_engine::CleanupCardinalTracks::NAME, input_schema::<viamind_engine::CleanupCardinalTracks>(), cleanup_cardinal_tracks),
     RoutePadPosture => (viamind_engine::RoutePadPosture::NAME,input_schema::<viamind_engine::RoutePadPosture>(),route_pad_posture),
     RoutePadViaPolyline => (viamind_engine::RoutePadViaPolyline::NAME,input_schema::<viamind_engine::RoutePadViaPolyline>(),route_pad_via_polyline),
+    RouteTerminalPolyline => (viamind_engine::RouteTerminalPolyline::NAME,input_schema::<viamind_engine::RouteTerminalPolyline>(),route_terminal_polyline),
+    RouteTerminalPosture => (viamind_engine::RouteTerminalPosture::NAME,input_schema::<viamind_engine::RouteTerminalPosture>(),route_terminal_posture),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
     RoutePolyline => (viamind_engine::RoutePolyline::NAME, input_schema::<viamind_engine::RoutePolyline>(), route_polyline),
     AddTrack => (viamind_engine::AddTrack::NAME, input_schema::<viamind_engine::AddTrack>(), add_track),
@@ -411,4 +413,11 @@ fn load_footprint_definition(engine: &EngineHandle, input: Value) -> Result<Valu
 }
 fn save_footprint_definition(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.save_footprint_definition(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
+}
+
+fn route_terminal_polyline(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RouteTerminalPolyline::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn route_terminal_posture(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RouteTerminalPosture::NAME, input, Origin::User)?).map_err(encode_error)
 }
