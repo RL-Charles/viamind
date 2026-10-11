@@ -5,12 +5,19 @@ use viamind_engine::agent_policy::AgentMode;
 pub struct AgentModesUi {
     open: bool,
     message: Option<String>,
+    controls: Vec<(egui::Rect, egui::Rect)>,
 }
 pub fn mode_label(mode: AgentMode) -> &'static str {
     match mode {
         AgentMode::Live => "Agents live apply",
         AgentMode::Approval => "Agents approval",
         AgentMode::ReadOnly => "Agents read only",
+    }
+}
+impl AgentModesUi {
+    /// Current native pass button bounds and effective clips for inspection.
+    pub fn control_rects(&self) -> &[(egui::Rect, egui::Rect)] {
+        &self.controls
     }
 }
 impl ViamindApp {
@@ -20,6 +27,7 @@ impl ViamindApp {
         }
     }
     pub(crate) fn agent_modes_window(&mut self, ui: &mut egui::Ui) {
+        self.agent_modes.controls.clear();
         if !self.agent_modes.open {
             return;
         }
@@ -36,7 +44,9 @@ impl ViamindApp {
             .default_width(400.).max_width((content.width()-32.).max(180.)).show(ui.ctx(), |ui| {
             ui.horizontal(|ui| {
                 for (mode,label) in [(AgentMode::Live,"Live apply"),(AgentMode::Approval,"Approval"),(AgentMode::ReadOnly,"Read only")] {
-                    if ui.add_enabled(!status.startup_locked || mode == AgentMode::ReadOnly, egui::Button::new(label).selected(status.mode == mode)).clicked() { requested = Some(mode); }
+                    let response=ui.add_enabled(!status.startup_locked || mode == AgentMode::ReadOnly, egui::Button::new(label).selected(status.mode == mode));
+                    self.agent_modes.controls.push((response.rect,ui.clip_rect()));
+                    if response.clicked() { requested = Some(mode); }
                 }
             });
             egui::ScrollArea::vertical().max_height((content.height()-160.).clamp(60.,340.)).show(ui, |ui| {

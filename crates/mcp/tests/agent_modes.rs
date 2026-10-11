@@ -158,7 +158,8 @@ fn actual_four_render_publications_survive_caller_abort_and_transport_runtime_sh
     for name in ["render_board_view", "render_board_png", "render_schematic_view", "render_schematic_png"] {
         let directory = tempfile::tempdir().unwrap();
         let output = directory.path().join(name);
-        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+        let mut project = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+        project.board = viamind_doc::file::from_str(include_str!("../../../fixtures/views/asymmetric.viamind.json")).unwrap().board;
         let sheet = *project.schematic.sheets.keys().next().unwrap();
         let engine = EngineHandle::new(project);
         let before = engine.session_state();
@@ -172,7 +173,7 @@ fn actual_four_render_publications_survive_caller_abort_and_transport_runtime_sh
             held_engine.read(|_| {
                 entered_tx.send(()).unwrap();
                 release_rx.recv().unwrap();
-            })
+            });
         });
         entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
         let (abort_tx, abort_rx) = tokio::sync::oneshot::channel();
