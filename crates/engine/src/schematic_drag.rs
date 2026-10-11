@@ -139,7 +139,7 @@ impl DragSchematicSymbol {
 }
 impl Command for DragSchematicSymbol {
     const NAME: &'static str = "drag_schematic_symbol";
-    const DESCRIPTION: &'static str = "Translate one explicit schematic symbol and its cardinal endpoint-attached wires, preserving the complete bounded native graph's original wire/pin/junction/label partition. Required exact project/full source cursor, sheet/symbol UUID and integer Nm delta. One sheet transaction/undo; package membership, PCB and metadata unchanged. At most256 pins/incident wires; unsupported interior/direct-point/diagonal attachments or changed topology refuse atomically. Complete schematic10000graph objects/2MiB text,100000 combined identities,shared1million visits and2MiB preview bounds. Preview with preview_schematic_symbol_drag; apply recalculates, never accepts a supplied pass flag. No ERC/DRC certification.";
+    const DESCRIPTION: &'static str = "Translate one explicit schematic symbol and its cardinal endpoint-attached wires, preserving the complete bounded native graph's original wire/pin/junction/label partition. Required exact project/full source cursor, sheet/symbol UUID and integer Nm delta. One sheet transaction/undo; package membership, PCB and metadata unchanged. At most256 pins/incident wires; unsupported interior/direct-point/diagonal attachments or changed topology refuse atomically. Complete schematic: 10000 graph objects/2 MiB text, 100000 combined identities, shared1million visits and2 MiB preview bounds. Preview with preview_schematic_symbol_drag; apply recalculates, never accepts a supplied pass flag. No ERC/DRC certification.";
     fn expected_cursor(&self) -> Option<EventCursor> {
         Some(self.source_cursor)
     }
@@ -752,5 +752,86 @@ mod tests {
         assert!(result.native_graph_partition_preserved);
         assert_eq!(e.event_cursor(), before);
         assert_eq!(e.read(|p| p.board.parts[&id].assembly.as_ref().unwrap().manufacturer.as_ref().unwrap().len()), 3 * 1024 * 1024);
+    }
+    #[test]
+    fn complete_package_unit_move_keeps_owner_membership_other_units_and_pins_exact() {
+        let _lock = LOCK.lock().unwrap();
+        let project = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/package-annotation.viamind.json")).unwrap();
+        let sheet = "00000000-0000-0000-0000-000000000001".parse().unwrap();
+        let symbol = "00000000-0000-0000-0000-000000000068".parse().unwrap();
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let input = request(&e, sheet, symbol, p(1_000_003, 2_000_007));
+        assert_eq!(e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap().added_wire_count, 0);
+        e.execute_typed(input, Origin::User).unwrap();
+        let mut expected = before.project.clone();
+        let moved = expected.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap().symbols.get_mut(&symbol).unwrap();
+        moved.position = translated(moved.position, input.delta).unwrap();
+        assert_eq!(e.session_state().project, expected);
+        e.undo(Origin::User).unwrap();
+        assert_eq!(e.session_state().project, before.project);
+    }
+    #[test]
+    fn global_labels_across_unselected_sheet_keep_original_partition_and_names() {
+        let _lock = LOCK.lock().unwrap();
+        let (mut project, sheet, symbol, _) = fixture();
+        let c = project.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
+        let id = ObjectId::new();
+        c.labels.insert(id, SchematicLabel { id, position: p(20, 0), name: "GLOBAL".into(), scope: LabelScope::Global });
+        let mut other = Sheet::new("Unselected");
+        let mut content = SchematicContent::default();
+        add_symbol(&mut content, p(100, 100));
+        wire(&mut content, p(100, 100), p(120, 100));
+        let id = ObjectId::new();
+        content.labels.insert(id, SchematicLabel { id, position: p(120, 100), name: "GLOBAL".into(), scope: LabelScope::Global });
+        other.content = Some(content);
+        let other_id = other.id;
+        project.schematic.sheets.insert(other.id, other.clone());
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        let input = request(&e, sheet, symbol, p(3, 7));
+        let preview = e.prepare_schematic_symbol_drag(input).unwrap().run().unwrap();
+        assert_eq!(preview.original_graph_members, 8);
+        e.execute_typed(input, Origin::User).unwrap();
+        assert_eq!(e.read(|p| p.schematic.sheets[&other_id].clone()), other);
+        e.undo(Origin::User).unwrap();
+        assert_eq!(e.session_state().project, before.project);
+    }
+    #[test]
+    fn combined_board_identity_preflight_refuses_before_native_duplicate_validation() {
+        let _lock = LOCK.lock().unwrap();
+        let (mut project, sheet, symbol, _) = fixture();
+        let pad = viamind_doc::Pad {
+            id: ObjectId::new(),
+            number: "1".into(),
+            position: viamind_geom::Point::new(Nm(0), Nm(0)),
+            width: Nm(1),
+            height: Nm(1),
+            net: None,
+        };
+        // Deliberate duplicate poison would fail the native validator, but the
+        // borrowed aggregate must reject before that validator allocates ID sets.
+        let part = viamind_doc::Part {
+            artwork: None,
+            assembly: None,
+            schematic_symbol: None,
+            schematic_package: None,
+            pads: Some(viamind_doc::Pads(vec![pad; 100_001])),
+            id: ObjectId::new(),
+            designator: "R1".into(),
+            value: String::new(),
+            footprint: "F".into(),
+            position: viamind_geom::Point::new(Nm(0), Nm(0)),
+            rotation_mdeg: 0,
+            side: viamind_doc::Side::Top,
+        };
+        let id = part.id;
+        project.board.parts.insert(id, part);
+        let e = EngineHandle::new(project);
+        let cursor = e.event_cursor();
+        let result = e.prepare_schematic_symbol_drag(request(&e, sheet, symbol, p(3, 7))).unwrap().run().unwrap_err();
+        assert!(result.to_string().contains("100000 combined"), "{result}");
+        assert_eq!(e.event_cursor(), cursor);
+        assert_eq!(e.read(|p| p.board.parts[&id].pads.as_ref().unwrap().0.len()), 100_001);
     }
 }

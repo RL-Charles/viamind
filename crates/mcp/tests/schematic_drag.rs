@@ -120,19 +120,17 @@ fn cancelled_actual_preview_awaiter_retains_queued_worker_slot_until_retirement(
             wait.recv().unwrap();
         });
         ready.recv().unwrap();
-        let pending = tokio::spawn(async move { registry.call("preview_schematic_symbol_drag", args, CallContext::new("cancelled mover")).await });
-        let mut admitted = false;
-        for _ in 0..200 {
-            match engine.prepare_schematic_symbol_drag(typed) {
-                Ok(probe) => drop(probe),
-                Err(_) => {
-                    admitted = true;
-                    break;
-                }
-            }
-            tokio::time::sleep(std::time::Duration::from_millis(2)).await;
-        }
-        assert!(admitted);
+        // Poll the actual registry future through its first Pending, which
+        // queues the blocking handler before inspecting admission. A competing
+        // admission probe could otherwise steal its slot and cause a false busy.
+        let mut future = Box::pin(async move { registry.call("preview_schematic_symbol_drag", args, CallContext::new("cancelled mover")).await });
+        std::future::poll_fn(|cx| {
+            assert!(std::future::Future::poll(future.as_mut(), cx).is_pending(), "actual handler must wait behind held blocking worker");
+            std::task::Poll::Ready(())
+        })
+        .await;
+        assert!(engine.prepare_schematic_symbol_drag(typed).is_err());
+        let pending = tokio::spawn(future);
         pending.abort();
         assert!(pending.await.unwrap_err().is_cancelled());
         assert!(engine.prepare_schematic_symbol_drag(typed).is_err());
