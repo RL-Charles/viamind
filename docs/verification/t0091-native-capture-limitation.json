@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-11",
+  "scope": "only independently grounded T91 owned native processes",
+  "own_windows": [
+    {
+      "address": "0x6463bdd1f4d0",
+      "pid": 1195566,
+      "mapped": true,
+      "class": "viamind",
+      "title": "t0091-cleanup.viamind.json \u2014 Viamind",
+      "at": [
+        2041,
+        1330
+      ],
+      "size": [
+        1,
+        -5
+      ]
+    },
+    {
+      "address": "0x6463bdd26880",
+      "pid": 1196798,
+      "mapped": true,
+      "class": "viamind-cardinal-cleanup-inspection",
+      "title": "Untitled \u2014 Viamind",
+      "at": [
+        2080,
+        1265
+      ],
+      "size": [
+        1600,
+        1000
+      ]
+    }
+  ],
+  "cua_direct_stderr": "2026-10-11T13:01:32.581967Z  WARN platform_linux::wayland: Hyprland window enumeration unavailable: out of range integral type conversion attempted\n2026-10-11T13:01:32.595196Z  WARN platform_linux::wayland: Hyprland window enumeration unavailable: out of range integral type conversion attempted\n2026-10-11T13:02:24.941099Z  WARN platform_linux::wayland: Hyprland window enumeration unavailable: out of range integral type conversion attempted\n",
+  "exact_target_shared_refusal": "Window target pid 1196798, window_id 110379549223040 is stale or no longer running; refresh list_windows.\n",
+  "inference": "Malformed negative tiny production tile may contribute to enumeration conversion failure; no source diagnosis is claimed.",
+  "configuration_changed": false,
+  "os_input_claimed": false
+}

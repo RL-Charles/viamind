@@ -135,6 +135,7 @@ impl ViamindApp {
     /// Place an arbitrary part using the same command available to agents.
     pub fn begin_place_part(&mut self) {
         if self.routing.editing()
+            || self.track_cleanup.editing()
             || self.files.busy()
             || self.copper.editing()
             || self.parts.placing()
@@ -186,7 +187,7 @@ impl ViamindApp {
     }
 
     pub(crate) fn part_properties(&mut self, ui: &mut Ui) {
-        if self.routing.editing() {
+        if self.routing.editing() || self.track_cleanup.editing() {
             return;
         }
         let Some(design) = &self.design else { return };

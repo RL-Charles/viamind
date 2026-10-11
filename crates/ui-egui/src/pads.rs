@@ -63,6 +63,7 @@ impl PadsUi {
 impl ViamindApp {
     pub fn begin_edit_pads(&mut self, part: Part) {
         if self.routing.editing()
+            || self.track_cleanup.editing()
             || self.files.busy()
             || self.copper.editing()
             || self.parts.placing()

@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "source_commit": "b64d5e6a4ae2ac4feca35d1e3a8df57b82672b9c",
+  "port": 7918,
+  "binary_sha256": "ab9fad43ace5de47dfd943c0a68170940a9c62d96ab180c60ae1140d2558be85",
+  "checks": [
+    "both cleanup query and command discovered by actual production HTTP",
+    "immutable checked preview preserves complete session snapshot",
+    "checked plan retains captured project and full event cursor",
+    "exact supported counters distinguish merged branch diagonal and all-net hole chains",
+    "actual scoped coverage discloses legacy exclusion and unperformed checks",
+    "independently expected exact cardinal union and smallest surviving IDs",
+    "top explicit net layer filter independently checked",
+    "bottom explicit net layer filter independently checked",
+    "explicit stored IDs select only chosen chain",
+    "all selector queries preserve full session",
+    "one atomic event replaces and deletes both chains",
+    "stored-endpoint guide IDs and endpoints remain unchanged",
+    "unsupported branch diagonal and hole-contact tracks unchanged",
+    "peer stale plan_cardinal_track_cleanup refuses without partial changes",
+    "peer stale cleanup_cardinal_tracks refuses without partial changes",
+    "one undo restores exact original IDs and geometry",
+    "redo reuses deterministic surviving IDs and exact model",
+    "duplicate IDs refuse both tools atomically",
+    "no IDs refuse both tools atomically",
+    "oversized exact net refuse both tools atomically",
+    "real peer edit invalidates captured plan and command",
+    "same-project reopen changes stream and rejects old requests",
+    "already-clean supported copper is a checked no-op without event"
+  ],
+  "first_http_plan_ms": 5.551921000005677,
+  "first_http_commit_ms": 8.572999009629712,
+  "warm_http_commit_ms": [
+    5.875738002941944,
+    6.021765002515167,
+    6.345784990116954,
+    6.217189991730265,
+    6.209389001014642
+  ],
+  "warm_http_mean_ms": 6.1339733976637945,
+  "fixture": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0091-cleanup.viamind.json"
+}
