@@ -649,3 +649,14 @@ See [desktop use and limits](../../docs/static-cardinal-walkaround.md).
 ### Standalone PCB geometry conversion
 
 `preview_pcb_import` reads a bounded regular source file without mutation and returns the exact SHA256, project/full-cursor guards and per-object fidelity. `import_pcb` reparses those bytes and requires `path`, `expected_project`, `expected_cursor` and `expected_source_sha256`. Dirty native work, stale context, source changes or blocked geometry reject unchanged. Success creates an unsaved native document with no active source path; use native Save As. See [supported subset, bounds and omissions](../../docs/pcb-import.md).
+
+## Fixed-via checked walkaround
+
+`plan_pad_via_walkaround` and `route_pad_via_walkaround` share typed exact-Nm input:
+project/full cursor, opposite-side same-net explicit pad IDs, one fixed grid via,
+width/grid, via diameter/drill and existing scoped rules. One board snapshot and
+admission cover both legs under combined budgets. Success requires complete joint
+DRC of both paths plus via; query is immutable and commit recomputes atomically
+with one undo. Only rectangular outer boards/cutouts and quarter-turn explicit
+endpoints are supported; no automatic via relocation or shove. See the
+[workflow and limits](../../docs/fixed-via-walkaround.md).

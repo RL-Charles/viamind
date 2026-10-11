@@ -84,6 +84,8 @@ ui_actions! {
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
     PlanPadWalkaround => ("plan_pad_walkaround",input_schema::<viamind_engine::RoutePadWalkaround>(),plan_pad_walkaround),
     RoutePadWalkaround => (viamind_engine::RoutePadWalkaround::NAME,input_schema::<viamind_engine::RoutePadWalkaround>(),route_pad_walkaround),
+    PlanPadViaWalkaround => ("plan_pad_via_walkaround",input_schema::<viamind_engine::RoutePadViaWalkaround>(),plan_pad_via_walkaround),
+    RoutePadViaWalkaround => (viamind_engine::RoutePadViaWalkaround::NAME,input_schema::<viamind_engine::RoutePadViaWalkaround>(),route_pad_via_walkaround),
     RoutePadPosture => (viamind_engine::RoutePadPosture::NAME,input_schema::<viamind_engine::RoutePadPosture>(),route_pad_posture),
     RoutePadViaPolyline => (viamind_engine::RoutePadViaPolyline::NAME,input_schema::<viamind_engine::RoutePadViaPolyline>(),route_pad_via_polyline),
     RoutePadPolyline => (viamind_engine::RoutePadPolyline::NAME, input_schema::<viamind_engine::RoutePadPolyline>(), route_pad_polyline),
@@ -311,6 +313,16 @@ fn query_linked_pin_pads(engine: &EngineHandle, input: Value) -> Result<Value, E
 
 fn route_pad_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::RoutePadWalkaround::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn route_pad_via_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::RoutePadViaWalkaround::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn plan_pad_via_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = serde_json::from_value(input).map_err(encode_error)?;
+    serde_json::to_value(
+        engine.plan_pad_via_walkaround(&input).map_err(|error| EngineError::Command { command: "plan_pad_via_walkaround".into(), error })?,
+    )
+    .map_err(encode_error)
 }
 fn plan_pad_walkaround(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let input = serde_json::from_value(input).map_err(encode_error)?;

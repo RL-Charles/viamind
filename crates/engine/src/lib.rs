@@ -107,6 +107,8 @@ pub mod route_posture;
 pub use route_posture::RoutePadPosture;
 pub mod walkaround;
 pub use walkaround::{CheckedWalkaround, RoutePadWalkaround};
+pub mod via_walkaround;
+pub use via_walkaround::{CheckedViaWalkaround, RoutePadViaWalkaround};
 mod schematic_budget;
 
 pub mod symbol_library;

@@ -124,7 +124,11 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
     let page = registry.call("query_route_endpoints", json!({"net":"EXACT"}), a.clone()).await.unwrap();
     assert_eq!(page["total"], 2);
     assert_eq!(e.session_state(), before);
-    let input = json!({"expected_project":page["project_id"],"expected_cursor":page["source_cursor"],"start":page["endpoints"][0]["id"],"target":page["endpoints"][1]["id"],"via":{"x":20000000,"y":20000000},"before":[],"after":[],"grid":250000,"width":250000,"via_diameter":600000,"via_drill":300000});
+    // Discovery order is stable by identity, not by randomly generated UUID's layer.
+    let endpoints = page["endpoints"].as_array().unwrap();
+    let top = endpoints.iter().find(|endpoint| endpoint["layer"] == "top").unwrap();
+    let bottom = endpoints.iter().find(|endpoint| endpoint["layer"] == "bottom").unwrap();
+    let input = json!({"expected_project":page["project_id"],"expected_cursor":page["source_cursor"],"start":top["id"],"target":bottom["id"],"via":{"x":20000000,"y":20000000},"before":[],"after":[],"grid":250000,"width":250000,"via_diameter":600000,"via_drill":300000});
     let result = registry.call("route_pad_via_polyline", input.clone(), a.clone()).await.unwrap();
     assert_eq!(result["created"].as_array().unwrap().len(), 3);
     let after = e.session_state();
@@ -134,12 +138,39 @@ async fn opposite_side_via_route_is_discoverable_atomic_and_guarded_for_two_agen
     assert!(e.read(|p| p.board.tracks.values().any(|t| t.layer == viamind_doc::CopperLayer::Bottom)));
     assert_eq!(track.net.as_deref(), Some("EXACT"));
     assert!(e.read(|p| p.board.tracks.values().any(|t| t.start.x.0 % 250000 != 0 || t.end.x.0 % 250000 != 0)));
-    assert!(registry.call("route_pad_via_polyline", input, b).await.unwrap_err().to_string().contains("session changed"));
+    assert!(registry.call("route_pad_via_polyline", input.clone(), b.clone()).await.unwrap_err().to_string().contains("session changed"));
     assert_eq!(e.session_state(), after);
     registry.call("undo", json!({}), a.clone()).await.unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
-    registry.call("redo", json!({}), a).await.unwrap();
+    registry.call("redo", json!({}), a.clone()).await.unwrap();
     assert_eq!(e.read(Clone::clone), after.project);
+
+    registry.call("undo", json!({}), a.clone()).await.unwrap();
+    let baseline = e.session_state();
+    let mut checked_input = input;
+    checked_input.as_object_mut().unwrap().remove("before");
+    checked_input.as_object_mut().unwrap().remove("after");
+    checked_input["expected_cursor"] = serde_json::to_value(baseline.cursor).unwrap();
+    let plan = registry.call("plan_pad_via_walkaround", checked_input.clone(), a.clone()).await.unwrap();
+    assert_eq!(plan["complete_scoped_preflight"], true);
+    assert_eq!(plan["start_layer"], "top");
+    assert_eq!(plan["target_layer"], "bottom");
+    assert_eq!(e.session_state(), baseline);
+    let result = registry.call("route_pad_via_walkaround", checked_input.clone(), a.clone()).await.unwrap();
+    let committed = e.session_state();
+    assert_eq!(committed.cursor.sequence, baseline.cursor.sequence + 1);
+    assert_eq!(
+        result["created"].as_array().unwrap().len(),
+        plan["before"]["path"]["points"].as_array().unwrap().len() + plan["after"]["path"]["points"].as_array().unwrap().len() - 1
+    );
+    for tool in ["plan_pad_via_walkaround", "route_pad_via_walkaround"] {
+        assert!(registry.call(tool, checked_input.clone(), b.clone()).await.unwrap_err().to_string().contains("session changed"));
+        assert_eq!(e.session_state(), committed);
+    }
+    registry.call("undo", json!({}), a.clone()).await.unwrap();
+    assert_eq!(e.read(Clone::clone), baseline.project);
+    registry.call("redo", json!({}), a).await.unwrap();
+    assert_eq!(e.read(Clone::clone), committed.project);
 }
 #[tokio::test]
 

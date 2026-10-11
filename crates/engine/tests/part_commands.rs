@@ -45,6 +45,7 @@ fn builtin_specs() {
             "route_pad_polyline",
             "route_pad_posture",
             "route_pad_via_polyline",
+            "route_pad_via_walkaround",
             "route_pad_walkaround",
             "route_polyline",
             "set_board_outline",

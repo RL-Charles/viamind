@@ -74,6 +74,90 @@ fn wait_plan(h: &mut Harness<'_, ViamindApp>) {
         std::thread::sleep(std::time::Duration::from_millis(1));
     }
 }
+
+#[test]
+fn actual_fixed_via_checked_preview_replacement_peer_cancel_and_joint_undo() {
+    let (original, _) = setup();
+    let mut project = original.read(Clone::clone);
+    project.board.parts.values_mut().find(|p| p.designator == "J2").unwrap().side = Side::Bottom;
+    let e = EngineHandle::new(project);
+    for (x, y, yy, layer) in [(15., 8., 12., "top"), (25., 18., 22., "bottom")] {
+        e.execute(
+            "add_track",
+            json!({"start_x_mm":x,"start_y_mm":y,"end_x_mm":x,"end_y_mm":yy,"width_mm":0.25,"layer":layer,"net":"BLOCK"}),
+            Origin::agent("fixture"),
+        )
+        .unwrap();
+    }
+    let mut h = Harness::builder()
+        .with_size(vec2(1600., 1000.))
+        .build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), ViamindApp::with_design(e.clone(), None));
+    h.run_steps(5);
+    let before = e.session_state();
+    let begin = |h: &mut Harness<'_, ViamindApp>| {
+        h.state_mut().begin_via_walkaround_route();
+        h.run_steps(5);
+        h.get_by_label("Start route").click();
+        h.run_steps(5);
+        click(h, 10., 10.);
+        click(h, 30., 20.);
+        click(h, 20., 15.);
+    };
+    begin(&mut h);
+    assert_eq!(h.state().routing.pad_via(), Some(p(20_000_000, 15_000_000)));
+    key(&mut h, Key::Enter);
+    assert_eq!(e.session_state(), before);
+    assert!(h.state().routing.pad_planned_points().is_empty());
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(3);
+    wait_plan(&mut h);
+    let points = h.state().routing.pad_planned_points();
+    assert_eq!(points.first(), Some(&p(10_000_123, 10_000_129)));
+    assert_eq!(points.last(), Some(&p(30_000_257, 20_000_129)));
+    assert!(points.contains(&p(20_000_000, 15_000_000)));
+    assert!(h.query_by_label_contains("Joint checked snapshot").is_some());
+    assert_eq!(e.session_state(), before);
+    key(&mut h, Key::V);
+    assert!(h.state().routing.pad_planned_points().is_empty());
+    key(&mut h, Key::Enter);
+    assert_eq!(e.session_state(), before);
+    click(&mut h, 21., 15.);
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(3);
+    wait_plan(&mut h);
+    e.execute(
+        "add_track",
+        json!({"start_x_mm":70.,"start_y_mm":70.,"end_x_mm":75.,"end_y_mm":70.,"width_mm":0.25,"layer":"top","net":"PEER"}),
+        Origin::agent("peer"),
+    )
+    .unwrap();
+    let peer = e.session_state();
+    h.run_steps(3);
+    assert!(h.state().routing.pad_planned_points().is_empty());
+    key(&mut h, Key::Enter);
+    assert_eq!(e.session_state(), peer);
+    key(&mut h, Key::Escape);
+    assert!(!h.state().routing.editing());
+    assert_eq!(e.session_state(), peer);
+    begin(&mut h);
+    h.get_by_label("Plan static walkaround").click();
+    h.run_steps(3);
+    wait_plan(&mut h);
+    key(&mut h, Key::Enter);
+    assert!(!h.state().routing.editing(), "{:?}", h.state().routing.error);
+    let after = e.session_state();
+    assert_eq!(after.cursor.sequence, peer.cursor.sequence + 1);
+    assert_eq!(after.project.board.vias.len(), peer.project.board.vias.len() + 1);
+    let tracks: Vec<_> = after.project.board.tracks.values().filter(|t| t.net.as_deref() == Some("GND")).collect();
+    assert!(tracks.iter().any(|t| t.layer == viamind_doc::CopperLayer::Top));
+    assert!(tracks.iter().any(|t| t.layer == viamind_doc::CopperLayer::Bottom));
+    h.state_mut().undo_design();
+    h.run_steps(3);
+    assert_eq!(e.read(Clone::clone), peer.project);
+    h.state_mut().redo_design();
+    h.run_steps(3);
+    assert_eq!(e.read(Clone::clone), after.project);
+}
 #[test]
 fn actual_static_checkbox_background_plan_cancel_guard_and_atomic_commit() {
     let (e, mut h) = setup();

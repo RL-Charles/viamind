@@ -1,0 +1,24 @@
+b1cf0e72e9cb9ba0048dfef578edef2f94758a15
+Sun Oct 11 11:49:41 UTC 2026
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/router)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/render)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/fab)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.95s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/render)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0088/crates/mcp)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 31.80s
+bd9da95d933e543ebc73f6a045073c4d10f800e1d5113186d866e332e1a4973c  /home/charlesmowbray/.cache/viamind/native-artifacts/t0088-inspection-complete-native
+Sun Oct 11 11:50:22 UTC 2026

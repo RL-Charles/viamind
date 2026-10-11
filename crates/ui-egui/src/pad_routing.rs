@@ -25,6 +25,7 @@ pub(crate) struct PadDraft {
     pub(crate) token: viamind_doc::ObjectId,
     pub(crate) walkaround: bool,
     pub(crate) checked: Option<viamind_engine::CheckedWalkaround>,
+    pub(crate) checked_via: Option<viamind_engine::CheckedViaWalkaround>,
     pub(crate) plan_requested: bool,
     pub(crate) plan_pending: bool,
     index: SpatialIndex<usize>,
@@ -110,6 +111,7 @@ impl PadDraft {
             token: viamind_doc::ObjectId::new(),
             walkaround: false,
             checked: None,
+            checked_via: None,
             plan_requested: false,
             plan_pending: false,
             index,
@@ -136,7 +138,7 @@ impl PadDraft {
     }
     pub(crate) fn walkaround_input(&self) -> Option<viamind_engine::RoutePadWalkaround> {
         let (Some(start), Some(target)) = self.endpoints() else { return None };
-        self.walkaround.then(|| viamind_engine::RoutePadWalkaround {
+        (self.walkaround && self.via_sizes.is_none()).then(|| viamind_engine::RoutePadWalkaround {
             expected_project: self.snapshot.project_id,
             expected_cursor: self.snapshot.source_cursor,
             start,
@@ -150,12 +152,55 @@ impl PadDraft {
         self.via_sizes = Some((diameter, drill));
         self
     }
+    pub(crate) fn via_walkaround_input(&self) -> Option<viamind_engine::RoutePadViaWalkaround> {
+        if !self.walkaround {
+            return None;
+        }
+        let (Some(start), Some(target)) = self.endpoints() else {
+            return None;
+        };
+        let (via_diameter, via_drill) = self.via_sizes?;
+        Some(viamind_engine::RoutePadViaWalkaround {
+            expected_project: self.snapshot.project_id,
+            expected_cursor: self.snapshot.source_cursor,
+            start,
+            target,
+            via: self.via?,
+            grid: self.grid,
+            width: self.width,
+            via_diameter,
+            via_drill,
+            rules: self.rules.clone(),
+        })
+    }
+    pub(crate) fn walkaround_request(&self) -> Option<crate::routing::WalkaroundInput> {
+        if self.via_sizes.is_some() {
+            self.via_walkaround_input().map(crate::routing::WalkaroundInput::Via)
+        } else {
+            self.walkaround_input().map(crate::routing::WalkaroundInput::Same)
+        }
+    }
+    fn clear_checked(&mut self) {
+        self.checked = None;
+        self.checked_via = None;
+    }
+    fn has_checked(&self) -> bool {
+        if self.via_sizes.is_some() { self.checked_via.is_some() } else { self.checked.is_some() }
+    }
     pub(crate) fn with_posture(mut self, mode: CornerMode) -> Self {
         self.posture = Some((mode, Posture::Primary));
         self
     }
     pub(crate) fn planned_path(&self) -> Result<Option<PadPathPlan>, String> {
         if self.walkaround {
+            if let Some(checked) = &self.checked_via {
+                let mut points = checked.before.path.points.clone();
+                points.extend_from_slice(&checked.after.path.points[1..]);
+                return Ok(Some(PadPathPlan {
+                    points,
+                    endpoint_stub_segments: checked.before.path.endpoint_stub_segments + checked.after.path.endpoint_stub_segments,
+                }));
+            }
             return Ok(self.checked.as_ref().map(|c| c.plan.path.clone()));
         }
         let Some((mode, posture)) = self.posture else { return Ok(None) };
@@ -171,7 +216,7 @@ impl PadDraft {
         &self.after
     }
     fn clear_geometry(&mut self) {
-        self.checked = None;
+        self.clear_checked();
         self.interior.clear();
         self.after.clear();
         self.via = None;
@@ -222,23 +267,31 @@ impl PadDraft {
         match self.picking {
             Picking::Start => ui.label("Click a visible explicit pad or connection guide."),
             Picking::Target => ui.label("Click a compatible target pad."),
-            Picking::Interior if self.via_sizes.is_some() => ui.label("Editing start leg: click empty space to insert before via."),
             Picking::Interior if self.walkaround => ui.label("Choose endpoints, request plan, then Enter to finish."),
+            Picking::Interior if self.via_sizes.is_some() => ui.label("Editing start leg: click empty space to insert before via."),
             Picking::Interior => ui.label("Click: insert grid vertex before target · Backspace: remove · Enter: finish"),
             Picking::Via => ui.label("Place via: click empty space on the grid."),
             Picking::After => ui.label("Editing target leg: click empty space to insert before target."),
         };
         if self.walkaround {
             ui.label("Static cardinal walkaround · rectangular outer board and cutouts");
-            ui.label("Request a checked plan after choosing both pads. No manual waypoints or shove.");
+            ui.label(if self.via_sizes.is_some() {
+                "Choose both pads and a fixed via, then request a joint checked plan. Blue: target side. No manual vertices or shove."
+            } else {
+                "Request a checked plan after choosing both pads. No manual waypoints or shove."
+            });
             if ui
                 .add_enabled(
-                    self.start.is_some() && self.target.is_some() && !self.plan_pending && engine.event_cursor() == self.snapshot.source_cursor,
+                    self.start.is_some()
+                        && self.target.is_some()
+                        && (self.via_sizes.is_none() || self.via.is_some())
+                        && !self.plan_pending
+                        && engine.event_cursor() == self.snapshot.source_cursor,
                     egui::Button::new("Plan static walkaround"),
                 )
                 .clicked()
             {
-                self.checked = None;
+                self.clear_checked();
                 self.plan_requested = true;
             }
             if self.plan_pending {
@@ -251,6 +304,15 @@ impl PadDraft {
                     checked.plan.work.obstacle_boxes,
                     checked.plan.work.graph_nodes
                 ));
+            }
+            if let Some(checked) = &self.checked_via {
+                ui.label(format!(
+                    "Joint checked snapshot · {} segments +1 via · {} obstacles · {} nodes",
+                    checked.before.path.points.len() + checked.after.path.points.len() - 2,
+                    checked.work.obstacle_boxes,
+                    checked.work.graph_nodes
+                ));
+                ui.label(format!("Orange {:?} → via → blue {:?}", checked.start_layer, checked.target_layer));
             }
         }
         if let Some((mode, posture)) = &mut self.posture {
@@ -284,19 +346,26 @@ impl PadDraft {
             if let Some(p) = self.via {
                 ui.monospace(format!("Via X {:.6} Y {:.6} mm", p.x.to_mm(), p.y.to_mm()));
             }
-            ui.label("V: replace via · Backspace: remove active vertex · Enter: finish");
+            ui.label(if self.walkaround {
+                "V: replace fixed via · Enter: finish checked route"
+            } else {
+                "V: replace via · Backspace: remove active vertex · Enter: finish"
+            });
             if self.start.is_some() && self.target.is_some() {
                 if ui.button("Place via").clicked() {
+                    self.clear_checked();
                     self.picking = Picking::Via;
                 }
-                ui.horizontal(|ui| {
-                    if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit start leg")).clicked() {
-                        self.picking = Picking::Interior;
-                    }
-                    if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit target leg")).clicked() {
-                        self.picking = Picking::After;
-                    }
-                });
+                if !self.walkaround {
+                    ui.horizontal(|ui| {
+                        if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit start leg")).clicked() {
+                            self.picking = Picking::Interior;
+                        }
+                        if ui.add_enabled(self.via.is_some(), egui::Button::new("Edit target leg")).clicked() {
+                            self.picking = Picking::After;
+                        }
+                    });
+                }
             }
         }
         if let Some(i) = self.hovered_pad {
@@ -326,13 +395,13 @@ impl PadDraft {
         ui.horizontal(|ui| {
             if ui.button("Choose start pad").clicked() {
                 if self.walkaround {
-                    self.checked = None;
+                    self.clear_checked();
                 }
                 self.picking = Picking::Start;
             }
             if ui.button("Choose target pad").clicked() {
                 if self.walkaround {
-                    self.checked = None;
+                    self.clear_checked();
                 }
                 self.picking = Picking::Target;
             }
@@ -345,8 +414,7 @@ impl PadDraft {
                     self.start.is_some()
                         && self.target.is_some()
                         && (self.via_sizes.is_none() || self.via.is_some())
-                        && (!self.walkaround
-                            || (self.checked.is_some() && !self.plan_pending && engine.event_cursor() == self.snapshot.source_cursor)),
+                        && (!self.walkaround || (self.has_checked() && !self.plan_pending && engine.event_cursor() == self.snapshot.source_cursor)),
                     egui::Button::new(if self.via_sizes.is_some() { "Finish via route" } else { "Finish pad route" }),
                 )
                 .clicked();
@@ -358,11 +426,16 @@ impl PadDraft {
         let (Some(start), Some(target)) = self.endpoints() else { return Err("Choose start and target pads before finishing".into()) };
         let now = Instant::now();
         let result = if self.walkaround {
-            if self.checked.is_none() || self.plan_pending {
+            if !self.has_checked() || self.plan_pending {
                 return Err("Request a complete checked walkaround plan before finishing".into());
             }
-            let input = self.walkaround_input().ok_or("Choose start and target pads")?;
-            UiAction::RoutePadWalkaround.run(engine, serde_json::to_value(input).expect("walkaround serializes"))
+            if self.via_sizes.is_some() {
+                let input = self.via_walkaround_input().ok_or("Choose both pads and fixed via")?;
+                UiAction::RoutePadViaWalkaround.run(engine, serde_json::to_value(input).expect("via walkaround serializes"))
+            } else {
+                let input = self.walkaround_input().ok_or("Choose start and target pads")?;
+                UiAction::RoutePadWalkaround.run(engine, serde_json::to_value(input).expect("walkaround serializes"))
+            }
         } else if let Some((mode, posture)) = self.posture {
             let input = RoutePadPosture {
                 expected_project: self.snapshot.project_id,
@@ -445,10 +518,13 @@ impl PadDraft {
             return (true, false);
         }
         if self.walkaround && engine.event_cursor() != self.snapshot.source_cursor {
-            self.checked = None;
+            self.clear_checked();
         }
         let keyboard = !ui.ctx().egui_wants_keyboard_input();
         if keyboard && ui.input(|i| i.key_pressed(Key::Backspace)) {
+            if self.walkaround {
+                self.clear_checked();
+            }
             match self.picking {
                 Picking::After => {
                     self.after.pop();
@@ -464,6 +540,7 @@ impl PadDraft {
             *error = None;
         }
         if self.via_sizes.is_some() && keyboard && ui.input(|i| i.key_pressed(Key::V)) && self.start.is_some() && self.target.is_some() {
+            self.clear_checked();
             self.picking = Picking::Via;
         }
         self.hover = response.hover_pos().and_then(|p| {
@@ -488,6 +565,7 @@ impl PadDraft {
                         return Err("Choose empty space for the through via".into());
                     }
                     self.via = Some(self.hover.ok_or("Choose a valid grid position for the via")?);
+                    self.clear_checked();
                     self.picking = Picking::Interior;
                     return Ok(());
                 }
@@ -528,7 +606,7 @@ impl PadDraft {
                     } else if let Some(a) = self.start {
                         self.compatible(a, i)?;
                         self.target = Some(i);
-                        self.checked = None;
+                        self.clear_checked();
                         if self.via_sizes.is_some() {
                             self.clear_geometry();
                         }
@@ -617,7 +695,7 @@ impl PadDraft {
             points = plan_pad_path(start, target, &waypoints, self.grid, mode, posture).map_or_else(|_| vec![], |plan| plan.points);
         }
         if self.walkaround {
-            points = self.checked.as_ref().map_or_else(Vec::new, |c| c.plan.path.points.clone());
+            points = self.planned_path().ok().flatten().map_or_else(Vec::new, |p| p.points);
         }
         let painter = ui.painter().with_clip_rect(response.rect);
         let stroke = Stroke::new(((self.width.to_mm() * camera.zoom) as f32).max(1.0), Color32::from_rgb(255, 174, 64));
@@ -628,7 +706,12 @@ impl PadDraft {
             }
         }
         if self.via_sizes.is_none() || preview_via.is_some() {
-            for pair in points.windows(2) {
+            for (i, pair) in points.windows(2).enumerate() {
+                let stroke = if self.checked_via.as_ref().is_some_and(|c| i >= c.before.path.points.len() - 1) {
+                    Stroke::new(stroke.width, Color32::from_rgb(64, 190, 255))
+                } else {
+                    stroke
+                };
                 painter.line_segment([screen(pair[0]), screen(pair[1])], stroke);
             }
         }
