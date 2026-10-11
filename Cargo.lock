@@ -4389,6 +4389,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "viamind-doc",
+ "viamind-drc",
  "viamind-geom",
 ]
 

@@ -24,6 +24,7 @@ use crate::transaction::{CommandCall, ExecResult, Origin, Transaction, TxId, TxI
 #[derive(Debug)]
 pub struct Engine {
     project: Project,
+    design_revision: u64,
     registry: CommandRegistry,
     undo: Vec<Transaction>,
     redo: Vec<Transaction>,
@@ -44,6 +45,7 @@ impl Engine {
     /// An engine for `project` accepting the commands in `registry`.
     pub fn with_registry(project: Project, registry: CommandRegistry) -> Engine {
         Engine {
+            design_revision: 0,
             registry,
             selection: crate::SelectionSnapshot::default(),
             session: crate::session::SessionJournal::default(),
@@ -95,6 +97,10 @@ impl Engine {
     /// Current project and selection paired with their session cursor.
     pub fn session_state(&self) -> crate::SessionSnapshot {
         crate::SessionSnapshot { project: self.project.clone(), selection: self.selection.clone(), cursor: self.event_cursor() }
+    }
+
+    pub(crate) fn design_stamp(&self) -> crate::auto_drc::DesignStamp {
+        crate::auto_drc::DesignStamp { cursor_stream: self.event_cursor().stream_id, revision: self.design_revision }
     }
 
     /// The current session tail, independent of document transaction IDs.
@@ -326,6 +332,7 @@ impl Engine {
 
     /// Logs `event` and sends it to subscribers.
     fn emit(&mut self, event: ChangeEvent) {
+        self.design_revision = self.design_revision.checked_add(1).expect("design revision exhausted");
         self.document.dirty = self.project != self.document.saved;
         let before = self.selection.ids.len();
         self.selection.ids.retain(|id| {

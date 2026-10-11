@@ -109,3 +109,44 @@ fn desktop_mixed_copper_drc_rules_select_actual_objects_and_refresh_after_delete
     assert!(h.query_by_label("0 tracks · 1 through vias · 1 drilled holes").is_some());
     assert_eq!(engine.selection().ids, vec![via]);
 }
+
+#[test]
+fn desktop_automatic_drc_applies_rules_refreshes_after_agent_edit_and_disables_even_with_bad_draft() {
+    use viamind_engine::AutoDrcPhase;
+    let engine = EngineHandle::new(Project::new("automatic UI"));
+    let mut h = Harness::builder()
+        .with_size(vec2(1400.0, 1000.0))
+        .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), ViamindApp::with_design(engine.clone(), None));
+    h.run_steps(5);
+    h.state_mut().begin_drc();
+    h.run_steps(5);
+    let before = engine.session_state();
+    click(&mut h, "Enable automatic DRC");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while engine.auto_drc_status().phase != AutoDrcPhase::Ready {
+        assert!(std::time::Instant::now() < deadline);
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+    h.run_steps(5);
+    assert!(h.query_by_label_contains("Automatic DRC: Ready").is_some());
+    assert!(h.query_by_label_contains("excludes desktop presentation").is_some());
+    assert_eq!(engine.session_state(), before);
+    input(&mut h, "Minimum via drill (mm)", "0.4");
+    click(&mut h, "Apply automatic rules");
+    assert_eq!(engine.auto_drc_status().config.rules.minimum_via_drill_mm, 0.4);
+    let start = std::time::Instant::now();
+    engine.execute("add_via", json!({"x_mm":10,"y_mm":10,"diameter_mm":0.8,"drill_mm":0.3,"net":"A"}), Origin::agent("auto-ui-editor")).unwrap();
+    while engine.auto_drc_status().phase != AutoDrcPhase::Ready {
+        assert!(std::time::Instant::now() < deadline);
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+    h.run_steps(5);
+    assert!(h.query_by_label_contains("Minimum via drill:").is_some());
+    eprintln!("Automatic egui test edit-to-visible: {:.3} ms (test harness, not native acceptance)", start.elapsed().as_secs_f64() * 1000.0);
+    click(&mut h, "Select issue 1");
+    assert_eq!(engine.selection().ids.len(), 1);
+    input(&mut h, "Copper clearance (mm)", "bad");
+    click(&mut h, "Disable automatic DRC");
+    assert_eq!(engine.auto_drc_status().phase, AutoDrcPhase::Disabled);
+    assert!(h.query_by_label("Enable automatic DRC").is_some());
+}

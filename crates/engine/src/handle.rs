@@ -22,9 +22,10 @@ use crate::transaction::{CommandCall, ExecResult, Origin, TxId, TxInfo};
 /// [`read`](EngineHandle::read) and [`transaction`](EngineHandle::transaction) short.
 #[derive(Clone, Debug)]
 pub struct EngineHandle {
-    engine: Arc<Mutex<Engine>>,
+    pub(crate) engine: Arc<Mutex<Engine>>,
     session_changed: Arc<Condvar>,
     saves: Arc<Mutex<()>>,
+    pub(crate) automatic_drc: Arc<crate::auto_drc::AutoDrcController>,
 }
 
 impl EngineHandle {
@@ -40,7 +41,20 @@ impl EngineHandle {
 
     /// Wraps an existing engine.
     pub fn from_engine(engine: Engine) -> EngineHandle {
-        EngineHandle { engine: Arc::new(Mutex::new(engine)), session_changed: Arc::new(Condvar::new()), saves: Arc::new(Mutex::new(())) }
+        let engine = Arc::new(Mutex::new(engine));
+        let automatic_drc = Arc::new(crate::auto_drc::AutoDrcController::new(&engine));
+        EngineHandle { engine, automatic_drc, session_changed: Arc::new(Condvar::new()), saves: Arc::new(Mutex::new(())) }
+    }
+
+    /// Configure transient shared automatic DRC without modifying design/history.
+    pub fn configure_auto_drc(&self, config: crate::AutoDrcConfig) -> Result<crate::AutoDrcStatus, EngineError> {
+        let _engine = self.lock();
+        self.automatic_drc.configure(config)
+    }
+
+    /// Read the current bounded automatic DRC status. No project copy is needed.
+    pub fn auto_drc_status(&self) -> crate::AutoDrcStatus {
+        self.automatic_drc.status()
     }
 
     /// Loads an existing native project and records its active absolute path.
@@ -165,6 +179,7 @@ impl EngineHandle {
             let mut engine = self.lock();
             Self::check_replace(&engine, &crate::ReplaceGuard { expected_cursor: Some(before), ..guard }, command)?;
             engine.replace_document(project, path, origin);
+            self.automatic_drc.design_changed();
             (engine.session_state(), engine.take_due_wakers())
         };
         drop(files);
@@ -187,7 +202,11 @@ impl EngineHandle {
         let (result, wakers, changed) = {
             let mut engine = self.lock();
             let before = engine.event_cursor();
+            let design_before = engine.design_stamp();
             let result = f(&mut engine);
+            if engine.design_stamp() != design_before {
+                self.automatic_drc.design_changed();
+            }
             let changed = engine.event_cursor() != before;
             (result, engine.take_due_wakers(), changed)
         };

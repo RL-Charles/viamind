@@ -202,6 +202,38 @@ next page, repeat the same filters and pass `next_after` as `after`. `limit`
 defaults to 100, maximum 1000. Restart pagination after design edits.
 See [the complete query contract](../../docs/specs/part-queries.md).
 
+## Automatic scoped DRC
+
+Desktop **Board → Design rule check → Enable automatic DRC** and MCP
+`configure_auto_drc` control one shared transient runtime:
+
+```json
+{"enabled":true,"debounce_ms":20,"max_objects":5000,"rules":{"copper_clearance_mm":0.2}}
+```
+
+`rules` accepts the batch inputs below. Configuration defaults to disabled,
+20 ms debounce (0..2000) and 5000 board objects (1..10000). Use
+`get_auto_drc_status {}` for `config`, `generation`, `phase`, `source_cursor`,
+`report`, `message`, `snapshot_capture_ms`, `check_ms` and
+`request_to_publication_ms`. Timings exclude native desktop presentation.
+
+One lazy worker coalesces requests, captures only the bounded board, checks
+outside the engine lock and discards results superseded by edits, undo/redo,
+project replacement or configuration. Schematic-only design transactions conservatively rerun the board checker;
+schematic geometry/connectivity remain excluded. Selection and saves do not rerun checks.
+Phases are `disabled`, `pending`, `running`, `ready`, `skipped`, `failed`;
+a report is present only when ready for the current generation. Coverage and
+work-limit exclusions remain in that report. Snapshot bounds include parts,
+pads, tracks, vias and outline rings/vertices, 2 MiB board text and 512 bytes per
+replicated designator/pad-number/net label. Exceeding bounds reports skipped,
+with a reason; use batch DRC or raise the bounded object limit as appropriate.
+Unrelated schematic data is omitted from board capture.
+
+Configuration/status do not alter the project, dirty state, selection, event
+cursor or history. Settings are runtime-only and start disabled on restart.
+Automatic refresh is an initial moderate-board feature; timings do not establish
+a universal under-50-ms edit-to-visible guarantee or complete fabrication DRC.
+
 ## Scoped batch DRC
 
 `run_drc` checks a captured project snapshot and returns `{source_cursor, report}`.

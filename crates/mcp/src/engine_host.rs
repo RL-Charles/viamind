@@ -84,6 +84,16 @@ impl CommandHost for EngineHost {
             input_schema: input_schema::<WatchEvents>(),
         });
         commands.push(HostCommand {
+            name: "configure_auto_drc".into(),
+            description: "Configure transient shared automatic scoped DRC. One debounced worker checks bounded snapshots outside the engine lock; edits supersede old results. Does not modify design, dirty state or history. Snapshot limits may skip checks; reports retain fabrication coverage exclusions. Worker timings are not desktop edit-to-visible latency.".into(),
+            input_schema: input_schema::<viamind_engine::AutoDrcConfig>(),
+        });
+        commands.push(HostCommand {
+            name: "get_auto_drc_status".into(),
+            description: "Read shared automatic DRC config, generation, pending/running/ready/skipped/failed state, current scoped report, limits and measured worker latency. A report is present only when current. No project clone or design transaction.".into(),
+            input_schema: json!({"type":"object","properties":{},"additionalProperties":false}),
+        });
+        commands.push(HostCommand {
             name: "run_drc".into(),
             description: "Read-only scoped batch DRC of a captured design: rectangular SMD pads, round-ended straight tracks and annular through-via copper; same-layer different-net/unassigned clearance, polygon substrate/edge clearance, minimum via drill/annular width, physical drilled-hole spacing and foreign copper-to-hole clearance. Returns stable tagged part/pad, track and via IDs, measured/required Nm, source_cursor and explicit coverage/exclusions. All six distance rules finite 0..100 mm; max_violations 1..10000. Same assigned nets exempt copper/foreign-hole checks, but not physical hole spacing. Legacy previews and remaining fabrication/connectivity checks excluded. Limited work/results are explicitly incomplete. Not full fabrication DRC.".into(),
             input_schema: input_schema::<viamind_drc::DrcInput>(),
@@ -160,6 +170,16 @@ impl CommandHost for EngineHost {
             let input: WatchEvents = serde_json::from_value(input).map_err(|e| format!("invalid watch_events input: {e}"))?;
             let result = self.engine.watch_events(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(result).map_err(|e| e.to_string());
+        }
+        if name == "configure_auto_drc" {
+            let config = serde_json::from_value(input).map_err(|e| format!("invalid configure_auto_drc input: {e}"))?;
+            return serde_json::to_value(self.engine.configure_auto_drc(config).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "get_auto_drc_status" {
+            if !input.as_object().is_some_and(serde_json::Map::is_empty) {
+                return Err("get_auto_drc_status takes an empty object".into());
+            }
+            return serde_json::to_value(self.engine.auto_drc_status()).map_err(|e| e.to_string());
         }
         if name == "run_drc" {
             let input: viamind_drc::DrcInput = serde_json::from_value(input).map_err(|e| format!("invalid run_drc input: {e}"))?;
