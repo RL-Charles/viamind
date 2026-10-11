@@ -34,8 +34,9 @@ beyond the cap. Duplicate/blank pin numbers, malformed names, invalid geometry
 and excessive text report actionable errors while preserving editable inputs.
 
 Typing, opening, closing, adding/removing rows and validation never mutate the
-engine, undo/history, shared selection or existing file. Close/Cancel discards the
-local edit without changing the loaded placement template. Keep an unsaved edit
+engine, undo/history, shared selection or existing file. Cancel discards the local
+edit without changing the loaded placement template; closing the library retains
+its detached form and pending worker. Keep an unsaved edit
 through peer design edits; it is detached from the project. Reopening or creating
 another definition requires an explicit action and never silently replaces a
 currently open editor.

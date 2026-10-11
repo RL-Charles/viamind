@@ -469,6 +469,39 @@ mod tests {
         assert!(message.contains(&context.1.stream_id.to_string()));
     }
     #[test]
+    fn pending_detached_save_disables_editor_and_preserves_fields_after_error() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let engine = EngineHandle::new(viamind_doc::Project::new("no sheet required"));
+        let before = engine.session_state();
+        let (sender, receiver) = sync_channel(1);
+        let mut app = ViamindApp::with_design(engine.clone(), None);
+        app.begin_symbol_library();
+        app.symbol_library.editor = Some(crate::symbol_definition::DefinitionEditor::new());
+        app.symbol_library.pending = Some(Pending { source: None, detached_save: true, receiver });
+        let mut h = Harness::builder().with_size(egui::vec2(1600.0, 1200.0)).build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), app);
+        h.run_steps(5);
+        for label in [
+            "Definition name",
+            "Definition width (mm)",
+            "NEW definition file path",
+            "Add definition pin",
+            "Use edited definition",
+            "Save NEW definition file",
+            "Cancel definition edits",
+        ] {
+            assert!(h.get_by_label(label).accesskit_node().is_disabled(), "{label}");
+        }
+        sender.try_send(Err("controlled save failure".into())).unwrap();
+        h.run_steps(5);
+        assert!(!h.get_by_label("Definition name").accesskit_node().is_disabled());
+        assert!(!h.get_by_label("Save NEW definition file").accesskit_node().is_disabled());
+        assert!(h.query_by_label_contains("controlled save failure").is_some());
+        assert_eq!(engine.session_state(), before);
+    }
+    #[test]
     fn detached_save_stays_retained_hidden_reports_after_reopen_and_recovers_from_failures() {
         let sheet = snapshot();
         let context = (sheet.expected_project, sheet.source_cursor, sheet.expected.id);

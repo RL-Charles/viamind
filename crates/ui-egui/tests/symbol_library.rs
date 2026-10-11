@@ -192,9 +192,11 @@ fn create_edit_save_and_use_detached_definition_through_actual_controls() {
     let placed = e.read(Clone::clone);
     let symbol = placed.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().symbols.values().find(|s| s.designator == "U2").unwrap();
     assert_eq!(symbol.value, "Local revised gain");
+    assert_eq!(symbol.rotation_quarters, 3);
+    assert!(symbol.mirrored);
     assert_eq!(
         symbol.pin_position(symbol.pins[0].position).unwrap(),
-        viamind_doc::schematic::Coordinate { x: viamind_geom::Nm(42_000_004), y: viamind_geom::Nm(45_000_002) }
+        viamind_doc::schematic::Coordinate { x: viamind_geom::Nm(37_999_998), y: viamind_geom::Nm(55_000_004) }
     );
     let mut restored = placed.clone();
     restored.schematic.sheets.values_mut().next().unwrap().content.as_mut().unwrap().symbols.remove(&symbol.id);
