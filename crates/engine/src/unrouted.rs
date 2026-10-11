@@ -20,9 +20,27 @@ const SIZE: u64 = 100_000_000;
 static ACTIVE: AtomicUsize = AtomicUsize::new(0);
 
 /// Strict parameterless observation; no pagination or caller-weakened limits.
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, JsonSchema)]
+#[derive(Clone, Copy, Debug, Default, Serialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct UnroutedNetQuery {}
+impl<'de> Deserialize<'de> for UnroutedNetQuery {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct EmptyObject;
+        impl<'de> serde::de::Visitor<'de> for EmptyObject {
+            type Value = UnroutedNetQuery;
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("an empty JSON object")
+            }
+            fn visit_map<M: serde::de::MapAccess<'de>>(self, mut map: M) -> Result<Self::Value, M::Error> {
+                if map.next_key::<serde::de::IgnoredAny>()?.is_some() {
+                    return Err(serde::de::Error::custom("unrouted-net query accepts no fields"));
+                }
+                Ok(UnroutedNetQuery {})
+            }
+        }
+        deserializer.deserialize_map(EmptyObject)
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -766,7 +784,10 @@ mod tests {
         assert!(name_budget("N", &mut text).is_err());
         let mut text = usize::MAX;
         assert!(name_budget("N", &mut text).is_err());
-        assert!(serde_json::from_value::<UnroutedNetQuery>(serde_json::json!({"limit":1})).is_err());
+        for input in [serde_json::json!({"limit":1}), serde_json::json!([]), serde_json::json!(null), serde_json::json!(0), serde_json::json!("")] {
+            assert!(serde_json::from_value::<UnroutedNetQuery>(input).is_err());
+        }
+        assert!(serde_json::from_value::<UnroutedNetQuery>(serde_json::json!({})).is_ok());
     }
     #[test]
     fn unsupported_scalars_and_legacy_parts_are_explicit_incomplete_coverage() {

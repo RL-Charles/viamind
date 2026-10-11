@@ -79,7 +79,7 @@ async fn cancelled_actual_registry_awaiter_keeps_queued_capture_admission_until_
         held.with_engine(|_| {
             locked.send(()).unwrap();
             wait.recv().unwrap();
-        })
+        });
     });
     ready.recv().unwrap();
     let pending = tokio::spawn(async move { registry.call("query_unrouted_nets", json!({}), CallContext::new("cancelled observer")).await });
