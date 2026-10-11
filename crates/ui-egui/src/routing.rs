@@ -522,7 +522,7 @@ impl ViamindApp {
                         match self.design.as_ref().unwrap().engine.route_terminal_snapshot() {
                             Ok(snapshot) => {
                                 self.routing.terminal_draft =
-                                    Some(TerminalDraft::new(snapshot, input.layer, input.width, input.grid, input.rules, corner_mode))
+                                    Some(TerminalDraft::new(snapshot, input.layer, input.width, input.grid, input.rules, corner_mode));
                             }
                             Err(e) => {
                                 self.routing.error = Some(e.to_string());

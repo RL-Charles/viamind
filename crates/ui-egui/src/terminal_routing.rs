@@ -129,7 +129,8 @@ impl TerminalDraft {
       if let Some(i)=index {let row=&self.snapshot.terminals[i];ui.label(format!("{label}: {} / {}",row.label,row.net.as_deref().unwrap_or("unassigned")));if let Some(p)=row.center_nm{ui.monospace(format!("Exact X {} Y {}nm",p.x.0,p.y.0));}}
      }
      if let Some(mode)=self.mode {ui.label(format!("{:?}: {}",mode,self.posture.label(mode)));if ui.button("Switch terminal posture").clicked(){self.posture.toggle();}}
-     ui.horizontal_wrapped(|ui|{if ui.button("Choose start terminal").clicked(){self.picking=Picking::Start;}if ui.button("Choose target terminal").clicked(){self.picking=Picking::Target;}});
+     ui.horizontal_wrapped(|ui|{if ui.button("Choose start terminal").clicked(){self.picking=Picking::Start;}
+     if ui.button("Choose target terminal").clicked(){self.picking=Picking::Target;}});
      if let Some(i)=self.hovered {let row=&self.snapshot.terminals[i];ui.label(format!("Hover: {} / {}",row.label,row.net.as_deref().unwrap_or("unassigned")));}
      let unsupported=self.snapshot.terminals.iter().filter(|t|t.unsupported_reason.is_some()).count();
      ui.label(format!("{} interior vertices; {} unsupported terminals; {} legacy parts omitted",self.interior.len(),unsupported,self.snapshot.omitted_legacy_parts));
@@ -248,10 +249,10 @@ impl TerminalDraft {
                 for pair in points.windows(2) {
                     painter.line_segment([screen(pair[0]), screen(pair[1])], stroke);
                 }
-                if self.target.is_none() {
-                    if let (Some(&a), Some(b)) = (points.first(), self.hover) {
-                        painter.line_segment([screen(a), screen(b)], stroke);
-                    }
+                if self.target.is_none()
+                    && let (Some(&a), Some(b)) = (points.first(), self.hover)
+                {
+                    painter.line_segment([screen(a), screen(b)], stroke);
                 }
             }
             for i in [self.start, self.target, self.hovered].into_iter().flatten() {
