@@ -1,0 +1,77 @@
+   Compiling bytemuck v1.25.2
+   Compiling kurbo v0.13.1
+   Compiling font-types v0.12.6
+   Compiling read-fonts v0.41.0
+   Compiling serde_json v1.0.152
+   Compiling schemars v1.2.2
+   Compiling harfrust v0.12.0
+   Compiling skrifa v0.44.0
+   Compiling color v0.3.3
+   Compiling peniko v0.6.1
+   Compiling typenum v1.20.1
+   Compiling vello_common v0.1.0
+   Compiling hybrid-array v0.4.15
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/geom)
+   Compiling wgpu-types v30.0.1
+   Compiling emath v0.36.2
+   Compiling slotmap v1.1.1
+   Compiling float-cmp v0.9.0
+   Compiling strict-num v0.1.1
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/doc)
+   Compiling ecolor v0.36.2
+   Compiling wgpu-naga-bridge v30.0.1
+   Compiling vello_cpu v0.1.0
+   Compiling arrayref v0.3.9
+   Compiling wgpu-hal v30.0.1
+   Compiling epaint v0.36.2
+   Compiling tiny-skia-path v0.12.0
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling tinyvec v1.13.3
+   Compiling const-oid v0.10.2
+   Compiling winit v0.30.13
+   Compiling digest v0.11.3
+   Compiling fontdb v0.24.0
+   Compiling egui v0.36.2
+   Compiling wgpu-core-deps-windows-linux-android v30.0.1
+   Compiling svgtypes v0.16.1
+   Compiling roxmltree v0.21.1
+   Compiling simplecss v0.2.2
+   Compiling data-url v0.3.2
+   Compiling unicode-vo v0.1.0
+   Compiling unicode-bidi v0.3.18
+   Compiling unicode-script v0.5.8
+   Compiling pico-args v0.5.0
+   Compiling xmlwriter v0.1.0
+   Compiling imagesize v0.15.0
+   Compiling usvg v0.48.1
+   Compiling image v0.25.10
+   Compiling wgpu-core v30.0.1
+   Compiling sha2 v0.11.0
+   Compiling tiny-skia v0.12.0
+   Compiling rgb v0.8.53
+   Compiling resvg v0.48.1
+   Compiling accesskit_winit v0.32.2
+   Compiling wgpu v30.0.1
+   Compiling arboard v3.6.1
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/engine)
+   Compiling egui-winit v0.36.2
+   Compiling egui-wgpu v0.36.2
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/fab)
+   Compiling rmcp v3.5.1
+   Compiling eframe v0.36.2
+   Compiling base64 v0.22.1
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0020-baseline/crates/ui-egui)
+   Compiling egui_kittest v0.36.2
+    Finished `release` profile [optimized] target(s) in 8m 05s
+{"stage": "unique-release-binaries-ready", "source": "e7f60cf489ddb673ad416f991fb86c398c61a2ed", "binaries": {"native_benchmark": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/verified/native_benchmark", "sha256": "6ffcedb836d1eecbd69b915f745ebf69069f5d8bc7902e04476cbd738a15af86"}, "gpu_parity": {"path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/verified/gpu_parity", "sha256": "5244ae92e44bb7f5d29989aba240bdf41b61f4b851dc0a3d4e56373d17268967"}}}
+WAITING_FOR_EXPLICIT_QUIET_WINDOW: unique release copies ready
+Traceback (most recent call last):
+  File "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/run-baseline.py", line 32, in <module>
+    assert parity['passed']and len(parity['cases'])==5 and all(c['drawn']>0 for c in parity['cases']),parity
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'cases': [{'case': 0, 'drawn': 5002, 'max_channel_difference': 1, 'mean_channel_difference': 0.00017267520215633424, 'pixels': 1068480, 'pixels_over_2_channels': 0}, {'case': 1, 'drawn': 5002, 'max_channel_difference': 1, 'mean_channel_difference': 0.0001712713387241689, 'pixels': 1068480, 'pixels_over_2_channels': 0}, {'case': 2, 'drawn': 4665, 'max_channel_difference': 1, 'mean_channel_difference': 0.0001240079365079365, 'pixels': 1068480, 'pixels_over_2_channels': 0}, {'case': 3, 'drawn': 4624, 'max_channel_difference': 2, 'mean_channel_difference': 0.00026416030248577416, 'pixels': 1068480, 'pixels_over_2_channels': 0}, {'case': 4, 'drawn': 581, 'max_channel_difference': 215, 'mean_channel_difference': 6.939124503968254, 'pixels': 1068480, 'pixels_over_2_channels': 346026}], 'passed': False}

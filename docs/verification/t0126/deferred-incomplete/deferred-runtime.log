@@ -1,0 +1,2 @@
+native parity diagnostic failure: diagnostic native frame/time budget exceeded
+writing diagnostic failure: legacy trace has invalid paired provenance; inspect retained receipts

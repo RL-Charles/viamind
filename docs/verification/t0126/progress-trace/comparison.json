@@ -1,0 +1,12 @@
+{
+  "scope": "Current initial and progress diagnostic states/metrics only; original failure has no exact camera receipts. Different full screenshots can include changing UI statistics outside the compared canvas. No cause closure.",
+  "same_ten_arrival_states": true,
+  "same_five_metrics": true,
+  "initial_elapsed_seconds": 20.045548707,
+  "progress_elapsed_seconds": 8.577535026997793,
+  "deferred_prior_elapsed_seconds": ">210, incomplete; no stage receipt",
+  "original_drawn_case4": 581,
+  "initial_and_progress_drawn_case4": 606,
+  "root_cause": "UNRESOLVED",
+  "stalled_stage_question": "Not answered: stall did not recur; terminal receipt coherent, all requests returned."
+}

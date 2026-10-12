@@ -1,0 +1,34 @@
+[
+  {
+    "reference_image": 6,
+    "compared_image": 9,
+    "pixels": 1068480,
+    "max": 226,
+    "mean": 53.792984192497755,
+    "over2": 1059737
+  },
+  {
+    "reference_image": 7,
+    "compared_image": 9,
+    "pixels": 1068480,
+    "max": 226,
+    "mean": 53.792933419436956,
+    "over2": 1059737
+  },
+  {
+    "reference_image": 6,
+    "compared_image": 8,
+    "pixels": 1068480,
+    "max": 226,
+    "mean": 53.79301320567535,
+    "over2": 1059737
+  },
+  {
+    "reference_image": 7,
+    "compared_image": 8,
+    "pixels": 1068480,
+    "max": 226,
+    "mean": 53.79296243261456,
+    "over2": 1059737
+  }
+]

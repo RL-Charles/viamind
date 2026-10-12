@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-12T00:09:39.766719+00:00",
+  "source": "9783c974b83f42938408e9f0d4b85761665eabd5",
+  "binary_sha256": "7183877eb4d1bf1914b59ad7be34f983ba02b973856dfea135998f5bd6a4d287",
+  "live_executable_sha256": "7183877eb4d1bf1914b59ad7be34f983ba02b973856dfea135998f5bd6a4d287",
+  "owned_pid": 3567262,
+  "watchdog_seconds": 210,
+  "orchestrator_exit_code": 1,
+  "process_preserved": true,
+  "orchestrator_log": "Traceback (most recent call last):\n  File \"/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/run-deferred-trace.py\", line 26, in <module>\n    if time.monotonic()>end:raise RuntimeError(('ownedtrace didnotselfclose; preserveprocess',pid))\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: ('ownedtrace didnotselfclose; preserveprocess', 3567262)\n",
+  "report_bytes": 0,
+  "trace_file_exists": false,
+  "capture_files": [],
+  "ps": "    PID     ELAPSED     TIME %CPU STAT WCHAN\n3567262       03:53 00:00:12  5.2 Sl   do_epoll_wait\n",
+  "scope": "ONE deferred comparison incomplete: stage unknown, no terminal trace, no parity result, no historical-cause closure, no cadence; no retry; both lock holders exited"
+}

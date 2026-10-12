@@ -1,0 +1,12 @@
+{
+  "admitted": true,
+  "utc": "2026-10-12T01:22:24.808805+00:00",
+  "source": "c0e2ccd3db319a5b8dd1b1900c3c2891a0097e05",
+  "binary_sha256": "660e5de117a60afd86c8cf9ceb1e58a27890230edf275a6b899dbcac59cde399",
+  "fresh_acknowledgements": {
+    "root": "author-ui3 actual EXIT101; no active own Cargo/native/MCP or artifact hashing; source edits paused",
+    "manufacturing_csv": "focused4 blocked whole mutex; no own compiler/native/GPU/render/MCP mutations",
+    "outline_dxf": "frozen ab12596; no own active or queued Cargo/native/GPU/MCP mutation"
+  },
+  "scope": "ONE hardened capture, original fivecases/thresholds; 180s progress/210s outer bound; no automatic retry, historical cause or cadence claim"
+}

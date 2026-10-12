@@ -1,0 +1,323 @@
+{
+  "image": 8,
+  "dimensions": [
+    1400,
+    1000
+  ],
+  "token": {
+    "step": 8,
+    "sequence": 8
+  },
+  "valid_token": true,
+  "viewport_matches": true,
+  "state_matches_request": true,
+  "draw_states_match_request": true,
+  "pair_state_matches_reference": true,
+  "pair_dimensions_match_reference": true,
+  "request_dimensions_match": true,
+  "request": {
+    "token": {
+      "step": 8,
+      "sequence": 8
+    },
+    "frame": {
+      "frame": 78,
+      "pass": 79,
+      "pass_index": 0
+    },
+    "state": {
+      "camera_center": [
+        33.8096233769221,
+        25.375284784012628
+      ],
+      "camera_zoom": 53.69680915111379,
+      "viewport": [
+        280.0,
+        23.0,
+        1400.0,
+        977.0
+      ],
+      "pixels_per_point": 1.0,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "layers": [
+        {
+          "id": 36,
+          "visible": true,
+          "opacity": 0.9,
+          "color": [
+            209,
+            161,
+            151,
+            230
+          ]
+        },
+        {
+          "id": 38,
+          "visible": true,
+          "opacity": 0.25,
+          "color": [
+            1,
+            64,
+            60,
+            64
+          ]
+        },
+        {
+          "id": 2,
+          "visible": true,
+          "opacity": 0.78,
+          "color": [
+            99,
+            156,
+            99,
+            199
+          ]
+        },
+        {
+          "id": 31,
+          "visible": true,
+          "opacity": 0.78,
+          "color": [
+            55,
+            86,
+            172,
+            199
+          ]
+        },
+        {
+          "id": 1,
+          "visible": false,
+          "opacity": 0.78,
+          "color": [
+            161,
+            98,
+            34,
+            199
+          ]
+        },
+        {
+          "id": 0,
+          "visible": true,
+          "opacity": 0.4,
+          "color": [
+            88,
+            24,
+            20,
+            102
+          ]
+        },
+        {
+          "id": 100,
+          "visible": true,
+          "opacity": 1.0,
+          "color": [
+            210,
+            190,
+            110,
+            255
+          ]
+        },
+        {
+          "id": 39,
+          "visible": true,
+          "opacity": 0.25,
+          "color": [
+            54,
+            25,
+            64,
+            64
+          ]
+        },
+        {
+          "id": 37,
+          "visible": true,
+          "opacity": 0.9,
+          "color": [
+            218,
+            214,
+            145,
+            230
+          ]
+        },
+        {
+          "id": 44,
+          "visible": true,
+          "opacity": 1.0,
+          "color": [
+            208,
+            210,
+            205,
+            255
+          ]
+        }
+      ]
+    },
+    "draw_start": 79,
+    "completed_stable_frames": 6
+  },
+  "arrival": {
+    "frame": 81,
+    "pass": 82,
+    "pass_index": 0
+  },
+  "arrival_state": {
+    "camera_center": [
+      33.8096233769221,
+      25.375284784012628
+    ],
+    "camera_zoom": 53.69680915111379,
+    "viewport": [
+      280.0,
+      23.0,
+      1400.0,
+      977.0
+    ],
+    "pixels_per_point": 1.0,
+    "root_pixels": [
+      1400,
+      1000
+    ],
+    "layers": [
+      {
+        "id": 36,
+        "visible": true,
+        "opacity": 0.9,
+        "color": [
+          209,
+          161,
+          151,
+          230
+        ]
+      },
+      {
+        "id": 38,
+        "visible": true,
+        "opacity": 0.25,
+        "color": [
+          1,
+          64,
+          60,
+          64
+        ]
+      },
+      {
+        "id": 2,
+        "visible": true,
+        "opacity": 0.78,
+        "color": [
+          99,
+          156,
+          99,
+          199
+        ]
+      },
+      {
+        "id": 31,
+        "visible": true,
+        "opacity": 0.78,
+        "color": [
+          55,
+          86,
+          172,
+          199
+        ]
+      },
+      {
+        "id": 1,
+        "visible": false,
+        "opacity": 0.78,
+        "color": [
+          161,
+          98,
+          34,
+          199
+        ]
+      },
+      {
+        "id": 0,
+        "visible": true,
+        "opacity": 0.4,
+        "color": [
+          88,
+          24,
+          20,
+          102
+        ]
+      },
+      {
+        "id": 100,
+        "visible": true,
+        "opacity": 1.0,
+        "color": [
+          210,
+          190,
+          110,
+          255
+        ]
+      },
+      {
+        "id": 39,
+        "visible": true,
+        "opacity": 0.25,
+        "color": [
+          54,
+          25,
+          64,
+          64
+        ]
+      },
+      {
+        "id": 37,
+        "visible": true,
+        "opacity": 0.9,
+        "color": [
+          218,
+          214,
+          145,
+          230
+        ]
+      },
+      {
+        "id": 44,
+        "visible": true,
+        "opacity": 1.0,
+        "color": [
+          208,
+          210,
+          205,
+          255
+        ]
+      }
+    ]
+  },
+  "legacy_step": 8,
+  "draw_end": 82,
+  "regions": [
+    {
+      "name": "fixture_via_and_drill",
+      "item": 5000,
+      "screen_pixels": [
+        6649.478,
+        4077.5347,
+        7508.627,
+        4936.6836
+      ],
+      "intersects_canvas": false
+    },
+    {
+      "name": "fixture_quad",
+      "item": 5001,
+      "screen_pixels": [
+        7454.93,
+        4507.1094,
+        7938.2017,
+        4936.6836
+      ],
+      "intersects_canvas": false
+    }
+  ],
+  "original_rgba_bytes": 5600000
+}

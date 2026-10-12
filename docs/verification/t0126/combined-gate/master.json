@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "ticket": "T-0126",
+  "base": "88c3ec12db48e7fff0aae84ca0d96bbf65ab668c",
+  "scope": "Full four Linux workspace gates, debug gpu_parity example tests, exact generated MCP reference and isolated agent workflow on the integrated source. No native capture, renderer correction, historical case-4 cause, 100k benchmark or cadence claim.",
+  "failed_run": {
+    "source": "f4320d2f0a235456f33d2be6173b8e999b0a1723",
+    "script": "full-combined.sh",
+    "log": "full-combined.log",
+    "result": "FAILED (set -e, no PASS marker): fmt, strict workspace all-target Clippy and cargo test --workspace passed (1033 passed, 0 failed, 1 ignored); debug gpu_parity example tests 13 passed, 9 failed on epaint 0.36.2 debug-only TexturesDelta drop assertion. Build, catalog and workflow never ran."
+  },
+  "correction": {
+    "source": "570ba277ae241789c8b5a7b90a492b29171dcde6",
+    "change": "Test-only: headless example test passes clear their texture delta; test-cfg Clippy method references.",
+    "focused": {
+      "script": "fix-focused1.sh",
+      "log": "fix-focused1.log",
+      "result": "22/22 debug example tests passed; test-cfg Clippy then flagged four pre-existing redundant closures, fixed in the same commit"
+    }
+  },
+  "passing_run": {
+    "source": "570ba277ae241789c8b5a7b90a492b29171dcde6",
+    "script": "full-combined2.sh",
+    "log": "full-combined2.log",
+    "result": "EXIT 0: fmt; strict workspace all-target Clippy; test-cfg example Clippy; cargo test --workspace 1033 passed/0 failed/1 ignored; debug gpu_parity 22/22; all Rust inputs retouched immediately before cargo build --workspace; 13 reference-tool tests; exact docs/generated check for 120 tools; 18 isolated agent workflow checks"
+  },
+  "binary": {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/combined2-570ba277/viamind",
+    "sha256": "85ffa048ce4a6db0e71bac99cd6ee7781350b94ac7a3a8828be6618d761f3a87",
+    "build": "debug normal build after immediate retouch, VIAMIND_BUILD_COMMIT=570ba277ae241789c8b5a7b90a492b29171dcde6"
+  },
+  "open": "Acceptance 3 (confirmed historical case-4 cause with focused regression) remains open; strict T20 cadence remains separately gated.",
+  "files": {
+    "full-combined.sh": "afee17cd7d2575599df3fea5f8ff45ad16fc73b5e58de9d1b5a07039af4eb1c2",
+    "full-combined.log": "24eb197073002c6686ed083fab8044a7249d75ce3b2e1334def7c6df1c9f9de8",
+    "fix-focused1.sh": "2eee6e9cbff46335e2a149c8cc8c80ee1bc602d2722027e3990002bf737077c9",
+    "fix-focused1.log": "03b3437a83a73f515a542ac3211d6d63bd1c76b1eacbc7e157e099c3376943c1",
+    "full-combined2.sh": "25dfbdba4b5939a6b7c982b09267d69f505358250b481481cafb9b480717093c",
+    "full-combined2.log": "09f4ae17b4af00a4c616ba93b8591163b5289857a43605eff5b43666ced72829",
+    "catalog-verification.json": "8d106823e314f0768160712e0381faa0bf4ed6f8c70c307c21e4af56a2c601ee"
+  }
+}

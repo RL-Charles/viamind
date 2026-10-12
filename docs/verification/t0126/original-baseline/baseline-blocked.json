@@ -1,0 +1,193 @@
+{
+  "verified_utc": "2026-10-11T23:05:59.469965+00:00",
+  "source": "e7f60cf489ddb673ad416f991fb86c398c61a2ed",
+  "status": "blocked_before_cadence_by_existing_visual_parity_failure",
+  "cadence_launched": false,
+  "cadence_report_exists": false,
+  "native_benchmark_launch_exists": false,
+  "parity": {
+    "cases": [
+      {
+        "case": 0,
+        "drawn": 5002,
+        "max_channel_difference": 1,
+        "mean_channel_difference": 0.00017267520215633424,
+        "pixels": 1068480,
+        "pixels_over_2_channels": 0
+      },
+      {
+        "case": 1,
+        "drawn": 5002,
+        "max_channel_difference": 1,
+        "mean_channel_difference": 0.0001712713387241689,
+        "pixels": 1068480,
+        "pixels_over_2_channels": 0
+      },
+      {
+        "case": 2,
+        "drawn": 4665,
+        "max_channel_difference": 1,
+        "mean_channel_difference": 0.0001240079365079365,
+        "pixels": 1068480,
+        "pixels_over_2_channels": 0
+      },
+      {
+        "case": 3,
+        "drawn": 4624,
+        "max_channel_difference": 2,
+        "mean_channel_difference": 0.00026416030248577416,
+        "pixels": 1068480,
+        "pixels_over_2_channels": 0
+      },
+      {
+        "case": 4,
+        "drawn": 581,
+        "max_channel_difference": 215,
+        "mean_channel_difference": 6.939124503968254,
+        "pixels": 1068480,
+        "pixels_over_2_channels": 346026
+      }
+    ],
+    "passed": false
+  },
+  "provenance": {
+    "source": "e7f60cf489ddb673ad416f991fb86c398c61a2ed",
+    "source_tree": "f342e2b16890847fffc8bd3d152cc3f52d482964",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+    "built_utc": "2026-10-11T23:03:16.881071+00:00",
+    "binaries": {
+      "native_benchmark": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/verified/native_benchmark",
+        "sha256": "6ffcedb836d1eecbd69b915f745ebf69069f5d8bc7902e04476cbd738a15af86"
+      },
+      "gpu_parity": {
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0020-current/verified/gpu_parity",
+        "sha256": "5244ae92e44bb7f5d29989aba240bdf41b61f4b851dc0a3d4e56373d17268967"
+      }
+    },
+    "build": "cargo build --release --locked -p viamind-ui-egui --example native_benchmark --example gpu_parity",
+    "target": "/home/charlesmowbray/.cache/viamind/native-benchmark-target"
+  },
+  "quiet_admission": {
+    "admitted": true,
+    "admitted_utc": "2026-10-11T23:04:04.324452+00:00",
+    "source": "e7f60cf489ddb673ad416f991fb86c398c61a2ed",
+    "root_verified_binary_hashes": {
+      "native_benchmark": "6ffcedb836d1eecbd69b915f745ebf69069f5d8bc7902e04476cbd738a15af86",
+      "gpu_parity": "5244ae92e44bb7f5d29989aba240bdf41b61f4b851dc0a3d4e56373d17268967"
+    },
+    "lanes_acknowledged_quiet": [
+      "root",
+      "manufacturing_csv",
+      "outline_dxf"
+    ],
+    "mutexes": "benchmark agent retains workspace and release locks; queued root cleanup blocked",
+    "scope": "Existing five-case parity then one ordinary1260-frame baseline; default display/DPI; no reference/profile mode; no other Cargo/native/GPU/heavy verification until agent completion"
+  },
+  "system_before": {
+    "utc": "2026-10-11T23:04:05.245987+00:00",
+    "cpu_model": "Intel(R) Core(TM) Ultra 7 255U",
+    "logical_cpus": 14,
+    "loadavg": "3.80 5.65 7.73 3/2659 3359167",
+    "meminfo": {
+      "MemTotal": "       65307892 kB",
+      "MemAvailable": "   40135836 kB",
+      "SwapTotal": "      130616288 kB",
+      "SwapFree": "       98272304 kB"
+    },
+    "kernel": "Linux 7.2.5-3-omarchy x86_64 GNU/Linux",
+    "display_environment": {
+      "DISPLAY": ":0",
+      "WAYLAND_DISPLAY": "wayland-1",
+      "XDG_SESSION_TYPE": "wayland",
+      "WGPU_BACKEND": null
+    },
+    "monitors": [
+      {
+        "name": "eDP-1",
+        "description": "BOE 0x0C3F",
+        "width": 1920,
+        "height": 1200,
+        "refreshRate": 60.002,
+        "x": 1920,
+        "y": 1152,
+        "scale": 1,
+        "transform": 0,
+        "focused": true
+      }
+    ],
+    "cpu_processes": [
+      "COMMAND         %CPU %MEM",
+      "ps               300  0.0",
+      "python3          125  0.0",
+      "viamind-33981e0 18.2  0.2",
+      "viamind         17.8  0.1",
+      "sherpa          13.0  0.0",
+      "viamind          9.9  0.2",
+      "python3          8.8  0.0",
+      "viamind          8.7  0.1",
+      "ghostty          8.4  0.0",
+      "Hyprland         7.3  0.1",
+      "viamind          5.6  0.1",
+      "codex            4.8  0.9"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "build-and-baseline.log",
+      "sha256": "cc5fa4eb9ce96a7268dd543a3ecaf0aa4afba8145fbe0256371d4dcef4d542eb",
+      "bytes": 4590
+    },
+    {
+      "path": "build-and-baseline.sh",
+      "sha256": "86fb1d7f6f777a452f830c4c39c62fb7e9edca7e721fd076ec323d4d05891c41",
+      "bytes": 661
+    },
+    {
+      "path": "retain-build.py",
+      "sha256": "871834baa8f21994e935345bc846325a8712e9697af69b1cfedf9a57d8462489",
+      "bytes": 1356
+    },
+    {
+      "path": "run-baseline.py",
+      "sha256": "0343f6d4c986cb6e552a31333b86a1974c74769e4962738a46310fa1fa33d3c8",
+      "bytes": 5506
+    },
+    {
+      "path": "build-ready.json",
+      "sha256": "8a7505643109e39f2f9b6f2c2d3033634fc129d25c6a1c6adf789f1c6ce0e5c8",
+      "bytes": 1035
+    },
+    {
+      "path": "quiet-ready.json",
+      "sha256": "879190bc157292f3f10c1472629d0d6f80f0c3871c5b565d07a38e940af02acb",
+      "bytes": 732
+    },
+    {
+      "path": "system-before.json",
+      "sha256": "7a8cba32f6105b027467f006340b6d4451dfb2828237cf8b6c1c7ce0b90bbe66",
+      "bytes": 1253
+    },
+    {
+      "path": "gpu_parity-launch.json",
+      "sha256": "66eefec1c3eae20b24e2c3a05a22c0e3b20786e380df0d684a789e9ba3ac0675",
+      "bytes": 583
+    },
+    {
+      "path": "gpu_parity-runtime.log",
+      "sha256": "48d290588d7164d7c6df042ea07d14f992af3cffa364b31dbbca03106180fe09",
+      "bytes": 57
+    },
+    {
+      "path": "parity.json",
+      "sha256": "ee384e5e8e969332f89e4e10fcbcebd1621ec8e018490564a23c2a6c8771dbf1",
+      "bytes": 1048
+    },
+    {
+      "path": "verified/provenance.json",
+      "sha256": "8a7505643109e39f2f9b6f2c2d3033634fc129d25c6a1c6adf789f1c6ce0e5c8",
+      "bytes": 1035
+    }
+  ],
+  "claims": "One unchanged current release native parity run. No cadence/performance pass or renderer root cause claimed. First four cases satisfy historical max<=2 and zero pixels>2; populated8x fails unchanged builtin criteria. No retries or weakened thresholds."
+}

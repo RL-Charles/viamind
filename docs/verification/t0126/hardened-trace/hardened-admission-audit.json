@@ -1,0 +1,203 @@
+{
+  "scope": "Independent retained request/draw/arrival and prior diagnostic state audit; source guard enforces no known-discard submission. No historical cause/renderer/performance claim.",
+  "passed": true,
+  "requests": [
+    {
+      "step": 0,
+      "request_frame": {
+        "frame": 6,
+        "pass": 7,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 9,
+        "pass": 10,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 1,
+      "request_frame": {
+        "frame": 15,
+        "pass": 16,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 18,
+        "pass": 19,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 2,
+      "request_frame": {
+        "frame": 24,
+        "pass": 25,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 27,
+        "pass": 28,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 3,
+      "request_frame": {
+        "frame": 33,
+        "pass": 34,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 36,
+        "pass": 37,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 4,
+      "request_frame": {
+        "frame": 42,
+        "pass": 43,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 45,
+        "pass": 46,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 5,
+      "request_frame": {
+        "frame": 51,
+        "pass": 52,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 54,
+        "pass": 55,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 6,
+      "request_frame": {
+        "frame": 60,
+        "pass": 61,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 63,
+        "pass": 64,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 7,
+      "request_frame": {
+        "frame": 69,
+        "pass": 70,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 72,
+        "pass": 73,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 8,
+      "request_frame": {
+        "frame": 78,
+        "pass": 79,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 81,
+        "pass": 82,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    },
+    {
+      "step": 9,
+      "request_frame": {
+        "frame": 87,
+        "pass": 88,
+        "pass_index": 0
+      },
+      "arrival_frame": {
+        "frame": 90,
+        "pass": 91,
+        "pass_index": 0
+      },
+      "completed_stable_frames": 6,
+      "root_pixels": [
+        1400,
+        1000
+      ],
+      "matching_intervening_draws": 3
+    }
+  ],
+  "ui_pass_receipts": 91,
+  "distinct_observed_integration_frame_numbers": 90,
+  "all_states_equal_previous_progress_except_additive_root_pixels": true,
+  "same_all_five_metrics_as_previous_progress": true,
+  "all_root_dimension_admissions": true,
+  "all_requests_have_six_completed_stable_frames": true,
+  "no_retained_external_navigation_contamination": true
+}

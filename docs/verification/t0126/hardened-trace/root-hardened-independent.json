@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "source": "c0e2ccd3db319a5b8dd1b1900c3c2891a0097e05",
+  "native_pid": 4006395,
+  "process_absent": true,
+  "raw_p7_sha256": [
+    "04434c7fe85c1061d9f79d2f60c43c2a091bba14744e5b6796c61fb6e3b275d0",
+    "ccf9a9cad4d9532dcfe386911fb2276ad7b380a86d9272b8a3829a658eccc36d",
+    "ceaf6bbcac038e30b8eca4c1f96eabaf5abbd4eb5b69a48d7d2b6a46de029aab",
+    "fbfa4f444baf65050d56765029efa1dfa7e5af78dd796771e816ef47add2aeb7",
+    "5ec8ded4cdb912f62c82b09ac0692d145e7999bdec691c026954eb159fd9d752",
+    "e20b5f949c8a60ad8926cdb90afbc2b130c50547ee15513fc2b1bbbb7befb2e5",
+    "600f919bd411b6b2a6b4380efb55481005aabbd18c24a8499261f0613b5abe34",
+    "bf0582c012a6a6d9e1633929686dff149b5fe60ea72ba570f1e0ea0edcbf5235",
+    "41dd49fba568f1405dc686efefe2878af3e4f4da1a6993d590b23da98c6c3a46",
+    "f97d9dc4fa19f351e10ff22a836ed3a58cb325f430f27208526ef526aab61fbe"
+  ],
+  "all10_request_root_dimensions_token_and_intervening_states_exact": true,
+  "all_requests_completed_stable_frames_at_least6": true,
+  "cases": [
+    {
+      "case": 0,
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.00017267520215633424,
+      "pixels_over_2_channels": 0,
+      "drawn": 5002
+    },
+    {
+      "case": 1,
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001712713387241689,
+      "pixels_over_2_channels": 0,
+      "drawn": 5002
+    },
+    {
+      "case": 2,
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001240079365079365,
+      "pixels_over_2_channels": 0,
+      "drawn": 4665
+    },
+    {
+      "case": 3,
+      "pixels": 1068480,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.00026416030248577416,
+      "pixels_over_2_channels": 0,
+      "drawn": 4624
+    },
+    {
+      "case": 4,
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001792265648397724,
+      "pixels_over_2_channels": 0,
+      "drawn": 606
+    }
+  ],
+  "verification": "Standard-library exact raw RGBA four-channel comparison; original harness mean includes alpha. Initial optional Pillow unavailable; initial RGB-only mean expectation corrected after independently reading original four-channel denominator. No product change.",
+  "scope": "Current bounded provenance and image parity only; historical581 mismatch/stall/cadence unresolved"
+}

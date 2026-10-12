@@ -57,6 +57,22 @@ impl Default for Canvas {
 }
 
 impl Canvas {
+    /// Install an exact manual view without letting startup fitting replace it on resize.
+    /// Invalid cameras leave both the camera and fitting state unchanged.
+    pub fn set_manual_camera(&mut self, camera: Camera) -> Result<(), &'static str> {
+        if !camera.center.x.is_finite()
+            || !camera.center.y.is_finite()
+            || !camera.zoom.is_finite()
+            || !(crate::camera::MIN_ZOOM..=crate::camera::MAX_ZOOM).contains(&camera.zoom)
+        {
+            return Err("manual camera requires finite coordinates and zoom within supported limits");
+        }
+        self.camera = camera;
+        self.auto_fit = false;
+        self.fit_pending = false;
+        Ok(())
+    }
+
     /// Explicit view navigation disables startup auto-fit without changing selection.
     pub(crate) fn focus_world(&mut self, at: WorldPos) {
         self.auto_fit = false;
@@ -238,6 +254,41 @@ fn paint_grid(painter: &egui::Painter, cam: &Camera, viewport: Rect) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn manual_camera_is_exact_and_invalid_inputs_preserve_fit_state() {
+        let mut canvas = Canvas::default();
+        let original = canvas.camera;
+        for camera in [
+            Camera { center: WorldPos::new(f64::NAN, 0.0), ..original },
+            Camera { center: WorldPos::new(0.0, f64::INFINITY), ..original },
+            Camera { zoom: f64::NAN, ..original },
+            Camera { zoom: 0.0, ..original },
+            Camera { zoom: crate::camera::MAX_ZOOM + 1.0, ..original },
+        ] {
+            assert!(canvas.set_manual_camera(camera).is_err());
+            assert_eq!(canvas.camera, original);
+            assert!(canvas.auto_fit && canvas.fit_pending);
+        }
+        for zoom in [crate::camera::MIN_ZOOM, 53.69680915111379, crate::camera::MAX_ZOOM] {
+            let camera = Camera { center: WorldPos::new(-33.25, 17.125), zoom };
+            canvas.set_manual_camera(camera).unwrap();
+            assert_eq!(canvas.camera, camera);
+            assert!(!canvas.auto_fit && !canvas.fit_pending);
+        }
+    }
+
+    #[test]
+    fn focus_world_retains_its_existing_minimum_zoom_semantics() {
+        let mut canvas = Canvas::default();
+        canvas.camera.zoom = 2.0;
+        canvas.focus_world(WorldPos::new(3.0, 4.0));
+        assert_eq!(canvas.camera, Camera { center: WorldPos::new(3.0, 4.0), zoom: 10.0 });
+        assert!(!canvas.auto_fit && !canvas.fit_pending);
+        canvas.camera.zoom = 50.0;
+        canvas.focus_world(WorldPos::new(7.0, 8.0));
+        assert_eq!(canvas.camera.zoom, 50.0);
+    }
 
     #[test]
     fn grid_step_follows_1_2_5() {

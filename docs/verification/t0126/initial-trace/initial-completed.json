@@ -1,0 +1,10 @@
+{
+  "pid": 3504424,
+  "selfclosed": true,
+  "binary_sha256": "4a78ff55e5eef121cda4e9d36d0d429bb12af2ac7e22758b23832fba9e2b236f",
+  "report_exists": true,
+  "trace_exists": true,
+  "runtime": "",
+  "utc": "2026-10-11T23:44:34.074455+00:00",
+  "scope": "Causal diagnostic only; pixel/provenance outcomes reported independently, no automatic pass inference"
+}
