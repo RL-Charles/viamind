@@ -238,7 +238,7 @@ impl ViamindApp {
 mod tests {
     use super::*;
     use egui_kittest::{Harness, kittest::Queryable};
-    use viamind_engine::{EngineHandle, Origin};
+    use viamind_engine::EngineHandle;
     fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
         h.get_by_label(label).scroll_to_me();
         h.run_steps(10);
@@ -326,7 +326,7 @@ mod tests {
         expected.board.parts.get_mut(&part.id).unwrap().holes = Some(holes);
         assert_eq!(after.project, expected);
         assert_eq!(after.cursor.sequence, before.cursor.sequence + 1);
-        e.undo(Origin::User).unwrap();
+        crate::actions::UiAction::Undo.run(&e, serde_json::json!({})).unwrap();
         assert_eq!(e.read(Clone::clone), before.project);
         h.state_mut().begin_edit_part_holes(part.clone());
         h.run_steps(5);
@@ -336,9 +336,11 @@ mod tests {
         h.state_mut().begin_edit_part_holes(part);
         h.run_steps(5);
         click(&mut h, "Explicit nonplated holes");
-        let peer = Origin::Agent { id: "hole peer".into() };
-        e.execute("add_part", serde_json::json!({"designator":"PEER121","value":"","footprint":"legacy","x_mm":1,"y_mm":2}), peer.clone()).unwrap();
-        e.undo(peer).unwrap();
+        // Another edit plus its undo restores equal design but advances the full cursor.
+        crate::actions::UiAction::PlacePart
+            .run(&e, serde_json::json!({"designator":"PEER121","value":"","footprint":"legacy","x_mm":1,"y_mm":2}))
+            .unwrap();
+        crate::actions::UiAction::Undo.run(&e, serde_json::json!({})).unwrap();
         let stale = e.session_state();
         click(&mut h, "Apply holes");
         assert_eq!(e.session_state(), stale);
