@@ -449,13 +449,25 @@ mod nonplated_hole_tests {
         }
         let scene = scene_from_project(&project);
         assert!(scene.bounds().max.x > 161.5);
+        let engine = viamind_engine::EngineHandle::new(project.clone());
+        let mut selection = crate::selection::Selection::default();
         let mut layers = crate::layers::LayerStack::pcb_default(2);
         let old = layers.len();
         layers.sync_courtyards(&scene);
         assert_eq!(layers.len(), old + 1);
         assert!(layers.get(LayerId::NONPLATED_HOLES).unwrap().visible);
+        selection.sync(&engine, &layers);
+        for part in project.board.parts.values() {
+            let bounds = selection.visible_bounds(part.id).expect("visible drill selects parent Part");
+            assert!(bounds.contains(viamind_geom::Point::from_mm(160.0, 20.0)));
+            assert!(selection.visible_bounds(part.holes.as_ref().unwrap()[0].id).is_none());
+        }
         layers.set_visible(LayerId::NONPLATED_HOLES, false);
         layers.sync_courtyards(&scene);
         assert!(!layers.get(LayerId::NONPLATED_HOLES).unwrap().visible);
+        selection.sync(&engine, &layers);
+        for part in project.board.parts.values() {
+            assert!(selection.visible_bounds(part.id).is_none());
+        }
     }
 }
