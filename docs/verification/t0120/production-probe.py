@@ -79,7 +79,12 @@ try:
  corrupt=out/'corrupt-release';shutil.copytree(out/'release',corrupt);file=corrupt/'fabrication/top-paste.gbr';old=file.read_bytes();file.write_bytes(old.replace(b'Paste,Top',b'Paste,Bot'));reject('inspect_output_release',{'path':str(corrupt)});check('same-length saved paste side corruption refuses independently',len(file.read_bytes())==len(old))
  check('all exports/jobs/inspection preserve full session/status',state()==before and status()==st)
  with StdioClient([str(binary),'--headless','--agent-read-only','--open',str(native)],out,timeout=60) as readonly:
-  readonly.initialize();names=discover(readonly);check('read-only admission hides setter but permits exact stored observation','set_pad_apertures'not in names and readonly.call('get_design')==before['project']);readonly.call('set_pad_apertures',guard(bottom,pad['id'],None),expect_error=True);check('forged setter blocked in restricted actual process',readonly.call('get_design')==before['project']);readonly.finish()
+  readonly.initialize();names=discover(readonly);check('read-only admission hides setter but permits exact stored observation','set_pad_apertures'not in names and readonly.call('get_design')==before['project'])
+  restricted_state=readonly.call('get_session_state');restricted_status=readonly.call('get_document_status')
+  try:readonly.call('set_pad_apertures',guard(bottom,pad['id'],None))
+  except ValueError as refusal:assert str(refusal)=='MCP protocol error during tools/call',str(refusal)
+  else:raise AssertionError('forged hidden setter must receive protocol denial')
+  check('forged setter receives protocol denial and preserves full restricted session/status',readonly.call('get_session_state')==restricted_state and readonly.call('get_document_status')==restricted_status);readonly.finish()
  env=dict(os.environ);env.pop('DISPLAY',None);env.pop('WAYLAND_DISPLAY',None);cli=out/'cli-paste';proc=subprocess.run([str(binary),'--open',str(native),'--export-gerber','--output',str(cli),'--include-paste','--include-silkscreen'],env=env,capture_output=True,text=True,timeout=60);check('actual no-display CLI shares exact stored paste files',proc.returncode==0 and all((cli/n).read_bytes()==(out/'paste'/n).read_bytes()for n in ['top-paste.gbr','bottom-paste.gbr']))
  report.update(passed=True,check_count=len(report['checks']),tool_count=len(tools),native=str(native),final_state=state(),final_status=status(),cli={'returncode':proc.returncode,'stdout':proc.stdout,'stderr':proc.stderr})
 finally:
