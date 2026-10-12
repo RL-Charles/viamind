@@ -1,0 +1,48 @@
+{
+ "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0128/viamind-662ee6c7",
+ "binary_sha256": "0f293eea6fc5851bee04ee503e915b9783c2928a1b196f3c8bedb8b18e8e1049",
+ "checks": [
+  "actual catalog advertises preview/apply plus unchanged straight-only import",
+  "preview schema requires explicit tolerance_nm",
+  "two initialized HTTP clients discover identical tools",
+  "owned fixture identity verified before HTTP mutation",
+  "text and path previews bind identical bytes, polygon and report",
+  "report certifies every chord within the explicit tolerance",
+  "report discloses ignored TEXT, polygon-only native result and Y convention",
+  "rounded board has two cutouts and exact odd-Nm circle start",
+  "previews preserve full session and document status",
+  "straight-only source through the new entry keeps legacy coordinates and zero sagitta",
+  "tolerance below 10 Nm refuses without mutation",
+  "both sources refuses without mutation",
+  "missing tolerance refuses without mutation",
+  "bulge above one refuses without mutation",
+  "unknown field refuses without mutation",
+  "directory instead of regular file refuses without mutation",
+  "unrelated edit after preview invalidates Apply by full cursor",
+  "source rewrite after preview refuses by digest and reparse",
+  "guarded Apply commits exactly one BoardOutline delta and one event",
+  "applied outline equals preview polygon and other objects are preserved",
+  "source file bytes are never written",
+  "peer reads the exact applied outline",
+  "peer cannot reuse the consumed preview",
+  "peer undo cannot reach creator history",
+  "identical geometry from a fresh preview is a guarded no-op",
+  "native save stores the polygon outline in the existing schema",
+  "creator undo restores the previous outline exactly",
+  "redo restores the applied polygon",
+  "existing DRC consumes the converted polygon"
+ ],
+ "endpoint": "http://127.0.0.1:7965/mcp",
+ "final_cursor": {
+  "sequence": 4,
+  "stream_id": "4c6a62a2-ebac-4c73-9b1d-513bab08e8f4"
+ },
+ "latency_ms": {
+  "apply_path": 4.079,
+  "preview_path": 5.702,
+  "preview_text": 5.315
+ },
+ "passed": true,
+ "restricted": false,
+ "source": "662ee6c7"
+}

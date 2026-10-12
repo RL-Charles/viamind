@@ -110,6 +110,8 @@ ui_actions! {
     SetFootprintArtwork => (viamind_engine::SetFootprintArtwork::NAME, input_schema::<viamind_engine::SetFootprintArtwork>(), set_footprint_artwork),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+    PreviewBoardOutlineDxf => (viamind_engine::dxf_outline::PREVIEW_TOOL, input_schema::<viamind_engine::PreviewBoardOutlineDxf>(), preview_board_outline_dxf),
+    ApplyBoardOutlineDxf => (viamind_engine::dxf_outline::APPLY_TOOL, input_schema::<viamind_engine::ApplyBoardOutlineDxf>(), apply_board_outline_dxf),
     PlanPadWalkaround => ("plan_pad_walkaround",input_schema::<viamind_engine::RoutePadWalkaround>(),plan_pad_walkaround),
     RoutePadWalkaround => (viamind_engine::RoutePadWalkaround::NAME,input_schema::<viamind_engine::RoutePadWalkaround>(),route_pad_walkaround),
     PlanPadViaWalkaround => ("plan_pad_via_walkaround",input_schema::<viamind_engine::RoutePadViaWalkaround>(),plan_pad_via_walkaround),
@@ -437,6 +439,18 @@ fn export_symbol_template(engine: &EngineHandle, input: Value) -> Result<Value, 
     serde_json::to_value(engine.export_symbol_template(serde_json::from_value(input).map_err(encode_error)?)?).map_err(encode_error)
 }
 
+fn dxf_input<T: serde::de::DeserializeOwned>(command: &str, input: Value) -> Result<T, EngineError> {
+    viamind_engine::preflight_dxf_outline_input(&input).map_err(|message| EngineError::InvalidInput { command: command.into(), message })?;
+    serde_json::from_value(input).map_err(|e| EngineError::InvalidInput { command: command.into(), message: e.to_string() })
+}
+fn preview_board_outline_dxf(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = dxf_input(viamind_engine::dxf_outline::PREVIEW_TOOL, input)?;
+    serde_json::to_value(engine.preview_board_outline_dxf(&input)?).map_err(encode_error)
+}
+fn apply_board_outline_dxf(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let input = dxf_input(viamind_engine::dxf_outline::APPLY_TOOL, input)?;
+    serde_json::to_value(engine.apply_board_outline_dxf(&input, Origin::User)?).map_err(encode_error)
+}
 fn preview_pcb_import(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     let input = serde_json::from_value(input).map_err(encode_error)?;
     serde_json::to_value(engine.preview_pcb_import(input)?).map_err(encode_error)

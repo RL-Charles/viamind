@@ -1,0 +1,16 @@
+{
+ "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0128/viamind-662ee6c7",
+ "binary_sha256": "0f293eea6fc5851bee04ee503e915b9783c2928a1b196f3c8bedb8b18e8e1049",
+ "checks": [
+  "restricted catalog keeps preview and hides both outline writers",
+  "preview schema requires explicit tolerance_nm",
+  "restricted mode keeps preview as an observation",
+  "restricted mode refuses hidden Apply at the protocol before any work",
+  "restricted refusal preserves full session and document status"
+ ],
+ "endpoint": null,
+ "latency_ms": {},
+ "passed": true,
+ "restricted": true,
+ "source": "662ee6c7"
+}

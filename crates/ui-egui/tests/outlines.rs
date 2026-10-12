@@ -5,11 +5,18 @@ use serde_json::json;
 use viamind_doc::Project;
 use viamind_engine::{EngineHandle, Origin};
 use viamind_ui_egui::ViamindApp;
+fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
+    // The outline form scrolls inside a viewport-bounded modal; reveal before pointer input.
+    h.get_by_label(label).scroll_to_me();
+    h.run_steps(5);
+}
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
+    reveal(h, label);
     h.get_by_label(label).click();
     h.run_steps(5);
 }
 fn input(h: &mut Harness<'_, ViamindApp>, label: &str, value: &str) {
+    reveal(h, label);
     h.get_by_label(label).focus();
     h.event(Event::Key { key: Key::A, physical_key: None, pressed: true, repeat: false, modifiers: Modifiers::COMMAND });
     h.run_steps(2);
