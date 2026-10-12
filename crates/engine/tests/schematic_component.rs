@@ -251,3 +251,26 @@ fn result_object_budget_is_checked_before_commit_and_preview() {
     assert!(e.execute_typed(command, Origin::User).is_err());
     assert_eq!(e.session_state(), before);
 }
+
+#[test]
+fn linked_creation_refuses_authored_hole_policy_without_silent_loss_or_mutation() {
+    for rows in [vec![], vec![viamind_doc::footprint_holes::FootprintHole { key: "mount".into(), center: Point::ORIGIN, diameter: Nm(1_000_001) }]] {
+        let e = fixture();
+        let mut req = request(&e, "U1");
+        let mut command = e.preview_schematic_pcb_component(req.clone()).unwrap().command;
+        req.placement.footprint.holes = Some(rows.clone());
+        command.placement.footprint.holes = Some(rows);
+        let before = e.session_state();
+        assert!(e.preview_schematic_pcb_component(req).unwrap_err().to_string().contains("Legacy holes"));
+        assert_eq!(e.session_state(), before);
+        assert!(e.execute_typed(command.clone(), Origin::User).unwrap_err().to_string().contains("Legacy holes"));
+        assert_eq!(e.session_state(), before);
+        assert!(
+            e.execute(CreateSchematicPcbComponent::NAME, serde_json::to_value(command).unwrap(), Origin::User)
+                .unwrap_err()
+                .to_string()
+                .contains("Legacy holes")
+        );
+        assert_eq!(e.session_state(), before);
+    }
+}
