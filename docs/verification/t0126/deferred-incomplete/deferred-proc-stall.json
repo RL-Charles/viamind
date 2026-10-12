@@ -1,0 +1,80 @@
+{
+  "utc": "2026-10-12T00:09:49.768827+00:00",
+  "pid": 3567262,
+  "cmdline": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/trace-9783c97/gpu_parity /home/charlesmowbray/.cache/viamind/native-artifacts/t0126/deferred-report.json --trace-dir /home/charlesmowbray/.cache/viamind/native-artifacts/t0126/deferred-pairs --defer-trace-io ",
+  "status": "Name:\tgpu_parity\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t3567262\nNgid:\t0\nPid:\t3567262\nPPid:\t4189\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t256\nGroups:\t966 998 1000 \nNStgid:\t3567262\nNSpid:\t3567262\nNSpgid:\t4189\nNSsid:\t4189\nKthread:\t0\nVmPeak:\t 1263012 kB\nVmSize:\t 1259892 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t  124632 kB\nVmRSS:\t  124080 kB\nRssAnon:\t   65656 kB\nRssFile:\t   58376 kB\nRssShmem:\t      48 kB\nVmData:\t  123776 kB\nVmStk:\t     144 kB\nVmExe:\t   19596 kB\nVmLib:\t  150512 kB\nVmPTE:\t     832 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t12\nSigQ:\t0/254937\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000000001000\nSigCgt:\t0000000100000440\nCapInh:\t0000000800000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t3fff\nCpus_allowed_list:\t0-13\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t647\nnonvoluntary_ctxt_switches:\t1236\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+  "tasks": [
+    {
+      "tid": 3567262,
+      "comm": "gpu_parity\n",
+      "wchan": "do_epoll_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567276,
+      "comm": "gpu_par:disk$0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567277,
+      "comm": "gpu_parity:sh0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567280,
+      "comm": "gpu_pa:traceq0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567281,
+      "comm": "gpu_pari:gdrv0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567283,
+      "comm": "gpu_par:disk$0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567286,
+      "comm": "gpu_pa:traceq0\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567297,
+      "comm": "gpu_parity\n",
+      "wchan": "poll_schedule_timeout.constprop.0",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567298,
+      "comm": "smithay-clipboa\n",
+      "wchan": "do_epoll_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567299,
+      "comm": "gpu_parity\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567300,
+      "comm": "blocking-1\n",
+      "wchan": "futex_do_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    },
+    {
+      "tid": 3567301,
+      "comm": "async-io\n",
+      "wchan": "do_epoll_wait",
+      "stack_error": "[Errno 13] Permission denied"
+    }
+  ]
+}

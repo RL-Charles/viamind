@@ -1,0 +1,33 @@
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 1.02s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 7.81s
+     Running unittests examples/gpu_parity.rs (/home/charlesmowbray/.cache/viamind/native-benchmark-target/release/examples/gpu_parity-317c025d33a8aa9b)
+
+running 8 tests
+test parity_trace::tests::raw_capture_refuses_overflow_extent_and_aggregate_before_copy ... ok
+test parity_trace::tests::cumulative_metadata_refuses_before_retaining_or_serializing_more ... ok
+headless case 0: (Camera { center: WorldPos { x: 82.95, y: 53.95 }, zoom: 6.357615894039736 }, [[288.0 31.0] - [1392.0 969.0]], 5002)
+test parity_trace::tests::navigation_observations_refuse_excess_events_and_never_retain_text ... ok
+headless case 1: (Camera { center: WorldPos { x: 85.93854166666667, y: 51.905208333333334 }, zoom: 6.357615894039736 }, [[288.0 31.0] - [1392.0 969.0]], 5002)
+headless case 2: (Camera { center: WorldPos { x: 85.93854166666667, y: 51.905208333333334 }, zoom: 6.357615894039736 }, [[288.0 31.0] - [1392.0 969.0]], 4665)
+test parity_trace::tests::deferred_abort_flushes_prior_pixels_and_raw_budget_refuses_before_retention ... ok
+headless case 3: (Camera { center: WorldPos { x: 85.93854166666667, y: 51.905208333333334 }, zoom: 6.611920529801325 }, [[288.0 31.0] - [1392.0 969.0]], 4625)
+test parity_trace::tests::multiple_screenshots_and_repeated_pass_token_cannot_be_silently_accepted ... ok
+headless case 4: (Camera { center: WorldPos { x: 33.786203442340195, y: 25.388546674679485 }, zoom: 52.8953642384106 }, [[288.0 31.0] - [1392.0 969.0]], 608)
+
+thread 'tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation' (3546534) panicked at crates/ui-egui/examples/gpu_parity.rs:289:9:
+assertion failed: (states[4].0.zoom - 53.69680915111379).abs() < 1e-10
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation ... FAILED
+test parity_trace::tests::mismatched_pair_extents_are_retained_and_refused_before_legacy_indexing ... ok
+test parity_trace::tests::deferred_capture_retains_shared_pixels_without_files_until_finish_and_releases_them ... ok
+
+failures:
+
+failures:
+    tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+error: test failed, to rerun pass `-p viamind-ui-egui --example gpu_parity`

@@ -1,0 +1,10 @@
+{
+  "scope": "Read-only pinned source audit, not runtime cause proof",
+  "gpu_pixel_ownership": "egui-wgpu0.36.2 capture.rs drops mapped range and unmaps buffer before sending a standalone ColorImage; winit.rs wraps returned ColorImage in Arc. Retaining screenshot Arc does not retain mapped GPU buffer.",
+  "callback_budget": "Check::ui invokes180s budget on UI callback only; stalled UI cannot invoke it. External210s watchdog was necessary and timed out.",
+  "repaint": "Check::ui calls request_repaint after every completed pass. Pinned eframe native run.rs filters stale cumulative-pass RequestRepaint and waits redraw/compositor. No stack/runtime event evidence identifies this path as cause.",
+  "runtime_observation": "Exact-window screenshot visible zoom6.712/count4624/5002 corresponds case3 state; cannot establish internal legacy step, waiting request or cause.",
+  "debugger": "One bounded non-elevated debugger attach refused; no stack obtained. TracerPid0 verified; owned process retired after exact executable/starttime revalidation.",
+  "renderer_change": false,
+  "native_relaunch": false
+}

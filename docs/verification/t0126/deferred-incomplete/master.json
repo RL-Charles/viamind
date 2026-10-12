@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "ticket": "T-0126",
+  "utc": "2026-10-12T00:12:16.153756+00:00",
+  "source": "9783c974b83f42938408e9f0d4b85761665eabd5",
+  "approved_spec": "96e10124483456624180bdf7b633264837f2f2e0",
+  "binary_sha256": "7183877eb4d1bf1914b59ad7be34f983ba02b973856dfea135998f5bd6a4d287",
+  "gate": "Scoped fmt/release strict example lint/eight example tests/release example build PASS; no workspace gate claim",
+  "headless": "Actual unwrapped root fivecase viewport/cameras/counts exact initial native trace; one pixel resize resets direct navigation. This is a controlled risk regression, not historical causality.",
+  "attempt": "Exactly one admitted deferred-I/O comparison, PID3567262, actual1400x1000,210s watchdog incomplete; no pixels or terminal trace flushed; created report remains empty. No parity/FPS/native closure or renderer defect claim.",
+  "retirement": "No debugger stack permitted; only ownedPID exact source hash/starttime revalidated before SIGTERM; absent after boundedwait. No relaunch.",
+  "historical_failure": "UNRESOLVED",
+  "acceptance": "Causal correction/fivecase closure and T20strict60fps remain OPEN",
+  "artifacts": [
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/binary-provenance.json",
+      "sha256": "09b1a42ea70fc6fda6de89dbd6fc4280dd8aa1d3d16984f86533a8c85d235805",
+      "bytes": 496
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-capture-ready.json",
+      "sha256": "48789df6340e9722808bb4cbb302e9bab663dbbb8e9436975f696faac673faba",
+      "bytes": 404
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-launch.json",
+      "sha256": "d358dfb6fb873514e0fd9b913ffc58ad81bcda81dde8e6fffa7cc97bdbd7203a",
+      "bytes": 579
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-orchestrator.log",
+      "sha256": "68115a6832d65879c701772413ff1d7393607ed20a73b66862ee55ef611c9b88",
+      "bytes": 418
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-proc-stall.json",
+      "sha256": "48792489e8193b4bb3abcde640ea6c5e457d650cfb7b471015cc2c2ddd4dcdc6",
+      "bytes": 3879
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-quiet-ready.json",
+      "sha256": "d852d2c18fee1de0d484e8927f1abfc5cca6bb24dd0ed445fe653786110ab73c",
+      "bytes": 498
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-report.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-retirement.json",
+      "sha256": "c7285fe42ca2c33b4e36014d766cb377a07e4597961a51f00dca93a2a0d18c5c",
+      "bytes": 683
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-runtime.log",
+      "sha256": "b8e126643c634a5c25aafa8c39e07619cdfc59081fe411f3ad77d8c232b293bd",
+      "bytes": 177
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-stall-cua-metadata.json",
+      "sha256": "3c3989a2a701975c9a8aaaeb4da9e8e3175ff378fe4625a28bb369ee78e18995",
+      "bytes": 1140
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-stall-cua.png",
+      "sha256": "6e1738cafa334c9cd7a08448db697702504bfe3d9ca1a263ab37e34f02a478e8",
+      "bytes": 486449
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-stall-gdb.log",
+      "sha256": "b446ca39dbd9f2e3b8e3687d8f86c7418425032cecda5ea3970030accc930db0",
+      "bytes": 63
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-system.json",
+      "sha256": "a02a68e5e913403abf7fa601ced7350ebbd4c1d176d06479363c8f3d44fe9525",
+      "bytes": 1592
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/deferred-timeout.json",
+      "sha256": "bb0728c515df7c5bffdf7a9721ffeb634ef465d3e8758763ed804b4e70a11da4",
+      "bytes": 1213
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/run-deferred-trace.py",
+      "sha256": "41eb18a76006a206e6d21999da9295d57102ef5de6324958710acd5e07e9413f",
+      "bytes": 2955
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/source-audit.json",
+      "sha256": "7143359d70f8781c1dbdf90d67687bf994f3f9c5252867cb0ad782e69414b1d8",
+      "bytes": 1109
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/trace-gate4.log",
+      "sha256": "b6683ea78961ff2d16fd17211c45aa606f9a729b9b13413f18a1c6c074cf0043",
+      "bytes": 892
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/trace-gate5.log",
+      "sha256": "2d1d67dbee154de5405b1bf86ead81dbc0ff80cca1253b2265dcfbe55931066c",
+      "bytes": 2038
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/trace-gate6.log",
+      "sha256": "436f071e8a1fd396c94cdca6548087b37f215ea1167ca02fc271259cbc2f7462",
+      "bytes": 2709
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/trace-gate7.log",
+      "sha256": "ad488aaf69a2a3e44280121a7a087fd192b6f6b1aaa62d27eea40822c3cbcfb2",
+      "bytes": 2488
+    },
+    {
+      "path": "docs/verification/t0126/deferred-incomplete/trace-gate7.sh",
+      "sha256": "5309dc2fa9a2fb9c0f50a14c29ef74dcbe2dc45ade2d0223336c68c05ff02b89",
+      "bytes": 1649
+    }
+  ]
+}
