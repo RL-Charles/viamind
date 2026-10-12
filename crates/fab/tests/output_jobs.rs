@@ -68,7 +68,7 @@ fn release_is_coherent_byte_identical_and_never_clobbers() {
     }
     let fab = viamind_fab::fabrication(
         &original,
-        FabricationOptions { mask_expansion_mm: job().mask_expansion_mm, include_silkscreen: false, include_paste: false },
+        FabricationOptions { mask_expansion_mm: job().mask_expansion_mm, include_silkscreen: false, include_paste: false, include_npth: false },
     )
     .unwrap();
     for (name, data) in fab.files {
@@ -204,7 +204,7 @@ fn checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_boa
     assert_eq!(fs::read(path.join("validation/drc.json")).unwrap(), b"{\"trusted_test_callback\":true}\n");
     for (name, bytes) in viamind_fab::fabrication(
         &original,
-        FabricationOptions { mask_expansion_mm: job.mask_expansion_mm, include_silkscreen: false, include_paste: false },
+        FabricationOptions { mask_expansion_mm: job.mask_expansion_mm, include_silkscreen: false, include_paste: false, include_npth: false },
     )
     .unwrap()
     .files

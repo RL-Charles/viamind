@@ -13,6 +13,7 @@ pub struct FabricationUi {
     mask: String,
     include_silkscreen: bool,
     include_paste: bool,
+    include_npth: bool,
     worker: Option<Receiver<Result<Value, String>>>,
     message: Option<String>,
     result: Option<Value>,
@@ -37,6 +38,7 @@ impl FabricationUi {
             mask_expansion_mm: mask,
             include_silkscreen: self.include_silkscreen,
             include_paste: self.include_paste,
+            include_npth: self.include_npth,
             expected_cursor: Some(cursor),
         })
         .map_err(|e| e.to_string())
@@ -116,6 +118,7 @@ pub(crate) fn export_fabrication(engine: &EngineHandle, input: Value) -> Result<
                 mask_expansion_mm: input.mask_expansion_mm,
                 include_silkscreen: input.include_silkscreen,
                 include_paste: input.include_paste,
+                include_npth: input.include_npth,
             },
             &input.path,
             native.as_deref(),
@@ -154,6 +157,7 @@ impl ViamindApp {
                 ui.label("Default 0 mm: mask opening equals pad; all vias untented. Export X right/Y up; common top view.");
                 ui.checkbox(&mut self.fabrication.include_silkscreen, "Include stored silkscreen Legend files");
                 ui.checkbox(&mut self.fabrication.include_paste, "Include explicitly stored pad paste openings");
+                ui.checkbox(&mut self.fabrication.include_npth, "Include circular nonplated through-hole drill file");
                 ui.label("Legend exports stored straight strokes only; no text, clipping or courtyard checks.");
                 export = ui.button("Export fabrication snapshot").clicked();
             });
