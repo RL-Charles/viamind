@@ -170,3 +170,48 @@ fn actual_compact_detached_policy_fields_publish_library3_without_applying_to_de
     assert_eq!(h.state().footprint_definition.definition().unwrap(), expected);
     assert_eq!(engine.session_state(), before);
 }
+
+#[test]
+fn actual_detached_opening_text_identity_and_cursor_survive_earlier_pad_removal() {
+    let engine = EngineHandle::new(viamind_doc::Project::new("Keep detached identity"));
+    let before = engine.session_state();
+    let status = engine.document_status();
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("source.json");
+    let policy = serde_json::json!({"mask":{"width":1300005,"height":900003},"paste":{"width":1100001,"height":700003}});
+    let definition = serde_json::json!({"name":"Two independent pads","pads":[
+        {"number":"1","position":{"x":-2000000,"y":0},"width":1200003,"height":800001,"apertures":policy},
+        {"number":"2","position":{"x":2000000,"y":0},"width":1200003,"height":800001,"apertures":policy}]});
+    viamind_ui_egui::actions::UiAction::SaveFootprintDefinition.run(&engine, serde_json::json!({"path":path,"footprint":definition})).unwrap();
+    let mut app = ViamindApp::with_design(engine.clone(), None);
+    app.begin_footprint_definition();
+    let mut h = Harness::builder().with_size(egui::vec2(640., 400.)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
+    h.run_steps(6);
+    input(&mut h, "Native footprint source path", path.to_str().unwrap());
+    click(&mut h, "Load native footprint definition");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while h.state().footprint_definition.busy() && std::time::Instant::now() < deadline {
+        h.run_steps(2);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+    h.run_steps(5);
+    click(&mut h, "Edit definition pad 2 openings");
+    input(&mut h, "Paste height", "0.700009");
+    let id = h.get_by_label("Paste height").accesskit_node().id();
+    let focused = h.ctx.memory(egui::Memory::focused).unwrap();
+    // Save the actual text cursor selection, not only an accesskit identity.
+    let selection = egui::TextEdit::load_state(&h.ctx, focused).unwrap().cursor.char_range();
+    click(&mut h, "Remove definition pad 1");
+    reveal(&mut h, "Paste height");
+    h.get_by_label("Paste height").focus();
+    h.run_steps(3);
+    assert_eq!(h.get_by_label("Paste height").accesskit_node().id(), id);
+    assert_eq!(h.ctx.memory(egui::Memory::focused), Some(focused));
+    assert_eq!(egui::TextEdit::load_state(&h.ctx, focused).unwrap().cursor.char_range(), selection);
+    let value = h.state().footprint_definition.definition().unwrap();
+    assert_eq!(value.pads.len(), 1);
+    assert_eq!(value.pads[0].number, "2");
+    assert_eq!(value.pads[0].apertures.as_ref().unwrap().paste.unwrap().height.0, 700009);
+    assert_eq!(engine.session_state(), before);
+    assert_eq!(engine.document_status(), status);
+}

@@ -404,3 +404,67 @@ mod artwork_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod aperture_tests {
+    use super::*;
+    use viamind_doc::{ApertureRect, ObjectId, Pad, PadApertures, Pads};
+    use viamind_geom::{Nm, Point};
+    #[test]
+    fn aperture_native_corners_match_independent_doubled_nm_oracle_on_all_cardinal_sides() {
+        for side in [Side::Top, Side::Bottom] {
+            for (angle, quarter) in [(0, 0), (90000, 1), (180000, 2), (270000, 3)] {
+                let mut part = super::tests::part("EXPLICIT", angle, side);
+                part.pads = Some(
+                    Pads::try_from(vec![Pad {
+                        id: ObjectId::new(),
+                        number: "1".into(),
+                        position: Point::new(Nm(3), Nm(5)),
+                        width: Nm(7),
+                        height: Nm(11),
+                        net: None,
+                        apertures: None,
+                    }])
+                    .unwrap(),
+                );
+                let legacy = part_items(&part);
+                let copper = legacy.iter().find(|i| matches!(i.layer, LayerId::F_CU | LayerId::B_CU)).unwrap().prim;
+                assert_eq!(legacy.iter().filter(|i| matches!(i.layer, LayerId::F_PASTE | LayerId::B_PASTE)).count(), 0);
+                part.pads.as_mut().unwrap().0[0].apertures = Some(PadApertures {
+                    mask: Some(ApertureRect { width: Nm(13), height: Nm(17) }),
+                    paste: Some(ApertureRect { width: Nm(5), height: Nm(9) }),
+                });
+                let explicit = part_items(&part);
+                assert_eq!(explicit.iter().find(|i| matches!(i.layer, LayerId::F_CU | LayerId::B_CU)).unwrap().prim, copper);
+                for (layer, w, h) in [
+                    (if side == Side::Top { LayerId::F_MASK } else { LayerId::B_MASK }, 13, 17),
+                    (if side == Side::Top { LayerId::F_PASTE } else { LayerId::B_PASTE }, 5, 9),
+                ] {
+                    let Prim::Quad(corners) = explicit.iter().find(|i| i.layer == layer).unwrap().prim else { panic!("actual opening quad") };
+                    // Independent integer oracle: center and edges are doubled before mirror/rotation.
+                    let expected = [(6 - w, 10 - h), (6 + w, 10 - h), (6 + w, 10 + h), (6 - w, 10 + h)].map(|(mut x, y)| {
+                        if side == Side::Bottom {
+                            x = -x;
+                        }
+                        let (x, y) = match quarter {
+                            0 => (x, y),
+                            1 => (y, -x),
+                            2 => (-x, -y),
+                            _ => (-y, x),
+                        };
+                        (10.0 + f64::from(x) / 2_000_000.0, 20.0 + f64::from(y) / 2_000_000.0)
+                    });
+                    for (actual, (x, y)) in corners.into_iter().zip(expected) {
+                        assert!((actual.x - x).abs() < 1e-12 && (actual.y - y).abs() < 1e-12);
+                    }
+                }
+                part.pads.as_mut().unwrap().0[0].apertures = Some(PadApertures { mask: None, paste: None });
+                assert!(
+                    part_items(&part).iter().all(|i| !matches!(i.layer, LayerId::F_MASK | LayerId::B_MASK | LayerId::F_PASTE | LayerId::B_PASTE))
+                );
+                part.pads.as_mut().unwrap().0[0].apertures = None;
+                assert_eq!(part_items(&part), legacy, "restoring Legacy retains every original native primitive byte/value");
+            }
+        }
+    }
+}
