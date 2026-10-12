@@ -24,6 +24,8 @@ pub struct FabricationOptions {
     pub include_silkscreen: bool,
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_paste: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_npth: bool,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -41,6 +43,8 @@ pub struct FabricationExportRequest<C> {
     pub include_silkscreen: bool,
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_paste: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_npth: bool,
     #[serde(default)]
     pub expected_cursor: Option<C>,
 }
@@ -64,6 +68,7 @@ pub fn fabrication_schema() -> Value {
         "mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},
         "include_silkscreen":{"type":"boolean","default":false},
         "include_paste":{"type":"boolean","default":false},
+        "include_npth":{"type":"boolean","default":false},
         "expected_cursor":{"type":["object","null"],"additionalProperties":false,"required":["stream_id","sequence"],"properties":{
             "stream_id":{"type":"string","format":"uuid"},"sequence":{"type":"integer","minimum":0}
         }}
@@ -72,6 +77,8 @@ pub fn fabrication_schema() -> Value {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FabricationManifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub nonplated_holes: Option<NonplatedHoleSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pad_apertures: Option<PadApertureSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -86,6 +93,17 @@ pub struct FabricationManifest {
     pub cutout_count: usize,
     pub files: Vec<String>,
     pub exclusions: Vec<String>,
+}
+
+/// Mechanical intent counts; absent data is not an inspection or clearance certificate.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct NonplatedHoleSummary {
+    pub include_npth: bool,
+    pub authored_components: usize,
+    pub explicit_empty_components: usize,
+    pub physical_drills: usize,
+    pub tool_diameters: usize,
 }
 
 /// Explicit opening coverage; no stencil or manufacturer suitability claim.
@@ -226,6 +244,40 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     if !options.mask_expansion_mm.is_finite() || !(0.0..=10.0).contains(&options.mask_expansion_mm) {
         return Err(invalid("mask_expansion_mm must be finite and between 0 and 10 mm"));
     }
+    viamind_doc::footprint_holes::preflight_project(project, None).map_err(invalid)?;
+    let mut hole_summary = NonplatedHoleSummary {
+        include_npth: options.include_npth,
+        authored_components: 0,
+        explicit_empty_components: 0,
+        physical_drills: 0,
+        tool_diameters: 0,
+    };
+    // Refuse authored intent without its independent output before allocating tools/graphics.
+    for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            if !options.include_npth {
+                return Err(invalid("authored nonplated holes require include_npth=true, including explicit empty hole sets"));
+            }
+            hole_summary.authored_components += 1;
+            hole_summary.explicit_empty_components += usize::from(holes.is_empty());
+            hole_summary.physical_drills = hole_summary.physical_drills.saturating_add(holes.len());
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(invalid)?;
+        }
+    }
+    let mut npth = BTreeMap::new();
+    if options.include_npth {
+        for part in project.board.parts.values() {
+            for hole in part.holes.iter().flatten() {
+                let resolved = viamind_doc::footprint_holes::resolve_hole(part, hole).map_err(invalid)?;
+                let position = point(resolved.center)?;
+                if !npth.contains_key(&resolved.diameter.0) && npth.len() == 99 {
+                    return Err(invalid("XNC supports at most99 distinct nonplated drill diameters"));
+                }
+                npth.entry(resolved.diameter.0).or_insert_with(Vec::new).push((part.id, hole.id, position));
+            }
+        }
+    }
+    hole_summary.tool_diameters = npth.len();
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("fabrication export requires an explicit board outline"))?;
     let mut pads = 0usize;
     let mut aperture_summary = PadApertureSummary {
@@ -298,7 +350,7 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
         .saturating_add(project.board.tracks.len())
         .saturating_add(project.board.vias.len().saturating_mul(5))
         .saturating_add(outline.rings().map(|r| r.points.len()).sum::<usize>());
-    let objects = objects.saturating_add(artwork_primitives);
+    let objects = objects.saturating_add(artwork_primitives).saturating_add(hole_summary.physical_drills);
     if objects > MAX_OBJECTS {
         return Err(invalid("fabrication export supports at most 200000 primitives"));
     }
@@ -406,7 +458,29 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     }
     drill.push_str("M30\n");
     files.insert("plated-through.xnc".into(), drill);
-    let mut manifest=FabricationManifest { pad_apertures: (options.include_paste || aperture_summary.explicit_pads > 0).then_some(aperture_summary), footprint_artwork: (options.include_silkscreen || artwork.explicit_components > 0).then_some(artwork), project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    if options.include_npth {
+        let mut output = format!(
+            "; Viamind circular nonplated through holes, aligned top view\n; #@! TF.FileFunction,NonPlated,1,2,NPTH\n; #@! TF.SameCoordinates,{id}\nM48\nMETRIC\n"
+        );
+        for (i, diameter) in npth.keys().enumerate() {
+            writeln!(output, "T{:02}C{}", i + 1, decimal(*diameter, 6)).unwrap();
+        }
+        output.push_str("%\nG05\n");
+        for (i, positions) in npth.values_mut().enumerate() {
+            positions.sort_by_key(|(part, hole, _)| (*part, *hole));
+            writeln!(output, "T{:02}", i + 1).unwrap();
+            for &(_, _, (x, y)) in positions.iter() {
+                writeln!(output, "X{}Y{}", decimal(x, 6), decimal(y, 6)).unwrap();
+            }
+        }
+        output.push_str("M30\n");
+        files.insert("nonplated-through.xnc".into(), output);
+    }
+    let mut manifest=FabricationManifest { nonplated_holes: options.include_npth.then_some(hole_summary), pad_apertures: (options.include_paste || aperture_summary.explicit_pads > 0).then_some(aperture_summary), footprint_artwork: (options.include_silkscreen || artwork.explicit_components > 0).then_some(artwork), project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    if options.include_npth {
+        manifest.exclusions[1] = manifest.exclusions[1].replace("component through holes/slots", "plated component through holes/slots");
+        manifest.exclusions.push("Circular nonplated holes use explicit component geometry on both sides; absent hole policy is uninspected intent. No slots, drill suitability, material or manufacturer verification.".into());
+    }
     if options.include_paste {
         manifest.exclusions[1] = manifest.exclusions[1].replace("paste, ", "");
         manifest.exclusions.push("Paste uses only explicitly stored pad rectangles; legacy pads have no inferred paste. All vias remain untented with no paste. No stencil suitability checks.".into());

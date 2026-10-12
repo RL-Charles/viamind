@@ -113,7 +113,7 @@ fn compact_form_full_cursor_live_mcp_bytes_and_collision_native_errors_are_acces
     let actual = files(&output);
     let expected = viamind_fab::fabrication(
         &before.project,
-        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false },
+        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false, include_npth: false },
     )
     .unwrap();
     assert_eq!(actual, expected.files.into_iter().map(|(k, v)| (k, v.into_bytes())).collect());

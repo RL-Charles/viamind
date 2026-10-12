@@ -12,10 +12,19 @@ fn sample() -> Project {
 fn exact_geometry_attributes_units_and_deterministic_output() {
     let _guard = TEST.lock().unwrap();
     let project = sample();
-    let package = fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false }).unwrap();
+    let package = fabrication(
+        &project,
+        FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false, include_npth: false },
+    )
+    .unwrap();
     assert_eq!(
         package.files,
-        fabrication(&project, FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false }).unwrap().files
+        fabrication(
+            &project,
+            FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false, include_npth: false }
+        )
+        .unwrap()
+        .files
     );
     assert_eq!(package.manifest.smd_pad_count, 3);
     assert_eq!(package.manifest.cutout_count, 1);
@@ -51,7 +60,7 @@ fn invalid_or_unsupported_model_produces_no_destination_or_staging() {
         assert!(
             write_fabrication(
                 &sample(),
-                FabricationOptions { mask_expansion_mm: mask, include_silkscreen: false, include_paste: false },
+                FabricationOptions { mask_expansion_mm: mask, include_silkscreen: false, include_paste: false, include_npth: false },
                 &target,
                 None
             )
