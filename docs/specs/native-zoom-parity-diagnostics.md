@@ -88,6 +88,16 @@ case, replace an arrival, recapture after a mismatch or change fixture geometry.
   image, repeated token, dimension/state mismatch or incomplete provenance
   aborts with raw evidence and an actionable bounded report. No automatic
   recapture. Preserve existing legacy trace observations of invalid state.
+  Hardened request dimensions are recovered from the unrounded full root
+  `InputState::viewport_rect()` multiplied by effective pixels per point,
+  matching pinned egui-winit's window-inner-size/PPP input and egui-wgpu's
+  full surface capture. Safe-area content bounds and UI-rounded rectangles
+  are not texture dimensions. Refuse nonfinite, empty, nonlocal, out-of-budget
+  or precision-ambiguous integer recovery before requesting. Retain the
+  bounded expected pixel pair in hardened state only; each arriving image
+  must match it even when both images have equal wrong dimensions. Preserve
+  raw mismatch receipts before refusal. Fractional-DPI/safe-area and both
+  larger/smaller pair regressions cover this distinction.
 - Treat navigation input as experimental contamination. Refuse wheel/pinch,
   Home navigation and middle-button or Space-drag navigation before changing
   the next case/request; include only existing fixed numeric input counters.
