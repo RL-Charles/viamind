@@ -223,14 +223,47 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
     let mut bom = None;
     let mut fab_manifest = None;
     let mut opening_budget = FabricationReadBudget::default();
+    let mut observed_npth = None;
+    let mut observed_plated = None;
+    let mut semantic_bytes = 0usize;
     let mut observed_openings = (job.include_paste == Some(true)).then(ObservedPadOpenings::default);
     for name in manifest.files.keys().filter(|name| name.as_str() != "job.json") {
         let openings = observed_openings.is_some() && opening_layer(name).is_some();
-        let parsed = openings || matches!(name.as_str(), CALIBRATED | POPULATED | "fabrication/manifest.json");
-        let byte_cap = if openings { MAX_FILE_BYTES } else { cap(name) };
+        let drill_file =
+            job.include_npth == Some(true) && matches!(name.as_str(), "fabrication/nonplated-through.xnc" | "fabrication/plated-through.xnc");
+        let parsed = openings || drill_file || matches!(name.as_str(), CALIBRATED | POPULATED | "fabrication/manifest.json");
+        if openings || drill_file {
+            let size = usize::try_from(files[name].metadata.len()).map_err(|_| invalid("fabrication semantic size overflow"))?;
+            semantic_bytes = semantic_bytes
+                .checked_add(size)
+                .filter(|n| *n <= viamind_doc::fabrication_view::MAX_TOTAL_BYTES)
+                .ok_or_else(|| invalid("fabrication semantic inspection exceeds16MiB aggregate"))?;
+        }
+        let byte_cap = if openings || drill_file { MAX_FILE_BYTES } else { cap(name) };
         let bytes = read(files.get_mut(name).expect("opened fixed path"), byte_cap, parsed)?;
         if openings {
             inspect_openings(&bytes, name, manifest.project_id, &mut opening_budget, observed_openings.as_mut().expect("job5"))?;
+        }
+        if drill_file {
+            let text = std::str::from_utf8(&bytes).map_err(|e| invalid(e.to_string()))?;
+            if name == "fabrication/nonplated-through.xnc" {
+                let (geometry, tools) = viamind_doc::fabrication_view::parse_nonplated_xnc(text, &mut opening_budget).map_err(invalid)?;
+                if geometry.same_coordinates != Some(manifest.project_id) {
+                    return Err(invalid("NPTH SameCoordinates differs from release"));
+                }
+                observed_npth = Some(ObservedNonplatedHoles {
+                    physical_drills: geometry.primitives.len(),
+                    tool_diameters: tools,
+                    same_coordinates: manifest.project_id,
+                    plated_via_drills: 0,
+                });
+            } else {
+                let geometry = viamind_doc::fabrication_view::parse_xnc(text, &mut opening_budget).map_err(invalid)?;
+                if geometry.layer != FabricationLayer::Drill {
+                    return Err(invalid("plated file has nonplated geometry"));
+                }
+                observed_plated = Some(geometry.primitives.len());
+            }
         }
         match name.as_str() {
             CALIBRATED => placement = Some(bytes),
@@ -245,6 +278,17 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
     }
     if let Some(observed) = &observed_openings {
         match_openings(observed, fab_manifest.as_ref().expect("required fabrication manifest"))?;
+    }
+    if let Some(observed) = &mut observed_npth {
+        let fab = fab_manifest.as_ref().expect("required fabrication manifest");
+        let summary = fab.nonplated_holes.as_ref().expect("required job6 summary");
+        observed.plated_via_drills = observed_plated.ok_or_else(|| invalid("missing plated drill observation"))?;
+        if observed.physical_drills != summary.physical_drills
+            || observed.tool_diameters != summary.tool_diameters
+            || observed.plated_via_drills != fab.through_via_count
+        {
+            return Err(invalid("independent NPTH/plated tool or drill counts differ from release summary"));
+        }
     }
     let matched = if let Some(cal) = &manifest.calibrated_placement {
         csv::inspect(
@@ -276,7 +320,12 @@ fn inspect_with(input: &InspectOutputRelease, before_final: impl FnOnce()) -> io
             "No geometry equality, copper/profile/Legend Gerber, XNC/legacy assembly/validation semantic or DRC recomputation".into();
         checks_not_performed[2] = "No vendor/manufacturing/stock acceptance or component electrical polarity checks".into();
     }
+    if observed_npth.is_some() {
+        checks_performed.push("For job6: independently parsed nonplated through span, common coordinates, unique tools/diameters and NPTH/plated drill counts under shared fabrication read budgets".into());
+        checks_not_performed[1]="No original geometry equality, copper/profile/Legend Gerber, legacy assembly/validation semantic or DRC recomputation; plated XNC has unverified common origin".into();
+    }
     Ok(ReleaseInspection {
+        observed_nonplated_holes: observed_npth,
         observed_pad_openings: observed_openings,
         path,
         format: manifest.format,
