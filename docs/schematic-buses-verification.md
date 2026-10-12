@@ -36,6 +36,20 @@ exclusion note are omitted. Default output for every pre-bus sheet is therefore 
 the pre-bus renderer; `crates/render/tests/schematic_buses.rs` compares against an SVG exported by
 the retained main binary (`fixtures/views/legacy-oracle/schematic-default-c92d3ae8.svg`).
 
+## Results (source fb05911c)
+
+| Check | Result |
+| --- | --- |
+| fmt, strict all-target Clippy, workspace build | pass (`docs/verification/t0127/final/final3.log`) |
+| Workspace tests | 1104 passed, 0 failed, 1 ignored (246 suites) |
+| MCP catalog / workflow | exact, 127 tools / 18 checks |
+| Production stdio (Live, Approval, ReadOnly) | 38 checks pass |
+| Desktop HTTP, two initialized same-name clients, port 7964 | 53 checks pass (stdio + 15 HTTP) |
+| Native WGPU captures | 1600x1000 and 640x400, original RGBA retained |
+
+Earlier failed runs (final1 inherited-test failures, native helper failures before capture) are kept
+in the index with their corrections.
+
 ## Verification limits
 
 No implicit bus conductivity, aliases, hierarchy or hierarchical bus ports, bus ERC/DRC, PCB

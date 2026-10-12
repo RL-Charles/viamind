@@ -1,0 +1,139 @@
+fad6e697ac37f580877ffff4c33b94a50a81aa34
+ M apps/viamind/src/cli.rs
+ M crates/doc/src/footprint_holes.rs
+ M crates/doc/tests/footprint_holes.rs
+ M crates/engine/src/part_holes.rs
+ M crates/engine/src/schematic_budget.rs
+ M crates/engine/src/schematic_drag.rs
+ M crates/engine/tests/part_holes.rs
+ M crates/render/src/schematic.rs
+ M crates/render/tests/schematic_buses.rs
+?? fixtures/views/legacy-oracle/
+?? scripts/__pycache__/
+Mon Oct 12 03:15:35 AM UTC 2026
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.99s
+     Running tests/footprint_holes.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_holes-d79a80e0c64f5186)
+
+running 9 tests
+test local_geometry_keys_ids_and_odd_half_edges_have_checked_boundaries ... ok
+test eight_independent_cardinal_mirror_oracles_and_computed_arbitrary_quantization ... ok
+test library4_presence_strict_rows_and_max_composition_preserve_old_bytes ... ok
+test physical_identity_admission_rejects_global_collisions_without_choosing_a_pose_policy ... ok
+test absent_null_and_explicit_empty_preserve_distinct_native_intent_and_max_versions ... ok
+test strict_rows_centers_duplicates_and_max_plus_one_poison_are_rejected ... ok
+test physical_identity_admission_includes_explicit_bus_and_entry_namespace ... ok
+test global_collisions_refuse_and_padless_analysis_copies_retain_physical_drills ... ok
+test activated_combined_identity_and_key_budgets_precede_invalid_geometry ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.59s
+
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.56s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_doc-f18b61220e93c6c7)
+
+running 6 tests
+test schematic_bus::tests::malformed_duplicate_overflow_and_range_refuse_without_expansion ... ok
+test schematic_bus::tests::independently_declared_order_unicode_and_prefix_oracles ... ok
+test schematic_bus::tests::exact_breakout_association_and_nonconducting_ids_validate ... ok
+test schematic_bus::tests::version_sixteen_and_absent_legacy_bytes_and_global_namespace ... ok
+test schematic_bus::tests::borrowed_max_plus_one_precedes_field_poison_and_global_index ... ok
+test schematic_bus::tests::native_raw_row_cap_precedes_poison_value_and_duplicates_refuse ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.18s
+
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.25s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 1 test
+test schematic_budget::tests::combined_identity_budget_counts_explicit_buses ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 140 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 15 tests
+test schematic_drag::tests::combined_board_identity_preflight_refuses_before_native_duplicate_validation ... ok
+test schematic_drag::tests::asymmetric_mirrored_quarter_turn_uses_native_pin_positions_and_vertical_bend ... ok
+test schematic_drag::tests::cardinal_bend_preview_is_immutable_and_commit_undo_redo_replay_are_exact ... ok
+test schematic_drag::tests::aligned_stretch_and_both_attached_endpoints_preserve_wire_ids ... ok
+test schematic_drag::tests::complete_package_unit_move_keeps_owner_membership_other_units_and_pins_exact ... ok
+test schematic_drag::tests::complete_regulator_fixture_keeps_independently_declared_original_net_members_and_names ... ok
+test schematic_drag::tests::global_labels_across_unselected_sheet_keep_original_partition_and_names ... ok
+test schematic_drag::tests::later_nonconflicting_peer_part_survives_origin_owned_drag_undo_and_redo ... ok
+test schematic_drag::tests::mechanical_holes_join_drag_identity_set_and_combined_preflight ... ok
+test schematic_drag::tests::same_net_count_different_actual_member_partition_is_rejected ... ok
+test schematic_drag::tests::planned_additions_preflight_graph_budget_and_zero_delta_is_noop ... ok
+test schematic_drag::tests::pre_hooks_receive_final_candidate_veto_atomically_and_captured_work_refuses_reentry ... ok
+test schematic_drag::tests::stale_and_exhausted_work_output_and_admission_refuse_without_changes ... ok
+test schematic_drag::tests::unrelated_huge_invalid_board_metadata_is_not_copied_or_validated ... ok
+test schematic_drag::tests::unsupported_attachments_and_accidental_net_merge_refuse_exact_state ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 126 filtered out; finished in 1.05s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 11 tests
+test schematic_buses::tests::both_graph_runs_charge_one_cumulative_visit_budget ... ok
+test schematic_buses::tests::actual_local_scalar_union_preview_commit_and_origin_undo ... ok
+test schematic_buses::tests::complete_query_rejects_cross_namespace_collision_without_copying_unrelated_sourcing ... ok
+test schematic_buses::tests::delete_edit_ownership_and_stale_full_cursor_are_atomic ... ok
+test schematic_buses::tests::complete_output_refuses_before_duplicate_member_fact_growth_and_source_unchanged ... ok
+test schematic_buses::tests::feature_sixteen_checks_every_log_delta_side_and_public_prewrite_validation ... ok
+test schematic_buses::tests::global_only_equal_name_is_not_an_authorized_union ... ok
+test schematic_buses::tests::graphical_bus_crossings_do_not_conduct_and_old_bracket_labels_stay_literal ... ok
+test schematic_buses::tests::same_net_count_with_wrong_original_uuid_partition_is_refused ... ok
+test schematic_buses::tests::incidental_wire_contact_refuses_even_when_target_union_is_explicit ... ok
+test schematic_buses::tests::two_slot_retained_work_and_finite_collision_exhaustion ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 3.43s
+
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 25.17s
+     Running tests/part_holes.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/part_holes-7f7da72261741eb8)
+
+running 6 tests
+test batch_initial_cursor_rolls_back_all_steps_and_peer_edit_invalidates_snapshot ... ok
+test complete_global_namespace_rejects_foreign_pad_part_project_and_retains_owned_id ... ok
+test raw_required_null_duplicate_poison_and_geometry_refusals_are_atomic ... ok
+test guarded_atomic_edit_preserves_whole_project_and_nullable_intent_undo_redo_noop ... ok
+test hole_identities_share_the_explicit_bus_and_entry_namespace ... ok
+test keyed_detached_reuse_retains_pad_nets_hole_ids_and_old_definition_restores_legacy ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.43s
+     Running tests/schematic_buses.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic_buses-74695e76204391da)
+
+running 4 tests
+test bus_glyph_refusal_is_layer_specific ... ok
+test diagonal_graphic_entry_and_escaped_expression_have_independent_bounds ... ok
+test explicit_bus_layer_declares_graphic_counts_and_contains_expression_ink_in_fit ... ok
+test bus_free_sheet_default_output_is_byte_identical_to_pre_bus_renderer ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s
+
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.30s
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-23a84bbe650d9bf8)
+
+running 5 tests
+test filters_regions_legacy_and_invalid_selected_inputs_are_explicit ... ok
+test all_budgets_fail_before_clone_or_publication ... ok
+test distant_crop_is_pixel_identical_and_extreme_zoom_fails ... ok
+test explicit_package_unit_labels_and_borrowed_membership_budgets_are_preserved ... ok
+test outlined_text_geometry_is_deterministic_and_snapshot_excludes_unrelated_data ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.12s
+
+Mon Oct 12 03:17:19 AM UTC 2026
+EXIT 0

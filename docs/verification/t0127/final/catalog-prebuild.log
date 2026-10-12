@@ -1,0 +1,23 @@
+3cf32b7e38d46408d843251d6041bd5216b1fd2f
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/fab)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/mcp)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 06s
+4aac4bf24344a417faab4e5dc11786ab7e39afe6129942dfa599d939f9f94f7b  /home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-catalog-3cf32b7e
+Verified 127 full-application tools (2025-03-26)
+Traceback (most recent call last):
+  File "/home/charlesmowbray/Development/viamind-t-0127/scripts/generate-mcp-reference.py", line 30, in <module>
+    main()
+    ~~~~^^
+  File "/home/charlesmowbray/Development/viamind-t-0127/scripts/generate-mcp-reference.py", line 21, in main
+    raise ValueError(f"MCP reference drift: {name}; regenerate from current full application")
+ValueError: MCP reference drift: mcp-tools.json; regenerate from current full application
+CHECK_DIFFERS
+EXIT 0

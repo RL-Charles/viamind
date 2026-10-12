@@ -1,0 +1,27 @@
+{
+  "allowed_original_component_count": 2,
+  "bus_id": "00000000-0000-0000-0000-000000001272",
+  "bus_point": {
+    "x": 0,
+    "y": 0
+  },
+  "exact_candidate_visits": 23,
+  "expected_project": "00000000-0000-0000-0000-000000001270",
+  "member": "DATA0",
+  "original_graph_members": 3,
+  "scope": "Actual original scalar UUID partitions and label scopes preserved except the explicit endpoint/same-sheet Local-member union; bus/entry graphics do not conduct. No ERC/PCB/certification proof",
+  "sheet_id": "00000000-0000-0000-0000-000000001271",
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "6ccc85e6-e914-475d-b0c3-ab384bf8b9e3"
+  },
+  "unrelated_partitions_preserved": true,
+  "wire_end": {
+    "x": 2000000,
+    "y": 8000000
+  },
+  "wire_point": {
+    "x": 2000000,
+    "y": 2000000
+  }
+}

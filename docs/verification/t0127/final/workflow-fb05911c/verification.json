@@ -1,0 +1,29 @@
+{
+  "binary_sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7",
+  "checks": [
+    "discovered new_project request fields",
+    "discovered add_part request fields",
+    "discovered update_part request fields",
+    "discovered open_project request fields",
+    "discovered save_project request fields",
+    "two original placements have exact Nm coordinates",
+    "guarded edit preserves second component",
+    "guarded edit exact new coordinate",
+    "stale part rejection preserves full session",
+    "agent undo restores exact original part",
+    "redo restores exact guarded document",
+    "NEW save sets clean active native path",
+    "stale full-cursor lifecycle rejection preserves session",
+    "stale lifecycle preserves native bytes",
+    "NEW destination collision preserves file and session",
+    "reopen preserves exact document and IDs",
+    "reopen resets stream",
+    "executable identity unchanged"
+  ],
+  "format": "viamind-agent-workflow",
+  "native_sha256": "d4bd36b3a70f218087afe09e269d71473480561b82e16a20c1a573170d578d40",
+  "passed": true,
+  "scope": "Original component placement/properties; legacy graphical footprints, no explicit electrical pads or manufacturing approval.",
+  "tool_count": 127,
+  "version": 1
+}
