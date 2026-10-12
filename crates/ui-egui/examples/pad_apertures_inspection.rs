@@ -40,10 +40,7 @@ impl eframe::App for Inspect {
                     .iter()
                     .filter_map(|s| {
                         let egui::Shape::Rect(b) = &s.shape else { return None };
-                        (b.rect.contains(r.rect.center())
-                            && (b.rect.width() - r.rect.width()).abs() <= 4.0
-                            && (b.rect.height() - r.rect.height()).abs() <= 4.0)
-                            .then_some(s.clip_rect.intersect(content))
+                        (b.rect.min.distance(r.rect.min) <= 0.5 && b.rect.max.distance(r.rect.max) <= 0.5).then_some(s.clip_rect.intersect(content))
                     })
                     .min_by(|a, b| a.area().total_cmp(&b.area()))
                     .expect("actual current native control paint");
@@ -113,9 +110,7 @@ fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
         .filter_map(|s| {
             let matching = match &s.shape {
                 egui::Shape::Text(t) => t.galley.text() == label,
-                egui::Shape::Rect(b) => {
-                    b.rect.contains(r.center()) && (b.rect.width() - r.width()).abs() <= 4.0 && (b.rect.height() - r.height()).abs() <= 4.0
-                }
+                egui::Shape::Rect(b) => b.rect.min.distance(r.min) <= 0.5 && b.rect.max.distance(r.max) <= 0.5,
                 _ => false,
             };
             matching.then_some(s.clip_rect.intersect(h.ctx.content_rect()))
