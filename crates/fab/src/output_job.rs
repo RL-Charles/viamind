@@ -66,6 +66,8 @@ pub struct OutputJob {
     pub include_silkscreen: Option<bool>,
     #[serde(default, deserialize_with = "present_companion", skip_serializing_if = "Option::is_none")]
     pub include_paste: Option<bool>,
+    #[serde(default, deserialize_with = "present_companion", skip_serializing_if = "Option::is_none")]
+    pub include_npth: Option<bool>,
 }
 fn present_companion<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<bool>, D::Error> {
     bool::deserialize(deserializer).map(Some)
@@ -86,14 +88,18 @@ impl OutputJob {
             include_populated_bom: None,
             include_silkscreen: None,
             include_paste: None,
+            include_npth: None,
         }
     }
     pub fn validate(&self) -> io::Result<()> {
         if self.format != "viamind-output-job"
-            || !matches!(self.version, 1..=5)
+            || !matches!(self.version, 1..=6)
             || !matches!(self.profile.as_str(), "generic_outer_2layer" | CHECKED_PROFILE)
         {
             return Err(invalid("unsupported output job format, version or profile"));
+        }
+        if (self.version == 6 && self.include_npth != Some(true)) || (self.version != 6 && self.include_npth.is_some()) {
+            return Err(invalid("job6 requires include_npth=true; versions1..5 forbid the include_npth member"));
         }
         let companions = (self.include_calibrated_placement, self.include_populated_bom);
         let valid = match (self.version, self.include_silkscreen, self.include_paste) {
@@ -101,11 +107,12 @@ impl OutputJob {
             (2, None, None) => companions == (Some(true), None),
             (3, None, None) => companions == (Some(true), Some(true)),
             (4, Some(true), None) | (5, None | Some(true), Some(true)) => matches!(companions, (None | Some(true), None) | (Some(true), Some(true))),
+            (6, None | Some(true), None | Some(true)) => matches!(companions, (None | Some(true), None) | (Some(true), Some(true))),
             _ => false,
         };
         if !valid {
             return Err(invalid(
-                "version1 forbids companions; version2 requires calibrated placement only; version3 requires calibrated/populated; version4 requires include_silkscreen true; version5 requires include_paste true; populated requires calibrated",
+                "version1 forbids companions; version2 requires calibrated placement only; version3 requires calibrated/populated; version4 requires include_silkscreen true; version5 requires include_paste true; job6 permits absent or true paste/Legend independently; populated requires calibrated",
             ));
         }
         match (self.profile.as_str(), &self.checks) {
@@ -218,13 +225,14 @@ pub fn output_job_schema(action: &str) -> Value {
         "load" => json!({"type":"object","additionalProperties":false,"required":["path"],"properties":{"path":path}}),
         "save" => json!({"type":"object","additionalProperties":false,"required":["path","job"],"properties":{"path":path,"job":{
             "type":"object","additionalProperties":false,"required":["format","version","name","profile"],
-            "properties":{"format":{"const":"viamind-output-job"},"version":{"enum":[1,2,3,4,5]},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks,"include_calibrated_placement":{"const":true},"include_populated_bom":{"const":true},"include_silkscreen":{"const":true},"include_paste":{"const":true}},
-            "allOf":[{"oneOf":[
+            "properties":{"format":{"const":"viamind-output-job"},"version":{"enum":[1,2,3,4,5,6]},"name":{"type":"string","minLength":1,"maxLength":256},"profile":{"enum":["generic_outer_2layer",CHECKED_PROFILE]},"mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},"checks":checks,"include_calibrated_placement":{"const":true},"include_populated_bom":{"const":true},"include_silkscreen":{"const":true},"include_paste":{"const":true},"include_npth":{"const":true}},
+            "allOf":[{"if":{"properties":{"version":{"enum":[1,2,3,4,5]}}},"then":{"not":{"required":["include_npth"]}}},{"oneOf":[
                 {"properties":{"version":{"const":1}},"not":{"anyOf":[{"required":["include_calibrated_placement"]},{"required":["include_populated_bom"]},{"required":["include_silkscreen"]},{"required":["include_paste"]}]}},
                 {"properties":{"version":{"const":2}},"required":["include_calibrated_placement"],"not":{"anyOf":[{"required":["include_populated_bom"]},{"required":["include_silkscreen"]},{"required":["include_paste"]}]}},
                 {"properties":{"version":{"const":3}},"required":["include_calibrated_placement","include_populated_bom"],"not":{"anyOf":[{"required":["include_silkscreen"]},{"required":["include_paste"]}]}},
                 {"properties":{"version":{"const":4}},"required":["include_silkscreen"],"not":{"required":["include_paste"]},"if":{"required":["include_populated_bom"]},"then":{"required":["include_calibrated_placement"]}},
-                {"properties":{"version":{"const":5}},"required":["include_paste"],"if":{"required":["include_populated_bom"]},"then":{"required":["include_calibrated_placement"]}}
+                {"properties":{"version":{"const":5}},"required":["include_paste"],"if":{"required":["include_populated_bom"]},"then":{"required":["include_calibrated_placement"]}},
+                {"properties":{"version":{"const":6}},"required":["include_npth"],"if":{"required":["include_populated_bom"]},"then":{"required":["include_calibrated_placement"]}}
             ]}],
             "oneOf":[{"properties":{"profile":{"const":"generic_outer_2layer"}},"not":{"required":["checks"]}},{"properties":{"profile":{"const":CHECKED_PROFILE}},"required":["checks"]}]
         }}}),
@@ -240,6 +248,8 @@ pub struct OutputJobSnapshot {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReleaseManifest<C> {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub nonplated_holes: Option<crate::NonplatedHoleSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pad_apertures: Option<crate::PadApertureSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -275,12 +285,13 @@ impl OutputJobSnapshot {
         if project.board.parts.len() > 100_000 {
             return Err(invalid("output jobs support at most 100000 components"));
         }
-        if project.board.parts.values().any(|p| p.holes.is_some()) {
+        if job.version != 6 && project.board.parts.values().any(|p| p.holes.is_some()) {
             return Err(invalid("output job versions1..5 refuse authored nonplated holes; use NPTH job6"));
         }
         // Borrowed complete membership admission before the manufacturing snapshot copy.
+        let paste = job.include_paste == Some(true);
         for part in project.board.parts.values() {
-            if job.version == 5 && part.pads.is_none() {
+            if paste && part.pads.is_none() {
                 return Err(invalid("paste job5 requires explicit pad membership; legacy previews are unknown, not empty"));
             }
             if let Some(pads) = &part.pads {
@@ -288,8 +299,8 @@ impl OutputJobSnapshot {
                     return Err(invalid("at most1024 pads per part"));
                 }
                 for pad in &pads.0 {
-                    if (job.version == 5) != pad.apertures.is_some() {
-                        return Err(invalid(if job.version == 5 {
+                    if paste != pad.apertures.is_some() {
+                        return Err(invalid(if paste {
                             "paste job5 requires explicit aperture policy on every SMD pad"
                         } else {
                             "output job versions1..4 refuse explicit aperture policies; use version5"
@@ -357,7 +368,7 @@ impl OutputJobSnapshot {
             mask_expansion_mm: self.job.mask_expansion_mm,
             include_silkscreen: self.job.include_silkscreen == Some(true),
             include_paste: self.job.include_paste == Some(true),
-            include_npth: false,
+            include_npth: self.job.include_npth == Some(true),
         })?;
         let mut files = BTreeMap::new();
         let mut total = 0usize;
@@ -414,6 +425,7 @@ impl OutputJobSnapshot {
             ]
         };
         let manifest = ReleaseManifest {
+            nonplated_holes: package.manifest.nonplated_holes,
             pad_apertures: package.manifest.pad_apertures.clone(),
             footprint_artwork: package.manifest.footprint_artwork,
             format: "viamind-output-release".into(),

@@ -30,6 +30,6 @@ pub use output_job::{
 };
 
 pub use release_inspection::{
-    InspectOutputRelease, MatchedAssembly, ObservedPadOpenings, ReleaseCursor, ReleaseFileFact, ReleaseInspection, inspect_output_release,
-    release_inspection_schema,
+    InspectOutputRelease, MatchedAssembly, ObservedNonplatedHoles, ObservedPadOpenings, ReleaseCursor, ReleaseFileFact, ReleaseInspection,
+    inspect_output_release, release_inspection_schema,
 };
