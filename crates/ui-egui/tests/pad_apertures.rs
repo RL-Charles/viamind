@@ -203,6 +203,8 @@ fn actual_detached_opening_text_identity_and_cursor_survive_earlier_pad_removal(
     let selection = egui::TextEdit::load_state(&h.ctx, focused).unwrap().cursor.char_range();
     // The selected second row leaves the virtual table scrolled below row1.
     // Reveal an actually painted second-row field, then wheel over that inner area.
+    // Reset the outer form to a painted header before addressing its nested row viewport.
+    reveal(&mut h, "Footprint definition name");
     reveal(&mut h, "Pad 2 number");
     let table_point = h.get_by_label("Pad 2 number").rect().center();
     h.hover_at(table_point);
