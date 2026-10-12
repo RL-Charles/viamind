@@ -874,4 +874,83 @@ mod tests {
         assert_eq!(calls, 1024);
         assert_eq!(ids.len(), 1);
     }
+    #[test]
+    fn complete_output_refuses_before_duplicate_member_fact_growth_and_source_unchanged() {
+        let _guard = LOCK.lock().unwrap();
+        let (e, sheet, _) = fixture();
+        let mut p = e.read(Clone::clone);
+        let c = p.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
+        c.buses.clear();
+        for _ in 0..39 {
+            let id = ObjectId::new();
+            c.buses.insert(id, SchematicBus { id, expression: "D[0..255]".into(), start: pnt(0, 0), end: pnt(20, 0) });
+        }
+        for n in 0..256 {
+            let id = ObjectId::new();
+            c.labels.insert(id, SchematicLabel { id, name: format!("D{n}"), position: pnt(1000 + n, 1000), scope: LabelScope::Local });
+        }
+        let e = EngineHandle::new(p);
+        let before = e.session_state();
+        assert!(e.prepare_schematic_buses(&SchematicBusesQuery {}).unwrap().run_query().unwrap_err().to_string().contains("output budget"));
+        assert_eq!(e.session_state(), before);
+    }
+    fn pnt(x: i64, y: i64) -> Coordinate {
+        Coordinate { x: Nm(x), y: Nm(y) }
+    }
+    #[test]
+    fn both_graph_runs_charge_one_cumulative_visit_budget() {
+        let _guard = LOCK.lock().unwrap();
+        let (e, sheet, bus) = fixture();
+        let mut p = e.read(Clone::clone);
+        for _ in 0..600 {
+            add_wire(&mut p, sheet, pnt(0, 10), pnt(20, 10));
+        }
+        let e = EngineHandle::new(p);
+        assert_eq!(e.all_schematic_connectivity().unwrap().total_nets, 1);
+        let before = e.session_state();
+        let args = unfold(&e, sheet, bus);
+        let error = e.prepare_schematic_bus_unfold(args.clone()).unwrap().run_preview().unwrap_err().to_string();
+        assert!(error.contains("candidate") || error.contains("visits"), "{error}");
+        assert!(e.execute_typed(args, Origin::User).is_err());
+        assert_eq!(e.session_state(), before);
+    }
+    #[test]
+    fn feature_sixteen_checks_every_log_delta_side_and_public_prewrite_validation() {
+        let _guard = LOCK.lock().unwrap();
+        let mut p = Project::new("native event bus oracle");
+        let mut sheet = Sheet::new("Buses");
+        sheet.content = Some(Default::default());
+        let sid = sheet.id;
+        p.schematic.sheets.insert(sid, sheet);
+        let e = EngineHandle::new(p.clone());
+        let rx = e.subscribe();
+        e.execute_typed(
+            SetSchematicBus { source: source(&e, sid), bus_id: None, expression: "D[0..1]".into(), start: pnt(0, 0), end: pnt(10, 0) },
+            Origin::User,
+        )
+        .unwrap();
+        let create = rx.recv().unwrap();
+        let bus = e.read(|p| *p.schematic.sheets[&sid].content.as_ref().unwrap().buses.keys().next().unwrap());
+        e.execute_typed(DeleteSchematicBus { source: source(&e, sid), bus_id: bus }, Origin::User).unwrap();
+        let delete = rx.recv().unwrap();
+        let mut event = create.clone();
+        event.deltas.extend(delete.deltas.clone());
+        let mut log = crate::log::EventLog::new(p.clone());
+        log.append(event.clone());
+        let mut bytes = vec![];
+        log.write_jsonl(&mut bytes).unwrap();
+        let parsed = crate::log::EventLog::read_jsonl(std::io::Cursor::new(&bytes)).unwrap();
+        assert_eq!(parsed.replay(), p);
+        let mut lines = String::from_utf8(bytes).unwrap().lines().map(str::to_owned).collect::<Vec<_>>();
+        let mut header: serde_json::Value = serde_json::from_str(&lines[0]).unwrap();
+        header["version"] = serde_json::json!(15);
+        lines[0] = header.to_string();
+        assert!(crate::log::EventLog::read_jsonl(std::io::Cursor::new(lines.join("\n"))).is_err());
+        let mut invalid = create;
+        let Delta::Sheet { after: Some(s), .. } = &mut invalid.deltas[0] else { panic!("sheet creation") };
+        s.content.as_mut().unwrap().buses.values_mut().next().unwrap().expression = "X".repeat(4097);
+        let mut untouched = vec![];
+        assert!(crate::log::write_entry(&mut untouched, &invalid).is_err());
+        assert!(untouched.is_empty());
+    }
 }

@@ -23,7 +23,7 @@ fn explicit_bus_layer_declares_graphic_counts_and_contains_expression_ink_in_fit
     assert!(wires.svg.contains("wire-00000000-0000-0000-0000-000000001273"));
 }
 #[test]
-fn bus_glyph_refusal_is_layer_specific_and_native_entry_geometry_is_exact() {
+fn bus_glyph_refusal_is_layer_specific() {
     let mut p = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/buses.viamind.json")).unwrap();
     let sheet = *p.schematic.sheets.keys().next().unwrap();
     p.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap().buses.values_mut().next().unwrap().expression = "漢[0..1]".into();

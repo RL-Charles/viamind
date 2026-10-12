@@ -21,6 +21,7 @@ pub struct SchematicBusesUi {
     pub coordinates: [String; 10],
     pub member: String,
     preview: Option<UnfoldSchematicBusMember>,
+    pub report: Option<viamind_engine::SchematicBusUnfoldPreview>,
     pending: Option<Pending>,
     pub message: Option<String>,
 }
@@ -36,6 +37,7 @@ impl Default for SchematicBusesUi {
             coordinates: ["0", "0", "20", "0", "0", "0", "2", "2", "2", "8"].map(str::to_owned),
             member: "DATA0".into(),
             preview: None,
+            report: None,
             pending: None,
             message: None,
         }
@@ -57,6 +59,7 @@ impl SchematicBusesUi {
         self.selected = None;
         self.selected_entry = None;
         self.preview = None;
+        self.report = None;
         self.open = true;
         self.message =
             Some("Load scalar facts to inspect declarations. Coordinates are explicit millimetres; bus/entry graphics do not conduct.".into());
@@ -73,14 +76,27 @@ impl SchematicBusesUi {
         if self.busy() {
             return;
         }
+        self.run_with_spawn(engine, ctx, action, input, |job| std::thread::Builder::new().name("viamind-schematic-buses".into()).spawn(job));
+    }
+    fn run_with_spawn(
+        &mut self,
+        engine: &EngineHandle,
+        ctx: &Context,
+        action: UiAction,
+        input: Value,
+        spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> std::io::Result<std::thread::JoinHandle<()>>,
+    ) {
+        if self.busy() {
+            return;
+        }
         let engine = engine.clone();
         let ctx = ctx.clone();
         let (tx, rx) = sync_channel(1);
-        match std::thread::Builder::new().name("viamind-schematic-buses".into()).spawn(move || {
+        match spawn(Box::new(move || {
             let r = action.run(&engine, input).map_err(|e| e.to_string());
             let _ = tx.send(r);
             ctx.request_repaint();
-        }) {
+        })) {
             Ok(_) => {
                 self.pending = Some(Pending { receiver: rx, action, abandoned: false });
                 self.message = Some(format!("Running {}…", action.tool()));
@@ -107,6 +123,7 @@ impl SchematicBusesUi {
         match r {
             Err(e) => {
                 self.preview = None;
+                self.report = None;
                 self.message = Some(e);
             }
             Ok(v) if p.action == UiAction::QuerySchematicBuses => match serde_json::from_value::<SchematicBusesResult>(v) {
@@ -130,11 +147,19 @@ impl SchematicBusesUi {
                     ));
                     self.result = Some(r);
                     self.preview = None;
+                    self.report = None;
                 }
                 Err(e) => self.message = Some(e.to_string()),
             },
-            Ok(_) if p.action == UiAction::PreviewSchematicBusUnfold => match self.request() {
+            Ok(value) if p.action == UiAction::PreviewSchematicBusUnfold => match self.request() {
                 Ok(request) => {
+                    match serde_json::from_value(value) {
+                        Ok(report) => self.report = Some(report),
+                        Err(e) => {
+                            self.message = Some(e.to_string());
+                            return;
+                        }
+                    }
                     self.preview = Some(request);
                     self.message = Some(
                         "Preview passed actual scalar UUID partition and label-scope checks. Apply explicitly to commit one sheet transaction."
@@ -145,6 +170,7 @@ impl SchematicBusesUi {
             },
             Ok(_) => {
                 self.preview = None;
+                self.report = None;
                 self.result = None;
                 self.message =
                     Some("Committed one guarded sheet transaction. Load scalar facts to capture the new cursor before another edit.".into());
@@ -163,11 +189,11 @@ impl SchematicBusesUi {
                 if ui.button("Load scalar bus facts").clicked(){self.run(engine,ctx,UiAction::QuerySchematicBuses,json!({}));}
                 let rows:Vec<_>=self.result.as_ref().map(|r|r.buses.iter().filter(|b|self.source.is_some_and(|s|s.sheet_id==b.sheet_id)).map(|b|(b.bus.id,b.bus.expression.clone(),b.bus.start,b.bus.end)).collect()).unwrap_or_default();
                 egui::ComboBox::from_id_salt("bus_choice").selected_text(self.selected.map_or_else(||"New bus".into(),|id|id.to_string())).show_ui(ui,|ui|{
-                    if ui.selectable_label(self.selected.is_none(),"New bus").clicked(){self.selected=None;self.selected_entry=None;self.preview=None;}
-                    for(id,expression,a,z)in rows{if ui.selectable_label(self.selected==Some(id),&expression).clicked(){self.selected=Some(id);self.expression=expression;self.coordinates[0]=mm(a.x.0);self.coordinates[1]=mm(a.y.0);self.coordinates[2]=mm(z.x.0);self.coordinates[3]=mm(z.y.0);self.selected_entry=None;self.preview=None;}}
+                    if ui.selectable_label(self.selected.is_none(),"New bus").clicked(){self.selected=None;self.selected_entry=None;self.preview=None;self.report=None;}
+                    for(id,expression,a,z)in rows{if ui.selectable_label(self.selected==Some(id),&expression).clicked(){self.selected=Some(id);self.expression=expression;self.coordinates[0]=mm(a.x.0);self.coordinates[1]=mm(a.y.0);self.coordinates[2]=mm(z.x.0);self.coordinates[3]=mm(z.y.0);self.selected_entry=None;self.preview=None;self.report=None;}}
                 });
-                let label=ui.label("Bus expression");if ui.add(egui::TextEdit::singleline(&mut self.expression).char_limit(4096)).labelled_by(label.id).changed(){self.preview=None;}
-                for(i,name)in["Bus start X mm","Bus start Y mm","Bus end X mm","Bus end Y mm"].iter().enumerate(){let label=ui.label(*name);if ui.add(egui::TextEdit::singleline(&mut self.coordinates[i]).char_limit(32)).labelled_by(label.id).changed(){self.preview=None;}}
+                let label=ui.label("Bus expression");if ui.add(egui::TextEdit::singleline(&mut self.expression).char_limit(4096)).labelled_by(label.id).changed(){self.preview=None;self.report=None;}
+                for(i,name)in["Bus start X mm","Bus start Y mm","Bus end X mm","Bus end Y mm"].iter().enumerate(){let label=ui.label(*name);if ui.add(egui::TextEdit::singleline(&mut self.coordinates[i]).char_limit(32)).labelled_by(label.id).changed(){self.preview=None;self.report=None;}}
                 ui.horizontal_wrapped(|ui|{
                     if ui.button("Save bus declaration").clicked(){let r=(||->Result<Value,String>{let source=self.source.ok_or("Choose a sheet")?;let p=|i:usize|->Result<Coordinate,String>{Ok(Coordinate{x:Nm(super::schematic::nm(&self.coordinates[i])?),y:Nm(super::schematic::nm(&self.coordinates[i+1])?)})};serde_json::to_value(SetSchematicBus{source,bus_id:self.selected,expression:self.expression.clone(),start:p(0)?,end:p(2)?}).map_err(|e|e.to_string())})();match r{Ok(v)=>self.run(engine,ctx,UiAction::SetSchematicBus,v),Err(e)=>self.message=Some(e)}}
                     if ui.add_enabled(self.selected.is_some(),egui::Button::new("Delete bus declaration")).clicked(){self.run(engine,ctx,UiAction::DeleteSchematicBus,json!({"source":self.source,"bus_id":self.selected}));}
@@ -175,22 +201,24 @@ impl SchematicBusesUi {
                 ui.separator();
                 let facts=self.result.as_ref().and_then(|r|r.buses.iter().find(|b|Some(b.bus.id)==self.selected));
                 let members:Vec<_>=facts.map(|b|b.members.iter().map(|m|(m.name.clone(),m.labels.len(),m.missing)).collect()).unwrap_or_default();
-                egui::ComboBox::from_id_salt("member_choice").selected_text(&self.member).show_ui(ui,|ui|{for(name,count,missing)in members{if ui.selectable_label(self.member==name,format!("{name} · {count} actual labels{}",if missing{" · missing"}else{""})).clicked(){self.member=name;self.preview=None;}}});
-                for(i,name)in["Entry bus X mm","Entry bus Y mm","Entry wire X mm","Entry wire Y mm","Opposite wire end X mm","Opposite wire end Y mm"].iter().enumerate(){let label=ui.label(*name);if ui.add(egui::TextEdit::singleline(&mut self.coordinates[i+4]).char_limit(32)).labelled_by(label.id).changed(){self.preview=None;}}
+                egui::ComboBox::from_id_salt("member_choice").selected_text(&self.member).show_ui(ui,|ui|{for(name,count,missing)in members{if ui.selectable_label(self.member==name,format!("{name} · {count} actual labels{}",if missing{" · missing"}else{""})).clicked(){self.member=name;self.preview=None;self.report=None;}}});
+                for(i,name)in["Entry bus X mm","Entry bus Y mm","Entry wire X mm","Entry wire Y mm","Opposite wire end X mm","Opposite wire end Y mm"].iter().enumerate(){let label=ui.label(*name);if ui.add(egui::TextEdit::singleline(&mut self.coordinates[i+4]).char_limit(32)).labelled_by(label.id).changed(){self.preview=None;self.report=None;}}
                 ui.horizontal_wrapped(|ui|{
                     if ui.add_enabled(self.selected.is_some(),egui::Button::new("Preview member unfolding")).clicked(){match self.request().and_then(|r|serde_json::to_value(r).map_err(|e|e.to_string())){Ok(v)=>self.run(engine,ctx,UiAction::PreviewSchematicBusUnfold,v),Err(e)=>self.message=Some(e)}}
-                    if ui.add_enabled(self.preview.is_some(),egui::Button::new("Apply member unfolding")).clicked(){if let Some(r)=&self.preview{self.run(engine,ctx,UiAction::UnfoldSchematicBusMember,json!(r));}}
+                    if ui.add_enabled(self.preview.is_some(),egui::Button::new("Apply member unfolding")).clicked() && let Some(r)=&self.preview{self.run(engine,ctx,UiAction::UnfoldSchematicBusMember,json!(r));}
                 });
                 let entries:Vec<_>=self.result.as_ref().and_then(|r|r.buses.iter().find(|b|Some(b.bus.id)==self.selected)).map(|b|b.entries.iter().map(|e|(e.id,e.member.clone())).collect()).unwrap_or_default();
                 egui::ComboBox::from_id_salt("entry_choice").selected_text(self.selected_entry.map_or_else(||"Choose owned breakout".into(),|id|id.to_string())).show_ui(ui,|ui|{for(id,member)in entries{if ui.selectable_label(self.selected_entry==Some(id),member).clicked(){self.selected_entry=Some(id);}}});
                 if ui.add_enabled(self.selected_entry.is_some(),egui::Button::new("Delete complete owned breakout")).clicked(){self.run(engine,ctx,UiAction::DeleteSchematicBusBreakout,json!({"source":self.source,"entry_id":self.selected_entry}));}
             });
-            if ui.button("Cancel bus form").clicked(){self.preview=None;if let Some(p)=&mut self.pending{p.abandoned=true;}self.open=false;}
+            if ui.button("Cancel bus form").clicked(){self.preview=None;self.report=None;if let Some(p)=&mut self.pending{p.abandoned=true;}self.open=false;}
+            if let Some(report)=&self.report{ui.label(format!("Preview: {} original graph members; {} allowed components; {} cumulative visits",report.original_graph_members,report.allowed_original_component_count,report.exact_candidate_visits));ui.label(format!("Source stream {}",report.source_cursor.stream_id));ui.label(format!("Source sequence {}",report.source_cursor.sequence));}
             if let Some(m)=&self.message{ui.label(m);}
             if busy{ui.spinner();}
         });
         if !open {
             self.preview = None;
+            self.report = None;
             if let Some(p) = &mut self.pending {
                 p.abandoned = true;
             }
@@ -211,11 +239,11 @@ impl ViamindApp {
         let sheet = self.schematic.active_sheet_id();
         let enabled =
             sheet.is_some() && !self.files.busy() && !self.schematic_wires.active() && !self.schematic_drag.active() && !self.schematic_buses.busy();
-        if ui.add_enabled(enabled, egui::Button::new("Explicit buses and member unfolding")).clicked() {
-            if let (Some(d), Some(sheet)) = (&self.design, sheet) {
-                self.schematic_buses.begin(&d.engine, sheet);
-                self.clear_schematic_object_draft();
-            }
+        if ui.add_enabled(enabled, egui::Button::new("Explicit buses and member unfolding")).clicked()
+            && let (Some(d), Some(sheet)) = (&self.design, sheet)
+        {
+            self.schematic_buses.begin(&d.engine, sheet);
+            self.clear_schematic_object_draft();
         }
     }
     pub(crate) fn schematic_buses_window(&mut self, ui: &Ui) {
@@ -385,5 +413,17 @@ mod tests {
         s.pending = Some(Pending { receiver: rx, action: UiAction::QuerySchematicBuses, abandoned: false });
         s.poll(&ctx);
         assert!(s.message.as_ref().unwrap().contains("worker stopped"));
+    }
+    #[test]
+    fn fallible_spawn_refusal_keeps_no_pending_worker_or_mutated_source() {
+        let (e, sheet, _) = fixture();
+        let before = e.session_state();
+        let ctx = Context::default();
+        let mut ui = SchematicBusesUi::default();
+        ui.begin(&e, sheet);
+        ui.run_with_spawn(&e, &ctx, UiAction::QuerySchematicBuses, json!({}), |_| Err(std::io::Error::other("controlled spawn refusal")));
+        assert!(!ui.busy());
+        assert!(ui.message.as_ref().unwrap().contains("controlled spawn refusal"));
+        assert_eq!(e.session_state(), before);
     }
 }
