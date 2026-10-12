@@ -248,12 +248,25 @@ mod tests {
 
     #[test]
     fn actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation() {
-        let mut h = egui_kittest::Harness::builder()
-            .with_size(egui::vec2(1400.0, 1000.0))
-            .build_ui_state(|ui, app: &mut ViamindApp| app.show(ui, None), fixture());
+        let ctx = egui::Context::default();
+        let mut app = fixture();
+        let mut inputs = 0usize;
+        let mut pump = |app: &mut ViamindApp, size: egui::Vec2, steps: usize| {
+            for _ in 0..steps {
+                inputs += 1;
+                let _ = ctx.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, size)),
+                        time: Some(inputs as f64 / 60.0),
+                        ..Default::default()
+                    },
+                    |ui| app.show(ui, None),
+                );
+            }
+        };
+        let size = egui::vec2(1400.0, 1000.0);
         let mut states = Vec::new();
         for case in 0..5 {
-            let app = h.state_mut();
             match case {
                 1 => app.canvas.camera.pan_by_screen(egui::vec2(-19.0, 13.0)),
                 2 => {
@@ -270,34 +283,27 @@ mod tests {
                 _ => {}
             }
             app.canvas.cache.disable_gpu();
-            h.run_steps(6);
-            let reference = (h.state().canvas.camera, h.state().canvas.viewport, h.state().canvas.drawn);
-            h.state_mut().canvas.cache.enable_gpu(eframe::wgpu::TextureFormat::Bgra8Unorm);
-            h.run_steps(6);
-            let gpu = (h.state().canvas.camera, h.state().canvas.viewport, h.state().canvas.drawn);
+            pump(&mut app, size, 6);
+            let reference = (app.canvas.camera, app.canvas.viewport, app.canvas.drawn);
+            app.canvas.cache.enable_gpu(eframe::wgpu::TextureFormat::Bgra8Unorm);
+            pump(&mut app, size, 6);
+            let gpu = (app.canvas.camera, app.canvas.viewport, app.canvas.drawn);
+            eprintln!("headless root UI case {case}: {gpu:?}");
             assert_eq!(reference, gpu, "headless layout state diverged in case {case}");
-            eprintln!("headless case {case}: {gpu:?}");
-            // The headless font/layout metrics may differ from the native integration;
-            // this diagnostic requires equal paired state, not a substituted native count.
-            if case < 2 {
-                assert_eq!(gpu.2, 5002);
-            } else {
-                assert!(gpu.2 > 0 && gpu.2 < 5002);
-            }
+            assert_eq!(gpu.2, [5002, 5002, 4665, 4624, 606][case]);
             states.push(gpu);
         }
+        assert_eq!(states[4].1, egui::Rect::from_min_max(egui::pos2(280.0, 23.0), egui::pos2(1400.0, 977.0)));
         assert!((states[4].0.zoom - 53.69680915111379).abs() < 1e-10);
         assert!((states[4].0.center.x - 33.8096233769221).abs() < 1e-10);
         assert!((states[4].0.center.y - 25.375284784012628).abs() < 1e-10);
-        h.set_size(egui::vec2(1401.0, 1000.0));
-        h.run_steps(2);
-        let resized = h.state().canvas.camera;
+        pump(&mut app, egui::vec2(1401.0, 1000.0), 2);
+        let resized = app.canvas.camera;
         assert_ne!(resized, states[4].0, "direct navigation leaves startup auto-fit active");
-        assert_eq!(resized.center, h.state().scene.bounds().center());
+        assert_eq!(resized.center, app.scene.bounds().center());
         assert!(resized.zoom < states[4].0.zoom / 7.0);
-        h.set_size(egui::vec2(1400.0, 1000.0));
-        h.run_steps(2);
-        assert_eq!(h.state().canvas.camera, states[0].0);
+        pump(&mut app, size, 2);
+        assert_eq!(app.canvas.camera, states[0].0);
         // 64 input steps. This proves a layout hazard, not historical native causality.
     }
 }
