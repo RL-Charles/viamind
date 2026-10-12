@@ -24,9 +24,9 @@ fn invalid(message: impl Into<String>) -> DxfError {
     DxfError(message.into())
 }
 #[derive(Clone, Copy)]
-struct Pair<'a> {
-    code: u16,
-    value: &'a str,
+pub(crate) struct Pair<'a> {
+    pub(crate) code: u16,
+    pub(crate) value: &'a str,
 }
 fn pairs(text: &str) -> Result<Vec<Pair<'_>>, DxfError> {
     if text.len() > MAX_DXF_BYTES {
@@ -49,7 +49,7 @@ fn pairs(text: &str) -> Result<Vec<Pair<'_>>, DxfError> {
 fn is(pair: Option<&Pair<'_>>, code: u16, value: &str) -> bool {
     pair.is_some_and(|p| p.code == code && p.value == value)
 }
-fn sections<'a>(pairs: &'a [Pair<'a>]) -> Result<(&'a [Pair<'a>], Option<u16>), DxfError> {
+pub(crate) fn sections<'a>(pairs: &'a [Pair<'a>]) -> Result<(&'a [Pair<'a>], Option<u16>), DxfError> {
     let mut cursor = 0;
     let mut entities = None;
     let mut units = None;
@@ -96,7 +96,7 @@ fn sections<'a>(pairs: &'a [Pair<'a>]) -> Result<(&'a [Pair<'a>], Option<u16>), 
     }
     Ok((entities.ok_or_else(|| invalid("missing ENTITIES section"))?, units))
 }
-fn scale(units: DxfUnits, header: Option<u16>) -> Result<f64, DxfError> {
+pub(crate) fn scale(units: DxfUnits, header: Option<u16>) -> Result<f64, DxfError> {
     match units {
         DxfUnits::Mm => Ok(1_000_000.0),
         DxfUnits::Inches => Ok(25_400_000.0),
@@ -110,7 +110,7 @@ fn scale(units: DxfUnits, header: Option<u16>) -> Result<f64, DxfError> {
         },
     }
 }
-fn scalar<'a>(fields: &[Pair<'a>], code: u16) -> Result<Option<&'a str>, DxfError> {
+pub(crate) fn scalar<'a>(fields: &[Pair<'a>], code: u16) -> Result<Option<&'a str>, DxfError> {
     let mut values = fields.iter().filter(|p| p.code == code);
     let result = values.next().map(|p| p.value);
     if values.next().is_some() {
@@ -207,7 +207,7 @@ fn lwpolyline(fields: &[Pair<'_>], scale: f64) -> Result<Polygon, DxfError> {
     }
     ring(points)
 }
-fn record<'a>(fields: &'a [Pair<'a>], cursor: &mut usize) -> Result<(&'a str, &'a [Pair<'a>]), DxfError> {
+pub(crate) fn record<'a>(fields: &'a [Pair<'a>], cursor: &mut usize) -> Result<(&'a str, &'a [Pair<'a>]), DxfError> {
     let name = fields.get(*cursor).filter(|p| p.code == 0).ok_or_else(|| invalid("entity must begin with group 0"))?.value;
     *cursor += 1;
     let start = *cursor;
