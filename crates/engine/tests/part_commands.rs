@@ -60,6 +60,7 @@ fn builtin_specs() {
             "set_named_net_rules",
             "set_pad_apertures",
             "set_part_assembly",
+            "set_part_holes",
             "set_part_pads",
             "set_track_properties",
             "set_via_properties",
