@@ -1,0 +1,7 @@
+{
+  "source": "43600a009e110dec52d8b4aa462e5273827d8da2",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/trace-43600a0/gpu_parity",
+  "sha256": "89a361806cfc67813f663f732a2526ab72f4a7283d7289cabfda9cb74e5d25e7",
+  "built_utc": "2026-10-12T00:28:10.724362+00:00",
+  "scope": "diagnostic-only optional trace on original e7 product; fmt, release example strictlint, fourteen example bounds/ownership/privacy/layout/progress tests and release examplebuild; no fullworkspace gate claim"
+}

@@ -101,5 +101,57 @@ indexes 21 artifacts, including scoped successes and earlier test-host failures,
 quiet admission, exact executable provenance, timeout, owned-window screenshot,
 refused stack evidence and bounded retirement. Original failure and initial
 passing pairs remain unchanged. Historical causality, visual closure and strict
-100k/60fps acceptance remain open. Further Rust/native work requires the next
-public progress/watchdog amendment and independent review.
+100k/60fps acceptance remain open. The independently approved progress/watchdog amendment and its single run follow
+below. The Cua route name describes the capture driver fallback; it does not
+establish which backend the application used.
+
+
+## Independently timed progress run: complete, historical cause unresolved
+
+Public amendment `e51311ad` was independently approved before Rust. Diagnostic
+source `43600a009e110dec52d8b4aa462e5273827d8da2` adds an optional independent
+180-second observer with thirteen fixed atomic fields, generation consistency
+and one bounded terminal notification. It adds no GUI locks, extra screenshot
+requests, redraws or sequence image writes. Its fixed state, channel/path,
+requested thread stack and streamed 8KiB output allowance are precharged inside
+the same 1MiB metadata budget. The worker joins after the native loop returns.
+
+Scoped formatting, strict release example lint, all fourteen example tests and
+the release example build passed. All eight prior tests remain, including the
+exact five-state headless camera/count observations and controlled one-pixel
+resize risk. Six new tests cover independent timeout, active/changing callback
+observations, one terminal signal, sender disconnect/NEW output, streaming cap
+and metadata reservation before worker creation. This is not a full workspace
+gate receipt. The unique executable SHA256 is
+`89a361806cfc67813f663f732a2526ab72f4a7283d7289cabfda9cb74e5d25e7`.
+
+Exactly one newly admitted quiet run launched PID 3747131 at 2026-10-12
+00:49 UTC and self-closed in 8.58 seconds. The independent receipt completed
+through terminal notification after 8.32 seconds: 81 callback entries and exits,
+coherent generation 162, ten requests prepared/submitted/arrived, no pending
+sequence and the returned callback phase. No timeout or stalled stage occurred,
+so this run does not answer where the earlier helper stalled.
+
+Ten original RGBA images (56MB) and complete request/draw/arrival receipts were
+flushed at the terminal stage. All paired provenance checks passed. All ten
+arrival camera/viewport/DPI/layer states and all five comparison metrics exactly
+match the initial passing diagnostic. Case 4 again drew 606 objects with maximum
+difference 1, mean 0.0001792265648397724 and zero pixels over 2; the historical
+failure drew 581. Full screenshots include changing UI statistics, so equality
+of the reported canvas metrics does not assert equality of all full-window
+pixels. The native window remains 1400x1000 at (2180,1265), DPI 1.
+
+[The progress master](verification/t0126/progress-trace/master.json) indexes
+73 artifacts, twenty compressed original/derived raw files, exact executable
+provenance, scoped gate, quiet admission, completion/atomic receipts, all ten
+pairs, derived difference maps and the initial-versus-progress comparison.
+Run `python docs/verification/t0126/progress-trace/verify.py` with ImageMagick to
+rehash every artifact and compare every original RGBA/RGB PNG sample. Actual
+alpha is 255; RGB review explicitly omits it. No scanout or OS-input proof is
+claimed.
+
+The historical image mismatch and the single deferred stall remain unresolved.
+No renderer behavior changed, and the 100k cadence example has never launched
+in this investigation. Further native experiments or corrections require a
+specific evidence-based scope and independent review; repeated passing runs
+are not visual-correctness closure or a strict 60fps result.

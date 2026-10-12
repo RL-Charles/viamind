@@ -1,0 +1,40 @@
+{
+  "reason": "terminal_notification",
+  "elapsed_seconds": 8.322299998,
+  "observations": {
+    "generation_before": 162,
+    "generation_after": 162,
+    "aggregate_consistent": true,
+    "callback_entries": 81,
+    "callback_exits": 81,
+    "legacy_step": 10,
+    "settle_count": 0,
+    "phase": 9,
+    "requests_prepared": 10,
+    "requests_submitted": 10,
+    "arrivals": 10,
+    "pending_sequence_plus_one": 0,
+    "observed_frame": 78,
+    "observed_pass": 79,
+    "terminal": 1
+  },
+  "phase_names": [
+    "startup",
+    "budget",
+    "extraction",
+    "admission",
+    "comparison",
+    "drawing",
+    "trace_drawing",
+    "submission",
+    "repaint",
+    "returned",
+    "flushing"
+  ],
+  "terminal_names": [
+    "unfinished",
+    "trace_finished_not_pixel_verdict",
+    "trace_failure"
+  ],
+  "claim": "Fixed atomic phase observations only; inconsistent aggregates are hints. No backend cause, pixel parity or performance claim."
+}
