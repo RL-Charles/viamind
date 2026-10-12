@@ -28,9 +28,9 @@ fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
         .filter_map(|s| {
             let matching = match &s.shape {
                 egui::Shape::Text(t) => t.galley.text() == label,
-                egui::Shape::Rect(b) => {
-                    b.rect.contains(r.center()) && (b.rect.width() - r.width()).abs() <= 4. && (b.rect.height() - r.height()).abs() <= 4.
-                }
+                // Match the response's own painted frame. A center/size heuristic can match an
+                // offscreen scrolled row beneath a pinned control and report that row's clip.
+                egui::Shape::Rect(b) => b.rect.min.distance(r.min) <= 0.5 && b.rect.max.distance(r.max) <= 0.5,
                 _ => false,
             };
             matching.then_some(s.clip_rect.intersect(h.ctx.content_rect()))
