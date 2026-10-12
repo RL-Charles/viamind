@@ -181,7 +181,63 @@ pub fn resolve_hole(part: &crate::Part, hole: &PartHole) -> Result<ResolvedHole,
 /// Borrowed admission before any project validator creates a global identity set.
 /// A replacement sheet uses the same semantics as schematic validation.
 pub fn preflight_project(project: &crate::Project, replacement: Option<&crate::Sheet>) -> Result<(), String> {
-    if !project.board.parts.values().any(|p| p.holes.is_some()) {
+    preflight(project, replacement, None)
+}
+
+/// Admit a prospective Part edit without cloning the Part or allocating identities.
+pub fn preflight_replacement(project: &crate::Project, owner: crate::ObjectId, pads: usize, holes: Option<&[PartHole]>) -> Result<(), String> {
+    preflight(project, None, Some((owner, pads, holes.map(HoleRows::Placed))))
+}
+
+pub fn preflight_footprint_replacement(
+    project: &crate::Project,
+    owner: crate::ObjectId,
+    pads: usize,
+    holes: Option<&[FootprintHole]>,
+) -> Result<(), String> {
+    preflight(project, None, Some((owner, pads, holes.map(HoleRows::Detached))))
+}
+#[derive(Clone, Copy)]
+enum HoleRows<'a> {
+    Placed(&'a [PartHole]),
+    Detached(&'a [FootprintHole]),
+}
+impl HoleRows<'_> {
+    fn len(self) -> usize {
+        match self {
+            Self::Placed(h) => h.len(),
+            Self::Detached(h) => h.len(),
+        }
+    }
+    fn key_bytes(self) -> Result<usize, String> {
+        let mut bytes = 0usize;
+        let mut add = |key: &str| {
+            bytes = bytes.checked_add(key.len()).ok_or("hole key budget overflow")?;
+            Ok::<(), String>(())
+        };
+        match self {
+            Self::Placed(h) => {
+                for h in h {
+                    add(&h.key)?;
+                }
+            }
+            Self::Detached(h) => {
+                for h in h {
+                    add(&h.key)?;
+                }
+            }
+        }
+        Ok(bytes)
+    }
+}
+type Replacement<'a> = (crate::ObjectId, usize, Option<HoleRows<'a>>);
+fn preflight(project: &crate::Project, replacement: Option<&crate::Sheet>, part_replacement: Option<Replacement<'_>>) -> Result<(), String> {
+    if !project
+        .board
+        .parts
+        .values()
+        .any(|p| part_replacement.filter(|(id, _, _)| *id == p.id).map_or(p.holes.is_some(), |(_, _, holes)| holes.is_some()))
+    {
         return Ok(());
     }
     let mut identities = 1usize;
@@ -198,8 +254,13 @@ pub fn preflight_project(project: &crate::Project, replacement: Option<&crate::S
     add(project.board.tracks.len())?;
     add(project.board.vias.len())?;
     for part in project.board.parts.values() {
-        add(part.pads.as_ref().map_or(0, |p| p.0.len()))?;
-        if let Some(holes) = &part.holes {
+        let (_, pads, holes) = part_replacement.filter(|(id, _, _)| *id == part.id).unwrap_or((
+            part.id,
+            part.pads.as_ref().map_or(0, |p| p.0.len()),
+            part.holes.as_deref().map(HoleRows::Placed),
+        ));
+        add(pads)?;
+        if let Some(holes) = holes {
             if holes.len() > MAX_HOLES_PER_OWNER {
                 return Err("at most256 holes per owner".into());
             }
@@ -208,11 +269,9 @@ pub fn preflight_project(project: &crate::Project, replacement: Option<&crate::S
             if hole_rows > MAX_PROJECT_IDENTITIES {
                 return Err("at most100000 component holes".into());
             }
-            for hole in holes {
-                key_bytes = key_bytes.checked_add(hole.key.len()).ok_or("hole key budget overflow")?;
-                if key_bytes > MAX_HOLE_KEY_BYTES {
-                    return Err("aggregate hole keys exceed2MiB".into());
-                }
+            key_bytes = key_bytes.checked_add(holes.key_bytes()?).ok_or("hole key budget overflow")?;
+            if key_bytes > MAX_HOLE_KEY_BYTES {
+                return Err("aggregate hole keys exceed2MiB".into());
             }
         }
     }
