@@ -76,6 +76,32 @@ fn exact_eight_pose_npth_uses_diameter_then_owner_id_order_and_single_y_flip() {
     assert!(text.contains(&format!("; #@! TF.SameCoordinates,{}\n", p.id)));
     let expected = "M48\nMETRIC\nT01C0.000003\nT02C0.000005\nT03C0.000007\n%\nG05\nT01\nX10.000005Y-20.000003\nX10.000003Y-20.000005\nX9.999995Y-20.000003\nT02\nX10.000003Y-19.999995\nX10.000005Y-19.999997\nT03\nX9.999997Y-20.000005\nX9.999995Y-19.999997\nX9.999997Y-19.999995\nM30\n";
     assert_eq!(&text[text.find("M48\n").unwrap()..], expected);
+    let (geometry, tools) = viamind_doc::fabrication_view::parse_nonplated_xnc(text, &mut Default::default()).unwrap();
+    assert_eq!(geometry.layer, viamind_doc::fabrication_view::FabricationLayer::NonplatedDrill);
+    assert_eq!(geometry.same_coordinates, Some(p.id));
+    assert!(!geometry.unverified_common_origin);
+    assert_eq!(tools, 3);
+    let observed: Vec<_> = geometry
+        .primitives
+        .iter()
+        .map(|p| match p {
+            viamind_doc::fabrication_view::FabricationPrimitive::Circle { center, diameter } => (center.x.0, center.y.0, diameter.0),
+            _ => panic!("drill circle"),
+        })
+        .collect();
+    assert_eq!(
+        observed,
+        [
+            (10000005, 20000003, 3),
+            (10000003, 20000005, 3),
+            (9999995, 20000003, 3),
+            (10000003, 19999995, 5),
+            (10000005, 19999997, 5),
+            (9999997, 20000005, 7),
+            (9999995, 19999997, 7),
+            (9999997, 19999995, 7)
+        ]
+    );
     let s = out.manifest.nonplated_holes.unwrap();
     assert_eq!((s.authored_components, s.physical_drills, s.tool_diameters), (8, 8, 3));
 }

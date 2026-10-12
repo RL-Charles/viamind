@@ -158,6 +158,7 @@ fn color(layer: Layer) -> Color32 {
         Layer::BottomSilkscreen => Color32::from_rgb(200, 220, 255),
         Layer::Profile => Color32::YELLOW,
         Layer::Drill => Color32::from_rgb(120, 255, 255),
+        Layer::NonplatedDrill => Color32::from_rgb(210, 210, 225),
     }
 }
 impl ViamindApp {

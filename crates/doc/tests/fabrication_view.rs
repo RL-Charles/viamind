@@ -79,3 +79,44 @@ fn aggregate_budget_is_shared_across_files_and_exact_boundary_does_not_truncate(
     let definitions = (10..267).map(|id| format!("%ADD{id}C,1*%")).collect::<String>();
     assert!(parse(&(header("Copper,L1,Top", "Positive") + &definitions + "M02*")).is_err());
 }
+
+#[test]
+fn strict_nonplated_xnc_reads_independent_circle_oracle_and_refuses_wrong_plating_span_tools_and_origin() {
+    use viamind_doc::fabrication_view::{self as view, FabricationPrimitive};
+    let text = "; #@! TF.FileFunction,NonPlated,1,2,NPTH\n; #@! TF.SameCoordinates,00000000-0000-0000-0000-000000000123\nM48\nMETRIC\nT01C0.000009\n%\nG05\nT01\nX-0.000003Y0.000005\nM30\n";
+    let (geometry, tools) = view::parse_nonplated_xnc(text, &mut Default::default()).unwrap();
+    assert_eq!(tools, 1);
+    assert_eq!(geometry.layer, view::FabricationLayer::NonplatedDrill);
+    assert!(!geometry.unverified_common_origin);
+    assert_eq!(
+        geometry.primitives,
+        [FabricationPrimitive::Circle {
+            center: viamind_geom::Point::new(viamind_geom::Nm(-3), viamind_geom::Nm(-5)),
+            diameter: viamind_geom::Nm(9)
+        }]
+    );
+    assert_eq!(view::parse_xnc(text, &mut Default::default()).unwrap(), geometry);
+    for (from, to) in [
+        ("NonPlated,1,2,NPTH", "Plated,1,2,PTH"),
+        ("NonPlated,1,2,NPTH", "NonPlated,1,3,NPTH"),
+        ("000000000123", "000000000000"),
+        ("T01C0.000009", "T01C0.000009\nT01C0.000009"),
+        ("T01C0.000009", "T01C0.000009\nT02C0.000009"),
+        ("T01\nX", "T02\nX"),
+        ("C0.000009", "C100.000001"),
+        ("X-0.000003", "X-0.0000031"),
+        ("G05", "G05\nG05"),
+        ("M30", "G85\nM30"),
+        ("M30\n", ""),
+    ] {
+        assert!(view::parse_nonplated_xnc(&text.replace(from, to), &mut Default::default()).is_err(), "{from} -> {to}");
+    }
+    assert!(view::parse_nonplated_xnc(&text.replace("M48\n", "; #@! TF.FileFunction,NonPlated,1,2,NPTH\nM48\n"), &mut Default::default()).is_err());
+    let no_origin = text.lines().filter(|l| !l.contains("SameCoordinates")).collect::<Vec<_>>().join("\n");
+    assert!(view::parse_nonplated_xnc(&no_origin, &mut Default::default()).is_err());
+    assert!(view::parse_nonplated_xnc("M48\nMETRIC\n%\nG05\nM30\n", &mut Default::default()).is_err());
+    let empty = text.replace("T01C0.000009\n", "").replace("T01\nX-0.000003Y0.000005\n", "");
+    let (geometry, tools) = view::parse_nonplated_xnc(&empty, &mut Default::default()).unwrap();
+    assert_eq!(tools, 0);
+    assert!(geometry.primitives.is_empty());
+}

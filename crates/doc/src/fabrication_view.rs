@@ -22,6 +22,7 @@ pub enum FabricationLayer {
     BottomSilkscreen,
     Profile,
     Drill,
+    NonplatedDrill,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -295,16 +296,49 @@ pub fn parse_gerber(text: &str, budget: &mut FabricationReadBudget) -> Result<Fa
 }
 
 pub fn parse_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<FabricationGeometry, String> {
+    parse_drills(text, budget, false).map(|(geometry, _)| geometry)
+}
+/// Strict nonplated through span and common origin, independently interpreted from XNC text.
+pub fn parse_nonplated_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<(FabricationGeometry, usize), String> {
+    parse_drills(text, budget, true)
+}
+fn parse_drills(text: &str, budget: &mut FabricationReadBudget, require_nonplated: bool) -> Result<(FabricationGeometry, usize), String> {
     ascii(text)?;
     let (mut header, mut metric, mut body, mut drill, mut ended) = (false, false, false, false, false);
     let mut tools = BTreeMap::new();
     let mut selected = None;
     let mut primitives = Vec::new();
+    let mut attributes = BTreeSet::new();
+    let mut same_coordinates = None;
+    let mut nonplated = false;
+    let mut used_tools = BTreeSet::new();
+    let mut diameters = BTreeSet::new();
     for line in text.lines().map(str::trim).filter(|line| !line.is_empty()) {
         if ended || line.len() > 4096 {
             return Err(invalid());
         }
         budget.command()?;
+        if let Some(attribute) = line.strip_prefix("; #@! TF.") {
+            if header {
+                return Err("XNC file attributes must precede its header".into());
+            }
+            let (name, value) = attribute.split_once(',').ok_or_else(invalid)?;
+            if !attributes.insert(name) {
+                return Err("duplicate XNC file attribute".into());
+            }
+            match name {
+                "FileFunction" if value == "NonPlated,1,2,NPTH" => nonplated = true,
+                "SameCoordinates" => {
+                    let id = value.parse::<ObjectId>().map_err(|_| invalid())?;
+                    if id.as_uuid().is_nil() {
+                        return Err("XNC SameCoordinates UUID must be nonnil".into());
+                    }
+                    same_coordinates = Some(id);
+                }
+                _ => return Err("unsupported XNC plating, span or file attribute".into()),
+            }
+            continue;
+        }
         if line.starts_with(';') {
             continue;
         }
@@ -314,7 +348,7 @@ pub fn parse_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<Fabri
             metric = true;
         } else if line == "%" && header && metric && !body {
             body = true;
-        } else if line == "G05" && body {
+        } else if line == "G05" && body && (!nonplated || !drill) {
             drill = true;
         } else if line == "M30" && body && drill {
             ended = true;
@@ -328,14 +362,16 @@ pub fn parse_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<Fabri
                 }
                 let id = id.parse::<u8>().ok().filter(|n| (1..=99).contains(n)).ok_or_else(invalid)?;
                 let diameter = decimal(size, 6, 10_000_000_000)?;
-                if diameter <= 0 || tools.insert(id, diameter).is_some() {
+                if diameter <= 0 || (nonplated && (diameter > 100_000_000 || !diameters.insert(diameter))) || tools.insert(id, diameter).is_some() {
                     return Err(invalid());
                 }
             } else {
                 if !body || !drill {
                     return Err(invalid());
                 }
-                selected = Some(*tools.get(&tool.parse::<u8>().map_err(|_| invalid())?).ok_or_else(invalid)?);
+                let id = tool.parse::<u8>().map_err(|_| invalid())?;
+                selected = Some(*tools.get(&id).ok_or_else(invalid)?);
+                used_tools.insert(id);
             }
         } else if body && drill {
             let center = point(line, true)?;
@@ -346,14 +382,22 @@ pub fn parse_xnc(text: &str, budget: &mut FabricationReadBudget) -> Result<Fabri
             return Err(invalid());
         }
     }
-    if !ended {
-        return Err(invalid());
+    if !ended
+        || (require_nonplated && !nonplated)
+        || nonplated != same_coordinates.is_some()
+        || (nonplated && (attributes.len() != 2 || used_tools.len() != tools.len()))
+    {
+        return Err("incomplete XNC plating/origin/tool state".into());
     }
-    Ok(FabricationGeometry {
-        layer: FabricationLayer::Drill,
-        negative_file_polarity: false,
-        same_coordinates: None,
-        unverified_common_origin: true,
-        primitives,
-    })
+    let count = tools.len();
+    Ok((
+        FabricationGeometry {
+            layer: if nonplated { FabricationLayer::NonplatedDrill } else { FabricationLayer::Drill },
+            negative_file_polarity: false,
+            same_coordinates,
+            unverified_common_origin: same_coordinates.is_none(),
+            primitives,
+        },
+        count,
+    ))
 }
