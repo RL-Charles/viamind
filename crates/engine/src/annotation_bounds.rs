@@ -163,6 +163,12 @@ pub(super) fn predecode(value: &Value) -> Result<(), CommandError> {
                     }
                 }
             }
+            for bus in values(c.get("buses")) {
+                text(bus.get("expression"))?;
+            }
+            for entry in values(c.get("bus_entries")) {
+                text(entry.get("member"))?;
+            }
             for l in values(c.get("labels")) {
                 text(l.get("name"))?;
             }

@@ -65,6 +65,7 @@ pub fn engine_registry(engine: EngineHandle) -> anyhow::Result<ToolRegistry> {
     crate::agent_mode::register(&mut registry)?;
     crate::unrouted::register(&mut registry, engine.clone())?;
     crate::schematic_drag::register(&mut registry, engine.clone())?;
+    crate::schematic_buses::register(&mut registry, engine.clone())?;
     crate::assembly::register(&mut registry, engine.clone())?;
     crate::symbol_libraries::register(&mut registry, engine.clone())?;
     crate::symbol_packages::register(&mut registry, engine.clone())?;

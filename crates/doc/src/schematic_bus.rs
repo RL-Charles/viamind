@@ -474,8 +474,8 @@ mod tests {
         let c = project.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
         c.buses.clear();
         let legacy = crate::file::to_string(&project);
-        assert!(!legacy.contains("buses"));
-        assert!(!legacy.contains("bus_entries"));
+        assert!(!legacy.contains("\"buses\""));
+        assert!(!legacy.contains("\"bus_entries\""));
         assert_eq!(crate::file::minimum_version(&project), 5);
         let c = project.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
         c.buses.insert(project.id, SchematicBus { id: project.id, expression: "D[0..0]".into(), start: p(0, 0), end: p(1, 0) });
