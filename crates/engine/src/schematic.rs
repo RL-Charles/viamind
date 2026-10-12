@@ -68,6 +68,10 @@ impl Command for EditSchematicSheet {
         if self.edits.len() > 1000 {
             return Err(CommandError::invalid("edits", "at most 1000 edits per call"));
         }
+        viamind_doc::schematic_bus::preflight_project(project, None).map_err(|e| CommandError::invalid("buses", e))?;
+        if let Some(expected) = &self.expected {
+            crate::schematic_budget::sheet(expected, "schematic sheet guard")?;
+        }
         let mut sheet = match (self.sheet_id, &self.expected) {
             (None, None) => Sheet::new(&self.name),
             (Some(id), Some(expected)) if project.schematic.sheet(&id) == Some(expected) => expected.clone(),
@@ -179,6 +183,8 @@ pub struct SchematicQuery {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum SchematicObject {
+    Bus { bus: viamind_doc::SchematicBus },
+    BusEntry { entry: viamind_doc::SchematicBusEntry },
     Package { package: viamind_doc::symbol_package::SchematicPackage },
     Symbol { symbol: SchematicSymbol },
     Wire { wire: SchematicWire },
@@ -188,6 +194,8 @@ pub enum SchematicObject {
 impl SchematicObject {
     pub fn id(&self) -> ObjectId {
         match self {
+            Self::Bus { bus } => bus.id,
+            Self::BusEntry { entry } => entry.id,
             Self::Package { package } => package.id,
             Self::Symbol { symbol } => symbol.id,
             Self::Wire { wire } => wire.id,
@@ -216,6 +224,7 @@ impl SchematicQuery {
         if !(1..=100).contains(&limit) {
             return Err(CommandError::invalid("limit", "must be within 1..100"));
         }
+        viamind_doc::schematic_bus::preflight_project(project, None).map_err(|e| CommandError::invalid("buses", e))?;
         let mut result = SchematicQueryResult { sheets: vec![], objects: vec![], total: 0, next_offset: None };
         if let Some(id) = self.sheet_id {
             let sheet = project.schematic.sheet(&id).ok_or_else(|| CommandError::not_found("sheet", id))?;
@@ -228,6 +237,8 @@ impl SchematicQuery {
                     .chain(c.wires.keys())
                     .chain(c.junctions.keys())
                     .chain(c.labels.keys())
+                    .chain(c.buses.keys())
+                    .chain(c.bus_entries.keys())
                     .copied()
                     .collect();
                 result.total = ids.len();
@@ -244,8 +255,12 @@ impl SchematicQuery {
                             SchematicObject::Wire { wire: wire.clone() }
                         } else if let Some(junction) = c.junctions.get(&id) {
                             SchematicObject::Junction { junction: junction.clone() }
+                        } else if let Some(label) = c.labels.get(&id) {
+                            SchematicObject::Label { label: label.clone() }
+                        } else if let Some(bus) = c.buses.get(&id) {
+                            SchematicObject::Bus { bus: bus.clone() }
                         } else {
-                            SchematicObject::Label { label: c.labels[&id].clone() }
+                            SchematicObject::BusEntry { entry: c.bus_entries[&id].clone() }
                         }
                     })
                     .collect();

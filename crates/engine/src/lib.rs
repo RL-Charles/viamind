@@ -82,6 +82,11 @@ pub use schematic_component::{
     ComponentPadNet, CreateSchematicPcbComponent, SchematicComponentPlacement, SchematicComponentPreview, SchematicComponentRequest,
 };
 pub mod schematic;
+mod schematic_buses;
+pub use schematic_buses::{
+    BusSource, DeleteSchematicBus, DeleteSchematicBusBreakout, SchematicBusUnfoldPreview, SchematicBusWork, SchematicBusesQuery,
+    SchematicBusesResult, SetSchematicBus, UnfoldSchematicBusMember,
+};
 mod schematic_drag;
 pub use schematic_drag::{DragSchematicSymbol, SchematicDragPreview, SchematicDragSegment, SchematicDragWork};
 mod schematic_wires;
