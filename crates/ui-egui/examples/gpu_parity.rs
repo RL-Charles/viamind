@@ -12,6 +12,8 @@ use viamind_ui_egui::{
     layers::LayerId,
     scene::{Item, Prim},
 };
+#[path = "support/parity_admission.rs"]
+mod parity_admission;
 #[path = "support/parity_progress.rs"]
 mod parity_progress;
 #[path = "support/parity_trace.rs"]
@@ -28,6 +30,7 @@ struct Check {
     finished: Arc<Mutex<Option<bool>>>,
     trace: Option<parity_trace::Trace>,
     aborted: bool,
+    hardened: bool,
 }
 impl Check {
     fn trace_failure(&mut self, ui: &Ui, error: &str) {
@@ -48,6 +51,13 @@ impl eframe::App for Check {
         let _callback = progress.as_ref().map(|observed| observed.enter(self.step, self.frames));
         if self.aborted {
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+            return;
+        }
+        if self.hardened
+            && let Some(trace) = &self.trace
+            && let Err(error) = trace.check_hardened_input(ui.ctx())
+        {
+            self.trace_failure(ui, &error);
             return;
         }
         if let Some(trace) = &mut self.trace
@@ -142,20 +152,29 @@ impl eframe::App for Check {
                 return;
             }
             if self.step.is_multiple_of(2) {
+                let mut camera = self.app.canvas.camera;
                 match self.step / 2 {
-                    1 => self.app.canvas.camera.pan_by_screen(egui::vec2(-19.0, 13.0)),
+                    1 => camera.pan_by_screen(egui::vec2(-19.0, 13.0)),
                     2 => {
                         self.app.layers.set_visible(LayerId::IN1_CU, false);
                         self.app.layers.get_mut(LayerId::F_CU).unwrap().opacity = 0.4;
                         self.app.layers.move_layer(LayerId::B_CU, true);
                     }
-                    3 => self.app.canvas.camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 1.04),
+                    3 => camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 1.04),
                     4 => {
-                        self.app.canvas.camera.center = self.app.scene.board.center();
-                        self.app.canvas.camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 8.0);
-                        self.app.canvas.camera.pan_by_screen(egui::vec2(83.0, -47.0));
+                        camera.center = self.app.scene.board.center();
+                        camera.zoom_about(self.app.canvas.viewport.center(), self.app.canvas.viewport, 8.0);
+                        camera.pan_by_screen(egui::vec2(83.0, -47.0));
                     }
                     _ => {}
+                }
+                if self.hardened {
+                    if let Err(error) = self.app.canvas.set_manual_camera(camera) {
+                        self.trace_failure(ui, error);
+                        return;
+                    }
+                } else {
+                    self.app.canvas.camera = camera;
                 }
             }
         }
@@ -177,11 +196,25 @@ impl eframe::App for Check {
             self.trace_failure(ui, &error);
             return;
         }
-        self.frames += 1;
+        let ready = if self.hardened {
+            match self.trace.as_mut().unwrap().hardened_ready(self.step, ui.ctx()) {
+                Ok((ready, completed)) => {
+                    self.frames = completed;
+                    ready
+                }
+                Err(error) => {
+                    self.trace_failure(ui, &error);
+                    return;
+                }
+            }
+        } else {
+            self.frames += 1;
+            self.frames >= 6
+        };
         if let Some(observed) = &progress {
             observed.position(self.step, self.frames);
         }
-        if self.frames >= 6 && !self.waiting {
+        if ready && !self.waiting {
             let token = if let Some(trace) = &mut self.trace {
                 match trace.request(self.step, &self.app, ui.ctx()) {
                     Ok(token) => token,
@@ -210,16 +243,24 @@ impl eframe::App for Check {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
-    let usage = "usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY [--defer-trace-io [--progress-watchdog]]]";
+    let usage = "usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY [--defer-trace-io [--progress-watchdog [--hardened]]]]";
     let path = args.next().ok_or(usage)?;
     let mut progress_worker = None;
+    let mut hardened = false;
     let trace = match args.next() {
         Some(flag) if flag == "--trace-dir" => {
             let directory = args.next().ok_or("--trace-dir requires a NEW directory")?;
             let (deferred, progress) = match args.next() {
                 Some(flag) if flag == "--defer-trace-io" => {
                     let progress = match args.next() {
-                        Some(flag) if flag == "--progress-watchdog" && args.next().is_none() => true,
+                        Some(flag) if flag == "--progress-watchdog" => {
+                            match args.next() {
+                                Some(flag) if flag == "--hardened" && args.next().is_none() => hardened = true,
+                                None => {}
+                                Some(_) => return Err(usage.into()),
+                            }
+                            true
+                        }
                         Some(_) => return Err(usage.into()),
                         None => false,
                     };
@@ -229,6 +270,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 None => (false, false),
             };
             let mut trace = if deferred { parity_trace::Trace::deferred(directory.into())? } else { parity_trace::Trace::new(directory.into())? };
+            if hardened {
+                trace.enable_hardened()?;
+            }
             if progress {
                 progress_worker = Some(trace.enable_progress()?);
             }
@@ -267,6 +311,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 finished: shared,
                 trace,
                 aborted: false,
+                hardened,
             }))
         }),
     )
@@ -296,6 +341,107 @@ fn fixture() -> ViamindApp {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hardened_five_cases_keep_exact_cameras_and_survive_resize() {
+        let ctx = egui::Context::default();
+        let mut app = fixture();
+        let mut frames = 0usize;
+        let mut pump = |app: &mut ViamindApp, width: f32, count: usize| {
+            for _ in 0..count {
+                frames += 1;
+                let _ = ctx.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(width, 1000.0))),
+                        time: Some(frames as f64 / 60.0),
+                        ..Default::default()
+                    },
+                    |ui| app.show(ui, None),
+                );
+            }
+        };
+        for case in 0..5 {
+            let mut camera = app.canvas.camera;
+            match case {
+                1 => camera.pan_by_screen(egui::vec2(-19.0, 13.0)),
+                2 => {
+                    app.layers.set_visible(LayerId::IN1_CU, false);
+                    app.layers.get_mut(LayerId::F_CU).unwrap().opacity = 0.4;
+                    app.layers.move_layer(LayerId::B_CU, true);
+                }
+                3 => camera.zoom_about(app.canvas.viewport.center(), app.canvas.viewport, 1.04),
+                4 => {
+                    camera.center = app.scene.board.center();
+                    camera.zoom_about(app.canvas.viewport.center(), app.canvas.viewport, 8.0);
+                    camera.pan_by_screen(egui::vec2(83.0, -47.0));
+                }
+                _ => {}
+            }
+            if case != 0 {
+                app.canvas.set_manual_camera(camera).unwrap();
+            }
+            app.canvas.cache.disable_gpu();
+            pump(&mut app, 1400.0, 6);
+            let reference = (app.canvas.camera, app.canvas.viewport, app.canvas.drawn);
+            app.canvas.cache.enable_gpu(eframe::wgpu::TextureFormat::Bgra8Unorm);
+            pump(&mut app, 1400.0, 6);
+            assert_eq!((app.canvas.camera, app.canvas.viewport, app.canvas.drawn), reference);
+            assert_eq!(reference.2, [5002, 5002, 4665, 4624, 606][case]);
+            if case != 0 {
+                assert_eq!(reference.0, camera, "manual camera must not be reinterpreted");
+                pump(&mut app, 1401.0, 2);
+                assert_eq!(app.canvas.camera, camera);
+                pump(&mut app, 1400.0, 2);
+                assert_eq!((app.canvas.camera, app.canvas.viewport, app.canvas.drawn), reference);
+            }
+        }
+        assert!((app.canvas.camera.zoom - 53.69680915111379).abs() < 1e-10);
+        assert!((app.canvas.camera.center.x - 33.8096233769221).abs() < 1e-10);
+        assert!((app.canvas.camera.center.y - 25.375284784012628).abs() < 1e-10);
+        assert!(frames <= 120);
+    }
+
+    #[test]
+    fn actual_discarded_passes_do_not_submit_or_inflate_frame_settling() {
+        let ctx = egui::Context::default();
+        let mut app = fixture();
+        let temporary = tempfile::tempdir().unwrap();
+        let mut trace = parity_trace::Trace::deferred(temporary.path().join("strict")).unwrap();
+        trace.enable_hardened().unwrap();
+        let mut requests = Vec::new();
+        let mut repeated_passes = 0usize;
+        for frame in 0..10 {
+            let _ = ctx.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(1400.0, 1000.0))),
+                    time: Some(f64::from(frame) / 60.0),
+                    ..Default::default()
+                },
+                |ui| {
+                    app.show(ui, None);
+                    if ui.ctx().current_pass_index() == 0 {
+                        ui.ctx().request_discard("controlled strict harness test");
+                    } else {
+                        repeated_passes += 1;
+                    }
+                    trace.draw(0, &app, ui.ctx()).unwrap();
+                    let (ready, completed) = trace.hardened_ready(0, ui.ctx()).unwrap();
+                    assert!(completed <= frame as usize);
+                    if ui.ctx().will_discard() {
+                        assert!(!ready);
+                    }
+                    if ready && requests.is_empty() {
+                        let token = trace.request(0, &app, ui.ctx()).unwrap();
+                        ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(token));
+                        requests.push(ui.ctx().cumulative_frame_nr());
+                    }
+                },
+            );
+        }
+        assert!(repeated_passes >= 10);
+        assert_eq!(requests.len(), 1);
+        assert!(requests[0] >= 6);
+    }
 
     #[test]
     fn actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation() {

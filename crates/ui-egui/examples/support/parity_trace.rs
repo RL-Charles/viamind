@@ -157,6 +157,8 @@ struct Pending {
     frame: Frame,
     state: State,
     draw_start: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    completed_stable_frames: Option<usize>,
 }
 #[derive(Serialize)]
 struct Region {
@@ -212,6 +214,9 @@ pub struct Trace {
     deferred_images: Vec<Option<std::sync::Arc<ColorImage>>>,
     finished: bool,
     progress: Option<parity_progress::Controller>,
+    hardened: bool,
+    settling: Option<super::parity_admission::Settling>,
+    settled_draw: Option<usize>,
 }
 
 fn raw_image_bytes(size: [usize; 2], actual_pixels: usize, prior: usize) -> Result<usize, String> {
@@ -274,7 +279,46 @@ impl Trace {
             deferred_images: Vec::with_capacity(if io_mode == IoMode::Deferred { 10 } else { 0 }),
             finished: false,
             progress: None,
+            hardened: false,
+            settling: None,
+            settled_draw: None,
         })
+    }
+
+    pub fn enable_hardened(&mut self) -> Result<(), String> {
+        if self.io_mode != IoMode::Deferred || self.hardened {
+            return Err("hardened admission requires one deferred trace".into());
+        }
+        self.metadata.reserve(size_of::<super::parity_admission::Settling>() + size_of::<Option<usize>>() + size_of::<bool>())?;
+        self.hardened = true;
+        self.settling = Some(super::parity_admission::Settling::default());
+        Ok(())
+    }
+
+    pub fn check_hardened_input(&self, ctx: &Context) -> Result<(), String> {
+        let input = navigation_input(ctx)?;
+        if input.wheel != 0
+            || input.zoom != 0
+            || input.smooth_scroll != [0.0; 2]
+            || input.zoom_delta != 1.0
+            || input.home != 0
+            || input.home_held
+            || input.middle_held
+            || (input.space_held && input.pointer_delta != [0.0; 2])
+        {
+            return Err("hardened parity refused external navigation input".into());
+        }
+        Ok(())
+    }
+
+    pub fn hardened_ready(&mut self, step: usize, ctx: &Context) -> Result<(bool, usize), String> {
+        let index = self.draws.len().checked_sub(1).ok_or("hardened settling requires a drawn frame")?;
+        let current = &self.draws[index];
+        let unchanged = self.settled_draw.is_none_or(|previous| self.draws[previous].state == current.state);
+        let settling = self.settling.as_mut().ok_or("hardened settling not admitted")?;
+        let ready = settling.observe(current.frame.frame, step, unchanged, ctx.will_discard()).map_err(str::to_owned)?;
+        self.settled_draw = Some(index);
+        Ok((ready, settling.completed))
     }
 
     pub fn enable_progress(&mut self) -> Result<parity_progress::Worker, String> {
@@ -334,7 +378,13 @@ impl Trace {
             controller.progress.prepared(token.sequence);
         }
         self.requests += 1;
-        self.pending = Some(Pending { token, frame: frame(ctx), state, draw_start: self.draws.len().saturating_sub(1) });
+        self.pending = Some(Pending {
+            token,
+            frame: frame(ctx),
+            state,
+            draw_start: self.draws.len().saturating_sub(1),
+            completed_stable_frames: self.settling.as_ref().map(|settling| settling.completed),
+        });
         Ok(UserData::new(token))
     }
 
@@ -355,7 +405,7 @@ impl Trace {
         let regions = regions(app, ctx, &mut self.metadata)?;
         let supplied = user_data.data.as_ref().and_then(|d| d.downcast_ref::<Token>()).copied();
         let pending = self.pending.take();
-        let viewport_matches = viewport_id == ctx.viewport_id();
+        let viewport_matches = viewport_id == ctx.viewport_id() && (!self.hardened || viewport_id == ViewportId::ROOT);
         let valid_token = viewport_matches && pending.as_ref().is_some_and(|p| Some(p.token) == supplied && p.token.step == step);
         let state_matches_request = pending.as_ref().is_some_and(|p| p.state == state);
         let draw_states_match_request = pending.as_ref().is_some_and(|p| self.draws[p.draw_start..].iter().all(|draw| draw.state == p.state));
@@ -400,6 +450,9 @@ impl Trace {
         if !pair_dimensions_match_reference {
             return Err("diagnostic pair dimensions differ; raw images retained before comparison".into());
         }
+        if self.hardened && (!state_matches_request || !draw_states_match_request || !pair_state_matches_reference) {
+            return Err("hardened pair state differs from request, intervening draw or reference; raw images retained".into());
+        }
         Ok(())
     }
 
@@ -425,7 +478,13 @@ impl Trace {
             && self.requests == 10
             && self.images.iter().all(|r| r.valid_token && r.state_matches_request && r.draw_states_match_request && r.pair_state_matches_reference);
         let report = Report {
-            mode: if self.io_mode == IoMode::Deferred { "deferred_io_legacy_transition_trace" } else { "initial_legacy_transition_trace" },
+            mode: if self.hardened {
+                "hardened_manual_camera_completed_frame_trace"
+            } else if self.io_mode == IoMode::Deferred {
+                "deferred_io_legacy_transition_trace"
+            } else {
+                "initial_legacy_transition_trace"
+            },
             elapsed_seconds: self.started.elapsed().as_secs_f64(),
             failure,
             requests: self.requests,
@@ -434,7 +493,7 @@ impl Trace {
             paired_provenance_valid: valid,
             images: &self.images,
             ui_pass_receipts: &self.draws,
-            claim: "Observational legacy-sequence receipts only. Invalid provenance is not valid pixel parity. No renderer correction or performance claim.",
+            claim: "Harness receipts only. Invalid provenance is not valid pixel parity. No historical cause, renderer correction or performance claim.",
         };
         if let Err(error) = write_json(&self.directory.join("trace.json"), &report, &mut self.metadata) {
             // The fixed precharged allowance retains an actionable bounded failure even when
@@ -717,5 +776,75 @@ mod tests {
         let prior = immediate.metadata.used;
         assert!(immediate.enable_progress().is_err());
         assert_eq!(immediate.metadata.used, prior);
+    }
+
+    #[test]
+    fn hardened_admission_refuses_camera_draw_pair_identity_and_size_mismatches() {
+        let ctx = Context::default();
+        for failure in ["request_camera", "intervening_draw", "pair_camera", "foreign_viewport", "repeated_token", "larger", "smaller"] {
+            let temporary = tempfile::tempdir().unwrap();
+            let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
+            trace.enable_hardened().unwrap();
+            let mut app = ViamindApp::with_scene_size(1);
+            let first_size = if failure == "smaller" { [2, 2] } else { [1, 1] };
+            let image = Arc::new(ColorImage::filled(first_size, egui::Color32::WHITE));
+            trace.draw(0, &app, &ctx).unwrap();
+            let first_token = trace.request(0, &app, &ctx).unwrap();
+            if failure == "request_camera" {
+                app.canvas.camera.center.x += 1.0;
+                assert!(trace.image(0, ViewportId::ROOT, &first_token, &image, &app, &ctx).is_err());
+            } else if failure == "intervening_draw" {
+                let camera = app.canvas.camera;
+                app.canvas.camera.center.x += 1.0;
+                trace.draw(0, &app, &ctx).unwrap();
+                app.canvas.camera = camera;
+                assert!(trace.image(0, ViewportId::ROOT, &first_token, &image, &app, &ctx).is_err());
+            } else if failure == "foreign_viewport" {
+                assert!(trace.image(0, ViewportId::from_hash_of("foreign"), &first_token, &image, &app, &ctx).is_err());
+            } else {
+                trace.image(0, ViewportId::ROOT, &first_token, &image, &app, &ctx).unwrap();
+                if failure == "pair_camera" {
+                    app.canvas.camera.center.y += 1.0;
+                }
+                trace.draw(1, &app, &ctx).unwrap();
+                let token = trace.request(1, &app, &ctx).unwrap();
+                let token = if failure == "repeated_token" { &first_token } else { &token };
+                let second_size = if failure == "larger" { [2, 2] } else { [1, 1] };
+                let second = Arc::new(ColorImage::filled(second_size, egui::Color32::WHITE));
+                assert!(trace.image(1, ViewportId::ROOT, token, &second, &app, &ctx).is_err(), "{failure}");
+            }
+            assert!(trace.finish(Some(failure)).is_err());
+            assert!(trace.directory.join("image-00.p7").is_file());
+            assert!(fs::read_to_string(trace.directory.join("trace.json")).unwrap().contains("hardened_manual_camera_completed_frame_trace"));
+        }
+    }
+
+    #[test]
+    fn hardened_navigation_refusal_accepts_only_harmless_pointer_motion_and_keeps_text_private() {
+        let temporary = tempfile::tempdir().unwrap();
+        let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
+        trace.enable_hardened().unwrap();
+        for events in [
+            vec![Event::Text("private text".into()), Event::PointerMoved(egui::pos2(5.0, 10.0))],
+            vec![Event::Zoom(1.25)],
+            vec![Event::Key { key: egui::Key::Home, physical_key: None, pressed: true, repeat: false, modifiers: egui::Modifiers::NONE }],
+            vec![Event::PointerButton {
+                pos: egui::pos2(5.0, 10.0),
+                button: egui::PointerButton::Middle,
+                pressed: true,
+                modifiers: egui::Modifiers::NONE,
+            }],
+        ] {
+            let should_pass = matches!(events.first(), Some(Event::Text(_)));
+            let ctx = Context::default();
+            let _ = ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| {
+                assert_eq!(trace.check_hardened_input(ui.ctx()).is_ok(), should_pass);
+                assert!(!serde_json::to_string(&navigation_input(ui.ctx()).unwrap()).unwrap().contains("private"));
+            });
+        }
+        let mut capped = Trace::deferred(temporary.path().join("capped")).unwrap();
+        capped.metadata.used = MAX_METADATA;
+        assert!(capped.enable_hardened().is_err());
+        assert!(!capped.hardened && capped.settling.is_none());
     }
 }
