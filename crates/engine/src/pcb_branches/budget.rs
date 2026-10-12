@@ -62,8 +62,11 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
             }
         }
     }
+    viamind_doc::schematic_bus::preflight_project(project, None).map_err(BranchError::invalid)?;
     for sheet in project.schematic.sheets.values() {
         if let Some(content) = &sheet.content {
+            add(content.buses.len())?;
+            add(content.bus_entries.len())?;
             add(content.symbols.len())?;
             add(content.wires.len())?;
             add(content.junctions.len())?;

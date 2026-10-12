@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 15;
+pub const VERSION: u32 = 16;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -115,6 +115,7 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
     }
+    crate::schematic_bus::preflight_project(&project, None).map_err(FileError::Schematic)?;
     validate_holes(&project)?;
     validate_artwork(&project)?;
     validate_net_rules(&project)?;
@@ -149,6 +150,8 @@ pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileErr
 }
 
 fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
+    crate::schematic_bus::preflight_project(project, None).map_err(FileError::Schematic)?;
+    crate::schematic::validate_project(project, None).map_err(FileError::Schematic)?;
     validate_holes(project)?;
     validate_artwork(project)?;
     validate_net_rules(project)?;
@@ -171,6 +174,12 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
+    let bus_version =
+        if project.schematic.sheets.values().any(|s| s.content.as_ref().is_some_and(|c| !c.buses.is_empty() || !c.bus_entries.is_empty())) {
+            16
+        } else {
+            1
+        };
     let hole_version = if project.board.parts.values().any(|p| p.holes.is_some()) { 15 } else { 1 };
     let aperture_version =
         if project.board.parts.values().any(|p| p.pads.as_ref().is_some_and(|pads| pads.0.iter().any(|pad| pad.apertures.is_some()))) {
@@ -199,6 +208,7 @@ pub fn minimum_version(project: &Project) -> u32 {
         1
     };
     geometry_version
+        .max(bus_version)
         .max(hole_version)
         .max(assembly_version)
         .max(artwork_version)

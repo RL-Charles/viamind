@@ -100,8 +100,10 @@ pub fn schematic_view_snapshot(project: &Project, sheet_id: ObjectId) -> io::Res
     viamind_doc::schematic::validate_sheet(sheet).map_err(invalid)?;
     if project.id == sheet.id
         || sheet.content.as_ref().is_some_and(|c| {
-            c.packages
+            c.buses
                 .keys()
+                .chain(c.bus_entries.keys())
+                .chain(c.packages.keys())
                 .chain(c.symbols.keys())
                 .chain(c.wires.keys())
                 .chain(c.junctions.keys())
@@ -121,6 +123,7 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
         return Err(invalid("selected sheet exceeds 10000 objects or 100000 pins"));
     }
     if let Some(c) = &sheet.content {
+        viamind_doc::schematic_bus::budget(c).map_err(invalid)?;
         let (records, _) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
         if c.object_count().saturating_add(records.saturating_sub(c.packages.len())) > 10_000 {
             return Err(invalid("selected sheet exceeds 10000 objects including package membership records"));
@@ -150,6 +153,12 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
     add(project_name, false)?;
     add(&sheet.name, false)?;
     if let Some(c) = &sheet.content {
+        for bus in c.buses.values() {
+            add(&bus.expression, true)?;
+        }
+        for entry in c.bus_entries.values() {
+            add(&entry.member, false)?;
+        }
         for group in c.packages.values() {
             add(&group.template_name, false)?;
             for unit in &group.units {

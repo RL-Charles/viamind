@@ -220,6 +220,8 @@ pub fn preflight_project(project: &crate::Project, replacement: Option<&crate::S
     for sheet in project.schematic.sheets.values().filter(|s| Some(s.id) != replacing).chain(replacement) {
         add(1)?;
         if let Some(content) = &sheet.content {
+            add(content.buses.len())?;
+            add(content.bus_entries.len())?;
             add(content.packages.len())?;
             add(content.symbols.len())?;
             add(content.wires.len())?;

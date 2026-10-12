@@ -191,6 +191,7 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     let mut ids = BTreeSet::from([project.id]);
     for p in project.board.parts.values() {
         ids.insert(p.id);
+        ids.extend(p.holes.iter().flatten().map(|h| h.id));
         for pad in p.pads.iter().flat_map(|pads| &pads.0) {
             ids.insert(pad.id);
         }
@@ -199,7 +200,17 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     for sheet in &snapshot.sheets {
         ids.insert(sheet.id);
         if let Some(c) = &sheet.content {
-            ids.extend(c.packages.keys().chain(c.symbols.keys()).chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()).copied());
+            ids.extend(
+                c.buses
+                    .keys()
+                    .chain(c.bus_entries.keys())
+                    .chain(c.packages.keys())
+                    .chain(c.symbols.keys())
+                    .chain(c.wires.keys())
+                    .chain(c.junctions.keys())
+                    .chain(c.labels.keys())
+                    .copied(),
+            );
             for symbol in c.symbols.values() {
                 ids.extend(symbol.pins.iter().map(|p| p.id));
             }
@@ -207,7 +218,7 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     }
     let mut global_rows = 1 + project.board.parts.len() + project.board.tracks.len() + project.board.vias.len() + project.schematic.sheets.len();
     for part in project.board.parts.values() {
-        global_rows += part.pads.as_ref().map_or(0, |p| p.0.len());
+        global_rows += part.pads.as_ref().map_or(0, |p| p.0.len()) + part.holes.as_ref().map_or(0, Vec::len);
     }
     for sheet in &snapshot.sheets {
         if let Some(c) = &sheet.content {
@@ -291,6 +302,9 @@ fn plan(capture: Capture, input: DragSchematicSymbol, limit: usize) -> Result<Pl
         let b = points.contains(&key(wire.end));
         if !a && !b {
             continue;
+        }
+        if c.bus_entries.values().any(|e| e.wire_id == wire.id) {
+            return Err(invalid("connected drag cannot alter an entry-owned scalar wire; delete the explicit breakout first"));
         }
         attachments += 1;
         if attachments > 256 {
@@ -731,6 +745,7 @@ mod tests {
         let _lock = LOCK.lock().unwrap();
         let (mut project, sheet, symbol, _) = fixture();
         let part = viamind_doc::Part {
+            holes: None,
             artwork: None,
             assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
             schematic_symbol: None,
@@ -899,6 +914,7 @@ mod tests {
         let _lock = LOCK.lock().unwrap();
         let (mut project, sheet, symbol, _) = fixture();
         let pad = viamind_doc::Pad {
+            apertures: None,
             id: ObjectId::new(),
             number: "1".into(),
             position: viamind_geom::Point::new(Nm(0), Nm(0)),
@@ -909,6 +925,7 @@ mod tests {
         // Deliberate duplicate poison would fail the native validator, but the
         // borrowed aggregate must reject before that validator allocates ID sets.
         let part = viamind_doc::Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,
