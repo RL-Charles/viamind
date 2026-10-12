@@ -6,6 +6,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::parity_progress;
 use egui::{ColorImage, Context, Event, UserData, ViewportId};
 use serde::Serialize;
 use viamind_ui_egui::{ViamindApp, scene::Prim};
@@ -210,6 +211,7 @@ pub struct Trace {
     io_mode: IoMode,
     deferred_images: Vec<Option<std::sync::Arc<ColorImage>>>,
     finished: bool,
+    progress: Option<parity_progress::Controller>,
 }
 
 fn raw_image_bytes(size: [usize; 2], actual_pixels: usize, prior: usize) -> Result<usize, String> {
@@ -271,7 +273,22 @@ impl Trace {
             io_mode,
             deferred_images: Vec::with_capacity(if io_mode == IoMode::Deferred { 10 } else { 0 }),
             finished: false,
+            progress: None,
         })
+    }
+
+    pub fn enable_progress(&mut self) -> Result<parity_progress::Worker, String> {
+        if self.io_mode != IoMode::Deferred || self.progress.is_some() {
+            return Err("progress watchdog requires one deferred trace".into());
+        }
+        self.metadata.reserve(parity_progress::BUDGET_BYTES)?;
+        let (controller, worker) = parity_progress::start(self.directory.join("progress.json"), Duration::from_secs(180))?;
+        self.progress = Some(controller);
+        Ok(worker)
+    }
+
+    pub fn progress(&self) -> Option<std::sync::Arc<parity_progress::Progress>> {
+        self.progress.as_ref().map(|controller| std::sync::Arc::clone(&controller.progress))
     }
 
     pub fn check_budget(&mut self, ctx: &Context) -> Result<(), String> {
@@ -292,9 +309,13 @@ impl Trace {
         let state = State::capture(app, ctx, &mut self.metadata)?;
         let navigation_input = if self.io_mode == IoMode::Deferred { Some(navigation_input(ctx)?) } else { None };
         let s = app.canvas.cache.stats;
+        let observed_frame = frame(ctx);
+        if let Some(controller) = &self.progress {
+            controller.progress.observed_frame(observed_frame.frame, observed_frame.pass);
+        }
         self.draws.push(Draw {
             step,
-            frame: frame(ctx),
+            frame: observed_frame,
             state,
             drawn: app.canvas.drawn,
             cache: [s.tiles, s.tiles_drawn, s.tiles_built, s.vertices, s.gpu_layers, s.gpu_draw_calls],
@@ -309,6 +330,9 @@ impl Trace {
         }
         let state = State::capture(app, ctx, &mut self.metadata)?;
         let token = Token { step, sequence: self.requests };
+        if let Some(controller) = &self.progress {
+            controller.progress.prepared(token.sequence);
+        }
         self.requests += 1;
         self.pending = Some(Pending { token, frame: frame(ctx), state, draw_start: self.draws.len().saturating_sub(1) });
         Ok(UserData::new(token))
@@ -380,6 +404,17 @@ impl Trace {
     }
 
     pub fn finish(&mut self, failure: Option<&str>) -> Result<(), String> {
+        if let Some(controller) = &self.progress {
+            controller.progress.phase(parity_progress::Phase::Flushing);
+        }
+        let result = self.finish_inner(failure);
+        if let Some(controller) = &mut self.progress {
+            controller.terminal(failure.is_none() && result.is_ok());
+        }
+        result
+    }
+
+    fn finish_inner(&mut self, failure: Option<&str>) -> Result<(), String> {
         if self.finished {
             return Ok(());
         }
@@ -668,5 +703,19 @@ mod tests {
             .run_ui(egui::RawInput { events: vec![Event::PointerMoved(egui::Pos2::ZERO); MAX_INPUT_EVENTS + 1], ..Default::default() }, |ui| {
                 assert!(navigation_input(ui.ctx()).unwrap_err().contains("input event count"))
             });
+    }
+
+    #[test]
+    fn progress_state_and_full_output_are_charged_before_worker_creation() {
+        let temporary = tempfile::tempdir().unwrap();
+        let mut trace = Trace::deferred(temporary.path().join("deferred")).unwrap();
+        trace.metadata.used = MAX_METADATA - parity_progress::BUDGET_BYTES + 1;
+        assert!(trace.enable_progress().is_err());
+        assert!(trace.progress.is_none());
+        assert_eq!(fs::read_dir(&trace.directory).unwrap().count(), 0);
+        let mut immediate = Trace::new(temporary.path().join("immediate")).unwrap();
+        let prior = immediate.metadata.used;
+        assert!(immediate.enable_progress().is_err());
+        assert_eq!(immediate.metadata.used, prior);
     }
 }
