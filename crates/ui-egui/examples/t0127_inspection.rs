@@ -16,6 +16,7 @@ struct Inspection {
     passes: usize,
     controls: Vec<egui::Id>,
     prepared: serde_json::Value,
+    time_offset: f64,
     finished: bool,
 }
 impl eframe::App for Inspection {
@@ -35,7 +36,7 @@ impl eframe::App for Inspection {
         let shapes = ui.ctx().graphics(|g| g.clone().drain(&[], &Default::default()));
         assert!(shapes.len() <= 32768);
         let mut bounds = Vec::new();
-        if self.passes >= 3 {
+        if self.passes >= 6 {
             for id in &self.controls {
                 let r = ui.ctx().read_response(*id).expect("same production footer widget identity after memory transfer");
                 assert!(r.enabled());
@@ -49,7 +50,28 @@ impl eframe::App for Inspection {
                             .then_some(s.clip_rect.intersect(content))
                     })
                     .min_by(|a, b| a.area().total_cmp(&b.area()))
-                    .expect("exact native painted button background");
+                    .unwrap_or_else(|| {
+                        let near: Vec<_> = shapes
+                            .iter()
+                            .filter_map(|s| match &s.shape {
+                                egui::Shape::Rect(b) if b.rect.expand(4.0).intersects(r.rect) => Some((b.rect, s.clip_rect)),
+                                _ => None,
+                            })
+                            .collect();
+                        let texts: Vec<_> = shapes
+                            .iter()
+                            .filter_map(|s| match &s.shape {
+                                egui::Shape::Text(t) if t.visual_bounding_rect().expand(24.0).intersects(r.rect) => {
+                                    Some((t.galley.text().to_owned(), t.visual_bounding_rect()))
+                                }
+                                _ => None,
+                            })
+                            .collect();
+                        panic!(
+                            "exact native painted button background for {:?} at pass {}; nearby rects {near:?}; texts {texts:?}",
+                            r.rect, self.passes
+                        )
+                    });
                 assert!(clip.contains_rect(r.rect), "footer response must fit actual painted ancestor clip");
                 bounds.push(serde_json::json!({"response":[r.rect.min.x,r.rect.min.y,r.rect.max.x,r.rect.max.y],"effective_clip":[clip.min.x,clip.min.y,clip.max.x,clip.max.y]}));
             }
@@ -83,18 +105,21 @@ impl eframe::App for Inspection {
                 f.write_all(bytes).unwrap();
                 f.sync_all().unwrap();
             }
-            let report = serde_json::json!({"passed":true,"route":"production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event","pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"passes":self.passes,"prepared_inputs":self.prepared,"native_controls":["Preview member unfolding","Apply member unfolding","Cancel bus form"],"native_control_bounds":bounds,"full_session_unchanged":true,"complete_document_status_unchanged":true,"document_status":self.status,"native_path_and_bytes_unchanged":true,"source_cursor":self.before.cursor,"preview":self.app.schematic_buses.report,"width":self.size[0],"height":self.size[1],"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"channels":"Original Color32 RGBA and identical RGB; no unpremultiplication or flattening","preparation_scope":"Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.","self_close_requested_after_capture":true,"claims_excluded":["OS input","frame cadence","implicit bus conductance","ERC/DRC certification"]});
+            let report = serde_json::json!({"passed":true,"route":"production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event","pid":std::process::id(),"executable":std::env::current_exe().unwrap(),"passes":self.passes,"native_clock_continues_harness_seconds":self.time_offset,"prepared_inputs":self.prepared,"native_controls":["Preview member unfolding","Apply member unfolding","Cancel bus form"],"native_control_bounds":bounds,"full_session_unchanged":true,"complete_document_status_unchanged":true,"document_status":self.status,"native_path_and_bytes_unchanged":true,"source_cursor":self.before.cursor,"preview":self.app.schematic_buses.report,"width":self.size[0],"height":self.size[1],"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"nonopaque_pixels":image.pixels.iter().filter(|p|p.a()!=255).count(),"channels":"Original Color32 RGBA and identical RGB; no unpremultiplication or flattening","preparation_scope":"Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.","self_close_requested_after_capture":true,"claims_excluded":["OS input","frame cadence","implicit bus conductance","ERC/DRC certification"]});
             let mut f = std::fs::OpenOptions::new().write(true).create_new(true).open(self.output.join("native-report.json")).unwrap();
             serde_json::to_writer_pretty(&mut f, &report).unwrap();
             f.sync_all().unwrap();
             self.finished = true;
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
-        } else if self.passes == 8 {
+        } else if self.passes == 10 {
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
         }
         ui.ctx().request_repaint_after(std::time::Duration::from_millis(16));
     }
     fn raw_input_hook(&mut self, _: &egui::Context, raw: &mut egui::RawInput) {
+        // Continue the Harness clock: transferred Area fade-in state is timed in Harness seconds,
+        // and a native clock restarting at zero would keep the bus window fully transparent.
+        raw.time = raw.time.map(|t| t + self.time_offset);
         raw.focused = true;
         raw.events.retain(|e| !matches!(e, Event::WindowFocused(false)));
     }
@@ -171,10 +196,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     click(&mut h, "Explicit buses and member unfolding");
     click(&mut h, "Load scalar bus facts");
     wait(&mut h);
-    // Combo rows have no button background; their exact text must fit its actual painted clip.
-    h.get_by_label("New bus").scroll_to_me();
+    // The bus ComboBox exposes its selected text as the accessibility value, not a label.
+    h.get_by_value("New bus").scroll_to_me();
     h.run_steps(8);
-    h.get_by_label("New bus").click();
+    h.get_by_value("New bus").click();
     h.run_steps(4);
     h.get_by_label("DATA[1..0]").click();
     h.run_steps(4);
@@ -211,6 +236,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(engine.session_state(), before);
     assert_eq!(engine.document_status(), status);
     let memory = h.ctx.memory(Clone::clone);
+    let time_offset = h.ctx.input(|i| i.time);
     let mut app = h.into_state();
     let viewport = [size[0] as f32, size[1] as f32];
     let options = eframe::NativeOptions {
@@ -243,6 +269,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 passes: 0,
                 controls,
                 prepared: serde_json::json!(prepared),
+                time_offset,
                 finished: false,
             }))
         }),
