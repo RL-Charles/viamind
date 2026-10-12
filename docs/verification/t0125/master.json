@@ -1,0 +1,177 @@
+{
+  "ticket": "T-0125",
+  "source_boundaries": {
+    "approved_spec": "499ac8bf0feb8d5e1a69fa91e89ff278359c90b0",
+    "base": "47d7133869c2bdd27b8248936cda848cb749efc3",
+    "original_full": "0e4ae717cdcbb390e243a2b3a6dfeeacc97881b8",
+    "final_product_and_expanded_tests": "2e119258978e5f3e0f422cd6cabb3ebed83aa158",
+    "corrected_inspection_only": "b23a303102f57916879836f015adfe76202e5ccf"
+  },
+  "results": {
+    "original_full_workspace_passed": 1005,
+    "original_full_ignored": 1,
+    "original_extra_focused_passed": 20,
+    "final_engine_passed": 14,
+    "actual_final_tools": 119,
+    "isolated_workflow_checks": 18,
+    "python_tooling_checks": 23,
+    "actual_stdio_checks": 31,
+    "actual_stdio_plus_two_client_desktop_checks": 44,
+    "native_viewports": [
+      [
+        1600,
+        1000
+      ],
+      [
+        640,
+        400
+      ]
+    ],
+    "rgba_samples_compared": 7424000,
+    "rgb_samples_compared": 5568000,
+    "final_helper_fmt_strict_all_target_and_build_passed": true,
+    "final_exact_head_CI": "pending; independent merge gate",
+    "independent_root_real_two_client_checks": 10
+  },
+  "retained_binaries": [
+    {
+      "scope": "full-verified",
+      "source": "0e4ae717cdcbb390e243a2b3a6dfeeacc97881b8",
+      "name": "viamind",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/full-verified/viamind",
+      "sha256": "44137dbd620c56a9fe0cb49708adafc8eb77460373decc0ecb4fef6c71c0b192"
+    },
+    {
+      "scope": "full-verified",
+      "source": "0e4ae717cdcbb390e243a2b3a6dfeeacc97881b8",
+      "name": "connected-drag-inspection",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/full-verified/connected-drag-inspection",
+      "sha256": "1a589ce7350433952bba5ce5afd4c403b5a7dca62df361bc0059fa94126eb490"
+    },
+    {
+      "scope": "final-verified",
+      "source": "2e119258978e5f3e0f422cd6cabb3ebed83aa158",
+      "name": "viamind",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-verified/viamind",
+      "sha256": "44137dbd620c56a9fe0cb49708adafc8eb77460373decc0ecb4fef6c71c0b192"
+    },
+    {
+      "scope": "final-verified",
+      "source": "2e119258978e5f3e0f422cd6cabb3ebed83aa158",
+      "name": "connected-drag-inspection",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-verified/connected-drag-inspection",
+      "sha256": "c2b7ba933787ebdb1c7e383c96e51c2f017902108215a8830dbf8d08851a9323"
+    },
+    {
+      "scope": "helper-final",
+      "source": "b23a303102f57916879836f015adfe76202e5ccf",
+      "name": "connected-drag-inspection",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/helper-refreshed/connected-drag-inspection",
+      "sha256": "076540224160b6847ff136a890384af03f6a74dac7b3ea83bede1443f4f9ee4c"
+    }
+  ],
+  "external_raw_channels": [
+    {
+      "scope": "native-wide-final",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/native-wide-final/native.p7",
+      "sha256": "ba017c5a18fdd5b2c5f8af413777bb6398f96e9a7cd42f70b04db038e973d6c2"
+    },
+    {
+      "scope": "native-wide-final",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/native-wide-final/native.p6",
+      "sha256": "3929856464333c30a9fd56e3534c38f891d0029e75f86a44699a0d4f0217dab2"
+    },
+    {
+      "scope": "native-compact-final",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/native-compact-final/native.p7",
+      "sha256": "3d03322b6205a146d7e0afa0d4f7358485274756b2f0ff935d16a3e2318f5b0c"
+    },
+    {
+      "scope": "native-compact-final",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/native-compact-final/native.p6",
+      "sha256": "c66511dc498c1556f72fb76ea02505f59b8f3ab2815fe9c66ff7f62a5bfe64f2"
+    }
+  ],
+  "runtime": {
+    "production_launch": "docs/verification/t0125/production-launch.json",
+    "production_report": "docs/verification/t0125/production-final/verification.json",
+    "native_lifecycle": "docs/verification/t0125/native-lifecycle.json",
+    "scope": "PID/executable/listener identities were observed at verification time; no perpetual liveness claim. Production probe mutates and undoes only the owned fixture, honestly advancing source cursor."
+  },
+  "historical_scope": "history contains failed test-fixture/lifetime/public-page-limit runs, two withdrawn partial cancellation scopes and two failed pre-capture helper lock runs. None is counted as successful proof; original full1005 is separate from final14 expanded tests. Final normal build refreshed Rust immediately before build. Helper-only correction did not change production engine/UI.",
+  "artifacts": {
+    "crates/engine/src/lib.rs": "7bcebfae9a5e9c53778784d0c0632646004487f1ba9d7b8da79aeb09559985e0",
+    "crates/engine/src/registry.rs": "c6f39c6c675eb9813232c99797ebd12b90cb28bc0aec07652480e178d29ea5ff",
+    "crates/engine/src/schematic_connectivity.rs": "d525b95202e85ebfdbc613b513322ebb6845073b769620fb9f18d50c1080eac7",
+    "crates/engine/src/schematic_drag.rs": "41bce4865a7c01239db305d8fa5312ded0843cd38356e880f3f16e4867c7b2e9",
+    "crates/engine/tests/part_commands.rs": "f2327ab78f42ff7773abf18d73b5730710b7f74546cb00545beca41ccfc1188b",
+    "crates/mcp/src/http.rs": "58826f5b4623bbb0932bf05ea83f275d4e8a357d5567457f07169d68fe40b82d",
+    "crates/mcp/src/lib.rs": "64f465f01f01c10ba726e6db1e0d63e56bbfaa90d681ea386adc37ab2ffc02f4",
+    "crates/mcp/src/schematic_drag.rs": "f9e4eb482dbcfb42e71b0f3f213e01b95ad5f87c99590637ab099af7d10c402c",
+    "crates/mcp/tests/schematic_drag.rs": "9850e5a2c445303f9f992ed6f4541821933ff93084d20bd923b7166f33fbd4eb",
+    "crates/ui-egui/examples/t0125_inspection.rs": "bf1d4d8e63a6c09eff1aa3f6d70bf2546ae3955af83736c9e6dfdb3d0b297a58",
+    "crates/ui-egui/src/actions.rs": "6ac37e699e64899c27dc15bcdabf448c8224fc468b1cc511c64bf42ef68f7cef",
+    "crates/ui-egui/src/lib.rs": "b01fa7a9e4d9236a47e18334937d7ede48a01d5e9f6223d83ef7ee8e408aeaba",
+    "crates/ui-egui/src/schematic.rs": "3f7755ac2c507376847c4d7b9ef3fa04089073b97b3951cbab1039d0aec261c7",
+    "crates/ui-egui/src/schematic_drag.rs": "22a01328b7d218efd37028f5f1b9ee2a682eea4c8b50e857a860f066aa8f9040",
+    "crates/ui-egui/tests/schematic_drag.rs": "572546470066b8457e9c36fc8cb3df6f9d9e1381ffe03b66e35e28f9a588e5dd",
+    "docs/connected-symbol-drag-verification.md": "0b03ab47d8dca3cd6306826ffac9c01da551ad95f978802c79dcf4bb7d287f02",
+    "docs/specs/connected-symbol-drag.md": "65e217d76b2614fb0c4f218c039d5a711a39acf9bf2677b577fc8de48f7a7c94",
+    "docs/verification/t0125/build-final-identity.json": "c72eebd5a35b1fb0ab346f7f2d8e72d2791cef230db8351c2ff5861e8079775e",
+    "docs/verification/t0125/build-original-identity.json": "f63698f00c2af7e792ae4c2a629262f3be4227298963e55a57d42231395922dd",
+    "docs/verification/t0125/catalog-final/mcp-tools.json": "ef03cb82181f66bf9396ee7a85ee60b65b9a3b300d53d8e47c243c5a7db0fbdf",
+    "docs/verification/t0125/catalog-final/mcp-tools.md": "2d8094ceb4915c72757b8f58951c9f06ed420d7703dd1281dfeec1df53b917ea",
+    "docs/verification/t0125/catalog-final/verification.json": "778b5de84307b0847c3e58f6e33766e8133823b6850928f233b32ba5c5736bcc",
+    "docs/verification/t0125/commands/final-scoped.sh": "f2ad6d4d1de6a7aa41e6f21c177c3d35034bfa82a57dc6e6df1cde965dd8b6d7",
+    "docs/verification/t0125/commands/full-remaining.sh": "cdc3369abfe7092f7de4b3f80d6dd36f0803f1d9f5355906ac192741d9248c7f",
+    "docs/verification/t0125/commands/full.sh": "cc54c1c8f8bfce5e2ebdaf5a012e19aaa2db6e58c1ed1dcd5805fc96ba443150",
+    "docs/verification/t0125/commands/helper-refresh.sh": "fe7b0cd31acbccaf3ed12d2ee55588697cd945a8144641892b977059a8eca798",
+    "docs/verification/t0125/helper-final-identity.json": "4304bbd30a3c0d56eb5e0e9ba56d699223730413870073225df8a5d6464cc69f",
+    "docs/verification/t0125/history/final-scoped-withdrawal-retirement.json": "04be8ef80bafd799222f517806c2f392ff718b3ef9ccbb512ee818789e1f7b0b",
+    "docs/verification/t0125/history/final-scoped-withdrawal.json": "cd635da2caf0e8f9a195a0bfdaed579499e4bcbba6edc881b0da519082b172f9",
+    "docs/verification/t0125/history/final-scoped.log": "525f0020860be4afe5c4546adf28ebe42d48d74b5bf0d330fa2ab436dbada3cd",
+    "docs/verification/t0125/history/final-scoped2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/verification/t0125/history/final-scoped3.log": "56b0bdb7b0f483c86bd7af93c021c137326b1ba02646ea0eb72a377065533f34",
+    "docs/verification/t0125/history/final-scoped4.log": "32f9ef3436e1cddb059f40e7e8f1114cd0fa43881929ed0f419467b59606b306",
+    "docs/verification/t0125/history/focused-ui.log": "1447b273672d398947299335d942c334f4e907fc43a9974b0e3ce8c50f87367c",
+    "docs/verification/t0125/history/focused-ui2.log": "57972a066b41765d9ffdecdb88d2c8b25990a89015fd1ce91e070d879a4aa49e",
+    "docs/verification/t0125/history/full-remaining.log": "d5db1a8df3a6dc2cded384c9b319fbd1107c9cdebf22590f8027883cbddd5709",
+    "docs/verification/t0125/history/full-remaining2.log": "5d8eced2934281fe04fd805d7e441c2845156c648fcaef67c56dd0c56f550b5b",
+    "docs/verification/t0125/history/full.log": "bd9c9c54117bf3e87185cfa41334f67ec03d872b3701321263734aa1b5f2d1c2",
+    "docs/verification/t0125/history/helper-refresh.log": "f621b756e715187fc9861ca9814407a83e2d07a6cfcfb4741b3fb97e3132a0e7",
+    "docs/verification/t0125/history/native-wide-diagnostic.log": "e4e14c77bbdce75c68194bff861b997a8f5efe0208bd7a52b4a2f39837bb1a56",
+    "docs/verification/t0125/history/native-wide.log": "d317bbd6e3f3feddadb9cb509d1414c23e92e6f5db302d6feccb60e354e2f8ba",
+    "docs/verification/t0125/native-compact-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/verification/t0125/native-compact-final/native-channels.json": "a041dc2d69135aa7587ffb5663e8586e6c9a85a1be8035f391740129ac50a310",
+    "docs/verification/t0125/native-compact-final/native-report.json": "ccaca5750a2bb79b54bac4bf6599916ac9131cbd05ff7791a5eda30b04df3ad2",
+    "docs/verification/t0125/native-compact-final/native.png": "b2002fb0f9126fdffb1950be0aa4d650d06a4897cd599bcb7e3812b0094d3950",
+    "docs/verification/t0125/native-lifecycle.json": "fbc2bf32b197b63608cb2da992a49c327529eae0e923a7ddaf761f61b62c40f2",
+    "docs/verification/t0125/native-wide-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/verification/t0125/native-wide-final/native-channels.json": "ceb98907092a7a33463ed33f2d2a83b4098c2066588dc117e6819f29e80154a7",
+    "docs/verification/t0125/native-wide-final/native-report.json": "1892ce3705d3c592ae6633bc83819807fb2506dcdfca24fc78dbcd71ea5efcc3",
+    "docs/verification/t0125/native-wide-final/native.png": "d00d4239819f401ab94f43f00f1ee00e367143162dd2818feb901267f6cad31e",
+    "docs/verification/t0125/production-final.log": "2640587c774c0a9289115af9f09d2d50862b6e5d7fa5b328dafb49178c967f40",
+    "docs/verification/t0125/production-final/approval-preview.json": "8b1ad349ced42076688b2410da116e87d1ca846e544cfda1777f450001b5d132",
+    "docs/verification/t0125/production-final/http-preview.json": "daf75cdb8944cceda2ceb70b0eab6214d383a99c3668b7a61dfe14f24d009306",
+    "docs/verification/t0125/production-final/live-preview.json": "cc6a735c07e3e640fbd9145a2ea3068f9bf3d10d584be4ede2b2c88c48dc8f05",
+    "docs/verification/t0125/production-final/protected.viamind.json": "6fa6bd9732f9398f4d2738b558503c81d002019a9ba2e8be0dcc8bbe3de84c60",
+    "docs/verification/t0125/production-final/read_only-preview.json": "881597ef96ab9e1de4a47b2282d49bf52857c921438b8b833baf4a1d18d91238",
+    "docs/verification/t0125/production-final/verification.json": "2fdd7c389f2211e1eec5439a8e5f8101b6c15c178b1faf8cebb5c13e94862c00",
+    "docs/verification/t0125/production-launch.json": "02c592b85fcf72abb137dd46c98c164d14a1148d8a416b734a5e60c1bc79accb",
+    "docs/verification/t0125/production-probe.py": "7a672a37d3b84285011a4938dacb5f1a516d7583f17e9e9e6cf2cb45941a81bf",
+    "docs/verification/t0125/review-t0125-live.json": "b619116d873a28df5065c1ab7d3e54cc3d4ec9a7242d407a7692885e7155c573",
+    "docs/verification/t0125/review-t0125-live.py": "f0e2a506c9931602bc67f8b0001839aefb07a3443c36126f5969e70a34db045f",
+    "docs/verification/t0125/stdio-final.log": "693c7d253f38f91beb1db6cb57c6e5e7f45709b3ac7dce51b4498706df093b7f",
+    "docs/verification/t0125/stdio-final/approval-preview.json": "3896ff3c82c4c32d056ee86352ab0b352e549196e00671b50407e9c9acf17a8a",
+    "docs/verification/t0125/stdio-final/live-preview.json": "f42da7913c070c514581aace9bdb3c712dd99ee693d16a08e52116993c14b020",
+    "docs/verification/t0125/stdio-final/protected.viamind.json": "6fa6bd9732f9398f4d2738b558503c81d002019a9ba2e8be0dcc8bbe3de84c60",
+    "docs/verification/t0125/stdio-final/read_only-preview.json": "ee578089f6e936e967154d6a655b678eb2148613c628ec156a938292e87c11d1",
+    "docs/verification/t0125/stdio-final/verification.json": "aa530f6403148f6466de5d25fe94c9ec2825b131db09aff7f1b565e2d5102d41",
+    "docs/verification/t0125/verify-evidence.py": "5d9a44d9c4f75807f63aed4c76e18ac6b678e075a4c58c9508cd2436abb648b8",
+    "docs/verification/t0125/verify-native.py": "407a827cd93ca50caa48379e9ec100bb10fdbaeeac7b76c1093f29bd2bd47ce1",
+    "docs/verification/t0125/workflow-final/agent-board.viamind.json": "17b7d24baee3cd869c905811ac90fc12534185cfcd1cc79abd73b13192676ac1",
+    "docs/verification/t0125/workflow-final/verification.json": "6a3c5bd9f8d52c0aa7d92537ec00ebf08a36651ea4207ffcffb2365bc1501fe4",
+    "fixtures/schematic/connected-drag.viamind.json": "6fa6bd9732f9398f4d2738b558503c81d002019a9ba2e8be0dcc8bbe3de84c60",
+    "fixtures/schematic/regulator.viamind.json": "1826f61bdee38eb41779ee1e76143bad96249b0803d7702b9edf8798c87318e2"
+  }
+}

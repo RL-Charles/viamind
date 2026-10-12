@@ -1,0 +1,190 @@
+{
+  "alpha_max": 255,
+  "alpha_min": 255,
+  "channels": "original Color32 RGBA and identical RGB; no unpremultiplication or flattening",
+  "claims_excluded": [
+    "OS input",
+    "ERC/DRC certification",
+    "frame cadence"
+  ],
+  "complete_document_status_unchanged": true,
+  "document_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/production-owned.viamind.json"
+  },
+  "effective_clip_seen_controls": [
+    "Apply connected move",
+    "Cancel connected move",
+    "Delta X mm",
+    "Delta Y mm",
+    "Grid mm",
+    "Preview connected move"
+  ],
+  "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/helper-refreshed/connected-drag-inspection",
+  "frames": 71,
+  "full_session_unchanged": true,
+  "height": 400,
+  "host_only_preparation": "The host hides/reopens the connected-move window around canvas dragging; viewport is fixed. Fields are verified as reachable across actual scrolling, with all completion buttons and result visible at capture. No model changes or OS input.",
+  "local_injected_events": 21,
+  "native_path_and_bytes_unchanged": true,
+  "nonopaque_pixels": 0,
+  "passed": true,
+  "pid": 3547472,
+  "preview": {
+    "added_wire_count": 3,
+    "exact_candidate_visits": 63,
+    "expected_project": "00000000-0000-0000-0000-0000000001f5",
+    "native_graph_partition_preserved": true,
+    "original_graph_members": 12,
+    "original_position": {
+      "x": 20000000,
+      "y": 20000000
+    },
+    "scope": "Exact original native flat graph member partition and label scopes preserved; no ERC/DRC or physical continuity certification",
+    "segments": [
+      {
+        "end": {
+          "x": 10000000,
+          "y": 20000000
+        },
+        "new_segment_ordinal": null,
+        "original_wire_id": "00000000-0000-0000-0000-000000000201",
+        "start": {
+          "x": 21000000,
+          "y": 20000000
+        }
+      },
+      {
+        "end": {
+          "x": 21000000,
+          "y": 20000000
+        },
+        "new_segment_ordinal": 0,
+        "original_wire_id": "00000000-0000-0000-0000-000000000201",
+        "start": {
+          "x": 21000000,
+          "y": 25000000
+        }
+      },
+      {
+        "end": {
+          "x": 30000000,
+          "y": 21000000
+        },
+        "new_segment_ordinal": null,
+        "original_wire_id": "00000000-0000-0000-0000-000000000202",
+        "start": {
+          "x": 25000000,
+          "y": 21000000
+        }
+      },
+      {
+        "end": {
+          "x": 25000000,
+          "y": 21000000
+        },
+        "new_segment_ordinal": 1,
+        "original_wire_id": "00000000-0000-0000-0000-000000000202",
+        "start": {
+          "x": 25000000,
+          "y": 26000000
+        }
+      },
+      {
+        "end": {
+          "x": 20000000,
+          "y": 30000000
+        },
+        "new_segment_ordinal": null,
+        "original_wire_id": "00000000-0000-0000-0000-000000000203",
+        "start": {
+          "x": 20000000,
+          "y": 28000000
+        }
+      },
+      {
+        "end": {
+          "x": 20000000,
+          "y": 28000000
+        },
+        "new_segment_ordinal": 2,
+        "original_wire_id": "00000000-0000-0000-0000-000000000203",
+        "start": {
+          "x": 23000000,
+          "y": 28000000
+        }
+      }
+    ],
+    "sheet_id": "00000000-0000-0000-0000-0000000001f6",
+    "source_cursor": {
+      "sequence": 0,
+      "stream_id": "7c2c8280-39f3-417e-8982-22b434ac6cd9"
+    },
+    "symbol_id": "00000000-0000-0000-0000-0000000001f7",
+    "target_position": {
+      "x": 23000000,
+      "y": 25000000
+    }
+  },
+  "route": "production ViamindApp pointer selection, actual visible toolbar click, local drag and native WGPU Screenshot event",
+  "sidebar_wheel_events": 4,
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "7c2c8280-39f3-417e-8982-22b434ac6cd9"
+  },
+  "visible_labels": [
+    "PCB",
+    "Schematic",
+    "File",
+    "Edit",
+    "Inspect",
+    "Synchronize…",
+    "Libraries",
+    "View",
+    "Agents live apply",
+    "Agent modes…",
+    "MCP unavailable",
+    "X 23.200 Y 25.300 mm",
+    "zoom 2.833 px/mm · 10 schematic objects",
+    "Saved",
+    "MCP off",
+    "Sheet name",
+    "Regulator rearrangement",
+    "Create schematic sheet",
+    "Rename sheet",
+    "Delete sheet",
+    "Reload sheet details",
+    "Add symbol",
+    "Add wire",
+    "Add junction",
+    "Add label",
+    "Fit schematic",
+    "Schematic objects",
+    "Draw wires on canvas",
+    "Annotate symbols",
+    "Middle drag / Space+drag pan · wheel zoom · Home fit",
+    "Run Electrical rule check to inspect native pin diagnostics.",
+    "Connected move selected symbol",
+    "Connected move active. Preview then Apply; Escape cancels the local draft.",
+    "Show connected move",
+    "VIN (Local)",
+    "GND (Local)",
+    "Connected schematic move",
+    "Drag the selected symbol, or enter a displacement. Release checks the complete native graph; Apply commits explicitly.",
+    "Local cyan geometry is unvalidated until Preview succeeds. Integer Nm; grid nearest ties away from zero.",
+    "Delta X mm",
+    "3.000000",
+    "Delta Y mm",
+    "5.000000",
+    "Grid mm",
+    "1",
+    "Preview connected move",
+    "Apply connected move",
+    "Cancel connected move",
+    "12 original graph members preserved · 3 added wires · 63 visits",
+    "Source 7c2c8280-39f3-417e-8982-22b434ac6cd9:0",
+    "Native graph preserved for this source. Apply explicitly to commit."
+  ],
+  "width": 640,
+  "window_wheel_events": 0
+}

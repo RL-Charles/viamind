@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "width": 1600,
+  "height": 1000,
+  "rgba_samples_compared": 6400000,
+  "rgb_samples_compared": 4800000,
+  "alpha_min": 255,
+  "alpha_max": 255,
+  "nonopaque_pixels": 0,
+  "all_original_RGBA_bytes_equal_to_independently_decoded_PNG": true,
+  "all_original_RGB_bytes_equal_to_P6": true,
+  "rgba_sha256": "4f8d7e2d5c10233354eafe6b3e02c23adcab62c789e600842306bde272926770",
+  "p7_sha256": "ba017c5a18fdd5b2c5f8af413777bb6398f96e9a7cd42f70b04db038e973d6c2",
+  "p6_sha256": "3929856464333c30a9fd56e3534c38f891d0029e75f86a44699a0d4f0217dab2",
+  "png_sha256": "d00d4239819f401ab94f43f00f1ee00e367143162dd2818feb901267f6cad31e"
+}

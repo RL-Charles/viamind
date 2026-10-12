@@ -15,7 +15,7 @@ use viamind_doc::{
 };
 use viamind_geom::Nm;
 
-fn nm(text: &str) -> Result<i64, String> {
+pub(crate) fn nm(text: &str) -> Result<i64, String> {
     let text = text.trim();
     let (negative, number) = if let Some(s) = text.strip_prefix('-') { (true, s) } else { (false, text.strip_prefix('+').unwrap_or(text)) };
     let mut parts = number.split('.');
@@ -308,8 +308,17 @@ impl SchematicUi {
     }
 }
 impl ViamindApp {
+    pub(crate) fn selected_schematic_ids(&self) -> Option<(ObjectId, ObjectId)> {
+        if !self.schematic.active {
+            return None;
+        }
+        self.schematic.sheet.zip(self.schematic.selected)
+    }
+    pub(crate) fn clear_schematic_object_draft(&mut self) {
+        self.schematic.draft = None;
+    }
     pub(crate) fn schematic_object_draft_active(&self) -> bool {
-        self.schematic.draft.is_some()
+        self.schematic.draft.is_some() || self.schematic_drag.active()
     }
     pub(crate) fn schematic_probe_selection(&self, project: ObjectId, stream: ObjectId) -> Option<ObjectId> {
         (self.schematic.project == Some(project) && self.schematic.stream == Some(stream)).then_some(self.schematic.selected).flatten()
@@ -403,6 +412,7 @@ impl ViamindApp {
 
     pub fn set_schematic_mode(&mut self, active: bool) {
         if !active {
+            self.schematic_drag.cancel();
             self.schematic_wires.cancel();
         }
         if active {
@@ -826,8 +836,10 @@ impl ViamindApp {
         if let Some(sheet) = sheet.as_ref() {
             self.paint_schematic_agent_presence(ui, viewport, sheet.id, content);
         }
-        let drawing_wires = self.schematic_wire_canvas(ui, &response, &painter);
-        if !drawing_wires
+        let dragging = self.schematic_drag_canvas(ui, &response, &painter, cam);
+        let drawing_wires = if dragging { false } else { self.schematic_wire_canvas(ui, &response, &painter) };
+        if !dragging
+            && !drawing_wires
             && response.clicked()
             && !ui.input(|i| i.key_down(Key::Space))
             && !self.files.busy()
