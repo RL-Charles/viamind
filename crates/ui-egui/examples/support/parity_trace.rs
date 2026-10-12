@@ -651,6 +651,13 @@ fn regions(app: &ViamindApp, ctx: &Context, budget: &mut MetadataBudget) -> Resu
     Ok(result)
 }
 
+/// Run one headless test pass. These tests upload no textures, so the pending font-atlas
+/// delta is cleared deliberately instead of tripping epaint's debug-build drop check.
+#[cfg(test)]
+pub(crate) fn headless_pass(ctx: &egui::Context, input: egui::RawInput, ui: impl FnMut(&mut egui::Ui)) {
+    ctx.run_ui(input, ui).textures_delta.clear();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -758,7 +765,7 @@ mod tests {
             assert_eq!(Arc::strong_count(original), 1, "terminal flush releases diagnostic ownership");
             let raw = fs::read(directory.join(format!("image-{index:02}.p7"))).unwrap();
             let end = raw.windows(7).position(|w| w == b"ENDHDR\n").unwrap() + 7;
-            let expected: Vec<_> = original.pixels.iter().flat_map(|p| p.to_array()).collect();
+            let expected: Vec<_> = original.pixels.iter().flat_map(egui::Color32::to_array).collect();
             assert_eq!(&raw[end..], expected);
             assert!(directory.join(format!("image-{index:02}.json")).is_file());
         }
@@ -798,7 +805,8 @@ mod tests {
     #[test]
     fn navigation_observations_refuse_excess_events_and_never_retain_text() {
         let ctx = Context::default();
-        let _ = ctx.run_ui(
+        headless_pass(
+            &ctx,
             egui::RawInput {
                 events: vec![
                     Event::Text("private input text".into()),
@@ -815,10 +823,11 @@ mod tests {
                 assert!(!serialized.contains("clipboard"));
             },
         );
-        let _ = ctx
-            .run_ui(egui::RawInput { events: vec![Event::PointerMoved(egui::Pos2::ZERO); MAX_INPUT_EVENTS + 1], ..Default::default() }, |ui| {
-                assert!(navigation_input(ui.ctx()).unwrap_err().contains("input event count"))
-            });
+        headless_pass(
+            &ctx,
+            egui::RawInput { events: vec![Event::PointerMoved(egui::Pos2::ZERO); MAX_INPUT_EVENTS + 1], ..Default::default() },
+            |ui| assert!(navigation_input(ui.ctx()).unwrap_err().contains("input event count")),
+        );
     }
 
     #[test]
@@ -844,7 +853,8 @@ mod tests {
             let mut app = ViamindApp::with_scene_size(1);
             let first_size = if failure == "smaller" { [2, 2] } else { [1, 1] };
             let ctx = Context::default();
-            let _ = ctx.run_ui(
+            headless_pass(
+                &ctx,
                 egui::RawInput {
                     screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(first_size[0] as f32, first_size[1] as f32))),
                     ..Default::default()
@@ -892,16 +902,22 @@ mod tests {
             ..Default::default()
         };
         input.viewports.get_mut(&ViewportId::ROOT).unwrap().native_pixels_per_point = Some(1.5);
-        let _ = ctx.run_ui(input, |ui| {
+        headless_pass(&ctx, input, |ui| {
             assert_eq!(expected_root_pixels(ui.ctx()).unwrap(), [1400, 1000]);
-            assert_ne!(ui.ctx().input(|i| i.content_rect()), ui.ctx().input(|i| i.viewport_rect()));
-            assert_ne!(ui.ctx().viewport_rect(), ui.ctx().input(|i| i.viewport_rect()), "public rounded UI bounds cannot recover physical size");
+            assert_ne!(ui.ctx().input(egui::InputState::content_rect), ui.ctx().input(egui::InputState::viewport_rect));
+            assert_ne!(
+                ui.ctx().viewport_rect(),
+                ui.ctx().input(egui::InputState::viewport_rect),
+                "public rounded UI bounds cannot recover physical size"
+            );
         });
         for size in [egui::vec2(1.25, 1.0), egui::vec2(0.0, 1.0), egui::vec2(2_000_000.0, 1.0)] {
             let ctx = Context::default();
-            let _ = ctx.run_ui(egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, size)), ..Default::default() }, |ui| {
-                assert!(expected_root_pixels(ui.ctx()).is_err(), "ambiguous, empty or precision-unsafe viewport: {size:?}")
-            });
+            headless_pass(
+                &ctx,
+                egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, size)), ..Default::default() },
+                |ui| assert!(expected_root_pixels(ui.ctx()).is_err(), "ambiguous, empty or precision-unsafe viewport: {size:?}"),
+            );
         }
     }
 
@@ -911,7 +927,8 @@ mod tests {
         let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
         trace.enable_hardened().unwrap();
         let ctx = Context::default();
-        let _ = ctx.run_ui(
+        headless_pass(
+            &ctx,
             egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(2.0, 2.0))), ..Default::default() },
             |_| {},
         );
@@ -956,7 +973,7 @@ mod tests {
         ] {
             let should_pass = matches!(events.first(), Some(Event::Text(_)));
             let ctx = Context::default();
-            let _ = ctx.run_ui(egui::RawInput { events, ..Default::default() }, |ui| {
+            headless_pass(&ctx, egui::RawInput { events, ..Default::default() }, |ui| {
                 assert_eq!(trace.check_hardened_input(ui.ctx()).is_ok(), should_pass);
                 assert!(!serde_json::to_string(&navigation_input(ui.ctx()).unwrap()).unwrap().contains("private"));
             });
@@ -974,7 +991,8 @@ mod tests {
         trace.enable_hardened().unwrap();
         let ctx = Context::default();
         let mut refusal = None;
-        let _ = ctx.run_ui(
+        headless_pass(
+            &ctx,
             egui::RawInput {
                 events: vec![Event::Text("private text".into()), Event::Paste("private clipboard".into()), Event::Zoom(1.25)],
                 ..Default::default()

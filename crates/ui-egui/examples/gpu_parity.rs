@@ -350,7 +350,8 @@ mod tests {
         let mut pump = |app: &mut ViamindApp, width: f32, count: usize| {
             for _ in 0..count {
                 frames += 1;
-                let _ = ctx.run_ui(
+                parity_trace::headless_pass(
+                    &ctx,
                     egui::RawInput {
                         screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(width, 1000.0))),
                         time: Some(frames as f64 / 60.0),
@@ -411,7 +412,8 @@ mod tests {
         let mut requests = Vec::new();
         let mut repeated_passes = 0usize;
         for frame in 0..10 {
-            let _ = ctx.run_ui(
+            parity_trace::headless_pass(
+                &ctx,
                 egui::RawInput {
                     screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(1400.0, 1000.0))),
                     time: Some(f64::from(frame) / 60.0),
@@ -451,7 +453,8 @@ mod tests {
         let mut pump = |app: &mut ViamindApp, size: egui::Vec2, steps: usize| {
             for _ in 0..steps {
                 inputs += 1;
-                let _ = ctx.run_ui(
+                parity_trace::headless_pass(
+                    &ctx,
                     egui::RawInput {
                         screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, size)),
                         time: Some(inputs as f64 / 60.0),
