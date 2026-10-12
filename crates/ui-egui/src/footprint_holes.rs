@@ -362,7 +362,25 @@ mod tests {
         let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(|ui, a: &mut ViamindApp| a.show(ui, None), app);
         h.run_steps(6);
         let id = input(&mut h, "Hole Y (mm)", "0.000005");
-        click(&mut h, "Hole 2: second");
+        h.get_by_value("Hole 2: second").scroll_to_me();
+        h.run_steps(10);
+        let rect = h.get_by_value("Hole 2: second").rect();
+        h.hover_at(rect.center());
+        h.run_steps(2);
+        let rect = h.get_by_value("Hole 2: second").rect();
+        let clip = h
+            .output()
+            .shapes
+            .iter()
+            .filter_map(|s| {
+                let egui::Shape::Rect(r) = &s.shape else { return None };
+                (r.rect.min.distance(rect.min) <= 0.5 && r.rect.max.distance(rect.max) <= 0.5).then_some(s.clip_rect.intersect(h.ctx.content_rect()))
+            })
+            .min_by(|a, b| a.area().total_cmp(&b.area()))
+            .expect("current combo paint");
+        assert!(clip.contains_rect(rect));
+        h.get_by_value("Hole 2: second").click();
+        h.run_steps(5);
         click(&mut h, "Hole 1: first");
         click(&mut h, "Remove selected hole");
         assert_eq!(h.state().pads.holes.as_ref().unwrap().editor.selected, Some(selected));
