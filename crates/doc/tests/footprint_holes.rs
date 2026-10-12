@@ -208,3 +208,25 @@ fn library4_presence_strict_rows_and_max_composition_preserve_old_bytes() {
     f.artwork = Some(Box::default());
     assert_eq!(footprint::from_slice(&footprint::to_vec(&f).unwrap()).unwrap(), f);
 }
+
+#[test]
+fn physical_identity_admission_rejects_global_collisions_without_choosing_a_pose_policy() {
+    let mut p = project();
+    let owner = *p.board.parts.keys().next().unwrap();
+    let mut h = hole();
+    h.id = p.id;
+    p.board.parts.get_mut(&owner).unwrap().holes = Some(vec![h.clone()]);
+    assert!(viamind_doc::footprint_holes::validate_physical_identities(&p).is_err());
+    h.id = ObjectId::new();
+    p.board.parts.get_mut(&owner).unwrap().holes = Some(vec![h.clone()]);
+    let other = *p.board.parts.keys().find(|id| **id != owner).unwrap();
+    p.board.parts.get_mut(&other).unwrap().holes = Some(vec![h]);
+    assert!(viamind_doc::footprint_holes::validate_physical_identities(&p).is_err());
+    p.board.parts.get_mut(&other).unwrap().holes = None;
+    let part = p.board.parts.get_mut(&owner).unwrap();
+    part.position.x = Nm(i64::MAX);
+    part.holes.as_mut().unwrap()[0].center = Point::new(Nm(10), Nm(10));
+    assert!(viamind_doc::resolve_hole(part, &part.holes.as_ref().unwrap()[0]).is_err());
+    // Unrouted analysis may report unknown for this pose; identity admission does not resolve it.
+    assert!(viamind_doc::footprint_holes::validate_physical_identities(&p).is_ok());
+}

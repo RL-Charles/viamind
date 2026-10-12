@@ -53,7 +53,7 @@ impl FabricationSnapshot {
     /// One permit covers all borrowed preflight and the single geometry copy.
     pub(crate) fn capture_for_job(project: &Project, calibrated: bool, populated_bom: bool) -> io::Result<Self> {
         let permit = Permit::acquire()?;
-        viamind_doc::footprint_holes::preflight_project(project, None).map_err(invalid)?;
+        viamind_doc::footprint_holes::validate_physical_identities(project).map_err(invalid)?;
         let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
         let mut count =
             project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(5));
