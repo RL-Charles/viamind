@@ -1,0 +1,37 @@
+{
+  "nonplated_holes": {
+    "include_npth": true,
+    "authored_components": 1,
+    "explicit_empty_components": 0,
+    "physical_drills": 1,
+    "tool_diameters": 1
+  },
+  "format": "viamind-output-release",
+  "version": 6,
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "exported_cursor": {
+    "stream_id": "ac5d9dad-5bf1-4b8c-abdd-585758b6363b",
+    "sequence": 0
+  },
+  "files": {
+    "assembly/bom.csv": 203,
+    "assembly/placement.csv": 330,
+    "fabrication/bottom-copper.gbr": 745,
+    "fabrication/bottom-mask.gbr": 513,
+    "fabrication/manifest.json": 1324,
+    "fabrication/nonplated-through.xnc": 224,
+    "fabrication/plated-through.xnc": 166,
+    "fabrication/profile.gbr": 734,
+    "fabrication/top-copper.gbr": 638,
+    "fabrication/top-mask.gbr": 439,
+    "job.json": 176
+  },
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, plated component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+    "Circular nonplated holes use explicit component geometry on both sides; absent hole policy is uninspected intent. No slots, drill suitability, material or manufacturer verification.",
+    "Generic placement records component origins, not manufacturer-validated assembly centroids.",
+    "No sourcing or population metadata, manufacturer presets or vendor certification."
+  ]
+}

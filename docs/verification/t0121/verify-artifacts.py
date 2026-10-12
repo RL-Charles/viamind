@@ -54,4 +54,7 @@ if a.retained:
         assert sha(Path(b['path']).read_bytes()) == b['sha256']
 for name, r in master['actual_checks'].items():
     assert r['passed'] and r['binary_sha256'] == master['binaries']['application']['sha256'], name
+final = master['rebased_final']
+for name in ['stdio', 'checked_callback_stdio']:
+    assert final[name]['passed'] and final[name]['binary_sha256'] == final['application_sha256'], name
 print('PASS', len(master['artifacts']), 'indexed hashes and', len(master['native']['captures']), 'exact native PNG RGB readbacks')

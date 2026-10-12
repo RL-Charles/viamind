@@ -49,7 +49,7 @@ Three follow-up commits finish the integration:
 The [full Linux gate log](verification/t0121/final/final3.log) shows these results:
 
 - fmt check, strict workspace/all-target Clippy, workspace tests (**1072 passed, 0 failed,
-  1 ignored**, 244 suites) and workspace build all pass.
+  1 ignored**, 242 suites) and workspace build all pass.
 - Rust inputs were touched under the shared mutex before the gates and again just before the normal
   application build.
 - The application SHA256 is `ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a`.
@@ -63,6 +63,24 @@ The [full Linux gate log](verification/t0121/final/final3.log) shows these resul
 
 Two earlier full attempts at intermediate heads failed, and their logs are kept: `final1` hit
 `command_parity` and `final2` hit the aperture clip heuristic. Both are fixed by the commits above.
+
+## Rebased final source
+
+After T-0126 merged, the branch was rebased onto main `0e8616b5`. T-0126 and T-0121 change no
+common files, and all 30 commits are identical in `git range-diff`. The gated pre-rebase source and
+evidence are tagged `verification/t0121/native-source` and `verification/t0121/native-evidence`.
+
+The rebased source `a530c641afa2ee0ea4fabd158182b0fe7315dc4a` passed the full gate again
+([log](verification/t0121/final/rebased-a530c641/final4.log)):
+
+- fmt check, strict Clippy, workspace tests (**1074 passed, 0 failed, 1 ignored**) and a retouched
+  workspace build all pass.
+- The application SHA256 is `b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc`.
+- `docs/generated` matches the catalog exactly, and the 18 workflow checks, 38 stdio checks and
+  5 checked-callback checks pass.
+
+The native captures and two-client HTTP checks below were not repeated. They remain bound to
+`02305397`.
 
 ## Actual desktop and native evidence
 

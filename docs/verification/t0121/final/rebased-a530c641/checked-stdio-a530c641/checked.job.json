@@ -1,0 +1,17 @@
+{
+  "format": "viamind-output-job",
+  "version": 6,
+  "name": "Production checked NPTH",
+  "profile": "checked_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "checks": {
+    "copper_clearance_mm": 0.0,
+    "edge_clearance_mm": 0.0,
+    "minimum_via_drill_mm": 0.0,
+    "minimum_annular_width_mm": 0.0,
+    "hole_clearance_mm": 0.0,
+    "hole_to_copper_clearance_mm": 0.0,
+    "max_violations": 1000
+  },
+  "include_npth": true
+}

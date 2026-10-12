@@ -23,7 +23,7 @@
       "passed": 1072,
       "failed": 0,
       "ignored": 1,
-      "suites": 244
+      "suites": 242
     },
     "workspace_build": "pass",
     "retouched_before_normal_build": true,
@@ -1344,6 +1344,492 @@
       "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7",
       "bytes": 1024069,
       "sha256": "fbf8bffdcc67b9cf24363cdb3eaa2033fae655567acc4d8754a1a94c010e4c25"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/catalog-a530c641-report/verification.json",
+      "bytes": 368,
+      "sha256": "d15a064e1eeca0d89a67487704331e2ce3b69ce217b0c1da00247e485cd53e0c"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-production.json",
+      "bytes": 2610,
+      "sha256": "0b0e8e27df7eaf72f70cd219759ccd0ac1c8dcccbb6f0f2181e0178c0913b677"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "1c6313c07354b966aa778924644a3aef4fae85e278158f0970ad7eaaf411d2b0"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/job.json",
+      "bytes": 427,
+      "sha256": "d4169c7b80f8fe35e97f0e4e82788d02276328a30b1cc8769b09c8d9a432659c"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/release-manifest.json",
+      "bytes": 1628,
+      "sha256": "36621542540449f5d9cede0996852489857dca9d6b1eeff728f15ed1d9bf36f5"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked-release/validation/drc.json",
+      "bytes": 1740,
+      "sha256": "21d7bd4a0a2e99aa8c794dfbe9c09fcddb5bb0c07e80c4675e47b37350a909bf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/checked-stdio-a530c641/checked.job.json",
+      "bytes": 427,
+      "sha256": "d4169c7b80f8fe35e97f0e4e82788d02276328a30b1cc8769b09c8d9a432659c"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/final4-binaries.sha256",
+      "bytes": 299,
+      "sha256": "8aa768883bfe96b13accf6a508563ea2698555338271e9e303cb4d36c7298b83"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/final4.log",
+      "bytes": 153029,
+      "sha256": "14cdccd19efc776f7223edf6f2d54b59ccd07552fae211e126c0368759169048"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/final4.sh",
+      "bytes": 1968,
+      "sha256": "69df3c486aa3702b4582f7c325a345598518bfdcc9b5511b0c0bab6a5cd401cc"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/authored.viamind.json",
+      "bytes": 4428,
+      "sha256": "4deba49009ad8c38ecbffecaf51754c57c2d200746b636bb24f172a6f51e003f"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/cli-npth/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "e67d185210a33dd094af57bdc3d3c477f7c41d7813ba6e716649ba04bb94dd8d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/corrupt-release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "5ef9c846713e8136b1710fed6c5f6b8ac9101536362a4cd45ace5bac8f393b80"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/edited.footprint.json",
+      "bytes": 771,
+      "sha256": "0ec727bfcf536ff162118fcae9b29da71dc9f3baf3779dfae315aa48de484529"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/holes.footprint.json",
+      "bytes": 629,
+      "sha256": "285022fd8b353048e177c31cbb3f9add1f4fbf4e770a74bac3286eef926a8ee8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/manifest.json",
+      "bytes": 929,
+      "sha256": "632053a0b47170001a2e946e27df06fd3b3d5bbe820293678e75b2c3c66c0a63"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/legacy.footprint.json",
+      "bytes": 471,
+      "sha256": "c19261bb702e7f45de6fc3933abc05968314d17957fe971a5a13968af01e0465"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/npth.job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/production.json",
+      "bytes": 7790,
+      "sha256": "3c582e8f76ee79243fc55b92675e175f477b985e96fd91d6b9dd4f1bc631bb6a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/stdio-a530c641/release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "5ef9c846713e8136b1710fed6c5f6b8ac9101536362a4cd45ace5bac8f393b80"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/workflow-a530c641/agent-board.viamind.json",
+      "bytes": 977,
+      "sha256": "a85af8162da415dc4352a34c4e4b5aca8d62c789e214297b1ca1bfed4555a7b0"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/rebased-a530c641/workflow-a530c641/verification.json",
+      "bytes": 1265,
+      "sha256": "179d6c664fde58392b6001c77a63b2fcf658fb025bd970e2521f095a90eb8b2a"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/viamind-a530c641",
+      "bytes": 659426448,
+      "sha256": "b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc"
     }
-  ]
+  ],
+  "rebased_final": {
+    "source": "a530c641afa2ee0ea4fabd158182b0fe7315dc4a",
+    "base_main": "0e8616b5a022c770603474e9217e7e9bd3e35c13",
+    "range_diff": "all 30 commits identical (=) versus native-source base 88c3ec12; main delta is T-0126 only, no common files",
+    "tags": {
+      "native_source": "verification/t0121/native-source",
+      "native_evidence": "verification/t0121/native-evidence"
+    },
+    "log": "docs/verification/t0121/final/rebased-a530c641/final4.log",
+    "exit": 0,
+    "fmt": "pass",
+    "strict_workspace_all_target_clippy": "pass",
+    "workspace_tests": {
+      "passed": 1074,
+      "failed": 0,
+      "ignored": 1,
+      "suites": 242
+    },
+    "workspace_build": "pass",
+    "retouched_before_normal_build": true,
+    "application_sha256": "b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc",
+    "catalog_check": "docs/generated exact, 121 tools",
+    "workflow_checks": 18,
+    "python_tests": 13,
+    "stdio": {
+      "passed": true,
+      "checks": 38,
+      "binary_sha256": "b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc"
+    },
+    "checked_callback_stdio": {
+      "passed": true,
+      "checks": 5,
+      "binary_sha256": "b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc"
+    },
+    "scope": "native captures and two-client HTTP remain bound to native-source 02305397; not repeated after the clean non-overlapping rebase"
+  }
 }
