@@ -275,6 +275,9 @@ impl OutputJobSnapshot {
         if project.board.parts.len() > 100_000 {
             return Err(invalid("output jobs support at most 100000 components"));
         }
+        if project.board.parts.values().any(|p| p.holes.is_some()) {
+            return Err(invalid("output job versions1..5 refuse authored nonplated holes; use NPTH job6"));
+        }
         // Borrowed complete membership admission before the manufacturing snapshot copy.
         for part in project.board.parts.values() {
             if job.version == 5 && part.pads.is_none() {
@@ -354,6 +357,7 @@ impl OutputJobSnapshot {
             mask_expansion_mm: self.job.mask_expansion_mm,
             include_silkscreen: self.job.include_silkscreen == Some(true),
             include_paste: self.job.include_paste == Some(true),
+            include_npth: false,
         })?;
         let mut files = BTreeMap::new();
         let mut total = 0usize;

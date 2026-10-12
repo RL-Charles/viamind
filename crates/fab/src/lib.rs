@@ -19,8 +19,8 @@ static MANUFACTURING_TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new((
 
 pub use assembly::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot, PreparedAssemblyCsv, assembly_schema, csv, write_csv};
 pub use fabrication::{
-    FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, FootprintArtworkSummary, PadApertureSummary, fabrication,
-    fabrication_schema, write_fabrication,
+    FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, FootprintArtworkSummary, NonplatedHoleSummary,
+    PadApertureSummary, fabrication, fabrication_schema, write_fabrication,
 };
 pub use snapshot::FabricationSnapshot;
 

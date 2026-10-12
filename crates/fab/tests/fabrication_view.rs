@@ -5,7 +5,7 @@ fn all_native_export_layers_parse_independently_with_exact_profile_tracks_drills
     let project = viamind_doc::file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
     let package = viamind_fab::fabrication(
         &project,
-        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false },
+        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false, include_npth: false },
     )
     .unwrap();
     let mut budget = FabricationReadBudget::default();
