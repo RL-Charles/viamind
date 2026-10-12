@@ -1,0 +1,37 @@
+{
+  "format": "viamind-footprint",
+  "version": 4,
+  "footprint": {
+    "holes": [
+      {
+        "key": "mount.A",
+        "center": {
+          "x": 3,
+          "y": 5
+        },
+        "diameter": 1000001
+      }
+    ],
+    "name": "EXPLICIT_FIXTURE",
+    "pads": [
+      {
+        "number": "1",
+        "position": {
+          "x": 2000000,
+          "y": 1500000
+        },
+        "width": 4000000,
+        "height": 1000000
+      },
+      {
+        "number": "2",
+        "position": {
+          "x": -3000000,
+          "y": -1000000
+        },
+        "width": 1200000,
+        "height": 2200000
+      }
+    ]
+  }
+}

@@ -244,6 +244,7 @@ fn axis_choice_owner_uuid_ties_explicit_sheet_order_and_exhaustion_are_determini
 fn annotation_ignores_huge_unused_board_assembly_and_rejects_malformed_package_ownership() {
     let mut p = fixture();
     let part = viamind_doc::Part {
+        holes: None,
         artwork: None,
         id: id(900),
         assembly: Some(Box::new(viamind_doc::assembly::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),

@@ -144,7 +144,7 @@ pub fn parse(source: &str) -> Result<ParsedFootprint> {
     if count_pads(&root) > 1024 {
         return Err(bad("Footprint source exceeds 1024 pads."));
     }
-    let mut footprint = Footprint { artwork: None, name: footprint_name, pads: Vec::new() };
+    let mut footprint = Footprint { holes: None, artwork: None, name: footprint_name, pads: Vec::new() };
     mark(
         &mut items,
         &root,

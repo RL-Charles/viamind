@@ -1,0 +1,25 @@
+9f900007676cbc0b23f61bac059a11968d540fb6
+ crates/ui-egui/tests/pad_apertures.rs | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/fab)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/ui-egui)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0121/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 21.05s
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-2106d29e86fc7970)
+
+running 4 tests
+test actual_detached_opening_text_identity_and_cursor_survive_earlier_pad_removal ... ok
+test actual_compact_signed_margin_is_explicit_and_stale_apply_preserves_draft_until_reload ... ok
+test actual_compact_exact_policy_apply_undo_and_cancel_preserve_copper_and_metadata ... ok
+test actual_compact_detached_policy_fields_publish_library3_without_applying_to_design ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.46s
+
+APERTURE_ORACLE1_PASS
+EXIT=0

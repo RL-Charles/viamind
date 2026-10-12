@@ -111,6 +111,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [set\_named\_net\_rules](#tool-7365745f6e616d65645f6e65745f72756c6573)
 - [set\_pad\_apertures](#tool-7365745f7061645f617065727475726573)
 - [set\_part\_assembly](#tool-7365745f706172745f617373656d626c79)
+- [set\_part\_holes](#tool-7365745f706172745f686f6c6573)
 - [set\_part\_pads](#tool-7365745f706172745f70616473)
 - [set\_selection](#tool-7365745f73656c656374696f6e)
 - [set\_track\_properties](#tool-7365745f747261636b5f70726f70657274696573)
@@ -821,7 +822,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 
 ```json
 {
-  "description": "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork or pad apertures is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.",
+  "description": "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Hole keys preserve IDs; new holes receive bounded fresh globally checked IDs, absent holes restores Legacy. Retains component placement. Full expected_cursor required when source or target artwork, pad apertures or mechanical holes is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.",
   "inputSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": false,
@@ -1057,6 +1058,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "footprint": {
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
           },
           "id": {
             "description": "Stable id of the part.",
@@ -1424,6 +1477,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             ],
             "type": [
               "object",
+              "null"
+            ]
+          },
+          "holes": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
               "null"
             ]
           },
@@ -2400,6 +2498,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "description": "Footprint name, e.g. `\"R_0603\"`.",
                       "type": "string"
                     },
+                    "holes": {
+                      "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "center": {
+                            "description": "A position on the board, in nanometres.",
+                            "properties": {
+                              "x": {
+                                "description": "Horizontal coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "y": {
+                                "description": "Vertical coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "type": "object"
+                          },
+                          "diameter": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "id": {
+                            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "key",
+                          "center",
+                          "diameter"
+                        ],
+                        "type": "object"
+                      },
+                      "type": [
+                        "array",
+                        "null"
+                      ]
+                    },
                     "id": {
                       "description": "Stable id of the part.",
                       "format": "uuid",
@@ -3297,6 +3447,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 ],
                 "type": [
                   "object",
+                  "null"
+                ]
+              },
+              "holes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "center": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "diameter": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "center",
+                    "diameter"
+                  ],
+                  "type": "object"
+                },
+                "type": [
+                  "array",
                   "null"
                 ]
               },
@@ -3921,6 +4116,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "description": "Footprint name, e.g. `\"R_0603\"`.",
                       "type": "string"
                     },
+                    "holes": {
+                      "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "center": {
+                            "description": "A position on the board, in nanometres.",
+                            "properties": {
+                              "x": {
+                                "description": "Horizontal coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "y": {
+                                "description": "Vertical coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "type": "object"
+                          },
+                          "diameter": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "id": {
+                            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "key",
+                          "center",
+                          "diameter"
+                        ],
+                        "type": "object"
+                      },
+                      "type": [
+                        "array",
+                        "null"
+                      ]
+                    },
                     "id": {
                       "description": "Stable id of the part.",
                       "format": "uuid",
@@ -4818,6 +5065,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 ],
                 "type": [
                   "object",
+                  "null"
+                ]
+              },
+              "holes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "center": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "diameter": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "center",
+                    "diameter"
+                  ],
+                  "type": "object"
+                },
+                "type": [
+                  "array",
                   "null"
                 ]
               },
@@ -7543,6 +7835,10 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "null"
         ]
       },
+      "include_npth": {
+        "default": false,
+        "type": "boolean"
+      },
       "include_paste": {
         "default": false,
         "type": "boolean"
@@ -7814,6 +8110,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "footprint": {
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
           },
           "id": {
             "description": "Stable id of the part.",
@@ -8669,6 +9017,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
           },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "id": {
             "description": "Stable id of the part.",
             "format": "uuid",
@@ -9442,6 +9842,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                     "footprint": {
                       "description": "Footprint name, e.g. `\"R_0603\"`.",
                       "type": "string"
+                    },
+                    "holes": {
+                      "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "center": {
+                            "description": "A position on the board, in nanometres.",
+                            "properties": {
+                              "x": {
+                                "description": "Horizontal coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "y": {
+                                "description": "Vertical coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "type": "object"
+                          },
+                          "diameter": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "id": {
+                            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "key",
+                          "center",
+                          "diameter"
+                        ],
+                        "type": "object"
+                      },
+                      "type": [
+                        "array",
+                        "null"
+                      ]
                     },
                     "id": {
                       "description": "Stable id of the part.",
@@ -10493,6 +10945,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "footprint": {
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
           },
           "id": {
             "description": "Stable id of the part.",
@@ -13093,6 +13597,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                   "null"
                 ]
               },
+              "holes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "center": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "diameter": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "center",
+                    "diameter"
+                  ],
+                  "type": "object"
+                },
+                "type": [
+                  "array",
+                  "null"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -13531,6 +14080,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 ],
                 "type": [
                   "object",
+                  "null"
+                ]
+              },
+              "holes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "center": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "diameter": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "center",
+                    "diameter"
+                  ],
+                  "type": "object"
+                },
+                "type": [
+                  "array",
                   "null"
                 ]
               },
@@ -14561,7 +15155,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "bottom_silkscreen",
                 "top_silkscreen",
                 "bottom_courtyard",
-                "top_courtyard"
+                "top_courtyard",
+                "nonplated_holes"
               ],
               "type": "string"
             },
@@ -14705,7 +15300,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                 "bottom_silkscreen",
                 "top_silkscreen",
                 "bottom_courtyard",
-                "top_courtyard"
+                "top_courtyard",
+                "nonplated_holes"
               ],
               "type": "string"
             },
@@ -17280,6 +17876,51 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "null"
             ]
           },
+          "holes": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "name": {
             "type": "string"
           },
@@ -17430,6 +18071,28 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "additionalProperties": false,
         "allOf": [
           {
+            "if": {
+              "properties": {
+                "version": {
+                  "enum": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "include_npth"
+                ]
+              }
+            }
+          },
+          {
             "oneOf": [
               {
                 "not": {
@@ -17560,6 +18223,26 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                     "include_calibrated_placement"
                   ]
                 }
+              },
+              {
+                "if": {
+                  "required": [
+                    "include_populated_bom"
+                  ]
+                },
+                "properties": {
+                  "version": {
+                    "const": 6
+                  }
+                },
+                "required": [
+                  "include_npth"
+                ],
+                "then": {
+                  "required": [
+                    "include_calibrated_placement"
+                  ]
+                }
               }
             ]
           }
@@ -17645,6 +18328,9 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "include_calibrated_placement": {
             "const": true
           },
+          "include_npth": {
+            "const": true
+          },
           "include_paste": {
             "const": true
           },
@@ -17677,7 +18363,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               2,
               3,
               4,
-              5
+              5,
+              6
             ]
           }
         },
@@ -18649,6 +19336,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
           },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "id": {
             "description": "Stable id of the part.",
             "format": "uuid",
@@ -19297,6 +20036,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
           },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "id": {
             "description": "Stable id of the part.",
             "format": "uuid",
@@ -19878,6 +20669,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
           },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "id": {
             "description": "Stable id of the part.",
             "format": "uuid",
@@ -20107,6 +20950,597 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "set_part_assembly"
+}
+```
+
+<a id="tool-7365745f706172745f686f6c6573"></a>
+
+## set\_part\_holes
+
+```json
+{
+  "description": "Replace one part's circular nonplated through holes with strict integer local Nm centers, positive diameters, stable mechanical keys and globally unique UUIDs. Requires project, full initial cursor, exact Part and present nullable holes. Null restores Legacy; empty array explicitly clears. One undoable Part delta or no-op; pads, nets, pose and all unrelated metadata unchanged. Native15. No electrical terminal or manufacturing certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "expected": {
+        "description": "A component placed on the board.",
+        "properties": {
+          "artwork": {
+            "additionalProperties": false,
+            "description": "Explicit mounted-side artwork; Some(empty) suppresses legacy synthetic outlines.",
+            "properties": {
+              "courtyard": {
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "min": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "width": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "min",
+                  "max",
+                  "width"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "silkscreen": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "start": {
+                      "description": "A position on the board, in nanometres.",
+                      "properties": {
+                        "x": {
+                          "description": "Horizontal coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "Vertical coordinate.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "width": {
+                      "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "silkscreen"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "assembly": {
+            "additionalProperties": false,
+            "description": "Optional explicitly entered sourcing and population instructions.",
+            "properties": {
+              "manufacturer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "mounting": {
+                "description": "Explicit user-entered assembly technology; never inferred from pad geometry.",
+                "enum": [
+                  "surface_mount",
+                  "through_hole",
+                  "hybrid",
+                  null
+                ],
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "mpn": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "placement": {
+                "additionalProperties": false,
+                "description": "Local centroid and orientation marker in the unmirrored footprint frame.",
+                "properties": {
+                  "centroid_local": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "x": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "zero_axis_mdeg": {
+                    "description": "0 points +X; 90000 points -Y. This is not a universal vendor zero.",
+                    "format": "int32",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "centroid_local",
+                  "zero_axis_mdeg"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "populate": {
+                "default": true,
+                "type": "boolean"
+              },
+              "supplier": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "supplier_sku": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "designator": {
+            "description": "Reference designator, e.g. `\"R1\"`.",
+            "type": "string"
+          },
+          "footprint": {
+            "description": "Footprint name, e.g. `\"R_0603\"`.",
+            "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "description": "Stable id of the part.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "pads": {
+            "description": "Explicit electrical pads; None retains the legacy graphical preview.",
+            "items": {
+              "additionalProperties": false,
+              "description": "A rectangular SMD pad. Net names are case-sensitive; None means unassigned.",
+              "properties": {
+                "apertures": {
+                  "additionalProperties": false,
+                  "description": "None preserves legacy openings; Some contains explicit nullable mask/paste shapes.",
+                  "properties": {
+                    "mask": {
+                      "additionalProperties": false,
+                      "description": "Absolute dimensions in the pad's local axes; odd dimensions retain half-Nm edges.",
+                      "properties": {
+                        "height": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "width",
+                        "height"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "paste": {
+                      "additionalProperties": false,
+                      "description": "Absolute dimensions in the pad's local axes; odd dimensions retain half-Nm edges.",
+                      "properties": {
+                        "height": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "width": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "width",
+                        "height"
+                      ],
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "mask",
+                    "paste"
+                  ],
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "height": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "net": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "number": {
+                  "type": "string"
+                },
+                "position": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "width": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "number",
+                "position",
+                "width",
+                "height"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "position": {
+            "description": "Position of the part origin on the board, in nanometres.",
+            "properties": {
+              "x": {
+                "description": "Horizontal coordinate.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "y": {
+                "description": "Vertical coordinate.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "object"
+          },
+          "rotation_mdeg": {
+            "description": "Rotation counter-clockwise in millidegrees, normalised to `0..360_000`.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "schematic_package": {
+            "description": "Explicit complete multi-unit package identity; mutually exclusive with a single symbol link.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "schematic_symbol": {
+            "description": "Stable schematic symbol identity; missing symbols remain explicit unresolved links.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "side": {
+            "description": "Which side of the board the part sits on.",
+            "oneOf": [
+              {
+                "const": "top",
+                "description": "Component (top) side.",
+                "type": "string"
+              },
+              {
+                "const": "bottom",
+                "description": "Solder (bottom) side.",
+                "type": "string"
+              }
+            ]
+          },
+          "value": {
+            "description": "Value, e.g. `\"10k\"`.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "designator",
+          "value",
+          "footprint",
+          "position",
+          "rotation_mdeg",
+          "side"
+        ],
+        "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "holes": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "center": {
+              "description": "A position on the board, in nanometres.",
+              "properties": {
+                "x": {
+                  "description": "Horizontal coordinate.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "y": {
+                  "description": "Vertical coordinate.",
+                  "format": "int64",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "x",
+                "y"
+              ],
+              "type": "object"
+            },
+            "diameter": {
+              "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+              "format": "int64",
+              "type": "integer"
+            },
+            "id": {
+              "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+              "format": "uuid",
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "key",
+            "center",
+            "diameter"
+          ],
+          "type": "object"
+        },
+        "type": [
+          "array",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "expected_project",
+      "expected_cursor",
+      "expected",
+      "holes"
+    ],
+    "title": "SetPartHoles",
+    "type": "object"
+  },
+  "name": "set_part_holes"
 }
 ```
 
@@ -20353,6 +21787,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "footprint": {
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
           },
           "id": {
             "description": "Stable id of the part.",
@@ -21512,6 +22998,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "description": "Footprint name, e.g. `\"R_0603\"`.",
                       "type": "string"
                     },
+                    "holes": {
+                      "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "center": {
+                            "description": "A position on the board, in nanometres.",
+                            "properties": {
+                              "x": {
+                                "description": "Horizontal coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              },
+                              "y": {
+                                "description": "Vertical coordinate.",
+                                "format": "int64",
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "type": "object"
+                          },
+                          "diameter": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "id": {
+                            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "key",
+                          "center",
+                          "diameter"
+                        ],
+                        "type": "object"
+                      },
+                      "type": [
+                        "array",
+                        "null"
+                      ]
+                    },
                     "id": {
                       "description": "Stable id of the part.",
                       "format": "uuid",
@@ -22555,6 +24093,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "description": "Footprint name, e.g. `\"R_0603\"`.",
               "type": "string"
             },
+            "holes": {
+              "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "center": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "diameter": {
+                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "id": {
+                    "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "key",
+                  "center",
+                  "diameter"
+                ],
+                "type": "object"
+              },
+              "type": [
+                "array",
+                "null"
+              ]
+            },
             "id": {
               "description": "Stable id of the part.",
               "format": "uuid",
@@ -23169,6 +24759,58 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           "footprint": {
             "description": "Footprint name, e.g. `\"R_0603\"`.",
             "type": "string"
+          },
+          "holes": {
+            "description": "Explicit circular nonplated drills; Some(empty) retains authored clear intent.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "center": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "diameter": {
+                  "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                  "format": "int64",
+                  "type": "integer"
+                },
+                "id": {
+                  "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "center",
+                "diameter"
+              ],
+              "type": "object"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
           },
           "id": {
             "description": "Stable id of the part.",

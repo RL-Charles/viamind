@@ -21,7 +21,7 @@ use crate::project::Project;
 /// Value of the envelope's `format` field.
 pub const FORMAT: &str = "viamind";
 /// Highest supported version; legacy projects retain their original schema bytes.
-pub const VERSION: u32 = 14;
+pub const VERSION: u32 = 15;
 /// File name suffix for project files, e.g. `blinky.viamind.json`.
 pub const EXTENSION: &str = "viamind.json";
 
@@ -53,6 +53,8 @@ pub enum FileError {
     Pads(String),
     #[error("invalid footprint artwork: {0}")]
     Artwork(String),
+    #[error("invalid mechanical holes: {0}")]
+    Holes(String),
     #[error("invalid named-net minima: {0}")]
     NetRules(String),
     #[error("invalid assembly metadata: {0}")]
@@ -113,6 +115,7 @@ pub fn from_str(text: &str) -> Result<Project, FileError> {
     if project.board.outline.is_some() && envelope.version < 2 {
         return Err(FileError::OutlineVersion);
     }
+    validate_holes(&project)?;
     validate_artwork(&project)?;
     validate_net_rules(&project)?;
     validate_assembly(&project)?;
@@ -146,6 +149,7 @@ pub fn save_new(project: &Project, path: impl AsRef<Path>) -> Result<(), FileErr
 }
 
 fn save_with_overwrite(project: &Project, path: &Path, overwrite: bool) -> Result<(), FileError> {
+    validate_holes(project)?;
     validate_artwork(project)?;
     validate_net_rules(project)?;
     validate_assembly(project)?;
@@ -167,6 +171,7 @@ pub fn load(path: impl AsRef<Path>) -> Result<Project, FileError> {
 
 /// Minimum native schema that preserves all project features.
 pub fn minimum_version(project: &Project) -> u32 {
+    let hole_version = if project.board.parts.values().any(|p| p.holes.is_some()) { 15 } else { 1 };
     let aperture_version =
         if project.board.parts.values().any(|p| p.pads.as_ref().is_some_and(|pads| pads.0.iter().any(|pad| pad.apertures.is_some()))) {
             14
@@ -194,6 +199,7 @@ pub fn minimum_version(project: &Project) -> u32 {
         1
     };
     geometry_version
+        .max(hole_version)
         .max(assembly_version)
         .max(artwork_version)
         .max(aperture_version)
@@ -201,9 +207,11 @@ pub fn minimum_version(project: &Project) -> u32 {
 }
 /// Validate globally unique pad identities, including collisions with other objects.
 pub fn validate_pads(project: &Project) -> Result<(), FileError> {
+    validate_holes(project)?;
     let mut ids = std::collections::BTreeSet::from([project.id]);
     ids.extend(project.schematic.sheets.keys().copied());
     ids.extend(project.board.parts.keys().copied());
+    ids.extend(project.board.parts.values().flat_map(|p| p.holes.iter().flatten().map(|h| h.id)));
     for part in project.board.parts.values() {
         if let Some(pads) = &part.pads {
             crate::Pads::try_from(pads.0.clone()).map_err(FileError::Pads)?;
@@ -219,6 +227,7 @@ pub fn validate_pads(project: &Project) -> Result<(), FileError> {
 
 /// Validate independent copper geometry, map keys and globally distinct identities.
 pub fn validate_copper(project: &Project) -> Result<(), FileError> {
+    validate_holes(project)?;
     if project.board.tracks.len() > crate::MAX_COPPER_OBJECTS || project.board.vias.len() > crate::MAX_COPPER_OBJECTS {
         return Err(FileError::Copper("at most 100000 tracks and 100000 vias per board".into()));
     }
@@ -229,6 +238,11 @@ pub fn validate_copper(project: &Project) -> Result<(), FileError> {
         }
     }
     for p in project.board.parts.values() {
+        for hole in p.holes.iter().flatten() {
+            if !ids.insert(hole.id) {
+                return Err(FileError::Holes(format!("duplicate object identity {}", hole.id)));
+            }
+        }
         for pad in p.pads.iter().flat_map(|pads| &pads.0) {
             if !ids.insert(pad.id) {
                 return Err(FileError::Copper(format!("duplicate object identity {}", pad.id)));
@@ -270,4 +284,21 @@ pub fn validate_artwork(project: &Project) -> Result<(), FileError> {
         }
     }
     Ok(())
+}
+
+/// Validate authored drills and their complete project identity namespace before copies.
+pub fn validate_holes(project: &Project) -> Result<(), FileError> {
+    crate::footprint_holes::preflight_project(project, None).map_err(FileError::Holes)?;
+    if !project.board.parts.values().any(|p| p.holes.is_some()) {
+        return Ok(());
+    }
+    for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            crate::footprint_holes::validate_part_holes(holes).map_err(FileError::Holes)?;
+            for hole in holes {
+                crate::resolve_hole(part, hole).map_err(FileError::Holes)?;
+            }
+        }
+    }
+    crate::schematic::validate_project(project, None).map_err(FileError::Holes)
 }

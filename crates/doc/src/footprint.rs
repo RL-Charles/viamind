@@ -35,6 +35,8 @@ pub struct FootprintPad {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Footprint {
+    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "crate::footprint_holes::deserialize_holes")]
+    pub holes: Option<Vec<crate::FootprintHole>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub artwork: Option<Box<crate::FootprintArtwork>>,
     pub name: String,
@@ -43,6 +45,9 @@ pub struct Footprint {
 
 impl Footprint {
     pub fn validate(&self) -> Result<(), String> {
+        if let Some(holes) = &self.holes {
+            crate::footprint_holes::validate_footprint_holes(holes)?;
+        }
         if let Some(artwork) = &self.artwork {
             artwork.validate()?;
         }
@@ -72,11 +77,15 @@ impl Footprint {
 
     /// Export committed pads and explicit artwork in the part's local frame.
     pub fn from_part(part: &crate::Part) -> Result<Self, String> {
+        if let Some(holes) = &part.holes {
+            crate::footprint_holes::validate_part_holes(holes)?;
+        }
         if let Some(artwork) = &part.artwork {
             artwork.validate()?;
         }
         let pads = part.pads.as_ref().ok_or("apply explicit electrical pads before exporting a footprint")?;
         let footprint = Self {
+            holes: part.holes.as_ref().map(|holes| holes.iter().map(crate::PartHole::detached).collect()),
             artwork: part.artwork.clone(),
             name: part.footprint.clone(),
             pads: pads
@@ -112,6 +121,16 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     let raw: serde_json::Value = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
     let version = raw.get("version").and_then(serde_json::Value::as_u64);
     let artwork = raw.get("footprint").and_then(|f| f.get("artwork"));
+    let holes = raw.get("footprint").and_then(|f| f.get("holes"));
+    if holes.and_then(serde_json::Value::as_array).is_some_and(|h| h.len() > crate::footprint_holes::MAX_HOLES_PER_OWNER) {
+        return Err("at most256 holes per owner before typed decoding".into());
+    }
+    if matches!(version, Some(1..=3)) && holes.is_some() {
+        return Err("library1..3 forbid any holes member, including null".into());
+    }
+    if version == Some(4) && !holes.is_some_and(serde_json::Value::is_array) {
+        return Err("library4 requires a present non-null holes array, including empty".into());
+    }
     let pads = raw.get("footprint").and_then(|f| f.get("pads")).and_then(serde_json::Value::as_array);
     if pads.is_some_and(|p| p.len() > 1024) {
         return Err("at most1024 footprint pads before typed decoding".into());
@@ -126,15 +145,15 @@ pub fn from_slice(bytes: &[u8]) -> Result<Footprint, String> {
     }
     if (version == Some(1) && artwork.is_some())
         || (version == Some(2) && !artwork.is_some_and(serde_json::Value::is_object))
-        || (version == Some(3) && artwork.is_some_and(|a| !a.is_object()))
+        || (matches!(version, Some(3 | 4)) && artwork.is_some_and(|a| !a.is_object()))
     {
         return Err("library1 requires artwork missing; library2 requires non-null artwork object".into());
     }
     // Decode the original bounded bytes so duplicate fields remain visible to serde.
     // The presence preflight must never become a lossy Value-to-typed roundtrip.
     let envelope: Envelope = serde_json::from_slice(bytes).map_err(|e| e.to_string())?;
-    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1..=3) {
-        return Err("expected viamind-footprint version1,2 or3".into());
+    if envelope.format != "viamind-footprint" || !matches!(envelope.version, 1..=4) {
+        return Err("expected viamind-footprint version1,2,3 or4".into());
     }
     envelope.footprint.validate()?;
     Ok(envelope.footprint)
@@ -144,7 +163,9 @@ pub fn to_vec(footprint: &Footprint) -> Result<Vec<u8>, String> {
     footprint.validate()?;
     let mut bytes = serde_json::to_vec_pretty(&Envelope {
         format: "viamind-footprint".into(),
-        version: if footprint.pads.iter().any(|p| p.apertures.is_some()) {
+        version: if footprint.holes.is_some() {
+            4
+        } else if footprint.pads.iter().any(|p| p.apertures.is_some()) {
             3
         } else if footprint.artwork.is_some() {
             2
@@ -242,7 +263,7 @@ pub fn save_new(footprint: &Footprint, path: &Path, active_project: Option<&Path
 mod io_tests {
     use super::*;
     fn footprint() -> Footprint {
-        Footprint { artwork: None, name: "Original".into(), pads: Vec::new() }
+        Footprint { holes: None, artwork: None, name: "Original".into(), pads: Vec::new() }
     }
     #[cfg(target_os = "linux")]
     #[test]

@@ -18,6 +18,10 @@ struct GeometryCounts {
 }
 fn counts(project: &Project) -> io::Result<GeometryCounts> {
     viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
+    viamind_doc::footprint_holes::validate_physical_identities(project).map_err(invalid)?;
+    let nonplated = project.board.parts.values().try_fold(0usize, |count, part| {
+        count.checked_add(part.holes.as_ref().map_or(0, Vec::len)).ok_or_else(|| invalid("checked nonplated hole count overflow"))
+    })?;
     if project.board.parts.len() > 100_000
         || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)) > viamind_drc::MAX_COPPER_SHAPES
     {
@@ -30,6 +34,12 @@ fn counts(project: &Project) -> io::Result<GeometryCounts> {
         }
         Ok(count)
     })?;
+    if project.board.parts.values().any(|part| part.holes.is_some())
+        && pads.saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len()).saturating_add(nonplated)
+            > viamind_drc::MAX_COPPER_SHAPES
+    {
+        return Err(invalid("checked job exceeds bounded DRC physical hole coverage"));
+    }
     if project.board.parts.len() > 100_000
         || pads > viamind_drc::MAX_PADS
         || project.board.tracks.len().saturating_add(project.board.vias.len().saturating_mul(2)).saturating_add(pads) > viamind_drc::MAX_COPPER_SHAPES
@@ -51,6 +61,9 @@ fn counts(project: &Project) -> io::Result<GeometryCounts> {
     }
     for part in project.board.parts.values() {
         charge(&part.designator)?;
+        for hole in part.holes.iter().flatten() {
+            charge(&hole.key)?;
+        }
         if let Some(pads) = &part.pads {
             for pad in &pads.0 {
                 charge(&pad.number)?;
@@ -73,7 +86,12 @@ fn counts(project: &Project) -> io::Result<GeometryCounts> {
     {
         return Err(invalid("checked DRC outline exceeds 200000 primitives"));
     }
-    Ok(GeometryCounts { pads, tracks: project.board.tracks.len(), vias: project.board.vias.len(), holes: project.board.vias.len() })
+    Ok(GeometryCounts {
+        pads,
+        tracks: project.board.tracks.len(),
+        vias: project.board.vias.len(),
+        holes: project.board.vias.len().checked_add(nonplated).ok_or_else(|| invalid("checked physical hole count overflow"))?,
+    })
 }
 fn require_complete(project: &Project, expected: GeometryCounts, report: &DrcReport) -> io::Result<()> {
     let coverage = &report.coverage;
@@ -94,7 +112,7 @@ fn require_complete(project: &Project, expected: GeometryCounts, report: &DrcRep
             holes: coverage.checked_holes,
         })
     {
-        return Err(invalid("checked job DRC coverage does not match every exported copper object"));
+        return Err(invalid("checked job DRC coverage does not match every exported copper object and physical hole"));
     }
     if !report.violations.is_empty() {
         return Err(invalid(format!(
@@ -217,6 +235,34 @@ mod tests {
         project.board.parts.clear();
         project.board.outline = None;
         assert!(checked_output_job_report(&project, &serde_json::to_value(rules).unwrap(), &0).unwrap_err().to_string().contains("outline"));
+    }
+    #[test]
+    fn nonplated_checked_release_counts_every_physical_drill_and_refuses_overlap_or_omission() {
+        let mut project = project();
+        let part = project.board.parts.values_mut().next().unwrap();
+        part.holes = Some(vec![viamind_doc::PartHole {
+            id: viamind_doc::ObjectId::new(),
+            key: "mount.A".into(),
+            center: viamind_geom::Point::new(viamind_geom::Nm(0), viamind_geom::Nm(8_000_000)),
+            diameter: viamind_geom::Nm(1_000_001),
+        }]);
+        let before = project.clone();
+        let expected = counts(&project).unwrap();
+        assert_eq!(expected.holes, project.board.vias.len() + 1);
+        let input = serde_json::to_value(rules()).unwrap();
+        let bytes = checked_output_job_report(&project, &input, &0).unwrap();
+        let report: Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(report["exported_geometry"]["holes"], expected.holes);
+        assert_eq!(report["report"]["coverage"]["checked_holes"], expected.holes);
+        let mut omitted = viamind_drc::run_drc(&project, &rules()).unwrap();
+        omitted.coverage.checked_holes -= 1;
+        assert!(require_complete(&project, expected, &omitted).unwrap_err().to_string().contains("physical hole"));
+        assert_eq!(project, before);
+        // The original fixture has a bottom track starting at this component origin.
+        project.board.parts.values_mut().next().unwrap().holes.as_mut().unwrap()[0].center = viamind_geom::Point::ORIGIN;
+        assert!(checked_output_job_report(&project, &input, &0).unwrap_err().to_string().contains("violations"));
+        project.board.parts.values_mut().next().unwrap().holes.as_mut().unwrap()[0].id = project.id;
+        assert!(counts(&project).is_err());
     }
     #[test]
     fn report_append_budget_is_charged_before_allocation() {

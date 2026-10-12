@@ -1,0 +1,9 @@
+{
+  "tool": "launch_app",
+  "arguments": {
+    "launch_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/launch-board-02305397.sh"
+  },
+  "returncode": 0,
+  "stdout": "{\n  \"active\": false,\n  \"bundle_id\": null,\n  \"name\": \"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/launch-board-02305397.sh\",\n  \"pid\": 84041,\n  \"running\": true,\n  \"windows\": [\n    {\n      \"app_name\": \"viamind-hole-inspection\",\n      \"bounds\": {\n        \"height\": 1100,\n        \"width\": 1600,\n        \"x\": 2080,\n        \"y\": 1215\n      },\n      \"height\": 1100,\n      \"is_on_screen\": true,\n      \"pid\": 84041,\n      \"title\": \"Untitled \u2014 Viamind\",\n      \"width\": 1600,\n      \"window_id\": 110379538750064,\n      \"x\": 2080,\n      \"y\": 1215,\n      \"z_index\": null\n    }\n  ]\n}\n",
+  "stderr": ""
+}

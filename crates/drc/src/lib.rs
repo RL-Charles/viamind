@@ -109,11 +109,17 @@ pub enum CopperReference {
         via_id: ObjectId,
         net: Option<String>,
     },
+    NonplatedHole {
+        part_id: ObjectId,
+        hole_id: ObjectId,
+        key: String,
+    },
 }
 impl CopperReference {
     pub fn selection_id(&self) -> ObjectId {
         match self {
             Self::Pad { pad } => pad.part_id,
+            Self::NonplatedHole { part_id, .. } => *part_id,
             Self::Track { track_id, .. } => *track_id,
             Self::Via { via_id, .. } => *via_id,
         }
@@ -125,11 +131,13 @@ impl CopperReference {
             }
             Self::Track { track_id, side, net } => format!("track {track_id} · {side:?} · {net:?}"),
             Self::Via { via_id, net } => format!("via {via_id} · top/bottom · {net:?}"),
+            Self::NonplatedHole { part_id, hole_id, key } => format!("nonplated hole {key} ({hole_id}) · part {part_id} · top/bottom"),
         }
     }
     fn net(&self) -> &Option<String> {
         match self {
             Self::Pad { pad } => &pad.net,
+            Self::NonplatedHole { .. } => &None,
             Self::Track { net, .. } | Self::Via { net, .. } => net,
         }
     }
@@ -137,7 +145,7 @@ impl CopperReference {
         match self {
             Self::Pad { pad } => side_mask(pad.side),
             Self::Track { side, .. } => side_mask(*side),
-            Self::Via { .. } => 3,
+            Self::Via { .. } | Self::NonplatedHole { .. } => 3,
         }
     }
 }
@@ -210,7 +218,7 @@ pub struct DrcReport {
 }
 struct Copper {
     reference: CopperReference,
-    shape: Shape,
+    shape: Option<Shape>,
     hole: Option<Shape>,
     bbox: Rect,
 }
@@ -236,19 +244,20 @@ impl Substrate {
         Self { rings, edges: segments, index }
     }
     fn violation(&self, copper: &Copper, required: Nm) -> Option<(ViolationKind, Boundary, f64)> {
+        let shape = copper.shape.or(copper.hole).expect("physical copper or drill");
         // A boundary segment through the open pad interior detects notches and enclosed holes.
         let mut nearby: Vec<_> = self.index.query_rect(&copper.bbox).map(|(i, _)| i).collect();
         nearby.sort_unstable();
         for i in nearby {
             let (a, b, kind) = self.edges[i];
-            if copper.shape.segment_enters(a, b) {
+            if shape.segment_enters(a, b) {
                 return Some((ViolationKind::OutsideSubstrate, kind, 0.0));
             }
         }
         for (kind, ring, bbox) in &self.rings {
             let outside = match kind {
-                Boundary::Outer => !contains(ring, copper.shape.sample(), true),
-                Boundary::Cutout { .. } => bbox.intersects(&copper.bbox) && contains(ring, copper.shape.sample(), false),
+                Boundary::Outer => !contains(ring, shape.sample(), true),
+                Boundary::Cutout { .. } => bbox.intersects(&copper.bbox) && contains(ring, shape.sample(), false),
             };
             if outside {
                 return Some((ViolationKind::OutsideSubstrate, *kind, 0.0));
@@ -259,7 +268,7 @@ impl Substrate {
         candidates.sort_unstable();
         for i in candidates {
             let (a, b, kind) = self.edges[i];
-            let distance = copper.shape.segment_distance(a, b);
+            let distance = shape.segment_distance(a, b);
             if distance + EPS < required.0 as f64 && nearest.as_ref().is_none_or(|(_, _, best)| distance < *best) {
                 nearest = Some((ViolationKind::BoardEdgeClearance, kind, distance));
             }
@@ -281,6 +290,19 @@ impl DrcReport {
 pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcError> {
     viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| DrcError(e.into()))?;
     let rules = input.validate()?;
+    viamind_doc::footprint_holes::validate_physical_identities(project).map_err(DrcError)?;
+    // Charge every physical row before building geometry, including mechanical-only Parts.
+    let authored_holes = project.board.parts.values().any(|p| p.holes.is_some());
+    let mut physical_rows = project.board.tracks.len().saturating_add(project.board.vias.len());
+    let mut npth_count = 0usize;
+    for part in project.board.parts.values() {
+        let holes = part.holes.as_ref().map_or(0, Vec::len);
+        npth_count = npth_count.saturating_add(holes);
+        physical_rows = physical_rows.saturating_add(holes).saturating_add(part.pads.as_ref().map_or(0, |p| p.0.len()));
+        if authored_holes && physical_rows > MAX_COPPER_SHAPES {
+            return Err(DrcError(format!("at most {MAX_COPPER_SHAPES} physical pad/track/via/hole shapes are supported per run")));
+        }
+    }
     if let Some(outline) = &project.board.outline {
         outline.validate().map_err(|e| DrcError(e.to_string()))?;
     }
@@ -316,11 +338,36 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             .to_vec(),
         },
     };
+    if authored_holes {
+        report.coverage.checks_not_performed[2] = "through-hole footprint pads and plated drill-to-edge clearance".into();
+    }
     if project.board.outline.is_none() {
         report.coverage.checks_not_performed.push("board-edge/substrate checks: no explicit board outline".into());
     }
     let mut copper = Vec::new();
     for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(DrcError)?;
+            if !holes.is_empty()
+                && ([part.position.x.0, part.position.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000)
+                    || !(0..360_000).contains(&part.rotation_mdeg))
+            {
+                return Err(DrcError(
+                    "nonplated hole transform requires origin within +/-10000 mm and rotation within 0..360000 millidegrees".into(),
+                ));
+            }
+            for hole in holes {
+                let resolved = viamind_doc::footprint_holes::resolve_hole(part, hole).map_err(DrcError)?;
+                let center = point(resolved.center);
+                let shape = Shape::Capsule { a: center, b: center, radius: resolved.diameter.0 as f64 / 2.0 };
+                copper.push(Copper {
+                    reference: CopperReference::NonplatedHole { part_id: part.id, hole_id: hole.id, key: hole.key.clone() },
+                    shape: None,
+                    hole: Some(shape),
+                    bbox: shape.bbox(),
+                });
+            }
+        }
         let reason = if part.pads.is_none() {
             Some("legacy footprint preview has no explicit copper-pad model")
         } else if [part.position.x.0, part.position.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000)
@@ -341,7 +388,7 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
         }
         let pads = part.pads.as_ref().expect("modeled part");
         viamind_doc::Pads::try_from(pads.0.clone()).map_err(|e| DrcError(format!("part {}: {e}", part.id)))?;
-        if copper.len() + pads.0.len() > MAX_PADS {
+        if report.coverage.checked_pads + pads.0.len() > MAX_PADS {
             return Err(DrcError(format!("at most {MAX_PADS} explicit pads are supported per run")));
         }
         for pad in &pads.0 {
@@ -357,11 +404,12 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
                     net: pad.net.clone(),
                 },
             };
-            copper.push(Copper { reference, shape, hole: None, bbox });
+            report.coverage.checked_pads += 1;
+            report.coverage.unassigned_pads += usize::from(pad.net.is_none());
+            copper.push(Copper { reference, shape: Some(shape), hole: None, bbox });
         }
     }
-    report.coverage.checked_pads = copper.len();
-    report.coverage.unassigned_pads = copper.iter().filter(|p| p.reference.net().is_none()).count();
+    report.coverage.checked_holes = npth_count;
     if copper.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len()) > MAX_COPPER_SHAPES {
         return Err(DrcError(format!("at most {MAX_COPPER_SHAPES} total pad/track/via copper shapes are supported per run")));
     }
@@ -374,7 +422,7 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
         };
         copper.push(Copper {
             reference: CopperReference::Track { track_id: track.id, side, net: track.net.clone() },
-            shape,
+            shape: Some(shape),
             hole: None,
             bbox: shape.bbox(),
         });
@@ -402,7 +450,7 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
         let reference = CopperReference::Via { via_id: via.id, net: via.net.clone() };
         copper.push(Copper {
             reference: reference.clone(),
-            shape,
+            shape: Some(shape),
             hole: Some(Shape::Capsule { a: center, b: center, radius: via.drill.0 as f64 / 2.0 }),
             bbox: shape.bbox(),
         });
@@ -447,7 +495,13 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
                 break;
             }
             if let Some((kind, boundary, distance)) = substrate.violation(pad, report.rules.edge_clearance) {
-                let message = if kind == ViolationKind::OutsideSubstrate {
+                let message = if matches!(pad.reference, CopperReference::NonplatedHole { .. }) {
+                    if kind == ViolationKind::OutsideSubstrate {
+                        "nonplated drill extends outside the board or into a cutout"
+                    } else {
+                        "nonplated drill is too close to the board/cutout boundary"
+                    }
+                } else if kind == ViolationKind::OutsideSubstrate {
                     "copper extends outside the board or into a cutout"
                 } else {
                     "copper is too close to the board/cutout boundary"
@@ -490,10 +544,13 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             let same_net = pad.reference.net().is_some() && pad.reference.net() == other.reference.net();
             let shared_layer = pad.reference.layers() & other.reference.layers() != 0;
             let mut checks = Vec::with_capacity(4);
-            if shared_layer && !same_net {
+            if let (Some(a), Some(b)) = (pad.shape, other.shape)
+                && shared_layer
+                && !same_net
+            {
                 checks.push((
                     ViolationKind::CopperClearance,
-                    pad.shape.distance(other.shape),
+                    a.distance(b),
                     viamind_doc::named_copper_clearance(
                         &report.document_net_rules,
                         report.rules.copper_clearance,
@@ -502,15 +559,24 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
                     ),
                     "different-net or unassigned copper touches/overlaps or is below clearance",
                 ));
-                for (hole, shape) in [(pad.hole, other.shape), (other.hole, pad.shape)] {
-                    if let Some(hole) = hole {
-                        checks.push((
-                            ViolationKind::HoleToCopperClearance,
-                            hole.distance(shape),
-                            report.rules.hole_to_copper_clearance,
-                            "via drill touches/overlaps foreign copper or is below hole-to-copper clearance",
-                        ));
-                    }
+            }
+            // NPTH is a physical exclusion on both sides, for every net including its owner's copper.
+            // Existing plated-via ownership exemption remains limited to that plated drill.
+            for (drill, other) in [(pad, other), (other, pad)] {
+                if shared_layer
+                    && (drill.shape.is_none() || !same_net)
+                    && let (Some(hole), Some(shape)) = (drill.hole, other.shape)
+                {
+                    checks.push((
+                        ViolationKind::HoleToCopperClearance,
+                        hole.distance(shape),
+                        report.rules.hole_to_copper_clearance,
+                        if drill.shape.is_none() {
+                            "nonplated drill touches/overlaps copper or is below hole-to-copper clearance"
+                        } else {
+                            "via drill touches/overlaps foreign copper or is below hole-to-copper clearance"
+                        },
+                    ));
                 }
             }
             if let (Some(a), Some(b)) = (pad.hole, other.hole) {
@@ -518,7 +584,11 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
                     ViolationKind::HoleClearance,
                     a.distance(b),
                     report.rules.hole_clearance,
-                    "drilled via holes touch/overlap or are below physical hole spacing",
+                    if pad.shape.is_none() || other.shape.is_none() {
+                        "physical drilled holes touch/overlap or are below physical hole spacing"
+                    } else {
+                        "drilled via holes touch/overlap or are below physical hole spacing"
+                    },
                 ));
             }
             // Both directed hole/copper checks may have the same kind; retain the smallest measured gap once.

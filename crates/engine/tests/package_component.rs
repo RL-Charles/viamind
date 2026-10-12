@@ -53,6 +53,7 @@ fn request(engine: &EngineHandle) -> PackageComponentRequest {
         placement: PackageComponentPlacement {
             package_id: engine.read(|p| *p.schematic.sheets.values().next().unwrap().content.as_ref().unwrap().packages.keys().next().unwrap()),
             footprint: Footprint {
+                holes: None,
                 artwork: None,
                 name: "Authored-14pad".into(),
                 pads: (1..=14)
@@ -508,4 +509,27 @@ fn actual_package_annotation_then_forward_sync_updates_one_owner_and_preserves_g
     assert_eq!(e.read(Clone::clone), after_annotation.project);
     e.undo_own(Origin::agent("annotator")).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
+}
+
+#[test]
+fn linked_creation_refuses_authored_hole_policy_without_silent_loss_or_mutation() {
+    for rows in [vec![], vec![viamind_doc::footprint_holes::FootprintHole { key: "mount".into(), center: Point::ORIGIN, diameter: Nm(1_000_001) }]] {
+        let e = fixture();
+        let mut req = request(&e);
+        let mut command = e.preview_package_pcb_component(req.clone()).unwrap().command;
+        req.placement.footprint.holes = Some(rows.clone());
+        command.placement.footprint.holes = Some(rows);
+        let before = e.session_state();
+        assert!(e.preview_package_pcb_component(req).unwrap_err().to_string().contains("Legacy holes"));
+        assert_eq!(e.session_state(), before);
+        assert!(e.execute_typed(command.clone(), Origin::User).unwrap_err().to_string().contains("Legacy holes"));
+        assert_eq!(e.session_state(), before);
+        assert!(
+            e.execute(CreatePackagePcbComponent::NAME, serde_json::to_value(command).unwrap(), Origin::User)
+                .unwrap_err()
+                .to_string()
+                .contains("Legacy holes")
+        );
+        assert_eq!(e.session_state(), before);
+    }
 }

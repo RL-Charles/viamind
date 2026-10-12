@@ -62,9 +62,11 @@ impl Command for TransformParts {
         if self.expected.is_empty() || self.expected.len() > 10000 {
             return Err(CommandError::invalid("expected", "must contain one to10000 unique Part records"));
         }
+        viamind_doc::footprint_holes::preflight_project(project, None).map_err(|e| CommandError::invalid("holes", e))?;
         let mut ids = BTreeSet::new();
         for expected in &self.expected {
             crate::footprint_artwork::validate_part_artwork(expected)?;
+            crate::part_holes::validate_part(expected)?;
             if !ids.insert(expected.id) {
                 return Err(CommandError::invalid("expected", "duplicate part ID"));
             }
@@ -126,6 +128,7 @@ impl Command for TransformParts {
             }
         }
         for part in &after {
+            crate::part_holes::validate_part(part)?;
             if [part.position.x.0, part.position.y.0].iter().any(|value| value.unsigned_abs() > 10_000_000_000) {
                 return Err(CommandError::invalid("position", "resulting origins must stay within ±10000 mm"));
             }

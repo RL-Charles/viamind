@@ -228,6 +228,7 @@ mod tests {
 
     fn part(designator: &str) -> Part {
         Part {
+            holes: None,
             artwork: None,
             assembly: None,
             schematic_symbol: None,

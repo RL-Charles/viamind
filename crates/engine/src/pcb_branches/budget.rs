@@ -47,7 +47,15 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
     add(project.board.vias.len())?;
     add(project.board.net_rules.len())?;
     add(project.schematic.sheets.len())?;
+    viamind_doc::footprint_holes::preflight_project(project, None).map_err(BranchError::invalid)?;
     for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            add(holes.len())?;
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(BranchError::invalid)?;
+            for hole in holes {
+                viamind_doc::resolve_hole(part, hole).map_err(BranchError::invalid)?;
+            }
+        }
         if let Some(artwork) = &part.artwork {
             add(artwork.structural_rows())?;
             artwork.validate().map_err(BranchError::invalid)?;
@@ -128,12 +136,16 @@ impl Serialize for BorrowedPart<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let p = self.0;
         let fields = 7
+            + usize::from(p.holes.is_some())
             + usize::from(p.artwork.is_some())
             + usize::from(p.assembly.is_some())
             + usize::from(p.schematic_symbol.is_some())
             + usize::from(p.schematic_package.is_some())
             + usize::from(p.pads.is_some());
         let mut s = serializer.serialize_struct("Part", fields)?;
+        if let Some(holes) = &p.holes {
+            s.serialize_field("holes", holes)?;
+        }
         if let Some(artwork) = &p.artwork {
             s.serialize_field("artwork", artwork)?;
         }
@@ -170,6 +182,7 @@ mod tests {
     fn borrowed_count_matches_native_serialization_with_pad_arrays_and_escaped_text() {
         let mut p = Project::new("quotes\" newline\n unicodeλ");
         let part = Part {
+            holes: None,
             artwork: None,
             id: ObjectId::new(),
             assembly: None,
@@ -196,22 +209,34 @@ mod tests {
         };
         let id = part.id;
         p.board.parts.insert(id, part);
-        for (symbol, package) in [(None, None), (Some(ObjectId::new()), None), (None, Some(ObjectId::new()))] {
-            let part = p.board.parts.get_mut(&id).unwrap();
-            part.schematic_symbol = symbol;
-            part.schematic_package = package;
-            let native = serde_json::to_vec(&p).unwrap();
-            let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
-            assert_eq!(borrowed, native, "absent/single-symbol/complete-package field order and skips must match native bytes");
-            assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
-            assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
-            p.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
-            let native = serde_json::to_vec(&p).unwrap();
-            let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
-            assert_eq!(borrowed, native, "explicit artwork field order must match exactly");
-            assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
-            assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
-            p.board.parts.get_mut(&id).unwrap().artwork = None;
+        for holes in [
+            None,
+            Some(vec![]),
+            Some(vec![viamind_doc::footprint_holes::PartHole {
+                id: ObjectId::new(),
+                key: "mount.A-1".into(),
+                center: Point::new(Nm(-13), Nm(27)),
+                diameter: Nm(9),
+            }]),
+        ] {
+            p.board.parts.get_mut(&id).unwrap().holes = holes;
+            for (symbol, package) in [(None, None), (Some(ObjectId::new()), None), (None, Some(ObjectId::new()))] {
+                let part = p.board.parts.get_mut(&id).unwrap();
+                part.schematic_symbol = symbol;
+                part.schematic_package = package;
+                let native = serde_json::to_vec(&p).unwrap();
+                let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
+                assert_eq!(borrowed, native, "absent/single-symbol/complete-package field order and skips must match native bytes");
+                assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
+                assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+                p.board.parts.get_mut(&id).unwrap().artwork = Some(Box::default());
+                let native = serde_json::to_vec(&p).unwrap();
+                let borrowed = serde_json::to_vec(&BorrowedProject(&p)).unwrap();
+                assert_eq!(borrowed, native, "explicit artwork field order must match exactly");
+                assert_eq!(count(&BorrowedProject(&p), native.len()).unwrap(), native.len());
+                assert!(count(&BorrowedProject(&p), native.len() - 1).is_err());
+                p.board.parts.get_mut(&id).unwrap().artwork = None;
+            }
         }
     }
 }

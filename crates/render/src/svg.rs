@@ -26,6 +26,7 @@ pub enum ViewLayer {
     TopSilkscreen,
     BottomCourtyard,
     TopCourtyard,
+    NonplatedHoles,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -110,6 +111,8 @@ impl SvgOptions {
 #[derive(Clone, Debug, Serialize)]
 pub struct SvgMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub nonplated_holes: Option<NonplatedHoleViewMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pad_apertures: Option<ApertureViewMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub artwork: Option<ArtworkViewMetadata>,
@@ -125,6 +128,21 @@ pub struct SvgMetadata {
     pub omitted_legacy_parts: usize,
     pub replaced_invalid_xml_text: bool,
     pub exclusions: Vec<&'static str>,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct NonplatedHoleViewMetadata {
+    pub holes: Vec<NonplatedHoleView>,
+    pub rendered_holes: usize,
+    pub checks_not_performed: &'static str,
+}
+#[derive(Clone, Debug, Serialize)]
+pub struct NonplatedHoleView {
+    pub part_id: viamind_doc::ObjectId,
+    pub hole_id: viamind_doc::ObjectId,
+    pub key: String,
+    pub role: &'static str,
+    pub center_nm: viamind_geom::Point,
+    pub diameter_nm: viamind_geom::Nm,
 }
 #[derive(Clone, Debug, Serialize)]
 pub struct ArtworkViewMetadata {
@@ -213,6 +231,7 @@ fn rect_attrs(r: ViewBounds, origin: (i64, i64)) -> String {
 /// Maximum total UTF-8 text copied into a board view snapshot.
 pub const MAX_BOARD_VIEW_TEXT: usize = 2 * 1024 * 1024;
 fn validate_board_budget(project: &Project) -> io::Result<()> {
+    viamind_doc::footprint_holes::validate_physical_identities(project).map_err(invalid)?;
     let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
     let mut count = project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(3));
     count = count.saturating_add(policy.rows);
@@ -220,6 +239,16 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
         return Err(invalid("SVG view supports at most 100000 primitives"));
     }
     for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            count = count.saturating_add(holes.len());
+            if count > 100_000 {
+                return Err(invalid("SVG view supports at most100000 primitives including mechanical drills"));
+            }
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(invalid)?;
+            for hole in holes {
+                viamind_doc::footprint_holes::resolve_hole(part, hole).map_err(invalid)?;
+            }
+        }
         if let Some(artwork) = &part.artwork {
             artwork.validate().map_err(invalid)?;
             count = count.saturating_add(artwork.primitive_count());
@@ -261,6 +290,11 @@ fn validate_board_budget(project: &Project) -> io::Result<()> {
         add(&part.designator)?;
         add(&part.value)?;
         add(&part.footprint)?;
+        if let Some(holes) = &part.holes {
+            for hole in holes {
+                add(&hole.key)?;
+            }
+        }
         if let Some(pads) = &part.pads {
             for pad in &pads.0 {
                 add(&pad.number)?;
@@ -322,7 +356,12 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     if let Some(outline) = &project.board.outline {
         outline.validate().map_err(|e| invalid(e.to_string()))?;
     }
-    let layers: BTreeSet<_> = options.layers.iter().copied().collect();
+    let mut layers: BTreeSet<_> = options.layers.iter().copied().collect();
+    let authored_holes = project.board.parts.values().any(|p| p.holes.is_some());
+    // Extend the unchanged legacy default only when the physical feature is authored.
+    if authored_holes && layers == default_layers().into_iter().collect() {
+        layers.insert(ViewLayer::NonplatedHoles);
+    }
     let aperture_requested =
         layers.iter().any(|l| matches!(l, ViewLayer::TopMask | ViewLayer::BottomMask | ViewLayer::TopPaste | ViewLayer::BottomPaste));
     let mut aperture_rows = Vec::new();
@@ -336,6 +375,9 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
         emitted = emitted.saturating_add(project.board.outline.as_ref().map_or(0, |o| o.rings().map(|r| r.points.len()).sum::<usize>()));
     }
     for part in project.board.parts.values() {
+        if layers.contains(&ViewLayer::NonplatedHoles) {
+            emitted = emitted.saturating_add(part.holes.as_ref().map_or(0, Vec::len));
+        }
         let (cu, mask, paste) = if part.side == Side::Top {
             (ViewLayer::TopCopper, ViewLayer::TopMask, ViewLayer::TopPaste)
         } else {
@@ -374,6 +416,46 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     let mut omitted = 0;
     let mut size = 0;
     let mut artwork_metadata = None;
+    let mut hole_metadata = authored_holes.then(|| NonplatedHoleViewMetadata {
+        holes: Vec::new(), rendered_holes: 0,
+        checks_not_performed: "Circular physical drill geometry preview; no boolean copper clipping, manufacturer or fabrication suitability verification",
+    });
+    for part in project.board.parts.values() {
+        let Some(holes) = &part.holes else { continue };
+        for hole in holes {
+            let resolved = viamind_doc::footprint_holes::resolve_hole(part, hole).map_err(invalid)?;
+            let metadata = hole_metadata.as_mut().expect("authored feature");
+            metadata.holes.push(NonplatedHoleView {
+                part_id: part.id,
+                hole_id: hole.id,
+                key: hole.key.clone(),
+                role: "nonplated_through_hole",
+                center_nm: resolved.center,
+                diameter_nm: resolved.diameter,
+            });
+            if !layers.contains(&ViewLayer::NonplatedHoles) {
+                continue;
+            }
+            let bounds = extent(resolved.center.x.0, resolved.center.y.0, (resolved.diameter.0 + 1) / 2);
+            bounds.validate()?;
+            let key = xml(&hole.key, &mut replaced)?;
+            let shape = format!(
+                "<circle id=\"npth-{}\" data-role=\"nonplated_through_hole\" data-part=\"{}\" data-key=\"{key}\" cx=\"{}\" cy=\"{}\" r=\"{}\"><title>Nonplated through hole {key} · part {}</title></circle>\n",
+                hole.id,
+                part.id,
+                x(resolved.center.x.0),
+                y(resolved.center.y.0),
+                half(resolved.diameter.0),
+                part.id,
+            );
+            size += shape.len();
+            if size > MAX_BYTES {
+                return Err(invalid("SVG view exceeds16MiB"));
+            }
+            shapes.push(Shape { layer: ViewLayer::NonplatedHoles, bounds, xml: shape });
+            metadata.rendered_holes += 1;
+        }
+    }
     for part in project.board.parts.values() {
         let Some(artwork) = &part.artwork else { continue };
         let metadata = artwork_metadata.get_or_insert(ArtworkViewMetadata {
@@ -643,21 +725,28 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
         }
         svg.push_str("</g>\n");
     }
-    if layers
-        .iter()
-        .any(|l| matches!(l, ViewLayer::TopSilkscreen | ViewLayer::BottomSilkscreen | ViewLayer::TopCourtyard | ViewLayer::BottomCourtyard))
-    {
+    if layers.iter().any(|l| {
+        matches!(
+            l,
+            ViewLayer::TopSilkscreen | ViewLayer::BottomSilkscreen | ViewLayer::TopCourtyard | ViewLayer::BottomCourtyard | ViewLayer::NonplatedHoles
+        )
+    }) {
         svg.push_str("</g>\n");
         for (layer, color) in [
             (ViewLayer::BottomSilkscreen, "#e8b2a7"),
             (ViewLayer::TopSilkscreen, "#f2eda1"),
             (ViewLayer::BottomCourtyard, "#78a0d2"),
             (ViewLayer::TopCourtyard, "#c878d2"),
+            (ViewLayer::NonplatedHoles, "#161a1e"),
         ] {
             if !layers.contains(&layer) {
                 continue;
             }
-            writeln!(svg, "<g id=\"layer-{layer:?}\" fill=\"none\" color=\"{color}\">").unwrap();
+            if layer == ViewLayer::NonplatedHoles {
+                writeln!(svg, "<g id=\"layer-{layer:?}\" fill=\"{color}\" color=\"{color}\">").unwrap();
+            } else {
+                writeln!(svg, "<g id=\"layer-{layer:?}\" fill=\"none\" color=\"{color}\">").unwrap();
+            }
             for shape in shapes.iter().filter(|s| s.layer == layer) {
                 svg.push_str(&shape.xml);
             }
@@ -673,6 +762,7 @@ fn board_svg_impl(project: &Project, options: &SvgOptions, raster_origin: Option
     Ok(BoardSvg {
         svg,
         metadata: SvgMetadata {
+            nonplated_holes: hole_metadata,
             pad_apertures: aperture_requested.then_some(ApertureViewMetadata{pads:aperture_rows,legacy_mask_policy:"Nominal copper-sized openings with zero expansion; native desktop legacy preview instead uses0.05mm border. No legacy paste inferred.",checks_not_performed:"No stencil, manufacturer, mask-sliver, silk-to-mask or fabrication suitability checks"}),
             artwork: artwork_metadata,
             region_nm: region,

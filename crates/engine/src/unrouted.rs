@@ -61,6 +61,7 @@ pub enum UnroutedNetReason {
     ForeignDrill,
     DrilledAway,
     UnlocatedDrill,
+    PhysicalNonplatedHole,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -276,6 +277,7 @@ struct Snapshot {
     objects: Vec<Object>,
     coverage: UnroutedCoverage,
     unlocated_drill: bool,
+    mechanical_drills: Vec<(P, i64)>,
 }
 fn name_budget(name: &str, text: &mut usize) -> Result<(), CommandError> {
     if name.is_empty() || name.trim() != name || name.len() > 512 || name.chars().count() > 128 || name.chars().any(char::is_control) {
@@ -298,6 +300,7 @@ impl Snapshot {
         if project.id.as_uuid().is_nil() {
             return Err(error("project identity must be nonnil"));
         }
+        viamind_doc::footprint_holes::validate_physical_identities(project).map_err(error)?;
         let b = &project.board;
         let mut count = b
             .parts
@@ -307,8 +310,15 @@ impl Snapshot {
             .and_then(|n| n.checked_add(b.net_rules.len()))
             .filter(|n| *n <= MAX_OBJECTS)
             .ok_or_else(|| error("whole-query object budget exceeded"))?;
-        let mut text = 0;
+        let mut text = 0usize;
         for part in b.parts.values() {
+            if let Some(holes) = &part.holes {
+                count = count.checked_add(holes.len()).filter(|n| *n <= MAX_OBJECTS).ok_or_else(|| error("whole-query object budget exceeded"))?;
+                viamind_doc::footprint_holes::validate_part_holes(holes).map_err(error)?;
+                for hole in holes {
+                    text = text.checked_add(hole.key.len()).filter(|n| *n <= MAX_TEXT).ok_or_else(|| error("whole-query text budget exceeded"))?;
+                }
+            }
             if let Some(pads) = &part.pads {
                 count = count.checked_add(pads.0.len()).filter(|n| *n <= MAX_OBJECTS).ok_or_else(|| error("whole-query object budget exceeded"))?;
                 for pad in &pads.0 {
@@ -352,6 +362,7 @@ impl Snapshot {
             objects: Vec::new(),
             coverage: UnroutedCoverage::default(),
             unlocated_drill: false,
+            mechanical_drills: Vec::new(),
         };
         let mut ids = BTreeSet::new();
         let mut identity = |id: ObjectId, key: ObjectId| -> Result<(), CommandError> {
@@ -362,6 +373,18 @@ impl Snapshot {
         };
         for (key, part) in &b.parts {
             identity(part.id, *key)?;
+            if let Some(holes) = &part.holes {
+                for hole in holes {
+                    identity(hole.id, hole.id)?;
+                    let resolved = viamind_doc::footprint_holes::resolve_hole(part, hole).ok();
+                    let center = resolved.and_then(|h| coordinate(h.center));
+                    if let Some(center) = center {
+                        result.mechanical_drills.push((center, hole.diameter.0));
+                    } else {
+                        result.unlocated_drill = true;
+                    }
+                }
+            }
             let Some(pads) = &part.pads else {
                 result.coverage.excluded_legacy_parts += 1;
                 continue;
@@ -444,6 +467,23 @@ impl Snapshot {
                 net.reasons.insert(UnroutedNetReason::UnlocatedDrill);
             }
         }
+        // Mechanical drills never enter the copper forest, terminal inventory or layer bridges.
+        // Intersected copper cannot be certified by this subset; report a fixed physical reason.
+        for &(center, radius) in &self.mechanical_drills {
+            let disk = Shape::Ring { center, inner: 0, outer: radius };
+            for (j, _) in index.query_rect(&disk.bbox()) {
+                visit()?;
+                let other = &self.objects[j];
+                let shape = other.shape.expect("indexed supported shape");
+                let hit = match shape {
+                    Shape::Ring { center: c, outer, .. } => squared(c, center) <= square(outer + radius),
+                    _ => shape.disk(center, radius),
+                };
+                if hit && let Some(net) = other.net {
+                    self.nets[net].reasons.insert(UnroutedNetReason::PhysicalNonplatedHole);
+                }
+            }
+        }
         // Validate drill effects before any contact can be interpreted as complete.
         for (i, hole) in self.objects.iter().enumerate().filter(|(_, o)| o.kind == Kind::Via) {
             let Some(Shape::Ring { center, inner, .. }) = hole.shape else { continue };
@@ -502,7 +542,7 @@ impl Snapshot {
         let mut result = UnroutedNetResult {
             project_id: self.project_id,
             source_cursor: self.cursor,
-            complete: self.coverage.excluded_legacy_parts == 0,
+            complete: self.coverage.excluded_legacy_parts == 0 && !self.unlocated_drill,
             model: "exact_cardinal_outer_copper".into(),
             coverage: self.coverage,
             connected_count: 0,
@@ -616,6 +656,7 @@ mod tests {
             net: Some(name.into()),
         };
         let part = Part {
+            holes: None,
             assembly: None,
             artwork: None,
             schematic_symbol: None,
@@ -935,5 +976,49 @@ mod tests {
             std::thread::sleep(std::time::Duration::from_millis(2));
         }
         panic!("retained worker must finish and release admission");
+    }
+    #[test]
+    fn nonplated_drill_is_subtractive_for_full_width_copper_and_never_a_terminal_or_bridge() {
+        for side in [CopperLayer::Top, CopperLayer::Bottom] {
+            let mut project = Project::new("NPTH");
+            let a = pad(&mut project, -100, 0, Side::Top, "N", 20, 20);
+            pad(&mut project, 100, 0, Side::Top, "N", 20, 20);
+            track(&mut project, (-100, 0), (100, 0), side, "N", 20);
+            let mut h = project.board.parts[&a].clone();
+            h.id = ObjectId::new();
+            h.position = p(0, 18);
+            h.side = Side::Bottom;
+            h.pads = Some(Pads(vec![]));
+            h.holes =
+                Some(vec![viamind_doc::footprint_holes::PartHole { id: ObjectId::new(), key: "H".into(), center: Point::ORIGIN, diameter: Nm(20) }]);
+            let hid = h.id;
+            project.board.parts.insert(hid, h);
+            let result = single(&project);
+            assert_eq!(result.terminals, 2);
+            assert_eq!(result.status, UnroutedNetStatus::Unknown); // Intersects track edge, not its center line.
+            assert_eq!(result.reasons, [UnroutedNetReason::PhysicalNonplatedHole]);
+            let proof = crate::copper_connectivity::CopperProof::analyze(&project);
+            assert_eq!(proof.coverage.fallback_reason, Some("physical_nonplated_hole_intersection"));
+            assert_eq!(proof.coverage.analyzed_tracks, 0);
+            project.board.parts.get_mut(&hid).unwrap().position.y = Nm(100);
+            assert!(single(&project).reasons.is_empty());
+            assert_eq!(single(&project).terminals, 2);
+        }
+    }
+    #[test]
+    fn unlocated_mechanical_hole_prevents_complete_query_even_without_copper_nets() {
+        let mut project = Project::new("unlocated");
+        let id = pad(&mut project, 0, 0, Side::Top, "N", 10, 10);
+        let part = project.board.parts.get_mut(&id).unwrap();
+        part.pads = None;
+        part.position = Point::new(Nm(i64::MAX), Nm(0));
+        part.holes =
+            Some(vec![viamind_doc::footprint_holes::PartHole { id: ObjectId::new(), key: "H".into(), center: Point::ORIGIN, diameter: Nm(1) }]);
+        let result = Snapshot::capture(&project, EventCursor { stream_id: ObjectId::new(), sequence: 0 }).unwrap().analyze(MAX_CANDIDATES).unwrap();
+        assert!(!result.complete);
+        assert!(result.nets.is_empty());
+        let proof = crate::copper_connectivity::CopperProof::analyze(&project);
+        assert_eq!(proof.coverage.fallback_reason, Some("unlocated_nonplated_hole"));
+        assert!(!proof.coverage.budget_fallback);
     }
 }
