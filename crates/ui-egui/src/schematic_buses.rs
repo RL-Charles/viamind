@@ -292,7 +292,7 @@ mod tests {
                     return None;
                 };
                 let b = bg.rect;
-                (b.contains(r.center()) && (b.width() - r.width()).abs() <= 4.0 && (b.height() - r.height()).abs() <= 4.0)
+                ((b.min - r.min).abs().max_elem() <= 0.5 && (b.max - r.max).abs().max_elem() <= 0.5)
                     .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
             })
             .min_by(|a, b| a.area().total_cmp(&b.area()))
