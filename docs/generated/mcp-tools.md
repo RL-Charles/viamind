@@ -8,6 +8,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [add\_track](#tool-6164645f747261636b)
 - [add\_via](#tool-6164645f766961)
 - [annotate\_schematic](#tool-616e6e6f746174655f736368656d61746963)
+- [apply\_board\_outline\_dxf](#tool-6170706c795f626f6172645f6f75746c696e655f647866)
 - [apply\_footprint](#tool-6170706c795f666f6f747072696e74)
 - [apply\_pcb\_branch](#tool-6170706c795f7063625f6272616e6368)
 - [cleanup\_cardinal\_tracks](#tool-636c65616e75705f63617264696e616c5f747261636b73)
@@ -63,6 +64,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [plan\_cardinal\_track\_cleanup](#tool-706c616e5f63617264696e616c5f747261636b5f636c65616e7570)
 - [plan\_pad\_via\_walkaround](#tool-706c616e5f7061645f7669615f77616c6b61726f756e64)
 - [plan\_pad\_walkaround](#tool-706c616e5f7061645f77616c6b61726f756e64)
+- [preview\_board\_outline\_dxf](#tool-707265766965775f626f6172645f6f75746c696e655f647866)
 - [preview\_footprint\_conversion](#tool-707265766965775f666f6f747072696e745f636f6e76657273696f6e)
 - [preview\_package\_pcb\_component](#tool-707265766965775f7061636b6167655f7063625f636f6d706f6e656e74)
 - [preview\_pcb\_import](#tool-707265766965775f7063625f696d706f7274)
@@ -813,6 +815,172 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "annotate_schematic"
+}
+```
+
+<a id="tool-6170706c795f626f6172645f6f75746c696e655f647866"></a>
+
+## apply\_board\_outline\_dxf
+
+```json
+{
+  "description": "Writer: reread/reparse the same DXF source and options from preview_board_outline_dxf, require identical lowercase expected_source_sha256, recompute the same certified bounded plan outside the design lock, then under exact expected project_id/outline and full expected_cursor apply ONE undoable BoardOutline polygon delta (equal geometry is a no-op). Peer edits, new streams, reopened projects or changed source bytes refuse without mutation. Undo/redo, native save and log replay use the ordinary polygon delta; source files are never written. Refused in restricted agent modes.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "description": "Guarded Apply of the same source/options under exact preview guards.",
+    "properties": {
+      "expected": {
+        "additionalProperties": false,
+        "description": "Exact project identity and current outline from the preview.",
+        "properties": {
+          "outline": {
+            "additionalProperties": false,
+            "description": "One simple outer boundary with strictly internal, disjoint cutouts.",
+            "properties": {
+              "cutouts": {
+                "default": [],
+                "items": {
+                  "description": "A closed polygon: one ring of vertices, either winding, implicitly closed\n(the last vertex joins the first; do not repeat it).\n\nHoles and multi-part regions (copper pours) belong to the boolean layer on\ntop of this type. Point containment uses the non-zero winding rule and\ncounts the boundary as inside; it is exact.",
+                  "items": {
+                    "description": "A position on the board, in nanometres.",
+                    "properties": {
+                      "x": {
+                        "description": "Horizontal coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      },
+                      "y": {
+                        "description": "Vertical coordinate.",
+                        "format": "int64",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              "outer": {
+                "description": "A closed polygon: one ring of vertices, either winding, implicitly closed\n(the last vertex joins the first; do not repeat it).\n\nHoles and multi-part regions (copper pours) belong to the boolean layer on\ntop of this type. Point containment uses the non-zero winding rule and\ncounts the boundary as inside; it is exact.",
+                "items": {
+                  "description": "A position on the board, in nanometres.",
+                  "properties": {
+                    "x": {
+                      "description": "Horizontal coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "description": "Vertical coordinate.",
+                      "format": "int64",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "outer"
+            ],
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "project_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "type": "object"
+      },
+      "expected_cursor": {
+        "additionalProperties": false,
+        "description": "Full session cursor (stream and sequence) from the preview.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "expected_source_sha256": {
+        "description": "Lowercase SHA-256 of the previewed source bytes.",
+        "type": "string"
+      },
+      "layer": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "text": {
+        "maxLength": 8388608,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "tolerance_nm": {
+        "format": "uint64",
+        "maximum": 1000000,
+        "minimum": 10,
+        "type": "integer"
+      },
+      "units": {
+        "default": "header",
+        "enum": [
+          "header",
+          "mm",
+          "inches"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "tolerance_nm",
+      "expected_source_sha256",
+      "expected_cursor",
+      "expected"
+    ],
+    "title": "ApplyBoardOutlineDxf",
+    "type": "object"
+  },
+  "name": "apply_board_outline_dxf"
 }
 ```
 
@@ -13415,6 +13583,68 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "plan_pad_walkaround"
+}
+```
+
+<a id="tool-707265766965775f626f6172645f6f75746c696e655f647866"></a>
+
+## preview\_board\_outline\_dxf
+
+```json
+{
+  "description": "Read-only certified polygon conversion of exactly one ASCII DXF source (text <=8MiB or local regular-file path <=4096 bytes, one nonblocking descriptor). Straight closed LWPOLYLINE/POLYLINE, closed polylines with 0<|bulge|<=1, ARC+LINE loops joined at exactly equal rounded Nm endpoints and CIRCLE rings; units header/mm/inches, optional exact layer, REQUIRED tolerance_nm 10..1000000. Each emitted chord has a conservative analytic upper bound (sagitta plus enclosed source/evaluation/rounding) <= tolerance; returns polygon, per-segment fidelity rows, achieved bound, source SHA256, project/full cursor/exact current outline guards. Limits: 131072 pairs, 16384 records, 2048 segments/vertices, 65 rings, depth24, 262144 work steps, 2MiB response. Native result is polygon-only; no analytic curves, welding, topology or fabrication guarantee. No mutation or source writes.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "description": "Read-only certified conversion of exactly one bounded DXF source.",
+    "properties": {
+      "layer": {
+        "description": "Optional exact layer name (1..512 bytes); POLYLINE vertices follow their parent.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "path": {
+        "description": "Local regular DXF file path (at most 4096 encoded bytes), read through one nonblocking descriptor.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "text": {
+        "description": "Inline ASCII/UTF-8 DXF text (at most 8 MiB). Supply exactly one of `text` or `path`.",
+        "maxLength": 8388608,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "tolerance_nm": {
+        "description": "Required explicit integer chord tolerance in Nm, 10..=1000000.",
+        "format": "uint64",
+        "maximum": 1000000,
+        "minimum": 10,
+        "type": "integer"
+      },
+      "units": {
+        "default": "header",
+        "description": "`header` (default) requires $INSUNITS; `mm` or `inches` explicitly override it.",
+        "enum": [
+          "header",
+          "mm",
+          "inches"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "tolerance_nm"
+    ],
+    "title": "PreviewBoardOutlineDxf",
+    "type": "object"
+  },
+  "name": "preview_board_outline_dxf"
 }
 ```
 
