@@ -25,6 +25,7 @@ struct Pending {
 }
 #[derive(Default)]
 pub struct FootprintDefinitionUi {
+    holes: crate::footprint_holes::HoleEditor,
     artwork: crate::footprint_artwork::ArtworkEditor,
     selected_apertures: Option<ObjectId>,
     open: bool,
@@ -55,7 +56,7 @@ impl FootprintDefinitionUi {
         if self.rows.len() > 1024 {
             return Err("At most 1024 rectangular SMD pads per definition".into());
         }
-        let mut bytes = 0usize;
+        let mut bytes = self.holes.text_bytes()?;
         for (field, limit) in std::iter::once((&self.name, 512))
             .chain(self.rows.iter().flat_map(|r| [(&r.number, 512), (&r.x, 64), (&r.y, 64), (&r.width, 64), (&r.height, 64)]))
         {
@@ -82,7 +83,7 @@ impl FootprintDefinitionUi {
             .collect::<Result<Vec<_>, String>>()?;
         let artwork = self.artwork.definition()?;
         let footprint = Footprint {
-            holes: None,
+            holes: self.holes.definition()?,
             artwork,
             name: self.name.clone(),
             pads: self
@@ -128,6 +129,7 @@ impl FootprintDefinitionUi {
             return;
         }
         self.artwork = Default::default();
+        self.holes = Default::default();
         self.name.clear();
         self.rows.clear();
         self.selected_apertures = None;
@@ -137,6 +139,7 @@ impl FootprintDefinitionUi {
     fn loaded(&mut self, footprint: Footprint) -> Result<(), String> {
         validate_definition(&footprint)?;
         self.artwork = crate::footprint_artwork::ArtworkEditor::load(footprint.artwork.as_deref())?;
+        self.holes = crate::footprint_holes::HoleEditor::load(footprint.holes.as_deref());
         self.selected_apertures = None;
         self.name = footprint.name.clone();
         self.rows = footprint
@@ -261,6 +264,12 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
             }
         }
     }
+    for h in footprint.holes.iter().flatten() {
+        for (axis, n) in [h.center.x.0, h.center.y.0].into_iter().enumerate() {
+            low[axis] = low[axis].min(n as f64 - h.diameter.0 as f64 / 2.0);
+            high[axis] = high[axis].max(n as f64 + h.diameter.0 as f64 / 2.0);
+        }
+    }
     if let Some(artwork) = &footprint.artwork {
         for line in &artwork.silkscreen {
             for point in [line.start, line.end] {
@@ -309,6 +318,13 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
         if size.x >= 16.0 && size.y >= 16.0 {
             painter.text(center, egui::Align2::CENTER_CENTER, &pad.number, egui::FontId::proportional(12.0), egui::Color32::WHITE);
         }
+    }
+    for h in footprint.holes.iter().flatten() {
+        painter.circle_filled(
+            at(h.center.x.0 as f64, h.center.y.0 as f64),
+            (h.diameter.0 as f64 * scale / 2.0) as f32,
+            egui::Color32::from_rgb(22, 26, 30),
+        );
     }
     if let Some(artwork) = &footprint.artwork {
         let line = |a: viamind_geom::Point, b: viamind_geom::Point, width: Nm, color: egui::Color32| {
@@ -383,6 +399,7 @@ impl ViamindApp {
                             ui.push_id(("detached-apertures",id),|ui|changed|=row.apertures.show(ui,copper));
                         } else {form.selected_apertures=None;}
                     }
+                    changed |= form.holes.show(ui);
                     changed |= form.artwork.show(ui);
                     changed |= field(ui, "NEW footprint definition path", &mut form.destination, 4096);
                 });
@@ -494,5 +511,46 @@ mod tests {
         assert!(form.message.as_ref().unwrap().contains("discarded"));
         assert_eq!(form.definition().unwrap(), original());
         assert_eq!(engine.session_state(), before);
+    }
+    #[test]
+    fn hole_library_four_new_save_and_closed_retained_load_preserve_project() {
+        let mut f = original();
+        f.holes = Some(vec![viamind_doc::FootprintHole { key: "mount.A".into(), center: viamind_geom::Point::new(Nm(-3), Nm(5)), diameter: Nm(9) }]);
+        let mut form = FootprintDefinitionUi::default();
+        form.loaded(f.clone()).unwrap();
+        assert_eq!(form.definition().unwrap(), f);
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("holes.footprint.json");
+        form.destination = path.to_str().unwrap().into();
+        let engine = EngineHandle::new(viamind_doc::Project::new("untouched"));
+        let before = engine.session_state();
+        let status = engine.document_status();
+        let ctx = egui::Context::default();
+        form.start_with(engine.clone(), false, ctx.clone(), |job| {
+            job();
+            Ok(())
+        });
+        assert!(form.busy());
+        form.open = false;
+        form.reset();
+        form.poll(&ctx);
+        assert!(!form.busy());
+        assert!(!form.open);
+        assert_eq!(form.definition().unwrap(), f);
+        let raw: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+        assert_eq!(raw["version"], 4);
+        assert_eq!(viamind_doc::footprint::load(&path).unwrap(), f);
+        form.source = path.to_str().unwrap().into();
+        form.start_with(engine.clone(), true, ctx.clone(), |job| {
+            job();
+            Ok(())
+        });
+        form.open = false;
+        form.reset();
+        form.poll(&ctx);
+        assert_eq!(form.definition().unwrap(), f);
+        assert!(!form.open);
+        assert_eq!(engine.session_state(), before);
+        assert_eq!(engine.document_status(), status);
     }
 }

@@ -24,6 +24,7 @@ pub mod files;
 mod footprint_artwork;
 pub mod footprint_conversion;
 pub mod footprint_definition;
+pub mod footprint_holes;
 mod gpu_tiles;
 pub mod gpu_timing;
 pub mod layer_panel;
