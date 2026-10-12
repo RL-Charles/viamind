@@ -93,6 +93,78 @@ not permission for retries until passing or for a renderer correction.
   historical cause unresolved; stop after the single comparison and report that
   limitation. No cadence run or visual-correctness closure follows automatically.
 
+## Amendment: independently timed progress receipt after incomplete comparison
+
+The ONE deferred comparison on `9783c974b83f42938408e9f0d4b85761665eabd5`
+did not self-close within the external 210s watchdog. No terminal trace or pixel
+files were flushed, and the created parity report stayed empty. The exact-window
+snapshot shows case-3-like geometry; internal step/request state is unknown.
+The initial run took about 20s. This timing difference is an observation, not
+causality. The owned helper was retired after exact identity revalidation, with
+no replacement launch. Original failure and initial passing pixels remain intact.
+
+Pinned compatible egui-wgpu source unmaps its capture buffer before sending an
+owned CPU `ColorImage`; retaining the later image `Arc` does not retain that
+mapped buffer. This excludes that specific ownership explanation, not a backend
+stall. The existing 180s guard executes inside UI callbacks and cannot report
+when those callbacks stop. One non-elevated debugger attachment and readable
+kernel stacks were refused; no stack or renderer defect has been established.
+
+The diagnostic question for a possible later run is narrow: **at the deadline,
+has the UI callback returned with an outstanding screenshot, or is execution
+still inside a particular diagnostic/app callback phase?** It does not ask for
+another passing parity attempt. Add the following only after independent review:
+
+- In an explicit progress-enabled deferred mode, precharge one fixed shared
+  structure of at most 32 atomic numeric fields, no more than 512 bytes, before
+  thread creation. Fields include callback entries/exits, legacy step, settle
+  count, screenshot requests prepared/submitted, screenshot arrivals, pending
+  token sequence, latest already-observed frame/pass, terminal classification,
+  and a fixed numeric phase enum. Phases identify budget check, screenshot
+  extraction, receipt admission, legacy comparison, app drawing, trace drawing,
+  screenshot submission, repaint request, return and terminal flushing.
+  Do not retain more event/text data, image handles, strings or unbounded history.
+- Write these observations at existing boundaries. No new GUI/backend locks,
+  render operations, scene changes or case transitions are introduced. Do not
+  call Context merely to obtain another observation when an existing frame
+  receipt is available. Explicitly disclose the added atomic operations and
+  watchdog thread as observational overhead; a changed outcome remains possible.
+- Use one independent standard thread and a capacity-one terminal notification.
+  It waits at most 180s using the public standard-library
+  [Receiver::recv_timeout](https://doc.rust-lang.org/std/sync/mpsc/struct.Receiver.html#method.recv_timeout)
+  contract. UI callbacks never wait for the thread, perform a sequence write,
+  poll the thread, or send more than one terminal notification. The watchdog
+  does not request redraw, invoke GUI APIs, move the camera or close the window.
+- The worker reads only this fixed atomic structure after terminal notification,
+  sender disconnection or timeout, never from the image/trace vectors. Safe
+  [atomic sharing](https://doc.rust-lang.org/std/sync/atomic/) supplies individual
+  observations, not an automatically coherent aggregate. Use bounded generation
+  reads to mark a snapshot inconsistent if a callback changes it or is active;
+  never spin waiting for the GUI. Inconsistent fields remain diagnostic hints.
+- Only then serialize one NEW `progress.json` receipt of at most 8KiB, with fsync,
+  numeric counters, fixed phases, elapsed time and terminal/timeout reason.
+  Reserve its fixed retained state and output allowance within the existing
+  combined 1MiB metadata budget before allocating. The immutable output path
+  stays in the already admitted NEW trace directory. No image copies or extra
+  screenshot requests are permitted. No writes occur during the active case
+  sequence before a timeout/terminal state. A terminal thread join may occur
+  after native event-loop return, outside UI callbacks; the independent 210s
+  external watchdog remains authoritative if callback or writer completion fails.
+- Tests use injected short deadlines and synthetic counter states to prove a
+  receipt appears without further UI callbacks, pending-request/inside-callback
+  states differ, terminal/disconnect classification is exact, generation races
+  are flagged without spinning, one notification/file only, bounded output and
+  NEW-path refusal. Existing eight tests and all legacy scene/count/pixel oracles
+  remain intact. A short-deadline test is not a native timing result.
+- After scoped tests/build/source review, there may be at most ONE separately
+  admitted native progress capture, only if independent review agrees it answers
+  the stated stalled-stage question. Retain a unique binary, fresh lane quiet
+  acknowledgements, both mutexes and the external 210s guard. No automatic native
+  launch follows this spec approval. Do not retry after timeout or passing pairs.
+  If no stall reproduces, report the question unanswered. Any stall receipt is
+  phase evidence, not a backend root cause. Renderer changes, historical parity
+  closure and T20 cadence still require separate causal review and original gates.
+
 1. Preserve the original failed report and both original release binary hashes.
    Add optional diagnostics to the existing five-case example, retaining the same
    synthetic 5000 scene, added via, quad, ratsnest, layer operations, camera
