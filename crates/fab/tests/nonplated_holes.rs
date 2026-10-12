@@ -2,11 +2,13 @@
 use viamind_doc::{ObjectId, Side, file, footprint_holes::PartHole};
 use viamind_fab::{FabricationOptions, OutputJob, OutputJobSnapshot, fabrication, write_fabrication};
 use viamind_geom::{Nm, Point};
+static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 fn sample() -> viamind_doc::Project {
     file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap()
 }
 #[test]
 fn opt_in_refuses_even_explicit_empty_and_new_output_has_valid_empty_drill_file() {
+    let _serial = SERIAL.lock().unwrap();
     let mut p = sample();
     let legacy = fabrication(&p, Default::default()).unwrap();
     let enabled = fabrication(&p, FabricationOptions { include_npth: true, ..Default::default() }).unwrap();
@@ -33,6 +35,7 @@ fn opt_in_refuses_even_explicit_empty_and_new_output_has_valid_empty_drill_file(
 }
 #[test]
 fn exact_eight_pose_npth_uses_diameter_then_owner_id_order_and_single_y_flip() {
+    let _serial = SERIAL.lock().unwrap();
     let mut p = sample();
     let old = fabrication(&p, Default::default()).unwrap();
     let seed = p.board.parts.values().next().unwrap().clone();
@@ -107,6 +110,7 @@ fn exact_eight_pose_npth_uses_diameter_then_owner_id_order_and_single_y_flip() {
 }
 #[test]
 fn tool_max_plus_one_refuses_without_publication_and_does_not_restrict_plated_tool_file() {
+    let _serial = SERIAL.lock().unwrap();
     let mut p = sample();
     let part = p.board.parts.values_mut().next().unwrap();
     part.holes = Some(
