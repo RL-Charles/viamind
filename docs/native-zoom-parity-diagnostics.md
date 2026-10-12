@@ -218,3 +218,25 @@ hardened harness on these cases. It does not reconstruct the original case-4
 camera or explain why 581 objects were drawn then versus 606 now. The historical
 image mismatch and deferred stall remain unresolved; no renderer change, new
 native retry, 100k cadence result or strict 60fps acceptance follows from it.
+
+## Integrated workspace gates
+
+The first full combined run on rebased source `f4320d2f` failed honestly: the
+four workspace gates passed (1033 tests, 0 failed, 1 ignored), but 9 of 22
+`gpu_parity` example tests failed in the debug profile on epaint's debug-only
+assertion for dropped, unapplied texture deltas. Earlier scoped runs were release
+builds, so the assertion never fired. Test-only source `570ba277` clears the delta
+in one headless helper, matching existing headless tests.
+
+The rerun on `570ba277` passed formatting, strict workspace all-target Clippy,
+test-cfg example Clippy, the workspace tests, all 22 debug example tests, a
+normal workspace build immediately after retouching every Rust input, the exact
+120-tool generated reference and 18 isolated agent workflow checks. The retained
+debug executable SHA256 is
+`85ffa048ce4a6db0e71bac99cd6ee7781350b94ac7a3a8828be6618d761f3a87`.
+[The combined-gate master](verification/t0126/combined-gate/master.json) indexes
+both runs; `python docs/verification/t0126/combined-gate/verify.py` checks it.
+
+This increment ships the bounded optional diagnostics and the validated
+`Canvas::set_manual_camera` API. It does not identify the historical case-4 cause,
+change the renderer, or provide a 100k cadence result; those remain open.
