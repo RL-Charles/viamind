@@ -106,6 +106,7 @@ ui_actions! {
     OpenProject => ("open_project", input_schema::<OpenProject>(), open_project),
     TransformParts => (TransformParts::NAME, input_schema::<TransformParts>(), transform_parts),
     SetPadApertures => (viamind_engine::SetPadApertures::NAME, input_schema::<viamind_engine::SetPadApertures>(), set_pad_apertures),
+    SetPartHoles => (viamind_engine::SetPartHoles::NAME, input_schema::<viamind_engine::SetPartHoles>(), set_part_holes),
     SetFootprintArtwork => (viamind_engine::SetFootprintArtwork::NAME, input_schema::<viamind_engine::SetFootprintArtwork>(), set_footprint_artwork),
     SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
     ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
@@ -541,4 +542,7 @@ fn preview_schematic_symbol_drag(engine: &EngineHandle, input: Value) -> Result<
 }
 fn drag_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::DragSchematicSymbol::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn set_part_holes(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetPartHoles::NAME, input, Origin::User)?).map_err(encode_error)
 }

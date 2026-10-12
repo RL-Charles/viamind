@@ -310,7 +310,7 @@ impl Snapshot {
             .and_then(|n| n.checked_add(b.net_rules.len()))
             .filter(|n| *n <= MAX_OBJECTS)
             .ok_or_else(|| error("whole-query object budget exceeded"))?;
-        let mut text = 0;
+        let mut text = 0usize;
         for part in b.parts.values() {
             if let Some(holes) = &part.holes {
                 count = count.checked_add(holes.len()).filter(|n| *n <= MAX_OBJECTS).ok_or_else(|| error("whole-query object budget exceeded"))?;
