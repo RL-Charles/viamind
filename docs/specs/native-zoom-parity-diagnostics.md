@@ -29,6 +29,109 @@ state, and a primitive-specific raster mismatch remain hypotheses until measured
 The large fixture via is retained and receives explicit region diagnostics;
 the mismatch is not presumed to affect all primitives or to be a harness defect.
 
+## Amendment: explicit manual navigation and strict harness admission
+
+The independently reviewed progress attempt on source
+`43600a009e110dec52d8b4aa462e5273827d8da2` self-closed in 8.58 seconds:
+ten readbacks, coherent 81 callback entries/exits, and five passing pairs whose
+metrics and arrival states match the initial passing trace. The original
+581-versus-606 visible count remains unexplained. The previous deferred stall
+did not recur. Neither historical cause is closed by this amendment.
+
+The actual-root headless regression establishes a separate concrete harness
+risk: editing the public camera directly leaves startup auto-fit active, and a
+one-point viewport resize replaces that camera. Independently reviewed evidence
+now permits specifying a narrow harness correction. This amendment does not
+assert that the controlled resize caused either historical native result.
+
+### Explicit camera API
+
+Add `Canvas::set_manual_camera(Camera) -> Result<(), &'static str>`. Before any
+mutation it requires finite center coordinates and finite zoom within the
+existing inclusive `MIN_ZOOM..=MAX_ZOOM` limits. An invalid value returns an
+actionable error with camera/fit state unchanged. On success it stores the exact
+supplied camera and disables both startup auto-fit and pending fit. It never
+clamps, recenters or recomputes a valid camera. This is view state only: no model,
+selection, command, renderer, shader, mesh or GPU cache change. Preserve the
+existing `pub(crate) focus_world` behavior and its minimum-10 zoom semantics.
+
+The new optional hardened diagnostic computes each original case's camera
+operations on a local copy, in the original order, then installs that exact
+camera through this API. Case zero retains startup fitting until its layout has
+stabilized; case one starts explicit manual navigation. Layer changes and the
+1.04/8.0 zoom factors, pan deltas, center selection, all 5002 items and guide
+remain exactly the same. On the unchanged viewport, independent camera,
+viewport and visible-count oracles remain
+`[5002, 5002, 4665, 4624, 606]`; those are headless/current-trace observations,
+not a substituted explanation for the original 581 count.
+
+### One strict optional harness mode
+
+Add an explicit `--hardened` option requiring the existing deferred trace and
+progress observer options. Historical ordinary/legacy trace modes retain their
+existing sequence semantics and are clearly distinguished in receipts. A
+hardened run has no relaxed comparison criteria and cannot silently retry a
+case, replace an arrival, recapture after a mismatch or change fixture geometry.
+
+- Settle using six distinct completed integration-frame numbers, not six UI
+  callbacks. Repeated passes of a frame contribute at most once. Count a prior
+  frame only once the next cumulative frame number is observed. Retain a fixed
+  last-frame state and stable-frame count; state changes reset settling before
+  any request. Submit only after the full production `app.show` and when the
+  current pass does not report `Context::will_discard()`. Never request a
+  screenshot from a known discarded pass. All frame/pass receipts remain.
+- Capture only the current root viewport with exactly one outstanding uniquely
+  tagged request. Before accepting or comparing any pair, require the exact
+  request token/step, root viewport, dimensions, camera, viewport/DPI and ordered
+  layer state. Every intervening draw state must match that request; the second
+  image must match the first image's state and dimensions. Any unexpected extra
+  image, repeated token, dimension/state mismatch or incomplete provenance
+  aborts with raw evidence and an actionable bounded report. No automatic
+  recapture. Preserve existing legacy trace observations of invalid state.
+- Treat navigation input as experimental contamination. Refuse wheel/pinch,
+  Home navigation and middle-button or Space-drag navigation before changing
+  the next case/request; include only existing fixed numeric input counters.
+  Harmless pointer movement alone may update cursor observations. Do not erase
+  or inject user input, record arbitrary text, or change desktop configuration.
+  Other unexpected camera changes reset settling before a request or refuse
+  an outstanding request, never compare different camera states.
+- Keep all existing limits: ten original shared image buffers, 16M pixels and
+  64MiB per image, 640MiB aggregate pixels, one outstanding request, 900 native
+  frames/180 seconds, 1MiB retained-plus-serialized metadata and 8KiB independent
+  progress output. Charge fixed settling/admission fields before retention and
+  keep NEW output/streaming/failure reservation. Deferred image and trace writes
+  still occur only at terminal success/abort; no new wake-ups or polling.
+- The whole compared canvas remains authoritative with the original mean<0.1
+  and changed-pixels<total/1000 thresholds. Also report the historical stricter
+  max<=2/zero-over-2 observation without silently replacing the original gate.
+  Full-window raw pairs, fixture regions and every exact PNG sample remain
+  independently inspectable. Regions never excuse failed whole-canvas pixels.
+
+### Verification and later native admission
+
+Retain all fourteen existing tests and the original failure/incomplete/pass
+artifacts. Add focused tests for invalid manual-camera values leaving state
+unchanged, exact valid camera preservation through one-point resize and back,
+and unchanged `focus_world` semantics. Run the actual unwrapped production root
+through all five hardened cases with the same exact count/camera oracles. Test
+repeated/discarded passes against completed-frame settling (including no request
+from a discarded pass), duplicate-token and both-direction size/state refusals,
+and real navigation input refusal without retaining private text. Keep each
+headless layout scenario within 120 input frames and charge metadata before
+added buffers or fields. Pure state-machine tests do not claim native raster
+behavior.
+
+After independent pre-Rust review, implement only these view-state and example
+boundaries; run scoped formatting/strict lint/tests/release example build and
+retain a uniquely hashed executable. At most ONE later native hardened
+validation may be proposed after source/test review and a separate fresh quiet
+admission under both mutexes. That validation asks whether the explicit manual
+camera survives layout changes and each compared pair satisfies strict frame/
+state admission. A pass validates this hardened harness, not historical cause,
+renderer correctness for untested states, the earlier stall, or 100k cadence.
+No further run or cadence is automatically authorized. Full Linux workspace
+gates, combined references and exact-head CI remain required before submission.
+
 ## Diagnostic behavior and bounds
 
 The first diagnostic-only trace retains the legacy example's transition semantics
