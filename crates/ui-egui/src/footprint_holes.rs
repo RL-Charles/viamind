@@ -157,7 +157,7 @@ impl ViamindApp {
             return;
         }
         let Some(design) = &self.design else { return };
-        let admitted = design.engine.read(|p| viamind_doc::footprint_holes::validate_physical_identities(p));
+        let admitted = design.engine.read(viamind_doc::footprint_holes::validate_physical_identities);
         if admitted.is_err() || part.holes.as_ref().is_some_and(|h| viamind_doc::footprint_holes::validate_part_holes(h).is_err()) {
             return;
         }
