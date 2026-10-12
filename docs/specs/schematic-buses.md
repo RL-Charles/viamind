@@ -1,0 +1,58 @@
+# Explicit schematic buses and scalar member unfolding
+
+T-0127 / S-042. Public behavior contract before implementation. Initial immutable base: T125 `67ce6784f7b37999777c794de06bfdf0853ac3dc`. No Rust is authorized by this document alone; independent review and the final aperture/NPTH dependency interfaces must settle before implementation freezes.
+
+## Public sources and scope
+
+The [official KiCad 9 schematic manual, Buses](https://docs.kicad.org/9.0/en/eeschema/eeschema.html#buses) describes vector/group members, labels connecting scalar members, graphical bus entries, and choosing a member to unfold. Viamind independently implements the bounded subset below. Bus geometry and an entry never supply an electrical edge. Existing literal scalar labels keep their meaning, including labels containing brackets or braces.
+
+This increment supports one cardinal segment per explicit bus, vectors and flat groups, and one selected scalar member breakout at a time. Aliases, nested groups, connected bus networks, hierarchical ports, automatic signal pairing, implicit pin connections and bus ERC are excluded. Separate bus objects that touch remain separate declarations. No source-file compatibility or electrical certification is claimed.
+
+## Strict expansion and limits
+
+A vector is `NAME[M..N]`; a flat group is `NAME{TERM TERM...}` or `{TERM TERM...}`, where a term is a scalar NAME or vector. NAME is nonempty exact case-sensitive Unicode text without controls, whitespace, brackets or braces. A group permits one or more ASCII spaces between terms; no leading/trailing whitespace or spaces elsewhere. Numeric endpoints are canonical unsigned decimal (`0` or a nonzero digit followed by digits), at most ten digits and within `u32`. Signs, exponents and leading zeros other than zero refuse.
+
+Vector suffixes are inclusive and expand in ascending numeric order regardless of endpoint order. Groups keep written term order, with each vector ascending; a named group prefixes each member with the group name and `.`. Duplicate expanded member names refuse the whole expression. The authored expression is retained verbatim; no old label or net is renamed.
+
+Before expansion allocations or owned source copies, borrowed parsing computes checked counts and final UTF8/character lengths. Limits are 4096 UTF8 bytes/expression, 256 members/bus, 128 characters and512 UTF8 bytes/final member, 256 buses/project, 10000 expanded members/project and2MiB aggregate bus expressions, expanded names and stored entry member text. These are explicit Viamind limits. Native map deserializers also bound new bus/entry rows; source file/MCP envelopes retain existing caps. Exceeding any bound refuses the whole operation without mutation.
+
+## Native model, geometry and associations
+
+Add omitted-when-empty sheet maps of UUID-bearing `SchematicBus` and `SchematicBusEntry`. A bus has its ID, expression, start and end. Its integer-Nm endpoints obey existing ±10000mm limits, are distinct and cardinal. There is no inferred relation between separate touching buses.
+
+An entry has ID, bus ID, exact expanded member name, owned scalar wire ID, owned scalar label ID, bus point and wire point. Both referenced scalar objects are on the same sheet; the label is Local, its name is the member and its position is the wire point. That point is one endpoint of the owned nonzero cardinal wire. The bus point lies exactly on the referenced bus segment. The entry is a nonzero exact45degree diagonal (`abs(dx)==abs(dy)`). Each entry owns a distinct wire and label pair; no pair may be shared between entries. These relationships are native invariants, not a claim that diagonal entry geometry conducts.
+
+The normal scalar wire and label supply all actual connectivity. Repeated breakouts of one member are allowed and follow existing literal same-sheet label rules. A same-named global/power label physically or logically joined on that sheet follows the existing production graph rules; an isolated remote global label is not silently connected by a bus declaration. Nil/duplicate IDs, map-key mismatch, missing references, changed owned label names/scopes/positions, malformed geometry or absent members refuse. Existing general wire/label editing must preserve these invariants or refuse atomically.
+
+Native/event feature16 is reserved by root. Compose it with every other feature minimum by maximum, including aperture14 and NPTH15; clearing the final bus/entry falls back to the remaining feature requirement. Empty maps preserve existing native serialization and old project reads. Every event before/after/intermediate sheet snapshot gets the same gate; public log writing validates new records before writing bytes. Add all new IDs to borrowed preflight before the native validator allocates global identity sets. Preserve holes, aperture fields and all existing Part IDs/storage on final integration.
+
+## Shared commands and immutable facts
+
+Every mutation requires expected project ID and complete source cursor. Create/edit/delete bus retain explicit IDs and apply one sheet delta after preflight. Edit refuses if an existing entry's exact member or geometry would become invalid. Delete refuses while entries reference the bus. A separate delete-breakout action atomically removes precisely its owned entry/wire/label; it leaves every incidental object intact. Existing UI deletion of an owned wire/label must refuse until the breakout association is removed explicitly.
+
+`unfold_schematic_bus_member` selects explicit sheet/bus/member plus bus point, wire point and opposite scalar wire endpoint. It atomically creates exactly one graphical entry, one ordinary Local scalar label and one ordinary wire. It does not auto-route, infer pin polarity, choose global scope or connect other members. Native and borrowed prospective identity/count/text bounds are checked before candidate copies; finite collision-checked fresh IDs follow validation. One delta commits all three objects with exact undo/redo/replay. A preview captures the full guard; Apply recomputes against that guard. A stale or unsupported request leaves the complete project/status/history unchanged.
+
+A bounded read-only bus query inventories every explicit bus and its complete expansion on one coherent captured project. For each member it reports actual production scalar-net IDs and matching label UUID/scope facts on the bus's sheet, or explicitly missing. It does not use canonical net-name guesses, synthesize scalar anchors or infer connectivity from bus/entry crossings. Multiple observed names/aliases and existing graph exclusions remain disclosed. The source cursor, counts and coverage are returned. If the complete inventory/graph/output cannot fit, the whole call refuses; no partial result is called complete.
+
+## Captures, workers and shared consumers
+
+All new source strings/rows and planned additions are charged before copying. Existing combined100000-identity preflight,1000 sheets and ordinary geometry/text limits remain. The bus query/preview use at most10000 complete scalar graph rows,2MiB graph source text, one cumulative1M exact-contact allowance, and2MiB precharged serialized output. Two nonwaiting process slots remain held by the real worker through serialization even after caller cancellation. No engine lock spans await, rendering or serialization. Hook read guards run before permit reservation and before captured work acquires an engine lock; writers use standard hooks/admission. Restricted modes discover observations and deny writers by default; private PCB branches do not acquire schematic mutation authority.
+
+Audit all schematic consumers: native/log validation, object counts/global IDs, shared schematic budget, scalar connectivity captures, annotation/package/synchronization captures, PCB sandbox serialized budgets, agent presence/selection, connected drag, desktop rendering/fit and selected-sheet SVG/PNG bounds/text. Ordinary copies retain the maps. A purpose-specific scalar graph shell can omit nonconducting bus/entry geometry only after borrowed bounds and explicit coverage accounting; actual owned scalar wires/labels remain. No unused unbounded metadata may slip into geometry snapshots.
+
+Connected symbol drag initially refuses changes to an entry-owned wire or its label/association; no promise of bus-aware rubberbanding is added. Creating or drawing a bus across an existing pin/wire leaves scalar partitions unchanged. Forward PCB synchronization continues to use the actual scalar production graph only.
+
+## Human workflow
+
+Provide compact-scrollable selected-sheet bus authoring, expression/expansion results, member selection and explicit integer-coordinate fallback for unfold. Draw buses distinctly thicker than scalar wires and entries as diagonal graphical strokes; expression text and member facts are readable. Selected explicit IDs, rather than equal names, choose edit/delete targets. Preview clearly distinguishes nonconducting graphics from actual Local label/wire creation. Explicit Apply and Cancel are reachable at640×400 through effective painted ancestor clips. Use one fallible named retained worker, disabled bounded inputs while pending, hidden polling, cancellation/stale recovery and complete source/result facts. Every human action invokes a shared typed command/observation also reachable through MCP.
+
+Desktop and SVG/PNG use the same exact integer model at the render boundary; include bus/entry/expression bounds in auto-fit and clipping. Existing output defaults are unchanged. No claim of universal bus syntax or vendor/manufacturing readiness appears in the product.
+
+## Required verification
+
+1. Independently declared expansion oracles: ascending/reversed vectors, anonymous/named flat groups, vectors inside groups, Unicode and exact case. Refuse duplicates, malformed syntax, overflows and count/text/output limits before source copying.
+2. Literal old bracket/brace labels retain their exact native bytes, UUIDs and scalar-net identity. New buses/entries crossing pins/wires do not merge actual original UUID partitions; isolated remote global names do not invent a local connection.
+3. Unfold creates exactly the selected scalar member, validates ownership/geometry and actual production net facts, preserves unrelated partitions/PCB/package data, and round-trips native/log/undo/redo. Edit/delete and ordinary wire/label actions refuse broken associations unchanged.
+4. New native/log16 gates compose with13/14/15, both event sides and mixed clear-to-other-feature cases; borrowed global identity poison fails before validator sets/copies. Captures preserve all new hole IDs and purpose-specific geometry fields after dependency integration.
+5. Actual compact input/member/action reachability, effective ancestor clips, hidden/cancel/disconnect/stale worker paths and retained cancellation admission. Initialized Live/Approval/ReadOnly and two fresh same-name HTTP clients verify exact parity, immutable complete source state and guarded refusal.
+6. All four Linux gates, generated actual full-app MCP catalog/workflow, independently reviewed source/provenance, production CLI/MCP proof, wide/compact native framebuffer channels and final exact-head CI. Keep full source/history and failed-run scope honest; no electrical certification or cadence claim.
