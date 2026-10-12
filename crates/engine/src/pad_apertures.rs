@@ -77,6 +77,7 @@ impl<'de> Deserialize<'de> for StrictValue {
 
 /// Admission before secondary typed decoding or a serializer's owned pad copy.
 pub(crate) fn preflight_part(value: &Value) -> Result<(), String> {
+    crate::part_holes::preflight(value)?;
     if let Some(pads) = value.get("pads").and_then(Value::as_array) {
         if pads.len() > 1024 {
             return Err("expected part supports at most1024 pads before typed decoding".into());
@@ -123,6 +124,12 @@ pub(crate) fn bounded_bytes(value: &impl Serialize) -> Result<(), String> {
     serde_json::to_writer(&mut Counter(0), value).map_err(|e| e.to_string())
 }
 pub(crate) fn validate_part(part: &Part) -> Result<(), CommandError> {
+    if let Some(holes) = &part.holes {
+        viamind_doc::footprint_holes::validate_part_holes(holes).map_err(|e| CommandError::invalid("holes", e))?;
+        for hole in holes {
+            viamind_doc::resolve_hole(part, hole).map_err(|e| CommandError::invalid("holes", e))?;
+        }
+    }
     crate::footprint_artwork::validate_part_artwork(part)?;
     if part.pads.as_ref().is_some_and(|p| p.0.len() > 1024) {
         return Err(CommandError::invalid("expected", "at most1024 pads before copies"));

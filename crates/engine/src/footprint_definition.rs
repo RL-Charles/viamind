@@ -48,6 +48,7 @@ pub struct FootprintDefinitionSaved {
 /// Borrowed transport admission before constructing owned pad/artwork rows.
 pub fn preflight_definition(value: &serde_json::Value) -> Result<(), String> {
     use serde_json::Value;
+    crate::part_holes::preflight(value)?;
     let pads = value.get("pads").and_then(Value::as_array);
     if pads.is_some_and(|p| p.len() > 1024) {
         return Err("footprint definitions support at most 1024 pads before typed decoding".into());

@@ -45,7 +45,7 @@ impl<'de> Deserialize<'de> for ApplyFootprint {
 
 impl Command for ApplyFootprint {
     const NAME: &'static str = "apply_footprint";
-    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork or pad apertures is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
+    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Hole keys preserve IDs; new holes receive bounded fresh globally checked IDs, absent holes restores Legacy. Retains component placement. Full expected_cursor required when source or target artwork, pad apertures or mechanical holes is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
     fn expected_cursor(&self) -> Option<crate::EventCursor> {
         self.expected_cursor
     }
@@ -59,16 +59,44 @@ impl Command for ApplyFootprint {
         }
         if (self.footprint.artwork.is_some()
             || current.artwork.is_some()
+            || self.footprint.holes.is_some()
+            || current.holes.is_some()
             || self.footprint.pads.iter().any(|p| p.apertures.is_some())
             || current.pads.as_ref().is_some_and(|pads| pads.0.iter().any(|p| p.apertures.is_some())))
             && self.expected_cursor.is_none()
         {
-            return Err(CommandError::invalid("expected_cursor", "explicit artwork/aperture application requires full initial cursor"));
+            return Err(CommandError::invalid("expected_cursor", "explicit artwork/aperture/hole application requires full initial cursor"));
+        }
+        let explicit_holes = current.holes.is_some() || self.footprint.holes.is_some();
+        if explicit_holes {
+            viamind_doc::footprint_holes::preflight_project(project, None).map_err(|e| CommandError::invalid("holes", e))?;
+            viamind_doc::footprint_holes::preflight_footprint_replacement(
+                project,
+                current.id,
+                self.footprint.pads.len(),
+                self.footprint.holes.as_deref(),
+            )
+            .map_err(|e| CommandError::invalid("holes", e))?;
         }
         crate::pad_apertures::validate_part(current)?;
         crate::footprint_definition::validate_definition(&self.footprint).map_err(|e| CommandError::invalid("footprint", e))?;
         let existing = current.pads.as_ref().map(|p| p.0.as_slice()).unwrap_or_default();
+        let holes = if let Some(rows) = self.footprint.holes {
+            let mut ids = crate::part_holes::identities(project, None)?;
+            let mut result = Vec::with_capacity(rows.len());
+            for hole in rows {
+                let id = match current.holes.iter().flatten().find(|h| h.key == hole.key) {
+                    Some(old) => old.id,
+                    None => crate::part_holes::fresh(&mut ids, &mut ObjectId::new)?,
+                };
+                result.push(viamind_doc::PartHole { id, key: hole.key, center: hole.center, diameter: hole.diameter });
+            }
+            Some(result)
+        } else {
+            None
+        };
         let mut after = current.clone();
+        after.holes = holes;
         after.footprint = self.footprint.name;
         after.artwork = self.footprint.artwork;
         after.pads = Some(
@@ -92,6 +120,10 @@ impl Command for ApplyFootprint {
             )
             .map_err(|e| CommandError::invalid("footprint", e))?,
         );
+        if explicit_holes {
+            crate::part_holes::admit(project, current, after.pads.as_ref().map_or(0, |p| p.0.len()), after.holes.as_deref())?;
+            crate::part_holes::check_part_ids(project, current, &after)?;
+        }
         if after == *current {
             return Ok(vec![]);
         }
@@ -152,6 +184,9 @@ impl crate::EngineHandle {
             let project = engine.project();
             if project.id != input.expected_project || project.board.part(&input.expected.id) != Some(&input.expected) {
                 return Err(crate::EngineError::File { message: "project or part changed; reload before exporting footprint".into() });
+            }
+            if input.expected.holes.is_some() {
+                viamind_doc::file::validate_holes(project).map_err(|e| crate::EngineError::File { message: e.to_string() })?;
             }
             crate::pad_apertures::validate_part(&input.expected).map_err(|e| crate::EngineError::File { message: e.to_string() })?;
             Ok(input.expected.clone())

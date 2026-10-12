@@ -108,8 +108,12 @@ impl Command for MovePart {
             return Ok(Vec::new());
         }
         crate::footprint_artwork::validate_part_artwork(part)?;
+        if part.holes.is_some() {
+            crate::part_holes::admit(project, part, part.pads.as_ref().map_or(0, |p| p.0.len()), part.holes.as_deref())?;
+        }
         let mut moved = part.clone();
         moved.position = position;
+        crate::part_holes::validate_part(&moved)?;
         Ok(vec![Delta::record_part(project, self.id, Some(moved))])
     }
 }
@@ -149,6 +153,9 @@ impl Command for UpdatePart {
             return Err(CommandError::conflict("part changed since it was read; reload its properties and review the edit"));
         }
         crate::footprint_artwork::validate_part_artwork(before)?;
+        if before.holes.is_some() {
+            crate::part_holes::admit(project, before, before.pads.as_ref().map_or(0, |p| p.0.len()), before.holes.as_deref())?;
+        }
         let mut after = before.clone();
         if let Some(designator) = self.designator {
             let designator = designator.trim();
@@ -177,6 +184,7 @@ impl Command for UpdatePart {
         }
         after.rotation_mdeg = self.rotation_deg.map(rotation_mdeg).transpose()?.unwrap_or(before.rotation_mdeg);
         after.side = self.side.unwrap_or(before.side);
+        crate::part_holes::validate_part(&after)?;
         if &after == before {
             return Ok(Vec::new());
         }
