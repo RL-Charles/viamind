@@ -21,13 +21,15 @@ fn log15_base_before_after_and_undo_redo_preserve_exact_drill_intent() {
     assert_eq!(replay, log);
     assert_eq!(replay.replay().board.parts[&id], after);
     let text = String::from_utf8(bytes).unwrap();
-    assert!(EventLog::read_jsonl(text.replacen("\"version\":15", "\"version\":14", 1).as_bytes()).is_err());
+    assert!(text.contains("\"version\":16"), "logs are written at the current version 16");
+    assert!(EventLog::read_jsonl(text.replacen("\"version\":16", "\"version\":14", 1).as_bytes()).is_err());
     let mut base15 = base.clone();
     base15.board.parts.insert(id, after.clone());
     let mut base_log = Vec::new();
     EventLog::new(base15.clone()).write_jsonl(&mut base_log).unwrap();
     let text = String::from_utf8(base_log).unwrap();
-    assert!(EventLog::read_jsonl(text.replacen("\"version\":15", "\"version\":14", 1).as_bytes()).is_err());
+    assert!(text.contains("\"version\":16"), "logs are written at the current version 16");
+    assert!(EventLog::read_jsonl(text.replacen("\"version\":16", "\"version\":14", 1).as_bytes()).is_err());
     let mut removal = EventLog::new(base15);
     removal.append(event(ChangeKind::Applied, vec![Delta::Part { id, before: Some(after), after: Some(before) }]));
     let mut bytes = vec![];

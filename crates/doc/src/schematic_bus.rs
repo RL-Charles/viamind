@@ -246,7 +246,7 @@ pub fn budget(content: &SchematicContent) -> Result<BusBudget, String> {
 /// Admit combined rows and every inherited identity before any native global index or source copy.
 pub fn preflight_project(project: &Project, replacement: Option<&Sheet>) -> Result<BusBudget, String> {
     if project.schematic.sheets.len() > 1000 {
-        return Err("at most1000 schematic sheets".into());
+        return Err("bus preflight supports at most 1000 sheets".into());
     }
     let replacing = replacement.map(|s| s.id);
     let sheets = || project.schematic.sheets.values().filter(|s| Some(s.id) != replacing).chain(replacement);
