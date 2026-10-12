@@ -108,7 +108,10 @@ fn job6_requires_explicit_npth_and_preserves_other_versions_and_aperture_admissi
     p = source();
     p.board.parts.values_mut().next().unwrap().holes = Some(vec![]);
     let temp = tempfile::tempdir().unwrap();
-    let (path, _) = OutputJobSnapshot::capture(&p, job()).unwrap().write(0, &temp.path().join("empty"), None).unwrap();
+    let (path, _) = OutputJobSnapshot::capture(&p, job())
+        .unwrap()
+        .write(ReleaseCursor { stream_id: ObjectId::new(), sequence: 0 }, &temp.path().join("empty"), None)
+        .unwrap();
     let facts = inspect_output_release(&InspectOutputRelease { path }).unwrap().observed_nonplated_holes.unwrap();
     assert_eq!((facts.physical_drills, facts.tool_diameters), (0, 0));
 }
@@ -129,8 +132,11 @@ fn drill_semantic_corruption_refuses_even_after_file_lengths_are_updated() {
     let p = source();
     let temp = tempfile::tempdir().unwrap();
     for case in 0..7 {
-        let (path, _) = OutputJobSnapshot::capture(&p, job()).unwrap().write(0, &temp.path().join(format!("case{case}")), None).unwrap();
-        assert!(inspect_output_release(&InspectOutputRelease { path: path.clone() }).is_ok());
+        let (path, _) = OutputJobSnapshot::capture(&p, job())
+            .unwrap()
+            .write(ReleaseCursor { stream_id: ObjectId::new(), sequence: 0 }, &temp.path().join(format!("case{case}")), None)
+            .unwrap();
+        inspect_output_release(&InspectOutputRelease { path: path.clone() }).unwrap();
         let name = "fabrication/nonplated-through.xnc";
         match case {
             0 => change(&path, name, |s| s.replace("NonPlated,1,2,NPTH", "Plated,1,2,PTH")),
