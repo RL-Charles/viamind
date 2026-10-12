@@ -1,0 +1,3 @@
+Designator,Component ID,Value,Footprint,X (mm),Y (mm),Rotation (deg CCW),Side
+U_BOTTOM,00000000-0000-0000-0000-000000000002,Synthetic asymmetric geometry,EXPLICIT_FIXTURE,30.000000,17.000000,30.000,Bottom
+U_TOP,00000000-0000-0000-0000-000000000005,Synthetic asymmetric geometry,EXPLICIT_FIXTURE,14.000000,24.000000,117.500,Top

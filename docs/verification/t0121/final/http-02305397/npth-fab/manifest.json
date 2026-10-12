@@ -1,0 +1,33 @@
+{
+  "nonplated_holes": {
+    "include_npth": true,
+    "authored_components": 1,
+    "explicit_empty_components": 0,
+    "physical_drills": 1,
+    "tool_diameters": 1
+  },
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "units": "mm (Gerber 5.6, 1 nm; XNC explicit decimals)",
+  "coordinate_system": "Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored",
+  "mask_expansion_nm": 0,
+  "smd_pad_count": 3,
+  "track_count": 2,
+  "through_via_count": 2,
+  "cutout_count": 1,
+  "files": [
+    "bottom-copper.gbr",
+    "bottom-mask.gbr",
+    "nonplated-through.xnc",
+    "plated-through.xnc",
+    "profile.gbr",
+    "top-copper.gbr",
+    "top-mask.gbr",
+    "manifest.json"
+  ],
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, plated component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred",
+    "Circular nonplated holes use explicit component geometry on both sides; absent hole policy is uninspected intent. No slots, drill suitability, material or manufacturer verification."
+  ]
+}

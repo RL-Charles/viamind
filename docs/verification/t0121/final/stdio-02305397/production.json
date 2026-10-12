@@ -1,0 +1,245 @@
+{
+  "passed": true,
+  "source": "023053973d8e1932a5339deafb49fbc66ff61e3d",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/viamind-02305397",
+  "binary_sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a",
+  "endpoint": null,
+  "checks": [
+    "catalog exposes shared hole writer and explicit fabrication opt-in",
+    "Legacy fabrication preserves full session/status",
+    "hole edit changes only exact Part holes with one event",
+    "peer observes same stored mechanical identities",
+    "stale exact Part/full cursor refuses unchanged",
+    "undo restores original whole project",
+    "redo restores exact keyed hole",
+    "equal hole policy emits no event",
+    "zero diameter refuses atomically",
+    "duplicate key refuses atomically",
+    "nil UUID refuses atomically",
+    "foreign identity refuses atomically",
+    "missing center coordinate refuses atomically",
+    "poison row max plus one refuses atomically",
+    "required nullable holes member enforced",
+    "peer edit and undo invalidates complete initial cursor",
+    "missing NPTH opt-in refuses before publication",
+    "separate NPTH file and summary preserve existing plated and copper bytes",
+    "NPTH contains exact diameter and attributed common origin",
+    "static metadata exposes mechanical role and stored identity",
+    "detached library4 contains mechanical keys without global IDs",
+    "detached load remains read-only",
+    "detached NEW save never applies",
+    "hole library reuse requires complete cursor",
+    "keyed reuse keeps existing UUID/pads/nets and gives new key a distinct UUID",
+    "one reuse undo restores complete project",
+    "old library authoritatively restores Legacy absence",
+    "explicit empty survives as present array",
+    "explicit empty still requires opt-in",
+    "native15 retains exact authored project",
+    "reopen changes stream and invalidates stale writer",
+    "saved job6 canonical load exact",
+    "saved release independently observes actual NPTH and plated counts",
+    "same-length wrong NPTH span rejected independently",
+    "all jobs and inspections preserve full session/status",
+    "restricted process hides writer but reads exact holes",
+    "forged restricted call preserves whole session/status",
+    "no-display CLI produces identical NPTH and plated files"
+  ],
+  "check_count": 38,
+  "tool_count": 121,
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/stdio-02305397/authored.viamind.json",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "fe8ce425-48b2-4f37-a101-c3deafdeb453"
+    },
+    "project": {
+      "board": {
+        "outline": {
+          "cutouts": [
+            [
+              {
+                "x": 45000000,
+                "y": 22000000
+              },
+              {
+                "x": 50000000,
+                "y": 22000000
+              },
+              {
+                "x": 49000000,
+                "y": 27000000
+              },
+              {
+                "x": 45000000,
+                "y": 26000000
+              }
+            ]
+          ],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 60000000,
+              "y": 0
+            },
+            {
+              "x": 57000000,
+              "y": 35000000
+            },
+            {
+              "x": 0,
+              "y": 40000000
+            }
+          ]
+        },
+        "parts": {
+          "00000000-0000-0000-0000-000000000002": {
+            "designator": "U_BOTTOM",
+            "footprint": "EXPLICIT_FIXTURE",
+            "holes": [
+              {
+                "center": {
+                  "x": 3,
+                  "y": 5
+                },
+                "diameter": 1000001,
+                "id": "c9850b84-fb09-4912-adc1-cb182f48eb76",
+                "key": "mount.A"
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "pads": [
+              {
+                "height": 1000000,
+                "id": "00000000-0000-0000-0000-000000000003",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 2000000,
+                  "y": 1500000
+                },
+                "width": 4000000
+              },
+              {
+                "height": 2200000,
+                "id": "00000000-0000-0000-0000-000000000004",
+                "net": "GND",
+                "number": "2",
+                "position": {
+                  "x": -3000000,
+                  "y": -1000000
+                },
+                "width": 1200000
+              }
+            ],
+            "position": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "rotation_mdeg": 30000,
+            "side": "bottom",
+            "value": "Synthetic asymmetric geometry"
+          },
+          "00000000-0000-0000-0000-000000000005": {
+            "designator": "U_TOP",
+            "footprint": "EXPLICIT_FIXTURE",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "pads": [
+              {
+                "height": 600000,
+                "id": "00000000-0000-0000-0000-000000000006",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 1250000,
+                  "y": -750000
+                },
+                "width": 1300000
+              }
+            ],
+            "position": {
+              "x": 14000000,
+              "y": 24000000
+            },
+            "rotation_mdeg": 117500,
+            "side": "top",
+            "value": "Synthetic asymmetric geometry"
+          }
+        },
+        "tracks": {
+          "00000000-0000-0000-0000-000000000007": {
+            "end": {
+              "x": 18000000,
+              "y": 12000000
+            },
+            "id": "00000000-0000-0000-0000-000000000007",
+            "layer": "top",
+            "net": "GND",
+            "start": {
+              "x": 5000000,
+              "y": 8000000
+            },
+            "width": 250000
+          },
+          "00000000-0000-0000-0000-000000000008": {
+            "end": {
+              "x": 40000000,
+              "y": 9000000
+            },
+            "id": "00000000-0000-0000-0000-000000000008",
+            "layer": "bottom",
+            "net": "GND",
+            "start": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "width": 400000
+          }
+        },
+        "vias": {
+          "00000000-0000-0000-0000-000000000009": {
+            "diameter": 800000,
+            "drill": 300000,
+            "id": "00000000-0000-0000-0000-000000000009",
+            "net": "GND",
+            "position": {
+              "x": 18000000,
+              "y": 12000000
+            }
+          },
+          "00000000-0000-0000-0000-00000000000a": {
+            "diameter": 1200000,
+            "drill": 500000,
+            "id": "00000000-0000-0000-0000-00000000000a",
+            "net": "GND",
+            "position": {
+              "x": 40000000,
+              "y": 9000000
+            }
+          }
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Independent fabrication reader fixture",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/stdio-02305397/authored.viamind.json"
+  },
+  "cli": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "viamind: exported 8 files to /home/charlesmowbray/.cache/viamind/native-artifacts/t0121/stdio-02305397/cli-npth\n"
+  }
+}

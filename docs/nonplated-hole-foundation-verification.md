@@ -45,3 +45,6 @@ DRC/routing/continuity, rendering, fabrication and release integration. Actual c
 and wide native editing, initialized multi-client MCP, independent drill parsing and
 all full Linux/application checks remain required. Final independent review and
 exact-head CI are required before merge; human completion remains separate.
+
+The completed integration and its final verification are recorded in
+[nonplated-footprint-holes-verification.md](nonplated-footprint-holes-verification.md).

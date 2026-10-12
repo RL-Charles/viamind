@@ -1,0 +1,8 @@
+{
+  "format": "viamind-output-job",
+  "version": 6,
+  "name": "Explicit drill proof",
+  "profile": "generic_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "include_npth": true
+}
