@@ -628,6 +628,8 @@ impl ViamindApp {
                                 ),
                             )
                         })
+                        .chain(c.buses.values().map(|b| (b.id, format!("Bus {}", b.expression))))
+                        .chain(c.bus_entries.values().map(|e| (e.id, format!("Bus entry {}", e.member))))
                         .chain(c.wires.keys().map(|id| (*id, format!("Wire {id}"))))
                         .chain(c.junctions.keys().map(|id| (*id, format!("Junction {id}"))))
                         .chain(c.labels.values().map(|l| (l.id, format!("Label {}", l.name))))
@@ -782,6 +784,23 @@ impl ViamindApp {
                 normal
             }
         };
+        for bus in c.buses.values() {
+            let ink = color(bus.id, Color32::from_rgb(110, 160, 245));
+            painter.line_segment([screen(bus.start), screen(bus.end)], Stroke::new((0.4 * cam.zoom as f32).clamp(2.0, 12.0), ink));
+            painter.text(
+                screen(bus.start) + egui::vec2(0.0, -8.0),
+                Align2::LEFT_BOTTOM,
+                &bus.expression,
+                FontId::monospace((0.9 * cam.zoom as f32).clamp(0.1, 36.0)),
+                ink,
+            );
+        }
+        for entry in c.bus_entries.values() {
+            painter.line_segment(
+                [screen(entry.bus_point), screen(entry.wire_point)],
+                Stroke::new((0.25 * cam.zoom as f32).clamp(1.5, 8.0), color(entry.id, Color32::from_rgb(110, 160, 245))),
+            );
+        }
         for w in c.wires.values() {
             painter.line_segment([screen(w.start), screen(w.end)], Stroke::new(2.0, color(w.id, wire_color)));
         }
@@ -836,8 +855,8 @@ impl ViamindApp {
         if let Some(sheet) = sheet.as_ref() {
             self.paint_schematic_agent_presence(ui, viewport, sheet.id, content);
         }
-        let dragging = self.schematic_drag_canvas(ui, &response, &painter, cam);
-        let drawing_wires = if dragging { false } else { self.schematic_wire_canvas(ui, &response, &painter) };
+        let dragging = !self.schematic_buses.active() && self.schematic_drag_canvas(ui, &response, &painter, cam);
+        let drawing_wires = if dragging || self.schematic_buses.active() { false } else { self.schematic_wire_canvas(ui, &response, &painter) };
         if !dragging
             && !drawing_wires
             && response.clicked()
@@ -880,6 +899,8 @@ fn anchors(c: &SchematicContent) -> Vec<(ObjectId, Coordinate)> {
     c.symbols
         .values()
         .map(|s| (s.id, s.position))
+        .chain(c.buses.values().flat_map(|b| [(b.id, b.start), (b.id, b.end)]))
+        .chain(c.bus_entries.values().flat_map(|e| [(e.id, e.bus_point), (e.id, e.wire_point)]))
         .chain(c.wires.values().flat_map(|w| [(w.id, w.start), (w.id, w.end)]))
         .chain(c.junctions.values().map(|j| (j.id, j.position)))
         .chain(c.labels.values().map(|l| (l.id, l.position)))
@@ -889,6 +910,12 @@ fn bounds(c: Option<&SchematicContent>) -> WorldRect {
     let mut points = vec![];
     if let Some(c) = c {
         points.extend(anchors(c).into_iter().map(|(_, p)| p));
+        for bus in c.buses.values() {
+            points.push(Coordinate {
+                x: Nm(bus.start.x.0 + i64::try_from(bus.expression.chars().count()).unwrap_or(4096) * 700_000),
+                y: Nm(bus.start.y.0 - 2_000_000),
+            });
+        }
         for s in c.symbols.values() {
             points.extend(body_corners(s));
             points.extend(s.pins.iter().filter_map(|p| s.pin_position(p.position).ok()));

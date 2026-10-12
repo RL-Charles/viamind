@@ -130,6 +130,7 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Invocation, Str
                 options.schematic_options.layers = value
                     .split(',')
                     .map(|s| match s {
+                        "buses" => Ok(viamind_render::SchematicLayer::Buses),
                         "wires" => Ok(viamind_render::SchematicLayer::Wires),
                         "symbols" => Ok(viamind_render::SchematicLayer::Symbols),
                         "pins" => Ok(viamind_render::SchematicLayer::Pins),

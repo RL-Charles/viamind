@@ -48,6 +48,7 @@ pub mod release_inspection;
 pub mod routing;
 pub mod scene;
 pub mod schematic;
+pub mod schematic_buses;
 pub mod schematic_component;
 pub mod schematic_drag;
 pub mod schematic_wires;
@@ -164,6 +165,7 @@ pub struct ViamindApp {
     pub command_hooks: command_hooks::CommandHooksUi,
     pub schematic: schematic::SchematicUi,
     pub schematic_wires: schematic_wires::SchematicWiresUi,
+    pub schematic_buses: schematic_buses::SchematicBusesUi,
     pub schematic_drag: schematic_drag::SchematicDragUi,
     pub symbol_library: symbol_library::SymbolLibraryUi,
     pub package_library: package_library::PackageLibraryUi,
@@ -229,6 +231,7 @@ impl ViamindApp {
             schematic: schematic::SchematicUi::default(),
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             schematic_drag: schematic_drag::SchematicDragUi::default(),
+            schematic_buses: schematic_buses::SchematicBusesUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
             package_library: package_library::PackageLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
@@ -293,6 +296,7 @@ impl ViamindApp {
             schematic,
             schematic_wires: schematic_wires::SchematicWiresUi::default(),
             schematic_drag: schematic_drag::SchematicDragUi::default(),
+            schematic_buses: schematic_buses::SchematicBusesUi::default(),
             symbol_library: symbol_library::SymbolLibraryUi::default(),
             package_library: package_library::PackageLibraryUi::default(),
             annotation: annotation::AnnotationUi::default(),
@@ -437,6 +441,7 @@ impl ViamindApp {
         self.sync_design();
         self.sync_schematic_wires(ui.ctx());
         self.sync_schematic_drag(ui.ctx());
+        self.sync_schematic_buses(ui.ctx());
         self.sync_track_cleanup(ui.ctx());
         self.sync_pcb_branches(ui.ctx());
         if let Some(design) = &self.design {
@@ -453,8 +458,9 @@ impl ViamindApp {
                 egui::ScrollArea::vertical().show(ui, |ui| {
                     self.cross_probe_panel(ui);
                     if self.schematic.active {
-                        ui.add_enabled_ui(!self.schematic_drag.active(), |ui| self.schematic_panel(ui));
+                        ui.add_enabled_ui(!self.schematic_drag.active() && !self.schematic_buses.active(), |ui| self.schematic_panel(ui));
                         self.schematic_drag_toolbar(ui);
+                        self.schematic_buses_toolbar(ui);
                         return;
                     }
                     layer_panel::show(ui, &mut self.layers);
@@ -520,6 +526,7 @@ impl ViamindApp {
         self.drc_window(ui);
         self.unrouted_window(ui);
         self.schematic_drag_window(ui);
+        self.schematic_buses_window(ui);
         self.command_hooks_window(ui);
         self.erc_window(ui);
         self.fabrication_window(ui);

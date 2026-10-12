@@ -809,13 +809,13 @@ mod tests {
         let global = add_label(&mut pj, sheet, p(100, 100), "DATA0", LabelScope::Global);
         let e = EngineHandle::new(pj);
         let input = unfold(&e, sheet, bus);
-        let preview = e.prepare_schematic_bus_unfold(input.clone()).unwrap().run_preview().unwrap();
-        assert_eq!(preview.allowed_original_component_count, 0);
-        e.execute_typed(input, Origin::User).unwrap();
+        let before = e.session_state();
+        assert!(e.prepare_schematic_bus_unfold(input.clone()).unwrap().run_preview().is_err());
+        assert!(e.execute_typed(input, Origin::User).is_err());
+        assert_eq!(e.session_state(), before);
         let graph = e.all_schematic_connectivity().unwrap();
-        let old = graph.nets.iter().find(|n| n.members.iter().any(|m| m.id == global)).unwrap();
-        assert_eq!(old.members.len(), 1);
-        assert_eq!(graph.total_nets, 2);
+        assert_eq!(graph.nets[0].members[0].id, global);
+        assert_eq!(graph.total_nets, 1);
     }
     #[test]
     fn delete_edit_ownership_and_stale_full_cursor_are_atomic() {
