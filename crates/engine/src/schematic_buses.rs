@@ -981,7 +981,7 @@ mod tests {
         });
         let mut remaining = MAX_VISITS;
         assert!(
-            preserve(&before, &actual_after, &input, &BTreeSet::from([target]), entry_wire, entry_label, &mut remaining)
+            preserve(&before, &actual_after, &BTreeSet::from([target]), &input, entry_wire, entry_label, &mut remaining)
                 .unwrap_err()
                 .to_string()
                 .contains("unrelated original scalar partitions")
