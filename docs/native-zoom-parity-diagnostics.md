@@ -155,3 +155,58 @@ No renderer behavior changed, and the 100k cadence example has never launched
 in this investigation. Further native experiments or corrections require a
 specific evidence-based scope and independent review; repeated passing runs
 are not visual-correctness closure or a strict 60fps result.
+
+## Optional hardened harness: validated, historical cause unresolved
+
+Public amendment `c912fc9ac04910ed061aef7926356f865831332e` was independently
+approved before Rust. `Canvas::set_manual_camera` validates finite coordinates
+and the existing zoom range before changing anything, then installs the exact
+camera and disables startup auto-fit. Existing `focus_world` behavior remains.
+The optional `--hardened` diagnostic requires deferred trace I/O and the progress
+watchdog; ordinary and legacy trace modes remain available.
+
+The harness counts six completed integration frames rather than UI passes,
+refuses known discarded passes before screenshot submission, and requires exact
+tokens, root viewport, dimensions, camera, DPI, layers and intervening draw state.
+Wheel/pinch/Home/middle-button/Space-drag contamination aborts with fixed numeric
+evidence and no private text. Expected root pixels come from the unrounded full
+`InputState` viewport and effective PPP, matching pinned egui-winit's window
+inner-size input and egui-wgpu's surface texture. Safe-area content bounds and
+UI-rounded bounds are unsuitable. Ambiguous pixel recovery refuses before a
+request; equal-but-wrong image dimensions retain raw evidence and refuse.
+
+Source `c0e2ccd3db319a5b8dd1b1900c3c2891a0097e05` passed formatting, release UI
+all-target strict Clippy, all 22 example tests and the release example build.
+Four unchanged Canvas tests, including exact/invalid manual-camera and retained
+focus semantics, passed at `ff180e3`. The examples include actual root five-case
+camera/count preservation across resize, discarded-pass admission, privacy,
+both-direction dimension mismatch, matching-but-wrong dimensions, fractional
+DPI/safe areas and metadata ownership limits. These are scoped receipts, not
+a full workspace gate. The uniquely retained executable SHA256 is
+`660e5de117a60afd86c8cf9ceb1e58a27890230edf275a6b899dbcac59cde399`.
+
+Exactly one fresh quiet native validation launched PID 4006395 on 2026-10-12
+01:22 UTC. It self-closed after 9.89 seconds, flushed ten original images and
+released both shared mutexes. The atomic observer received terminal notification
+after 9.59 seconds with 92 callback entries/exits, ten arrivals and no pending
+request. The 91 retained drawing passes represent 90 distinct observed integration
+frame numbers; neither count is a display scanout or performance measurement.
+
+All five whole-canvas comparisons passed, including max differences 1/1/1/2/1
+and zero pixels over 2. Camera/count/viewport/DPI/layer observations exactly match
+the previous passing progress run after removing the new root-pixel field. The
+physical window again was 1400x1000 at (2180,1265), PPP 1; every actual image and
+requested root size is 1400x1000. Each unique request had six completed stable
+frames and three matching retained draws before arrival. Independent raw-sample
+analysis reproduced every metric and verified every RGBA/RGB PNG sample. Actual
+alpha is 255; RGB review images explicitly omit it.
+
+[The hardened master](verification/t0126/hardened-trace/master.json) indexes
+the scoped gates, exact executable, quiet/system/atomic receipts, all ten pairs,
+independent admission audit and pixel analysis. Run
+`python docs/verification/t0126/hardened-trace/verify.py` with ImageMagick to
+verify all indexed hashes and original PNG samples. This validates the optional
+hardened harness on these cases. It does not reconstruct the original case-4
+camera or explain why 581 objects were drawn then versus 606 now. The historical
+image mismatch and deferred stall remain unresolved; no renderer change, new
+native retry, 100k cadence result or strict 60fps acceptance follows from it.

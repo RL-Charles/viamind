@@ -1,0 +1,65 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/doc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/router)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/drc)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 25.08s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 2m 11s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/native-benchmark-target/release/deps/viamind_ui_egui-1692b2ef347a10b1)
+
+running 4 tests
+test canvas::tests::grid_lines_stay_bounded_at_any_zoom ... ok
+test canvas::tests::focus_world_retains_its_existing_minimum_zoom_semantics ... ok
+test canvas::tests::grid_step_follows_1_2_5 ... ok
+test canvas::tests::manual_camera_is_exact_and_invalid_inputs_preserve_fit_state ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 96 filtered out; finished in 0.00s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 36.37s
+     Running unittests examples/gpu_parity.rs (/home/charlesmowbray/.cache/viamind/native-benchmark-target/release/examples/gpu_parity-317c025d33a8aa9b)
+
+running 19 tests
+test parity_admission::tests::settling_counts_completed_frames_not_repeated_or_discarded_passes ... ok
+test parity_progress::tests::streamed_output_refuses_before_exceeding_reserved_budget ... ok
+test parity_trace::tests::raw_capture_refuses_overflow_extent_and_aggregate_before_copy ... ok
+test parity_trace::tests::progress_state_and_full_output_are_charged_before_worker_creation ... ok
+test parity_trace::tests::cumulative_metadata_refuses_before_retaining_or_serializing_more ... ok
+test parity_trace::tests::hardened_navigation_refusal_accepts_only_harmless_pointer_motion_and_keeps_text_private ... ok
+test parity_progress::tests::terminal_notification_is_nonblocking_once_and_no_sequence_file_exists ... ok
+test parity_progress::tests::disconnected_sender_and_new_path_race_do_not_overwrite ... ok
+test parity_trace::tests::deferred_abort_flushes_prior_pixels_and_raw_budget_refuses_before_retention ... ok
+test parity_trace::tests::multiple_screenshots_and_repeated_pass_token_cannot_be_silently_accepted ... ok
+headless root UI case 0: (Camera { center: WorldPos { x: 82.95, y: 53.95 }, zoom: 6.4539434075857915 }, [[280.0 23.0] - [1400.0 977.0]], 5002)
+headless root UI case 1: (Camera { center: WorldPos { x: 85.89393656716418, y: 51.9357276119403 }, zoom: 6.4539434075857915 }, [[280.0 23.0] - [1400.0 977.0]], 5002)
+test tests::actual_discarded_passes_do_not_submit_or_inflate_frame_settling ... ok
+test parity_trace::tests::mismatched_pair_extents_are_retained_and_refused_before_legacy_indexing ... ok
+headless root UI case 2: (Camera { center: WorldPos { x: 85.89393656716418, y: 51.9357276119403 }, zoom: 6.4539434075857915 }, [[280.0 23.0] - [1400.0 977.0]], 4665)
+test parity_trace::tests::navigation_observations_refuse_excess_events_and_never_retain_text ... ok
+headless root UI case 3: (Camera { center: WorldPos { x: 85.89393656716418, y: 51.9357276119403 }, zoom: 6.712101143889224 }, [[280.0 23.0] - [1400.0 977.0]], 4624)
+headless root UI case 4: (Camera { center: WorldPos { x: 33.8096233769221, y: 25.375284784012628 }, zoom: 53.69680915111379 }, [[280.0 23.0] - [1400.0 977.0]], 606)
+test parity_progress::tests::active_callback_and_changed_generation_are_explicitly_inconsistent ... ok
+test parity_progress::tests::independent_deadline_records_pending_capture_without_more_callbacks ... ok
+test tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation ... ok
+test parity_trace::tests::deferred_capture_retains_shared_pixels_without_files_until_finish_and_releases_them ... ok
+test tests::hardened_five_cases_keep_exact_cameras_and_survive_resize ... ok
+test parity_trace::tests::hardened_admission_refuses_camera_draw_pair_identity_and_size_mismatches ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 3.20s
+UNIQUE_DIAGNOSTIC_BINARY_READY 88ac09da3979a1721b0c43d769cd412f710eab7aa3d7603fa8760f873691fdc3

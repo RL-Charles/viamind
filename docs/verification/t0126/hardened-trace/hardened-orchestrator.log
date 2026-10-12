@@ -1,0 +1,12 @@
+{
+  "pid": 4006395,
+  "selfclosed": true,
+  "elapsed_seconds": 9.893989396994584,
+  "binary_sha256": "660e5de117a60afd86c8cf9ceb1e58a27890230edf275a6b899dbcac59cde399",
+  "report_exists": true,
+  "trace_exists": true,
+  "runtime": "",
+  "utc": "2026-10-12T01:22:35.589164+00:00",
+  "scope": "Hardened harness validation only; pixel/provenance outcomes reported independently; historical cause/stall/performance remain unresolved"
+}
+

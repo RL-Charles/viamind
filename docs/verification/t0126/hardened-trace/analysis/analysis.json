@@ -1,0 +1,353 @@
+{
+  "scope": "Independent original RGBA sample analysis; RGB review omits alpha, each sample verified; derived diff amplified8 only for review, original whole-canvas thresholds unchanged",
+  "trace_paired_provenance_valid": true,
+  "artifacts": [
+    {
+      "image": 0,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "f21c4e21b6bb80fd0e114946198bd0ca495063c26f7184a91c73718efe95e73c",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 1,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "0eaa03f9299810e3f4901be0b9664e6b1258a7b0a917a470a051fe18b35e0896",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 2,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "3e5613fbd9b46d6b9b98e75bf44c02beb072e088fdca26841662bf5554a81c00",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 3,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "95c0f29fcdd62380cd43c5548463326ca32b2e1778c8d75c715fafc1241334ad",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 4,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "a436a2ef5fe718966a87a961df299527e996d9b124fedc2035e90a5c45e0c73c",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 5,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "b0c56fb19ebe117635c2296496ea4e6cc7016c2e816f916e0d6b767b696eab85",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 6,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "c4cecbfbe72f7fddf20f2dd1e5d3c0e62541afcba17e2cdc211b3062e785ff75",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 7,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "2ba4ebe3d717663523550e2e9673eb1cefe814447bfae957781f9a31ea978f44",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 8,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "6786b632a7f7fc855a3bd0faaffc70c49f75d92e898663ae70df79a701d506ec",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    },
+    {
+      "image": 9,
+      "width": 1400,
+      "height": 1000,
+      "original_rgba_sha256": "0b1a3685f7caffccb0de2bb0102477e3a4d3a1acc0b3f457ec19f0a34f10906a",
+      "alpha_min": 255,
+      "alpha_max": 255,
+      "nonopaque_pixels": 0,
+      "rgba_and_rgb_png_samples_exact": true
+    }
+  ],
+  "cases": [
+    {
+      "case": 0,
+      "crop": [
+        280,
+        23,
+        1400,
+        977
+      ],
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.00017267520215633424,
+      "pixels_over_2_channels": 0,
+      "changed_bbox": null,
+      "most_common_changed_rgba_pairs": [],
+      "most_changed_rows": [],
+      "most_changed_columns": [],
+      "regions": [
+        {
+          "name": "fixture_via_and_drill",
+          "item": 5000,
+          "screen_pixels": [
+            1221.1053,
+            745.5725,
+            1324.3684,
+            848.83563
+          ],
+          "intersects_canvas": true
+        },
+        {
+          "name": "fixture_quad",
+          "item": 5001,
+          "screen_pixels": [
+            1317.9146,
+            797.2041,
+            1376.0,
+            848.83563
+          ],
+          "intersects_canvas": true
+        }
+      ],
+      "paired_provenance": {
+        "valid_token": true,
+        "state_matches_request": true,
+        "draw_states_match_request": true,
+        "pair_state_matches_reference": true,
+        "pair_dimensions_match_reference": true,
+        "request_dimensions_match": true
+      }
+    },
+    {
+      "case": 1,
+      "crop": [
+        280,
+        23,
+        1400,
+        977
+      ],
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001712713387241689,
+      "pixels_over_2_channels": 0,
+      "changed_bbox": null,
+      "most_common_changed_rgba_pairs": [],
+      "most_changed_rows": [],
+      "most_changed_columns": [],
+      "regions": [
+        {
+          "name": "fixture_via_and_drill",
+          "item": 5000,
+          "screen_pixels": [
+            1202.1053,
+            758.5725,
+            1305.3684,
+            861.83563
+          ],
+          "intersects_canvas": true
+        },
+        {
+          "name": "fixture_quad",
+          "item": 5001,
+          "screen_pixels": [
+            1298.9146,
+            810.2041,
+            1357.0,
+            861.83563
+          ],
+          "intersects_canvas": true
+        }
+      ],
+      "paired_provenance": {
+        "valid_token": true,
+        "state_matches_request": true,
+        "draw_states_match_request": true,
+        "pair_state_matches_reference": true,
+        "pair_dimensions_match_reference": true,
+        "request_dimensions_match": true
+      }
+    },
+    {
+      "case": 2,
+      "crop": [
+        280,
+        23,
+        1400,
+        977
+      ],
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001240079365079365,
+      "pixels_over_2_channels": 0,
+      "changed_bbox": null,
+      "most_common_changed_rgba_pairs": [],
+      "most_changed_rows": [],
+      "most_changed_columns": [],
+      "regions": [
+        {
+          "name": "fixture_via_and_drill",
+          "item": 5000,
+          "screen_pixels": [
+            1202.1053,
+            758.5725,
+            1305.3684,
+            861.83563
+          ],
+          "intersects_canvas": true
+        },
+        {
+          "name": "fixture_quad",
+          "item": 5001,
+          "screen_pixels": [
+            1298.9146,
+            810.2041,
+            1357.0,
+            861.83563
+          ],
+          "intersects_canvas": true
+        }
+      ],
+      "paired_provenance": {
+        "valid_token": true,
+        "state_matches_request": true,
+        "draw_states_match_request": true,
+        "pair_state_matches_reference": true,
+        "pair_dimensions_match_reference": true,
+        "request_dimensions_match": true
+      }
+    },
+    {
+      "case": 3,
+      "crop": [
+        280,
+        23,
+        1400,
+        977
+      ],
+      "pixels": 1068480,
+      "max_channel_difference": 2,
+      "mean_channel_difference": 0.00026416030248577416,
+      "pixels_over_2_channels": 0,
+      "changed_bbox": null,
+      "most_common_changed_rgba_pairs": [],
+      "most_changed_rows": [],
+      "most_changed_columns": [],
+      "regions": [
+        {
+          "name": "fixture_via_and_drill",
+          "item": 5000,
+          "screen_pixels": [
+            1216.5896,
+            768.9154,
+            1323.9832,
+            876.3091
+          ],
+          "intersects_canvas": true
+        },
+        {
+          "name": "fixture_quad",
+          "item": 5001,
+          "screen_pixels": [
+            1317.2711,
+            822.61224,
+            1377.6799,
+            876.3091
+          ],
+          "intersects_canvas": true
+        }
+      ],
+      "paired_provenance": {
+        "valid_token": true,
+        "state_matches_request": true,
+        "draw_states_match_request": true,
+        "pair_state_matches_reference": true,
+        "pair_dimensions_match_reference": true,
+        "request_dimensions_match": true
+      }
+    },
+    {
+      "case": 4,
+      "crop": [
+        280,
+        23,
+        1400,
+        977
+      ],
+      "pixels": 1068480,
+      "max_channel_difference": 1,
+      "mean_channel_difference": 0.0001792265648397724,
+      "pixels_over_2_channels": 0,
+      "changed_bbox": null,
+      "most_common_changed_rgba_pairs": [],
+      "most_changed_rows": [],
+      "most_changed_columns": [],
+      "regions": [
+        {
+          "name": "fixture_via_and_drill",
+          "item": 5000,
+          "screen_pixels": [
+            6649.478,
+            4077.5347,
+            7508.627,
+            4936.6836
+          ],
+          "intersects_canvas": false
+        },
+        {
+          "name": "fixture_quad",
+          "item": 5001,
+          "screen_pixels": [
+            7454.93,
+            4507.1094,
+            7938.2017,
+            4936.6836
+          ],
+          "intersects_canvas": false
+        }
+      ],
+      "paired_provenance": {
+        "valid_token": true,
+        "state_matches_request": true,
+        "draw_states_match_request": true,
+        "pair_state_matches_reference": true,
+        "pair_dimensions_match_reference": true,
+        "request_dimensions_match": true
+      }
+    }
+  ]
+}
