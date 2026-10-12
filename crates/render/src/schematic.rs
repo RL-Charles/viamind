@@ -194,6 +194,9 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
     }
     Ok(())
 }
+fn is_zero(n: &usize) -> bool {
+    *n == 0
+}
 #[derive(Debug, Serialize)]
 pub struct SchematicMetadata {
     pub project_id: ObjectId,
@@ -209,7 +212,9 @@ pub struct SchematicMetadata {
     pub font: &'static str,
     pub symbol_count: usize,
     pub pin_count: usize,
+    #[serde(skip_serializing_if = "is_zero")]
     pub bus_count: usize,
+    #[serde(skip_serializing_if = "is_zero")]
     pub bus_entry_count: usize,
     pub wire_count: usize,
     pub junction_count: usize,
@@ -443,7 +448,13 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>, lab
 }
 pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOptions) -> io::Result<SchematicSvg> {
     options.validate()?;
-    let selected: BTreeSet<_> = options.layers.iter().copied().collect();
+    let mut selected: BTreeSet<_> = options.layers.iter().copied().collect();
+    // The Buses layer has no content on a sheet without explicit buses/entries. Dropping it there
+    // keeps every pre-bus sheet's SVG/PNG bytes (including metadata) identical to the legacy output.
+    let has_buses = snapshot.sheet.content.as_ref().is_some_and(|c| !c.buses.is_empty() || !c.bus_entries.is_empty());
+    if !has_buses {
+        selected.remove(&SchematicLayer::Buses);
+    }
     let labels: Vec<_> = if selected.contains(&SchematicLayer::Symbols) || selected.contains(&SchematicLayer::Pins) {
         schematic_label_layout(&snapshot.sheet)?
             .into_iter()
@@ -614,7 +625,7 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         junction_count: c.map_or(0, |c| c.junctions.len()),
         label_count: c.map_or(0, |c| c.labels.len()),
         legacy_empty_sheet: c.is_none(),
-        exclusions: vec![
+        exclusions: [
             "board geometry",
             "other sheets",
             "hierarchy",
@@ -622,7 +633,10 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
             "custom symbol artwork",
             "electrical certification",
             "global label collision avoidance",
-        ],
+        ]
+        .into_iter()
+        .filter(|e| has_buses || !e.starts_with("bus and entry"))
+        .collect(),
         symbol_label_policy: LABEL_POLICY,
         symbol_labels: labels,
     };

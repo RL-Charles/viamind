@@ -72,3 +72,29 @@ fn diagonal_graphic_entry_and_escaped_expression_have_independent_bounds() {
     assert!(r.metadata.region_nm.max_y >= 2_125_000);
     assert!(r.metadata.region_nm.min_y <= -2_000_000);
 }
+#[test]
+fn bus_free_sheet_default_output_is_byte_identical_to_pre_bus_renderer() {
+    // Oracle bytes were exported by the retained pre-bus main binary (source tree c92d3ae8,
+    // viamind-a530c641 sha256 b7ff6506…11dc) with `--export-schematic-svg` and default options.
+    let oracle = include_str!("../../../fixtures/views/legacy-oracle/schematic-default-c92d3ae8.svg");
+    let p = viamind_doc::file::from_str(include_str!("../../../fixtures/views/schematic.viamind.json")).unwrap();
+    let sheet: ObjectId = "00000000-0000-0000-0000-000000000066".parse().unwrap();
+    let snapshot = schematic_view_snapshot(&p, sheet).unwrap();
+    let default = schematic_svg(&snapshot, &SchematicViewOptions::default()).unwrap();
+    assert_eq!(default.svg, oracle);
+    assert!(!default.metadata.layers.contains(&SchematicLayer::Buses));
+    assert!(!default.svg.contains("bus_count") && !default.svg.contains("bus and entry"));
+    // Explicitly requesting the empty Buses layer is the same output as the legacy five layers.
+    let legacy = SchematicViewOptions {
+        layers: vec![SchematicLayer::Wires, SchematicLayer::Symbols, SchematicLayer::Pins, SchematicLayer::Junctions, SchematicLayer::Labels],
+        ..Default::default()
+    };
+    assert_eq!(schematic_svg(&snapshot, &legacy).unwrap().svg, oracle);
+    assert_eq!(schematic_png(&snapshot, &SchematicViewOptions::default()).unwrap().png, schematic_png(&snapshot, &legacy).unwrap().png);
+    // A sheet with an explicit bus reports the layer, counts and nonconducting exclusion.
+    let buses = viamind_doc::file::from_str(include_str!("../../../fixtures/schematic/buses.viamind.json")).unwrap();
+    let bus_sheet: ObjectId = "00000000-0000-0000-0000-000000001271".parse().unwrap();
+    let r = schematic_svg(&schematic_view_snapshot(&buses, bus_sheet).unwrap(), &SchematicViewOptions::default()).unwrap();
+    assert!(r.metadata.layers.contains(&SchematicLayer::Buses));
+    assert!(r.svg.contains("bus_count") && r.svg.contains("bus and entry graphics do not conduct"));
+}
