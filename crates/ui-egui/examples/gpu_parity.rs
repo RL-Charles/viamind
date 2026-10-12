@@ -12,6 +12,8 @@ use viamind_ui_egui::{
     layers::LayerId,
     scene::{Item, Prim},
 };
+#[path = "support/parity_progress.rs"]
+mod parity_progress;
 #[path = "support/parity_trace.rs"]
 mod parity_trace;
 struct Check {
@@ -42,6 +44,8 @@ impl Check {
 }
 impl eframe::App for Check {
     fn ui(&mut self, ui: &mut Ui, _: &mut eframe::Frame) {
+        let progress = self.trace.as_ref().and_then(parity_trace::Trace::progress);
+        let _callback = progress.as_ref().map(|observed| observed.enter(self.step, self.frames));
         if self.aborted {
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
             return;
@@ -51,6 +55,9 @@ impl eframe::App for Check {
         {
             self.trace_failure(ui, &error);
             return;
+        }
+        if let Some(observed) = &progress {
+            observed.phase(parity_progress::Phase::Extraction);
         }
         let image = ui.input(|i| {
             if self.trace.is_some() {
@@ -73,6 +80,10 @@ impl eframe::App for Check {
             }
         };
         if let Some((image, user_data, viewport_id)) = image {
+            if let Some(observed) = &progress {
+                observed.arrived();
+                observed.phase(parity_progress::Phase::Admission);
+            }
             if let Some(trace) = &mut self.trace
                 && let Err(error) = trace.image(self.step, viewport_id, &user_data, &image, &self.app, ui.ctx())
             {
@@ -83,6 +94,9 @@ impl eframe::App for Check {
             if self.step.is_multiple_of(2) {
                 self.reference = Some(image);
             } else {
+                if let Some(observed) = &progress {
+                    observed.phase(parity_progress::Phase::Comparison);
+                }
                 let reference = self.reference.take().unwrap();
                 let rect = self.app.canvas.viewport;
                 let ppp = ui.ctx().pixels_per_point();
@@ -105,6 +119,9 @@ impl eframe::App for Check {
             }
             self.step += 1;
             self.frames = 0;
+            if let Some(observed) = &progress {
+                observed.position(self.step, self.frames);
+            }
             if self.step == 10 {
                 let success = self.report.iter().all(|r| {
                     r["drawn"].as_u64().unwrap() > 0
@@ -147,7 +164,13 @@ impl eframe::App for Check {
         } else {
             self.app.canvas.cache.enable_gpu(self.format);
         }
+        if let Some(observed) = &progress {
+            observed.phase(parity_progress::Phase::Drawing);
+        }
         self.app.show(ui, None);
+        if let Some(observed) = &progress {
+            observed.phase(parity_progress::Phase::TraceDrawing);
+        }
         if let Some(trace) = &mut self.trace
             && let Err(error) = trace.draw(self.step, &self.app, ui.ctx())
         {
@@ -155,6 +178,9 @@ impl eframe::App for Check {
             return;
         }
         self.frames += 1;
+        if let Some(observed) = &progress {
+            observed.position(self.step, self.frames);
+        }
         if self.frames >= 6 && !self.waiting {
             let token = if let Some(trace) = &mut self.trace {
                 match trace.request(self.step, &self.app, ui.ctx()) {
@@ -167,25 +193,46 @@ impl eframe::App for Check {
             } else {
                 Default::default()
             };
+            if let Some(observed) = &progress {
+                observed.phase(parity_progress::Phase::Submission);
+            }
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(token));
+            if let Some(observed) = &progress {
+                observed.submitted();
+            }
             self.waiting = true;
+        }
+        if let Some(observed) = &progress {
+            observed.phase(parity_progress::Phase::Repaint);
         }
         ui.ctx().request_repaint();
     }
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
-    let usage = "usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY [--defer-trace-io]]";
+    let usage = "usage: gpu_parity NEW_REPORT.json [--trace-dir NEW_DIRECTORY [--defer-trace-io [--progress-watchdog]]]";
     let path = args.next().ok_or(usage)?;
+    let mut progress_worker = None;
     let trace = match args.next() {
         Some(flag) if flag == "--trace-dir" => {
             let directory = args.next().ok_or("--trace-dir requires a NEW directory")?;
-            let deferred = match args.next() {
-                Some(flag) if flag == "--defer-trace-io" && args.next().is_none() => true,
+            let (deferred, progress) = match args.next() {
+                Some(flag) if flag == "--defer-trace-io" => {
+                    let progress = match args.next() {
+                        Some(flag) if flag == "--progress-watchdog" && args.next().is_none() => true,
+                        Some(_) => return Err(usage.into()),
+                        None => false,
+                    };
+                    (true, progress)
+                }
                 Some(_) => return Err(usage.into()),
-                None => false,
+                None => (false, false),
             };
-            Some(if deferred { parity_trace::Trace::deferred(directory.into())? } else { parity_trace::Trace::new(directory.into())? })
+            let mut trace = if deferred { parity_trace::Trace::deferred(directory.into())? } else { parity_trace::Trace::new(directory.into())? };
+            if progress {
+                progress_worker = Some(trace.enable_progress()?);
+            }
+            Some(trace)
         }
         Some(_) => return Err(usage.into()),
         None => None,
@@ -204,7 +251,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         renderer: eframe::Renderer::Wgpu,
         ..Default::default()
     };
-    eframe::run_native(
+    let native_result = eframe::run_native(
         "Viamind GPU parity",
         options,
         Box::new(move |cc| {
@@ -223,7 +270,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }))
         }),
     )
-    .map_err(|e| e.to_string())?;
+    .map_err(|e| e.to_string());
+    if let Some(worker) = progress_worker {
+        worker.join()?;
+    }
+    native_result?;
     match *finished.lock().unwrap() {
         Some(true) => Ok(()),
         Some(false) => Err("native canvas parity failed; inspect the report".into()),
