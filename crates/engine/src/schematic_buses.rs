@@ -368,6 +368,7 @@ impl SchematicBusWork {
             Request::Query => {
                 let snap = self.engine.with_engine(|e| {
                     crate::schematic_budget::project(e.project(), 0, "bus query")?;
+                    viamind_doc::schematic::validate_project(e.project(), None).map_err(invalid)?;
                     crate::schematic_connectivity::capture(e.project(), e.event_cursor())
                 })?;
                 serialize(&query(snap)?)
@@ -986,5 +987,46 @@ mod tests {
                 .to_string()
                 .contains("unrelated original scalar partitions")
         );
+    }
+    #[test]
+    fn complete_query_rejects_cross_namespace_collision_without_copying_unrelated_sourcing() {
+        let _guard = LOCK.lock().unwrap();
+        let (e, _, bus) = fixture();
+        let mut project = e.read(Clone::clone);
+        let part = viamind_doc::Part {
+            holes: None,
+            artwork: None,
+            assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
+            schematic_symbol: None,
+            schematic_package: None,
+            pads: None,
+            id: ObjectId::new(),
+            designator: "R1".into(),
+            value: String::new(),
+            footprint: "F".into(),
+            position: viamind_geom::Point::new(Nm(0), Nm(0)),
+            rotation_mdeg: 0,
+            side: viamind_doc::Side::Top,
+        };
+        let part_id = part.id;
+        project.board.parts.insert(part_id, part);
+        let e = EngineHandle::new(project);
+        let before = e.event_cursor();
+        let result = e.prepare_schematic_buses(&SchematicBusesQuery {}).unwrap().run_query().unwrap();
+        assert!(result.complete);
+        assert_eq!(result.total_buses, 1);
+        assert_eq!(e.event_cursor(), before);
+        assert_eq!(e.read(|p| p.board.parts[&part_id].assembly.as_ref().unwrap().manufacturer.as_ref().unwrap().len()), 3 * 1024 * 1024);
+        // A bus query is purpose-specific, but identities remain global.
+        // Invalid unrelated sourcing above is excluded; a board/bus ID collision cannot be excluded.
+        let mut project = e.read(Clone::clone);
+        let mut part = project.board.parts.remove(&part_id).unwrap();
+        part.id = bus;
+        project.board.parts.insert(bus, part);
+        let e = EngineHandle::new(project);
+        let before = e.session_state();
+        assert!(e.prepare_schematic_buses(&SchematicBusesQuery {}).unwrap().run_query().unwrap_err().to_string().contains("duplicate"));
+        assert_eq!(e.session_state(), before);
+        assert_eq!(ACTIVE.load(Ordering::Acquire), 0);
     }
 }

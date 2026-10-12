@@ -11,6 +11,11 @@ struct Pending {
     action: UiAction,
     abandoned: bool,
 }
+impl Pending {
+    fn read_only(&self) -> bool {
+        matches!(self.action, UiAction::QuerySchematicBuses | UiAction::PreviewSchematicBusUnfold)
+    }
+}
 pub struct SchematicBusesUi {
     pub open: bool,
     source: Option<BusSource>,
@@ -63,6 +68,16 @@ impl SchematicBusesUi {
         self.open = true;
         self.message =
             Some("Load scalar facts to inspect declarations. Coordinates are explicit millimetres; bus/entry graphics do not conduct.".into());
+    }
+    fn close(&mut self) {
+        self.preview = None;
+        self.report = None;
+        if let Some(p) = &mut self.pending
+            && p.read_only()
+        {
+            p.abandoned = true;
+        }
+        self.open = false;
     }
     fn request(&self) -> Result<UnfoldSchematicBusMember, String> {
         let source = self.source.ok_or("Choose a schematic sheet")?;
@@ -211,18 +226,13 @@ impl SchematicBusesUi {
                 egui::ComboBox::from_id_salt("entry_choice").selected_text(self.selected_entry.map_or_else(||"Choose owned breakout".into(),|id|id.to_string())).show_ui(ui,|ui|{for(id,member)in entries{if ui.selectable_label(self.selected_entry==Some(id),member).clicked(){self.selected_entry=Some(id);}}});
                 if ui.add_enabled(self.selected_entry.is_some(),egui::Button::new("Delete complete owned breakout")).clicked(){self.run(engine,ctx,UiAction::DeleteSchematicBusBreakout,json!({"source":self.source,"entry_id":self.selected_entry}));}
             });
-            if ui.button("Cancel bus form").clicked(){self.preview=None;self.report=None;if let Some(p)=&mut self.pending{p.abandoned=true;}self.open=false;}
+            if ui.add_enabled(self.pending.as_ref().is_none_or(Pending::read_only),egui::Button::new("Cancel bus form")).clicked(){self.close();}
             if let Some(report)=&self.report{ui.label(format!("Preview: {} original graph members; {} allowed components; {} cumulative visits",report.original_graph_members,report.allowed_original_component_count,report.exact_candidate_visits));ui.label(format!("Source stream {}",report.source_cursor.stream_id));ui.label(format!("Source sequence {}",report.source_cursor.sequence));}
             if let Some(m)=&self.message{ui.label(m);}
             if busy{ui.spinner();}
         });
         if !open {
-            self.preview = None;
-            self.report = None;
-            if let Some(p) = &mut self.pending {
-                p.abandoned = true;
-            }
-            self.open = false;
+            self.close();
         }
     }
 }
@@ -425,5 +435,47 @@ mod tests {
         assert!(!ui.busy());
         assert!(ui.message.as_ref().unwrap().contains("controlled spawn refusal"));
         assert_eq!(e.session_state(), before);
+    }
+    #[test]
+    fn closing_form_retains_mutation_completion_and_commits_once() {
+        let (engine, sheet, bus) = fixture();
+        let before = engine.event_cursor();
+        let input = json!(SetSchematicBus {
+            source: BusSource { expected_project: engine.read(|p| p.id), source_cursor: before, sheet_id: sheet },
+            bus_id: Some(bus),
+            expression: "D[0..1]".into(),
+            start: viamind_doc::schematic::Coordinate { x: Nm(0), y: Nm(0) },
+            end: viamind_doc::schematic::Coordinate { x: Nm(20_000_000), y: Nm(0) }
+        });
+        let ctx = Context::default();
+        let mut s = SchematicBusesUi::default();
+        s.begin(&engine, sheet);
+        let (held, locked) = channel();
+        let (release, wait) = channel();
+        let e = engine.clone();
+        let holder = std::thread::spawn(move || {
+            e.with_engine(|_| {
+                held.send(()).unwrap();
+                wait.recv().unwrap();
+            });
+        });
+        locked.recv().unwrap();
+        s.run(&engine, &ctx, UiAction::SetSchematicBus, input.clone());
+        assert!(s.busy());
+        assert!(!s.pending.as_ref().unwrap().read_only());
+        s.close();
+        assert!(!s.open);
+        assert!(!s.pending.as_ref().unwrap().abandoned);
+        s.run(&engine, &ctx, UiAction::SetSchematicBus, input);
+        release.send(()).unwrap();
+        holder.join().unwrap();
+        let until = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while s.busy() {
+            assert!(std::time::Instant::now() < until);
+            s.poll(&ctx);
+            std::thread::sleep(std::time::Duration::from_millis(5));
+        }
+        assert_eq!(engine.event_cursor().sequence, before.sequence + 1);
+        assert!(s.message.as_ref().unwrap().contains("Committed one guarded sheet transaction"));
     }
 }
