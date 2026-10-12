@@ -24,6 +24,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [delete\_track](#tool-64656c6574655f747261636b)
 - [delete\_via](#tool-64656c6574655f766961)
 - [discard\_pcb\_branch](#tool-646973636172645f7063625f6272616e6368)
+- [drag\_schematic\_symbol](#tool-647261675f736368656d617469635f73796d626f6c)
 - [draw\_schematic\_wire\_polyline](#tool-647261775f736368656d617469635f776972655f706f6c796c696e65)
 - [echo](#tool-6563686f)
 - [edit\_schematic\_sheet](#tool-656469745f736368656d617469635f7368656574)
@@ -68,6 +69,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [preview\_schematic\_annotation](#tool-707265766965775f736368656d617469635f616e6e6f746174696f6e)
 - [preview\_schematic\_pcb\_component](#tool-707265766965775f736368656d617469635f7063625f636f6d706f6e656e74)
 - [preview\_schematic\_pcb\_sync](#tool-707265766965775f736368656d617469635f7063625f73796e63)
+- [preview\_schematic\_symbol\_drag](#tool-707265766965775f736368656d617469635f73796d626f6c5f64726167)
 - [query\_agent\_presence](#tool-71756572795f6167656e745f70726573656e6365)
 - [query\_connectivity](#tool-71756572795f636f6e6e6563746976697479)
 - [query\_copper\_properties](#tool-71756572795f636f707065725f70726f70657274696573)
@@ -5771,6 +5773,89 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "discard_pcb_branch"
+}
+```
+
+<a id="tool-647261675f736368656d617469635f73796d626f6c"></a>
+
+## drag\_schematic\_symbol
+
+```json
+{
+  "description": "Translate one explicit schematic symbol and its cardinal endpoint-attached wires, preserving the complete bounded native graph's original wire/pin/junction/label partition. Required exact project/full source cursor, sheet/symbol UUID and integer Nm delta. One sheet transaction/undo; package membership, PCB and metadata unchanged. At most256 pins/incident wires; unsupported interior/direct-point/diagonal attachments or changed topology refuse atomically. Complete schematic: 10000 graph objects/2 MiB text, 100000 combined identities, shared1million visits and2 MiB preview bounds. Preview with preview_schematic_symbol_drag; apply recalculates, never accepts a supplied pass flag. No ERC/DRC certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "delta": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "sheet_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "source_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "symbol_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "source_cursor",
+      "sheet_id",
+      "symbol_id",
+      "delta"
+    ],
+    "title": "DragSchematicSymbol",
+    "type": "object"
+  },
+  "name": "drag_schematic_symbol"
 }
 ```
 
@@ -12942,6 +13027,89 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "preview_schematic_pcb_sync"
+}
+```
+
+<a id="tool-707265766965775f736368656d617469635f73796d626f6c5f64726167"></a>
+
+## preview\_schematic\_symbol\_drag
+
+```json
+{
+  "description": "Preview one explicitly guarded integer-Nm schematic symbol translation and cardinal endpoint-wire adjustment without changing model/history/selection/native. Required project UUID/full source cursor/sheet/symbol UUID. Exact complete original wire/pin/label/junction partition and label scopes must remain equal. Whole graph: 10000 objects/2 MiB text, 100000 combined identities, 256 selected pins/incident wires, shared1M visits, 2 MiB output and two retained planners; unsupported attachments/topology/budget refuse. New segments use local ordinals, not permanent IDs. Apply with drag_schematic_symbol, which recalculates against its guarded source. Available in all agent modes. Not ERC/DRC certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "delta": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "expected_project": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "sheet_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "source_cursor": {
+        "additionalProperties": false,
+        "description": "Last consumed event in one engine session. Reusable by any connection.",
+        "properties": {
+          "sequence": {
+            "description": "Last consumed sequence, zero before the first event.",
+            "format": "uint64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "stream_id": {
+            "description": "Random engine session ID; changes on restart.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "sequence"
+        ],
+        "type": "object"
+      },
+      "symbol_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      }
+    },
+    "required": [
+      "expected_project",
+      "source_cursor",
+      "sheet_id",
+      "symbol_id",
+      "delta"
+    ],
+    "title": "DragSchematicSymbol",
+    "type": "object"
+  },
+  "name": "preview_schematic_symbol_drag"
 }
 ```
 

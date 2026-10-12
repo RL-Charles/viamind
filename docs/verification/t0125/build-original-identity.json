@@ -1,0 +1,13 @@
+{
+  "source": "0e4ae717cdcbb390e243a2b3a6dfeeacc97881b8",
+  "binaries": {
+    "viamind": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/full-verified/viamind",
+      "sha256": "44137dbd620c56a9fe0cb49708adafc8eb77460373decc0ecb4fef6c71c0b192"
+    },
+    "connected-drag-inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0125/full-verified/connected-drag-inspection",
+      "sha256": "1a589ce7350433952bba5ce5afd4c403b5a7dca62df361bc0059fa94126eb490"
+    }
+  }
+}

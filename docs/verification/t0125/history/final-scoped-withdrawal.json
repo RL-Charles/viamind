@@ -1,0 +1,16 @@
+[
+  {
+    "session_leader": 3509216,
+    "pgid": 3509216,
+    "command": "/usr/bin/bash -lc python3 - <<'PY'\nfrom pathlib import Path\np=Path('/home/charlesmowbray/.cache/viamind/native-artifacts/t0125')\ns=(p/'full.sh').read_text()\nstart=s.index('cargo test -p viamind-mcp')\nend=s.index('cargo build --workspace')\ns=s[:start]+s[end:]\ns=s.replace('cargo build --workspace','rg --files crates apps -g \\'*.rs\\' -0 | xargs -0 touch\\ncargo build --workspace',1)\ns=s.replace(\"t0125/full-verified\", \"t0125/final-verified\")\ns+='''python3 -B scripts/generate-mcp-reference.py --binary /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-verified/viamind --output /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/catalog-final --report /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/catalog-final-report\npython3 -B scripts/mcp-agent-workflow.py --binary /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-verified/viamind --output /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/workflow-final\npython3 -B -m unittest discover -s scripts/tests -v\n'''\nwith (p/'final-scoped.sh').open('x') as f:f.write(s)\nprint(p/'final-scoped.sh')\nPY\nflock /tmp/viamind-workspace-gates.lock bash /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-scoped.sh > /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-scoped.log 2>&1 ",
+    "log_bytes": 956,
+    "reason": "discard own gate after cancellation audit refusal was incorrectly ignored; no source-frozen proof inferred"
+  },
+  {
+    "session_leader": 3512282,
+    "pgid": 3512282,
+    "command": "/usr/bin/bash -lc shp log 'Independent source review catches test String API before compilation' -k verify -d 'Root found both new regulator native byte oracle calls incorrectly used unwrap on file::to_string, which returns String. Own final-scoped waiter3509226 was revalidated childless with0byte log, canceled onlythatwaiter before any Cargo. Receipt final-scoped-cancelled.json retained. Removed exactly2unwrap calls; no test/build failure or product change inferred.' -f crates/engine/src/schematic_drag.rs\ngit add crates/engine/src/schematic_drag.rs\ngit commit -m 'Use infallible native serialization in regulator byte oracle'\nflock /tmp/viamind-workspace-gates.lock bash /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-scoped.sh > /home/charlesmowbray/.cache/viamind/native-artifacts/t0125/final-scoped2.log 2>&1 ",
+    "log_bytes": 0,
+    "reason": "discard own gate after cancellation audit refusal was incorrectly ignored; no source-frozen proof inferred"
+  }
+]

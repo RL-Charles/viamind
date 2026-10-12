@@ -1,0 +1,57 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 49.96s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 30.31s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 12 tests
+test schematic_drag::tests::aligned_stretch_and_both_attached_endpoints_preserve_wire_ids ... ok
+test schematic_drag::tests::cardinal_bend_preview_is_immutable_and_commit_undo_redo_replay_are_exact ... ok
+test schematic_drag::tests::asymmetric_mirrored_quarter_turn_uses_native_pin_positions_and_vertical_bend ... ok
+test schematic_drag::tests::complete_package_unit_move_keeps_owner_membership_other_units_and_pins_exact ... ok
+test schematic_drag::tests::combined_board_identity_preflight_refuses_before_native_duplicate_validation ... ok
+test schematic_drag::tests::planned_additions_preflight_graph_budget_and_zero_delta_is_noop ... ok
+test schematic_drag::tests::same_net_count_different_actual_member_partition_is_rejected ... ok
+test schematic_drag::tests::pre_hooks_receive_final_candidate_veto_atomically_and_captured_work_refuses_reentry ... ok
+
+thread 'schematic_drag::tests::global_labels_across_unselected_sheet_keep_original_partition_and_names' (3436089) panicked at crates/engine/src/schematic_drag.rs:793:77:
+called `Result::unwrap()` on an `Err` value: Invalid { field: "schematic_drag", message: "duplicate schematic reference U1" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test schematic_drag::tests::global_labels_across_unselected_sheet_keep_original_partition_and_names ... 
+thread 'schematic_drag::tests::unrelated_huge_invalid_board_metadata_is_not_copied_or_validated' (3436094) panicked at crates/engine/src/schematic_drag.rs:731:33:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+FAILED
+
+thread 'schematic_drag::tests::stale_and_exhausted_work_output_and_admission_refuse_without_changes' (3436093) panicked at crates/engine/src/schematic_drag.rs:661:33:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+test schematic_drag::tests::unrelated_huge_invalid_board_metadata_is_not_copied_or_validated ... FAILED
+
+thread 'schematic_drag::tests::unsupported_attachments_and_accidental_net_merge_refuse_exact_state' (3436095) panicked at crates/engine/src/schematic_drag.rs:611:33:
+called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+test schematic_drag::tests::stale_and_exhausted_work_output_and_admission_refuse_without_changes ... FAILED
+test schematic_drag::tests::unsupported_attachments_and_accidental_net_merge_refuse_exact_state ... FAILED
+
+failures:
+
+failures:
+    schematic_drag::tests::global_labels_across_unselected_sheet_keep_original_partition_and_names
+    schematic_drag::tests::stale_and_exhausted_work_output_and_admission_refuse_without_changes
+    schematic_drag::tests::unrelated_huge_invalid_board_metadata_is_not_copied_or_validated
+    schematic_drag::tests::unsupported_attachments_and_accidental_net_merge_refuse_exact_state
+
+test result: FAILED. 8 passed; 4 failed; 0 ignored; 0 measured; 110 filtered out; finished in 0.50s
+
+error: test failed, to rerun pass `-p viamind-engine --lib`

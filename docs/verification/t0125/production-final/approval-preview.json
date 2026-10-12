@@ -1,0 +1,96 @@
+{
+  "added_wire_count": 3,
+  "exact_candidate_visits": 63,
+  "expected_project": "00000000-0000-0000-0000-0000000001f5",
+  "native_graph_partition_preserved": true,
+  "original_graph_members": 12,
+  "original_position": {
+    "x": 20000000,
+    "y": 20000000
+  },
+  "scope": "Exact original native flat graph member partition and label scopes preserved; no ERC/DRC or physical continuity certification",
+  "segments": [
+    {
+      "end": {
+        "x": 10000000,
+        "y": 20000000
+      },
+      "new_segment_ordinal": null,
+      "original_wire_id": "00000000-0000-0000-0000-000000000201",
+      "start": {
+        "x": 21000000,
+        "y": 20000000
+      }
+    },
+    {
+      "end": {
+        "x": 21000000,
+        "y": 20000000
+      },
+      "new_segment_ordinal": 0,
+      "original_wire_id": "00000000-0000-0000-0000-000000000201",
+      "start": {
+        "x": 21000000,
+        "y": 25000000
+      }
+    },
+    {
+      "end": {
+        "x": 30000000,
+        "y": 21000000
+      },
+      "new_segment_ordinal": null,
+      "original_wire_id": "00000000-0000-0000-0000-000000000202",
+      "start": {
+        "x": 25000000,
+        "y": 21000000
+      }
+    },
+    {
+      "end": {
+        "x": 25000000,
+        "y": 21000000
+      },
+      "new_segment_ordinal": 1,
+      "original_wire_id": "00000000-0000-0000-0000-000000000202",
+      "start": {
+        "x": 25000000,
+        "y": 26000000
+      }
+    },
+    {
+      "end": {
+        "x": 20000000,
+        "y": 30000000
+      },
+      "new_segment_ordinal": null,
+      "original_wire_id": "00000000-0000-0000-0000-000000000203",
+      "start": {
+        "x": 20000000,
+        "y": 28000000
+      }
+    },
+    {
+      "end": {
+        "x": 20000000,
+        "y": 28000000
+      },
+      "new_segment_ordinal": 2,
+      "original_wire_id": "00000000-0000-0000-0000-000000000203",
+      "start": {
+        "x": 23000000,
+        "y": 28000000
+      }
+    }
+  ],
+  "sheet_id": "00000000-0000-0000-0000-0000000001f6",
+  "source_cursor": {
+    "sequence": 0,
+    "stream_id": "4ba705f0-78da-41f9-b719-d562f27040c8"
+  },
+  "symbol_id": "00000000-0000-0000-0000-0000000001f7",
+  "target_position": {
+    "x": 23000000,
+    "y": 25000000
+  }
+}

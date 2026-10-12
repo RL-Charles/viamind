@@ -1,0 +1,12 @@
+{
+  "retired_pgids": [
+    3509216,
+    3512282
+  ],
+  "matching_processes": [],
+  "current_clean_scope": "26abe03",
+  "earlier_exec_sessions_exit_codes": [
+    143,
+    143
+  ]
+}
