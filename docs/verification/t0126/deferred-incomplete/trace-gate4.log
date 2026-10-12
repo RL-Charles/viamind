@@ -1,0 +1,15 @@
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+error[E0599]: no method named `to_array` found for struct `egui::Vec2` in the current scope
+  --> crates/ui-egui/examples/support/parity_trace.rs:49:50
+   |
+49 |             smooth_scroll: i.smooth_scroll_delta.to_array(),
+   |                                                  ^^^^^^^^ method not found in `egui::Vec2`
+
+error[E0599]: no method named `to_array` found for struct `egui::Vec2` in the current scope
+  --> crates/ui-egui/examples/support/parity_trace.rs:51:46
+   |
+51 |             pointer_delta: i.pointer.delta().to_array(),
+   |                                              ^^^^^^^^ method not found in `egui::Vec2`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `viamind-ui-egui` (example "gpu_parity") due to 2 previous errors

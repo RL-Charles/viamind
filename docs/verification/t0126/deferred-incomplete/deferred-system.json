@@ -1,0 +1,75 @@
+{
+  "utc": "2026-10-12T00:05:46.369792+00:00",
+  "loadavg": "2.88 3.72 4.97 3/2747 3567254",
+  "monitors": [
+    {
+      "id": 0,
+      "name": "eDP-1",
+      "description": "BOE 0x0C3F",
+      "make": "BOE",
+      "model": "0x0C3F",
+      "serial": "",
+      "width": 1920,
+      "height": 1200,
+      "physicalWidth": 300,
+      "physicalHeight": 190,
+      "refreshRate": 60.002,
+      "x": 1920,
+      "y": 1152,
+      "activeWorkspace": {
+        "id": 2,
+        "name": "2"
+      },
+      "specialWorkspace": {
+        "id": 0,
+        "name": ""
+      },
+      "reserved": [
+        0,
+        26,
+        0,
+        0
+      ],
+      "scale": 1,
+      "transform": 0,
+      "focused": true,
+      "dpmsStatus": true,
+      "vrr": false,
+      "solitary": "0",
+      "solitaryBlockedBy": [
+        "WINDOWED",
+        "CANDIDATE"
+      ],
+      "activelyTearing": false,
+      "tearingBlockedBy": [
+        "NOT_TORN",
+        "USER",
+        "CANDIDATE"
+      ],
+      "directScanoutTo": "0",
+      "directScanoutBlockedBy": [
+        "USER",
+        "CANDIDATE"
+      ],
+      "disabled": false,
+      "currentFormat": "XRGB8888",
+      "mirrorOf": "none",
+      "availableModes": [
+        "1920x1200@60.00Hz",
+        "1920x1200@48.00Hz"
+      ],
+      "colorManagementPreset": "srgb",
+      "sdrBrightness": 1,
+      "sdrSaturation": 1,
+      "sdrMinLuminance": 0.2,
+      "sdrMaxLuminance": 80,
+      "hardwareCursorsInUse": true
+    }
+  ],
+  "display": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "XDG_SESSION_TYPE": "wayland",
+    "WGPU_BACKEND": null
+  }
+}

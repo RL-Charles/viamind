@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-12T00:10:45.750725+00:00",
+  "owned_pid": 3567262,
+  "exe_sha256_before_signal": "7183877eb4d1bf1914b59ad7be34f983ba02b973856dfea135998f5bd6a4d287",
+  "starttime_ticks_revalidated": "10938116",
+  "signal": "SIGTERM",
+  "pid_absent_after_bounded_wait": true,
+  "debugger_attach_refused": "ptrace: Operation not permitted",
+  "tracer_pid_before_signal": 0,
+  "cua_snapshot_scope": "1400x1000 exact owned X11 metadata/screenshot; partial AT-SPI; visible zoom6.712/count4624/5002 corresponds case3 geometry but does not establish internal stage/cause",
+  "classification": "One deferred diagnostic incomplete; no relaunch, no parity/cadence/historical-cause claim"
+}

@@ -65,3 +65,41 @@ used for case 4: those comparisons differ by mean 53.79 and 1059737 pixels over 
 unlike the original failure. A repeated passing deferred comparison will still
 leave the historical cause unresolved. No additional native retry, renderer
 change, visual-correctness closure or cadence follows automatically.
+
+## Deferred comparison: incomplete
+
+Approved diagnostic source `9783c974b83f42938408e9f0d4b85761665eabd5`
+passed formatting, strict release example lint, eight example tests and the
+release example build. The headless host uses the actual unwrapped egui root:
+all five viewport/camera/count observations match the initial native trace. A
+controlled one-pixel resize overrides direct camera navigation while auto-fit
+remains active. This demonstrates a risk, not the historical cause.
+
+Exactly one quiet deferred-I/O comparison launched the unique executable
+`7183877eb4d1bf1914b59ad7be34f983ba02b973856dfea135998f5bd6a4d287`
+as PID 3567262. Its physical window again matched 1400x1000 at (2180,1265).
+Unlike the approximately 20s initial run, this attempt remained alive beyond the
+210s external watchdog. The created parity report stayed empty; no terminal
+trace or deferred pixel files were flushed. Its stage and parity are unknown.
+
+The fresh exact-window screenshot shows zoom 6.712 and 4624/5002 drawn objects,
+consistent with case-3 geometry. It does not expose the internal step or pending
+request. Main-thread `wchan` was epoll wait; readable worker wait locations were
+retained. Kernel thread stacks and one non-elevated debugger attachment were
+refused, so no call stack or backend cause was obtained. After executable hash
+and process start time were revalidated, only this owned helper received SIGTERM;
+its absence was verified. No replacement launch followed.
+
+Pinned egui-wgpu source unmaps the capture buffer before sending an owned CPU
+`ColorImage`; the event subsequently shares that image through `Arc`. Retaining
+the image does not itself retain that mapped GPU buffer. The example's 180s guard
+executes inside UI callbacks, so it cannot stop an event loop that stops invoking
+them. These source observations do not establish why the native helper stalled.
+
+[The incomplete-attempt master](verification/t0126/deferred-incomplete/master.json)
+indexes 21 artifacts, including scoped successes and earlier test-host failures,
+quiet admission, exact executable provenance, timeout, owned-window screenshot,
+refused stack evidence and bounded retirement. Original failure and initial
+passing pairs remain unchanged. Historical causality, visual closure and strict
+100k/60fps acceptance remain open. Further Rust/native work requires the next
+public progress/watchdog amendment and independent review.

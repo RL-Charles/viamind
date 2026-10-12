@@ -1,0 +1,33 @@
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 0.92s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0126/crates/ui-egui)
+    Finished `release` profile [optimized] target(s) in 7.42s
+     Running unittests examples/gpu_parity.rs (/home/charlesmowbray/.cache/viamind/native-benchmark-target/release/examples/gpu_parity-317c025d33a8aa9b)
+
+running 8 tests
+test parity_trace::tests::raw_capture_refuses_overflow_extent_and_aggregate_before_copy ... ok
+test parity_trace::tests::cumulative_metadata_refuses_before_retaining_or_serializing_more ... ok
+test parity_trace::tests::deferred_abort_flushes_prior_pixels_and_raw_budget_refuses_before_retention ... ok
+test parity_trace::tests::multiple_screenshots_and_repeated_pass_token_cannot_be_silently_accepted ... ok
+test parity_trace::tests::mismatched_pair_extents_are_retained_and_refused_before_legacy_indexing ... ok
+test parity_trace::tests::navigation_observations_refuse_excess_events_and_never_retain_text ... ok
+test tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation ... FAILED
+test parity_trace::tests::deferred_capture_retains_shared_pixels_without_files_until_finish_and_releases_them ... ok
+
+failures:
+
+---- tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation stdout ----
+
+thread 'tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation' (3540983) panicked at crates/ui-egui/examples/gpu_parity.rs:279:13:
+assertion `left == right` failed
+  left: 4625
+ right: 4624
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::actual_five_case_layout_is_stable_but_one_pixel_resize_overrides_direct_navigation
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `-p viamind-ui-egui --example gpu_parity`
