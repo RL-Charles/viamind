@@ -19,6 +19,8 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [create\_pcb\_branch](#tool-6372656174655f7063625f6272616e6368)
 - [create\_schematic\_pcb\_component](#tool-6372656174655f736368656d617469635f7063625f636f6d706f6e656e74)
 - [delete\_part](#tool-64656c6574655f70617274)
+- [delete\_schematic\_bus](#tool-64656c6574655f736368656d617469635f627573)
+- [delete\_schematic\_bus\_breakout](#tool-64656c6574655f736368656d617469635f6275735f627265616b6f7574)
 - [delete\_schematic\_sheet](#tool-64656c6574655f736368656d617469635f7368656574)
 - [delete\_symbol\_package](#tool-64656c6574655f73796d626f6c5f7061636b616765)
 - [delete\_track](#tool-64656c6574655f747261636b)
@@ -67,6 +69,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [preview\_package\_pcb\_component](#tool-707265766965775f7061636b6167655f7063625f636f6d706f6e656e74)
 - [preview\_pcb\_import](#tool-707265766965775f7063625f696d706f7274)
 - [preview\_schematic\_annotation](#tool-707265766965775f736368656d617469635f616e6e6f746174696f6e)
+- [preview\_schematic\_bus\_unfold](#tool-707265766965775f736368656d617469635f6275735f756e666f6c64)
 - [preview\_schematic\_pcb\_component](#tool-707265766965775f736368656d617469635f7063625f636f6d706f6e656e74)
 - [preview\_schematic\_pcb\_sync](#tool-707265766965775f736368656d617469635f7063625f73796e63)
 - [preview\_schematic\_symbol\_drag](#tool-707265766965775f736368656d617469635f73796d626f6c5f64726167)
@@ -81,6 +84,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [query\_route\_endpoints](#tool-71756572795f726f7574655f656e64706f696e7473)
 - [query\_route\_terminals](#tool-71756572795f726f7574655f7465726d696e616c73)
 - [query\_schematic](#tool-71756572795f736368656d61746963)
+- [query\_schematic\_buses](#tool-71756572795f736368656d617469635f6275736573)
 - [query\_schematic\_connectivity](#tool-71756572795f736368656d617469635f636f6e6e6563746976697479)
 - [query\_symbol\_packages](#tool-71756572795f73796d626f6c5f7061636b61676573)
 - [query\_unrouted\_nets](#tool-71756572795f756e726f757465645f6e657473)
@@ -113,6 +117,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [set\_part\_assembly](#tool-7365745f706172745f617373656d626c79)
 - [set\_part\_holes](#tool-7365745f706172745f686f6c6573)
 - [set\_part\_pads](#tool-7365745f706172745f70616473)
+- [set\_schematic\_bus](#tool-7365745f736368656d617469635f627573)
 - [set\_selection](#tool-7365745f73656c656374696f6e)
 - [set\_track\_properties](#tool-7365745f747261636b5f70726f70657274696573)
 - [set\_via\_properties](#tool-7365745f7669615f70726f70657274696573)
@@ -121,6 +126,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 - [synchronize\_schematic\_pcb](#tool-73796e6368726f6e697a655f736368656d617469635f706362)
 - [transform\_parts](#tool-7472616e73666f726d5f7061727473)
 - [undo](#tool-756e646f)
+- [unfold\_schematic\_bus\_member](#tool-756e666f6c645f736368656d617469635f6275735f6d656d626572)
 - [update\_part](#tool-7570646174655f70617274)
 - [viamind\_version](#tool-7669616d696e645f76657273696f6e)
 - [watch\_auto\_drc\_events](#tool-77617463685f6175746f5f6472635f6576656e7473)
@@ -392,6 +398,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
               "additionalProperties": false,
               "description": "Explicit schematic capture; omitted in legacy empty sheets.",
               "properties": {
+                "bus_entries": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "bus_id": {
+                        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "bus_point": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "x": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "id": {
+                        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "label_id": {
+                        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "member": {
+                        "type": "string"
+                      },
+                      "wire_id": {
+                        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "wire_point": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "x": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "bus_id",
+                      "member",
+                      "wire_id",
+                      "label_id",
+                      "bus_point",
+                      "wire_point"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "object"
+                },
+                "buses": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "end": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "x": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      },
+                      "expression": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "start": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "x": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "y": {
+                            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "expression",
+                      "start",
+                      "end"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "object"
+                },
                 "junctions": {
                   "additionalProperties": {
                     "additionalProperties": false,
@@ -2924,6 +3074,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "additionalProperties": false,
                       "description": "Explicit schematic capture; omitted in legacy empty sheets.",
                       "properties": {
+                        "bus_entries": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "bus_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "bus_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "label_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "member": {
+                                "type": "string"
+                              },
+                              "wire_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "wire_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "bus_id",
+                              "member",
+                              "wire_id",
+                              "label_id",
+                              "bus_point",
+                              "wire_point"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
+                        "buses": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "expression": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "start": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "expression",
+                              "start",
+                              "end"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
                         "junctions": {
                           "additionalProperties": {
                             "additionalProperties": false,
@@ -4542,6 +4836,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "additionalProperties": false,
                       "description": "Explicit schematic capture; omitted in legacy empty sheets.",
                       "properties": {
+                        "bus_entries": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "bus_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "bus_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "label_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "member": {
+                                "type": "string"
+                              },
+                              "wire_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "wire_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "bus_id",
+                              "member",
+                              "wire_id",
+                              "label_id",
+                              "bus_point",
+                              "wire_point"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
+                        "buses": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "expression": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "start": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "expression",
+                              "start",
+                              "end"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
                         "junctions": {
                           "additionalProperties": {
                             "additionalProperties": false,
@@ -5352,6 +5790,148 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-64656c6574655f736368656d617469635f627573"></a>
+
+## delete\_schematic\_bus
+
+```json
+{
+  "description": "Delete one explicit schematic bus guarded by project UUID/full event cursor. Refuses a bus with owned entries; delete each complete breakout first. Does not delete or rename other scalar wires/labels. One sheet delta/undo; bounded preflight before copying.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "bus_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "source": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sheet_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "source_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "expected_project",
+          "source_cursor",
+          "sheet_id"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source",
+      "bus_id"
+    ],
+    "title": "DeleteSchematicBus",
+    "type": "object"
+  },
+  "name": "delete_schematic_bus"
+}
+```
+
+<a id="tool-64656c6574655f736368656d617469635f6275735f627265616b6f7574"></a>
+
+## delete\_schematic\_bus\_breakout
+
+```json
+{
+  "description": "Delete exactly one explicit entry and its associated scalar wire and Local member label, guarded by project UUID/full event cursor. Keeps the parent bus and every other object. One undoable sheet delta; native association validation and borrowed limits precede copy.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "entry_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "source": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sheet_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "source_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "expected_project",
+          "source_cursor",
+          "sheet_id"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source",
+      "entry_id"
+    ],
+    "title": "DeleteSchematicBusBreakout",
+    "type": "object"
+  },
+  "name": "delete_schematic_bus_breakout"
+}
+```
+
 <a id="tool-64656c6574655f736368656d617469635f7368656574"></a>
 
 ## delete\_schematic\_sheet
@@ -5371,6 +5951,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -5777,6 +6501,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -6540,6 +7408,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -7341,6 +8353,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -10269,6 +11425,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "additionalProperties": false,
                       "description": "Explicit schematic capture; omitted in legacy empty sheets.",
                       "properties": {
+                        "bus_entries": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "bus_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "bus_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "label_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "member": {
+                                "type": "string"
+                              },
+                              "wire_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "wire_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "bus_id",
+                              "member",
+                              "wire_id",
+                              "label_id",
+                              "bus_point",
+                              "wire_point"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
+                        "buses": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "expression": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "start": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "expression",
+                              "start",
+                              "end"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
                         "junctions": {
                           "additionalProperties": {
                             "additionalProperties": false,
@@ -11741,6 +13041,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -12343,6 +13787,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             "additionalProperties": false,
             "description": "Explicit schematic capture; omitted in legacy empty sheets.",
             "properties": {
+              "bus_entries": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "bus_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "bus_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "label_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "member": {
+                      "type": "string"
+                    },
+                    "wire_id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "wire_point": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "bus_id",
+                    "member",
+                    "wire_id",
+                    "label_id",
+                    "bus_point",
+                    "wire_point"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              "buses": {
+                "additionalProperties": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "end": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    },
+                    "expression": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "start": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "x": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "y": {
+                          "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "expression",
+                    "start",
+                    "end"
+                  ],
+                  "type": "object"
+                },
+                "type": "object"
+              },
               "junctions": {
                 "additionalProperties": {
                   "additionalProperties": false,
@@ -13929,6 +15517,144 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-707265766965775f736368656d617469635f6275735f756e666f6c64"></a>
+
+## preview\_schematic\_bus\_unfold
+
+```json
+{
+  "description": "Preview exact member unfolding against required project/full source cursor/sheet guards. Ordinary scalar wire and Local label connect only the explicit opposite endpoint and same-sheet exact Local-member components. Actual source/candidate graph UUID partitions and label scopes must preserve all unrelated topology; incidental shorts and budget exhaustion refuse. Preview is immutable and uses temporary identities. Same retained bounded workers as query_schematic_buses. Apply with unfold_schematic_bus_member, which recalculates from its guarded source. Available in all agent modes; no ERC/PCB certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "bus_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "bus_point": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "member": {
+        "type": "string"
+      },
+      "source": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sheet_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "source_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "expected_project",
+          "source_cursor",
+          "sheet_id"
+        ],
+        "type": "object"
+      },
+      "wire_end": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "wire_point": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source",
+      "bus_id",
+      "member",
+      "bus_point",
+      "wire_point",
+      "wire_end"
+    ],
+    "title": "UnfoldSchematicBusMember",
+    "type": "object"
+  },
+  "name": "preview_schematic_bus_unfold"
+}
+```
+
 <a id="tool-707265766965775f736368656d617469635f7063625f636f6d706f6e656e74"></a>
 
 ## preview\_schematic\_pcb\_component
@@ -14972,6 +16698,23 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-71756572795f736368656d617469635f6275736573"></a>
+
+## query\_schematic\_buses
+
+```json
+{
+  "description": "Read complete explicit bus definitions, ordered expanded members, owned entries and actual same-sheet scalar label UUID/scope/net facts in one coherent snapshot. Bus/entry graphics never conduct; existing bracket labels stay literal. Maximum256 buses/4096 entries/10000 expanded members,10000 graph rows/2MiB text,100000 global IDs, cumulative1M visits/2MiB output/two retained workers. Whole-call refusal on limits; no partial page, hierarchy, implicit cross-sheet inference, ERC or PCB continuity claim. Available in all agent modes.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "title": "SchematicBusesQuery",
+    "type": "object"
+  },
+  "name": "query_schematic_buses"
+}
+```
+
 <a id="tool-71756572795f736368656d617469635f636f6e6e6563746976697479"></a>
 
 ## query\_schematic\_connectivity
@@ -15412,6 +17155,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "default": {
           "height_px": 1000,
           "layers": [
+            "buses",
             "wires",
             "symbols",
             "pins",
@@ -15431,6 +17175,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           },
           "layers": {
             "default": [
+              "buses",
               "wires",
               "symbols",
               "pins",
@@ -15439,6 +17184,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             ],
             "items": {
               "enum": [
+                "buses",
                 "wires",
                 "symbols",
                 "pins",
@@ -15560,6 +17306,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
         "default": {
           "height_px": 1000,
           "layers": [
+            "buses",
             "wires",
             "symbols",
             "pins",
@@ -15579,6 +17326,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
           },
           "layers": {
             "default": [
+              "buses",
               "wires",
               "symbols",
               "pins",
@@ -15587,6 +17335,7 @@ Every JSON block preserves the complete discovered tool definition. Request unit
             ],
             "items": {
               "enum": [
+                "buses",
                 "wires",
                 "symbols",
                 "pins",
@@ -22112,6 +23861,125 @@ Every JSON block preserves the complete discovered tool definition. Request unit
 }
 ```
 
+<a id="tool-7365745f736368656d617469635f627573"></a>
+
+## set\_schematic\_bus
+
+```json
+{
+  "description": "Create or edit one explicit nonconducting schematic bus. Exact project/full event cursor/sheet guards; omit bus_id to create. Strict bounded unsigned vectors NAME[M..N] or flat optional-prefix groups NAME{TERM TERM}. Integer Nm cardinal segment; no implicit scalar label interpretation/conductance. Existing breakout associations must remain valid. Maximum256 project buses/4096 entries/10000 expanded members/2MiB bus text;1024 fresh-ID attempts. One undoable sheet delta, unchanged on refusal.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "bus_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "end": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "expression": {
+        "type": "string"
+      },
+      "source": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sheet_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "source_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "expected_project",
+          "source_cursor",
+          "sheet_id"
+        ],
+        "type": "object"
+      },
+      "start": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source",
+      "expression",
+      "start",
+      "end"
+    ],
+    "title": "SetSchematicBus",
+    "type": "object"
+  },
+  "name": "set_schematic_bus"
+}
+```
+
 <a id="tool-7365745f73656c656374696f6e"></a>
 
 ## set\_selection
@@ -23424,6 +25292,150 @@ Every JSON block preserves the complete discovered tool definition. Request unit
                       "additionalProperties": false,
                       "description": "Explicit schematic capture; omitted in legacy empty sheets.",
                       "properties": {
+                        "bus_entries": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "bus_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "bus_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "label_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "member": {
+                                "type": "string"
+                              },
+                              "wire_id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "wire_point": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "bus_id",
+                              "member",
+                              "wire_id",
+                              "label_id",
+                              "bus_point",
+                              "wire_point"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
+                        "buses": {
+                          "additionalProperties": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "end": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              },
+                              "expression": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "start": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "expression",
+                              "start",
+                              "end"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "object"
+                        },
                         "junctions": {
                           "additionalProperties": {
                             "additionalProperties": false,
@@ -24506,6 +26518,144 @@ Every JSON block preserves the complete discovered tool definition. Request unit
     "type": "object"
   },
   "name": "undo"
+}
+```
+
+<a id="tool-756e666f6c645f736368656d617469635f6275735f6d656d626572"></a>
+
+## unfold\_schematic\_bus\_member
+
+```json
+{
+  "description": "Atomically unfold one exact member of an explicit bus into a nonconducting45degree entry plus ordinary cardinal wire and Local member label. Requires project/full source cursor; preview_schematic_bus_unfold first. Actual production source/candidate scalar graph permits only the explicit opposite-wire-endpoint and same-sheet exact Local-member union; refuses incidental shorts or any other original UUID partition/name/scope change. Cumulative1M visits/10000 graph rows/2MiB capture, two retained planners,1024 fresh-ID attempts. One sheet delta/undo; no global-only name inference, ERC or PCB certification.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "bus_id": {
+        "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "bus_point": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "member": {
+        "type": "string"
+      },
+      "source": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_project": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sheet_id": {
+            "description": "Stable identifier of a model object (project, sheet, part, ...).\n\nA random (version 4) UUID, assigned once when the object is created and kept\nfor its whole life, across moves, edits, undo and save/load. Serialises as the\nhyphenated UUID string, e.g. `\"67e55044-10b1-426f-9247-bb680e5fe0c8\"`.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "source_cursor": {
+            "additionalProperties": false,
+            "description": "Last consumed event in one engine session. Reusable by any connection.",
+            "properties": {
+              "sequence": {
+                "description": "Last consumed sequence, zero before the first event.",
+                "format": "uint64",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "stream_id": {
+                "description": "Random engine session ID; changes on restart.",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id",
+              "sequence"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "expected_project",
+          "source_cursor",
+          "sheet_id"
+        ],
+        "type": "object"
+      },
+      "wire_end": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      },
+      "wire_point": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "y": {
+            "description": "A signed length in whole nanometres.\n\nThe `i64` range covers about ±9.2 million km, far beyond any board, while a\nnanometre is well below any manufacturing tolerance. Serialises as a bare\ninteger.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source",
+      "bus_id",
+      "member",
+      "bus_point",
+      "wire_point",
+      "wire_end"
+    ],
+    "title": "UnfoldSchematicBusMember",
+    "type": "object"
+  },
+  "name": "unfold_schematic_bus_member"
 }
 ```
 
