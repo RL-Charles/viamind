@@ -48,6 +48,7 @@ struct Draft {
 }
 #[derive(Default)]
 pub struct PadsUi {
+    pub(crate) holes: Option<crate::footprint_holes::HoleDraft>,
     pub(crate) apertures: Option<crate::pad_apertures::ApertureDraft>,
     pub(crate) artwork: Option<crate::footprint_artwork::ArtworkDraft>,
     draft: Option<Draft>,
@@ -56,10 +57,11 @@ pub struct PadsUi {
 }
 impl PadsUi {
     pub(crate) fn editing(&self) -> bool {
-        self.draft.is_some() || self.artwork.is_some() || self.apertures.is_some()
+        self.draft.is_some() || self.artwork.is_some() || self.apertures.is_some() || self.holes.is_some()
     }
     pub(crate) fn cancel(&mut self) {
         self.draft = None;
+        self.holes = None;
         self.artwork = None;
         self.apertures = None;
         self.message = None;
@@ -100,6 +102,10 @@ impl ViamindApp {
         self.pads.message = None;
     }
     pub(crate) fn pads_dialog(&mut self, ui: &mut egui::Ui) {
+        if self.pads.holes.is_some() {
+            self.part_holes_dialog(ui);
+            return;
+        }
         if self.pads.apertures.is_some() {
             self.pad_apertures_dialog(ui);
             return;
