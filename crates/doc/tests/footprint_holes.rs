@@ -230,3 +230,39 @@ fn physical_identity_admission_rejects_global_collisions_without_choosing_a_pose
     // Unrouted analysis may report unknown for this pose; identity admission does not resolve it.
     assert!(viamind_doc::footprint_holes::validate_physical_identities(&p).is_ok());
 }
+
+#[test]
+fn physical_identity_admission_includes_explicit_bus_and_entry_namespace() {
+    let buses = file::from_str(include_str!("../../../fixtures/schematic/buses.viamind.json")).unwrap();
+    let mut p = project();
+    p.schematic.sheets.extend(buses.schematic.sheets);
+    let owner = *p.board.parts.keys().next().unwrap();
+    let pad = p.board.parts[&owner].pads.as_ref().unwrap().0[0].id;
+    let h = hole();
+    p.board.parts.get_mut(&owner).unwrap().holes = Some(vec![h.clone()]);
+    viamind_doc::footprint_holes::validate_physical_identities(&p).unwrap();
+    viamind_doc::schematic::validate_project(&p, None).unwrap();
+    let sheet = *p.schematic.sheets.keys().next().unwrap();
+    let bus = *p.schematic.sheets[&sheet].content.as_ref().unwrap().buses.keys().next().unwrap();
+    // Re-key the explicit bus onto a board part, pad and mechanical hole identity in turn.
+    for id in [owner, pad, h.id] {
+        let mut q = p.clone();
+        let c = q.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
+        let mut b = c.buses.remove(&bus).unwrap();
+        b.id = id;
+        c.buses.insert(id, b);
+        assert!(viamind_doc::footprint_holes::validate_physical_identities(&q).unwrap_err().contains("duplicate"), "{id}");
+        assert!(viamind_doc::schematic::validate_project(&q, None).is_err(), "{id}");
+    }
+    // A hole reusing the bus identity is the same global collision from the other side.
+    let mut q = p.clone();
+    q.board.parts.get_mut(&owner).unwrap().holes.as_mut().unwrap()[0].id = bus;
+    assert!(viamind_doc::footprint_holes::validate_physical_identities(&q).unwrap_err().contains("duplicate"));
+    assert!(viamind_doc::schematic::validate_project(&q, None).is_err());
+    // A bus map key that differs from its identity is refused by the physical validator too.
+    let mut q = p.clone();
+    let c = q.schematic.sheets.get_mut(&sheet).unwrap().content.as_mut().unwrap();
+    let b = c.buses.remove(&bus).unwrap();
+    c.buses.insert(ObjectId::new(), b);
+    assert!(viamind_doc::footprint_holes::validate_physical_identities(&q).is_err());
+}

@@ -62,7 +62,17 @@ pub(crate) fn identities(project: &Project, omit_owner_holes: Option<ObjectId>) 
     for sheet in project.schematic.sheets.values() {
         ids.insert(sheet.id);
         if let Some(c) = &sheet.content {
-            ids.extend(c.packages.keys().chain(c.symbols.keys()).chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()).copied());
+            ids.extend(
+                c.buses
+                    .keys()
+                    .chain(c.bus_entries.keys())
+                    .chain(c.packages.keys())
+                    .chain(c.symbols.keys())
+                    .chain(c.wires.keys())
+                    .chain(c.junctions.keys())
+                    .chain(c.labels.keys())
+                    .copied(),
+            );
             ids.extend(c.symbols.values().flat_map(|s| &s.pins).map(|p| p.id));
         }
     }

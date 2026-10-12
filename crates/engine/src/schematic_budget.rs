@@ -197,3 +197,39 @@ pub(crate) fn predecode_sheet(value: &serde_json::Value, purpose: &str) -> Resul
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use viamind_doc::{
+        ObjectId, Project, SchematicBus, Sheet,
+        schematic::{Coordinate, SchematicContent},
+    };
+    use viamind_geom::Nm;
+
+    // Largest `added` the combined identity budget admits for this project.
+    fn headroom(p: &Project) -> usize {
+        let (mut ok, mut bad) = (0usize, 100_001usize);
+        assert!(super::project(p, ok, "test").is_ok());
+        while bad - ok > 1 {
+            let mid = ok + (bad - ok) / 2;
+            if super::project(p, mid, "test").is_ok() { ok = mid } else { bad = mid }
+        }
+        ok
+    }
+    #[test]
+    fn combined_identity_budget_counts_explicit_buses() {
+        let mut p = Project::new("bus budget");
+        let mut sheet = Sheet::new("Buses");
+        let sid = sheet.id;
+        sheet.content = Some(SchematicContent::default());
+        p.schematic.sheets.insert(sid, sheet);
+        let base = headroom(&p);
+        let c = p.schematic.sheets.get_mut(&sid).unwrap().content.as_mut().unwrap();
+        for i in 0..2i64 {
+            let id = ObjectId::new();
+            let at = |x: i64| Coordinate { x: Nm(x * 1_000_000), y: Nm(i * 1_000_000) };
+            c.buses.insert(id, SchematicBus { id, expression: format!("D{i}[1..0]"), start: at(0), end: at(10) });
+        }
+        assert_eq!(headroom(&p), base - 2);
+    }
+}

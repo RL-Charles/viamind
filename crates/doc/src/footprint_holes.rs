@@ -139,9 +139,11 @@ pub fn validate_physical_identities(project: &crate::Project) -> Result<(), Stri
         add(sheet.id)?;
         if let Some(c) = &sheet.content {
             for (key, id) in c
-                .packages
+                .buses
                 .iter()
                 .map(|(k, v)| (k, v.id))
+                .chain(c.bus_entries.iter().map(|(k, v)| (k, v.id)))
+                .chain(c.packages.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.symbols.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.wires.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.junctions.iter().map(|(k, v)| (k, v.id)))

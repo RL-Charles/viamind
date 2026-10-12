@@ -191,7 +191,6 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     let mut ids = BTreeSet::from([project.id]);
     for p in project.board.parts.values() {
         ids.insert(p.id);
-        ids.extend(p.holes.iter().flatten().map(|h| h.id));
         for pad in p.pads.iter().flat_map(|pads| &pads.0) {
             ids.insert(pad.id);
         }
@@ -747,7 +746,6 @@ mod tests {
         let _lock = LOCK.lock().unwrap();
         let (mut project, sheet, symbol, _) = fixture();
         let part = viamind_doc::Part {
-            holes: None,
             artwork: None,
             holes: None,
             assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
@@ -917,7 +915,6 @@ mod tests {
         let _lock = LOCK.lock().unwrap();
         let (mut project, sheet, symbol, _) = fixture();
         let pad = viamind_doc::Pad {
-            apertures: None,
             id: ObjectId::new(),
             number: "1".into(),
             position: viamind_geom::Point::new(Nm(0), Nm(0)),
@@ -929,7 +926,6 @@ mod tests {
         // Deliberate duplicate poison would fail the native validator, but the
         // borrowed aggregate must reject before that validator allocates ID sets.
         let part = viamind_doc::Part {
-            holes: None,
             artwork: None,
             holes: None,
             assembly: None,
