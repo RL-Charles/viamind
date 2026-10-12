@@ -93,7 +93,7 @@ pub struct ViewExportUi {
     crop: bool,
     region: [String; 4],
     board_layers: [bool; 7],
-    schematic_layers: [bool; 5],
+    schematic_layers: [bool; 6],
     worker: Option<Receiver<Result<Value, String>>>,
     message: Option<String>,
     result: Option<Value>,
@@ -112,7 +112,7 @@ impl Default for ViewExportUi {
             crop: false,
             region: ["0".into(), "0".into(), "30".into(), "20".into()],
             board_layers: [true, true, true, false, false, false, false],
-            schematic_layers: [true; 5],
+            schematic_layers: [true; 6],
             worker: None,
             message: None,
             result: None,
@@ -183,11 +183,18 @@ impl ViewExportUi {
             )
         } else {
             let sheet = self.sheet.ok_or("Select the schematic sheet to export.")?;
-            let layers = [SchematicLayer::Wires, SchematicLayer::Symbols, SchematicLayer::Pins, SchematicLayer::Junctions, SchematicLayer::Labels]
-                .into_iter()
-                .zip(self.schematic_layers)
-                .filter_map(|(layer, on)| on.then_some(layer))
-                .collect();
+            let layers = [
+                SchematicLayer::Buses,
+                SchematicLayer::Wires,
+                SchematicLayer::Symbols,
+                SchematicLayer::Pins,
+                SchematicLayer::Junctions,
+                SchematicLayer::Labels,
+            ]
+            .into_iter()
+            .zip(self.schematic_layers)
+            .filter_map(|(layer, on)| on.then_some(layer))
+            .collect();
             let options = SchematicViewOptions { layers, width_px, height_px, padding_nm, region_nm };
             options.validate().map_err(|e| e.to_string())?;
             (
@@ -285,7 +292,7 @@ impl ViamindApp {
                 ui.label("Dimensions: 1–4096 each; PNG and schematic views: at most 4,194,304 pixels.");
                 ui.horizontal(|ui| {
                     if state.target == Target::Board { for (value, name) in state.board_layers.iter_mut().zip(["Bottom copper", "Top copper", "Outline", "Bottom silkscreen", "Top silkscreen", "Bottom courtyard", "Top courtyard"]) { ui.checkbox(value, name); } }
-                    else { for (value, name) in state.schematic_layers.iter_mut().zip(["Wires", "Symbols", "Pins", "Junctions", "Labels"]) { ui.checkbox(value, name); } }
+                    else { for (value, name) in state.schematic_layers.iter_mut().zip(["Buses", "Wires", "Symbols", "Pins", "Junctions", "Labels"]) { ui.checkbox(value, name); } }
                 });
                 ui.checkbox(&mut state.crop, "Explicit crop (mm, X right / Y down)");
                 if state.crop {

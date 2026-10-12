@@ -109,7 +109,15 @@ fn validate(sheets: &BTreeMap<ObjectId, Sheet>, project: ObjectId) -> Result<usi
         };
         insert(sheet.id)?;
         if let Some(c) = &sheet.content {
-            for id in c.packages.keys().chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()) {
+            for id in c
+                .buses
+                .keys()
+                .chain(c.bus_entries.keys())
+                .chain(c.packages.keys())
+                .chain(c.wires.keys())
+                .chain(c.junctions.keys())
+                .chain(c.labels.keys())
+            {
                 insert(*id)?;
             }
             for s in c.symbols.values() {

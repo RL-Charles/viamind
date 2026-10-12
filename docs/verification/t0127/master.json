@@ -1,0 +1,979 @@
+{
+  "ticket": "T-0127",
+  "source": "fb05911c52edb4f241b779ef9a4a85f90a407158",
+  "base_main": "c92d3ae83df838f29bcb2e424cdb9fba7cda0505",
+  "pre_transplant": {
+    "tip": "56b75f93d1426af6ccd48508e68b7ff00e00f87b",
+    "tag": "verification/t0127/pre-transplant-56b75f93",
+    "own_range": "4551f119..56b75f93 (12 commits; base 4551f119 = c404 NPTH foundation + T125, not copied)",
+    "range_diff": "12 own commits preserved: 9 '=', 3 '!' only in merge context (schematic_budget holes line, additive UiActions, builtin_specs list)"
+  },
+  "integration_commits": {
+    "9081516e": "bus/entry UUIDs in doc validate_physical_identities and engine part_holes::identities; duplicate drag hole extend/test fields removed; collision and budget tests",
+    "3cf32b7e": "bus-free sheet SVG/PNG byte-identical to pre-bus renderer (oracle from main binary); CLI help lists buses",
+    "98c77480": "MCP reference catalog regenerated (127 tools); docs/schematic-buses-verification.md",
+    "4b116cbf": "inherited log15/log-base/1000-sheet tests aligned with feature 16 admission (final1 failures)",
+    "fb05911c": "inspection helper: ComboBox value query and native clock continuation (first native launches failed)"
+  },
+  "full_linux": {
+    "source": "fb05911c52edb4f241b779ef9a4a85f90a407158",
+    "log": "docs/verification/t0127/final/final3.log",
+    "script": "docs/verification/t0127/final/final-gates.sh",
+    "exit": 0,
+    "fmt": "pass",
+    "strict_workspace_all_target_clippy": "pass",
+    "workspace_tests": {
+      "passed": 1104,
+      "failed": 0,
+      "ignored": 1,
+      "suites": 246
+    },
+    "workspace_build": "pass",
+    "retouched_before_normal_build": true,
+    "catalog_check": "docs/generated exact, 127 tools",
+    "workflow_checks": 18,
+    "python_tests": 13,
+    "stdio_checks": 38
+  },
+  "failed_attempts": {
+    "final1 (98c77480)": "fmt+clippy pass; 3 inherited tests failed (log15 version text, validated log writer, 1000-sheet message); corrected in 4b116cbf",
+    "final2 (4b116cbf)": "fmt+clippy+1104 tests+build pass; script stopped at clean-tree assertion (untracked verifier written mid-run); post-gates-4b116cbf ran catalog/workflow/stdio PASS",
+    "native 4b116cbf": "both helper launches panicked before capture (ComboBox label query); dev builds showed transparent window (Harness-timed fade-in); fixed in fb05911c"
+  },
+  "binaries": {
+    "application": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-fb05911c",
+      "sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7"
+    },
+    "inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+      "sha256": "e619190bfbea3184bdbec86ed333fa7de1a3b38ec43d852fc11a0f47b2707199"
+    }
+  },
+  "binary_identity": "viamind-4b116cbf and viamind-fb05911c are byte-identical (058801...30e7); fb05911c changed only the inspection example",
+  "production": {
+    "pid": 297774,
+    "port": 7964,
+    "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-4b116cbf",
+    "executable_sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7",
+    "launch": "cua-driver launch_app owned wrapper launch-production-4b116cbf.sh",
+    "left_running": true
+  },
+  "actual_checks": {
+    "stdio_three_modes": {
+      "passed": true,
+      "checks": 38,
+      "binary_sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7",
+      "endpoint": null
+    },
+    "stdio_plus_two_http_clients": {
+      "passed": true,
+      "checks": 53,
+      "binary_sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7",
+      "endpoint": "http://127.0.0.1:7964/mcp"
+    }
+  },
+  "native": {
+    "captures": [
+      {
+        "mode": "wide",
+        "pid": 381534,
+        "exited": true,
+        "seconds": 2.69,
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "channels": "Original Color32 RGBA and identical RGB; no unpremultiplication or flattening",
+          "claims_excluded": [
+            "OS input",
+            "frame cadence",
+            "implicit bus conductance",
+            "ERC/DRC certification"
+          ],
+          "complete_document_status_unchanged": true,
+          "document_status": {
+            "dirty": false,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fixture-fb05911c.viamind.json"
+          },
+          "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+          "full_session_unchanged": true,
+          "height": 1000,
+          "native_clock_continues_harness_seconds": 129.0166666675359,
+          "native_control_bounds": [
+            {
+              "effective_clip": [
+                17.0,
+                51.0,
+                445.0,
+                435.0
+              ],
+              "response": [
+                23.0,
+                246.0,
+                188.3125,
+                264.0
+              ]
+            },
+            {
+              "effective_clip": [
+                17.0,
+                51.0,
+                445.0,
+                435.0
+              ],
+              "response": [
+                196.3125,
+                246.0,
+                348.40625,
+                264.0
+              ]
+            },
+            {
+              "effective_clip": [
+                17.0,
+                51.0,
+                445.0,
+                435.0
+              ],
+              "response": [
+                23.0,
+                309.0,
+                124.34375,
+                327.0
+              ]
+            }
+          ],
+          "native_controls": [
+            "Preview member unfolding",
+            "Apply member unfolding",
+            "Cancel bus form"
+          ],
+          "native_path_and_bytes_unchanged": true,
+          "nonopaque_pixels": 0,
+          "passed": true,
+          "passes": 13,
+          "pid": 381534,
+          "preparation_scope": "Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.",
+          "prepared_inputs": [
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus expression",
+              "response": [
+                23.0,
+                165.0,
+                303.0,
+                184.0
+              ],
+              "value": "DATA[1..0]"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus start X mm",
+              "response": [
+                23.0,
+                205.0,
+                303.0,
+                224.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus start Y mm",
+              "response": [
+                23.0,
+                234.0,
+                303.0,
+                253.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus end X mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "20"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus end Y mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry bus X mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry bus Y mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry wire X mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry wire Y mm",
+              "response": [
+                23.0,
+                233.0,
+                303.0,
+                252.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Opposite wire end X mm",
+              "response": [
+                23.0,
+                253.0,
+                303.0,
+                272.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Opposite wire end Y mm",
+              "response": [
+                23.0,
+                293.0,
+                303.0,
+                312.0
+              ],
+              "value": "8"
+            }
+          ],
+          "preview": {
+            "allowed_original_component_count": 2,
+            "bus_id": "00000000-0000-0000-0000-000000001272",
+            "bus_point": {
+              "x": 0,
+              "y": 0
+            },
+            "exact_candidate_visits": 23,
+            "expected_project": "00000000-0000-0000-0000-000000001270",
+            "member": "DATA0",
+            "original_graph_members": 3,
+            "scope": "Actual original scalar UUID partitions and label scopes preserved except the explicit endpoint/same-sheet Local-member union; bus/entry graphics do not conduct. No ERC/PCB/certification proof",
+            "sheet_id": "00000000-0000-0000-0000-000000001271",
+            "source_cursor": {
+              "sequence": 0,
+              "stream_id": "8419499c-0158-4330-bedc-280dd03106fd"
+            },
+            "unrelated_partitions_preserved": true,
+            "wire_end": {
+              "x": 2000000,
+              "y": 8000000
+            },
+            "wire_point": {
+              "x": 2000000,
+              "y": 2000000
+            }
+          },
+          "route": "production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event",
+          "self_close_requested_after_capture": true,
+          "source_cursor": {
+            "sequence": 0,
+            "stream_id": "8419499c-0158-4330-bedc-280dd03106fd"
+          },
+          "width": 1600
+        },
+        "pixels": [
+          1600,
+          1000
+        ],
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p6",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p7",
+        "p6_sha256": "1e1754cb6df62fa911cca0e6782fa6093654c4def9355bbd79df8f0ac84d15e7",
+        "p7_sha256": "b6984b43689f2fdd51232084af828dccfd0022d528ab2b44c08cf97e1d56efb4",
+        "rgb_sha256": "482ad8e23a2d09f65c085cfa345a9ffa3d36806b7f4db6207644c3dd3417d866",
+        "rgba_sha256": "af7653760cc30ace134c511de47ae7527f4ed8e29c134abdf59e8fc69584257b",
+        "png": "wide-fb05911c.png",
+        "png_sha256": "3363d073a9aec3d4d6b3d533ea6d2f435e69378e41f294a2ac2f86217d53a819",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "fixture_unchanged": true
+      },
+      {
+        "mode": "compact",
+        "pid": 381778,
+        "exited": true,
+        "seconds": 2.33,
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "channels": "Original Color32 RGBA and identical RGB; no unpremultiplication or flattening",
+          "claims_excluded": [
+            "OS input",
+            "frame cadence",
+            "implicit bus conductance",
+            "ERC/DRC certification"
+          ],
+          "complete_document_status_unchanged": true,
+          "document_status": {
+            "dirty": false,
+            "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fixture-fb05911c.viamind.json"
+          },
+          "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+          "full_session_unchanged": true,
+          "height": 400,
+          "native_clock_continues_harness_seconds": 129.0166666675359,
+          "native_control_bounds": [
+            {
+              "effective_clip": [
+                17.0,
+                35.0,
+                445.0,
+                389.0
+              ],
+              "response": [
+                23.0,
+                200.0,
+                188.3125,
+                218.0
+              ]
+            },
+            {
+              "effective_clip": [
+                17.0,
+                35.0,
+                445.0,
+                389.0
+              ],
+              "response": [
+                196.3125,
+                200.0,
+                348.40625,
+                218.0
+              ]
+            },
+            {
+              "effective_clip": [
+                17.0,
+                35.0,
+                445.0,
+                389.0
+              ],
+              "response": [
+                23.0,
+                263.0,
+                124.34375,
+                281.0
+              ]
+            }
+          ],
+          "native_controls": [
+            "Preview member unfolding",
+            "Apply member unfolding",
+            "Cancel bus form"
+          ],
+          "native_path_and_bytes_unchanged": true,
+          "nonopaque_pixels": 0,
+          "passed": true,
+          "passes": 13,
+          "pid": 381778,
+          "preparation_scope": "Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.",
+          "prepared_inputs": [
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus expression",
+              "response": [
+                23.0,
+                149.0,
+                303.0,
+                168.0
+              ],
+              "value": "DATA[1..0]"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus start X mm",
+              "response": [
+                23.0,
+                189.0,
+                303.0,
+                208.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus start Y mm",
+              "response": [
+                23.0,
+                203.0,
+                303.0,
+                222.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus end X mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "20"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Bus end Y mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry bus X mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry bus Y mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "0"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry wire X mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Entry wire Y mm",
+              "response": [
+                23.0,
+                202.0,
+                303.0,
+                221.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Opposite wire end X mm",
+              "response": [
+                23.0,
+                207.0,
+                303.0,
+                226.0
+              ],
+              "value": "2"
+            },
+            {
+              "effective_ancestor_clip_verified": true,
+              "label": "Opposite wire end Y mm",
+              "response": [
+                23.0,
+                247.0,
+                303.0,
+                266.0
+              ],
+              "value": "8"
+            }
+          ],
+          "preview": {
+            "allowed_original_component_count": 2,
+            "bus_id": "00000000-0000-0000-0000-000000001272",
+            "bus_point": {
+              "x": 0,
+              "y": 0
+            },
+            "exact_candidate_visits": 23,
+            "expected_project": "00000000-0000-0000-0000-000000001270",
+            "member": "DATA0",
+            "original_graph_members": 3,
+            "scope": "Actual original scalar UUID partitions and label scopes preserved except the explicit endpoint/same-sheet Local-member union; bus/entry graphics do not conduct. No ERC/PCB/certification proof",
+            "sheet_id": "00000000-0000-0000-0000-000000001271",
+            "source_cursor": {
+              "sequence": 0,
+              "stream_id": "14b82e14-eb73-4e6f-9872-b48b96071ffe"
+            },
+            "unrelated_partitions_preserved": true,
+            "wire_end": {
+              "x": 2000000,
+              "y": 8000000
+            },
+            "wire_point": {
+              "x": 2000000,
+              "y": 2000000
+            }
+          },
+          "route": "production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event",
+          "self_close_requested_after_capture": true,
+          "source_cursor": {
+            "sequence": 0,
+            "stream_id": "14b82e14-eb73-4e6f-9872-b48b96071ffe"
+          },
+          "width": 640
+        },
+        "pixels": [
+          640,
+          400
+        ],
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p6",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p7",
+        "p6_sha256": "11419b6bdcefb7b4830c11029c5404925442a2d07a3297a499029206d073ddbb",
+        "p7_sha256": "afa0f367a0017d1f6e1e3597b38a52720b318f01a2b2f0484149615baafe2ebf",
+        "rgb_sha256": "445f2ab262b718445e3148b19d3a633ba7f051f2514a830f4990164d870cf9a2",
+        "rgba_sha256": "c5f37c4af5663ffd07a15a8d34b76870679c48a416574ad6c3f0abf533470af7",
+        "png": "compact-fb05911c.png",
+        "png_sha256": "3fee286158cc21964bbfb3a40402ade599f7c5b30e0f5a65eae542ba75c42fd4",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "fixture_unchanged": true
+      }
+    ],
+    "route": "production ViamindApp prepared with local egui Harness inputs; actual eframe WGPU Screenshot event; no OS input or cadence claim"
+  },
+  "render_oracle": {
+    "svg": "fixtures/views/legacy-oracle/schematic-default-c92d3ae8.svg",
+    "svg_sha256": "07a1569c0a73ebe219a2d14659efce6c85b9d3a515f38b7a565393115b3a8bdb",
+    "exported_by": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/viamind-a530c641 (sha256 b7ff6506727bc300ce8afb8998f492a8d3d6fb4e3070a1d416f49e2ed1a011dc; crates/apps identical to c92d3ae8)",
+    "test": "crates/render/tests/schematic_buses.rs bus_free_sheet_default_output_is_byte_identical_to_pre_bus_renderer"
+  },
+  "limitations": [
+    "no implicit bus conductivity, aliases, hierarchy, bus ERC/DRC or PCB continuity",
+    "native captures are egui Harness-prepared, not OS input; no frame cadence",
+    "HTTP receipt ran against the byte-identical 4b116cbf application copy",
+    "CI and independent review pending at assembly time"
+  ],
+  "artifacts": [
+    {
+      "path": "docs/verification/t0127/compact-fb05911c.png",
+      "storage": "repository",
+      "bytes": 35815,
+      "sha256": "3fee286158cc21964bbfb3a40402ade599f7c5b30e0f5a65eae542ba75c42fd4"
+    },
+    {
+      "path": "docs/verification/t0127/final/assemble-master.py",
+      "storage": "repository",
+      "bytes": 6244,
+      "sha256": "8b510a1952f6a7783d986ceb5f1db6ef7269c916c3aa1c0b6859e7f2e4481221"
+    },
+    {
+      "path": "docs/verification/t0127/final/binaries-4b116cbf.sha256",
+      "storage": "repository",
+      "bytes": 287,
+      "sha256": "b2e921060f7b15f2c94f95aa8f50ebc6b273c162321e5c33d823cba7e637d999"
+    },
+    {
+      "path": "docs/verification/t0127/final/binaries-fb05911c.sha256",
+      "storage": "repository",
+      "bytes": 287,
+      "sha256": "ada99e1a6c5bd61c8946e94b09e45e0883b72a01a288a4168188fd0b9ac1edf7"
+    },
+    {
+      "path": "docs/verification/t0127/final/catalog-fb05911c-report/verification.json",
+      "storage": "repository",
+      "bytes": 368,
+      "sha256": "0d0850c067ae2fba1b921d602602ea893d5eab5da9eebe24bf3bee6c4b7bb8f7"
+    },
+    {
+      "path": "docs/verification/t0127/final/catalog-prebuild.log",
+      "storage": "repository",
+      "bytes": 1754,
+      "sha256": "37de0689dd9c6ced86d55b3cce0f3dee6e3354f6fa4b414b6bbb7f9e8dcbd07f"
+    },
+    {
+      "path": "docs/verification/t0127/final/catalog-prebuild.sh",
+      "storage": "repository",
+      "bytes": 901,
+      "sha256": "e93af77b8a327d4fa253921fcf789d21d3d8a278ace2f1c379cfd36f7388cc48"
+    },
+    {
+      "path": "docs/verification/t0127/final/final-gates.sh",
+      "storage": "repository",
+      "bytes": 1778,
+      "sha256": "ebcdb324b8d2f6a481a311d6ebc5ca4ef1792cc82059c03ef781d586cfc6e9b6"
+    },
+    {
+      "path": "docs/verification/t0127/final/final1.log",
+      "storage": "repository",
+      "bytes": 155517,
+      "sha256": "a7791559b9d163eefa97c85723bed8e2bc00eef7123722542a992423104a914b"
+    },
+    {
+      "path": "docs/verification/t0127/final/final2.log",
+      "storage": "repository",
+      "bytes": 155827,
+      "sha256": "fdaea466b340cbdf0cb7d4c5d087fba1a1093382c842e5ac7d8c7b93c07c7c61"
+    },
+    {
+      "path": "docs/verification/t0127/final/final3.log",
+      "storage": "repository",
+      "bytes": 156159,
+      "sha256": "e788929de15f58bb63107648fe3823fbe5dd557404d192eec794974d8425f189"
+    },
+    {
+      "path": "docs/verification/t0127/final/helper-dev.sh",
+      "storage": "repository",
+      "bytes": 649,
+      "sha256": "e5521e451b20389c090af8072343d055a8a3218875f13ac566492d67419d734b"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/approval-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "783049b449bac8f8bcec18f13442a2b71f81ce7993933f2cdd1e1032862a41dd"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/http-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "94f9fddbbaef78695dc7f6bc9f69f5f8ec750a7aa69b1431b88bd965a7eb5d8c"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/live-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "9c81bd9732cfd753c96d371fe2e24a1823122720c65a4e3183ab1c0e93dae843"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/protected.viamind.json",
+      "storage": "repository",
+      "bytes": 1974,
+      "sha256": "e71bfb0e719f0b162635733a6b8ff08967444ae7d3ca3c1297b10334e8eafd6b"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/read_only-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "11bb99d1171142c8e7cbfb6c167f50ded00b21684fb6b2a3013804a47d38f98a"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf/verification.json",
+      "storage": "repository",
+      "bytes": 4762,
+      "sha256": "af90ffd8d097d9e896497f379245e771848b78e783c59bfe2cbbf714048f3957"
+    },
+    {
+      "path": "docs/verification/t0127/final/http-4b116cbf.log",
+      "storage": "repository",
+      "bytes": 52,
+      "sha256": "81f3b49a4a3c73db02bbbc64e3760e015ab3bcb1e57d09552f4f11b2b1244e22"
+    },
+    {
+      "path": "docs/verification/t0127/final/integ1.log",
+      "storage": "repository",
+      "bytes": 9395,
+      "sha256": "cfd9a8d33fd3e1e4fa618b4d1f503d9d505551774e25c50fa61a00b78c8df158"
+    },
+    {
+      "path": "docs/verification/t0127/final/integ1.sh",
+      "storage": "repository",
+      "bytes": 857,
+      "sha256": "9eab02948007262450c956844321bd914b57841da3a7d3d6568cedceb888bda9"
+    },
+    {
+      "path": "docs/verification/t0127/final/integ2.log",
+      "storage": "repository",
+      "bytes": 3270,
+      "sha256": "7c11c35e6968aaf821e16091f0ae0dc445e1d475665057f91b9f036ed4aa1411"
+    },
+    {
+      "path": "docs/verification/t0127/final/integ2.sh",
+      "storage": "repository",
+      "bytes": 582,
+      "sha256": "f35680291702bd3b60ce6cca8f0002c4df4166b4dceff78e4691e65cf9bace24"
+    },
+    {
+      "path": "docs/verification/t0127/final/launch-compact-fb05911c.sh",
+      "storage": "repository",
+      "bytes": 438,
+      "sha256": "0e7e612068ec7928c4a6dd513f910c040a6611c000d510f894ead3b063a00c81"
+    },
+    {
+      "path": "docs/verification/t0127/final/launch-production-4b116cbf.sh",
+      "storage": "repository",
+      "bytes": 381,
+      "sha256": "501e931147f6e3d0164b81332b49c8123233cdd63dee7c9145d19c9a0b46abfb"
+    },
+    {
+      "path": "docs/verification/t0127/final/launch-wide-fb05911c.sh",
+      "storage": "repository",
+      "bytes": 422,
+      "sha256": "a85294cece9f1c9e3de6393bfeac4fdae97c99abcdfd94be246a4877d562af06"
+    },
+    {
+      "path": "docs/verification/t0127/final/main-oracle/views-default.png.stdout",
+      "storage": "repository",
+      "bytes": 154,
+      "sha256": "b794371bb4808a9afedc94b5b734e0759d4549371a4032e5a38002033217e181"
+    },
+    {
+      "path": "docs/verification/t0127/final/main-oracle/views-default.svg.stdout",
+      "storage": "repository",
+      "bytes": 154,
+      "sha256": "9650564b166f01db944309316d5c85d45e95bdbecf2af5d9fd4f9b301bc5208e"
+    },
+    {
+      "path": "docs/verification/t0127/final/native-compact-fb05911c-launch.json",
+      "storage": "repository",
+      "bytes": 901,
+      "sha256": "649a070baffd97c4a891a05fd6056f5a1b1951fb851a3abc55beb4f3adb0818f"
+    },
+    {
+      "path": "docs/verification/t0127/final/native-fb05911c-wide-compact.json",
+      "storage": "repository",
+      "bytes": 14197,
+      "sha256": "daa671c3e9efe21545e8a40053849abd5ea4cb3c7026dd986e635534a44f3b7a"
+    },
+    {
+      "path": "docs/verification/t0127/final/native-fb05911c.log",
+      "storage": "repository",
+      "bytes": 1409,
+      "sha256": "1095c0192fa3323b69679557637332b7da774130f4cf53f1382da7fa27641dd5"
+    },
+    {
+      "path": "docs/verification/t0127/final/native-fb05911c.py",
+      "storage": "repository",
+      "bytes": 2870,
+      "sha256": "3422452fd3cf9b86f9dd77fe462c5e3e3baa0482d5aeba41c4ab767fe3c5bc07"
+    },
+    {
+      "path": "docs/verification/t0127/final/native-wide-fb05911c-launch.json",
+      "storage": "repository",
+      "bytes": 899,
+      "sha256": "3d328dc330c120ff147cbe8d9ca67d28e8b905a7e4a00d951fd43c561a304a08"
+    },
+    {
+      "path": "docs/verification/t0127/final/post-gates-4b116cbf.log",
+      "storage": "repository",
+      "bytes": 496,
+      "sha256": "1ee727496e10c89a4a8bb2074f229fa7cb0ed2caaf8c6366372f634ca9e87bf4"
+    },
+    {
+      "path": "docs/verification/t0127/final/post-gates-4b116cbf.sh",
+      "storage": "repository",
+      "bytes": 1207,
+      "sha256": "ab4706a94fff42238a224914603405a26fb4a6c64b355ce6f6cdbe168a668838"
+    },
+    {
+      "path": "docs/verification/t0127/final/production-4b116cbf-cua-state.json",
+      "storage": "repository",
+      "bytes": 305,
+      "sha256": "55a4d275c4339abc58b67e28c27c400d00bb79ae652bdbc44b17fce34bdfa858"
+    },
+    {
+      "path": "docs/verification/t0127/final/production-4b116cbf-cua.png",
+      "storage": "repository",
+      "bytes": 120101,
+      "sha256": "727ca5ee5334ccceec00b249af929aaf65decef6e1c78600d3975fbc1ee5ec5d"
+    },
+    {
+      "path": "docs/verification/t0127/final/production-4b116cbf-launch.json",
+      "storage": "repository",
+      "bytes": 604,
+      "sha256": "c08f9d6fdca0b1c4d4725158cf2427a0f6a705fbe4dd389cf9aef2239cf34124"
+    },
+    {
+      "path": "docs/verification/t0127/final/retired-dev-binaries.sha256",
+      "storage": "repository",
+      "bytes": 672,
+      "sha256": "0db162ffaac0543e0ba5ead4e1786170fc3c7155219403248f5486ea856ed0cf"
+    },
+    {
+      "path": "docs/verification/t0127/final/stdio-fb05911c/approval-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "41d8cceb067388bf7c75d7db0b0e99981bce071a4780dc6a93ea1440116728c6"
+    },
+    {
+      "path": "docs/verification/t0127/final/stdio-fb05911c/live-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "1c901f44a4d26b84941b03b753b08ed2024621c37c7bb59a8683db04fa2f83d2"
+    },
+    {
+      "path": "docs/verification/t0127/final/stdio-fb05911c/protected.viamind.json",
+      "storage": "repository",
+      "bytes": 1974,
+      "sha256": "e71bfb0e719f0b162635733a6b8ff08967444ae7d3ca3c1297b10334e8eafd6b"
+    },
+    {
+      "path": "docs/verification/t0127/final/stdio-fb05911c/read_only-preview.json",
+      "storage": "repository",
+      "bytes": 804,
+      "sha256": "faa5161d028c7876693c3d30dacdd2f3713ac26675b3ed10ea91c65b56c26369"
+    },
+    {
+      "path": "docs/verification/t0127/final/stdio-fb05911c/verification.json",
+      "storage": "repository",
+      "bytes": 3119,
+      "sha256": "d63031c2578ca871b080ae6a3aa015a296e4420523e53c88866cc6a21dee21e1"
+    },
+    {
+      "path": "docs/verification/t0127/final/trial-dev.py",
+      "storage": "repository",
+      "bytes": 1113,
+      "sha256": "a4764a8cd642588e800e88d47d430ae24cbd076069abd93a01fa06456bbc66b7"
+    },
+    {
+      "path": "docs/verification/t0127/final/workflow-fb05911c/verification.json",
+      "storage": "repository",
+      "bytes": 1265,
+      "sha256": "7b602304aa7b19bfd5d6b873a2d0917e351361fb3e9c3e094cb1d7385910c54f"
+    },
+    {
+      "path": "docs/verification/t0127/wide-fb05911c.png",
+      "storage": "repository",
+      "bytes": 73190,
+      "sha256": "3363d073a9aec3d4d6b3d533ea6d2f435e69378e41f294a2ac2f86217d53a819"
+    },
+    {
+      "path": "fixtures/views/legacy-oracle/schematic-default-c92d3ae8.svg",
+      "storage": "repository",
+      "bytes": 38227,
+      "sha256": "07a1569c0a73ebe219a2d14659efce6c85b9d3a515f38b7a565393115b3a8bdb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-fb05911c",
+      "storage": "retained",
+      "bytes": 668178512,
+      "sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+      "storage": "retained",
+      "bytes": 567957088,
+      "sha256": "e619190bfbea3184bdbec86ed333fa7de1a3b38ec43d852fc11a0f47b2707199"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-4b116cbf",
+      "storage": "retained",
+      "bytes": 668178512,
+      "sha256": "058801078d04dab447fbd18ec15cbf3c01bcc4cddf74273529a825f5708630e7"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/production-fixture-4b116cbf.viamind.json",
+      "storage": "retained",
+      "bytes": 1974,
+      "sha256": "e71bfb0e719f0b162635733a6b8ff08967444ae7d3ca3c1297b10334e8eafd6b"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fixture-fb05911c.viamind.json",
+      "storage": "retained",
+      "bytes": 1974,
+      "sha256": "e71bfb0e719f0b162635733a6b8ff08967444ae7d3ca3c1297b10334e8eafd6b"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/launch-wide-4b116cbf.sh.log",
+      "storage": "retained",
+      "bytes": 186005,
+      "sha256": "1581551a41987a3e4a5bbcd0670826f3e4bbb48718b0ae7400086981da0fdbad"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/launch-compact-4b116cbf.sh.log",
+      "storage": "retained",
+      "bytes": 178884,
+      "sha256": "7831da61a9f337559ff8f1ab7679d9b2c3014a48040fc08fbdde07e4ab2737ae"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native-report.json",
+      "storage": "retained",
+      "bytes": 5262,
+      "sha256": "12aa3dc8713ea7792d933ed5ee0603de99006883220d467406e862441a5e443d"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native-report.json",
+      "storage": "retained",
+      "bytes": 5260,
+      "sha256": "dd4c2a502ba13a98a526b53cc0553ed661f6748f6c733eedaa2980ff9b4885bb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/main-oracle/views-default.svg",
+      "storage": "retained",
+      "bytes": 38227,
+      "sha256": "07a1569c0a73ebe219a2d14659efce6c85b9d3a515f38b7a565393115b3a8bdb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/main-oracle/views-default.png",
+      "storage": "retained",
+      "bytes": 31419,
+      "sha256": "c0a52c6e850675fff6dfb1dd3f8a2975e68a50ccdbf6a87d52d9aa127ac9262e"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p6",
+      "storage": "retained",
+      "bytes": 4800017,
+      "sha256": "1e1754cb6df62fa911cca0e6782fa6093654c4def9355bbd79df8f0ac84d15e7"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p7",
+      "storage": "retained",
+      "bytes": 6400071,
+      "sha256": "b6984b43689f2fdd51232084af828dccfd0022d528ab2b44c08cf97e1d56efb4"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p6",
+      "storage": "retained",
+      "bytes": 768015,
+      "sha256": "11419b6bdcefb7b4830c11029c5404925442a2d07a3297a499029206d073ddbb"
+    },
+    {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p7",
+      "storage": "retained",
+      "bytes": 1024069,
+      "sha256": "afa0f367a0017d1f6e1e3597b38a52720b318f01a2b2f0484149615baafe2ebf"
+    }
+  ]
+}

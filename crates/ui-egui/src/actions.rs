@@ -67,6 +67,12 @@ ui_actions! {
     ConvertFootprintFile => ("convert_footprint_file", input_schema::<viamind_engine::ConvertFootprintFile>(), convert_footprint_file),
     PreviewPcbImport => ("preview_pcb_import", input_schema::<viamind_engine::PreviewPcbImport>(), preview_pcb_import),
     ImportPcb => ("import_pcb", input_schema::<viamind_engine::ImportPcb>(), import_pcb),
+    QuerySchematicBuses => ("query_schematic_buses", input_schema::<viamind_engine::SchematicBusesQuery>(), query_schematic_buses),
+    PreviewSchematicBusUnfold => ("preview_schematic_bus_unfold", input_schema::<viamind_engine::UnfoldSchematicBusMember>(), preview_schematic_bus_unfold),
+    SetSchematicBus => (viamind_engine::SetSchematicBus::NAME,input_schema::<viamind_engine::SetSchematicBus>(), set_schematic_bus),
+    DeleteSchematicBus => (viamind_engine::DeleteSchematicBus::NAME,input_schema::<viamind_engine::DeleteSchematicBus>(),delete_schematic_bus),
+    DeleteSchematicBusBreakout => (viamind_engine::DeleteSchematicBusBreakout::NAME,input_schema::<viamind_engine::DeleteSchematicBusBreakout>(),delete_schematic_bus_breakout),
+    UnfoldSchematicBusMember => (viamind_engine::UnfoldSchematicBusMember::NAME,input_schema::<viamind_engine::UnfoldSchematicBusMember>(),unfold_schematic_bus_member),
     PreviewSchematicSymbolDrag => ("preview_schematic_symbol_drag", input_schema::<viamind_engine::DragSchematicSymbol>(), preview_schematic_symbol_drag),
     DragSchematicSymbol => (viamind_engine::DragSchematicSymbol::NAME, input_schema::<viamind_engine::DragSchematicSymbol>(), drag_schematic_symbol),
     DrawSchematicWirePolyline => (viamind_engine::DrawSchematicWirePolyline::NAME, input_schema::<viamind_engine::DrawSchematicWirePolyline>(), draw_schematic_wire_polyline),
@@ -545,4 +551,25 @@ fn drag_schematic_symbol(engine: &EngineHandle, input: Value) -> Result<Value, E
 }
 fn set_part_holes(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
     serde_json::to_value(engine.execute(viamind_engine::SetPartHoles::NAME, input, Origin::User)?).map_err(encode_error)
+}
+
+fn query_schematic_buses(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let q = serde_json::from_value(input).map_err(encode_error)?;
+    engine.prepare_schematic_buses(&q).map_err(branch_error)?.run_value().map_err(branch_error)
+}
+fn preview_schematic_bus_unfold(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    let q = serde_json::from_value(input).map_err(encode_error)?;
+    engine.prepare_schematic_bus_unfold(q).map_err(branch_error)?.run_value().map_err(branch_error)
+}
+fn set_schematic_bus(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::SetSchematicBus::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn delete_schematic_bus(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::DeleteSchematicBus::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn delete_schematic_bus_breakout(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::DeleteSchematicBusBreakout::NAME, input, Origin::User)?).map_err(encode_error)
+}
+fn unfold_schematic_bus_member(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    serde_json::to_value(engine.execute(viamind_engine::UnfoldSchematicBusMember::NAME, input, Origin::User)?).map_err(encode_error)
 }

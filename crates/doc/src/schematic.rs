@@ -148,6 +148,10 @@ pub struct SchematicLabel {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SchematicContent {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "crate::schematic_bus::bounded_buses")]
+    pub buses: BTreeMap<ObjectId, crate::SchematicBus>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "crate::schematic_bus::bounded_entries")]
+    pub bus_entries: BTreeMap<ObjectId, crate::SchematicBusEntry>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty", deserialize_with = "crate::symbol_package::bounded_packages")]
     pub packages: BTreeMap<ObjectId, crate::symbol_package::SchematicPackage>,
     pub symbols: BTreeMap<ObjectId, SchematicSymbol>,
@@ -157,8 +161,10 @@ pub struct SchematicContent {
 }
 impl SchematicContent {
     pub fn object_count(&self) -> usize {
-        self.packages
+        self.buses
             .len()
+            .saturating_add(self.bus_entries.len())
+            .saturating_add(self.packages.len())
             .saturating_add(self.symbols.len())
             .saturating_add(self.wires.len())
             .saturating_add(self.junctions.len())
@@ -171,6 +177,7 @@ impl SchematicContent {
         if self.object_count() > MAX_SHEET_OBJECTS || self.pin_count() > MAX_PINS {
             return Err("sheet exceeds 10000 objects or 100000 pins".into());
         }
+        crate::schematic_bus::validate(self)?;
         for s in self.symbols.values() {
             s.validate()?;
         }
@@ -231,6 +238,8 @@ pub fn validate_sheet(sheet: &Sheet) -> Result<(), String> {
     if let Some(content) = &sheet.content {
         name(&sheet.name, false, 128)?;
         content.validate()?;
+        keyed(&mut ids, &content.buses, |v| v.id)?;
+        keyed(&mut ids, &content.bus_entries, |v| v.id)?;
         keyed(&mut ids, &content.packages, |v| v.id)?;
         keyed(&mut ids, &content.symbols, |v| v.id)?;
         keyed(&mut ids, &content.wires, |v| v.id)?;
@@ -253,6 +262,7 @@ pub fn validate_sheet(sheet: &Sheet) -> Result<(), String> {
 
 /// Validate all sheet geometry and global identities. A replacement is checked before commit.
 pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Result<(), String> {
+    crate::schematic_bus::preflight_project(project, replacement)?;
     crate::footprint_holes::preflight_project(project, replacement)?;
     if project.schematic.sheets.iter().any(|(key, sheet)| *key != sheet.id) {
         return Err("schematic sheet map key must match ID".into());
@@ -303,6 +313,8 @@ pub fn validate_project(project: &Project, replacement: Option<&Sheet>) -> Resul
             if objects > MAX_PROJECT_OBJECTS || pins > MAX_PINS {
                 return Err("project exceeds 100000 schematic objects or pins".into());
             }
+            keyed(&mut ids, &content.buses, |v| v.id)?;
+            keyed(&mut ids, &content.bus_entries, |v| v.id)?;
             keyed(&mut ids, &content.packages, |v| v.id)?;
             packages.extend(content.packages.keys().copied());
             keyed(&mut ids, &content.symbols, |v| v.id)?;

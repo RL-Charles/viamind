@@ -19,6 +19,7 @@ pub mod http;
 pub mod output_jobs;
 pub mod pcb_branches;
 pub mod registry;
+mod schematic_buses;
 mod schematic_drag;
 pub mod server;
 mod unrouted;

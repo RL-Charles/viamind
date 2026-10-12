@@ -1,0 +1,510 @@
+[
+  {
+    "mode": "wide",
+    "pid": 381534,
+    "exited": true,
+    "seconds": 2.69,
+    "log": "",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "channels": "Original Color32 RGBA and identical RGB; no unpremultiplication or flattening",
+      "claims_excluded": [
+        "OS input",
+        "frame cadence",
+        "implicit bus conductance",
+        "ERC/DRC certification"
+      ],
+      "complete_document_status_unchanged": true,
+      "document_status": {
+        "dirty": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fixture-fb05911c.viamind.json"
+      },
+      "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+      "full_session_unchanged": true,
+      "height": 1000,
+      "native_clock_continues_harness_seconds": 129.0166666675359,
+      "native_control_bounds": [
+        {
+          "effective_clip": [
+            17.0,
+            51.0,
+            445.0,
+            435.0
+          ],
+          "response": [
+            23.0,
+            246.0,
+            188.3125,
+            264.0
+          ]
+        },
+        {
+          "effective_clip": [
+            17.0,
+            51.0,
+            445.0,
+            435.0
+          ],
+          "response": [
+            196.3125,
+            246.0,
+            348.40625,
+            264.0
+          ]
+        },
+        {
+          "effective_clip": [
+            17.0,
+            51.0,
+            445.0,
+            435.0
+          ],
+          "response": [
+            23.0,
+            309.0,
+            124.34375,
+            327.0
+          ]
+        }
+      ],
+      "native_controls": [
+        "Preview member unfolding",
+        "Apply member unfolding",
+        "Cancel bus form"
+      ],
+      "native_path_and_bytes_unchanged": true,
+      "nonopaque_pixels": 0,
+      "passed": true,
+      "passes": 13,
+      "pid": 381534,
+      "preparation_scope": "Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.",
+      "prepared_inputs": [
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus expression",
+          "response": [
+            23.0,
+            165.0,
+            303.0,
+            184.0
+          ],
+          "value": "DATA[1..0]"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus start X mm",
+          "response": [
+            23.0,
+            205.0,
+            303.0,
+            224.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus start Y mm",
+          "response": [
+            23.0,
+            234.0,
+            303.0,
+            253.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus end X mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "20"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus end Y mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry bus X mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry bus Y mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry wire X mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry wire Y mm",
+          "response": [
+            23.0,
+            233.0,
+            303.0,
+            252.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Opposite wire end X mm",
+          "response": [
+            23.0,
+            253.0,
+            303.0,
+            272.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Opposite wire end Y mm",
+          "response": [
+            23.0,
+            293.0,
+            303.0,
+            312.0
+          ],
+          "value": "8"
+        }
+      ],
+      "preview": {
+        "allowed_original_component_count": 2,
+        "bus_id": "00000000-0000-0000-0000-000000001272",
+        "bus_point": {
+          "x": 0,
+          "y": 0
+        },
+        "exact_candidate_visits": 23,
+        "expected_project": "00000000-0000-0000-0000-000000001270",
+        "member": "DATA0",
+        "original_graph_members": 3,
+        "scope": "Actual original scalar UUID partitions and label scopes preserved except the explicit endpoint/same-sheet Local-member union; bus/entry graphics do not conduct. No ERC/PCB/certification proof",
+        "sheet_id": "00000000-0000-0000-0000-000000001271",
+        "source_cursor": {
+          "sequence": 0,
+          "stream_id": "8419499c-0158-4330-bedc-280dd03106fd"
+        },
+        "unrelated_partitions_preserved": true,
+        "wire_end": {
+          "x": 2000000,
+          "y": 8000000
+        },
+        "wire_point": {
+          "x": 2000000,
+          "y": 2000000
+        }
+      },
+      "route": "production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event",
+      "self_close_requested_after_capture": true,
+      "source_cursor": {
+        "sequence": 0,
+        "stream_id": "8419499c-0158-4330-bedc-280dd03106fd"
+      },
+      "width": 1600
+    },
+    "pixels": [
+      1600,
+      1000
+    ],
+    "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p6",
+    "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-wide-fb05911c/native.p7",
+    "p6_sha256": "1e1754cb6df62fa911cca0e6782fa6093654c4def9355bbd79df8f0ac84d15e7",
+    "p7_sha256": "b6984b43689f2fdd51232084af828dccfd0022d528ab2b44c08cf97e1d56efb4",
+    "rgb_sha256": "482ad8e23a2d09f65c085cfa345a9ffa3d36806b7f4db6207644c3dd3417d866",
+    "rgba_sha256": "af7653760cc30ace134c511de47ae7527f4ed8e29c134abdf59e8fc69584257b",
+    "png": "wide-fb05911c.png",
+    "png_sha256": "3363d073a9aec3d4d6b3d533ea6d2f435e69378e41f294a2ac2f86217d53a819",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "fixture_unchanged": true
+  },
+  {
+    "mode": "compact",
+    "pid": 381778,
+    "exited": true,
+    "seconds": 2.33,
+    "log": "",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "channels": "Original Color32 RGBA and identical RGB; no unpremultiplication or flattening",
+      "claims_excluded": [
+        "OS input",
+        "frame cadence",
+        "implicit bus conductance",
+        "ERC/DRC certification"
+      ],
+      "complete_document_status_unchanged": true,
+      "document_status": {
+        "dirty": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fixture-fb05911c.viamind.json"
+      },
+      "executable": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-fb05911c",
+      "full_session_unchanged": true,
+      "height": 400,
+      "native_clock_continues_harness_seconds": 129.0166666675359,
+      "native_control_bounds": [
+        {
+          "effective_clip": [
+            17.0,
+            35.0,
+            445.0,
+            389.0
+          ],
+          "response": [
+            23.0,
+            200.0,
+            188.3125,
+            218.0
+          ]
+        },
+        {
+          "effective_clip": [
+            17.0,
+            35.0,
+            445.0,
+            389.0
+          ],
+          "response": [
+            196.3125,
+            200.0,
+            348.40625,
+            218.0
+          ]
+        },
+        {
+          "effective_clip": [
+            17.0,
+            35.0,
+            445.0,
+            389.0
+          ],
+          "response": [
+            23.0,
+            263.0,
+            124.34375,
+            281.0
+          ]
+        }
+      ],
+      "native_controls": [
+        "Preview member unfolding",
+        "Apply member unfolding",
+        "Cancel bus form"
+      ],
+      "native_path_and_bytes_unchanged": true,
+      "nonopaque_pixels": 0,
+      "passed": true,
+      "passes": 13,
+      "pid": 381778,
+      "preparation_scope": "Read-only shared query/preview prepared through production UI using local egui inputs; fixed viewport, transferred UI memory. Native footer responses matched to exact current painted Rect min/max within0.5px. Compact field typing/Apply independently verified by kittest. No OS input or model mutation.",
+      "prepared_inputs": [
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus expression",
+          "response": [
+            23.0,
+            149.0,
+            303.0,
+            168.0
+          ],
+          "value": "DATA[1..0]"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus start X mm",
+          "response": [
+            23.0,
+            189.0,
+            303.0,
+            208.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus start Y mm",
+          "response": [
+            23.0,
+            203.0,
+            303.0,
+            222.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus end X mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "20"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Bus end Y mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry bus X mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry bus Y mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "0"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry wire X mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Entry wire Y mm",
+          "response": [
+            23.0,
+            202.0,
+            303.0,
+            221.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Opposite wire end X mm",
+          "response": [
+            23.0,
+            207.0,
+            303.0,
+            226.0
+          ],
+          "value": "2"
+        },
+        {
+          "effective_ancestor_clip_verified": true,
+          "label": "Opposite wire end Y mm",
+          "response": [
+            23.0,
+            247.0,
+            303.0,
+            266.0
+          ],
+          "value": "8"
+        }
+      ],
+      "preview": {
+        "allowed_original_component_count": 2,
+        "bus_id": "00000000-0000-0000-0000-000000001272",
+        "bus_point": {
+          "x": 0,
+          "y": 0
+        },
+        "exact_candidate_visits": 23,
+        "expected_project": "00000000-0000-0000-0000-000000001270",
+        "member": "DATA0",
+        "original_graph_members": 3,
+        "scope": "Actual original scalar UUID partitions and label scopes preserved except the explicit endpoint/same-sheet Local-member union; bus/entry graphics do not conduct. No ERC/PCB/certification proof",
+        "sheet_id": "00000000-0000-0000-0000-000000001271",
+        "source_cursor": {
+          "sequence": 0,
+          "stream_id": "14b82e14-eb73-4e6f-9872-b48b96071ffe"
+        },
+        "unrelated_partitions_preserved": true,
+        "wire_end": {
+          "x": 2000000,
+          "y": 8000000
+        },
+        "wire_point": {
+          "x": 2000000,
+          "y": 2000000
+        }
+      },
+      "route": "production ViamindApp, local egui Harness input preparation and actual native WGPU Screenshot event",
+      "self_close_requested_after_capture": true,
+      "source_cursor": {
+        "sequence": 0,
+        "stream_id": "14b82e14-eb73-4e6f-9872-b48b96071ffe"
+      },
+      "width": 640
+    },
+    "pixels": [
+      640,
+      400
+    ],
+    "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p6",
+    "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/native-compact-fb05911c/native.p7",
+    "p6_sha256": "11419b6bdcefb7b4830c11029c5404925442a2d07a3297a499029206d073ddbb",
+    "p7_sha256": "afa0f367a0017d1f6e1e3597b38a52720b318f01a2b2f0484149615baafe2ebf",
+    "rgb_sha256": "445f2ab262b718445e3148b19d3a633ba7f051f2514a830f4990164d870cf9a2",
+    "rgba_sha256": "c5f37c4af5663ffd07a15a8d34b76870679c48a416574ad6c3f0abf533470af7",
+    "png": "compact-fb05911c.png",
+    "png_sha256": "3fee286158cc21964bbfb3a40402ade599f7c5b30e0f5a65eae542ba75c42fd4",
+    "alpha_min": 255,
+    "alpha_max": 255,
+    "fixture_unchanged": true
+  }
+]

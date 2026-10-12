@@ -167,3 +167,30 @@ fn batch_initial_cursor_rolls_back_all_steps_and_peer_edit_invalidates_snapshot(
     assert_eq!(e.read(Clone::clone), before.project);
     assert!(e.execute_typed(first, Origin::User).is_err());
 }
+#[test]
+fn hole_identities_share_the_explicit_bus_and_entry_namespace() {
+    let mut project = file::from_str(include_str!("../../../fixtures/fabrication/asymmetric.viamind.json")).unwrap();
+    let buses = file::from_str(include_str!("../../../fixtures/schematic/buses.viamind.json")).unwrap();
+    project.schematic.sheets.extend(buses.schematic.sheets);
+    let e = EngineHandle::new(project);
+    let s = e.session_state();
+    let unfold: viamind_engine::UnfoldSchematicBusMember = serde_json::from_value(serde_json::json!({
+        "source": {"expected_project": s.project.id, "source_cursor": s.cursor, "sheet_id": "00000000-0000-0000-0000-000000001271"},
+        "bus_id": "00000000-0000-0000-0000-000000001272", "member": "DATA0",
+        "bus_point": {"x": 0, "y": 0}, "wire_point": {"x": 2000000, "y": 2000000}, "wire_end": {"x": 2000000, "y": 8000000}
+    }))
+    .unwrap();
+    e.execute_typed(unfold, Origin::User).unwrap();
+    let before = e.session_state();
+    let content = before.project.schematic.sheets.values().find_map(|s| s.content.as_ref().filter(|c| !c.buses.is_empty())).unwrap();
+    let entry = content.bus_entries.values().next().unwrap();
+    for id in [*content.buses.keys().next().unwrap(), entry.id, entry.wire_id, entry.label_id] {
+        let mut h = hole("bus-collision");
+        h.id = id;
+        let refused = e.execute_typed(request(&e, Some(vec![h])), Origin::User).unwrap_err();
+        assert!(refused.to_string().contains("collides"), "{id}: {refused}");
+        assert_eq!(e.session_state(), before);
+    }
+    e.execute_typed(request(&e, Some(vec![hole("distinct")])), Origin::User).unwrap();
+    assert_eq!(file::minimum_version(&e.read(Clone::clone)), 16);
+}

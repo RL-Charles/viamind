@@ -16,8 +16,8 @@ use crate::event::ChangeEvent;
 
 /// Value of the header's `format` field.
 pub const LOG_FORMAT: &str = "viamind-log";
-/// New logs use version15 to preserve explicit nonplated holes and earlier features.
-pub const LOG_VERSION: u32 = 15;
+/// New logs use version16 to preserve explicit nonconducting buses and earlier features.
+pub const LOG_VERSION: u32 = 16;
 
 /// Why a log could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -172,6 +172,7 @@ impl EventLog {
                             && viamind_doc::schematic::validate_sheet(sheet).is_ok()
                             && (header.version >= 5 || sheet.content.is_none())
                             && (header.version >= 11 || sheet.content.as_ref().is_none_or(|c| c.packages.is_empty()))
+                            && (header.version >= 16 || sheet.content.as_ref().is_none_or(|c| c.buses.is_empty() && c.bus_entries.is_empty()))
                     }),
                     _ => true,
                 };
@@ -198,9 +199,20 @@ impl EventLog {
                 {
                     return Err(LogError::BadHeader);
                 }
+                if let crate::Delta::Sheet { before, after, id } = delta {
+                    let has_bus =
+                        before.iter().chain(after).any(|s| s.content.as_ref().is_some_and(|c| !c.buses.is_empty() || !c.bus_entries.is_empty()));
+                    if has_bus && current.schematic.sheets.get(id) != before.as_ref() {
+                        return Err(LogError::BadHeader);
+                    }
+                    if let Some(after) = after {
+                        viamind_doc::schematic::validate_project(&current, Some(after)).map_err(|_| LogError::BadHeader)?;
+                    }
+                }
                 delta.apply_to(&mut current);
             }
             viamind_doc::file::validate_holes(&current).map_err(|_| LogError::BadHeader)?;
+            viamind_doc::schematic::validate_project(&current, None).map_err(|_| LogError::BadHeader)?;
             log.append(event);
         }
         if viamind_doc::file::validate_copper(&log.replay()).is_err() {
@@ -215,6 +227,7 @@ impl EventLog {
 
 /// Writes the header line of a log starting from `base`.
 pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
+    viamind_doc::schematic::validate_project(base, None).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
     viamind_doc::file::validate_holes(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     viamind_doc::file::validate_net_rules(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
     viamind_doc::file::validate_assembly(base).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e.to_string()))?;
@@ -225,6 +238,11 @@ pub fn write_header(mut out: impl Write, base: &Project) -> io::Result<()> {
 /// Appends one event as a single line.
 pub fn write_entry(mut out: impl Write, event: &ChangeEvent) -> io::Result<()> {
     for delta in &event.deltas {
+        if let crate::Delta::Sheet { before, after, .. } = delta {
+            for sheet in before.iter().chain(after) {
+                viamind_doc::schematic::validate_sheet(sheet).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+            }
+        }
         if let crate::Delta::Part { before, after, .. } = delta {
             for part in before.iter().chain(after) {
                 if let Some(holes) = &part.holes {

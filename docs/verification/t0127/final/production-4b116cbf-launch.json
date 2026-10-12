@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "bundle_id": null,
+  "name": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/launch-production-4b116cbf.sh",
+  "pid": 297774,
+  "running": true,
+  "windows": [
+    {
+      "app_name": "viamind",
+      "bounds": {
+        "height": 568,
+        "width": 941,
+        "x": 2887,
+        "y": 1772
+      },
+      "height": 568,
+      "is_on_screen": true,
+      "pid": 297774,
+      "title": "production-fixture-4b116cbf.viamind.json — Viamind",
+      "width": 941,
+      "window_id": 110379540060448,
+      "x": 2887,
+      "y": 1772,
+      "z_index": null
+    }
+  ]
+}

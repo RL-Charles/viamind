@@ -1,0 +1,14 @@
+?? docs/verification/t0127/
+/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/viamind-4b116cbf: OK
+/home/charlesmowbray/.cache/viamind/native-artifacts/t0127/inspection-4b116cbf: OK
+.............
+----------------------------------------------------------------------
+Ran 13 tests in 0.382s
+
+OK
+Verified 127 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+{"passed": true, "checks": 38, "http": false}
+POST_END_2026-10-12T03:46:16Z
+POST_GATES_COMPLETE
+EXIT 0

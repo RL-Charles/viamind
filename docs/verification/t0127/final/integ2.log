@@ -1,0 +1,53 @@
+98c77480ec174fcb87c8492a4a9f3c1a87107c21
+ M crates/doc/src/schematic_bus.rs
+ M crates/engine/tests/footprint_holes_foundation.rs
+ M crates/engine/tests/schematic.rs
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.93s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_doc-f18b61220e93c6c7)
+
+running 6 tests
+test schematic_bus::tests::malformed_duplicate_overflow_and_range_refuse_without_expansion ... ok
+test schematic_bus::tests::independently_declared_order_unicode_and_prefix_oracles ... ok
+test schematic_bus::tests::exact_breakout_association_and_nonconducting_ids_validate ... ok
+test schematic_bus::tests::version_sixteen_and_absent_legacy_bytes_and_global_namespace ... ok
+test schematic_bus::tests::borrowed_max_plus_one_precedes_field_poison_and_global_index ... ok
+test schematic_bus::tests::native_raw_row_cap_precedes_poison_value_and_duplicates_refuse ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.07s
+
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0127/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.40s
+     Running tests/footprint_holes_foundation.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_holes_foundation-63ea9e064cfc39c0)
+
+running 2 tests
+test log_rejects_an_intermediate_global_hole_collision_even_if_later_removed ... ok
+test log15_base_before_after_and_undo_redo_preserve_exact_drill_intent ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/schematic.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/schematic-bc3cc0619e76ce61)
+
+running 3 tests
+test sheet_atomic_guards_pin_identity_paging_and_history_roundtrip ... ok
+test log_base_rejects_sheet_identity_key_mismatch ... ok
+test selective_undo_distinguishes_sheets_and_detects_same_sheet_conflict ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/symbol_library.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/symbol_library-df142db15e932c21)
+
+running 5 tests
+test source_only_export_is_guarded_detached_new_and_does_not_inspect_unrelated_content ... ok
+test typed_and_dynamic_creation_are_one_event_with_exact_fresh_pins_and_replayable_undo ... ok
+test selected_and_global_preflight_bound_unrelated_data_before_inherited_validation ... ok
+test malformed_ambiguous_stale_and_reopened_proposals_leave_entire_sessions_unchanged ... ok
+test proposed_fresh_symbol_and_pin_are_included_in_global_identity_budget ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+EXIT 0

@@ -201,7 +201,17 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     for sheet in &snapshot.sheets {
         ids.insert(sheet.id);
         if let Some(c) = &sheet.content {
-            ids.extend(c.packages.keys().chain(c.symbols.keys()).chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()).copied());
+            ids.extend(
+                c.buses
+                    .keys()
+                    .chain(c.bus_entries.keys())
+                    .chain(c.packages.keys())
+                    .chain(c.symbols.keys())
+                    .chain(c.wires.keys())
+                    .chain(c.junctions.keys())
+                    .chain(c.labels.keys())
+                    .copied(),
+            );
             for symbol in c.symbols.values() {
                 ids.extend(symbol.pins.iter().map(|p| p.id));
             }
@@ -293,6 +303,9 @@ fn plan(capture: Capture, input: DragSchematicSymbol, limit: usize) -> Result<Pl
         let b = points.contains(&key(wire.end));
         if !a && !b {
             continue;
+        }
+        if c.bus_entries.values().any(|e| e.wire_id == wire.id) {
+            return Err(invalid("connected drag cannot alter an entry-owned scalar wire; delete the explicit breakout first"));
         }
         attachments += 1;
         if attachments > 256 {

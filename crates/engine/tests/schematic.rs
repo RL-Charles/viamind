@@ -121,9 +121,18 @@ fn selective_undo_distinguishes_sheets_and_detects_same_sheet_conflict() {
 fn log_base_rejects_sheet_identity_key_mismatch() {
     let engine = EngineHandle::new(Project::new("Bad base"));
     let id = create(&engine, Origin::User);
-    let mut project = engine.session_state().project;
-    project.schematic.sheets.get_mut(&id).unwrap().id = ObjectId::new();
+    let project = engine.session_state().project;
+    let mut bad = project.clone();
+    bad.schematic.sheets.get_mut(&id).unwrap().id = ObjectId::new();
+    // Public log writing validates the base before writing any bytes.
+    let mut refused = vec![];
+    assert!(EventLog::new(bad).write_jsonl(&mut refused).is_err());
+    assert!(refused.is_empty());
+    // A forged header with the same mismatch is still refused on read.
     let mut bytes = vec![];
     EventLog::new(project).write_jsonl(&mut bytes).unwrap();
-    assert!(EventLog::read_jsonl(bytes.as_slice()).is_err());
+    let mut header: serde_json::Value = serde_json::from_slice(bytes.split(|b| *b == b'\n').next().unwrap()).unwrap();
+    header["base"]["schematic"]["sheets"][id.to_string()]["id"] = serde_json::to_value(ObjectId::new()).unwrap();
+    let forged = format!("{header}\n");
+    assert!(EventLog::read_jsonl(forged.as_bytes()).is_err());
 }

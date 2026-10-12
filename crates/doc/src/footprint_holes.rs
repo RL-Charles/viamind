@@ -139,9 +139,11 @@ pub fn validate_physical_identities(project: &crate::Project) -> Result<(), Stri
         add(sheet.id)?;
         if let Some(c) = &sheet.content {
             for (key, id) in c
-                .packages
+                .buses
                 .iter()
                 .map(|(k, v)| (k, v.id))
+                .chain(c.bus_entries.iter().map(|(k, v)| (k, v.id)))
+                .chain(c.packages.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.symbols.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.wires.iter().map(|(k, v)| (k, v.id)))
                 .chain(c.junctions.iter().map(|(k, v)| (k, v.id)))
@@ -340,6 +342,8 @@ fn preflight(project: &crate::Project, replacement: Option<&crate::Sheet>, part_
     for sheet in project.schematic.sheets.values().filter(|s| Some(s.id) != replacing).chain(replacement) {
         add(1)?;
         if let Some(content) = &sheet.content {
+            add(content.buses.len())?;
+            add(content.bus_entries.len())?;
             add(content.packages.len())?;
             add(content.symbols.len())?;
             add(content.wires.len())?;

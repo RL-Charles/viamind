@@ -28,6 +28,7 @@ fn invalid(message: impl Into<String>) -> io::Error {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum SchematicLayer {
+    Buses,
     Wires,
     Symbols,
     Pins,
@@ -35,7 +36,14 @@ pub enum SchematicLayer {
     Labels,
 }
 fn layers() -> Vec<SchematicLayer> {
-    vec![SchematicLayer::Wires, SchematicLayer::Symbols, SchematicLayer::Pins, SchematicLayer::Junctions, SchematicLayer::Labels]
+    vec![
+        SchematicLayer::Buses,
+        SchematicLayer::Wires,
+        SchematicLayer::Symbols,
+        SchematicLayer::Pins,
+        SchematicLayer::Junctions,
+        SchematicLayer::Labels,
+    ]
 }
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -100,8 +108,10 @@ pub fn schematic_view_snapshot(project: &Project, sheet_id: ObjectId) -> io::Res
     viamind_doc::schematic::validate_sheet(sheet).map_err(invalid)?;
     if project.id == sheet.id
         || sheet.content.as_ref().is_some_and(|c| {
-            c.packages
+            c.buses
                 .keys()
+                .chain(c.bus_entries.keys())
+                .chain(c.packages.keys())
                 .chain(c.symbols.keys())
                 .chain(c.wires.keys())
                 .chain(c.junctions.keys())
@@ -121,6 +131,7 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
         return Err(invalid("selected sheet exceeds 10000 objects or 100000 pins"));
     }
     if let Some(c) = &sheet.content {
+        viamind_doc::schematic_bus::budget(c).map_err(invalid)?;
         let (records, _) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
         if c.object_count().saturating_add(records.saturating_sub(c.packages.len())) > 10_000 {
             return Err(invalid("selected sheet exceeds 10000 objects including package membership records"));
@@ -150,6 +161,12 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
     add(project_name, false)?;
     add(&sheet.name, false)?;
     if let Some(c) = &sheet.content {
+        for bus in c.buses.values() {
+            add(&bus.expression, true)?;
+        }
+        for entry in c.bus_entries.values() {
+            add(&entry.member, false)?;
+        }
         for group in c.packages.values() {
             add(&group.template_name, false)?;
             for unit in &group.units {
@@ -177,6 +194,9 @@ pub(crate) fn validate_budget(project_name: &str, sheet: &Sheet) -> io::Result<(
     }
     Ok(())
 }
+fn is_zero(n: &usize) -> bool {
+    *n == 0
+}
 #[derive(Debug, Serialize)]
 pub struct SchematicMetadata {
     pub project_id: ObjectId,
@@ -192,6 +212,10 @@ pub struct SchematicMetadata {
     pub font: &'static str,
     pub symbol_count: usize,
     pub pin_count: usize,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub bus_count: usize,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub bus_entry_count: usize,
     pub wire_count: usize,
     pub junction_count: usize,
     pub label_count: usize,
@@ -279,6 +303,36 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>, lab
     let wire = "#237347";
     let symbol = "#806215";
     let label = "#275d9d";
+    if selected.contains(&SchematicLayer::Buses) {
+        for b in c.buses.values() {
+            let (a, z) = (point(b.start), point(b.end));
+            shapes.push(Shape {
+                layer: SchematicLayer::Buses,
+                id: format!("bus-{}", b.id),
+                color: "#497cc2",
+                bounds: bounds(a, z, 200_000),
+                geometry: Geometry::Line(a, z, 400_000),
+            });
+            shapes.push(text_shape(
+                SchematicLayer::Buses,
+                format!("bus-expression-{}", b.id),
+                "#497cc2",
+                (a.0, a.1 - 500_000),
+                b.expression.clone(),
+                false,
+            )?);
+        }
+        for e in c.bus_entries.values() {
+            let (a, z) = (point(e.bus_point), point(e.wire_point));
+            shapes.push(Shape {
+                layer: SchematicLayer::Buses,
+                id: format!("bus-entry-{}", e.id),
+                color: "#497cc2",
+                bounds: bounds(a, z, 125_000),
+                geometry: Geometry::Line(a, z, 250_000),
+            });
+        }
+    }
     if selected.contains(&SchematicLayer::Wires) {
         for w in c.wires.values() {
             let (a, b) = (point(w.start), point(w.end));
@@ -394,7 +448,13 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>, lab
 }
 pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOptions) -> io::Result<SchematicSvg> {
     options.validate()?;
-    let selected: BTreeSet<_> = options.layers.iter().copied().collect();
+    let mut selected: BTreeSet<_> = options.layers.iter().copied().collect();
+    // The Buses layer has no content on a sheet without explicit buses/entries. Dropping it there
+    // keeps every pre-bus sheet's SVG/PNG bytes (including metadata) identical to the legacy output.
+    let has_buses = snapshot.sheet.content.as_ref().is_some_and(|c| !c.buses.is_empty() || !c.bus_entries.is_empty());
+    if !has_buses {
+        selected.remove(&SchematicLayer::Buses);
+    }
     let labels: Vec<_> = if selected.contains(&SchematicLayer::Symbols) || selected.contains(&SchematicLayer::Pins) {
         schematic_label_layout(&snapshot.sheet)?
             .into_iter()
@@ -559,18 +619,24 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         font: "bundled unchanged Hack Regular; visible glyphs outlined",
         symbol_count: c.map_or(0, |c| c.symbols.len()),
         pin_count: c.map_or(0, viamind_doc::schematic::SchematicContent::pin_count),
+        bus_count: c.map_or(0, |c| c.buses.len()),
+        bus_entry_count: c.map_or(0, |c| c.bus_entries.len()),
         wire_count: c.map_or(0, |c| c.wires.len()),
         junction_count: c.map_or(0, |c| c.junctions.len()),
         label_count: c.map_or(0, |c| c.labels.len()),
         legacy_empty_sheet: c.is_none(),
-        exclusions: vec![
+        exclusions: [
             "board geometry",
             "other sheets",
             "hierarchy",
+            "bus and entry graphics do not conduct; scalar wires and labels supply connectivity",
             "custom symbol artwork",
             "electrical certification",
             "global label collision avoidance",
-        ],
+        ]
+        .into_iter()
+        .filter(|e| has_buses || !e.starts_with("bus and entry"))
+        .collect(),
         symbol_label_policy: LABEL_POLICY,
         symbol_labels: labels,
     };
