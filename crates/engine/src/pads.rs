@@ -38,6 +38,11 @@ impl Command for SetPartPads {
         if self.pads.len() > 1024 {
             return Err(CommandError::invalid("pads", "at most 1024 pads per part"));
         }
+        if current.holes.is_some() {
+            crate::part_holes::admit(project, current, self.pads.len(), current.holes.as_deref())?;
+            crate::pad_apertures::validate_part(current)?;
+            crate::pad_apertures::bounded_bytes(&self).map_err(|e| CommandError::invalid("pads", e))?;
+        }
         let existing = current.pads.as_ref().map(|p| p.0.as_slice()).unwrap_or_default();
         let mut pads = Vec::new();
         for p in self.pads {
@@ -67,6 +72,9 @@ impl Command for SetPartPads {
         crate::footprint_artwork::validate_part_artwork(current)?;
         let mut after = current.clone();
         after.pads = Some(Pads::try_from(pads).map_err(|e| CommandError::invalid("pads", e))?);
+        if current.holes.is_some() {
+            crate::part_holes::check_part_ids(project, current, &after)?;
+        }
         if after == *current {
             return Ok(vec![]);
         }

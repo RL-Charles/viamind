@@ -35,6 +35,8 @@ pub use package_component::{
     CreatePackagePcbComponent, LinkSchematicPackage, PackageComponentPin, PackageComponentPlacement, PackageComponentPreview, PackageComponentRequest,
 };
 pub use pad_apertures::SetPadApertures;
+mod part_holes;
+pub use part_holes::SetPartHoles;
 pub mod annotation;
 mod annotation_bounds;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};

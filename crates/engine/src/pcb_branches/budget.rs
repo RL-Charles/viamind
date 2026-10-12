@@ -47,7 +47,15 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
     add(project.board.vias.len())?;
     add(project.board.net_rules.len())?;
     add(project.schematic.sheets.len())?;
+    viamind_doc::footprint_holes::preflight_project(project, None).map_err(BranchError::invalid)?;
     for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            add(holes.len())?;
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(BranchError::invalid)?;
+            for hole in holes {
+                viamind_doc::resolve_hole(part, hole).map_err(BranchError::invalid)?;
+            }
+        }
         if let Some(artwork) = &part.artwork {
             add(artwork.structural_rows())?;
             artwork.validate().map_err(BranchError::invalid)?;
@@ -128,12 +136,16 @@ impl Serialize for BorrowedPart<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let p = self.0;
         let fields = 7
+            + usize::from(p.holes.is_some())
             + usize::from(p.artwork.is_some())
             + usize::from(p.assembly.is_some())
             + usize::from(p.schematic_symbol.is_some())
             + usize::from(p.schematic_package.is_some())
             + usize::from(p.pads.is_some());
         let mut s = serializer.serialize_struct("Part", fields)?;
+        if let Some(holes) = &p.holes {
+            s.serialize_field("holes", holes)?;
+        }
         if let Some(artwork) = &p.artwork {
             s.serialize_field("artwork", artwork)?;
         }
