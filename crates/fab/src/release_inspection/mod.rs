@@ -66,8 +66,17 @@ pub struct ObservedPadOpenings {
     pub top_paste_rectangles: usize,
     pub bottom_paste_rectangles: usize,
 }
+#[derive(Clone, Debug, Serialize, PartialEq, Eq)]
+pub struct ObservedNonplatedHoles {
+    pub physical_drills: usize,
+    pub tool_diameters: usize,
+    pub same_coordinates: ObjectId,
+    pub plated_via_drills: usize,
+}
 #[derive(Clone, Debug, Serialize)]
 pub struct ReleaseInspection {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub observed_nonplated_holes: Option<ObservedNonplatedHoles>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub observed_pad_openings: Option<ObservedPadOpenings>,
     pub path: PathBuf,
@@ -107,6 +116,8 @@ fn nonnull<'de, T: Deserialize<'de>, D: serde::Deserializer<'de>>(d: D) -> Resul
 #[serde(deny_unknown_fields)]
 struct Manifest {
     #[serde(default, deserialize_with = "nonnull")]
+    nonplated_holes: Option<crate::NonplatedHoleSummary>,
+    #[serde(default, deserialize_with = "nonnull")]
     pad_apertures: Option<crate::PadApertureSummary>,
     #[serde(default, deserialize_with = "nonnull")]
     footprint_artwork: Option<crate::FootprintArtworkSummary>,
@@ -127,12 +138,12 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
     impl<'de> Visitor<'de> for Files {
         type Value = BTreeMap<String, usize>;
         fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            f.write_str("at most17 unique fixed release file entries")
+            f.write_str("at most18 unique fixed release file entries")
         }
         fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
             let mut files = BTreeMap::new();
             while let Some(key) = map.next_key::<String>()? {
-                if files.len() >= 17 || key.len() > 64 || files.contains_key(&key) {
+                if files.len() >= 18 || key.len() > 64 || files.contains_key(&key) {
                     return Err(de::Error::custom("duplicate/excess/oversized release file key"));
                 }
                 let size = map.next_value::<usize>()?;
@@ -149,6 +160,8 @@ fn file_map<'de, D: serde::Deserializer<'de>>(d: D) -> Result<BTreeMap<String, u
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct FabManifest {
+    #[serde(default, deserialize_with = "nonnull")]
+    nonplated_holes: Option<crate::NonplatedHoleSummary>,
     #[serde(default, deserialize_with = "nonnull")]
     pad_apertures: Option<crate::PadApertureSummary>,
     #[serde(default, deserialize_with = "nonnull")]
@@ -195,6 +208,10 @@ impl Manifest {
         if job.include_paste == Some(true) {
             expected.extend(["fabrication/top-paste.gbr", "fabrication/bottom-paste.gbr"]);
         }
+        if job.include_npth == Some(true) {
+            expected.push("fabrication/nonplated-through.xnc");
+        }
+        validate_hole_summary(self.nonplated_holes.as_ref(), job)?;
         validate_aperture_summary(self.pad_apertures.as_ref(), job)?;
         validate_artwork_summary(self.footprint_artwork.as_ref(), job)?;
         if job.profile == crate::CHECKED_PROFILE {
@@ -226,6 +243,25 @@ impl Manifest {
             _ => return Err(invalid("populated summary contradicts release version/paths/count/digest")),
         }
         Ok(())
+    }
+}
+fn validate_hole_summary(summary: Option<&crate::NonplatedHoleSummary>, job: &crate::OutputJob) -> io::Result<()> {
+    match (summary, job.include_npth == Some(true)) {
+        (None, false) => Ok(()),
+        (Some(s), true)
+            if s.include_npth
+                && s.authored_components <= 100_000
+                && s.explicit_empty_components <= s.authored_components
+                && s.physical_drills <= 100_000
+                && s.physical_drills >= s.authored_components - s.explicit_empty_components
+                && s.physical_drills <= (s.authored_components - s.explicit_empty_components).saturating_mul(256)
+                && s.tool_diameters <= 99
+                && s.tool_diameters <= s.physical_drills
+                && (s.tool_diameters == 0) == (s.physical_drills == 0) =>
+        {
+            Ok(())
+        }
+        _ => Err(invalid("nonplated summary contradicts job6 intent/count/tool bounds")),
     }
 }
 fn validate_artwork_summary(summary: Option<&crate::FootprintArtworkSummary>, job: &crate::OutputJob) -> io::Result<()> {
@@ -272,10 +308,14 @@ fn validate_fabrication(fab: &FabManifest, manifest: &Manifest, job: &crate::Out
     if job.include_paste == Some(true) {
         expected.extend(["top-paste.gbr", "bottom-paste.gbr"]);
     }
+    if job.include_npth == Some(true) {
+        expected.push("nonplated-through.xnc");
+    }
     expected.sort_unstable();
     let mut actual = fab.files.iter().map(String::as_str).collect::<Vec<_>>();
     actual.sort_unstable();
-    if fab.pad_apertures != manifest.pad_apertures
+    if fab.nonplated_holes != manifest.nonplated_holes
+        || fab.pad_apertures != manifest.pad_apertures
         || fab.footprint_artwork != manifest.footprint_artwork
         || fab.project_id != manifest.project_id
         || actual != expected
