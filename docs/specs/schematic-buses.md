@@ -14,7 +14,7 @@ A vector is `NAME[M..N]`; a flat group is `NAME{TERM TERM...}` or `{TERM TERM...
 
 Vector suffixes are inclusive and expand in ascending numeric order regardless of endpoint order. Groups keep written term order, with each vector ascending; a named group prefixes each member with the group name and `.`. Duplicate expanded member names refuse the whole expression. The authored expression is retained verbatim; no old label or net is renamed.
 
-Before expansion allocations or owned source copies, borrowed parsing computes checked counts and final UTF8/character lengths. Limits are 4096 UTF8 bytes/expression, 256 members/bus, 128 characters and512 UTF8 bytes/final member, 256 buses/project, 10000 expanded members/project and2MiB aggregate bus expressions, expanded names and stored entry member text. These are explicit Viamind limits. Native map deserializers also bound new bus/entry rows; source file/MCP envelopes retain existing caps. Exceeding any bound refuses the whole operation without mutation.
+Before expansion allocations or owned source copies, borrowed parsing computes checked counts and final UTF8/character lengths. Limits are 4096 UTF8 bytes/expression, 256 members/bus, 128 characters and512 UTF8 bytes/final member, 256 buses/project, 4096 entries/project (also4096 per sheet map), 10000 expanded members/project and2MiB aggregate bus expressions, expanded names and stored entry member text. These are explicit Viamind limits. Native map deserializers count raw rows, reject duplicate keys, and refuse the257th bus or4097th entry before deserializing that row's value. Borrowed typed-source admission checks per-map/project counts before inspecting nested fields or cloning source; a max+1 map containing poisoned entry fields must report the count bound first. Source file/MCP envelopes retain existing caps. Exceeding any bound refuses the whole operation without mutation.
 
 ## Native model, geometry and associations
 
@@ -50,7 +50,7 @@ Desktop and SVG/PNG use the same exact integer model at the render boundary; inc
 
 ## Required verification
 
-1. Independently declared expansion oracles: ascending/reversed vectors, anonymous/named flat groups, vectors inside groups, Unicode and exact case. Refuse duplicates, malformed syntax, overflows and count/text/output limits before source copying.
+1. Independently declared expansion oracles: ascending/reversed vectors, anonymous/named flat groups, vectors inside groups, Unicode and exact case. Refuse duplicates, malformed syntax, overflows and count/text/output limits before source copying. Explicit max+1 bus/entry maps with invalid nested fields prove count-before-field/clone precedence; raw duplicate keys cannot bypass row admission.
 2. Literal old bracket/brace labels retain their exact native bytes, UUIDs and scalar-net identity. New buses/entries crossing pins/wires do not merge actual original UUID partitions; isolated remote global names do not invent a local connection.
 3. Unfold creates exactly the selected scalar member, validates ownership/geometry and actual production net facts, preserves unrelated partitions/PCB/package data, and round-trips native/log/undo/redo. Edit/delete and ordinary wire/label actions refuse broken associations unchanged.
 4. New native/log16 gates compose with13/14/15, both event sides and mixed clear-to-other-feature cases; borrowed global identity poison fails before validator sets/copies. Captures preserve all new hole IDs and purpose-specific geometry fields after dependency integration.
