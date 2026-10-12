@@ -387,7 +387,7 @@ mod tests {
             engine.with_engine(|_| {
                 held.send(()).unwrap();
                 wait.recv().unwrap();
-            })
+            });
         });
         locked.recv().unwrap();
         s.run(&e, &ctx, UiAction::QuerySchematicBuses, json!({}));

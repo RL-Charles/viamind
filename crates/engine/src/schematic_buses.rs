@@ -953,4 +953,38 @@ mod tests {
         assert!(crate::log::write_entry(&mut untouched, &invalid).is_err());
         assert!(untouched.is_empty());
     }
+    #[test]
+    fn same_net_count_with_wrong_original_uuid_partition_is_refused() {
+        let _guard = LOCK.lock().unwrap();
+        let (e, sheet, bus) = fixture();
+        let mut p = e.read(Clone::clone);
+        let target = add_wire(&mut p, sheet, pnt(4, 8), pnt(8, 8));
+        add_wire(&mut p, sheet, pnt(10, 8), pnt(12, 8));
+        add_label(&mut p, sheet, pnt(100, 100), "DATA0", LabelScope::Local);
+        let expected = EngineHandle::new(p.clone());
+        let candidate = EngineHandle::new(p);
+        let before = expected.all_schematic_connectivity().unwrap();
+        let input = unfold(&expected, sheet, bus);
+        expected.execute_typed(input.clone(), Origin::User).unwrap();
+        let expected_after = expected.all_schematic_connectivity().unwrap();
+        let mut wrong = unfold(&candidate, sheet, bus);
+        wrong.bus_point = pnt(6, 0);
+        wrong.wire_point = pnt(10, 4);
+        wrong.wire_end = pnt(10, 8);
+        candidate.execute_typed(wrong, Origin::User).unwrap();
+        let actual_after = candidate.all_schematic_connectivity().unwrap();
+        assert_eq!(expected_after.total_nets, actual_after.total_nets);
+        assert_eq!(actual_after.total_nets, 2);
+        let (entry_wire, entry_label) = candidate.read(|p| {
+            let e = p.schematic.sheets[&sheet].content.as_ref().unwrap().bus_entries.values().next().unwrap();
+            (e.wire_id, e.label_id)
+        });
+        let mut remaining = MAX_VISITS;
+        assert!(
+            preserve(&before, &actual_after, &input, &BTreeSet::from([target]), entry_wire, entry_label, &mut remaining)
+                .unwrap_err()
+                .to_string()
+                .contains("unrelated original scalar partitions")
+        );
+    }
 }
