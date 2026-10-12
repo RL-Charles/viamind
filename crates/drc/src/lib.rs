@@ -536,37 +536,39 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
             let same_net = pad.reference.net().is_some() && pad.reference.net() == other.reference.net();
             let shared_layer = pad.reference.layers() & other.reference.layers() != 0;
             let mut checks = Vec::with_capacity(4);
-            if let (Some(a), Some(b)) = (pad.shape, other.shape) {
-                if shared_layer && !same_net {
-                    checks.push((
-                        ViolationKind::CopperClearance,
-                        a.distance(b),
-                        viamind_doc::named_copper_clearance(
-                            &report.document_net_rules,
-                            report.rules.copper_clearance,
-                            pad.reference.net().as_deref(),
-                            other.reference.net().as_deref(),
-                        ),
-                        "different-net or unassigned copper touches/overlaps or is below clearance",
-                    ));
-                }
+            if let (Some(a), Some(b)) = (pad.shape, other.shape)
+                && shared_layer
+                && !same_net
+            {
+                checks.push((
+                    ViolationKind::CopperClearance,
+                    a.distance(b),
+                    viamind_doc::named_copper_clearance(
+                        &report.document_net_rules,
+                        report.rules.copper_clearance,
+                        pad.reference.net().as_deref(),
+                        other.reference.net().as_deref(),
+                    ),
+                    "different-net or unassigned copper touches/overlaps or is below clearance",
+                ));
             }
             // NPTH is a physical exclusion on both sides, for every net including its owner's copper.
             // Existing plated-via ownership exemption remains limited to that plated drill.
             for (drill, other) in [(pad, other), (other, pad)] {
-                if shared_layer && (drill.shape.is_none() || !same_net) {
-                    if let (Some(hole), Some(shape)) = (drill.hole, other.shape) {
-                        checks.push((
-                            ViolationKind::HoleToCopperClearance,
-                            hole.distance(shape),
-                            report.rules.hole_to_copper_clearance,
-                            if drill.shape.is_none() {
-                                "nonplated drill touches/overlaps copper or is below hole-to-copper clearance"
-                            } else {
-                                "via drill touches/overlaps foreign copper or is below hole-to-copper clearance"
-                            },
-                        ));
-                    }
+                if shared_layer
+                    && (drill.shape.is_none() || !same_net)
+                    && let (Some(hole), Some(shape)) = (drill.hole, other.shape)
+                {
+                    checks.push((
+                        ViolationKind::HoleToCopperClearance,
+                        hole.distance(shape),
+                        report.rules.hole_to_copper_clearance,
+                        if drill.shape.is_none() {
+                            "nonplated drill touches/overlaps copper or is below hole-to-copper clearance"
+                        } else {
+                            "via drill touches/overlaps foreign copper or is below hole-to-copper clearance"
+                        },
+                    ));
                 }
             }
             if let (Some(a), Some(b)) = (pad.hole, other.hole) {
