@@ -101,7 +101,10 @@ impl eframe::App for Inspect {
 }
 fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
     h.get_by_label(label).scroll_to_me();
-    h.run_steps(8);
+    h.run_steps(10);
+    let r = h.get_by_label(label).rect();
+    h.hover_at(r.center());
+    h.run_steps(2);
     let r = h.get_by_label(label).rect();
     let clip = h
         .output()
@@ -119,7 +122,7 @@ fn reveal(h: &mut Harness<'_, ViamindApp>, label: &str) {
         })
         .min_by(|a, b| a.area().total_cmp(&b.area()))
         .expect("prepared current paint");
-    assert!(clip.contains_rect(r), "{label} actual ancestor clip");
+    assert!(clip.contains_rect(r), "{label} actual ancestor clip: response {r:?}, clip {clip:?}");
 }
 fn click(h: &mut Harness<'_, ViamindApp>, label: &str) {
     reveal(h, label);
