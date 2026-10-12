@@ -1,0 +1,21 @@
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.55s
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-9a18d8586c424aa7)
+
+running 1 test
+
+thread 'version5_companion_matrix_exact_release_files_and_null_summary_refuse' (3540432) panicked at crates/fab/tests/pad_apertures.rs:112:101:
+silk=true cal=true pop=true: invalid strict release JSON: duplicate/excess/oversized release file key at line 46 column 14
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test version5_companion_matrix_exact_release_files_and_null_summary_refuse ... FAILED
+
+failures:
+
+failures:
+    version5_companion_matrix_exact_release_files_and_null_summary_refuse
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p viamind-fab --test pad_apertures`

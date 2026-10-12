@@ -1,0 +1,9 @@
+{
+  "tool": "launch_app",
+  "arguments": {
+    "launch_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/launch-production.sh"
+  },
+  "returncode": 0,
+  "stdout": "{\n  \"active\": false,\n  \"bundle_id\": null,\n  \"name\": \"/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/launch-production.sh\",\n  \"pid\": 3765109,\n  \"running\": true,\n  \"windows\": [\n    {\n      \"app_name\": \"viamind\",\n      \"bounds\": {\n        \"height\": 274,\n        \"width\": 416,\n        \"x\": 3412,\n        \"y\": 1484\n      },\n      \"height\": 274,\n      \"is_on_screen\": true,\n      \"pid\": 3765109,\n      \"title\": \"inspection-fixture.viamind.json \u2014 Viamind\",\n      \"width\": 416,\n      \"window_id\": 110379552970976,\n      \"x\": 3412,\n      \"y\": 1484,\n      \"z_index\": null\n    }\n  ]\n}\n",
+  "stderr": ""
+}

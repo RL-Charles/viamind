@@ -1,0 +1,51 @@
+{
+  "pad_apertures": {
+    "include_paste": true,
+    "explicit_pads": 3,
+    "legacy_pads": 0,
+    "mask_rectangles": 2,
+    "mask_omissions": 1,
+    "paste_rectangles": 2,
+    "paste_omissions": 1,
+    "top_mask_rectangles": 1,
+    "bottom_mask_rectangles": 1,
+    "top_paste_rectangles": 1,
+    "bottom_paste_rectangles": 1,
+    "explicit_coverage_complete": true
+  },
+  "footprint_artwork": {
+    "include_silkscreen": true,
+    "explicit_components": 0,
+    "top_silkscreen_segments": 0,
+    "bottom_silkscreen_segments": 0,
+    "courtyard_count": 0
+  },
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "units": "mm (Gerber 5.6, 1 nm; XNC explicit decimals)",
+  "coordinate_system": "Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored",
+  "mask_expansion_nm": 0,
+  "smd_pad_count": 3,
+  "track_count": 2,
+  "through_via_count": 2,
+  "cutout_count": 1,
+  "files": [
+    "bottom-copper.gbr",
+    "bottom-mask.gbr",
+    "bottom-paste.gbr",
+    "bottom-silkscreen.gbr",
+    "plated-through.xnc",
+    "profile.gbr",
+    "top-copper.gbr",
+    "top-mask.gbr",
+    "top-paste.gbr",
+    "top-silkscreen.gbr",
+    "manifest.json"
+  ],
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion applies only to legacy pads and untented vias; explicit mask rectangles are absolute. No manufacturer rules inferred.",
+    "Paste uses only explicitly stored pad rectangles; legacy pads have no inferred paste. All vias remain untented with no paste. No stencil suitability checks.",
+    "Stored silkscreen straight strokes only; no synthetic bodies, text, clipping, silk-to-mask or courtyard clearance checks. Courtyards are excluded."
+  ]
+}

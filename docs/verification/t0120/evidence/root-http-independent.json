@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "utc": "2026-10-12T00:59:46.503273+00:00",
+  "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+  "pid": 3765109,
+  "binary_sha256": "3dbc1f23b408a35fad2ded07252c20430caae931221b944e07ff789d8066d139",
+  "checks": [
+    "owned production native path",
+    "same named initialized peer sees exact session",
+    "exact one Part delta/event and complete project",
+    "peer reads exact result",
+    "stale peer writer refuses unchanged",
+    "peer cannot undo creator-owned change",
+    "equal setter emits no event",
+    "zero opening rejects with whole session unchanged",
+    "creator undo restores whole original project",
+    "creator redo restores exact changed project",
+    "final creator undo restores project and native path"
+  ],
+  "initial_cursor": {
+    "sequence": 2,
+    "stream_id": "cda3b9c6-346b-4045-bd64-44cc069e8fb6"
+  },
+  "final_cursor": {
+    "sequence": 6,
+    "stream_id": "cda3b9c6-346b-4045-bd64-44cc069e8fb6"
+  },
+  "scope": "Two initialized same-name actualHTTP clients; original whole project restored, honest event advancement; no framebuffer or performance claim"
+}

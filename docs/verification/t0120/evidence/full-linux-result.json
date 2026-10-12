@@ -1,0 +1,21 @@
+{
+  "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+  "session": 27863,
+  "script_exit": 1,
+  "fmt": "pass",
+  "strict_workspace_all_target_clippy": "pass",
+  "workspace_build": "pass",
+  "inspection_build": "pass",
+  "workspace_tests": {
+    "passed": 1009,
+    "failed": 0,
+    "ignored": 1,
+    "completed_suites": 233
+  },
+  "python_tests": 13,
+  "catalog_tools": 118,
+  "workflow_checks": 18,
+  "tail_failure": "Verification helper expected tool-level refusal for hidden restricted setter; actual correct MCP protocol denial. Product unchanged. Fresh retouched build and corrected probe pending.",
+  "log_sha256": "d128a647e21f12ed1e416a35b16a1cec482530b2c355f7350cd02341523538e3",
+  "retouch_note": "Sources touched under mutex before lint/tests; root requires separate immediate retouch before final normal build."
+}

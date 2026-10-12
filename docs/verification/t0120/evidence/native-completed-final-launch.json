@@ -1,0 +1,9 @@
+{
+  "tool": "launch_app",
+  "arguments": {
+    "launch_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/launch-completed-final.sh"
+  },
+  "returncode": 0,
+  "stdout": "{\n  \"active\": false,\n  \"bundle_id\": null,\n  \"name\": \"/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/launch-completed-final.sh\",\n  \"pid\": 3829776,\n  \"running\": true,\n  \"windows\": []\n}\n",
+  "stderr": ""
+}

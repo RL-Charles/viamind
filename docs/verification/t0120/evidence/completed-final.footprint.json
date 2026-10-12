@@ -1,0 +1,41 @@
+{
+  "format": "viamind-footprint",
+  "version": 3,
+  "footprint": {
+    "name": "EXPLICIT_FIXTURE",
+    "pads": [
+      {
+        "number": "1",
+        "position": {
+          "x": 2000000,
+          "y": 1500000
+        },
+        "width": 4000000,
+        "height": 1000000,
+        "apertures": {
+          "mask": {
+            "width": 4200003,
+            "height": 1200007
+          },
+          "paste": {
+            "width": 3800001,
+            "height": 800009
+          }
+        }
+      },
+      {
+        "number": "2",
+        "position": {
+          "x": -3000000,
+          "y": -1000000
+        },
+        "width": 1200000,
+        "height": 2200000,
+        "apertures": {
+          "mask": null,
+          "paste": null
+        }
+      }
+    ]
+  }
+}

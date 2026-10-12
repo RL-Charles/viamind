@@ -1,0 +1,55 @@
+{
+  "pad_apertures": {
+    "include_paste": true,
+    "explicit_pads": 3,
+    "legacy_pads": 0,
+    "mask_rectangles": 2,
+    "mask_omissions": 1,
+    "paste_rectangles": 2,
+    "paste_omissions": 1,
+    "top_mask_rectangles": 1,
+    "bottom_mask_rectangles": 1,
+    "top_paste_rectangles": 1,
+    "bottom_paste_rectangles": 1,
+    "explicit_coverage_complete": true
+  },
+  "footprint_artwork": {
+    "include_silkscreen": true,
+    "explicit_components": 0,
+    "top_silkscreen_segments": 0,
+    "bottom_silkscreen_segments": 0,
+    "courtyard_count": 0
+  },
+  "format": "viamind-output-release",
+  "version": 5,
+  "project_id": "00000000-0000-0000-0000-000000000001",
+  "exported_cursor": {
+    "stream_id": "2e09aa94-d1f0-4605-a686-2cd07dc94166",
+    "sequence": 0
+  },
+  "files": {
+    "assembly/bom.csv": 203,
+    "assembly/placement.csv": 330,
+    "fabrication/bottom-copper.gbr": 745,
+    "fabrication/bottom-mask.gbr": 438,
+    "fabrication/bottom-paste.gbr": 304,
+    "fabrication/bottom-silkscreen.gbr": 230,
+    "fabrication/manifest.json": 1930,
+    "fabrication/plated-through.xnc": 166,
+    "fabrication/profile.gbr": 734,
+    "fabrication/top-copper.gbr": 638,
+    "fabrication/top-mask.gbr": 439,
+    "fabrication/top-paste.gbr": 305,
+    "fabrication/top-silkscreen.gbr": 230,
+    "job.json": 207
+  },
+  "exclusions": [
+    "Scoped geometry export, not fabrication readiness or clearance/continuity certification",
+    "No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, netlist/X3 assembly or material/finish/stackup instructions",
+    "Mask expansion applies only to legacy pads and untented vias; explicit mask rectangles are absolute. No manufacturer rules inferred.",
+    "Paste uses only explicitly stored pad rectangles; legacy pads have no inferred paste. All vias remain untented with no paste. No stencil suitability checks.",
+    "Stored silkscreen straight strokes only; no synthetic bodies, text, clipping, silk-to-mask or courtyard clearance checks. Courtyards are excluded.",
+    "Generic placement records component origins, not manufacturer-validated assembly centroids.",
+    "No sourcing or population metadata, manufacturer presets or vendor certification."
+  ]
+}

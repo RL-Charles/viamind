@@ -1,0 +1,15 @@
+{
+  "passed": false,
+  "reason": "Independent harness incorrectly requested peer undo of creator-owned command; application correctly refused by per-client history. Creator connection closed, so restored exact original project through fresh guarded setter after whole-project comparison.",
+  "original_project_restored": true,
+  "observed_cursor": {
+    "sequence": 1,
+    "stream_id": "cda3b9c6-346b-4045-bd64-44cc069e8fb6"
+  },
+  "restored_cursor": {
+    "sequence": 2,
+    "stream_id": "cda3b9c6-346b-4045-bd64-44cc069e8fb6"
+  },
+  "deltas": 1,
+  "utc": "2026-10-12T00:59:15.879018+00:00"
+}

@@ -1,0 +1,179 @@
+{
+  "passed": true,
+  "captures": [
+    {
+      "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+      "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/aperture-inspection-2cbe6dd6e1bb-fresh",
+      "binary_sha256": "ed8a9dd6e0436e90bceac777e60f7cf2a556978787f9bb7858b7330176ba8a1f",
+      "mode": "placed",
+      "pixels": [
+        1600,
+        1100
+      ],
+      "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/placed.png",
+      "png_sha256": "45fdcefeb87a5cb6d33016de017081eacc106484b634c6814a8784f9184f465f",
+      "p6_sha256": "098eccda981e9e50aa3c96538c473bc289c16e1af504c0ffe603325ac62bd539",
+      "p7_sha256": "9eb8eaf17f5ca97dc2580283a1bfc493ec46aa9b919f5d99d667aacd34d540ca",
+      "rgb_sha256": "c844d37313aea5035637e24f14e46df06164f47b1556948dd74b18b84363424d",
+      "rgba_sha256": "2ae8460d801139fba6d1e63b4df7167a67039e1941a8c62c49815a2dc6e4c594",
+      "exact_rgb_channels": true,
+      "process_after_capture": "absent; self-closed",
+      "native": {
+        "alpha_max": 255,
+        "alpha_min": 255,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "control_and_field_bounds": [
+          [
+            500.0,
+            381.0,
+            621.8125,
+            399.0
+          ],
+          [
+            629.8125,
+            381.0,
+            758.90625,
+            399.0
+          ],
+          [
+            766.90625,
+            381.0,
+            813.25,
+            399.0
+          ],
+          [
+            500.0,
+            501.0,
+            680.0,
+            520.0
+          ],
+          [
+            500.0,
+            541.0,
+            680.0,
+            560.0
+          ],
+          [
+            500.0,
+            602.0,
+            680.0,
+            621.0
+          ],
+          [
+            500.0,
+            642.0,
+            680.0,
+            661.0
+          ]
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "os_input_claim": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/placed.p6",
+        "pid": 3783052,
+        "pixels": [
+          1600,
+          1100
+        ],
+        "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/placed.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 11
+      }
+    },
+    {
+      "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+      "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/aperture-inspection-2cbe6dd6e1bb-fresh",
+      "binary_sha256": "ed8a9dd6e0436e90bceac777e60f7cf2a556978787f9bb7858b7330176ba8a1f",
+      "mode": "board",
+      "pixels": [
+        1600,
+        1100
+      ],
+      "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/board.png",
+      "png_sha256": "8957cd7a08c57a204ae9ef8046130aaa2bf606d753458b10b9262f73567f1dfb",
+      "p6_sha256": "bd20c297bcba4ba3f7e570c223b27d082fe33bb50950ab0fb53f84938ab93103",
+      "p7_sha256": "ba93c8e3da629db08501dac9d05b890d63461e8f77e9a8b533304948475f969b",
+      "rgb_sha256": "b6b44a9afb149cce41feda48aa982c668b99cdb0c47a948a04bba0a44d8a4ebe",
+      "rgba_sha256": "dd292f0356dd04c88221ee46a6c9add85f8235b40ed7451327ac5e014c5adc36",
+      "exact_rgb_channels": true,
+      "process_after_capture": "absent; self-closed",
+      "native": {
+        "alpha_max": 255,
+        "alpha_min": 255,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "control_and_field_bounds": [],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "os_input_claim": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/board.p6",
+        "pid": 3787321,
+        "pixels": [
+          1600,
+          1100
+        ],
+        "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/board.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 11
+      }
+    },
+    {
+      "source": "0c55f7874a5ee19dfb2eee49613b025f2f8b066a",
+      "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/aperture-inspection-0c55f787",
+      "binary_sha256": "0b69eff29bb1f9efed92cc3bc9897d6eedf94bac32e7241ae4bf7210f55d79e8",
+      "mode": "completed",
+      "pixels": [
+        640,
+        400
+      ],
+      "png": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/completed.png",
+      "png_sha256": "5434b3d7001e696580e5c33d43cb6c6e1d15bdd23ae3472312152efede06a0b0",
+      "p6_sha256": "30ed39aec437117d2d73aa03bb1413bb10c2001cbf47585424a44d90dedd40d6",
+      "p7_sha256": "8c08dd14de509f156254d26ed4a014a2551bfcbf8a0ea675707444c5122c329e",
+      "rgb_sha256": "c44ec5538adcc58af8478f5568ce5f28c30e054ac143f9256ca82cc8be9b1618",
+      "rgba_sha256": "62d618ad55e8b641cb28c306db9a6e05ad8b7eaa655f1e5bad3c703617a8d08e",
+      "exact_rgb_channels": true,
+      "process_after_capture": "absent; self-closed",
+      "native": {
+        "alpha_max": 255,
+        "alpha_min": 255,
+        "capture": "actual eframe native WGPU Screenshot event",
+        "control_and_field_bounds": [
+          [
+            23.0,
+            41.0,
+            204.21875,
+            59.0
+          ],
+          [
+            387.78125,
+            41.0,
+            542.40625,
+            59.0
+          ],
+          [
+            22.0,
+            289.0,
+            594.0,
+            331.0
+          ]
+        ],
+        "document_status_unchanged": true,
+        "full_session_unchanged": true,
+        "os_input_claim": false,
+        "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/completed.p6",
+        "pid": 3916765,
+        "pixels": [
+          640,
+          400
+        ],
+        "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+        "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/completed.p7",
+        "self_close_after_capture": true,
+        "ui_passes": 11
+      }
+    }
+  ],
+  "independent_decode": "ImageMagick RGB equals every original P6 sample and P7 RGB channel; original alpha retained and indexed"
+}

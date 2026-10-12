@@ -1,0 +1,172 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/engine)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 55.61s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.51s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_fab-0d4e9464ff0aed3a)
+
+running 9 tests
+test release_inspection::csv::tests::quoted_unicode_crlf_and_multiline_fields_are_preserved ... ok
+test release_inspection::csv::tests::fixed_decimals_reject_exponents_nonfinite_and_overflow ... ok
+test release_inspection::tests::manifest_map_rejects_duplicates_before_collapsing ... ok
+test release_inspection::csv::tests::row_and_field_limits_reject_before_unbounded_collection ... ok
+test release_inspection::reader::tests::inspector_caps_refuse_large_exportable_tables_and_empty_population_is_valid ... ok
+test release_inspection::reader::tests::canceled_receiver_does_not_release_real_owned_reader_permit ... ok
+test release_inspection::reader::tests::strict_layout_lengths_and_matched_csv_errors_reject_without_partial_result ... ok
+test release_inspection::reader::tests::supported_layouts_roundtrip_and_unchecked_content_is_honestly_excluded ... ok
+test release_inspection::reader::tests::symlink_fifo_and_observed_directory_or_file_replacement_refuse ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.33s
+
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.54s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-3b6e414642a80095)
+
+running 3 tests
+test borrowed_artwork_capture_refusal_preserves_source_and_creates_no_stage ... ok
+test independent_legend_reader_all_cardinal_mirrors_arbitrary_rounding_and_old_files ... ok
+test job_four_exact_companion_matrix_captured_art_and_strict_release_consistency ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/output_job_calibration.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_calibration-2d9dff5a57f453f5)
+
+running 4 tests
+test explicit_version_two_is_strict_and_legacy_canonical_bytes_are_unchanged ... ok
+test companion_has_standalone_bytes_and_stable_population_without_changing_legacy_payloads ... ok
+test incomplete_calibration_collision_and_empty_population_have_atomic_results ... ok
+test purpose_capture_excludes_unused_source_strings_and_sheets_and_admission_is_one_slot ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/output_job_population.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_job_population-06c970f8666c35a0)
+
+running 5 tests
+test empty_population_is_headers_only_and_invalid_included_id_mapping_rejects_before_copy ... ok
+test aggregate_included_sourcing_budget_refuses_before_copy_without_restricting_v2 ... ok
+test explicit_matched_version_three_does_not_reinterpret_legacy_settings ... ok
+test matched_bom_has_exact_explicit_fields_digest_and_unchanged_calibrated_inventory_bytes ... ok
+test included_source_preflight_precedes_calibration_and_one_capture_retains_one_permit ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/output_jobs.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/output_jobs-67b5f0fac0c446b3)
+
+running 6 tests
+test strict_checked_descriptor_requires_every_numeric_baseline_and_preserves_generic_bytes ... ok
+test checked_snapshot_mandates_validation_before_output_and_keeps_one_coherent_board ... ok
+test job_component_budget_precedes_board_capture ... ok
+test strict_descriptor_and_bounded_regular_file_loading ... ok
+test release_failure_cleans_staging_and_rejects_board_budget_before_copy ... ok
+test release_is_coherent_byte_identical_and_never_clobbers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-9a18d8586c424aa7)
+
+running 4 tests
+test independent_job5_observed_openings_refuse_semantic_corruption_even_when_lengths_agree ... ok
+test independent_rectangular_reader_all_cardinal_sides_absolute_mask_omission_and_polarity ... ok
+test legacy_default_outputs_remain_identical_to_retained_pre_feature_binary ... ok
+test version5_companion_matrix_exact_release_files_and_null_summary_refuse ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.84s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-5cc872bbaa2d85e1)
+
+running 1 test
+test explicit_layer_output_exact_quarter_bottom_and_legacy_defaults ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-45f3de01d38dd313)
+
+running 1 test
+test selected_mask_paste_preserve_odd_edges_roles_omissions_and_default_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 59.26s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_ui_egui-a13e0564524374e4)
+
+running 1 test
+test pad_apertures::tests::local_entry_has_no_defaults_and_preserves_absolute_values_and_stable_owner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 107 filtered out; finished in 0.00s
+
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/ui-egui)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.38s
+     Running tests/footprint_artwork.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_artwork-8a2e6f7815bbbf33)
+
+running 3 tests
+test explicit_courtyard_layers_follow_live_edits_and_undo_without_changing_legacy_defaults ... ok
+test actual_compact_exact_author_apply_one_undo_and_local_cancel ... ok
+test actual_stable_row_identity_and_stale_peer_refusal ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-d7cb86108d110db6)
+
+running 3 tests
+test actual_compact_save_and_error_controls_are_reachable_and_invalid_entry_retained ... ok
+test actual_menu_create_odd_nm_save_then_separate_guarded_pad_apply_and_undo ... ok
+test actual_load_edit_remove_keeps_remaining_row_identity_and_draft_through_peer_and_reopen ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.83s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-2106d29e86fc7970)
+
+running 3 tests
+test actual_compact_exact_policy_apply_undo_and_cancel_preserve_copper_and_metadata ... ok
+test actual_compact_signed_margin_is_explicit_and_stale_apply_preserves_draft_until_reload ... ok
+test actual_compact_detached_policy_fields_publish_library3_without_applying_to_design ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.92s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/router)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/drc)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/engine)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/render)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/mcp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 47.89s
+     Running tests/footprint_definition.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/footprint_definition-3b4723e8bc7ac0f2)
+
+running 2 tests
+test borrowed_definition_limits_precede_typed_row_decoding_and_preserve_session ... ok
+test real_two_clients_share_detached_files_with_separate_guarded_reuse_and_no_implicit_design_changes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
+
+     Running tests/pad_apertures.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/pad_apertures-e47981f409120cb4)
+
+running 1 test
+test real_two_clients_share_exact_policy_guards_library3_and_independent_reuse ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="-1.0500000 -1.0500000 62.1000000 42.1000000" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="view-title view-description">
+<title id="view-title">Independent fabrication reader fixture</title>
+<desc id="view-description">PCB inspection view; model origin, mm, X right/Y down; legacy previews omitted; not fabrication certification.</desc>
+<defs><clipPath id="view-clip" clipPathUnits="userSpaceOnUse"><rect x="-1.0500000" y="-1.0500000" width="62.1000000" height="42.1000000"/></clipPath>
+<mask id="through-holes" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-1.0500000" y="-1.0500000" width="62.1000000" height="42.1000000" style="mask-type:luminance"><rect x="-1.0500000" y="-1.0500000" width="62.1000000" height="42.1000000" fill="white"/>
+<circle cx="18.0000000" cy="12.0000000" r="0.1500000" fill="black"/>
+<circle cx="40.0000000" cy="9.0000000" r="0.2500000" fill="black"/>
+</mask></defs>
+<g clip-path="url(#view-clip)"><g mask="url(#through-holes)">
+<g id="layer-Outline" fill="#d8ddd9" color="#d8ddd9">
+<path id="board-outline" d="M0.0000000 0.0000000 L60.0000000 0.0000000 L57.0000000 35.0000000 L0.0000000 40.0000000 Z M45.0000000 22.0000000 L50.0000000 22.0000000 L49.0000000 27.0000000 L45.0000000 26.0000000 Z " fill="#25302b" fill-rule="evenodd" stroke="#d8ddd9" stroke-width="0.1" stroke-linejoin="round"/>
+</g>
+<g id="layer-BottomCopper" fill="#4773dc" color="#4773dc">
+<g id="pad-00000000-0000-0000-0000-000000000003" transform="translate(29.0179490 19.2990380) rotate(-30.000)"><title>U_BOTTOM pad 1 · Synthetic asymmetric geometry · GND</title><rect x="-2.0000000" y="-0.5000000" width="4.0000000" height="1.0000000"/></g>
+<g id="pad-00000000-0000-0000-0000-000000000004" transform="translate(32.0980760 14.6339750) rotate(-30.000)"><title>U_BOTTOM pad 2 · Synthetic asymmetric geometry · GND</title><rect x="-0.6000000" y="-1.1000000" width="1.2000000" height="2.2000000"/></g>
+<path id="track-00000000-0000-0000-0000-000000000008" d="M30.0000000 17.0000000 L40.0000000 9.0000000" fill="none" stroke="currentColor" stroke-width="0.4000000" stroke-linecap="round"><title>Track 00000000-0000-0000-0000-000000000008 · GND</title></path>
+<circle id="via-BottomCopper-00000000-0000-0000-0000-000000000009" cx="18.0000000" cy="12.0000000" r="0.4000000"><title>Through via 00000000-0000-0000-0000-000000000009 · GND · finished drill 0.3000000 mm</title></circle>
+<circle id="via-BottomCopper-00000000-0000-0000-0000-00000000000a" cx="40.0000000" cy="9.0000000" r="0.6000000"><title>Through via 00000000-0000-0000-0000-00000000000a · GND · finished drill 0.5000000 mm</title></circle>
+</g>
+<g id="layer-TopCopper" fill="#d65348" color="#d65348">
+<g id="pad-00000000-0000-0000-0000-000000000006" transform="translate(12.7575560 23.2375480) rotate(-117.500)"><title>U_TOP pad 1 · Synthetic asymmetric geometry · GND</title><rect x="-0.6500000" y="-0.3000000" width="1.3000000" height="0.6000000"/></g>
+<path id="track-00000000-0000-0000-0000-000000000007" d="M5.0000000 8.0000000 L18.0000000 12.0000000" fill="none" stroke="currentColor" stroke-width="0.2500000" stroke-linecap="round"><title>Track 00000000-0000-0000-0000-000000000007 · GND</title></path>
+<circle id="via-TopCopper-00000000-0000-0000-0000-000000000009" cx="18.0000000" cy="12.0000000" r="0.4000000"><title>Through via 00000000-0000-0000-0000-000000000009 · GND · finished drill 0.3000000 mm</title></circle>
+<circle id="via-TopCopper-00000000-0000-0000-0000-00000000000a" cx="40.0000000" cy="9.0000000" r="0.6000000"><title>Through via 00000000-0000-0000-0000-00000000000a · GND · finished drill 0.5000000 mm</title></circle>
+</g>
+</g></g></svg>

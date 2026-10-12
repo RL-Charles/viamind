@@ -1,0 +1,10 @@
+{
+  "pid": 3765109,
+  "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh",
+  "binary_sha256": "3dbc1f23b408a35fad2ded07252c20430caae931221b944e07ff789d8066d139",
+  "cmdline": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh --open /home/charlesmowbray/Development/viamind-t-0120/docs/verification/t0120/inspection-fixture.viamind.json ",
+  "mcp_port": 7961,
+  "owned_fixture": "docs/verification/t0120/inspection-fixture.viamind.json",
+  "preserve_after_verification": true
+}
