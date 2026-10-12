@@ -197,6 +197,8 @@ struct Report<'a> {
     paired_provenance_valid: bool,
     images: &'a [ImageReceipt],
     ui_pass_receipts: &'a [Draw],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    rejected_navigation: Option<&'a NavigationInput>,
     claim: &'static str,
 }
 
@@ -217,6 +219,7 @@ pub struct Trace {
     hardened: bool,
     settling: Option<super::parity_admission::Settling>,
     settled_draw: Option<usize>,
+    rejected_navigation: Option<NavigationInput>,
 }
 
 fn raw_image_bytes(size: [usize; 2], actual_pixels: usize, prior: usize) -> Result<usize, String> {
@@ -282,6 +285,7 @@ impl Trace {
             hardened: false,
             settling: None,
             settled_draw: None,
+            rejected_navigation: None,
         })
     }
 
@@ -289,13 +293,19 @@ impl Trace {
         if self.io_mode != IoMode::Deferred || self.hardened {
             return Err("hardened admission requires one deferred trace".into());
         }
-        self.metadata.reserve(size_of::<super::parity_admission::Settling>() + size_of::<Option<usize>>() + size_of::<bool>())?;
+        self.metadata.reserve(
+            size_of::<super::parity_admission::Settling>()
+                + size_of::<Option<usize>>()
+                + size_of::<bool>()
+                + size_of::<Option<NavigationInput>>()
+                + 1024,
+        )?;
         self.hardened = true;
         self.settling = Some(super::parity_admission::Settling::default());
         Ok(())
     }
 
-    pub fn check_hardened_input(&self, ctx: &Context) -> Result<(), String> {
+    pub fn check_hardened_input(&mut self, ctx: &Context) -> Result<(), String> {
         let input = navigation_input(ctx)?;
         if input.wheel != 0
             || input.zoom != 0
@@ -306,6 +316,9 @@ impl Trace {
             || input.middle_held
             || (input.space_held && input.pointer_delta != [0.0; 2])
         {
+            if self.rejected_navigation.is_none() {
+                self.rejected_navigation = Some(input);
+            }
             return Err("hardened parity refused external navigation input".into());
         }
         Ok(())
@@ -493,6 +506,7 @@ impl Trace {
             paired_provenance_valid: valid,
             images: &self.images,
             ui_pass_receipts: &self.draws,
+            rejected_navigation: self.rejected_navigation.as_ref(),
             claim: "Harness receipts only. Invalid provenance is not valid pixel parity. No historical cause, renderer correction or performance claim.",
         };
         if let Err(error) = write_json(&self.directory.join("trace.json"), &report, &mut self.metadata) {
@@ -846,5 +860,36 @@ mod tests {
         capped.metadata.used = MAX_METADATA;
         assert!(capped.enable_hardened().is_err());
         assert!(!capped.hardened && capped.settling.is_none());
+    }
+
+    #[test]
+    fn rejecting_navigation_pass_retains_only_fixed_numeric_cause_before_requests_or_comparison() {
+        let temporary = tempfile::tempdir().unwrap();
+        let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
+        trace.enable_hardened().unwrap();
+        let ctx = Context::default();
+        let mut refusal = None;
+        let _ = ctx.run_ui(
+            egui::RawInput {
+                events: vec![Event::Text("private text".into()), Event::Paste("private clipboard".into()), Event::Zoom(1.25)],
+                ..Default::default()
+            },
+            |ui| refusal = Some(trace.check_hardened_input(ui.ctx()).unwrap_err()),
+        );
+        assert_eq!(trace.requests, 0);
+        assert!(trace.pending.is_none() && trace.images.is_empty() && trace.draws.is_empty());
+        let captured = trace.rejected_navigation.as_ref().unwrap();
+        assert_eq!(captured.zoom, 1);
+        assert_eq!(captured.zoom_delta, 1.25);
+        assert!(serde_json::to_vec(captured).unwrap().len() <= 1024);
+        assert!(trace.finish(refusal.as_deref()).is_err());
+        let report = fs::read_to_string(trace.directory.join("trace.json")).unwrap();
+        assert!(!report.contains("private") && !report.contains("clipboard"));
+        let report: serde_json::Value = serde_json::from_str(&report).unwrap();
+        assert_eq!(report["rejected_navigation"]["zoom"], 1);
+        assert_eq!(report["rejected_navigation"]["zoom_delta"], 1.25);
+        assert_eq!(report["requests"], 0);
+        assert_eq!(report["images"].as_array().unwrap().len(), 0);
+        assert_eq!(report["ui_pass_receipts"].as_array().unwrap().len(), 0);
     }
 }
