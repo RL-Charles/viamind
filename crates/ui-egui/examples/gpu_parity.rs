@@ -54,7 +54,7 @@ impl eframe::App for Check {
             return;
         }
         if self.hardened
-            && let Some(trace) = &self.trace
+            && let Some(trace) = &mut self.trace
             && let Err(error) = trace.check_hardened_input(ui.ctx())
         {
             self.trace_failure(ui, &error);
