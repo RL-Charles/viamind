@@ -132,6 +132,7 @@ pub(crate) fn project_schematic_connectivity(
     calculate(capture(project, cursor)?, &SchematicConnectivityQuery { offset: 0, limit: MAX_MEMBERS }, MAX_CANDIDATES)
 }
 pub(crate) fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Result<Snapshot, CommandError> {
+    viamind_doc::schematic_bus::preflight_project(project, None).map_err(invalid)?;
     let sheets = &project.schematic.sheets;
     if sheets.len() > 1000 {
         return Err(invalid("query supports at most 1000 sheets"));
@@ -144,7 +145,7 @@ pub(crate) fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Re
         if let Some(c) = &sheet.content {
             let (records, bytes) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
             count = count.saturating_add(c.object_count()).saturating_add(records.saturating_sub(c.packages.len()));
-            text = text.saturating_add(bytes);
+            text = text.saturating_add(bytes).saturating_add(viamind_doc::schematic_bus::budget(c).map_err(invalid)?.text_bytes);
             if count > MAX_MEMBERS {
                 return Err(invalid("query supports at most 10000 objects including sheets, symbols and pins"));
             }
@@ -185,7 +186,15 @@ pub(crate) fn capture(project: &viamind_doc::Project, cursor: EventCursor) -> Re
         };
         insert(sheet.id)?;
         if let Some(c) = &sheet.content {
-            for id in c.packages.keys().chain(c.wires.keys()).chain(c.junctions.keys()).chain(c.labels.keys()) {
+            for id in c
+                .buses
+                .keys()
+                .chain(c.bus_entries.keys())
+                .chain(c.packages.keys())
+                .chain(c.wires.keys())
+                .chain(c.junctions.keys())
+                .chain(c.labels.keys())
+            {
                 insert(*id)?;
             }
             for s in c.symbols.values() {

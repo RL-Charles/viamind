@@ -82,7 +82,7 @@ pub(super) fn budget(sheets: &BTreeMap<ObjectId, Sheet>) -> Result<usize, Comman
         b.text(&sheet.name)?;
         if let Some(c) = &sheet.content {
             let (_, text) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
-            b.text = b.text.saturating_add(text);
+            b.text = b.text.saturating_add(text).saturating_add(viamind_doc::schematic_bus::budget(c).map_err(invalid)?.text_bytes);
             if b.text > MAX_TEXT {
                 return Err(invalid("annotation schematic text exceeds 256 KiB"));
             }
@@ -128,8 +128,13 @@ pub(super) fn predecode(value: &Value) -> Result<(), CommandError> {
     b.rows(sheets.len(), 0)?;
     for sheet in sheets.values() {
         if let Some(c) = sheet.get("content") {
+            if map_rows(c.get("buses")) > 256 || map_rows(c.get("bus_entries")) > 4096 {
+                return Err(invalid("at most256 buses and4096 entries before typed decoding"));
+            }
             let symbols = map_rows(c.get("symbols"));
-            let rows = ["symbols", "wires", "junctions", "labels", "packages"].into_iter().fold(0usize, |n, k| n.saturating_add(map_rows(c.get(k))));
+            let rows = ["symbols", "wires", "junctions", "labels", "packages", "buses", "bus_entries"]
+                .into_iter()
+                .fold(0usize, |n, k| n.saturating_add(map_rows(c.get(k))));
             b.rows(rows, symbols)?;
             for symbol in values(c.get("symbols")) {
                 b.rows(array_rows(symbol.get("pins")), 0)?;

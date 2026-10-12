@@ -23,6 +23,7 @@ pub mod pad_apertures;
 pub mod pcb_sexpr;
 pub mod project;
 pub mod schematic;
+pub mod schematic_bus;
 pub mod symbol_library;
 pub mod symbol_package;
 
@@ -35,6 +36,7 @@ pub use outline::{BoardOutline, OutlineError};
 pub use pad::{Pad, Pads};
 pub use pad_apertures::{ApertureKind, ApertureRect, ApertureResolution, PadApertures, resolve_aperture};
 pub use project::{Project, Schematic, Sheet};
+pub use schematic_bus::{SchematicBus, SchematicBusEntry};
 
 pub mod copper;
 pub use copper::{CopperLayer, MAX_COPPER_OBJECTS, Track, Via};

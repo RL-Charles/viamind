@@ -9,10 +9,12 @@ pub(crate) fn sheet(sheet: &Sheet, purpose: &str) -> Result<usize, CommandError>
     if c.is_some_and(|c| c.object_count() > 10_000) {
         return Err(invalid(format!("{purpose} supports at most 10000 sheet objects")));
     }
+    let bus_budget = c.map(viamind_doc::schematic_bus::budget).transpose().map_err(invalid)?.unwrap_or_default();
     let (membership, mut text) = c.map(viamind_doc::symbol_package::membership_budget).transpose().map_err(invalid)?.unwrap_or_default();
     if c.is_some_and(|c| c.object_count().saturating_add(membership.saturating_sub(c.packages.len())) > 10_000) {
         return Err(invalid(format!("{purpose} supports at most 10000 objects and package membership records")));
     }
+    text = text.saturating_add(bus_budget.text_bytes);
     if text > 2 * 1024 * 1024 {
         return Err(invalid(format!("{purpose} package text exceeds 2 MiB")));
     }
@@ -52,6 +54,7 @@ pub(crate) fn sheet(sheet: &Sheet, purpose: &str) -> Result<usize, CommandError>
 // The inherited global identity/reference validator allocates a global set. Bound
 // all data it visits before calling it; no board strings or geometry are copied.
 pub(crate) fn project(project: &Project, added: usize, purpose: &str) -> Result<usize, CommandError> {
+    viamind_doc::schematic_bus::preflight_project(project, None).map_err(invalid)?;
     let mut count = 1usize
         .saturating_add(added)
         .saturating_add(project.board.parts.len())
@@ -80,7 +83,7 @@ pub(crate) fn project(project: &Project, added: usize, purpose: &str) -> Result<
         if let Some(c) = &sheet.content {
             let (records, text) = viamind_doc::symbol_package::membership_budget(c).map_err(invalid)?;
             more(records.saturating_sub(c.packages.len()))?;
-            bytes = bytes.saturating_add(text);
+            bytes = bytes.saturating_add(text).saturating_add(viamind_doc::schematic_bus::budget(c).map_err(invalid)?.text_bytes);
             if bytes > 4 * 1024 * 1024 {
                 return Err(invalid("global package text exceeds 4 MiB"));
             }
@@ -128,10 +131,16 @@ pub(crate) fn predecode_sheet(value: &serde_json::Value, purpose: &str) -> Resul
         v.and_then(Value::as_array).into_iter().flatten()
     }
     let c = value.get("content");
-    let mut rows =
-        c.map_or(0, |c| ["symbols", "wires", "junctions", "labels", "packages"].into_iter().fold(0usize, |n, k| n.saturating_add(count(c.get(k)))));
+    let mut rows = c.map_or(0, |c| {
+        ["symbols", "wires", "junctions", "labels", "packages", "buses", "bus_entries"]
+            .into_iter()
+            .fold(0usize, |n, k| n.saturating_add(count(c.get(k))))
+    });
     if rows > 10_000 {
         return Err(invalid(format!("{purpose} supports at most10000 sheet objects before typed decoding")));
+    }
+    if c.is_some_and(|c| count(c.get("buses")) > 256 || count(c.get("bus_entries")) > 4096) {
+        return Err(invalid("at most256 buses and4096 entries before typed decoding"));
     }
     let mut pins = 0usize;
     if let Some(c) = c {
@@ -168,6 +177,12 @@ pub(crate) fn predecode_sheet(value: &serde_json::Value, purpose: &str) -> Resul
                 text(p.get("number"))?;
                 text(p.get("name"))?;
             }
+        }
+        for bus in values(c.get("buses")) {
+            text(bus.get("expression"))?;
+        }
+        for entry in values(c.get("bus_entries")) {
+            text(entry.get("member"))?;
         }
         for label in values(c.get("labels")) {
             text(label.get("name"))?;
