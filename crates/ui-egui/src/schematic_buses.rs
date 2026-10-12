@@ -169,7 +169,7 @@ impl SchematicBusesUi {
                 let label=ui.label("Bus expression");if ui.add(egui::TextEdit::singleline(&mut self.expression).char_limit(4096)).labelled_by(label.id).changed(){self.preview=None;}
                 for(i,name)in["Bus start X mm","Bus start Y mm","Bus end X mm","Bus end Y mm"].iter().enumerate(){let label=ui.label(*name);if ui.add(egui::TextEdit::singleline(&mut self.coordinates[i]).char_limit(32)).labelled_by(label.id).changed(){self.preview=None;}}
                 ui.horizontal_wrapped(|ui|{
-                    if ui.button("Save bus declaration").clicked(){let r=(||->Result<Value,String>{let source=self.source.ok_or("Choose a sheet")?;let p=|i|->Result<Coordinate,String>{Ok(Coordinate{x:Nm(super::schematic::nm(&self.coordinates[i])?),y:Nm(super::schematic::nm(&self.coordinates[i+1])?)})};serde_json::to_value(SetSchematicBus{source,bus_id:self.selected,expression:self.expression.clone(),start:p(0)?,end:p(2)?}).map_err(|e|e.to_string())})();match r{Ok(v)=>self.run(engine,ctx,UiAction::SetSchematicBus,v),Err(e)=>self.message=Some(e)}}
+                    if ui.button("Save bus declaration").clicked(){let r=(||->Result<Value,String>{let source=self.source.ok_or("Choose a sheet")?;let p=|i:usize|->Result<Coordinate,String>{Ok(Coordinate{x:Nm(super::schematic::nm(&self.coordinates[i])?),y:Nm(super::schematic::nm(&self.coordinates[i+1])?)})};serde_json::to_value(SetSchematicBus{source,bus_id:self.selected,expression:self.expression.clone(),start:p(0)?,end:p(2)?}).map_err(|e|e.to_string())})();match r{Ok(v)=>self.run(engine,ctx,UiAction::SetSchematicBus,v),Err(e)=>self.message=Some(e)}}
                     if ui.add_enabled(self.selected.is_some(),egui::Button::new("Delete bus declaration")).clicked(){self.run(engine,ctx,UiAction::DeleteSchematicBus,json!({"source":self.source,"bus_id":self.selected}));}
                 });
                 ui.separator();
@@ -222,5 +222,168 @@ impl ViamindApp {
         if let Some(d) = &self.design {
             self.schematic_buses.window(ui.ctx(), &d.engine);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use egui_kittest::{Harness, kittest::Queryable};
+    use std::sync::mpsc::channel;
+    fn fixture() -> (EngineHandle, ObjectId, ObjectId) {
+        let mut p = viamind_doc::Project::new("bus desktop");
+        let mut s = viamind_doc::Sheet::new("Buses");
+        let id = ObjectId::new();
+        let mut c = viamind_doc::schematic::SchematicContent::default();
+        c.buses.insert(
+            id,
+            viamind_doc::SchematicBus {
+                id,
+                expression: "DATA[0..1]".into(),
+                start: Coordinate { x: Nm(0), y: Nm(0) },
+                end: Coordinate { x: Nm(20_000_000), y: Nm(0) },
+            },
+        );
+        s.content = Some(c);
+        let sheet = s.id;
+        p.schematic.sheets.insert(sheet, s);
+        (EngineHandle::new(p), sheet, id)
+    }
+    fn reveal(h: &mut Harness<'_, SchematicBusesUi>, label: &str) {
+        h.get_by_label(label).scroll_to_me();
+        h.run_steps(8);
+        h.hover_at(h.get_by_label(label).rect().center());
+        h.run_steps(2);
+        let r = h.get_by_label(label).rect();
+        let clip = h
+            .output()
+            .shapes
+            .iter()
+            .filter_map(|shape| {
+                let egui::Shape::Rect(bg) = &shape.shape else {
+                    return None;
+                };
+                let b = bg.rect;
+                (b.contains(r.center()) && (b.width() - r.width()).abs() <= 4.0 && (b.height() - r.height()).abs() <= 4.0)
+                    .then_some(shape.clip_rect.intersect(h.ctx.content_rect()))
+            })
+            .min_by(|a, b| a.area().total_cmp(&b.area()))
+            .expect("actual painted control");
+        assert!(clip.contains_rect(r), "{label} clipped {r:?} vs {clip:?}");
+    }
+    fn input(h: &mut Harness<'_, SchematicBusesUi>, label: &str, text: &str) {
+        reveal(h, label);
+        h.get_by_label(label).focus();
+        h.run_steps(2);
+        for pressed in [true, false] {
+            h.event(egui::Event::Key { key: egui::Key::A, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND });
+            h.run_steps(2);
+        }
+        h.get_by_label(label).type_text(text);
+        h.run_steps(3);
+    }
+    fn wait(h: &mut Harness<'_, SchematicBusesUi>) {
+        h.run_steps(3);
+        let until = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while h.state().busy() {
+            assert!(std::time::Instant::now() < until, "{:?}", h.state().message);
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            h.run_steps(3);
+        }
+    }
+    #[test]
+    fn compact_actual_coordinate_preview_apply_load_and_cancel_are_reachable() {
+        let (engine, sheet, bus) = fixture();
+        let before = engine.session_state();
+        let mut s = SchematicBusesUi::default();
+        s.begin(&engine, sheet);
+        s.selected = Some(bus);
+        s.expression = "DATA[0..1]".into();
+        let worker = engine.clone();
+        let mut h = Harness::builder().with_size(egui::vec2(640.0, 400.0)).build_ui_state(
+            move |ui, s: &mut SchematicBusesUi| {
+                s.poll(ui.ctx());
+                s.window(ui.ctx(), &worker);
+            },
+            s,
+        );
+        h.run_steps(5);
+        for (label, text) in [
+            ("Bus start X mm", "0"),
+            ("Bus start Y mm", "0"),
+            ("Bus end X mm", "20"),
+            ("Bus end Y mm", "0"),
+            ("Entry bus X mm", "0"),
+            ("Entry bus Y mm", "0"),
+            ("Entry wire X mm", "2"),
+            ("Entry wire Y mm", "2"),
+            ("Opposite wire end X mm", "2"),
+            ("Opposite wire end Y mm", "8"),
+        ] {
+            input(&mut h, label, text);
+        }
+        assert_eq!(h.state().coordinates, ["0", "0", "20", "0", "0", "0", "2", "2", "2", "8"].map(str::to_owned));
+        reveal(&mut h, "Preview member unfolding");
+        h.get_by_label("Preview member unfolding").click();
+        wait(&mut h);
+        assert!(h.state().preview.is_some(), "{:?}", h.state().message);
+        assert_eq!(engine.session_state(), before);
+        reveal(&mut h, "Apply member unfolding");
+        h.get_by_label("Apply member unfolding").click();
+        wait(&mut h);
+        assert_eq!(engine.event_cursor().sequence, before.cursor.sequence + 1);
+        let p = engine.read(Clone::clone);
+        let c = p.schematic.sheets[&sheet].content.as_ref().unwrap();
+        assert_eq!((c.buses.len(), c.bus_entries.len(), c.wires.len(), c.labels.len()), (1, 1, 1, 1));
+        reveal(&mut h, "Load scalar bus facts");
+        h.get_by_label("Load scalar bus facts").click();
+        wait(&mut h);
+        assert_eq!(h.state().result.as_ref().unwrap().total_entries, 1);
+        reveal(&mut h, "Cancel bus form");
+        h.get_by_label("Cancel bus form").click();
+        h.run_steps(4);
+        assert!(!h.state().open);
+        assert!(!h.state().busy());
+    }
+    #[test]
+    fn hidden_cancel_retains_one_actual_worker_until_engine_lock_retires() {
+        let (e, sheet, _) = fixture();
+        let before = e.session_state();
+        let ctx = Context::default();
+        let mut s = SchematicBusesUi::default();
+        s.begin(&e, sheet);
+        let (held, locked) = channel();
+        let (release, wait) = channel();
+        let engine = e.clone();
+        let holder = std::thread::spawn(move || {
+            engine.with_engine(|_| {
+                held.send(()).unwrap();
+                wait.recv().unwrap();
+            })
+        });
+        locked.recv().unwrap();
+        s.run(&e, &ctx, UiAction::QuerySchematicBuses, json!({}));
+        assert!(s.busy());
+        s.run(&e, &ctx, UiAction::QuerySchematicBuses, json!({}));
+        assert!(s.busy());
+        s.pending.as_mut().unwrap().abandoned = true;
+        s.open = false;
+        s.poll(&ctx);
+        assert!(s.busy());
+        release.send(()).unwrap();
+        holder.join().unwrap();
+        let until = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        while s.busy() {
+            assert!(std::time::Instant::now() < until);
+            std::thread::sleep(std::time::Duration::from_millis(5));
+            s.poll(&ctx);
+        }
+        assert!(s.result.is_none());
+        assert_eq!(e.session_state(), before);
+        let (tx, rx) = sync_channel(1);
+        drop(tx);
+        s.pending = Some(Pending { receiver: rx, action: UiAction::QuerySchematicBuses, abandoned: false });
+        s.poll(&ctx);
+        assert!(s.message.as_ref().unwrap().contains("worker stopped"));
     }
 }
