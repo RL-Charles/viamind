@@ -104,10 +104,13 @@ struct State {
     camera_zoom: f64,
     viewport: [f32; 4],
     pixels_per_point: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    root_pixels: Option<[usize; 2]>,
     layers: Vec<LayerState>,
 }
 impl State {
-    fn capture(app: &ViamindApp, ctx: &Context, budget: &mut MetadataBudget) -> Result<Self, String> {
+    fn capture(app: &ViamindApp, ctx: &Context, budget: &mut MetadataBudget, hardened: bool) -> Result<Self, String> {
+        let root_pixels = if hardened { Some(expected_root_pixels(ctx)?) } else { None };
         let count = app.layers.draw_order().count();
         if count > MAX_LAYERS {
             return Err("diagnostic layer metadata count exceeded".into());
@@ -128,9 +131,35 @@ impl State {
             camera_zoom: camera.zoom,
             viewport: [rect.min.x, rect.min.y, rect.max.x, rect.max.y],
             pixels_per_point: ctx.pixels_per_point(),
+            root_pixels,
             layers,
         })
     }
+}
+
+fn expected_root_pixels(ctx: &Context) -> Result<[usize; 2], String> {
+    // egui-winit derives the unrounded full viewport from window.inner_size / PPP.
+    // Context::viewport_rect rounds UI points; content_rect also subtracts safe areas.
+    // Neither rounded rectangle is the physical capture texture's dimensions.
+    let (rect, ppp) = ctx.input(|i| (i.viewport_rect(), i.pixels_per_point));
+    if ctx.viewport_id() != ViewportId::ROOT || rect.min != egui::Pos2::ZERO || !ppp.is_finite() || ppp <= 0.0 {
+        return Err("hardened capture requires a finite local root viewport and positive PPP".into());
+    }
+    let dimension = |points: f32| -> Result<usize, String> {
+        let pixels = f64::from(points) * f64::from(ppp);
+        let rounded = pixels.round();
+        // Bound the f32 division/size reconstruction error. Refuse ambiguous integer
+        // recovery instead of guessing a physical texture size at extreme magnitudes.
+        let uncertainty = pixels.abs() * f64::from(f32::EPSILON) * 4.0;
+        if !pixels.is_finite() || rounded < 1.0 || rounded > MAX_PIXELS as f64 || uncertainty >= 0.5 || (pixels - rounded).abs() > uncertainty {
+            return Err("hardened root viewport cannot determine exact bounded pixel dimensions".into());
+        }
+        Ok(rounded as usize)
+    };
+    let result = [dimension(rect.width())?, dimension(rect.height())?];
+    let count = result[0].checked_mul(result[1]).ok_or("hardened root pixel count overflow")?;
+    raw_image_bytes(result, count, 0)?;
+    Ok(result)
 }
 #[derive(Clone, Copy, Serialize)]
 struct Frame {
@@ -178,6 +207,8 @@ struct ImageReceipt {
     draw_states_match_request: bool,
     pair_state_matches_reference: bool,
     pair_dimensions_match_reference: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    request_dimensions_match: Option<bool>,
     request: Option<Pending>,
     arrival: Frame,
     arrival_state: State,
@@ -363,7 +394,7 @@ impl Trace {
         if self.draws.len() == MAX_PASSES {
             return Err("diagnostic UI-pass receipt budget exceeded".into());
         }
-        let state = State::capture(app, ctx, &mut self.metadata)?;
+        let state = State::capture(app, ctx, &mut self.metadata, self.hardened)?;
         let navigation_input = if self.io_mode == IoMode::Deferred { Some(navigation_input(ctx)?) } else { None };
         let s = app.canvas.cache.stats;
         let observed_frame = frame(ctx);
@@ -385,7 +416,7 @@ impl Trace {
         if self.pending.is_some() || self.requests == 10 {
             return Err("diagnostic request count/outstanding budget exceeded".into());
         }
-        let state = State::capture(app, ctx, &mut self.metadata)?;
+        let state = State::capture(app, ctx, &mut self.metadata, self.hardened)?;
         let token = Token { step, sequence: self.requests };
         if let Some(controller) = &self.progress {
             controller.progress.prepared(token.sequence);
@@ -414,7 +445,7 @@ impl Trace {
             return Err("diagnostic image count exceeded".into());
         }
         let bytes = raw_image_bytes(image.size, image.pixels.len(), self.raw_bytes)?;
-        let state = State::capture(app, ctx, &mut self.metadata)?;
+        let state = State::capture(app, ctx, &mut self.metadata, self.hardened)?;
         let regions = regions(app, ctx, &mut self.metadata)?;
         let supplied = user_data.data.as_ref().and_then(|d| d.downcast_ref::<Token>()).copied();
         let pending = self.pending.take();
@@ -425,6 +456,7 @@ impl Trace {
         let pair_state_matches_reference =
             step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.arrival_state == state && previous.dimensions == image.size);
         let pair_dimensions_match_reference = step.is_multiple_of(2) || self.images.last().is_some_and(|previous| previous.dimensions == image.size);
+        let request_dimensions_match = self.hardened.then(|| pending.as_ref().is_some_and(|p| p.state.root_pixels == Some(image.size)));
         if self.io_mode == IoMode::Deferred {
             // No pixel copy and no image/JSON I/O until the sequence is terminal. The checked
             // raw aggregate above admits this unique image before retaining its shared handle.
@@ -443,6 +475,7 @@ impl Trace {
             draw_states_match_request,
             pair_state_matches_reference,
             pair_dimensions_match_reference,
+            request_dimensions_match,
             request: pending,
             arrival: frame(ctx),
             arrival_state: state,
@@ -462,6 +495,9 @@ impl Trace {
         // incompatible extents after retaining both receipts, before those indices are used.
         if !pair_dimensions_match_reference {
             return Err("diagnostic pair dimensions differ; raw images retained before comparison".into());
+        }
+        if request_dimensions_match == Some(false) {
+            return Err("hardened screenshot dimensions differ from requested root pixels; raw image retained".into());
         }
         if self.hardened && (!state_matches_request || !draw_states_match_request || !pair_state_matches_reference) {
             return Err("hardened pair state differs from request, intervening draw or reference; raw images retained".into());
@@ -489,7 +525,14 @@ impl Trace {
         let failure = flush_error.as_deref().or(failure);
         let valid = self.images.len() == 10
             && self.requests == 10
-            && self.images.iter().all(|r| r.valid_token && r.state_matches_request && r.draw_states_match_request && r.pair_state_matches_reference);
+            && self.images.iter().all(|r| {
+                r.valid_token
+                    && r.state_matches_request
+                    && r.draw_states_match_request
+                    && r.pair_state_matches_reference
+                    && r.pair_dimensions_match_reference
+                    && r.request_dimensions_match != Some(false)
+            });
         let report = Report {
             mode: if self.hardened {
                 "hardened_manual_camera_completed_frame_trace"
@@ -794,13 +837,20 @@ mod tests {
 
     #[test]
     fn hardened_admission_refuses_camera_draw_pair_identity_and_size_mismatches() {
-        let ctx = Context::default();
         for failure in ["request_camera", "intervening_draw", "pair_camera", "foreign_viewport", "repeated_token", "larger", "smaller"] {
             let temporary = tempfile::tempdir().unwrap();
             let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
             trace.enable_hardened().unwrap();
             let mut app = ViamindApp::with_scene_size(1);
             let first_size = if failure == "smaller" { [2, 2] } else { [1, 1] };
+            let ctx = Context::default();
+            let _ = ctx.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(first_size[0] as f32, first_size[1] as f32))),
+                    ..Default::default()
+                },
+                |_| {},
+            );
             let image = Arc::new(ColorImage::filled(first_size, egui::Color32::WHITE));
             trace.draw(0, &app, &ctx).unwrap();
             let first_token = trace.request(0, &app, &ctx).unwrap();
@@ -831,6 +881,61 @@ mod tests {
             assert!(trace.directory.join("image-00.p7").is_file());
             assert!(fs::read_to_string(trace.directory.join("trace.json")).unwrap().contains("hardened_manual_camera_completed_frame_trace"));
         }
+    }
+
+    #[test]
+    fn hardened_root_dimensions_use_unrounded_full_viewport_with_fractional_dpi() {
+        let ctx = Context::default();
+        let mut input = egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(1400.0 / 1.5, 1000.0 / 1.5))),
+            safe_area_insets: Some(egui::SafeAreaInsets(egui::epaint::MarginF32 { left: 13.0, right: 7.0, top: 19.0, bottom: 5.0 })),
+            ..Default::default()
+        };
+        input.viewports.get_mut(&ViewportId::ROOT).unwrap().native_pixels_per_point = Some(1.5);
+        let _ = ctx.run_ui(input, |ui| {
+            assert_eq!(expected_root_pixels(ui.ctx()).unwrap(), [1400, 1000]);
+            assert_ne!(ui.ctx().input(|i| i.content_rect()), ui.ctx().input(|i| i.viewport_rect()));
+            assert_ne!(ui.ctx().viewport_rect(), ui.ctx().input(|i| i.viewport_rect()), "public rounded UI bounds cannot recover physical size");
+        });
+        for size in [egui::vec2(1.25, 1.0), egui::vec2(0.0, 1.0), egui::vec2(2_000_000.0, 1.0)] {
+            let ctx = Context::default();
+            let _ = ctx.run_ui(egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, size)), ..Default::default() }, |ui| {
+                assert!(expected_root_pixels(ui.ctx()).is_err(), "ambiguous, empty or precision-unsafe viewport: {size:?}")
+            });
+        }
+    }
+
+    #[test]
+    fn equally_wrong_sized_pair_retains_raw_but_never_admits_requested_root_dimensions() {
+        let temporary = tempfile::tempdir().unwrap();
+        let mut trace = Trace::deferred(temporary.path().join("strict")).unwrap();
+        trace.enable_hardened().unwrap();
+        let ctx = Context::default();
+        let _ = ctx.run_ui(
+            egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(2.0, 2.0))), ..Default::default() },
+            |_| {},
+        );
+        let app = ViamindApp::with_scene_size(1);
+        let image = Arc::new(ColorImage::filled([1, 1], egui::Color32::WHITE));
+        // Production aborts at the first refusal. Continue explicitly only in this test
+        // to prove that equality with a second wrong image cannot establish validity.
+        for step in 0..2 {
+            trace.draw(step, &app, &ctx).unwrap();
+            let token = trace.request(step, &app, &ctx).unwrap();
+            let error = trace.image(step, ViewportId::ROOT, &token, &image, &app, &ctx).unwrap_err();
+            assert!(error.contains("requested root pixels"));
+            assert_eq!(trace.images[step].request_dimensions_match, Some(false));
+            assert!(trace.images[step].pair_dimensions_match_reference);
+            assert_eq!(trace.images[step].request.as_ref().unwrap().state.root_pixels, Some([2, 2]));
+        }
+        assert!(trace.finish(Some("requested dimensions mismatch")).is_err());
+        for step in 0..2 {
+            assert!(trace.directory.join(format!("image-{step:02}.p7")).is_file());
+        }
+        let report: serde_json::Value = serde_json::from_slice(&fs::read(trace.directory.join("trace.json")).unwrap()).unwrap();
+        assert_eq!(report["paired_provenance_valid"], false);
+        assert_eq!(report["images"][1]["pair_dimensions_match_reference"], true);
+        assert_eq!(report["images"][1]["request_dimensions_match"], false);
     }
 
     #[test]
