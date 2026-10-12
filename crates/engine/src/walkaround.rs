@@ -215,6 +215,7 @@ pub(crate) fn scene(
     remaining_obstacles: usize,
 ) -> Result<(Rect, Vec<Rect>), CommandError> {
     let rules = input.validate().map_err(|e| invalid(e.to_string()))?;
+    viamind_doc::footprint_holes::preflight_project(project, None).map_err(invalid)?;
     viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
     if width < viamind_doc::named_track_width(&project.board.net_rules, Some(net)) {
         return Err(invalid("route width is below the exact named-net document minimum"));
@@ -242,6 +243,17 @@ pub(crate) fn scene(
         push(expanded(rectangle_bounds(cutout, "cutout")?, edge, edge)?)?;
     }
     for part in project.board.parts.values() {
+        if let Some(holes) = &part.holes {
+            viamind_doc::footprint_holes::validate_part_holes(holes).map_err(invalid)?;
+            for drill in holes {
+                let resolved = viamind_doc::footprint_holes::resolve_hole(part, drill).map_err(invalid)?;
+                if [resolved.center.x.0, resolved.center.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000) {
+                    return Err(invalid("nonplated drill center out of walkaround range"));
+                }
+                let margin = half(resolved.diameter)? + hole;
+                push(expanded(Rect::from_point(resolved.center), margin, margin)?)?;
+            }
+        }
         let side = if part.side == Side::Top { CopperLayer::Top } else { CopperLayer::Bottom };
         if side != layer {
             continue;

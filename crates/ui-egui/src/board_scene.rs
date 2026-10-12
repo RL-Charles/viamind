@@ -124,6 +124,22 @@ pub fn part_items(part: &Part) -> Vec<Item> {
             items.push(Item::new(Prim::Segment { a: corners[i], b: corners[(i + 1) % 4], width: 0.12 }, silk));
         }
     }
+    if let Some(holes) = &part.holes {
+        // Native storage/commands admit bounded validated rows before scene rebuild.
+        if viamind_doc::footprint_holes::validate_part_holes(holes).is_ok() {
+            for hole in holes {
+                if let Ok(resolved) = viamind_doc::footprint_holes::resolve_hole(part, hole) {
+                    items.push(Item::new(
+                        Prim::Circle {
+                            center: WorldPos::new(resolved.center.x.to_mm(), resolved.center.y.to_mm()),
+                            radius: resolved.diameter.to_mm() / 2.0,
+                        },
+                        LayerId::NONPLATED_HOLES,
+                    ));
+                }
+            }
+        }
+    }
     items
 }
 
@@ -467,5 +483,43 @@ mod aperture_tests {
                 assert_eq!(part_items(&part), legacy, "restoring Legacy retains every original native primitive byte/value");
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod nonplated_hole_tests {
+    use super::*;
+    use viamind_geom::{Nm, Point};
+    #[test]
+    fn mechanical_circle_has_shared_layer_true_bounds_fit_and_parent_pick() {
+        let mut project = Project::new("mechanical");
+        for side in [Side::Top, Side::Bottom] {
+            let mut part = super::tests::part("R_0603", 90000, side);
+            part.pads = Some(viamind_doc::Pads(vec![]));
+            part.artwork = Some(Box::default());
+            part.holes = Some(vec![viamind_doc::footprint_holes::PartHole {
+                id: viamind_doc::ObjectId::new(),
+                key: "mount".into(),
+                center: Point::from_mm(0.0, 150.0),
+                diameter: Nm(3_000_001),
+            }]);
+            let items = part_items(&part);
+            assert_eq!(items.len(), 1);
+            assert_eq!(items[0].layer, LayerId::NONPLATED_HOLES);
+            let Prim::Circle { center, radius } = items[0].prim else { panic!("physical circle") };
+            assert_eq!(center, WorldPos::new(160.0, 20.0));
+            assert_eq!(radius, 1.5000005);
+            project.board.parts.insert(part.id, part);
+        }
+        let scene = scene_from_project(&project);
+        assert!(scene.bounds().max.x > 161.5);
+        let mut layers = crate::layers::LayerStack::pcb_default(2);
+        let old = layers.len();
+        layers.sync_courtyards(&scene);
+        assert_eq!(layers.len(), old + 1);
+        assert!(layers.get(LayerId::NONPLATED_HOLES).unwrap().visible);
+        layers.set_visible(LayerId::NONPLATED_HOLES, false);
+        layers.sync_courtyards(&scene);
+        assert!(!layers.get(LayerId::NONPLATED_HOLES).unwrap().visible);
     }
 }
