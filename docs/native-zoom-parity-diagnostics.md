@@ -13,6 +13,14 @@ The 100k cadence example never launched. Original binaries, source, reports,
 quiet admission and system receipts remain indexed in
 [the original baseline](verification/t0126/original-baseline/baseline-blocked.json).
 
+The retained original inventory contains launch-time window geometry, system
+configuration, executable provenance and comparison metrics. It has no original
+RGBA image, per-case camera/PPP/root dimensions, input journal or frame/pass
+receipts. The launcher aborts at the parity assertion before persisting its
+in-memory start/completion summary. Launch geometry alone does not establish
+case-4 geometry throughout the run. Source-level auto-fit and untagged screenshot
+hazards do not establish that either occurred in that historical run.
+
 ## Initial bounded diagnostic
 
 Diagnostic-only source `ce135b238667993f5bf215254389fd71958d4635` preserves the
@@ -29,7 +37,7 @@ observation. The first four results exactly match the failed run. Case 4 instead
 drew 606 objects, maximum difference 1, mean 0.0001792265648397724 and zero pixels
 over 2. That changed visible count prevents treating this as a fix.
 
-The physical window matches the original 1400x1000 at (2180,1265). Both used the
+The physical window matches the original launch metadata: 1400x1000 at (2180,1265). Both used the
 1920x1200/60.002Hz monitor at scale 1 and default display environment. Actual trace
 DPI is 1; canvas is [280,23,1400,977], matching the original 1068480 compared pixels.
 Case 4's pair holds camera center [33.8096233769221,25.375284784012628] and zoom
