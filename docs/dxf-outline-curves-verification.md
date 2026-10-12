@@ -57,28 +57,31 @@ radius/center domain check that rejects ill-conditioned tiny bulges.
 
 ## Retained verification (local, Linux)
 
-Artifacts: `~/.cache/viamind/native-artifacts/t0128/`.
+Artifacts: `~/.cache/viamind/native-artifacts/t0128/`. The original gated source `c32aefc7`
+(tag `verification/t0128/pre-rebase-c32aefc7`) was rebased onto main `c92d3ae8` (merged
+T-0121 nonplated holes); only the generated catalog conflicted and was regenerated. Every gate
+below was rerun on the rebased head `662ee6c7`.
 
 | Gate | Result | Receipt |
 | --- | --- | --- |
-| fmt, strict workspace all-target Clippy, workspace tests, workspace build | PASS, **1051 passed / 0 failed / 1 existing ignored** at `fb22b0d6` | `full2.log` (first attempt `full1-clippy-fail.log`: one collapsible-match lint, fixed) |
-| Retouched app build | `viamind-fb22b0d6` SHA256 `c9be3c37964ff4edaa8592dc72713c8a38cf737f0ac3d1f60e16afa7bfa0826c` | `full2.log` |
-| Catalog / workflow | 122 tools regenerated and `--check` exact; 18 workflow checks; reference unittests OK | `docs/generated/` |
-| Production stdio | 24 checks PASS ([stdio.json](verification/t0128/stdio.json)); first run retained failed on a probe KeyError (absent outline field) | `stdio1/`, `stdio2/` |
-| Restricted stdio (`--agent-read-only`) | 5 checks PASS ([restricted-stdio.json](verification/t0128/restricted-stdio.json)); two earlier probe-expectation failures retained | `stdio-restricted{1,2,3}/` |
-| GUI HTTP, two initialized clients | 29 checks PASS against owned PID 217333 on port 7965 ([http.json](verification/t0128/http.json)) | `http1/` |
+| fmt, strict workspace all-target Clippy, workspace tests, workspace build | PASS, **1094 passed / 0 failed / 1 existing ignored** at `662ee6c7` (pre-rebase `fb22b0d6`/`c32aefc7`: 1051/0/1) | `full4.log` (`full2.log`, `full3.log`; first attempt `full1-clippy-fail.log`: one collapsible-match lint, fixed) |
+| Retouched app build | `viamind-662ee6c7` SHA256 `0f293eea6fc5851bee04ee503e915b9783c2928a1b196f3c8bedb8b18e8e1049` | `full4.log` |
+| Catalog / workflow | 123 tools regenerated and `--check` exact; 18 workflow checks; reference unittests OK | `docs/generated/` |
+| Production stdio | 24 checks PASS ([stdio.json](verification/t0128/stdio.json)); an earlier run failed on a probe KeyError (absent outline field) and is retained | `stdio-662ee6c7/`, `stdio1/` |
+| Restricted stdio (`--agent-read-only`) | 5 checks PASS ([restricted-stdio.json](verification/t0128/restricted-stdio.json)); two earlier probe-expectation failures retained | `stdio-restricted-662ee6c7/` |
+| GUI HTTP, two initialized clients | 29 checks PASS against owned PID 414954 on port 7965 ([http.json](verification/t0128/http.json)) | `http-662ee6c7/` (pre-rebase PID 217333: `http1/`, retired) |
 
 The GUI was launched with `cua-driver launch_app` through the owned wrapper
-`launch-production-fb22b0d6.sh` (owned fixture "T128 curved DXF owned inspection");
+`launch-production-662ee6c7.sh` (owned fixture "T128 curved DXF owned inspection");
 [production-window.png](verification/t0128/production-window.png) is a compositor capture for
-launch provenance only (AT-SPI unavailable; no input was sent).
+launch provenance only (pre-rebase binary; AT-SPI unavailable; no input was sent).
 
 ### Native WGPU captures
 
 [compact.png](verification/t0128/compact.png) (640x400, fresh preview with reachable
 Preview/Apply/Cancel and report) and [wide.png](verification/t0128/wide.png) (1600x1100, applied
 rounded board with circle and slot cutouts and the success notice) come from the
-inspection-only `dxf_curves_inspection` example (helper `dxf-inspection-r6`, SHA256
+inspection-only `dxf_curves_inspection` example built from the pre-rebase tree (helper `dxf-inspection-r6`, SHA256
 `df1b6277cbd96fb9490924b6983d030d2caaa9c484e117bf9226e593527050ce`). Preparation uses actual egui
 Harness input; the same app state and egui memory move into a fixed-size eframe WGPU window
 that asserts the full session and document status every pass, requires every control label

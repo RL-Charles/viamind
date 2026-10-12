@@ -1,6 +1,6 @@
 {
- "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0128/viamind-fb22b0d6",
- "binary_sha256": "c9be3c37964ff4edaa8592dc72713c8a38cf737f0ac3d1f60e16afa7bfa0826c",
+ "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0128/viamind-662ee6c7",
+ "binary_sha256": "0f293eea6fc5851bee04ee503e915b9783c2928a1b196f3c8bedb8b18e8e1049",
  "checks": [
   "actual catalog advertises preview/apply plus unchanged straight-only import",
   "preview schema requires explicit tolerance_nm",
@@ -35,14 +35,14 @@
  "endpoint": "http://127.0.0.1:7965/mcp",
  "final_cursor": {
   "sequence": 4,
-  "stream_id": "044d7a29-7e5c-45c6-a025-61b9d7b9e0df"
+  "stream_id": "4c6a62a2-ebac-4c73-9b1d-513bab08e8f4"
  },
  "latency_ms": {
-  "apply_path": 16.556,
-  "preview_path": 17.642,
-  "preview_text": 21.096
+  "apply_path": 4.079,
+  "preview_path": 5.702,
+  "preview_text": 5.315
  },
  "passed": true,
  "restricted": false,
- "source": "fb22b0d6"
+ "source": "662ee6c7"
 }
