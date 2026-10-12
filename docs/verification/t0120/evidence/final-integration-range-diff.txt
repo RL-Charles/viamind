@@ -1,0 +1,40 @@
+ 1:  77e4b40d =  1:  179ad3c1 Specify explicit rectangular mask and paste aperture behavior before implementation
+ 2:  878bd28e =  2:  adae127f Match current loader contract and specify bounded exact local margin calculator
+ 3:  2335c88e =  3:  65c12a8c Clarify complete saved paste membership requirement
+ 4:  e4dfd30c =  4:  14198584 Add strict explicit pad aperture and native library version foundation
+ 5:  df971fc4 =  5:  f67d60b8 Verify aperture history guard identity and absolute policy invariants
+ 6:  c49ae2e7 =  6:  6d8e0d53 Correct aperture fixture field and checked calculator error inference
+ 7:  950f6160 =  7:  8984cb54 Express supported footprint library versions as a bounded range
+ 8:  29d494a9 !  8:  d9115809 Implement guarded pad openings and explicit mask paste consumers
+    @@ crates/ui-egui/src/actions.rs: ui_actions! {
+          SetPartPads => (SetPartPads::NAME, input_schema::<SetPartPads>(), set_part_pads),
+          ImportBoardOutlineDxf => (ImportBoardOutlineDxf::NAME, input_schema::<ImportBoardOutlineDxf>(), import_board_outline_dxf),
+     @@ crates/ui-egui/src/actions.rs: fn get_command_hooks(engine: &EngineHandle, input: Value) -> Result<Value, Engin
+    -     }
+          serde_json::to_value(engine.command_hook_status()).map_err(encode_error)
+      }
+    -+
+    + 
+     +fn set_pad_apertures(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+     +    serde_json::to_value(engine.execute(viamind_engine::SetPadApertures::NAME, input, Origin::User)?).map_err(encode_error)
+     +}
+    ++
+    + fn preview_schematic_symbol_drag(engine: &EngineHandle, input: Value) -> Result<Value, EngineError> {
+    +     let request = serde_json::from_value(input).map_err(encode_error)?;
+    +     engine.prepare_schematic_symbol_drag(request).map_err(branch_error)?.run_value().map_err(branch_error)
+     
+      ## crates/ui-egui/src/board_scene.rs ##
+     @@ crates/ui-egui/src/board_scene.rs: pub fn part_items(part: &Part) -> Vec<Item> {
+ 9:  aa4f9c82 =  9:  cfb24130 Count emitted openings and independently verify saved mask paste layers
+10:  2e797a06 = 10:  027593e6 Preserve legacy inspection receipts and verify aperture shared guards
+11:  3012539e = 11:  7ca553c1 Verify detached aperture publication with independently owned test captures
+12:  b782ff72 = 12:  935d4dfb Keep legacy unrouted fixture and exact aperture editor lint clean
+13:  bff9832f = 13:  49ea2680 Expose exact saved aperture companion inspection failure
+14:  8f5af1d6 = 14:  db4a6cfa Compose saved opening release admission with every checked companion
+15:  8ac6ae92 = 15:  ecd85dc7 Verify native aperture transforms and stable detached field ownership
+16:  29c33ec1 = 16:  05f8684e Reveal virtual pad table through actual wheel input before ownership check
+17:  c9a34855 = 17:  e77dcd38 Reveal outer footprint form before scrolling its virtual pad table
+18:  2cbe6dd6 = 18:  37176880 Retain original aperture inspection fixture and guarded production reuse workflow
+19:  e30108f9 = 19:  742954e6 Retain aperture tool catalog and settle verified inspection controls before input
+20:  0c55f787 = 20:  6f05334c Match actual native aperture inspection widget rectangles
+21:  927ae695 = 21:  469df8fb Retain exact aperture runtime release and native verification evidence

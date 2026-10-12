@@ -1,0 +1,17 @@
+G04 Viamind scoped outer-copper snapshot*
+%FSLAX56Y56*%
+%MOMM*%
+%TF.Part,Single*%
+%TF.FileFunction,Paste,Top*%
+%TF.FilePolarity,Positive*%
+%TF.SameCoordinates,00000000-0000-0000-0000-000000000001*%
+%ADD10R,1.100001X0.500003*%
+%TD*%
+%LPD*%
+%LMN*%
+%LS1*%
+G01*
+D10*
+%LR117.500*%
+X12757556Y-23237548D03*
+M02*
