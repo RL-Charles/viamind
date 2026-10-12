@@ -535,15 +535,11 @@ fn lwpolyline<'a>(f: &Fields<'a>) -> Result<Vec<(&'a str, &'a str, Option<&'a st
                 }
                 v.2 = Some(p.value);
             }
-            40 | 41 => {
-                if !Decimal::parse(p.value).map_err(|e| format!("width: {e}"))?.is_zero() {
-                    return Err("nonzero polyline width (group 40/41); export zero-width outlines".into());
-                }
+            40 | 41 if !Decimal::parse(p.value).map_err(|e| format!("width: {e}"))?.is_zero() => {
+                return Err("nonzero polyline width (group 40/41); export zero-width outlines".into());
             }
-            30 | 31 => {
-                if !Decimal::parse(p.value).map_err(|e| format!("Z: {e}"))?.is_zero() {
-                    return Err("nonzero Z coordinate; export flat 2D geometry".into());
-                }
+            30 | 31 if !Decimal::parse(p.value).map_err(|e| format!("Z: {e}"))?.is_zero() => {
+                return Err("nonzero Z coordinate; export flat 2D geometry".into());
             }
             _ => (),
         }
