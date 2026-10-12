@@ -113,4 +113,8 @@ fn malformed_or_unlocated_holes_refuse_instead_of_silent_exclusion() {
     h.position = Point::ORIGIN;
     h.holes.as_mut().unwrap()[0].diameter = Nm(0);
     assert!(run_drc(&p, &Default::default()).is_err());
+    let h = p.board.parts.get_mut(&id).unwrap();
+    h.holes.as_mut().unwrap()[0].diameter = Nm(1);
+    h.holes.as_mut().unwrap()[0].id = p.id;
+    assert!(run_drc(&p, &Default::default()).unwrap_err().to_string().contains("identity"));
 }

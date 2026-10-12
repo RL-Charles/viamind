@@ -300,7 +300,7 @@ impl Snapshot {
         if project.id.as_uuid().is_nil() {
             return Err(error("project identity must be nonnil"));
         }
-        viamind_doc::footprint_holes::preflight_project(project, None).map_err(error)?;
+        viamind_doc::footprint_holes::validate_physical_identities(project).map_err(error)?;
         let b = &project.board;
         let mut count = b
             .parts

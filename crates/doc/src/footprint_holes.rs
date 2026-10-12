@@ -99,6 +99,67 @@ pub fn validate_footprint_holes(holes: &[FootprintHole]) -> Result<(), String> {
     Ok(())
 }
 
+/// Identity admission for physical consumers, independent of their pose/unknown policy.
+/// Legacy projects keep their existing consumer rules. Counts precede every index.
+pub fn validate_physical_identities(project: &crate::Project) -> Result<(), String> {
+    preflight_project(project, None)?;
+    if !project.board.parts.values().any(|p| p.holes.is_some()) {
+        return Ok(());
+    }
+    let mut ids = BTreeSet::new();
+    let mut add = |id| {
+        if ids.insert(id) { Ok(()) } else { Err(format!("duplicate project/hole identity {id}")) }
+    };
+    add(project.id)?;
+    for (key, part) in &project.board.parts {
+        if *key != part.id {
+            return Err("part map key differs from identity".into());
+        }
+        add(part.id)?;
+        for pad in part.pads.iter().flat_map(|p| &p.0) {
+            add(pad.id)?;
+        }
+        if let Some(holes) = &part.holes {
+            validate_part_holes(holes)?;
+            for hole in holes {
+                add(hole.id)?;
+            }
+        }
+    }
+    for (key, id) in project.board.tracks.iter().map(|(k, v)| (k, v.id)).chain(project.board.vias.iter().map(|(k, v)| (k, v.id))) {
+        if *key != id {
+            return Err("copper map key differs from identity".into());
+        }
+        add(id)?;
+    }
+    for (key, sheet) in &project.schematic.sheets {
+        if *key != sheet.id {
+            return Err("sheet map key differs from identity".into());
+        }
+        add(sheet.id)?;
+        if let Some(c) = &sheet.content {
+            for (key, id) in c
+                .packages
+                .iter()
+                .map(|(k, v)| (k, v.id))
+                .chain(c.symbols.iter().map(|(k, v)| (k, v.id)))
+                .chain(c.wires.iter().map(|(k, v)| (k, v.id)))
+                .chain(c.junctions.iter().map(|(k, v)| (k, v.id)))
+                .chain(c.labels.iter().map(|(k, v)| (k, v.id)))
+            {
+                if *key != id {
+                    return Err("schematic map key differs from identity".into());
+                }
+                add(id)?;
+            }
+            for pin in c.symbols.values().flat_map(|s| &s.pins) {
+                add(pin.id)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 /// Refuse max+1 before decoding that row, including an invalid/null poison row.
 fn rows<'de, D: Deserializer<'de>, T: Deserialize<'de>>(d: D) -> Result<Vec<T>, D::Error> {
     struct Rows<T>(std::marker::PhantomData<T>);
