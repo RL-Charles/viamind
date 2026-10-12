@@ -22,7 +22,7 @@ Only published format and platform documentation is used:
 - Rust [floating-point operations and their precision contracts](https://doc.rust-lang.org/std/primitive.f64.html),
   [File descriptor metadata](https://doc.rust-lang.org/std/fs/struct.File.html#method.metadata),
   pinned workspace [rustix 1.1.5 file flags](https://docs.rs/rustix/1.1.5/rustix/fs/struct.OFlags.html),
-  [sha2 0.10.9](https://docs.rs/sha2/0.10.9/sha2/), and
+  pinned workspace [sha2 0.11.0](https://docs.rs/sha2/0.11.0/sha2/), and
   [egui 0.36.2 ScrollArea](https://docs.rs/egui/0.36.2/egui/containers/scroll_area/struct.ScrollArea.html).
 
 DXF stores circle center/radius and arc start/end angles; bulge is the tangent of
