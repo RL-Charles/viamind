@@ -1,0 +1,7 @@
+{
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0126/trace-43600a0/gpu_parity",
+  "sha256": "89a361806cfc67813f663f732a2526ab72f4a7283d7289cabfda9cb74e5d25e7",
+  "source": "43600a009e110dec52d8b4aa462e5273827d8da2",
+  "scope": "ONE stalled-stage diagnostic with independently timed fixed atomic progress receipt; unchanged legacy cases; no rendererfix/cadence/automaticclosure",
+  "utc": "2026-10-12T00:48:37.954851+00:00"
+}

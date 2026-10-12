@@ -1,0 +1,12 @@
+{
+  "admitted": true,
+  "utc": "2026-10-12T00:49:31.629683+00:00",
+  "source": "43600a009e110dec52d8b4aa462e5273827d8da2",
+  "sha256": "89a361806cfc67813f663f732a2526ab72f4a7283d7289cabfda9cb74e5d25e7",
+  "scope": "ONE bounded stalled-stage progress diagnostic; no automatic renderer fix, cadence or closure",
+  "quiet_acks": {
+    "root": "no Cargo/native/GPU or waiter",
+    "outline_dxf": "full27863 exited; no Cargo/native/GPU queued or running",
+    "manufacturing_csv": "foundation54959 childless whole-mutex waiter; no active Cargo/native/GPU"
+  }
+}
