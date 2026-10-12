@@ -1,0 +1,80 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/router)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/engine)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/fab)
+    Checking viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/render)
+    Checking viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/mcp)
+    Checking viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/ui-egui)
+    Checking viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 53.61s
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.72s
+     Running unittests src/lib.rs (/home/charlesmowbray/.cache/viamind/build-target/debug/deps/viamind_engine-762ba1a605098f32)
+
+running 14 tests
+test schematic_drag::tests::combined_board_identity_preflight_refuses_before_native_duplicate_validation ... ok
+test schematic_drag::tests::global_labels_across_unselected_sheet_keep_original_partition_and_names ... ok
+test schematic_drag::tests::unsupported_attachments_and_accidental_net_merge_refuse_exact_state ... ok
+test schematic_drag::tests::pre_hooks_receive_final_candidate_veto_atomically_and_captured_work_refuses_reentry ... ok
+test schematic_drag::tests::complete_regulator_fixture_keeps_independently_declared_original_net_members_and_names ... ok
+test schematic_drag::tests::aligned_stretch_and_both_attached_endpoints_preserve_wire_ids ... ok
+test schematic_drag::tests::cardinal_bend_preview_is_immutable_and_commit_undo_redo_replay_are_exact ... ok
+test schematic_drag::tests::unrelated_huge_invalid_board_metadata_is_not_copied_or_validated ... ok
+test schematic_drag::tests::planned_additions_preflight_graph_budget_and_zero_delta_is_noop ... ok
+test schematic_drag::tests::complete_package_unit_move_keeps_owner_membership_other_units_and_pins_exact ... ok
+test schematic_drag::tests::later_nonconflicting_peer_part_survives_origin_owned_drag_undo_and_redo ... ok
+test schematic_drag::tests::asymmetric_mirrored_quarter_turn_uses_native_pin_positions_and_vertical_bend ... ok
+test schematic_drag::tests::same_net_count_different_actual_member_partition_is_rejected ... ok
+test schematic_drag::tests::stale_and_exhausted_work_output_and_admission_refuse_without_changes ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 110 filtered out; finished in 0.72s
+
+   Compiling viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/geom)
+   Compiling viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/doc)
+   Compiling viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/drc)
+   Compiling viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/router)
+   Compiling viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/engine)
+   Compiling viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/fab)
+   Compiling viamind-render v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/render)
+   Compiling viamind-mcp v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/mcp)
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/ui-egui)
+   Compiling viamind v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/apps/viamind)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 55.86s
+   Compiling viamind-ui-egui v0.1.0 (/home/charlesmowbray/Development/viamind-t-0125/crates/ui-egui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.30s
+Verified 119 full-application tools (2025-03-26)
+Passed 18 isolated agent workflow checks
+test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit (test_appimage.AppImageTests.test_apprun_preserves_exact_arguments_cwd_env_streams_and_exit) ... ok
+test_archive_paths_links_duplicates_and_expansion_are_bounded (test_appimage.AppImageTests.test_archive_paths_links_duplicates_and_expansion_are_bounded) ... ok
+test_atomic_publish_preserves_racing_destination (test_appimage.AppImageTests.test_atomic_publish_preserves_racing_destination) ... ok
+test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution (test_appimage.AppImageTests.test_bad_cached_tool_bytes_and_symlinks_refuse_before_execution) ... ok
+test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture (test_appimage.AppImageTests.test_bundle_provenance_cannot_control_output_paths_or_wrong_architecture) ... ok
+test_relink_refuses_destination_created_after_early_check (test_appimage.AppImageTests.test_relink_refuses_destination_created_after_early_check) ... ok
+test_runtime_inventory_digest_and_failed_package_cleanup (test_appimage.AppImageTests.test_runtime_inventory_digest_and_failed_package_cleanup) ... ok
+test_wrong_architecture_refuses_before_inputs_or_publication (test_appimage.AppImageTests.test_wrong_architecture_refuses_before_inputs_or_publication) ... ok
+test_buffered_record_and_expensive_decode_respect_deadline (test_mcp_reference.ReferenceTests.test_buffered_record_and_expensive_decode_respect_deadline) ... ok
+test_check_regular_same_fd_limits_fifo_and_symlink (test_mcp_reference.ReferenceTests.test_check_regular_same_fd_limits_fifo_and_symlink) ... ok
+test_deterministic_complete_markdown_escaping_and_injective_anchors (test_mcp_reference.ReferenceTests.test_deterministic_complete_markdown_escaping_and_injective_anchors) ... ok
+test_duplicate_and_repeated_cursor_and_skeleton_reject (test_mcp_reference.ReferenceTests.test_duplicate_and_repeated_cursor_and_skeleton_reject) ... ok
+test_new_publication_existing_paths_symlink_race_preserve (test_mcp_reference.ReferenceTests.test_new_publication_existing_paths_symlink_race_preserve) ... ok
+test_notifications_drain_and_normal_finish (test_mcp_reference.ReferenceTests.test_notifications_drain_and_normal_finish) ... ok
+test_object_input_schema_required (test_mcp_reference.ReferenceTests.test_object_input_schema_required) ... ok
+test_page_tool_cursor_total_byte_budgets_and_failed_exit (test_mcp_reference.ReferenceTests.test_page_tool_cursor_total_byte_budgets_and_failed_exit) ... ok
+test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit (test_mcp_reference.ReferenceTests.test_paginated_empty_cursor_preserves_complete_metadata_and_clean_exit) ... ok
+test_strict_json_duplicate_depth_nonfinite_utf8 (test_mcp_reference.ReferenceTests.test_strict_json_duplicate_depth_nonfinite_utf8) ... ok
+test_timeout_and_unterminated_stdout_and_stderr_bounded (test_mcp_reference.ReferenceTests.test_timeout_and_unterminated_stdout_and_stderr_bounded) ... ok
+test_tool_error_status_requires_actual_boolean (test_mcp_reference.ReferenceTests.test_tool_error_status_requires_actual_boolean) ... ok
+test_wrong_identity_protocol_error_and_invalid_json_reject (test_mcp_reference.ReferenceTests.test_wrong_identity_protocol_error_and_invalid_json_reject) ... ok
+test_atomic_publication_preserves_every_existing_destination (test_package_linux.LinuxBundleTests.test_atomic_publication_preserves_every_existing_destination) ... ok
+test_dependency_closure_keeps_shared_normal_and_build_dependencies (test_package_linux.LinuxBundleTests.test_dependency_closure_keeps_shared_normal_and_build_dependencies) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 1.073s
+
+OK

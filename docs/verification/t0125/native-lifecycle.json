@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "captures": [
+    {
+      "mode": "native-wide-final",
+      "pid": 3546413,
+      "self_closed": true,
+      "exit_code": 0,
+      "frames": 55,
+      "events": 17,
+      "sidebar_wheels": 2,
+      "window_wheels": 0
+    },
+    {
+      "mode": "native-compact-final",
+      "pid": 3547472,
+      "self_closed": true,
+      "exit_code": 0,
+      "frames": 71,
+      "events": 21,
+      "sidebar_wheels": 4,
+      "window_wheels": 0
+    }
+  ]
+}

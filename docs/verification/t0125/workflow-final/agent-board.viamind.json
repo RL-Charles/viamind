@@ -1,0 +1,39 @@
+{
+  "format": "viamind",
+  "version": 1,
+  "project": {
+    "id": "b0fe26e0-f959-4a9f-9dba-f95afe267786",
+    "name": "Agent connector placement example",
+    "schematic": {
+      "sheets": {}
+    },
+    "board": {
+      "parts": {
+        "ea7a37c8-0b01-4129-a698-4856060bd1e1": {
+          "id": "ea7a37c8-0b01-4129-a698-4856060bd1e1",
+          "designator": "J1",
+          "value": "Input",
+          "footprint": "EXAMPLE_2PIN",
+          "position": {
+            "x": 11125000,
+            "y": 15250000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        },
+        "f411806c-59a7-459a-bffc-fb9fca6ae3b9": {
+          "id": "f411806c-59a7-459a-bffc-fb9fca6ae3b9",
+          "designator": "J2",
+          "value": "2-pin connector",
+          "footprint": "EXAMPLE_2PIN",
+          "position": {
+            "x": 30125000,
+            "y": 15250000
+          },
+          "rotation_mdeg": 0,
+          "side": "top"
+        }
+      }
+    }
+  }
+}

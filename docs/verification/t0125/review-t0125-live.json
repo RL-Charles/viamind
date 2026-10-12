@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    "owned fixture identity",
+    "retained live executable identity",
+    "two-client deterministic source immutability",
+    "independent target and exact bend count",
+    "peer change invalidates full guarded cursor",
+    "one event keeps whole PCB exact",
+    "independent old UUID partition and label facts",
+    "origin undo preserves peer part",
+    "peer origin undo restores complete original and native bytes",
+    "honest four-event advancement"
+  ],
+  "before_cursor": {
+    "sequence": 4,
+    "stream_id": "e728bc7f-91a6-4def-8317-b5a49b9de618"
+  },
+  "after_cursor": {
+    "sequence": 8,
+    "stream_id": "e728bc7f-91a6-4def-8317-b5a49b9de618"
+  },
+  "native_sha256": "6fa6bd9732f9398f4d2738b558503c81d002019a9ba2e8be0dcc8bbe3de84c60",
+  "scope": "Independent two same-name real production HTTP clients, owned fixture, no OS input."
+}
