@@ -348,6 +348,14 @@ pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcErro
     for part in project.board.parts.values() {
         if let Some(holes) = &part.holes {
             viamind_doc::footprint_holes::validate_part_holes(holes).map_err(DrcError)?;
+            if !holes.is_empty()
+                && ([part.position.x.0, part.position.y.0].iter().any(|n| n.unsigned_abs() > 10_000_000_000)
+                    || !(0..360_000).contains(&part.rotation_mdeg))
+            {
+                return Err(DrcError(
+                    "nonplated hole transform requires origin within +/-10000 mm and rotation within 0..360000 millidegrees".into(),
+                ));
+            }
             for hole in holes {
                 let resolved = viamind_doc::footprint_holes::resolve_hole(part, hole).map_err(DrcError)?;
                 let center = point(resolved.center);
