@@ -295,7 +295,7 @@ mod tests {
         editor.rows[0].fields = ["mount.A".into(), "-0.000003".into(), "0.000005".into(), "0.000009".into()];
         let expected = FootprintHole { key: "mount.A".into(), center: Point::new(Nm(-3), Nm(5)), diameter: Nm(9) };
         assert_eq!(editor.definition().unwrap(), Some(vec![expected.clone()]));
-        assert_eq!(HoleEditor::load(Some(&[expected.clone()])).definition().unwrap(), Some(vec![expected]));
+        assert_eq!(HoleEditor::load(Some(std::slice::from_ref(&expected))).definition().unwrap(), Some(vec![expected]));
         editor.rows[0].fields[3] = "NaN".into();
         assert!(editor.definition().is_err());
         editor.rows[0].fields[0] = "x".repeat(65);
