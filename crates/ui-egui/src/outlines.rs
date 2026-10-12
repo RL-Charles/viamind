@@ -202,7 +202,8 @@ pub struct OutlineUi {
     curve: CurveForm,
 }
 impl OutlineUi {
-    pub(crate) fn editing(&self) -> bool {
+    /// The outline form (manual vertices and DXF import) is open.
+    pub fn editing(&self) -> bool {
         self.draft.is_some()
     }
     pub(crate) fn cancel(&mut self) {

@@ -17,8 +17,11 @@ struct Inspect {
     status: DocumentStatus,
     capture: Option<PathBuf>,
     ui_passes: usize,
-    controls: Vec<egui::Id>,
+    controls: Vec<&'static str>,
     notice: &'static str,
+    verified: usize,
+    requested: bool,
+    ready_after: f64,
 }
 impl eframe::App for Inspect {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -35,31 +38,40 @@ impl eframe::App for Inspect {
         let content = ui.ctx().content_rect();
         let shapes = ui.ctx().graphics(|g| g.clone().drain(&[], &Default::default()));
         assert!(shapes.len() <= 65536);
+        // Collect current paint for every control label and the readable notice; require the
+        // complete set fully inside the effective clip for three consecutive native passes.
+        let painted = |prefix: &str, exact: bool| {
+            shapes.iter().find_map(|s| {
+                let egui::Shape::Text(t) = &s.shape else { return None };
+                let text = t.galley.text();
+                (if exact { text == prefix } else { text.starts_with(prefix) }).then_some((t.visual_bounding_rect(), s.clip_rect.intersect(content)))
+            })
+        };
         let mut bounds = Vec::new();
-        if self.ui_passes >= 3 {
-            for id in &self.controls {
-                let r = ui.ctx().read_response(*id).expect("same production widget identity after native memory transfer");
-                assert!(content.contains_rect(r.rect));
-                let clip = shapes
-                    .iter()
-                    .filter_map(|s| {
-                        let egui::Shape::Rect(b) = &s.shape else { return None };
-                        (b.rect.min.distance(r.rect.min) <= 0.5 && b.rect.max.distance(r.rect.max) <= 0.5).then_some(s.clip_rect.intersect(content))
-                    })
-                    .min_by(|a, b| a.area().total_cmp(&b.area()))
-                    .expect("actual current native control paint");
-                assert!(clip.contains_rect(r.rect), "actual native widget must fit effective clip");
-                bounds.push([r.rect.min.x, r.rect.min.y, r.rect.max.x, r.rect.max.y]);
+        let mut complete = true;
+        for (label, exact) in self.controls.iter().map(|l| (*l, true)).chain(std::iter::once((self.notice, false))) {
+            match painted(label, exact) {
+                Some((r, c)) if content.contains_rect(r) && c.contains_rect(r) => bounds.push([r.min.x, r.min.y, r.max.x, r.max.y]),
+                _ => complete = false,
             }
-            let (r, c) = shapes
+        }
+        // Transferred egui memory keeps the prepared Harness clock's area fade-in timestamps;
+        // count only frames after the native clock has passed them plus the fade duration.
+        let settled = ui.input(|i| i.time) >= self.ready_after;
+        self.verified = if complete && settled { self.verified + 1 } else { 0 };
+        if self.ui_passes >= 6000 && self.verified == 0 {
+            let texts: Vec<_> = shapes
                 .iter()
-                .find_map(|s| {
-                    let egui::Shape::Text(t) = &s.shape else { return None };
-                    t.galley.text().starts_with(self.notice).then_some((t.visual_bounding_rect(), s.clip_rect.intersect(content)))
+                .filter_map(|s| match &s.shape {
+                    egui::Shape::Text(t) => Some(t.galley.text().chars().take(40).collect::<String>()),
+                    _ => None,
                 })
-                .expect("current readable conversion notice");
-            assert!(c.contains_rect(r), "notice must be fully visible");
-            bounds.push([r.min.x, r.min.y, r.max.x, r.max.y]);
+                .collect();
+            panic!(
+                "controls/notice never fully visible; form open {}; preview retained {}; painted {texts:?}",
+                self.app.outlines.editing(),
+                self.app.outlines.dxf_preview().is_some()
+            );
         }
         let image = ui.ctx().input(|i| {
             i.events.iter().find_map(|e| match e {
@@ -69,6 +81,7 @@ impl eframe::App for Inspect {
         });
         if let Some(image) = image {
             assert!(image.pixels.len() <= 4_194_304);
+            assert!(self.verified >= 3, "capture frame must keep every control and notice fully visible");
             let path = self.capture.take().unwrap();
             let rawpath = path.with_extension("p7");
             let mut raw = std::fs::OpenOptions::new().write(true).create_new(true).open(&rawpath).unwrap();
@@ -81,15 +94,16 @@ impl eframe::App for Inspect {
             rgb.sync_all().unwrap();
             println!(
                 "{}",
-                serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"ui_passes":self.ui_passes,"path":path,"rgba_path":rawpath,"pixels":image.size,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"os_input_claim":false,"control_and_notice_bounds":bounds,"preparation":"actual egui Harness inputs; native app/state/memory reuse; no OS input"})
+                serde_json::json!({"capture":"actual eframe native WGPU Screenshot event","pid":std::process::id(),"ui_passes":self.ui_passes,"path":path,"rgba_path":rawpath,"pixels":image.size,"alpha_min":image.pixels.iter().map(egui::Color32::a).min(),"alpha_max":image.pixels.iter().map(egui::Color32::a).max(),"full_session_unchanged":true,"document_status_unchanged":true,"self_close_after_capture":true,"os_input_claim":false,"control_and_notice_bounds":bounds,"consecutive_verified_passes":self.verified,"harness_clock_ready_after_s":self.ready_after,"preparation":"actual egui Harness inputs; native app/state/memory reuse; no OS input"})
             );
             std::io::stdout().flush().unwrap();
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         } else {
-            if self.ui_passes == 8 {
+            if self.verified == 3 && !self.requested {
+                self.requested = true;
                 ui.ctx().send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
             }
-            assert!(self.ui_passes < 180);
+            assert!(self.ui_passes < 6100);
             ui.ctx().request_repaint_after(std::time::Duration::from_millis(16));
         }
     }
@@ -179,19 +193,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Polygon approximation:"
     };
     h.run_steps(10);
-    let mut controls = Vec::new();
-    let labels: &[&str] =
-        if mode == "compact" { &["Preview curved DXF", "Apply curved DXF outline", "Cancel"] } else { &["Preview curved DXF", "Cancel"] };
-    for label in labels {
+    let controls: Vec<&'static str> =
+        if mode == "compact" { vec!["Preview curved DXF", "Apply curved DXF outline", "Cancel"] } else { vec!["Preview curved DXF", "Cancel"] };
+    for label in &controls {
         reveal(&mut h, label);
-        h.get_by_label(label).focus();
-        h.run_steps(3);
-        controls.push(h.ctx.memory(egui::Memory::focused).unwrap());
     }
     h.get_by_label_contains(notice).scroll_to_me();
     h.run_steps(10);
+    assert!(h.state().outlines.editing() && h.query_by_label("Board outline").is_some(), "prepared outline form must be open");
     let before = engine.session_state();
     let status = engine.document_status();
+    let ready_after = h.ctx.input(|i| i.time) + f64::from(h.ctx.global_style().animation_time) + 0.25;
     let memory = h.ctx.memory(Clone::clone);
     let mut app = h.into_state();
     let options = eframe::NativeOptions {
@@ -213,7 +225,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Box::new(move |cc| {
             app.configure_renderer(cc);
             cc.egui_ctx.memory_mut(|m| *m = memory);
-            Ok(Box::new(Inspect { app, engine, before, status, capture, ui_passes: 0, controls, notice }))
+            Ok(Box::new(Inspect { app, engine, before, status, capture, ui_passes: 0, controls, notice, verified: 0, requested: false, ready_after }))
         }),
     )
     .map_err(|e| e.to_string())?;

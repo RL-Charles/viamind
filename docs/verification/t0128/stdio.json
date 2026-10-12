@@ -1,0 +1,43 @@
+{
+ "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0128/viamind-fb22b0d6",
+ "binary_sha256": "c9be3c37964ff4edaa8592dc72713c8a38cf737f0ac3d1f60e16afa7bfa0826c",
+ "checks": [
+  "actual catalog advertises preview/apply plus unchanged straight-only import",
+  "preview schema requires explicit tolerance_nm",
+  "text and path previews bind identical bytes, polygon and report",
+  "report certifies every chord within the explicit tolerance",
+  "report discloses ignored TEXT, polygon-only native result and Y convention",
+  "rounded board has two cutouts and exact odd-Nm circle start",
+  "previews preserve full session and document status",
+  "straight-only source through the new entry keeps legacy coordinates and zero sagitta",
+  "tolerance below 10 Nm refuses without mutation",
+  "both sources refuses without mutation",
+  "missing tolerance refuses without mutation",
+  "bulge above one refuses without mutation",
+  "unknown field refuses without mutation",
+  "directory instead of regular file refuses without mutation",
+  "unrelated edit after preview invalidates Apply by full cursor",
+  "source rewrite after preview refuses by digest and reparse",
+  "guarded Apply commits exactly one BoardOutline delta and one event",
+  "applied outline equals preview polygon and other objects are preserved",
+  "source file bytes are never written",
+  "identical geometry from a fresh preview is a guarded no-op",
+  "native save stores the polygon outline in the existing schema",
+  "creator undo restores the previous outline exactly",
+  "redo restores the applied polygon",
+  "existing DRC consumes the converted polygon"
+ ],
+ "endpoint": null,
+ "final_cursor": {
+  "sequence": 4,
+  "stream_id": "5d90b7aa-780b-4b0b-9bda-57cf5bb48586"
+ },
+ "latency_ms": {
+  "apply_path": 20.197,
+  "preview_path": 21.258,
+  "preview_text": 13.548
+ },
+ "passed": true,
+ "restricted": false,
+ "source": "fb22b0d6"
+}
