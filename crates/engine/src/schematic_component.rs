@@ -44,6 +44,12 @@ pub struct SchematicComponentPreview {
 }
 
 pub(crate) fn validate_footprint_pose(footprint: &Footprint, position: Point, side: Side, rotation_mdeg: i32) -> Result<(), CommandError> {
+    if footprint.holes.is_some() {
+        return Err(CommandError::invalid(
+            "footprint",
+            "linked component creation requires Legacy holes; create the component then use guarded ApplyFootprint or SetPartHoles to author drills",
+        ));
+    }
     if footprint.pads.len() > 1024 || footprint.name.len() > 4096 || footprint.pads.iter().any(|p| p.number.len() > 4096) {
         return Err(CommandError::invalid("footprint", "at most1024 pads and4096 UTF-8 bytes per name/number before copies"));
     }
