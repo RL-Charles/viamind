@@ -435,7 +435,8 @@ impl ViamindApp {
     }
     pub(crate) fn schematic_drag_toolbar(&mut self, ui: &mut Ui) {
         let target = self.selected_schematic_ids();
-        let enabled = !self.files.busy() && !self.schematic_wires.active() && !self.schematic_drag.busy() && target.is_some();
+        let enabled =
+            !self.schematic_buses.active() && !self.files.busy() && !self.schematic_wires.active() && !self.schematic_drag.busy() && target.is_some();
         if ui.add_enabled(enabled, egui::Button::new("Connected move selected symbol")).clicked()
             && let (Some(design), Some((sheet, symbol))) = (&self.design, target)
         {

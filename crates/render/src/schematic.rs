@@ -28,6 +28,7 @@ fn invalid(message: impl Into<String>) -> io::Error {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum SchematicLayer {
+    Buses,
     Wires,
     Symbols,
     Pins,
@@ -35,7 +36,14 @@ pub enum SchematicLayer {
     Labels,
 }
 fn layers() -> Vec<SchematicLayer> {
-    vec![SchematicLayer::Wires, SchematicLayer::Symbols, SchematicLayer::Pins, SchematicLayer::Junctions, SchematicLayer::Labels]
+    vec![
+        SchematicLayer::Buses,
+        SchematicLayer::Wires,
+        SchematicLayer::Symbols,
+        SchematicLayer::Pins,
+        SchematicLayer::Junctions,
+        SchematicLayer::Labels,
+    ]
 }
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -201,6 +209,8 @@ pub struct SchematicMetadata {
     pub font: &'static str,
     pub symbol_count: usize,
     pub pin_count: usize,
+    pub bus_count: usize,
+    pub bus_entry_count: usize,
     pub wire_count: usize,
     pub junction_count: usize,
     pub label_count: usize,
@@ -288,6 +298,36 @@ fn shapes(snapshot: &SchematicSnapshot, selected: &BTreeSet<SchematicLayer>, lab
     let wire = "#237347";
     let symbol = "#806215";
     let label = "#275d9d";
+    if selected.contains(&SchematicLayer::Buses) {
+        for b in c.buses.values() {
+            let (a, z) = (point(b.start), point(b.end));
+            shapes.push(Shape {
+                layer: SchematicLayer::Buses,
+                id: format!("bus-{}", b.id),
+                color: "#497cc2",
+                bounds: bounds(a, z, 200_000),
+                geometry: Geometry::Line(a, z, 400_000),
+            });
+            shapes.push(text_shape(
+                SchematicLayer::Buses,
+                format!("bus-expression-{}", b.id),
+                "#497cc2",
+                (a.0, a.1 - 500_000),
+                b.expression.clone(),
+                false,
+            )?);
+        }
+        for e in c.bus_entries.values() {
+            let (a, z) = (point(e.bus_point), point(e.wire_point));
+            shapes.push(Shape {
+                layer: SchematicLayer::Buses,
+                id: format!("bus-entry-{}", e.id),
+                color: "#497cc2",
+                bounds: bounds(a, z, 125_000),
+                geometry: Geometry::Line(a, z, 250_000),
+            });
+        }
+    }
     if selected.contains(&SchematicLayer::Wires) {
         for w in c.wires.values() {
             let (a, b) = (point(w.start), point(w.end));
@@ -568,6 +608,8 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
         font: "bundled unchanged Hack Regular; visible glyphs outlined",
         symbol_count: c.map_or(0, |c| c.symbols.len()),
         pin_count: c.map_or(0, viamind_doc::schematic::SchematicContent::pin_count),
+        bus_count: c.map_or(0, |c| c.buses.len()),
+        bus_entry_count: c.map_or(0, |c| c.bus_entries.len()),
         wire_count: c.map_or(0, |c| c.wires.len()),
         junction_count: c.map_or(0, |c| c.junctions.len()),
         label_count: c.map_or(0, |c| c.labels.len()),
@@ -576,6 +618,7 @@ pub fn schematic_svg(snapshot: &SchematicSnapshot, options: &SchematicViewOption
             "board geometry",
             "other sheets",
             "hierarchy",
+            "bus and entry graphics do not conduct; scalar wires and labels supply connectivity",
             "custom symbol artwork",
             "electrical certification",
             "global label collision avoidance",
