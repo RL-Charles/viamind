@@ -1,0 +1,1349 @@
+{
+  "ticket": "T-0121",
+  "source": "023053973d8e1932a5339deafb49fbc66ff61e3d",
+  "base_main": "88c3ec12db48e7fff0aae84ca0d96bbf65ab668c",
+  "pre_transplant": {
+    "tip": "3033041827cf1aaa3f8c545e1cde3e8bd4001524",
+    "tag": "verification/t0121/pre-transplant-30330418",
+    "own_range": "8f5af1d653cade9d3e9e019e80a601964a98611d..3033041827cf1aaa3f8c545e1cde3e8bd4001524",
+    "range_diff": "25 own commits preserved: 23 identical, 2 differ only in merge context (additive UiAction and adjacent test module)"
+  },
+  "integration_commits": {
+    "0b3b377f": "holes join connected-drag identity set and schematic_budget aggregate; drag Part fixtures holes:None",
+    "9f900007": "hole editor test edits routed through UiAction catalog (command_parity gate)",
+    "02305397": "aperture compact test matches pinned control by own painted frame"
+  },
+  "full_linux": {
+    "source": "023053973d8e1932a5339deafb49fbc66ff61e3d",
+    "log": "docs/verification/t0121/final/final3.log",
+    "exit": 0,
+    "fmt": "pass",
+    "strict_workspace_all_target_clippy": "pass",
+    "workspace_tests": {
+      "passed": 1072,
+      "failed": 0,
+      "ignored": 1,
+      "suites": 244
+    },
+    "workspace_build": "pass",
+    "retouched_before_normal_build": true,
+    "catalog_tools": 121,
+    "workflow_checks": 18,
+    "python_tests": 13
+  },
+  "failed_attempts": {
+    "final1-attempt0": "refused before cargo: stray scripts/__pycache__ made worktree dirty",
+    "final1": "fmt+clippy pass; command_parity refused direct engine calls in hole editor test (EXIT 101)",
+    "final2": "fmt+clippy pass; 1071 passed/1 failed: aperture compact clip heuristic matched scrolled hole row (EXIT 101)"
+  },
+  "binaries": {
+    "application": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/viamind-02305397",
+      "sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a"
+    },
+    "inspection": {
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/inspection-02305397",
+      "sha256": "5e7bcb34ff1d941b6be82d96553cca1e3f5c585d86a50ca974a493e8c8dc3606"
+    }
+  },
+  "production": {
+    "pid": 84635,
+    "port": 7963,
+    "launch": "cua-driver launch_app owned wrapper"
+  },
+  "actual_checks": {
+    "stdio": {
+      "passed": true,
+      "checks": 38,
+      "binary_sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a",
+      "endpoint": null
+    },
+    "two_http_clients": {
+      "passed": true,
+      "checks": 40,
+      "binary_sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a",
+      "endpoint": "http://127.0.0.1:7963/mcp"
+    },
+    "checked_callback_stdio": {
+      "passed": true,
+      "checks": 5,
+      "binary_sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a",
+      "endpoint": null
+    }
+  },
+  "native": {
+    "captures": [
+      {
+        "mode": "placed",
+        "pid": 83359,
+        "exited": true,
+        "seconds": 4.7,
+        "pixels": [
+          1600,
+          1100
+        ],
+        "p6_sha256": "274c85396cf32e15e32d8c99c4807d348d68b127bd589c490d2dc7aa27cf861c",
+        "p7_sha256": "27d3bdaa8017be57c3f256b2e85943feb118c1e44fd8045b48148ed0990e437d",
+        "rgb_sha256": "5e54f0e48dd70ac94969c13b75a73eed5169a5f2ca586ce3ca5b7e2b4f4ccade",
+        "rgba_sha256": "c81f373bd60dcdd699b92717d787eeef9273d23993766c82a0b55abc7a672913",
+        "png_sha256": "515aadfc664a620825f8c83e78c92a8f8d262f0b54d7eaa03a668056d1235e4a",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "png": "placed-02305397.png",
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.ppm",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.p7",
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "capture": "actual eframe native WGPU Screenshot event",
+          "control_and_field_bounds": [
+            [
+              500.0,
+              422.0,
+              574.90625,
+              440.0
+            ],
+            [
+              582.90625,
+              422.0,
+              665.0625,
+              440.0
+            ],
+            [
+              673.0625,
+              422.0,
+              719.40625,
+              440.0
+            ],
+            [
+              500.0,
+              542.0,
+              680.0,
+              561.0
+            ],
+            [
+              500.0,
+              582.0,
+              680.0,
+              601.0
+            ],
+            [
+              500.0,
+              622.0,
+              680.0,
+              641.0
+            ],
+            [
+              500.0,
+              662.0,
+              680.0,
+              681.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.ppm",
+          "pid": 83359,
+          "pixels": [
+            1600,
+            1100
+          ],
+          "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.p7",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        }
+      },
+      {
+        "mode": "compact",
+        "pid": 83877,
+        "exited": true,
+        "seconds": 2.5,
+        "pixels": [
+          640,
+          400
+        ],
+        "p6_sha256": "e8f455184272166cdf4c4b4a20d672937843a4db3eda3facfa8c0c3e306c5b04",
+        "p7_sha256": "da99747ffe2eb55cc065e2020e410adc76d1c4e77ede1d6cdcfa2b75594b83ca",
+        "rgb_sha256": "9932fdf95e2be43722da4fe41012b19d963774da5d41b66cacb4d1f064a6b67c",
+        "rgba_sha256": "5e2dd0a735c28a116da4e712e97468756c7bbf5cfc7a9a6ce6680e68fcd8b429",
+        "png_sha256": "4493d0d935b1c5d60d5b02ebcce0cc6c3fc951c33c59f36b582cf861db1ecd73",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "png": "compact-02305397.png",
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.ppm",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.p7",
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "capture": "actual eframe native WGPU Screenshot event",
+          "control_and_field_bounds": [
+            [
+              20.0,
+              77.0,
+              94.90625,
+              95.0
+            ],
+            [
+              102.90625,
+              77.0,
+              185.0625,
+              95.0
+            ],
+            [
+              193.0625,
+              77.0,
+              239.40625,
+              95.0
+            ],
+            [
+              20.0,
+              308.0,
+              200.0,
+              327.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.ppm",
+          "pid": 83877,
+          "pixels": [
+            640,
+            400
+          ],
+          "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.p7",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        }
+      },
+      {
+        "mode": "board",
+        "pid": 84041,
+        "exited": true,
+        "seconds": 4.23,
+        "pixels": [
+          1600,
+          1100
+        ],
+        "p6_sha256": "9b9832a6490aa979adc7950fc8c75a7dc1d9b5cc8c03612ed69d07626a303379",
+        "p7_sha256": "63a8e57f58e75be3a502ef814689502fd9c8965ca74e419a50103e57be743fa3",
+        "rgb_sha256": "5bd23d45a76105ed2085f0719dee0b3a65bd9ac3cff4328152263b54b12c5eca",
+        "rgba_sha256": "2d90b4716d2a53483d8a149107f9931460b27762f3cce3a5300fbc555bf47ec0",
+        "png_sha256": "15afce2bfe641f4d8ccb7bd51b644830d2cba2a9dc60dd69819a22bb9cb764ed",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "png": "board-02305397.png",
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.ppm",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.p7",
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "capture": "actual eframe native WGPU Screenshot event",
+          "control_and_field_bounds": [],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.ppm",
+          "pid": 84041,
+          "pixels": [
+            1600,
+            1100
+          ],
+          "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.p7",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        }
+      },
+      {
+        "mode": "completed",
+        "pid": 84133,
+        "exited": true,
+        "seconds": 2.67,
+        "pixels": [
+          640,
+          400
+        ],
+        "p6_sha256": "b00e0eb8029d1d233d04041c679eb30ea0c1c7a783618d0bb234269b02ca7142",
+        "p7_sha256": "fbf8bffdcc67b9cf24363cdb3eaa2033fae655567acc4d8754a1a94c010e4c25",
+        "rgb_sha256": "86a9852a907222706152feb6b375238f5059441add360e943350a91e83c288b6",
+        "rgba_sha256": "87016d19b7a55653ae5b6ad55c320a08671d155e41722483807e325889acc0f6",
+        "png_sha256": "f31d62164124ba3d4a5269ee857c73188f6685292819ad0ee85527c497861d95",
+        "alpha_min": 255,
+        "alpha_max": 255,
+        "png": "completed-02305397.png",
+        "p6": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.ppm",
+        "p7": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7",
+        "helper": {
+          "alpha_max": 255,
+          "alpha_min": 255,
+          "capture": "actual eframe native WGPU Screenshot event",
+          "control_and_field_bounds": [
+            [
+              23.0,
+              41.0,
+              204.21875,
+              59.0
+            ],
+            [
+              387.78125,
+              41.0,
+              542.40625,
+              59.0
+            ],
+            [
+              22.0,
+              289.0,
+              608.0,
+              331.0
+            ]
+          ],
+          "document_status_unchanged": true,
+          "full_session_unchanged": true,
+          "os_input_claim": false,
+          "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.ppm",
+          "pid": 84133,
+          "pixels": [
+            640,
+            400
+          ],
+          "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+          "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7",
+          "self_close_after_capture": true,
+          "ui_passes": 11
+        }
+      }
+    ],
+    "method": "actual egui Harness input prepares production UI; state/memory transferred to eframe; native WGPU Screenshot event; no OS input or cadence claim"
+  },
+  "limitations": [
+    "No manufacturing/DFM certification or minimum-drill rule inferred.",
+    "Native rendering is not boolean copper clipping.",
+    "Only circular NPTH; no slots/oval/plated mechanical holes."
+  ],
+  "artifacts": [
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/aperture-oracle1.log",
+      "bytes": 1722,
+      "sha256": "dfad6657cbbfe54154be743cd7eece891170564ebbef383200a99f52dd637725"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/aperture-oracle1.sh",
+      "bytes": 430,
+      "sha256": "70452d94248f848ecbe299c6e237cf161f08a26843bdef54411fcef764d44ad6"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/assemble-final.py",
+      "bytes": 5694,
+      "sha256": "1a85c4e7fdec02c47c33b0b362744d66e309d5f856d0a75b025fb3b31ad09dca"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/board-02305397.png",
+      "bytes": 113337,
+      "sha256": "15afce2bfe641f4d8ccb7bd51b644830d2cba2a9dc60dd69819a22bb9cb764ed"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/catalog-02305397-report/verification.json",
+      "bytes": 368,
+      "sha256": "02c7baa33f73b51c4c9c1d950bc331d78f332acf33cbe9f1f35ec963e62d9640"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-production-probe.py",
+      "bytes": 3722,
+      "sha256": "3a3cdaaf4ace4414e04ea49faa252da38fe0aac6121496cc27a44c66b68fee50"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-production.json",
+      "bytes": 2610,
+      "sha256": "61f77efa49276610b675a6e33d8e7a21f372f20d48040232a4db564dfef4487e"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "1c6313c07354b966aa778924644a3aef4fae85e278158f0970ad7eaaf411d2b0"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/job.json",
+      "bytes": 427,
+      "sha256": "d4169c7b80f8fe35e97f0e4e82788d02276328a30b1cc8769b09c8d9a432659c"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/release-manifest.json",
+      "bytes": 1628,
+      "sha256": "0f13685cd30ee8c012246247d056337042f2a9a713d4089b566effd15297ae40"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked-release/validation/drc.json",
+      "bytes": 1740,
+      "sha256": "5f158e60765e14a38c90722a2289e2df8d2598f64c80d73263ad4ee1cf5db8a6"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/checked-stdio-02305397/checked.job.json",
+      "bytes": 427,
+      "sha256": "d4169c7b80f8fe35e97f0e4e82788d02276328a30b1cc8769b09c8d9a432659c"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/compact-02305397.png",
+      "bytes": 33483,
+      "sha256": "4493d0d935b1c5d60d5b02ebcce0cc6c3fc951c33c59f36b582cf861db1ecd73"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/completed-02305397.footprint.json",
+      "bytes": 641,
+      "sha256": "92566b67bb933cd1c1e8c0a25a74fa1b6321f2399f08c1e64334e08e207edb52"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/completed-02305397.footprint.source.json",
+      "bytes": 641,
+      "sha256": "e620c19588dd6b0c10adb53290ddd4e595136b7b9ce472a6630c03eeb1367528"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/completed-02305397.png",
+      "bytes": 44379,
+      "sha256": "f31d62164124ba3d4a5269ee857c73188f6685292819ad0ee85527c497861d95"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final1-attempt0-dirty-pycache.log",
+      "bytes": 7,
+      "sha256": "4bf4fca02e6eeaf7f1c510b82c756e7f8a3c567a230bae1094b254adc774f38b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final1.log",
+      "bytes": 124429,
+      "sha256": "b2b80ad30d1557950040869d435a71a36e205e9f5f0a22b45e07984bcfdd6abc"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final1.sh",
+      "bytes": 1916,
+      "sha256": "68aa60f92dffa2441a663b5d5d24c5c09d21101afec13d11f4cf0ca9e9c71f19"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final2.log",
+      "bytes": 150792,
+      "sha256": "a793c2a05adab6dffab4bf8959c7cde96aee5507e49b0d28dd0572161e06f58b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final2.sh",
+      "bytes": 1931,
+      "sha256": "4eefa7d21caf34ba17f439fa1885c4036e8d4d2a231309de1f5898073260fd41"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final3-binaries.sha256",
+      "bytes": 287,
+      "sha256": "a8e690ae13ce5c9c0600ef0d8f271f83de674fa21aefe196d48decb3244ccffb"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final3.log",
+      "bytes": 152784,
+      "sha256": "b49bda9734ec613378865dde14951328950a73ccae98c4d907bd16fbd917e5e6"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/final3.sh",
+      "bytes": 1931,
+      "sha256": "d6b0ee7ab8eefc77d85eb0d8341bdb73c3d61646fc00c5d866f5ea34a5237666"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/authored.viamind.json",
+      "bytes": 4428,
+      "sha256": "10bcbbb63a336b9431fb8d37619ddebd217be0ae870e2e45c21de438bd5c8543"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/cli-npth/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "e67d185210a33dd094af57bdc3d3c477f7c41d7813ba6e716649ba04bb94dd8d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/corrupt-release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "8f92fb7da6f9bb28bcffc09eb6f4434aff6afeb036aaea20ca1df5bb8f5fe8bf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/edited.footprint.json",
+      "bytes": 771,
+      "sha256": "0ec727bfcf536ff162118fcae9b29da71dc9f3baf3779dfae315aa48de484529"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/holes.footprint.json",
+      "bytes": 629,
+      "sha256": "285022fd8b353048e177c31cbb3f9add1f4fbf4e770a74bac3286eef926a8ee8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/manifest.json",
+      "bytes": 929,
+      "sha256": "632053a0b47170001a2e946e27df06fd3b3d5bbe820293678e75b2c3c66c0a63"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/legacy.footprint.json",
+      "bytes": 471,
+      "sha256": "c19261bb702e7f45de6fc3933abc05968314d17957fe971a5a13968af01e0465"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/npth.job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/production.json",
+      "bytes": 7933,
+      "sha256": "71b86bd59dfb70ac708bd2ee01f48612a07e2f51c90522258c5023cc7d7095a5"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397/release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "8f92fb7da6f9bb28bcffc09eb6f4434aff6afeb036aaea20ca1df5bb8f5fe8bf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/http-02305397.log",
+      "bytes": 140,
+      "sha256": "fb6e379634db0d2fb5dda83072b0e58c8cee504c7cc54e8f8df9b9780c313b65"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/inspection-fixture.viamind.json",
+      "bytes": 4438,
+      "sha256": "3add847735b3144695b4cd44234aed6c0b9f94671eb416548bf33a4888a0da4b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/launch-board-02305397.sh",
+      "bytes": 507,
+      "sha256": "e9a29b697749567cae4cfd3993b4a232819da2b34af92a8e24806a7e86134c5f"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/launch-compact-02305397.sh",
+      "bytes": 515,
+      "sha256": "b548a0e984e1468d1d4dbd1bc95a694242f82294488d164d95c87f66b21bf5fd"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/launch-completed-02305397.sh",
+      "bytes": 523,
+      "sha256": "f2f0e47c94ef648f6ab6454daf4e9edc0570e3e4474c4a801e2bbc47d3db9b96"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/launch-placed-02305397.sh",
+      "bytes": 511,
+      "sha256": "20e632bd3a24c08e87516a80e79c53e674eff1d2e1dc9512e6a2a41f14558657"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/launch-production-02305397.sh",
+      "bytes": 372,
+      "sha256": "03e1dc1a25f3a99676635061a5e92d4e5fefc08c8960a2a0908f873bd525b135"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-02305397-compact-board-completed.json",
+      "bytes": 6606,
+      "sha256": "a6175c17f5430cbf69de446cf6d8c0896f88c924792646787f84a82376c7882b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-02305397-placed.json",
+      "bytes": 2762,
+      "sha256": "97e56ba7ee86c0baf00f9e086d1bf7cebc47ce8ec9461e66e7c39aad7e5ce337"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-02305397.py",
+      "bytes": 2480,
+      "sha256": "ea4cf5ccf98c97bfc653872b1337ce418ab49a7b8655d2538bd3e91b25486fbe"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-board-02305397-launch.json",
+      "bytes": 868,
+      "sha256": "1f6600a99c377bcdf0f5727aab0e26a1d03a5b8cf45b3cd744013e01b74e0b13"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-compact-02305397-launch.json",
+      "bytes": 868,
+      "sha256": "ed91fc5450a0d3862446578f6ab3dd29148ff877c8c3ba9bd48233efde0c0292"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-completed-02305397-launch.json",
+      "bytes": 872,
+      "sha256": "92b48ec2216d7840923f3af8f4423e6e1773a51d3cff651690186e4da85664b9"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/native-placed-02305397-launch.json",
+      "bytes": 870,
+      "sha256": "a54d684333fd228d9694cc71a999bc6b5c6b078f58f523f486a2696abd6ad11f"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/placed-02305397.png",
+      "bytes": 112771,
+      "sha256": "515aadfc664a620825f8c83e78c92a8f8d262f0b54d7eaa03a668056d1235e4a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/production-02305397-cua-state.json",
+      "bytes": 1263,
+      "sha256": "77d418ed67ba5237bc840d167bdaa89b95d07efdc9dee6565aeecd9419e73f8b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/production-02305397-cua.png",
+      "bytes": 148739,
+      "sha256": "b10b223d66c54defcee81fd87941bf721cb2679ff5ad90e55f5459a6a60784c3"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/production-02305397-launch.json",
+      "bytes": 883,
+      "sha256": "81c0acf35a76649ba1fdd0a8c36e0f9aabc90db83df292ed1caad8bd832744dc"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/production-probe.py",
+      "bytes": 11871,
+      "sha256": "e417741fe75fadc557431ee0e191d3126f36c65339fda3ef258029ce1df00194"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/authored.viamind.json",
+      "bytes": 4428,
+      "sha256": "56653c9b122679aa9d2b9a4f45872d58dec0e9c63d1c530c8fd28f96e742657b"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/cli-npth/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "e67d185210a33dd094af57bdc3d3c477f7c41d7813ba6e716649ba04bb94dd8d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/corrupt-release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "be652d495fa1a85f96a1a85fc19cf7efe7c1823a2cb206a5671ffa63205f155d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/edited.footprint.json",
+      "bytes": 771,
+      "sha256": "0ec727bfcf536ff162118fcae9b29da71dc9f3baf3779dfae315aa48de484529"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/holes.footprint.json",
+      "bytes": 629,
+      "sha256": "285022fd8b353048e177c31cbb3f9add1f4fbf4e770a74bac3286eef926a8ee8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/manifest.json",
+      "bytes": 929,
+      "sha256": "632053a0b47170001a2e946e27df06fd3b3d5bbe820293678e75b2c3c66c0a63"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/legacy.footprint.json",
+      "bytes": 471,
+      "sha256": "c19261bb702e7f45de6fc3933abc05968314d17957fe971a5a13968af01e0465"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth-fab/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/npth.job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/production.json",
+      "bytes": 7790,
+      "sha256": "d53703a0b99d4c2a195ff21781bac8b8f0d130b7804744adab07dbcf71085a0f"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/assembly/bom.csv",
+      "bytes": 203,
+      "sha256": "db581fc9c200e3674628ee32a847416ad61e9fe3fad4586b85fbe0a86c5e1d53"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/assembly/placement.csv",
+      "bytes": 330,
+      "sha256": "7256ee1f5fa9c6165a64b8f60028a79d2214938e619ae6f8636936b6cfb8dc1a"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/bottom-copper.gbr",
+      "bytes": 745,
+      "sha256": "a5c184738621208b7ea8174f4440946d5092cebbf3ccf29881475a89f0b45120"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/bottom-mask.gbr",
+      "bytes": 513,
+      "sha256": "89a202969f291dddfda36151f918cc56ce42850f9d7b111e70364a305dd9d61d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/manifest.json",
+      "bytes": 1324,
+      "sha256": "385096eb27c3dd42330d2a4d1c994c010cf5fb42214358defa4749aeb1c6e6d8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/nonplated-through.xnc",
+      "bytes": 224,
+      "sha256": "4bd5757dcd766a4e62942d38e4822af6ef1812c15316dd7395b9d7508d4f14e7"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/plated-through.xnc",
+      "bytes": 166,
+      "sha256": "efc96bb34d0a713af6561bec608752e9933addf678f9208506ce04722fdf718d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/profile.gbr",
+      "bytes": 734,
+      "sha256": "849f891e45724bdf07c361b99169e6731588418a9c3ef4667b47dcf1c00e06d4"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/top-copper.gbr",
+      "bytes": 638,
+      "sha256": "83e9c239648580467e91d1767de887992b9f866c6552a4fa22fe8e14a7de3ddf"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/fabrication/top-mask.gbr",
+      "bytes": 439,
+      "sha256": "232cef82e15efe1f5d06431ae7b74ecd226f44baa5937422b70afd29a21984a8"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/job.json",
+      "bytes": 176,
+      "sha256": "45c5df65619353319ccbd104faf7cb1d32753b935553bf4e7463114183163778"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/stdio-02305397/release/release-manifest.json",
+      "bytes": 1595,
+      "sha256": "be652d495fa1a85f96a1a85fc19cf7efe7c1823a2cb206a5671ffa63205f155d"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/workflow-02305397/agent-board.viamind.json",
+      "bytes": 977,
+      "sha256": "9965b47becfce3ca53f4feec1e9a72170a1abeb157d076401ee29f5d0f04197e"
+    },
+    {
+      "storage": "repository",
+      "path": "docs/verification/t0121/final/workflow-02305397/verification.json",
+      "bytes": 1265,
+      "sha256": "f11a7cedb589463e16371925f80e9ec05455ede7cf841bdfbad9f999d3d4cf43"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/viamind-02305397",
+      "bytes": 659427648,
+      "sha256": "ee8ca4dfb608eb28012fae196a872929b77e116029d089306734f970fa95859a"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/inspection-02305397",
+      "bytes": 560724824,
+      "sha256": "5e7bcb34ff1d941b6be82d96553cca1e3f5c585d86a50ca974a493e8c8dc3606"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.ppm",
+      "bytes": 5280017,
+      "sha256": "274c85396cf32e15e32d8c99c4807d348d68b127bd589c490d2dc7aa27cf861c"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.p7",
+      "bytes": 7040071,
+      "sha256": "27d3bdaa8017be57c3f256b2e85943feb118c1e44fd8045b48148ed0990e437d"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.ppm",
+      "bytes": 768015,
+      "sha256": "e8f455184272166cdf4c4b4a20d672937843a4db3eda3facfa8c0c3e306c5b04"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.p7",
+      "bytes": 1024069,
+      "sha256": "da99747ffe2eb55cc065e2020e410adc76d1c4e77ede1d6cdcfa2b75594b83ca"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.ppm",
+      "bytes": 5280017,
+      "sha256": "9b9832a6490aa979adc7950fc8c75a7dc1d9b5cc8c03612ed69d07626a303379"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.p7",
+      "bytes": 7040071,
+      "sha256": "63a8e57f58e75be3a502ef814689502fd9c8965ca74e419a50103e57be743fa3"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.ppm",
+      "bytes": 768015,
+      "sha256": "b00e0eb8029d1d233d04041c679eb30ea0c1c7a783618d0bb234269b02ca7142"
+    },
+    {
+      "storage": "retained",
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7",
+      "bytes": 1024069,
+      "sha256": "fbf8bffdcc67b9cf24363cdb3eaa2033fae655567acc4d8754a1a94c010e4c25"
+    }
+  ]
+}

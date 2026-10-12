@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "placed",
+    "pid": 83359,
+    "exited": true,
+    "seconds": 4.7,
+    "log": "{\"alpha_max\":255,\"alpha_min\":255,\"capture\":\"actual eframe native WGPU Screenshot event\",\"control_and_field_bounds\":[[500.0,422.0,574.90625,440.0],[582.90625,422.0,665.0625,440.0],[673.0625,422.0,719.40625,440.0],[500.0,542.0,680.0,561.0],[500.0,582.0,680.0,601.0],[500.0,622.0,680.0,641.0],[500.0,662.0,680.0,681.0]],\"document_status_unchanged\":true,\"full_session_unchanged\":true,\"os_input_claim\":false,\"path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.ppm\",\"pid\":83359,\"pixels\":[1600,1100],\"preparation\":\"actual egui Harness inputs; native app/state/memory reuse; no OS input\",\"rgba_path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.p7\",\"self_close_after_capture\":true,\"ui_passes\":11}\n",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "capture": "actual eframe native WGPU Screenshot event",
+      "control_and_field_bounds": [
+        [
+          500.0,
+          422.0,
+          574.90625,
+          440.0
+        ],
+        [
+          582.90625,
+          422.0,
+          665.0625,
+          440.0
+        ],
+        [
+          673.0625,
+          422.0,
+          719.40625,
+          440.0
+        ],
+        [
+          500.0,
+          542.0,
+          680.0,
+          561.0
+        ],
+        [
+          500.0,
+          582.0,
+          680.0,
+          601.0
+        ],
+        [
+          500.0,
+          622.0,
+          680.0,
+          641.0
+        ],
+        [
+          500.0,
+          662.0,
+          680.0,
+          681.0
+        ]
+      ],
+      "document_status_unchanged": true,
+      "full_session_unchanged": true,
+      "os_input_claim": false,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.ppm",
+      "pid": 83359,
+      "pixels": [
+        1600,
+        1100
+      ],
+      "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+      "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/placed-02305397.p7",
+      "self_close_after_capture": true,
+      "ui_passes": 11
+    },
+    "pixels": [
+      1600,
+      1100
+    ],
+    "p6_sha256": "274c85396cf32e15e32d8c99c4807d348d68b127bd589c490d2dc7aa27cf861c",
+    "p7_sha256": "27d3bdaa8017be57c3f256b2e85943feb118c1e44fd8045b48148ed0990e437d",
+    "rgb_sha256": "5e54f0e48dd70ac94969c13b75a73eed5169a5f2ca586ce3ca5b7e2b4f4ccade",
+    "rgba_sha256": "c81f373bd60dcdd699b92717d787eeef9273d23993766c82a0b55abc7a672913",
+    "png_sha256": "515aadfc664a620825f8c83e78c92a8f8d262f0b54d7eaa03a668056d1235e4a",
+    "alpha_min": 255,
+    "alpha_max": 255
+  }
+]

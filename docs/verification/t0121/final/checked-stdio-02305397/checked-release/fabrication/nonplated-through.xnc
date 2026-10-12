@@ -1,0 +1,11 @@
+; Viamind circular nonplated through holes, aligned top view
+; #@! TF.FileFunction,NonPlated,1,2,NPTH
+; #@! TF.SameCoordinates,00000000-0000-0000-0000-000000000001
+M48
+METRIC
+T01C1.000001
+%
+G05
+T01
+X34.000000Y-23.928203
+M30

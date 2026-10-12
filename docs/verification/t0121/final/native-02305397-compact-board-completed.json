@@ -1,0 +1,157 @@
+[
+  {
+    "mode": "compact",
+    "pid": 83877,
+    "exited": true,
+    "seconds": 2.5,
+    "log": "{\"alpha_max\":255,\"alpha_min\":255,\"capture\":\"actual eframe native WGPU Screenshot event\",\"control_and_field_bounds\":[[20.0,77.0,94.90625,95.0],[102.90625,77.0,185.0625,95.0],[193.0625,77.0,239.40625,95.0],[20.0,308.0,200.0,327.0]],\"document_status_unchanged\":true,\"full_session_unchanged\":true,\"os_input_claim\":false,\"path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.ppm\",\"pid\":83877,\"pixels\":[640,400],\"preparation\":\"actual egui Harness inputs; native app/state/memory reuse; no OS input\",\"rgba_path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.p7\",\"self_close_after_capture\":true,\"ui_passes\":11}\n",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "capture": "actual eframe native WGPU Screenshot event",
+      "control_and_field_bounds": [
+        [
+          20.0,
+          77.0,
+          94.90625,
+          95.0
+        ],
+        [
+          102.90625,
+          77.0,
+          185.0625,
+          95.0
+        ],
+        [
+          193.0625,
+          77.0,
+          239.40625,
+          95.0
+        ],
+        [
+          20.0,
+          308.0,
+          200.0,
+          327.0
+        ]
+      ],
+      "document_status_unchanged": true,
+      "full_session_unchanged": true,
+      "os_input_claim": false,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.ppm",
+      "pid": 83877,
+      "pixels": [
+        640,
+        400
+      ],
+      "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+      "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/compact-02305397.p7",
+      "self_close_after_capture": true,
+      "ui_passes": 11
+    },
+    "pixels": [
+      640,
+      400
+    ],
+    "p6_sha256": "e8f455184272166cdf4c4b4a20d672937843a4db3eda3facfa8c0c3e306c5b04",
+    "p7_sha256": "da99747ffe2eb55cc065e2020e410adc76d1c4e77ede1d6cdcfa2b75594b83ca",
+    "rgb_sha256": "9932fdf95e2be43722da4fe41012b19d963774da5d41b66cacb4d1f064a6b67c",
+    "rgba_sha256": "5e2dd0a735c28a116da4e712e97468756c7bbf5cfc7a9a6ce6680e68fcd8b429",
+    "png_sha256": "4493d0d935b1c5d60d5b02ebcce0cc6c3fc951c33c59f36b582cf861db1ecd73",
+    "alpha_min": 255,
+    "alpha_max": 255
+  },
+  {
+    "mode": "board",
+    "pid": 84041,
+    "exited": true,
+    "seconds": 4.23,
+    "log": "{\"alpha_max\":255,\"alpha_min\":255,\"capture\":\"actual eframe native WGPU Screenshot event\",\"control_and_field_bounds\":[],\"document_status_unchanged\":true,\"full_session_unchanged\":true,\"os_input_claim\":false,\"path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.ppm\",\"pid\":84041,\"pixels\":[1600,1100],\"preparation\":\"actual egui Harness inputs; native app/state/memory reuse; no OS input\",\"rgba_path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.p7\",\"self_close_after_capture\":true,\"ui_passes\":11}\n",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "capture": "actual eframe native WGPU Screenshot event",
+      "control_and_field_bounds": [],
+      "document_status_unchanged": true,
+      "full_session_unchanged": true,
+      "os_input_claim": false,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.ppm",
+      "pid": 84041,
+      "pixels": [
+        1600,
+        1100
+      ],
+      "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+      "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/board-02305397.p7",
+      "self_close_after_capture": true,
+      "ui_passes": 11
+    },
+    "pixels": [
+      1600,
+      1100
+    ],
+    "p6_sha256": "9b9832a6490aa979adc7950fc8c75a7dc1d9b5cc8c03612ed69d07626a303379",
+    "p7_sha256": "63a8e57f58e75be3a502ef814689502fd9c8965ca74e419a50103e57be743fa3",
+    "rgb_sha256": "5bd23d45a76105ed2085f0719dee0b3a65bd9ac3cff4328152263b54b12c5eca",
+    "rgba_sha256": "2d90b4716d2a53483d8a149107f9931460b27762f3cce3a5300fbc555bf47ec0",
+    "png_sha256": "15afce2bfe641f4d8ccb7bd51b644830d2cba2a9dc60dd69819a22bb9cb764ed",
+    "alpha_min": 255,
+    "alpha_max": 255
+  },
+  {
+    "mode": "completed",
+    "pid": 84133,
+    "exited": true,
+    "seconds": 2.67,
+    "log": "{\"alpha_max\":255,\"alpha_min\":255,\"capture\":\"actual eframe native WGPU Screenshot event\",\"control_and_field_bounds\":[[23.0,41.0,204.21875,59.0],[387.78125,41.0,542.40625,59.0],[22.0,289.0,608.0,331.0]],\"document_status_unchanged\":true,\"full_session_unchanged\":true,\"os_input_claim\":false,\"path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.ppm\",\"pid\":84133,\"pixels\":[640,400],\"preparation\":\"actual egui Harness inputs; native app/state/memory reuse; no OS input\",\"rgba_path\":\"/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7\",\"self_close_after_capture\":true,\"ui_passes\":11}\n",
+    "helper": {
+      "alpha_max": 255,
+      "alpha_min": 255,
+      "capture": "actual eframe native WGPU Screenshot event",
+      "control_and_field_bounds": [
+        [
+          23.0,
+          41.0,
+          204.21875,
+          59.0
+        ],
+        [
+          387.78125,
+          41.0,
+          542.40625,
+          59.0
+        ],
+        [
+          22.0,
+          289.0,
+          608.0,
+          331.0
+        ]
+      ],
+      "document_status_unchanged": true,
+      "full_session_unchanged": true,
+      "os_input_claim": false,
+      "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.ppm",
+      "pid": 84133,
+      "pixels": [
+        640,
+        400
+      ],
+      "preparation": "actual egui Harness inputs; native app/state/memory reuse; no OS input",
+      "rgba_path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0121/completed-02305397.p7",
+      "self_close_after_capture": true,
+      "ui_passes": 11
+    },
+    "pixels": [
+      640,
+      400
+    ],
+    "p6_sha256": "b00e0eb8029d1d233d04041c679eb30ea0c1c7a783618d0bb234269b02ca7142",
+    "p7_sha256": "fbf8bffdcc67b9cf24363cdb3eaa2033fae655567acc4d8754a1a94c010e4c25",
+    "rgb_sha256": "86a9852a907222706152feb6b375238f5059441add360e943350a91e83c288b6",
+    "rgba_sha256": "87016d19b7a55653ae5b6ad55c320a08671d155e41722483807e325889acc0f6",
+    "png_sha256": "f31d62164124ba3d4a5269ee857c73188f6685292819ad0ee85527c497861d95",
+    "alpha_min": 255,
+    "alpha_max": 255
+  }
+]
