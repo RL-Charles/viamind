@@ -275,7 +275,7 @@ pub(crate) fn calculate_with_budget(
         exclusions: vec![
             "board nets and board annotation",
             "ERC and electrical pin compatibility",
-            "buses and hierarchical sheet pins",
+            "nonconducting bus/entry graphics and hierarchical sheet pins",
             "implicit hidden power-pin connections and net classes",
             "symbol bodies do not conduct; legacy empty sheets have no modeled members",
         ],

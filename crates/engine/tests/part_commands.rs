@@ -35,6 +35,8 @@ fn builtin_specs() {
             "create_package_pcb_component",
             "create_schematic_pcb_component",
             "delete_part",
+            "delete_schematic_bus",
+            "delete_schematic_bus_breakout",
             "delete_schematic_sheet",
             "delete_symbol_package",
             "delete_track",
@@ -63,10 +65,12 @@ fn builtin_specs() {
             "set_part_assembly",
             "set_part_holes",
             "set_part_pads",
+            "set_schematic_bus",
             "set_track_properties",
             "set_via_properties",
             "synchronize_schematic_pcb",
             "transform_parts",
+            "unfold_schematic_bus_member",
             "update_part"
         ]
     );
