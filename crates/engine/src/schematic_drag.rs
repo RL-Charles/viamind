@@ -194,6 +194,8 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
         for pad in p.pads.iter().flat_map(|pads| &pads.0) {
             ids.insert(pad.id);
         }
+        // Mechanical holes share the global identity namespace (validated above).
+        ids.extend(p.holes.iter().flatten().map(|h| h.id));
     }
     ids.extend(project.board.tracks.keys().chain(project.board.vias.keys()).copied());
     for sheet in &snapshot.sheets {
@@ -207,7 +209,7 @@ fn capture(project: &Project, input: DragSchematicSymbol) -> Result<Capture, Com
     }
     let mut global_rows = 1 + project.board.parts.len() + project.board.tracks.len() + project.board.vias.len() + project.schematic.sheets.len();
     for part in project.board.parts.values() {
-        global_rows += part.pads.as_ref().map_or(0, |p| p.0.len());
+        global_rows += part.pads.as_ref().map_or(0, |p| p.0.len()) + part.holes.as_ref().map_or(0, Vec::len);
     }
     for sheet in &snapshot.sheets {
         if let Some(c) = &sheet.content {
@@ -732,6 +734,7 @@ mod tests {
         let (mut project, sheet, symbol, _) = fixture();
         let part = viamind_doc::Part {
             artwork: None,
+            holes: None,
             assembly: Some(Box::new(viamind_doc::AssemblyMetadata { manufacturer: Some("x".repeat(3 * 1024 * 1024)), ..Default::default() })),
             schematic_symbol: None,
             schematic_package: None,
@@ -911,6 +914,7 @@ mod tests {
         // borrowed aggregate must reject before that validator allocates ID sets.
         let part = viamind_doc::Part {
             artwork: None,
+            holes: None,
             assembly: None,
             schematic_symbol: None,
             schematic_package: None,
@@ -931,5 +935,63 @@ mod tests {
         assert!(result.to_string().contains("100000 combined"), "{result}");
         assert_eq!(e.event_cursor(), cursor);
         assert_eq!(e.read(|p| p.board.parts[&id].pads.as_ref().unwrap().0.len()), 100_001);
+    }
+    #[test]
+    fn mechanical_holes_join_drag_identity_set_and_combined_preflight() {
+        let _lock = LOCK.lock().unwrap();
+        let (mut project, sheet, symbol, _) = fixture();
+        let hole = |key: String| viamind_doc::footprint_holes::PartHole {
+            id: ObjectId::new(),
+            key,
+            center: viamind_geom::Point::new(Nm(0), Nm(0)),
+            diameter: Nm(1_000_000),
+        };
+        let mut part = viamind_doc::Part {
+            artwork: None,
+            holes: Some(vec![hole("mount".into())]),
+            assembly: None,
+            schematic_symbol: None,
+            schematic_package: None,
+            pads: None,
+            id: ObjectId::new(),
+            designator: "H1".into(),
+            value: String::new(),
+            footprint: "F".into(),
+            position: viamind_geom::Point::new(Nm(0), Nm(0)),
+            rotation_mdeg: 0,
+            side: viamind_doc::Side::Top,
+        };
+        let hole_id = part.holes.as_ref().unwrap()[0].id;
+        let rows_without = {
+            let mut legacy = project.clone();
+            let mut bare = part.clone();
+            bare.holes = None;
+            legacy.board.parts.insert(bare.id, bare);
+            let e = EngineHandle::new(legacy);
+            capture(&e.read(Clone::clone), request(&e, sheet, symbol, p(3, 7))).unwrap().global_rows
+        };
+        project.board.parts.insert(part.id, part.clone());
+        let e = EngineHandle::new(project.clone());
+        let captured = capture(&e.read(Clone::clone), request(&e, sheet, symbol, p(3, 7))).unwrap();
+        assert!(captured.ids.contains(&hole_id), "fresh wire identities must avoid authored hole UUIDs");
+        assert_eq!(captured.global_rows, rows_without + 1);
+        // Pads alone fit; the 256 authored holes push the borrowed aggregate over 100000.
+        let pads = 100_000 - rows_without - 100;
+        part.pads = Some(viamind_doc::Pads(vec![
+            viamind_doc::Pad {
+                id: ObjectId::new(),
+                number: "1".into(),
+                position: viamind_geom::Point::new(Nm(0), Nm(0)),
+                width: Nm(1),
+                height: Nm(1),
+                net: None,
+                apertures: None,
+            };
+            pads
+        ]));
+        part.holes = Some((0..256).map(|i| hole(format!("h{i}"))).collect());
+        project.board.parts.insert(part.id, part);
+        let error = crate::schematic_budget::project(&project, 0, "drag").unwrap_err();
+        assert!(error.to_string().contains("pad/hole"), "{error}");
     }
 }

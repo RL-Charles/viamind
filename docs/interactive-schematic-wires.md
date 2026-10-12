@@ -51,7 +51,7 @@ per string and 2 MiB aggregate text; pointer attachment uses at most 30000 index
 anchors. The available grids are 0.1, 0.25, 0.5, 1 and 1.27 mm.
 
 Commit also validates project-wide identities and references. Before that work,
-it requires at most 100000 combined project/sheet/part/pad/copper/schematic/pin
+it requires at most 100000 combined project/sheet/part/pad/hole/copper/schematic/pin
 identities including the new wires, 1000 sheets, and 4 MiB aggregate schematic
 text with 4096 bytes per string. An oversized unrelated board or sheet can reject
 a commit even when the selected sheet snapshot succeeds. This bounded commit

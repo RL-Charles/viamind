@@ -62,7 +62,7 @@ pub(crate) fn project(project: &Project, added: usize, purpose: &str) -> Result<
         count = count.saturating_add(n);
         if count > 100_000 {
             Err(invalid(format!(
-                "{purpose} supports at most 100000 combined project/sheet/part/pad/copper/schematic/pin identities including additions"
+                "{purpose} supports at most 100000 combined project/sheet/part/pad/hole/copper/schematic/pin identities including additions"
             )))
         } else {
             Ok(())
@@ -73,7 +73,7 @@ pub(crate) fn project(project: &Project, added: usize, purpose: &str) -> Result<
         return Err(invalid(format!("{purpose} supports at most 1000 sheets")));
     }
     for p in project.board.parts.values() {
-        more(p.pads.as_ref().map_or(0, |p| p.0.len()))?;
+        more(p.pads.as_ref().map_or(0, |p| p.0.len()).saturating_add(p.holes.as_ref().map_or(0, Vec::len)))?;
     }
     let mut bytes = 0usize;
     for sheet in project.schematic.sheets.values() {
