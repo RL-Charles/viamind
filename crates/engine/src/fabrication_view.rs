@@ -129,11 +129,18 @@ impl EngineHandle {
             let geometry = if extension.eq_ignore_ascii_case("gbr") {
                 view::parse_gerber(text, &mut budget)
             } else if extension.eq_ignore_ascii_case("xnc") {
-                view::parse_xnc(text, &mut budget)
+                if path.file_name().is_some_and(|n| n == "nonplated-through.xnc") {
+                    view::parse_nonplated_xnc(text, &mut budget).map(|(geometry, _)| geometry)
+                } else {
+                    view::parse_xnc(text, &mut budget)
+                }
             } else {
                 return Err(invalid("choose explicit .gbr or .xnc files"));
             }
             .map_err(invalid)?;
+            if path.file_name().is_some_and(|n| n == "plated-through.xnc") && geometry.layer == view::FabricationLayer::NonplatedDrill {
+                return Err(invalid("plated-through filename contradicts nonplated XNC file attributes"));
+            }
             if geometry.same_coordinates.is_some_and(|id| id != input.expected_project) {
                 return Err(invalid("fabrication SameCoordinates UUID differs from the requested project"));
             }
