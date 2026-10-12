@@ -201,6 +201,18 @@ fn actual_detached_opening_text_identity_and_cursor_survive_earlier_pad_removal(
     let focused = h.ctx.memory(egui::Memory::focused).unwrap();
     // Save the actual text cursor selection, not only an accesskit identity.
     let selection = egui::TextEdit::load_state(&h.ctx, focused).unwrap().cursor.char_range();
+    // The selected second row leaves the virtual table scrolled below row1.
+    // Reveal an actually painted second-row field, then wheel over that inner area.
+    reveal(&mut h, "Pad 2 number");
+    let table_point = h.get_by_label("Pad 2 number").rect().center();
+    h.hover_at(table_point);
+    h.event(Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(0.0, 600.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: Modifiers::NONE,
+    });
+    h.run_steps(12);
     click(&mut h, "Remove definition pad 1");
     reveal(&mut h, "Paste height");
     h.get_by_label("Paste height").focus();
