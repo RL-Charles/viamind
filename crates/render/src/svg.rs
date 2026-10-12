@@ -231,7 +231,7 @@ fn rect_attrs(r: ViewBounds, origin: (i64, i64)) -> String {
 /// Maximum total UTF-8 text copied into a board view snapshot.
 pub const MAX_BOARD_VIEW_TEXT: usize = 2 * 1024 * 1024;
 fn validate_board_budget(project: &Project) -> io::Result<()> {
-    viamind_doc::footprint_holes::preflight_project(project, None).map_err(invalid)?;
+    viamind_doc::footprint_holes::validate_physical_identities(project).map_err(invalid)?;
     let policy = viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(invalid)?;
     let mut count = project.board.parts.len().saturating_add(project.board.tracks.len()).saturating_add(project.board.vias.len().saturating_mul(3));
     count = count.saturating_add(policy.rows);

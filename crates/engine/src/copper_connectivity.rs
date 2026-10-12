@@ -135,7 +135,7 @@ impl CopperProof {
     fn fallback(reason: &'static str) -> Self {
         Self {
             coverage: CopperConnectivityCoverage {
-                budget_fallback: !matches!(reason, "invalid_via_geometry" | "unlocated_nonplated_hole"),
+                budget_fallback: !matches!(reason, "invalid_via_geometry" | "unlocated_nonplated_hole" | "invalid_nonplated_model"),
                 fallback_reason: Some(reason),
                 ..Default::default()
             },
@@ -146,6 +146,9 @@ impl CopperProof {
         let mut result = Self { coverage: CopperConnectivityCoverage::default(), pads: BTreeMap::new() };
         if !budget(project) {
             return Self::fallback("allocation_budget");
+        }
+        if viamind_doc::footprint_holes::validate_physical_identities(project).is_err() {
+            return Self::fallback("invalid_nonplated_model");
         }
         // All holes matter, including unassigned and foreign-net vias. Broad phase
         // boxes are exact here (coordinates below 2^53); over-exclusion is safe.

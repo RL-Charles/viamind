@@ -290,7 +290,7 @@ impl DrcReport {
 pub fn run_drc(project: &Project, input: &DrcInput) -> Result<DrcReport, DrcError> {
     viamind_doc::named_net_rule_budget(&project.board.net_rules).map_err(|e| DrcError(e.into()))?;
     let rules = input.validate()?;
-    viamind_doc::footprint_holes::preflight_project(project, None).map_err(DrcError)?;
+    viamind_doc::footprint_holes::validate_physical_identities(project).map_err(DrcError)?;
     // Charge every physical row before building geometry, including mechanical-only Parts.
     let authored_holes = project.board.parts.values().any(|p| p.holes.is_some());
     let mut physical_rows = project.board.tracks.len().saturating_add(project.board.vias.len());
