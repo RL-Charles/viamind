@@ -49,6 +49,7 @@ impl CommandHost for EngineHost {
                 | "load_footprint_definition"
                 | "preview_footprint_conversion"
                 | "preview_pcb_import"
+                | "preview_board_outline_dxf"
                 | "plan_cardinal_track_cleanup"
                 | "plan_pad_walkaround"
                 | "plan_pad_via_walkaround"
@@ -109,6 +110,16 @@ impl CommandHost for EngineHost {
         });
         commands.push(HostCommand { name: "preview_pcb_import".into(), description: "Read-only bounded standalone PCB S-expression preview. Exact nm front zero-angle footprints with exact cardinal rectangular SMD pads (-360..360 degrees), straight outer tracks, through vias and polygon Edge.Cuts outline/cutouts only. Returns per-list disposition/reasons and source IDs, explicit full_fidelity=false, source SHA256 plus current project/full cursor guards. Unknown copper/outline semantics block import. Regular file <=8MiB; no source writes, mutation or native-path activation.".into(), input_schema: input_schema::<viamind_engine::PreviewPcbImport>() });
         commands.push(HostCommand { name: "import_pcb".into(), description: "Replace a clean shared session with reparsed supported standalone PCB geometry guarded by exact expected_project, full expected_cursor and lowercase expected_source_sha256 from preview. Reject dirty native work, stale context, changed source or blocked fidelity. Imported project has fresh project UUID, preserved supported native object UUIDs, new event stream, empty history/selection, path null and dirty=true until native Save As. Source files never written. Lifecycle replacement is not an undoable edit; subsequent native edits are undoable.".into(), input_schema: input_schema::<viamind_engine::ImportPcb>() });
+        commands.push(HostCommand {
+            name: "preview_board_outline_dxf".into(),
+            description: "Read-only certified polygon conversion of exactly one ASCII DXF source (text <=8MiB or local regular-file path <=4096 bytes, one nonblocking descriptor). Straight closed LWPOLYLINE/POLYLINE, closed polylines with 0<|bulge|<=1, ARC+LINE loops joined at exactly equal rounded Nm endpoints and CIRCLE rings; units header/mm/inches, optional exact layer, REQUIRED tolerance_nm 10..1000000. Each emitted chord has a conservative analytic upper bound (sagitta plus enclosed source/evaluation/rounding) <= tolerance; returns polygon, per-segment fidelity rows, achieved bound, source SHA256, project/full cursor/exact current outline guards. Limits: 131072 pairs, 16384 records, 2048 segments/vertices, 65 rings, depth24, 262144 work steps, 2MiB response. Native result is polygon-only; no analytic curves, welding, topology or fabrication guarantee. No mutation or source writes.".into(),
+            input_schema: input_schema::<viamind_engine::PreviewBoardOutlineDxf>(),
+        });
+        commands.push(HostCommand {
+            name: "apply_board_outline_dxf".into(),
+            description: "Writer: reread/reparse the same DXF source and options from preview_board_outline_dxf, require identical lowercase expected_source_sha256, recompute the same certified bounded plan outside the design lock, then under exact expected project_id/outline and full expected_cursor apply ONE undoable BoardOutline polygon delta (equal geometry is a no-op). Peer edits, new streams, reopened projects or changed source bytes refuse without mutation. Undo/redo, native save and log replay use the ordinary polygon delta; source files are never written. Refused in restricted agent modes.".into(),
+            input_schema: input_schema::<viamind_engine::ApplyBoardOutlineDxf>(),
+        });
         commands.push(HostCommand {
             name: "new_project".into(),
             description: "Create a new unnamed project in this shared session (name defaults to Untitled). Resets history and selection; old event cursors require get_session_state resynchronization. Unsaved changes reject unless discard_dirty is true with the current expected_cursor. Stale cursors reject.".into(),
@@ -289,6 +300,18 @@ impl CommandHost for EngineHost {
         if name == "convert_footprint_file" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;
             return serde_json::to_value(self.engine.convert_footprint_file(input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "preview_board_outline_dxf" {
+            viamind_engine::preflight_dxf_outline_input(&input)?;
+            let input: viamind_engine::PreviewBoardOutlineDxf =
+                serde_json::from_value(input).map_err(|e| format!("invalid DXF preview input: {e}"))?;
+            return serde_json::to_value(self.engine.preview_board_outline_dxf(&input).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+        }
+        if name == "apply_board_outline_dxf" {
+            viamind_engine::preflight_dxf_outline_input(&input)?;
+            let input: viamind_engine::ApplyBoardOutlineDxf = serde_json::from_value(input).map_err(|e| format!("invalid DXF apply input: {e}"))?;
+            return serde_json::to_value(self.engine.apply_board_outline_dxf(&input, Self::origin(agent)).map_err(|e| e.to_string())?)
+                .map_err(|e| e.to_string());
         }
         if name == "preview_pcb_import" {
             let input = serde_json::from_value(input).map_err(|e| e.to_string())?;

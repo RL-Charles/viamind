@@ -119,7 +119,7 @@ pub use delta::{Delta, apply_all, coalesce, invert};
 pub use document::{DocumentStatus, NewProject, OpenProject, ReplaceGuard, SaveProject, SaveResult};
 pub use engine::{Engine, Tx};
 pub use event::{ChangeEvent, ChangeKind, Waker};
-pub use handle::EngineHandle;
+pub use handle::{EngineHandle, WeakEngineHandle};
 pub use log::{EventLog, LogError};
 pub use pads::{PadInput, SetPartPads};
 pub use placement::{OriginAlignment, PartPlacement, PlacementAxis, TransformParts};
@@ -165,6 +165,11 @@ pub use symbol_library::{
 
 mod pcb_import;
 pub use pcb_import::{ImportPcb, PcbImportPreview, PcbImportResult, PreviewPcbImport};
+
+pub mod dxf_outline;
+pub use dxf_outline::{
+    ApplyBoardOutlineDxf, DxfOutlineApplied, DxfOutlinePreview, DxfSourceKind, PreviewBoardOutlineDxf, preflight_dxf_outline_input,
+};
 
 mod fabrication_view;
 pub use fabrication_view::{FabricationInspection, InspectFabricationFiles, InspectedFabricationFile};

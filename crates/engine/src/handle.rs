@@ -14,6 +14,31 @@ use crate::event::ChangeEvent;
 use crate::registry::{CommandRegistry, EngineError};
 use crate::transaction::{CommandCall, ExecResult, Origin, TxId, TxInfo};
 
+/// Weak counterpart of [`EngineHandle`]; [`upgrade`](WeakEngineHandle::upgrade) fails once the design is dropped.
+#[derive(Clone, Debug)]
+pub struct WeakEngineHandle {
+    engine: std::sync::Weak<Mutex<Engine>>,
+    session_changed: std::sync::Weak<Condvar>,
+    saves: std::sync::Weak<Mutex<()>>,
+    automatic_drc: std::sync::Weak<crate::auto_drc::AutoDrcController>,
+    agent_presence: std::sync::Weak<Mutex<crate::agent_presence::PresenceStore>>,
+    pcb_branches: std::sync::Weak<Mutex<crate::pcb_branches::BranchStore>>,
+    agent_policy: std::sync::Weak<crate::agent_policy::AgentPolicy>,
+}
+impl WeakEngineHandle {
+    pub fn upgrade(&self) -> Option<EngineHandle> {
+        Some(EngineHandle {
+            engine: self.engine.upgrade()?,
+            session_changed: self.session_changed.upgrade()?,
+            saves: self.saves.upgrade()?,
+            automatic_drc: self.automatic_drc.upgrade()?,
+            agent_presence: self.agent_presence.upgrade()?,
+            pcb_branches: self.pcb_branches.upgrade()?,
+            agent_policy: self.agent_policy.upgrade()?,
+        })
+    }
+}
+
 /// Cheap-to-clone, thread-safe handle to one engine.
 ///
 /// The egui UI thread and the tokio MCP server each hold a clone and call the
@@ -40,6 +65,19 @@ impl EngineHandle {
     /// A handle to a new engine for `project` accepting the commands in `registry`.
     pub fn with_registry(project: Project, registry: CommandRegistry) -> EngineHandle {
         EngineHandle::from_engine(Engine::with_registry(project, registry))
+    }
+
+    /// Non-owning reference for retained background workers; it never keeps a closed design alive.
+    pub fn downgrade(&self) -> WeakEngineHandle {
+        WeakEngineHandle {
+            engine: Arc::downgrade(&self.engine),
+            session_changed: Arc::downgrade(&self.session_changed),
+            saves: Arc::downgrade(&self.saves),
+            automatic_drc: Arc::downgrade(&self.automatic_drc),
+            agent_presence: Arc::downgrade(&self.agent_presence),
+            pcb_branches: Arc::downgrade(&self.pcb_branches),
+            agent_policy: Arc::downgrade(&self.agent_policy),
+        }
     }
 
     /// Wraps an existing engine.
