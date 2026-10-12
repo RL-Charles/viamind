@@ -1,10 +1,10 @@
 //! Guarded application of detached reusable local pad geometry.
 use crate::{Command, CommandError, Delta};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use viamind_doc::{ObjectId, Pad, Pads, Part, Project, footprint::Footprint};
 
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ApplyFootprint {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14,9 +14,38 @@ pub struct ApplyFootprint {
     pub footprint: Footprint,
 }
 
+impl<'de> Deserialize<'de> for ApplyFootprint {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let value = crate::pad_apertures::StrictValue::deserialize(d)?.0;
+        if let Some(expected) = value.get("expected") {
+            crate::pad_apertures::preflight_part(expected).map_err(serde::de::Error::custom)?;
+        }
+        if let Some(footprint) = value.get("footprint") {
+            crate::footprint_definition::preflight_definition(footprint).map_err(serde::de::Error::custom)?;
+        }
+        crate::pad_apertures::bounded_bytes(&value).map_err(serde::de::Error::custom)?;
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Input {
+            #[serde(default)]
+            expected_cursor: Option<crate::EventCursor>,
+            expected_project: ObjectId,
+            expected: Part,
+            footprint: Footprint,
+        }
+        let input: Input = serde_json::from_value(value).map_err(serde::de::Error::custom)?;
+        Ok(Self {
+            expected_cursor: input.expected_cursor,
+            expected_project: input.expected_project,
+            expected: input.expected,
+            footprint: input.footprint,
+        })
+    }
+}
+
 impl Command for ApplyFootprint {
     const NAME: &'static str = "apply_footprint";
-    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
+    const DESCRIPTION: &'static str = "Apply reusable rectangular SMD local geometry, explicit mounted-side artwork and footprint name to a part guarded by exact project and part snapshots. Matching pad numbers preserve IDs/nets, new pads have fresh IDs and no net. Retains component placement. Full expected_cursor required when source or target artwork or pad apertures is explicit; legacy-to-legacy omission remains supported. One undoable edit. Native Viamind geometry; no KiCad compatibility implied.";
     fn expected_cursor(&self) -> Option<crate::EventCursor> {
         self.expected_cursor
     }
@@ -28,11 +57,16 @@ impl Command for ApplyFootprint {
         if current != &self.expected {
             return Err(CommandError::conflict("part changed; reload before applying footprint"));
         }
-        if (self.footprint.artwork.is_some() || current.artwork.is_some()) && self.expected_cursor.is_none() {
-            return Err(CommandError::invalid("expected_cursor", "explicit artwork application requires full initial cursor"));
+        if (self.footprint.artwork.is_some()
+            || current.artwork.is_some()
+            || self.footprint.pads.iter().any(|p| p.apertures.is_some())
+            || current.pads.as_ref().is_some_and(|pads| pads.0.iter().any(|p| p.apertures.is_some())))
+            && self.expected_cursor.is_none()
+        {
+            return Err(CommandError::invalid("expected_cursor", "explicit artwork/aperture application requires full initial cursor"));
         }
-        crate::footprint_artwork::validate_part_artwork(current)?;
-        self.footprint.validate().map_err(|e| CommandError::invalid("footprint", e))?;
+        crate::pad_apertures::validate_part(current)?;
+        crate::footprint_definition::validate_definition(&self.footprint).map_err(|e| CommandError::invalid("footprint", e))?;
         let existing = current.pads.as_ref().map(|p| p.0.as_slice()).unwrap_or_default();
         let mut after = current.clone();
         after.footprint = self.footprint.name;
@@ -51,6 +85,7 @@ impl Command for ApplyFootprint {
                             position: viamind_geom::Point::new(p.position.x, p.position.y),
                             width: p.width,
                             height: p.height,
+                            apertures: p.apertures.clone(),
                         }
                     })
                     .collect::<Vec<_>>(),
@@ -65,7 +100,7 @@ impl Command for ApplyFootprint {
 }
 
 /// Capture/reuse a committed footprint through a local library file.
-#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct FootprintFile {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -73,6 +108,30 @@ pub struct FootprintFile {
     pub expected_project: ObjectId,
     pub expected: Part,
     pub path: std::path::PathBuf,
+}
+
+impl<'de> Deserialize<'de> for FootprintFile {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let v = crate::pad_apertures::StrictValue::deserialize(d)?.0;
+        if v.get("path").and_then(serde_json::Value::as_str).is_some_and(|s| s.len() > 4096) {
+            return Err(serde::de::Error::custom("footprint path exceeds4096 bytes before typed decoding"));
+        }
+        if let Some(p) = v.get("expected") {
+            crate::pad_apertures::preflight_part(p).map_err(serde::de::Error::custom)?;
+        }
+        crate::pad_apertures::bounded_bytes(&v).map_err(serde::de::Error::custom)?;
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Input {
+            #[serde(default)]
+            expected_cursor: Option<crate::EventCursor>,
+            expected_project: ObjectId,
+            expected: Part,
+            path: std::path::PathBuf,
+        }
+        let i: Input = serde_json::from_value(v).map_err(serde::de::Error::custom)?;
+        Ok(Self { expected_cursor: i.expected_cursor, expected_project: i.expected_project, expected: i.expected, path: i.path })
+    }
 }
 
 impl crate::EngineHandle {
@@ -94,7 +153,7 @@ impl crate::EngineHandle {
             if project.id != input.expected_project || project.board.part(&input.expected.id) != Some(&input.expected) {
                 return Err(crate::EngineError::File { message: "project or part changed; reload before exporting footprint".into() });
             }
-            crate::footprint_artwork::validate_part_artwork(&input.expected).map_err(|e| crate::EngineError::File { message: e.to_string() })?;
+            crate::pad_apertures::validate_part(&input.expected).map_err(|e| crate::EngineError::File { message: e.to_string() })?;
             Ok(input.expected.clone())
         })?;
         let footprint = Footprint::from_part(&part).map_err(|message| crate::EngineError::File { message })?;

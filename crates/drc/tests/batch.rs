@@ -23,6 +23,7 @@ fn part(designator: &str, x: f64, y: f64, width: f64, height: f64, angle: i32, s
                 width: Nm::from_mm(width),
                 height: Nm::from_mm(height),
                 net: net.map(str::to_owned),
+                apertures: None,
             }])
             .unwrap(),
         ),

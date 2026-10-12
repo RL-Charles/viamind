@@ -7,7 +7,7 @@ use std::{
     io::{self, Write},
     path::{Path, PathBuf},
 };
-use viamind_doc::{CopperLayer, Project, Side};
+use viamind_doc::{ApertureKind, ApertureResolution, CopperLayer, Project, Side, resolve_aperture};
 use viamind_geom::Point;
 
 const MAX_OBJECTS: usize = 200_000;
@@ -22,6 +22,8 @@ pub struct FabricationOptions {
     pub mask_expansion_mm: f64,
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_silkscreen: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_paste: bool,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -37,6 +39,8 @@ pub struct FabricationExportRequest<C> {
     pub mask_expansion_mm: f64,
     #[serde(default, skip_serializing_if = "is_false")]
     pub include_silkscreen: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub include_paste: bool,
     #[serde(default)]
     pub expected_cursor: Option<C>,
 }
@@ -59,6 +63,7 @@ pub fn fabrication_schema() -> Value {
         "path":{"type":"string","minLength":1},
         "mask_expansion_mm":{"type":"number","minimum":0,"maximum":10,"default":0},
         "include_silkscreen":{"type":"boolean","default":false},
+        "include_paste":{"type":"boolean","default":false},
         "expected_cursor":{"type":["object","null"],"additionalProperties":false,"required":["stream_id","sequence"],"properties":{
             "stream_id":{"type":"string","format":"uuid"},"sequence":{"type":"integer","minimum":0}
         }}
@@ -67,6 +72,8 @@ pub fn fabrication_schema() -> Value {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FabricationManifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pad_apertures: Option<PadApertureSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub footprint_artwork: Option<FootprintArtworkSummary>,
     pub project_id: String,
@@ -79,6 +86,24 @@ pub struct FabricationManifest {
     pub cutout_count: usize,
     pub files: Vec<String>,
     pub exclusions: Vec<String>,
+}
+
+/// Explicit opening coverage; no stencil or manufacturer suitability claim.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PadApertureSummary {
+    pub include_paste: bool,
+    pub explicit_pads: usize,
+    pub legacy_pads: usize,
+    pub mask_rectangles: usize,
+    pub mask_omissions: usize,
+    pub paste_rectangles: usize,
+    pub paste_omissions: usize,
+    pub top_mask_rectangles: usize,
+    pub bottom_mask_rectangles: usize,
+    pub top_paste_rectangles: usize,
+    pub bottom_paste_rectangles: usize,
+    pub explicit_coverage_complete: bool,
 }
 
 /// Captured explicit artwork counts; no clipping or courtyard checking is certified.
@@ -187,12 +212,36 @@ impl crate::FabricationSnapshot {
         publish_fabrication(self, options, path, native)
     }
 }
+// Count only emitted pad geometry; absence must preserve the old two-primitive
+// copper + legacy-mask eligibility, and intentional omission adds no primitive.
+fn emitted_pad_graphics(s: &PadApertureSummary) -> usize {
+    s.explicit_pads.saturating_add(s.legacy_pads).saturating_add(s.legacy_pads).saturating_add(s.mask_rectangles).saturating_add(if s.include_paste {
+        s.paste_rectangles
+    } else {
+        0
+    })
+}
+
 fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Result<FabricationPackage> {
     if !options.mask_expansion_mm.is_finite() || !(0.0..=10.0).contains(&options.mask_expansion_mm) {
         return Err(invalid("mask_expansion_mm must be finite and between 0 and 10 mm"));
     }
     let outline = project.board.outline.as_ref().ok_or_else(|| invalid("fabrication export requires an explicit board outline"))?;
     let mut pads = 0usize;
+    let mut aperture_summary = PadApertureSummary {
+        include_paste: options.include_paste,
+        explicit_pads: 0,
+        legacy_pads: 0,
+        mask_rectangles: 0,
+        mask_omissions: 0,
+        paste_rectangles: 0,
+        paste_omissions: 0,
+        top_mask_rectangles: 0,
+        bottom_mask_rectangles: 0,
+        top_paste_rectangles: 0,
+        bottom_paste_rectangles: 0,
+        explicit_coverage_complete: false,
+    };
     let mut artwork = FootprintArtworkSummary {
         include_silkscreen: options.include_silkscreen,
         explicit_components: 0,
@@ -220,9 +269,32 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
             invalid(format!("component {} has no explicit pads; legacy graphical footprint previews cannot be fabricated", part.designator))
         })?;
         pads = pads.saturating_add(explicit.0.len());
+        for pad in &explicit.0 {
+            if let Some(a) = &pad.apertures {
+                a.validate_at(pad.position).map_err(invalid)?;
+                if !options.include_paste && a.paste.is_some() {
+                    return Err(invalid("explicit paste geometry requires include_paste=true; refusing silent omission"));
+                }
+                aperture_summary.explicit_pads += 1;
+                aperture_summary.mask_rectangles += usize::from(a.mask.is_some());
+                aperture_summary.mask_omissions += usize::from(a.mask.is_none());
+                aperture_summary.paste_rectangles += usize::from(a.paste.is_some());
+                aperture_summary.paste_omissions += usize::from(a.paste.is_none());
+                if part.side == Side::Top {
+                    aperture_summary.top_mask_rectangles += usize::from(a.mask.is_some());
+                    aperture_summary.top_paste_rectangles += usize::from(a.paste.is_some());
+                } else {
+                    aperture_summary.bottom_mask_rectangles += usize::from(a.mask.is_some());
+                    aperture_summary.bottom_paste_rectangles += usize::from(a.paste.is_some());
+                }
+            } else {
+                aperture_summary.legacy_pads += 1;
+            }
+        }
     }
-    let objects = pads
-        .saturating_mul(2)
+    aperture_summary.explicit_coverage_complete = aperture_summary.legacy_pads == 0;
+    let pad_graphics = emitted_pad_graphics(&aperture_summary);
+    let objects = pad_graphics
         .saturating_add(project.board.tracks.len())
         .saturating_add(project.board.vias.len().saturating_mul(5))
         .saturating_add(outline.rings().map(|r| r.points.len()).sum::<usize>());
@@ -236,6 +308,7 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     let expansion = (options.mask_expansion_mm * 1_000_000.0).round() as i64;
     let mut copper = [Vec::new(), Vec::new()];
     let mut mask = [Vec::new(), Vec::new()];
+    let mut paste = [Vec::new(), Vec::new()];
     let mut legend = [Vec::new(), Vec::new()];
     for part in project.board.parts.values() {
         let side = usize::from(part.side == Side::Bottom);
@@ -260,11 +333,16 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
             let center = rotated_center(x, y)?;
             let aperture = Aperture { width: pad.width.0, height: Some(pad.height.0), function: "SMDPad,CuDef" };
             copper[side].push(flash(aperture, center, part.rotation_mdeg));
-            mask[side].push(flash(
-                Aperture { width: aperture.width + 2 * expansion, height: Some(pad.height.0 + 2 * expansion), function: "" },
-                center,
-                part.rotation_mdeg,
-            ));
+            for (kind, graphics) in [(ApertureKind::Mask, &mut mask[side]), (ApertureKind::Paste, &mut paste[side])] {
+                let dimensions = match resolve_aperture(pad.apertures.as_ref(), kind) {
+                    ApertureResolution::Legacy if kind == ApertureKind::Mask => Some((pad.width.0 + 2 * expansion, pad.height.0 + 2 * expansion)),
+                    ApertureResolution::Rectangle(r) => Some((r.width.0, r.height.0)),
+                    _ => None,
+                };
+                if let Some((width, height)) = dimensions {
+                    graphics.push(flash(Aperture { width, height: Some(height), function: "" }, center, part.rotation_mdeg));
+                }
+            }
         }
     }
     for track in project.board.tracks.values() {
@@ -305,6 +383,11 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     ] {
         files.insert(name.to_owned(), gerber(graphics, function, negative, &id));
     }
+    if options.include_paste {
+        for (name, function, graphics) in [("top-paste.gbr", "Paste,Top", &paste[0]), ("bottom-paste.gbr", "Paste,Bot", &paste[1])] {
+            files.insert(name.into(), gerber(graphics, function, false, &id));
+        }
+    }
     if options.include_silkscreen {
         for (name, function, graphics) in [("top-silkscreen.gbr", "Legend,Top", &legend[0]), ("bottom-silkscreen.gbr", "Legend,Bot", &legend[1])] {
             files.insert(name.into(), gerber(graphics, function, false, &id));
@@ -323,9 +406,23 @@ fn render_fabrication(project: &Project, options: FabricationOptions) -> io::Res
     }
     drill.push_str("M30\n");
     files.insert("plated-through.xnc".into(), drill);
-    let mut manifest=FabricationManifest { footprint_artwork: (options.include_silkscreen || artwork.explicit_components > 0).then_some(artwork), project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    let mut manifest=FabricationManifest { pad_apertures: (options.include_paste || aperture_summary.explicit_pads > 0).then_some(aperture_summary), footprint_artwork: (options.include_silkscreen || artwork.explicit_components > 0).then_some(artwork), project_id:id,units:"mm (Gerber 5.6, 1 nm; XNC explicit decimals)".into(),coordinate_system:"Model origin; X right; Y up (-model Y); top view for every layer; bottom files are not mirrored".into(),mask_expansion_nm:expansion,smd_pad_count:pads,track_count:project.board.tracks.len(),through_via_count:project.board.vias.len(),cutout_count:outline.cutouts.len(),files:files.keys().cloned().chain(std::iter::once("manifest.json".into())).collect(),exclusions:vec!["Scoped geometry export, not fabrication readiness or clearance/continuity certification".into(),"No legacy previews, inner copper, pours, arcs, component through holes/slots, blind/buried/microvias, paste, silkscreen, netlist/X3 assembly or material/finish/stackup instructions".into(),"Mask expansion is an export parameter; all vias untented; no manufacturer rules inferred".into()] };
+    if options.include_paste {
+        manifest.exclusions[1] = manifest.exclusions[1].replace("paste, ", "");
+        manifest.exclusions.push("Paste uses only explicitly stored pad rectangles; legacy pads have no inferred paste. All vias remain untented with no paste. No stencil suitability checks.".into());
+    }
     if options.include_silkscreen {
-        manifest.exclusions[1] = manifest.exclusions[1].replace("paste, silkscreen,", "paste,");
+        manifest.exclusions[1] = manifest.exclusions[1].replace("silkscreen, ", "");
+    }
+    if let Some(a) = &manifest.pad_apertures {
+        manifest.exclusions[2] =
+            "Mask expansion applies only to legacy pads and untented vias; explicit mask rectangles are absolute. No manufacturer rules inferred."
+                .into();
+        if !a.explicit_coverage_complete {
+            manifest
+                .exclusions
+                .push("Incomplete explicit aperture coverage: legacy SMD pads have no paste policy; absent data is not intentional omission.".into());
+        }
     }
     if manifest.footprint_artwork.is_some() {
         manifest.exclusions.push(if options.include_silkscreen {
@@ -384,5 +481,45 @@ fn publish_fabrication(
         std::fs::File::open(stage.path())?.sync_all()?;
         rustix::fs::renameat_with(rustix::fs::CWD, stage.path(), rustix::fs::CWD, &path, rustix::fs::RenameFlags::NOREPLACE)?;
         Ok((path, package.manifest))
+    }
+}
+
+#[cfg(test)]
+mod aperture_admission_tests {
+    use super::*;
+    #[test]
+    fn actual_pad_emissions_preserve_legacy_limit_and_do_not_charge_omissions() {
+        let mut s = PadApertureSummary {
+            include_paste: false,
+            explicit_pads: 0,
+            legacy_pads: 99_998,
+            mask_rectangles: 0,
+            mask_omissions: 0,
+            paste_rectangles: 0,
+            paste_omissions: 0,
+            top_mask_rectangles: 0,
+            bottom_mask_rectangles: 0,
+            top_paste_rectangles: 0,
+            bottom_paste_rectangles: 0,
+            explicit_coverage_complete: false,
+        };
+        // Four outline edges leave exactly the original legacy admission bound.
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.legacy_pads += 1;
+        assert!(emitted_pad_graphics(&s) + 4 > MAX_OBJECTS);
+        s.legacy_pads = 0;
+        s.explicit_pads = 199_996;
+        s.mask_omissions = s.explicit_pads;
+        s.paste_omissions = s.explicit_pads;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.include_paste = true;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
+        s.mask_rectangles = 1;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS + 1);
+        s.mask_rectangles = 0;
+        s.paste_rectangles = 1;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS + 1);
+        s.include_paste = false;
+        assert_eq!(emitted_pad_graphics(&s) + 4, MAX_OBJECTS);
     }
 }

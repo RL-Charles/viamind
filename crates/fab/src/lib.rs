@@ -19,8 +19,8 @@ static MANUFACTURING_TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new((
 
 pub use assembly::{AssemblyCsv, AssemblyExportRequest, AssemblySnapshot, PreparedAssemblyCsv, assembly_schema, csv, write_csv};
 pub use fabrication::{
-    FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, FootprintArtworkSummary, fabrication, fabrication_schema,
-    write_fabrication,
+    FabricationExportRequest, FabricationManifest, FabricationOptions, FabricationPackage, FootprintArtworkSummary, PadApertureSummary, fabrication,
+    fabrication_schema, write_fabrication,
 };
 pub use snapshot::FabricationSnapshot;
 
@@ -30,5 +30,6 @@ pub use output_job::{
 };
 
 pub use release_inspection::{
-    InspectOutputRelease, MatchedAssembly, ReleaseCursor, ReleaseFileFact, ReleaseInspection, inspect_output_release, release_inspection_schema,
+    InspectOutputRelease, MatchedAssembly, ObservedPadOpenings, ReleaseCursor, ReleaseFileFact, ReleaseInspection, inspect_output_release,
+    release_inspection_schema,
 };

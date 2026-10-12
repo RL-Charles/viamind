@@ -124,6 +124,7 @@ impl CommandRegistry {
             .with::<crate::RoutePadViaPolyline>()
             .with::<crate::ApplyFootprint>()
             .with::<crate::SetFootprintArtwork>()
+            .with::<crate::SetPadApertures>()
             .with::<crate::AnnotateSchematic>()
             .with::<crate::EditSchematicSheet>()
             .with::<crate::DrawSchematicWirePolyline>()

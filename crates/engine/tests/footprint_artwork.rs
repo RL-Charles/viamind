@@ -41,7 +41,7 @@ fn guarded_atomic_artwork_noop_undo_log_and_reopen() {
     e.with_engine(|eng| eng.log().write_jsonl(&mut log)).unwrap();
     assert_eq!(EventLog::read_jsonl(log.as_slice()).unwrap().replay(), after.project);
     let text = String::from_utf8(log).unwrap();
-    assert!(EventLog::read_jsonl(text.replace("\"version\":13", "\"version\":12").as_bytes()).is_err());
+    assert!(EventLog::read_jsonl(text.replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":12").as_bytes()).is_err());
     e.undo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
     e.redo(Origin::User).unwrap();
@@ -51,7 +51,12 @@ fn guarded_atomic_artwork_noop_undo_log_and_reopen() {
     let base_only = EventLog::new(after.project.clone());
     let mut base_bytes = Vec::new();
     base_only.write_jsonl(&mut base_bytes).unwrap();
-    assert!(EventLog::read_jsonl(String::from_utf8(base_bytes).unwrap().replace("\"version\":13", "\"version\":12").as_bytes()).is_err());
+    assert!(
+        EventLog::read_jsonl(
+            String::from_utf8(base_bytes).unwrap().replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":12").as_bytes()
+        )
+        .is_err()
+    );
     let before_only = EngineHandle::new(after.project.clone());
     before_only.execute_typed(command(&before_only, None), Origin::User).unwrap();
     let event = before_only.with_engine(|eng| eng.log().entries()[0].clone());
@@ -59,7 +64,15 @@ fn guarded_atomic_artwork_noop_undo_log_and_reopen() {
     isolated.append(event);
     let mut isolated_bytes = Vec::new();
     isolated.write_jsonl(&mut isolated_bytes).unwrap();
-    assert!(EventLog::read_jsonl(String::from_utf8(isolated_bytes).unwrap().replace("\"version\":13", "\"version\":12").as_bytes()).is_err());
+    assert!(
+        EventLog::read_jsonl(
+            String::from_utf8(isolated_bytes)
+                .unwrap()
+                .replace(&format!("\"version\":{}", viamind_engine::log::LOG_VERSION), "\"version\":12")
+                .as_bytes()
+        )
+        .is_err()
+    );
 
     let stale = command(&e, None);
     let d = tempfile::tempdir().unwrap();

@@ -1,0 +1,51 @@
+    Checking viamind-geom v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/geom)
+    Checking viamind-doc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/doc)
+    Checking viamind-drc v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/drc)
+    Checking viamind-router v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/router)
+    Checking viamind-fab v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/fab)
+    Checking viamind-engine v0.1.0 (/home/charlesmowbray/Development/viamind-t-0120/crates/engine)
+error[E0277]: the trait bound `std::string::String: std::convert::From<std::str::Utf8Error>` is not satisfied
+   --> crates/fab/src/release_inspection/reader.rs:131:16
+    |
+131 |     let text = std::str::from_utf8(bytes).map_err(invalid)?;
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `std::convert::From<std::str::Utf8Error>` is not implemented for `std::string::String`
+    |
+    = help: `std::string::String` implements trait `std::convert::From<T>`:
+              std::convert::From<&mut str>
+              std::convert::From<&std::string::String>
+              std::convert::From<&str>
+              std::convert::From<char>
+              std::convert::From<std::borrow::Cow<'_, str>>
+              std::convert::From<std::boxed::Box<str>>
+              std::convert::From<uuid::Uuid>
+    = note: required for `std::str::Utf8Error` to implement `std::convert::Into<std::string::String>`
+note: required by a bound in `release_inspection::invalid`
+   --> crates/fab/src/release_inspection/mod.rs:31:26
+    |
+ 31 | fn invalid(message: impl Into<String>) -> io::Error {
+    |                          ^^^^^^^^^^^^ required by this bound in `invalid`
+
+error[E0277]: the trait bound `std::string::String: std::convert::From<std::str::Utf8Error>` is not satisfied
+   --> crates/fab/src/release_inspection/reader.rs:131:51
+    |
+131 |     let text = std::str::from_utf8(bytes).map_err(invalid)?;
+    |                                                   ^^^^^^^ the trait `std::convert::From<std::str::Utf8Error>` is not implemented for `std::string::String`
+    |
+    = help: `std::string::String` implements trait `std::convert::From<T>`:
+              std::convert::From<&mut str>
+              std::convert::From<&std::string::String>
+              std::convert::From<&str>
+              std::convert::From<char>
+              std::convert::From<std::borrow::Cow<'_, str>>
+              std::convert::From<std::boxed::Box<str>>
+              std::convert::From<uuid::Uuid>
+    = note: required for `std::str::Utf8Error` to implement `std::convert::Into<std::string::String>`
+note: required by a bound in `release_inspection::invalid`
+   --> crates/fab/src/release_inspection/mod.rs:31:26
+    |
+ 31 | fn invalid(message: impl Into<String>) -> io::Error {
+    |                          ^^^^^^^^^^^^ required by this bound in `invalid`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `viamind-fab` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

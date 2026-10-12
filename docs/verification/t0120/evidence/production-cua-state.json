@@ -1,0 +1,14 @@
+{
+  "tool": "get_window_state",
+  "arguments": {
+    "pid": 3765109,
+    "window_id": 110379552970976,
+    "max_elements": 80,
+    "max_depth": 12,
+    "session": "t0120-production",
+    "screenshot_out_file": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/production-cua.png"
+  },
+  "returncode": 0,
+  "stdout": "{\n  \"_note\": \"Prefer `elements` \u2014 `tree_markdown` will continue to work but new fields will only be added to the structured side. Use `max_elements` / `max_depth` to bound the AT-SPI walk on apps with very large trees.\",\n  \"app_name\": \"viamind\",\n  \"degraded\": true,\n  \"degraded_reason\": \"x11_property_fallback_partial: AT-SPI was unavailable and Cua Driver only recovered window metadata. Treat it as discovery evidence; it cannot prove checked state.\",\n  \"element_count\": 1,\n  \"elements\": [\n    {\n      \"actions\": [\n        \"activate\"\n      ],\n      \"depth\": 0,\n      \"element_index\": 0,\n      \"element_token\": \"s0000003e:0\",\n      \"role\": \"window\"\n    }\n  ],\n  \"elements_complete\": false,\n  \"pid\": 3765109,\n  \"returned_element_count\": 1,\n  \"screenshot_file_path\": \"/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/production-cua.png\",\n  \"screenshot_height\": 274,\n  \"screenshot_mime_type\": \"image/png\",\n  \"screenshot_width\": 416,\n  \"snapshot_id\": \"s0000003e\",\n  \"total_element_count\": 1,\n  \"tree_markdown\": \"- [0] window \\\"\\\" [actions=[activate]]\\n\",\n  \"window_bounds\": {\n    \"height\": 274,\n    \"width\": 416,\n    \"x\": 3412,\n    \"y\": 1484\n  },\n  \"window_id\": 110379552970976,\n  \"window_title\": \"inspection-fixture.viamind.json \u2014 Viamind\"\n}\n",
+  "stderr": ""
+}

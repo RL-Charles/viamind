@@ -29,10 +29,12 @@
 pub mod agent_policy;
 pub mod assembly;
 pub mod package_component;
+pub mod pad_apertures;
 pub use assembly::SetPartAssembly;
 pub use package_component::{
     CreatePackagePcbComponent, LinkSchematicPackage, PackageComponentPin, PackageComponentPlacement, PackageComponentPreview, PackageComponentRequest,
 };
+pub use pad_apertures::SetPadApertures;
 pub mod annotation;
 mod annotation_bounds;
 pub use annotation::{AnnotateSchematic, AnnotationChange, AnnotationMode, AnnotationOptions, AnnotationOrder, AnnotationPreview};
@@ -175,7 +177,9 @@ mod net_rules;
 pub use net_rules::{NamedNetRuleRow, NamedNetRuleSnapshot, SetNamedNetRules};
 
 mod footprint_definition;
-pub use footprint_definition::{FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, validate_definition};
+pub use footprint_definition::{
+    FootprintDefinitionSaved, LoadFootprintDefinition, SaveFootprintDefinition, preflight_definition, validate_definition,
+};
 
 mod agent_presence;
 pub use agent_presence::{

@@ -61,6 +61,7 @@ impl Command for SetPartPads {
                 width: length(p.width_mm)?,
                 height: length(p.height_mm)?,
                 net: p.net.map(|n| n.trim().to_owned()).filter(|n| !n.is_empty()),
+                apertures: existing.iter().find(|p| p.id == id).and_then(|p| p.apertures.clone()),
             });
         }
         crate::footprint_artwork::validate_part_artwork(current)?;

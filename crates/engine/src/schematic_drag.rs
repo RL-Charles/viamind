@@ -905,6 +905,7 @@ mod tests {
             width: Nm(1),
             height: Nm(1),
             net: None,
+            apertures: None,
         };
         // Deliberate duplicate poison would fail the native validator, but the
         // borrowed aggregate must reject before that validator allocates ID sets.

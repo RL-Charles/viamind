@@ -54,6 +54,12 @@ pub(super) fn project(project: &Project) -> Result<(), BranchError> {
         }
         if let Some(pads) = &part.pads {
             add(pads.0.len())?;
+            for pad in &pads.0 {
+                if let Some(apertures) = &pad.apertures {
+                    add(apertures.structural_rows())?;
+                    apertures.validate_at(pad.position).map_err(BranchError::invalid)?;
+                }
+            }
         }
     }
     for sheet in project.schematic.sheets.values() {
@@ -183,6 +189,7 @@ mod tests {
                     width: Nm(5),
                     height: Nm(7),
                     net: Some("N\"λ".into()),
+                    apertures: None,
                 }])
                 .unwrap(),
             ),

@@ -1,0 +1,12 @@
+; Viamind plated through vias, finished diameters, aligned top view
+M48
+METRIC
+T01C0.300000
+T02C0.500000
+%
+G05
+T01
+X18.000000Y-12.000000
+T02
+X40.000000Y-9.000000
+M30

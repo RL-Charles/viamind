@@ -16,6 +16,7 @@ struct Row {
     y: String,
     width: String,
     height: String,
+    apertures: crate::pad_apertures::ApertureEditor,
 }
 struct Pending {
     receiver: Receiver<Result<Value, String>>,
@@ -25,6 +26,7 @@ struct Pending {
 #[derive(Default)]
 pub struct FootprintDefinitionUi {
     artwork: crate::footprint_artwork::ArtworkEditor,
+    selected_apertures: Option<ObjectId>,
     open: bool,
     name: String,
     rows: Vec<Row>,
@@ -62,6 +64,12 @@ impl FootprintDefinitionUi {
                 return Err("Definition text exceeds a field byte bound or 1 MiB aggregate".into());
             }
         }
+        for row in &self.rows {
+            bytes = bytes.saturating_add(row.apertures.text_bytes()?);
+            if bytes > 1024 * 1024 {
+                return Err("Definition exceeds1MiB aggregate local text".into());
+            }
+        }
         // Parse geometry before cloning strings, using the exact integer decimal parser.
         let geometry = self
             .rows
@@ -80,8 +88,16 @@ impl FootprintDefinitionUi {
                 .rows
                 .iter()
                 .zip(geometry)
-                .map(|(r, (position, width, height))| FootprintPad { number: r.number.clone(), position, width, height })
-                .collect(),
+                .map(|(r, (position, width, height))| {
+                    Ok(FootprintPad {
+                        apertures: r.apertures.definition(viamind_geom::Point::new(position.x, position.y))?,
+                        number: r.number.clone(),
+                        position,
+                        width,
+                        height,
+                    })
+                })
+                .collect::<Result<Vec<_>, String>>()?,
         };
         validate_definition(&footprint)?;
         Ok(footprint)
@@ -102,6 +118,7 @@ impl FootprintDefinitionUi {
             y: String::new(),
             width: String::new(),
             height: String::new(),
+            apertures: Default::default(),
         });
         self.changed();
     }
@@ -112,12 +129,14 @@ impl FootprintDefinitionUi {
         self.artwork = Default::default();
         self.name.clear();
         self.rows.clear();
+        self.selected_apertures = None;
         self.preview = None;
         self.changed();
     }
     fn loaded(&mut self, footprint: Footprint) -> Result<(), String> {
         validate_definition(&footprint)?;
         self.artwork = crate::footprint_artwork::ArtworkEditor::load(footprint.artwork.as_deref())?;
+        self.selected_apertures = None;
         self.name = footprint.name.clone();
         self.rows = footprint
             .pads
@@ -129,6 +148,7 @@ impl FootprintDefinitionUi {
                 y: decimal(p.position.y),
                 width: decimal(p.width),
                 height: decimal(p.height),
+                apertures: crate::pad_apertures::ApertureEditor::load(p.apertures.as_ref()),
             })
             .collect();
         self.preview = Some(footprint);
@@ -219,7 +239,7 @@ fn field_with_id(ui: &mut egui::Ui, label: &str, value: &mut String, chars: usiz
 }
 fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
     ui.label(format!(
-        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. No courtyard clearance, mask, paste or manufacturing checks.",
+        "Validated local preview: {} rectangular SMD pads. X right, Y down; origin marked. Explicit mask/paste outlines are displayed; no courtyard, stencil or manufacturing suitability checks.",
         footprint.pads.len()
     ));
     let (rect, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 200.0), egui::Sense::hover());
@@ -227,9 +247,17 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
     let mut low = [0.0f64; 2];
     let mut high = [0.0f64; 2];
     for pad in &footprint.pads {
-        for (axis, (center, size)) in [(pad.position.x.0, pad.width.0), (pad.position.y.0, pad.height.0)].into_iter().enumerate() {
-            low[axis] = low[axis].min(center as f64 - size as f64 / 2.0);
-            high[axis] = high[axis].max(center as f64 + size as f64 / 2.0);
+        let mut sizes = vec![(pad.width.0, pad.height.0)];
+        if let Some(a) = &pad.apertures {
+            for r in a.mask.iter().chain(&a.paste) {
+                sizes.push((r.width.0, r.height.0));
+            }
+        }
+        for (w, h) in sizes {
+            for (axis, (center, size)) in [(pad.position.x.0, w), (pad.position.y.0, h)].into_iter().enumerate() {
+                low[axis] = low[axis].min(center as f64 - size as f64 / 2.0);
+                high[axis] = high[axis].max(center as f64 + size as f64 / 2.0);
+            }
         }
     }
     if let Some(artwork) = &footprint.artwork {
@@ -265,6 +293,18 @@ fn preview(ui: &mut egui::Ui, footprint: &Footprint) {
         let center = at(pad.position.x.0 as f64, pad.position.y.0 as f64);
         let size = egui::vec2((pad.width.0 as f64 * scale) as f32, (pad.height.0 as f64 * scale) as f32);
         painter.rect_filled(egui::Rect::from_center_size(center, size), 0.0, egui::Color32::from_rgb(170, 105, 45));
+        if let Some(a) = &pad.apertures {
+            for (r, color) in [(a.mask, egui::Color32::MAGENTA), (a.paste, egui::Color32::LIGHT_BLUE)] {
+                if let Some(r) = r {
+                    painter.rect_stroke(
+                        egui::Rect::from_center_size(center, egui::vec2((r.width.0 as f64 * scale) as f32, (r.height.0 as f64 * scale) as f32)),
+                        0.0,
+                        (1.5, color),
+                        egui::StrokeKind::Middle,
+                    );
+                }
+            }
+        }
         if size.x >= 16.0 && size.y >= 16.0 {
             painter.text(center, egui::Align2::CENTER_CENTER, &pad.number, egui::FontId::proportional(12.0), egui::Color32::WHITE);
         }
@@ -329,11 +369,19 @@ impl ViamindApp {
                             for (name, value, limit) in [("number", &mut row.number, 128), ("X (mm)", &mut row.x, 64), ("Y (mm)", &mut row.y, 64), ("width (mm)", &mut row.width, 64), ("height (mm)", &mut row.height, 64)] {
                                 changed |= field_with_id(ui, &format!("Pad {} {name}", i + 1), value, limit, egui::Id::new(("footprint_definition_row", widget, name)));
                             }
+                            if ui.button(format!("Edit definition pad {} openings",i+1)).clicked(){form.selected_apertures=Some(widget);}
                             if ui.button(format!("Remove definition pad {}", i + 1)).clicked() { remove = Some(i); }
                         }); }); }
                     });
                     if let Some(i) = remove { form.rows.remove(i); changed = true; }
                     if ui.add_enabled(form.rows.len() < 1024, egui::Button::new("Add blank rectangular pad")).clicked() { form.add(); }
+                    if let Some(id)=form.selected_apertures {
+                        if let Some(row)=form.rows.iter_mut().find(|r|r.widget==id) {
+                            ui.separator();ui.label(format!("Openings for pad {}",row.number));
+                            let copper=millimetres(&row.width).ok().zip(millimetres(&row.height).ok());
+                            ui.push_id(("detached-apertures",id),|ui|changed|=row.apertures.show(ui,copper));
+                        } else {form.selected_apertures=None;}
+                    }
                     changed |= form.artwork.show(ui);
                     changed |= field(ui, "NEW footprint definition path", &mut form.destination, 4096);
                 });
@@ -366,6 +414,7 @@ mod tests {
                 position: LocalPosition { x: Nm(-500003), y: Nm(250001) },
                 width: Nm(1200003),
                 height: Nm(800001),
+                apertures: None,
             }],
         }
     }

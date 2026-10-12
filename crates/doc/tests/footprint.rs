@@ -11,6 +11,7 @@ fn example() -> Footprint {
             position: LocalPosition { x: Nm(-800001), y: Nm(123) },
             width: Nm(900003),
             height: Nm(950007),
+            apertures: None,
         }],
     }
 }

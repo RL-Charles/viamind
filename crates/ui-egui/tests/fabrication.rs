@@ -111,9 +111,11 @@ fn compact_form_full_cursor_live_mcp_bytes_and_collision_native_errors_are_acces
     h.run_steps(5);
     assert!(h.get_by_label(&label).rect().max.y <= 400.0);
     let actual = files(&output);
-    let expected =
-        viamind_fab::fabrication(&before.project, viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false })
-            .unwrap();
+    let expected = viamind_fab::fabrication(
+        &before.project,
+        viamind_fab::FabricationOptions { mask_expansion_mm: 0.050001, include_silkscreen: false, include_paste: false },
+    )
+    .unwrap();
     assert_eq!(actual, expected.files.into_iter().map(|(k, v)| (k, v.into_bytes())).collect());
     let runtime = tokio::runtime::Runtime::new().unwrap();
     let registry = viamind_mcp::engine_registry(engine.clone()).unwrap();

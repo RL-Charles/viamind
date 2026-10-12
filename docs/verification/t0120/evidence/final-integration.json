@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "source": "b3cf88f1c661899bdadade348af5570e448daba0",
+  "base_main": "223d8e770cb626eff4a02110612602e6b1476775",
+  "scope": "one final scoped exact-main integration, not second workspace full gate or new native captures",
+  "fmt": "pass",
+  "strict_workspace_all_target_clippy": "pass",
+  "focused_tests": {
+    "passed": 34,
+    "failed": 0,
+    "ignored": 0,
+    "suites": 11
+  },
+  "workspace_build": "pass; all own Rust mtimes refreshed immediately before normal build under whole mutex",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-combined-b3cf88f1",
+  "binary_sha256": "b213c09ee79e0d2146b3fa07507e9d3ef3afdec787f0bdd585b19f2ad0161d2e",
+  "binary_bytes": 654522704,
+  "catalog_tools": 120,
+  "agent_workflow": 18,
+  "actual_stdio_checks": 43,
+  "resolution": "one additive UI action handler conflict preserves both drag actions and SetPadApertures; one new T125 test Pad literal set apertures:None after first strict compile refusal; no aperture product behavior change",
+  "historical_proof": "original full1009/0/1 production2cbe and native2cbe/inspection0c55 remain unchanged",
+  "log_sha256": "beb399a0795586139eb7316a8b1936c3e67947219d8cca2379c5cae335417b95"
+}

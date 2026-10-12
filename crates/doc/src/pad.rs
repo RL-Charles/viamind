@@ -15,6 +15,9 @@ pub struct Pad {
     pub width: Nm,
     pub height: Nm,
     pub net: Option<String>,
+    /// None preserves legacy openings; Some contains explicit nullable mask/paste shapes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apertures: Option<crate::PadApertures>,
 }
 
 /// A validated ordered pad list; order is preserved across save/load.
@@ -30,6 +33,9 @@ impl TryFrom<Vec<Pad>> for Pads {
         let mut ids = BTreeSet::new();
         let mut numbers = BTreeSet::new();
         for p in &pads {
+            if let Some(apertures) = &p.apertures {
+                apertures.validate_at(p.position)?;
+            }
             if !ids.insert(p.id) || !numbers.insert(&p.number) {
                 return Err("pad IDs and numbers must be unique within a part".into());
             }
@@ -58,7 +64,7 @@ fn valid_name(name: &str) -> bool {
 mod tests {
     use super::*;
     fn pad() -> Pad {
-        Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(1), height: Nm(1), net: None }
+        Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(1), height: Nm(1), net: None, apertures: None }
     }
     #[test]
     fn bounded_sizes_names_counts_and_duplicate_identities_are_validated() {

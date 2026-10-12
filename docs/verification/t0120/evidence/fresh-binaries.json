@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh",
+    "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+    "sha256": "3dbc1f23b408a35fad2ded07252c20430caae931221b944e07ff789d8066d139",
+    "bytes": 650767264,
+    "previous_binary_sha256": "3dbc1f23b408a35fad2ded07252c20430caae931221b944e07ff789d8066d139",
+    "bit_identical_to_full_gate_binary": true
+  },
+  {
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/aperture-inspection-2cbe6dd6e1bb-fresh",
+    "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+    "sha256": "ed8a9dd6e0436e90bceac777e60f7cf2a556978787f9bb7858b7330176ba8a1f",
+    "bytes": 552015176,
+    "previous_binary_sha256": "ed8a9dd6e0436e90bceac777e60f7cf2a556978787f9bb7858b7330176ba8a1f",
+    "bit_identical_to_full_gate_binary": true
+  }
+]

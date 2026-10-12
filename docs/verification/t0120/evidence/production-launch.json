@@ -1,0 +1,9 @@
+{
+  "tool": "launch_app",
+  "arguments": {
+    "launch_path": "env VIAMIND_MCP_PORT=7961 TMPDIR=/home/charlesmowbray/.cache/viamind/tmp /home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh --open /home/charlesmowbray/Development/viamind-t-0120/docs/verification/t0120/inspection-fixture.viamind.json > /home/charlesmowbray/.cache/viamind/native-artifacts/t0120/production-native.log 2>&1"
+  },
+  "returncode": 0,
+  "stdout": "{\n  \"active\": false,\n  \"bundle_id\": null,\n  \"name\": \"env VIAMIND_MCP_PORT=7961 TMPDIR=/home/charlesmowbray/.cache/viamind/tmp /home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh --open /home/charlesmowbray/Development/viamind-t-0120/docs/verification/t0120/inspection-fixture.viamind.json > /home/charlesmowbray/.cache/viamind/native-artifacts/t0120/production-native.log 2>&1\",\n  \"pid\": 3758480,\n  \"running\": true,\n  \"windows\": []\n}\n",
+  "stderr": ""
+}

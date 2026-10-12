@@ -96,6 +96,7 @@ fn linked_project() -> Project {
                 width: Nm(1_000_000),
                 height: Nm(1_500_000),
                 net: None,
+                apertures: None,
             })
             .collect();
         let part = Part {

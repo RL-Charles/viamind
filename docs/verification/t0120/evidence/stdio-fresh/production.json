@@ -1,0 +1,269 @@
+{
+  "passed": true,
+  "source": "2cbe6dd6e1bb1fbe9d19d1b2950313d12db902ed",
+  "binary": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/viamind-2cbe6dd6e1bb-fresh",
+  "binary_sha256": "3dbc1f23b408a35fad2ded07252c20430caae931221b944e07ff789d8066d139",
+  "endpoint": null,
+  "checks": [
+    "actual catalog advertises shared aperture action and paste request",
+    "original explicit-pad fixture opened by shared lifecycle",
+    "peer sees exact shared fixture",
+    "Legacy export remains exact seven retained pre-feature files",
+    "read and Legacy export preserve full session/status",
+    "single guarded policy yields exact one Part delta/event and unchanged copper/nets/identity",
+    "peer reads exact explicit dimensions",
+    "stale full cursor refuses unchanged",
+    "one undo restores complete original document",
+    "redo restores exact explicit document",
+    "equal policy no-op produces no event",
+    "zero rectangle rejects atomically",
+    "negative rectangle rejects atomically",
+    "overflow dimensions rejects atomically",
+    "missing required shape rejects atomically",
+    "unknown subtree rejects atomically",
+    "oversized borrowed poison rows refuse before typed decoding",
+    "peer edit plus undo still invalidates full cursor",
+    "partial direct export discloses Legacy coverage and actual bottom sides",
+    "authoring all pads preserves entire original geometry except explicit policy",
+    "default SVG remains exact old bytes",
+    "selected SVG identifies explicit geometry and deliberate omission",
+    "unrequested non-null paste refuses before publication",
+    "complete summary retains exact side counts and omission intent",
+    "paired paste files have positive side-specific file attributes",
+    "mask is negative and exact explicit dimensions ignore Legacy expansion",
+    "detached library3 stores exact policy and no pad IDs/nets",
+    "detached load is read-only and preserves full session/status",
+    "detached NEW library3 save never applies to design",
+    "NEW file collision preserves exact library bytes",
+    "explicit definition reuse requires complete source cursor",
+    "separate guarded library reuse retains pad UUID/net/absolute policy",
+    "one library reuse undo restores exact complete project",
+    "one redo restores exact reused part",
+    "native14 stores exact complete authored document",
+    "same UUID reopen old stream refuses unchanged",
+    "saved job5 exact canonical load",
+    "independent saved reader observes actual side rectangle and via counts",
+    "same-length saved paste side corruption refuses independently",
+    "all exports/jobs/inspection preserve full session/status",
+    "read-only admission hides setter but permits exact stored observation",
+    "forged setter receives protocol denial and preserves full restricted session/status",
+    "actual no-display CLI shares exact stored paste files"
+  ],
+  "latency_ms": {
+    "exact_bottom_policy": 0.9455800027353689,
+    "partial_explicit_export": 7.154056002036668,
+    "complete_paste_export": 7.88548999116756,
+    "saved_job5_release": 14.583123993361369
+  },
+  "check_count": 43,
+  "tool_count": 118,
+  "native": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/stdio-fresh/authored.viamind.json",
+  "final_state": {
+    "cursor": {
+      "sequence": 0,
+      "stream_id": "2e09aa94-d1f0-4605-a686-2cd07dc94166"
+    },
+    "project": {
+      "board": {
+        "outline": {
+          "cutouts": [
+            [
+              {
+                "x": 45000000,
+                "y": 22000000
+              },
+              {
+                "x": 50000000,
+                "y": 22000000
+              },
+              {
+                "x": 49000000,
+                "y": 27000000
+              },
+              {
+                "x": 45000000,
+                "y": 26000000
+              }
+            ]
+          ],
+          "outer": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 60000000,
+              "y": 0
+            },
+            {
+              "x": 57000000,
+              "y": 35000000
+            },
+            {
+              "x": 0,
+              "y": 40000000
+            }
+          ]
+        },
+        "parts": {
+          "00000000-0000-0000-0000-000000000002": {
+            "designator": "U_BOTTOM",
+            "footprint": "EXPLICIT_FIXTURE",
+            "id": "00000000-0000-0000-0000-000000000002",
+            "pads": [
+              {
+                "apertures": {
+                  "mask": {
+                    "height": 1200007,
+                    "width": 4200003
+                  },
+                  "paste": {
+                    "height": 800003,
+                    "width": 3800001
+                  }
+                },
+                "height": 1000000,
+                "id": "00000000-0000-0000-0000-000000000003",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 2000000,
+                  "y": 1500000
+                },
+                "width": 4000000
+              },
+              {
+                "apertures": {
+                  "mask": null,
+                  "paste": null
+                },
+                "height": 2200000,
+                "id": "00000000-0000-0000-0000-000000000004",
+                "net": "GND",
+                "number": "2",
+                "position": {
+                  "x": -3000000,
+                  "y": -1000000
+                },
+                "width": 1200000
+              }
+            ],
+            "position": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "rotation_mdeg": 30000,
+            "side": "bottom",
+            "value": "Synthetic asymmetric geometry"
+          },
+          "00000000-0000-0000-0000-000000000005": {
+            "designator": "U_TOP",
+            "footprint": "EXPLICIT_FIXTURE",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "pads": [
+              {
+                "apertures": {
+                  "mask": {
+                    "height": 800007,
+                    "width": 1500003
+                  },
+                  "paste": {
+                    "height": 500003,
+                    "width": 1100001
+                  }
+                },
+                "height": 600000,
+                "id": "00000000-0000-0000-0000-000000000006",
+                "net": "GND",
+                "number": "1",
+                "position": {
+                  "x": 1250000,
+                  "y": -750000
+                },
+                "width": 1300000
+              }
+            ],
+            "position": {
+              "x": 14000000,
+              "y": 24000000
+            },
+            "rotation_mdeg": 117500,
+            "side": "top",
+            "value": "Synthetic asymmetric geometry"
+          }
+        },
+        "tracks": {
+          "00000000-0000-0000-0000-000000000007": {
+            "end": {
+              "x": 18000000,
+              "y": 12000000
+            },
+            "id": "00000000-0000-0000-0000-000000000007",
+            "layer": "top",
+            "net": "GND",
+            "start": {
+              "x": 5000000,
+              "y": 8000000
+            },
+            "width": 250000
+          },
+          "00000000-0000-0000-0000-000000000008": {
+            "end": {
+              "x": 40000000,
+              "y": 9000000
+            },
+            "id": "00000000-0000-0000-0000-000000000008",
+            "layer": "bottom",
+            "net": "GND",
+            "start": {
+              "x": 30000000,
+              "y": 17000000
+            },
+            "width": 400000
+          }
+        },
+        "vias": {
+          "00000000-0000-0000-0000-000000000009": {
+            "diameter": 800000,
+            "drill": 300000,
+            "id": "00000000-0000-0000-0000-000000000009",
+            "net": "GND",
+            "position": {
+              "x": 18000000,
+              "y": 12000000
+            }
+          },
+          "00000000-0000-0000-0000-00000000000a": {
+            "diameter": 1200000,
+            "drill": 500000,
+            "id": "00000000-0000-0000-0000-00000000000a",
+            "net": "GND",
+            "position": {
+              "x": 40000000,
+              "y": 9000000
+            }
+          }
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Independent fabrication reader fixture",
+      "schematic": {
+        "sheets": {}
+      }
+    },
+    "selection": {
+      "ids": [],
+      "origin": null,
+      "revision": 0
+    }
+  },
+  "final_status": {
+    "dirty": false,
+    "path": "/home/charlesmowbray/.cache/viamind/native-artifacts/t0120/stdio-fresh/authored.viamind.json"
+  },
+  "cli": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "viamind: exported 11 files to /home/charlesmowbray/.cache/viamind/native-artifacts/t0120/stdio-fresh/cli-paste\n"
+  }
+}

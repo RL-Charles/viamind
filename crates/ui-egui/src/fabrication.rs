@@ -12,6 +12,7 @@ pub struct FabricationUi {
     path: String,
     mask: String,
     include_silkscreen: bool,
+    include_paste: bool,
     worker: Option<Receiver<Result<Value, String>>>,
     message: Option<String>,
     result: Option<Value>,
@@ -35,6 +36,7 @@ impl FabricationUi {
             path: std::path::PathBuf::from(self.path.trim()),
             mask_expansion_mm: mask,
             include_silkscreen: self.include_silkscreen,
+            include_paste: self.include_paste,
             expected_cursor: Some(cursor),
         })
         .map_err(|e| e.to_string())
@@ -110,7 +112,11 @@ pub(crate) fn export_fabrication(engine: &EngineHandle, input: Value) -> Result<
     })?;
     let (path, manifest) = snapshot
         .write(
-            viamind_fab::FabricationOptions { mask_expansion_mm: input.mask_expansion_mm, include_silkscreen: input.include_silkscreen },
+            viamind_fab::FabricationOptions {
+                mask_expansion_mm: input.mask_expansion_mm,
+                include_silkscreen: input.include_silkscreen,
+                include_paste: input.include_paste,
+            },
             &input.path,
             native.as_deref(),
         )
@@ -147,6 +153,7 @@ impl ViamindApp {
                 ui.add(egui::TextEdit::singleline(&mut self.fabrication.mask).desired_width(100.0).char_limit(32)).labelled_by(label.id);
                 ui.label("Default 0 mm: mask opening equals pad; all vias untented. Export X right/Y up; common top view.");
                 ui.checkbox(&mut self.fabrication.include_silkscreen, "Include stored silkscreen Legend files");
+                ui.checkbox(&mut self.fabrication.include_paste, "Include explicitly stored pad paste openings");
                 ui.label("Legend exports stored straight strokes only; no text, clipping or courtyard checks.");
                 export = ui.button("Export fabrication snapshot").clicked();
             });

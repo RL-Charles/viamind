@@ -1,0 +1,9 @@
+{
+  "format": "viamind-output-job",
+  "version": 5,
+  "name": "Exact aperture proof",
+  "profile": "generic_outer_2layer",
+  "mask_expansion_mm": 0.0,
+  "include_silkscreen": true,
+  "include_paste": true
+}

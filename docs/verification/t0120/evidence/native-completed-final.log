@@ -1,0 +1,4 @@
+
+thread 'main' (3829776) panicked at crates/ui-egui/examples/pad_apertures_inspection.rs:125:5:
+Save NEW footprint definition actual ancestor clip: response [[23.0 41.0] - [204.2 59.0]], clip [[17.0 62.0] - [631.0 332.0]]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

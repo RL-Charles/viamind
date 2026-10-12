@@ -6,8 +6,15 @@ fn p(x: i64, y: i64) -> Point {
     Point::new(Nm(x), Nm(y))
 }
 fn part(project: &mut Project, x: i64, y: i64, side: Side) -> PadEndpointId {
-    let pad =
-        Pad { id: ObjectId::new(), number: "1".into(), position: Point::ORIGIN, width: Nm(1_000_000), height: Nm(1_000_000), net: Some("N".into()) };
+    let pad = Pad {
+        id: ObjectId::new(),
+        number: "1".into(),
+        position: Point::ORIGIN,
+        width: Nm(1_000_000),
+        height: Nm(1_000_000),
+        net: Some("N".into()),
+        apertures: None,
+    };
     let part = Part {
         artwork: None,
         assembly: None,

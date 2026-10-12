@@ -59,6 +59,7 @@ fn builtin_specs() {
             "set_board_outline",
             "set_footprint_artwork",
             "set_named_net_rules",
+            "set_pad_apertures",
             "set_part_assembly",
             "set_part_pads",
             "set_track_properties",
