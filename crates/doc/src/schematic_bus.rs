@@ -142,7 +142,7 @@ pub fn expand(expression: &str) -> Result<Vec<String>, String> {
     let mut result = Vec::with_capacity(b.members);
     let mut seen = BTreeSet::new();
     walk(expression, |group, prefix, range| {
-        let mut push = |suffix: Option<u32>| {
+        let mut push = |suffix: Option<u32>| -> Result<(), String> {
             let mut s = String::with_capacity(group.map_or(0, |g| g.len() + 1) + prefix.len() + suffix.map_or(0, digits));
             if let Some(g) = group {
                 s.push_str(g);
@@ -393,6 +393,19 @@ mod tests {
         rows.push(format!("\"{}\":null", ObjectId::new()));
         assert!(serde_json::from_str::<Map>(&format!("{{{}}}", rows.join(","))).err().unwrap().to_string().contains("256 raw rows"));
         let ok: Map = serde_json::from_str(&format!("{{{row}}}")).unwrap();
+        assert_eq!(ok.0.len(), 1);
+        #[derive(Deserialize)]
+        struct EntryMap(#[serde(deserialize_with = "bounded_entries")] BTreeMap<ObjectId, SchematicBusEntry>);
+        let entry =
+            serde_json::json!({"id":id,"bus_id":id,"member":"D0","wire_id":id,"label_id":id,"bus_point":{"x":0,"y":0},"wire_point":{"x":1,"y":1}});
+        let mut rows = Vec::new();
+        for n in 1..=MAX_ENTRIES {
+            let key = ObjectId::from_uuid(uuid::Uuid::from_u128(n as u128));
+            rows.push(format!("\"{key}\":{entry}"));
+        }
+        rows.push(format!("\"{}\":null", ObjectId::new()));
+        assert!(serde_json::from_str::<EntryMap>(&format!("{{{}}}", rows.join(","))).err().unwrap().to_string().contains("4096 raw rows"));
+        let ok: EntryMap = serde_json::from_str(&format!("{{\"{id}\":{entry}}}")).unwrap();
         assert_eq!(ok.0.len(), 1);
     }
     fn p(x: i64, y: i64) -> Coordinate {
