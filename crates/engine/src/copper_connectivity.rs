@@ -73,6 +73,9 @@ pub(crate) struct CopperProof {
     pub pads: BTreeMap<PadEndpointId, usize>,
 }
 fn budget(project: &Project) -> bool {
+    if viamind_doc::footprint_holes::preflight_project(project, None).is_err() {
+        return false;
+    }
     let board = &project.board;
     let mut count = board.parts.len().saturating_add(board.tracks.len()).saturating_add(board.vias.len());
     if count > MAX_OBJECTS {
@@ -86,6 +89,17 @@ fn budget(project: &Project) -> bool {
     for part in board.parts.values() {
         if !string(&part.designator) {
             return false;
+        }
+        if let Some(holes) = &part.holes {
+            count = count.saturating_add(holes.len());
+            if count > MAX_OBJECTS {
+                return false;
+            }
+            for hole in holes {
+                if !string(&hole.key) {
+                    return false;
+                }
+            }
         }
         if let Some(pads) = &part.pads {
             count = count.saturating_add(pads.0.len());
@@ -121,7 +135,7 @@ impl CopperProof {
     fn fallback(reason: &'static str) -> Self {
         Self {
             coverage: CopperConnectivityCoverage {
-                budget_fallback: reason != "invalid_via_geometry",
+                budget_fallback: !matches!(reason, "invalid_via_geometry" | "unlocated_nonplated_hole"),
                 fallback_reason: Some(reason),
                 ..Default::default()
             },
@@ -140,6 +154,24 @@ impl CopperProof {
         }
         let holes =
             SpatialIndex::bulk_load(project.board.vias.values().map(|v| (v.id, Rect::from_point(v.position).inflate(Nm((v.drill.0 + 1) / 2)))));
+        let mut mechanical = Vec::new();
+        for part in project.board.parts.values() {
+            if let Some(drills) = &part.holes {
+                if viamind_doc::footprint_holes::validate_part_holes(drills).is_err() {
+                    return Self::fallback("unlocated_nonplated_hole");
+                }
+                for drill in drills {
+                    let Ok(resolved) = viamind_doc::footprint_holes::resolve_hole(part, drill) else {
+                        return Self::fallback("unlocated_nonplated_hole");
+                    };
+                    if [resolved.center.x.0, resolved.center.y.0].iter().any(|v| v.unsigned_abs() > MAX_NM) {
+                        return Self::fallback("unlocated_nonplated_hole");
+                    }
+                    mechanical.push(Rect::from_point(resolved.center).inflate(Nm((resolved.diameter.0 + 1) / 2)));
+                }
+            }
+        }
+        let mechanical = SpatialIndex::bulk_load(mechanical.into_iter().enumerate());
         let mut safe_vias = BTreeSet::new();
         for via in project.board.vias.values() {
             let mut safe = true;
@@ -149,6 +181,14 @@ impl CopperProof {
                     return Self::fallback("hole_candidate_budget");
                 }
                 safe &= id == via.id;
+            }
+            for _ in mechanical.query_rect(&Rect::from_point(via.position).inflate(Nm((via.diameter.0 + 1) / 2))) {
+                result.coverage.hole_candidates += 1;
+                if result.coverage.hole_candidates > 1_000_000 {
+                    return Self::fallback("hole_candidate_budget");
+                }
+                result.coverage.fallback_reason = Some("physical_nonplated_hole_intersection");
+                safe = false;
             }
             if safe {
                 safe_vias.insert(via.id);
@@ -176,6 +216,15 @@ impl CopperProof {
                     && safe_vias.contains(&id)
                     && 4 * distance2(track.start, track.end) > i128::from(via.drill.0).pow(2);
                 safe &= incident;
+            }
+            // Use the entire round-capped track width for subtractive mechanical drills.
+            for _ in mechanical.query_rect(&Rect::new(track.start, track.end).inflate(Nm((track.width.0 + 1) / 2))) {
+                result.coverage.hole_candidates += 1;
+                if result.coverage.hole_candidates > 1_000_000 {
+                    return Self::fallback("hole_candidate_budget");
+                }
+                result.coverage.fallback_reason = Some("physical_nonplated_hole_intersection");
+                safe = false;
             }
             if !safe {
                 result.coverage.unsupported_named_copper += 1;
@@ -228,6 +277,19 @@ impl CopperProof {
                     if result.coverage.hole_candidates > 1_000_000 {
                         return Self::fallback("hole_candidate_budget");
                     }
+                    hole_affected = true;
+                }
+                let (w, h) = if part.rotation_mdeg.rem_euclid(180_000) == 90_000 { (pad.height.0, pad.width.0) } else { (pad.width.0, pad.height.0) };
+                let pad_bounds = Rect::new(
+                    Point::new(Nm(center.x.0 - (w + 1) / 2), Nm(center.y.0 - (h + 1) / 2)),
+                    Point::new(Nm(center.x.0 + (w + 1) / 2), Nm(center.y.0 + (h + 1) / 2)),
+                );
+                for _ in mechanical.query_rect(&pad_bounds) {
+                    result.coverage.hole_candidates += 1;
+                    if result.coverage.hole_candidates > 1_000_000 {
+                        return Self::fallback("hole_candidate_budget");
+                    }
+                    result.coverage.fallback_reason = Some("physical_nonplated_hole_intersection");
                     hole_affected = true;
                 }
                 if hole_affected {

@@ -26,6 +26,8 @@ impl LayerId {
     pub const EDGE_CUTS: Self = Self(44);
     /// Plated through-holes; a display layer, not a fabrication layer.
     pub const VIAS: Self = Self(100);
+    /// Mechanical nonplated through holes on both outer sides; geometry preview.
+    pub const NONPLATED_HOLES: Self = Self(101);
 
     /// Inner copper layer `n` (1-based, `In{n}.Cu`).
     pub fn inner_copper(n: u16) -> Self {
@@ -44,6 +46,7 @@ pub enum LayerKind {
     Paste,
     EdgeCuts,
     Vias,
+    NonplatedHoles,
 }
 
 /// One layer and how it is drawn.
@@ -120,6 +123,7 @@ impl LayerStack {
     /// Legacy/demonstration stacks retain their exact original order and count.
     pub(crate) fn sync_courtyards(&mut self, scene: &crate::scene::Scene) {
         for (id, name, color, kind) in [
+            (LayerId::NONPLATED_HOLES, "Nonplated holes", Color32::from_rgb(22, 26, 30), LayerKind::NonplatedHoles),
             (LayerId::B_COURTYARD, "B.Courtyard", Color32::from_rgb(120, 160, 210), LayerKind::Courtyard),
             (LayerId::F_COURTYARD, "F.Courtyard", Color32::from_rgb(200, 120, 210), LayerKind::Courtyard),
             (LayerId::B_PASTE, "B.Paste", Color32::from_rgb(80, 140, 180), LayerKind::Paste),

@@ -311,6 +311,7 @@ pub(crate) fn snapshot_budget(project: &Project, limit: usize) -> Result<(), Str
 }
 /// Reserve a replacement's positive net-text growth before cloning bounded geometry.
 pub(crate) fn snapshot_budget_with_text_growth(project: &Project, limit: usize, growth: usize) -> Result<(), String> {
+    viamind_doc::footprint_holes::preflight_project(project, None)?;
     let board = &project.board;
     let mut objects = board.parts.len().saturating_add(board.tracks.len()).saturating_add(board.vias.len());
     let policy = viamind_doc::named_net_rule_budget(&board.net_rules).map_err(|e| format!("Automatic DRC skipped: {e}"))?;
@@ -346,6 +347,16 @@ pub(crate) fn snapshot_budget_with_text_growth(project: &Project, limit: usize, 
         label(&part.designator)?;
         text = text.saturating_add(part.designator.len()).saturating_add(part.value.len()).saturating_add(part.footprint.len());
         check(objects, text)?;
+        if let Some(holes) = &part.holes {
+            objects = objects.saturating_add(holes.len());
+            check(objects, text)?;
+            viamind_doc::footprint_holes::validate_part_holes(holes)?;
+            for hole in holes {
+                viamind_doc::footprint_holes::resolve_hole(part, hole)?;
+                text = text.saturating_add(hole.key.len());
+                check(objects, text)?;
+            }
+        }
         if let Some(pads) = &part.pads {
             objects = objects.saturating_add(pads.0.len());
             check(objects, text)?;

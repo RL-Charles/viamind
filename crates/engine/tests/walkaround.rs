@@ -326,3 +326,44 @@ fn named_pair_clearance_inflates_only_matching_obstacles_and_width_floor_refuses
     e.undo(Origin::User).unwrap();
     assert_eq!(e.read(Clone::clone), before.project);
 }
+
+#[test]
+fn opposite_side_mechanical_only_hole_detours_and_direct_route_rolls_back() {
+    let _guard = TEST.lock().unwrap();
+    let (mut project, ids) = fixture();
+    let mut mechanical = project.board.parts[&ids[0].part_id].clone();
+    mechanical.id = ObjectId::new();
+    mechanical.side = Side::Bottom;
+    mechanical.pads = None;
+    mechanical.position = p(20_000_000, 10_000_000);
+    mechanical.holes = Some(vec![viamind_doc::footprint_holes::PartHole {
+        id: ObjectId::new(),
+        key: "mount".into(),
+        center: Point::ORIGIN,
+        diameter: Nm(2_000_001),
+    }]);
+    let mechanical_id = mechanical.id;
+    project.board.parts.insert(mechanical_id, mechanical);
+    let e = EngineHandle::new(project);
+    let cmd = input(&e, ids);
+    let before = e.session_state();
+    let direct = viamind_engine::RoutePolyline {
+        expected_project: cmd.expected_project,
+        expected_cursor: cmd.expected_cursor,
+        points: vec![p(10_000_000, 10_000_000), p(30_000_000, 10_000_000)],
+        grid: cmd.grid,
+        width: cmd.width,
+        layer: CopperLayer::Top,
+        net: "N".into(),
+        rules: cmd.rules.clone(),
+    };
+    assert!(e.execute_typed(direct, Origin::User).unwrap_err().to_string().contains("nonplated"));
+    assert_eq!(e.session_state(), before);
+    let plan = e.plan_pad_walkaround(&cmd).unwrap();
+    assert_eq!(plan.plan.work.obstacle_boxes, 1);
+    assert!(plan.plan.path.points.iter().any(|p| p.y.0 != 10_000_000));
+    e.execute_typed(cmd, Origin::User).unwrap();
+    assert_eq!(e.read(|p| p.board.parts[&mechanical_id].clone()), before.project.board.parts[&mechanical_id]);
+    e.undo(Origin::User).unwrap();
+    assert_eq!(e.read(Clone::clone), before.project);
+}
